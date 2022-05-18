@@ -14,6 +14,7 @@ import { disableResponsiveParameterObservation, enableResponsiveParameterObserva
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -61,6 +62,13 @@ describe('MainMenu', () => {
 				minWidth: false,
 				observeResponsiveParameter: false
 			});
+		});
+
+		it('has static constants', async () => {
+			expect(MainMenu.SWIPE_DELTA_PX).toBe(50);
+			expect(MainMenu.INITIAL_WIDTH_EM).toBe(28);
+			expect(MainMenu.MIN_WIDTH_EM).toBe(28);
+			expect(MainMenu.MAX_WIDTH_EM).toBe(100);
 		});
 	});
 
@@ -135,6 +143,7 @@ describe('MainMenu', () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.main-menu__close-button').id).toBe('toggle');
 			expect(element.shadowRoot.querySelector('.main-menu__close-button').title).toBe('menu_main_open_button');
 			expect(element.shadowRoot.querySelector('.main-menu__close-button-text').innerText).toBe('menu_main_open_button');
 		});
@@ -176,6 +185,17 @@ describe('MainMenu', () => {
 						break;
 				}
 			}
+		});
+
+		it('contains test-id attributes', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(5);
+			expect(element.shadowRoot.querySelector(SearchResultsPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector(TopicsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector(FeatureInfoPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector(MapsContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector(BvvMiscContentPanel.tag).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('display the content panel for default index = 0', async () => {
@@ -297,6 +317,85 @@ describe('MainMenu', () => {
 		});
 	});
 
+	describe('when close button swiped', () => {
+		const getCenter = (element) => {
+			const rect = element.getBoundingClientRect();
+			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
+		};
+
+		it('closes the main menu on swipe upward', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			const center = getCenter(closeButton);
+
+			// Touch-path upwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeNull();
+		});
+
+		it('does NOT closes the main menu on swipe downwards, left or right', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+
+			const center = getCenter(closeButton);
+
+			// Touch-path downwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+
+			// Touch-path left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+
+			// Touch-path right
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+
+			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
+		});
+
+		it('close-button get the focus after swipe', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					minWidth: false
+				}
+			};
+
+			const element = await setup(state);
+			const closeButton = element.shadowRoot.querySelector('.main-menu__close-button');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			expect(closeButton.matches(':focus')).toBeTrue();
+		});
+	});
+
 	describe('when responsive parameter observation state changes', () => {
 
 		it('adds or removes the prevent-transition css class', async () => {
@@ -349,6 +448,9 @@ describe('MainMenu', () => {
 			const slider = element.shadowRoot.querySelector('.slider-container input');
 			const initialWidthInPx = window.getComputedStyle(mainMenu).width;
 
+			//check initial value
+			expect(slider.value).toBe('28');
+
 			//open FeatureInfo panel and adjust width
 			setTab(TabId.FEATUREINFO);
 			slider.value = value;
@@ -364,6 +466,7 @@ describe('MainMenu', () => {
 			setTab(TabId.FEATUREINFO);
 
 			expect(window.getComputedStyle(mainMenu).width).toBe(adjustedWidthInPx);
+			expect(slider.value).toBe('50');
 		});
 
 		it('prevents default event handling and stops its propagation', async () => {

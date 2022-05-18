@@ -97,8 +97,9 @@ describe('Help', () => {
 
 				expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 				//we expect a lit-html TemplateResult as content
-				expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
-				expect(store.getState().modal.data.content.values[1]).toBe('http://some.url');
+				expect(store.getState().modal.data.content.strings[1]).toContain('<iframe title=');
+				expect(store.getState().modal.data.content.strings[3]).toContain('allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"');
+				expect(store.getState().modal.data.content.values[2]).toBe('http://some.url');
 			});
 
 			it('opens the modal with showcase, when help-content is NOT available', async () => {
@@ -207,7 +208,8 @@ describe('Help', () => {
 					expect(store.getState().notifications.latest.payload.content).toBeNull();
 					expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 					//we expect a lit-html TemplateResult as content
-					expect(store.getState().modal.data.content.strings[0]).toBe('<iframe title=');
+					expect(store.getState().modal.data.content.strings[1]).toContain('<iframe title=');
+					expect(store.getState().modal.data.content.strings[3]).toContain('allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"');
 				});
 
 			});

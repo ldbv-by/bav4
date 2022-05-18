@@ -56,6 +56,14 @@ export const createDefaultLayer = (id, geoResourceId = id) => {
 };
 
 /**
+ * Creates an object containing all layer specific default constraint properties.
+ * @returns Constraints
+ */
+export const createDefaultLayersConstraints = () => {
+	return { alwaysTop: false, hidden: false, cloneable: true, metaData: true };
+};
+
+/**
  * Creates an object containing all layer properties (bound to default values)
  * except for `id` and `geoResourceId`.
  */
@@ -64,7 +72,7 @@ export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
-	constraints: { alwaysTop: false, hidden: false, cloneable: true }
+	constraints: createDefaultLayersConstraints()
 });
 
 const addLayer = (state, payload) => {
@@ -81,6 +89,7 @@ const addLayer = (state, payload) => {
 		...createDefaultLayerProperties(),
 		geoResourceId: id,
 		...properties,
+		constraints: { ...createDefaultLayersConstraints(), ...properties.constraints ?? {} },
 		id: id
 	};
 

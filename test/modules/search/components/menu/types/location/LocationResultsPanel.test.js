@@ -3,6 +3,7 @@ import { LocationResultsPanel } from '../../../../../../../src/modules/search/co
 import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
 import { EventLike } from '../../../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../../../test-utils.js';
 
@@ -41,24 +42,22 @@ describe('LocationResultsPanel', () => {
 
 	describe('when initialized', () => {
 
-		it('renders the view', async (done) => {
+		it('renders the view', async () => {
 
 			const element = await setup();
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-				done();
-			}, LocationResultsPanel.Debounce_Delay + 100);
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 
-		it('renders the view based on a current query with "Default_Result_Item_Length" results', async (done) => {
+		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
 			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
@@ -73,22 +72,21 @@ describe('LocationResultsPanel', () => {
 
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelectorAll('ba-search-content-panel-location-item')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 
-				expect(getLocationSearchResultProvider).toHaveBeenCalled();
-				done();
-			}, LocationResultsPanel.Debounce_Delay + 100);
+			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 		});
 
 
-		it('renders the view based on a current query with more than "maxShow" results', async (done) => {
+		it('renders the view based on a current query with more than "maxShow" results', async () => {
 			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
@@ -103,24 +101,22 @@ describe('LocationResultsPanel', () => {
 
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
-				expect(getLocationSearchResultProvider).toHaveBeenCalled();
-				done();
-			}, LocationResultsPanel.Debounce_Delay + 100);
+			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 		});
 	});
 
 	describe('when query changes', () => {
 
-		it('updates the view based on a current query', async (done) => {
+		it('updates the view based on a current query', async () => {
 			const query = 'foo';
 			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
 				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
@@ -129,31 +125,26 @@ describe('LocationResultsPanel', () => {
 			setQuery(query);
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-				expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
-				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-				expect(getLocationSearchResultProvider).toHaveBeenCalled();
+			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 
-				setQuery(null);
+			setQuery(null);
 
-				setTimeout(() => {
-					expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
-					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-					expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-
-					done();
-
-				}, LocationResultsPanel.Debounce_Delay + 100);
-			}, LocationResultsPanel.Debounce_Delay + 100);
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-results-panel')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.location-label__text').textContent).toBe('search_menu_locationResultsPanel_label');
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+			expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 	});
 
@@ -161,7 +152,7 @@ describe('LocationResultsPanel', () => {
 
 		describe('when items are available', () => {
 
-			it('toggles the list of item', async (done) => {
+			it('toggles the list of item', async () => {
 				const query = 'foo';
 				const initialState = {
 					search: {
@@ -174,64 +165,58 @@ describe('LocationResultsPanel', () => {
 				const element = await setup(initialState);
 
 				//wait for elements
-				setTimeout(() => {
-					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
+				await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(1);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeFalsy();
 
-					const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
+				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeFalsy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					expect(getLocationSearchResultProvider).toHaveBeenCalled();
-					done();
-
-				}, LocationResultsPanel.Debounce_Delay + 100);
+				expect(getLocationSearchResultProvider).toHaveBeenCalled();
 			});
 		});
 
 		describe('items are NOT available', () => {
 
-			it('disables the collapse button', async (done) => {
+			it('disables the collapse button', async () => {
 				const element = await setup();
 
 				//wait for elements
-				setTimeout(() => {
+				await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
 
-					expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
-					expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
-					expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-label__collapse')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(0);
+				expect(element.shadowRoot.querySelector('.isdisabled')).toBeTruthy();
 
-					const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
+				const collapseButton = element.shadowRoot.querySelector('.location-label__collapse');
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 
-					collapseButton.click();
+				collapseButton.click();
 
-					expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
-					expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
-					done();
-
-				}, LocationResultsPanel.Debounce_Delay + 100);
+				expect(element.shadowRoot.querySelector('.iscollaps')).toBeFalsy();
+				expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 			});
 		});
 	});
 
 	describe('show-all button', () => {
 
-		it('displays all results on click', async (done) => {
+		it('displays all results on click', async () => {
 			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
 			const query = 'foo';
 			const initialState = {
@@ -246,17 +231,14 @@ describe('LocationResultsPanel', () => {
 
 
 			//wait for elements
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
+			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('block');
 
-				element.shadowRoot.querySelector('.show-all').click();
+			element.shadowRoot.querySelector('.show-all').click();
 
-				expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length + 1);
-				expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
-				done();
-
-			}, LocationResultsPanel.Debounce_Delay + 100);
+			expect(element.shadowRoot.querySelector('.location-items').childElementCount).toBe(LocationResultsPanel.Default_Result_Item_Length + 1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.show-all')).display).toBe('none');
 		});
 	});
 });

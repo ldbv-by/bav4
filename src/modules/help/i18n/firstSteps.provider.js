@@ -17,7 +17,7 @@ export const firstStepsProvide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				help_firstSteps_button: 'Erste Schritte',
 				help_firstSteps_notification_header: 'Erste Schritte',
-				help_firstSteps_notification_text: 'Sie brauchen Hilfe bei der Erfassung?',
+				help_firstSteps_notification_text: 'Sie brauchen Hilfe bei der Erfassung Ihrer Flurstücksdaten?',
 				help_firstSteps_notification_close: 'Nein Danke',
 				help_firstSteps_notification_first_steps: 'Erste Schritte',
 				help_firstSteps_link: 'https://bayernatlas.de'

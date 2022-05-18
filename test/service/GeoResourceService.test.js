@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, GeoResourceService } from '../../src/services/GeoResourceService';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, GeoResourceService } from '../../src/services/GeoResourceService';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
@@ -20,6 +20,14 @@ describe('GeoResourceService', () => {
 		return new GeoResourceService(provider, byIdProviders);
 	};
 	const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'wmtsLabel', 'wmtsUrl');
+
+	it('exports constant values', async () => {
+
+		expect(FALLBACK_GEORESOURCE_ID_0).toBe('atkis');
+		expect(FALLBACK_GEORESOURCE_ID_1).toBe('atkis_sw');
+		expect(FALLBACK_GEORESOURCE_LABEL_0).toBe('Base Map 1');
+		expect(FALLBACK_GEORESOURCE_LABEL_1).toBe('Base Map 2');
+	});
 
 	describe('init', () => {
 
@@ -79,6 +87,7 @@ describe('GeoResourceService', () => {
 				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
 				expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
+				expect(georesources[1].label).toBe(FALLBACK_GEORESOURCE_LABEL_1);
 				expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			});

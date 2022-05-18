@@ -1,19 +1,29 @@
-import { layersReducer, index, sort, createDefaultLayerProperties, createDefaultLayer } from '../../../src/store/layers/layers.reducer';
+import { layersReducer, index, sort, createDefaultLayerProperties, createDefaultLayer, createDefaultLayersConstraints } from '../../../src/store/layers/layers.reducer';
 import { addLayer, removeLayer, modifyLayer, setReady } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
 
 describe('defaultLayerProperties', () => {
 
-	it('returns a object containing default layer properties', () => {
+	it('returns an object containing default layer properties', () => {
 
 		const defaultLayerProperties = createDefaultLayerProperties();
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.label).toBe('');
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
-		expect(defaultLayerProperties.constraints.alwaysTop).toBeFalse();
-		expect(defaultLayerProperties.constraints.hidden).toBeFalse();
-		expect(defaultLayerProperties.constraints.cloneable).toBeTrue();
+		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
+	});
+});
+
+describe('createDefaultLayersConstraints', () => {
+
+	it('returns an object containing all layer specific default constraint properties', () => {
+
+		const defaultLayerConstraints = createDefaultLayersConstraints();
+		expect(defaultLayerConstraints.alwaysTop).toBeFalse();
+		expect(defaultLayerConstraints.hidden).toBeFalse();
+		expect(defaultLayerConstraints.cloneable).toBeTrue();
+		expect(defaultLayerConstraints.metaData).toBeTrue();
 	});
 });
 
@@ -29,9 +39,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.label).toBe('');
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
-		expect(layer.constraints.alwaysTop).toBeFalse();
-		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeTrue();
+		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 
 	it('returns a layer object with default properties and values for given id and geoResourceId', () => {
@@ -44,9 +52,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.label).toBe('');
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
-		expect(layer.constraints.alwaysTop).toBeFalse();
-		expect(layer.constraints.hidden).toBeFalse();
-		expect(layer.constraints.cloneable).toBeTrue();
+		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 });
 
@@ -112,10 +118,10 @@ describe('layersReducer', () => {
 		expect(array[2].label).toBe('label2');
 	});
 
-	it('adds layers', () => {
+	it('adds layers and complements missing optional properties', () => {
 		const store = setup();
 
-		const layerProperties1 = { label: 'label1', geoResourceId: 'geoResourceId1' };
+		const layerProperties1 = { label: 'label1', geoResourceId: 'geoResourceId1', constraints: { cloneable: false } };
 
 		addLayer('id0'); // no layer properties
 		addLayer('id1', layerProperties1);
@@ -125,10 +131,14 @@ describe('layersReducer', () => {
 		expect(store.getState().layers.active[0].geoResourceId).toBe('id0');
 		expect(store.getState().layers.active[0].label).toBe('');
 		expect(store.getState().layers.active[0].zIndex).toBe(0);
+		expect(store.getState().layers.active[0].constraints).toEqual(createDefaultLayersConstraints());
+
 		expect(store.getState().layers.active[1].id).toBe('id1');
 		expect(store.getState().layers.active[1].geoResourceId).toBe('geoResourceId1');
 		expect(store.getState().layers.active[1].label).toBe('label1');
 		expect(store.getState().layers.active[1].zIndex).toBe(1);
+		expect(store.getState().layers.active[1].constraints.hidden).toBeFalse();
+		expect(Object.keys(store.getState().layers.active[1].constraints).length).toBe(4);
 	});
 
 	it('adds layers regarding a \'z-index\' property of 0', () => {

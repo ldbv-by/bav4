@@ -40,6 +40,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 
+
 		this._onCollapse = () => { };
 	}
 
@@ -185,7 +186,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
-		const isCloneable = layer.constraints?.cloneable;
+		const cloneableClass = {
+			ishidden: !layer.constraints?.cloneable
+		};
+
+		const hasLayerInfoClass = {
+			ishidden: !layer.constraints?.metaData
+		};
+
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>
@@ -206,10 +214,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='copy' .disabled=${!isCloneable} .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
+						<ba-icon id='copy' class='${classMap(cloneableClass)}' .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
 					</div>                                                                                              
 					<div>                                                                                              
-						<ba-icon id='info' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
+						<ba-icon id='info' class='${classMap(hasLayerInfoClass)}' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
 					</div>                                                                                              
 					<div>                                                                                              
 						<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               

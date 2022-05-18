@@ -78,17 +78,10 @@ export const loadBvvGeoResources = async () => {
 
 /**
  * Helper function to parse BVV attributions.
- * @param {object} definition BVV geoResouce definition
+ * @param {object} definition BVV GeoResource definition
  * @returns  {Array<Attribution>|null} an array of attributions or `null`
  */
 export const _parseBvvAttributionDefinition = (definition) => {
-
-	if (!definition.attribution) {
-		return null;
-	}
-
-	//basic attribution values
-	const { description, copyright, href } = definition.attribution;
 
 	if (Array.isArray(definition.extendedAttributions)) {
 		return definition
@@ -97,14 +90,15 @@ export const _parseBvvAttributionDefinition = (definition) => {
 				//supplement each attribution with basic attribution values if needed
 				return {
 					copyright: {
-						label: extAtt.copyright || copyright,
-						url: extAtt.href || href
+						label: extAtt.copyright ?? definition?.attribution?.copyright ?? null,
+						url: extAtt.href ?? definition?.attribution?.href ?? null
 					},
-					description: extAtt.description || description
+					description: extAtt.description ?? definition?.attribution?.description ?? null
 				};
 			});
 	}
-	else {
+	else if (definition.attribution) {
+		const { description, copyright, href } = definition.attribution;
 		return [{
 			copyright: {
 				label: copyright,
@@ -113,6 +107,7 @@ export const _parseBvvAttributionDefinition = (definition) => {
 			description: description
 		}];
 	}
+	return null;
 };
 
 /**

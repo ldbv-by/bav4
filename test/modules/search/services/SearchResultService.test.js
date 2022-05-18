@@ -55,7 +55,7 @@ describe('SearchResultService', () => {
 		});
 	});
 
-	describe('_newFallbackGeoResouceSearchResults', () => {
+	describe('_newFallbackGeoResourceSearchResults', () => {
 
 		it('provides fallback search results for geoResources', () => {
 			const instanceUnderTest = setup();
@@ -65,12 +65,12 @@ describe('SearchResultService', () => {
 			expect(results).toHaveSize(2);
 			expect(results[0].id).toBe('atkis');
 			expect(results[0].layerId).toContain('atkis_');
-			expect(results[0].label).toBe('Base Layer 1');
-			expect(results[0].labelFormated).toBe('Base Layer 1');
+			expect(results[0].label).toBe('Base Map 1');
+			expect(results[0].labelFormated).toBe('Base Map 1');
 			expect(results[1].id).toBe('atkis_sw');
 			expect(results[1].layerId).toContain('atkis_sw_');
-			expect(results[1].label).toBe('Base Layer 2');
-			expect(results[1].labelFormated).toBe('Base Layer 2');
+			expect(results[1].label).toBe('Base Map 2');
+			expect(results[1].labelFormated).toBe('Base Map 2');
 		});
 	});
 
@@ -268,6 +268,16 @@ describe('SearchResultService', () => {
 
 			expect(results).toHaveSize(0);
 		});
+
+		it('provides an empty array as results when term is a URL', async () => {
+			const term = 'http://foo.bar';
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.locationsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
 	});
 
 	describe('cadastralParcelsByTerm', () => {
@@ -298,6 +308,16 @@ describe('SearchResultService', () => {
 
 		it('provides an empty array as results when max query length is exceeded', async () => {
 			const term = 't'.repeat(MAX_QUERY_TERM_LENGTH);
+			spyOn(environmentService, 'isStandalone').and.returnValue(false);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
+
+			expect(results).toHaveSize(0);
+		});
+
+		it('provides an empty array as results when term is a URL', async () => {
+			const term = 'http://foo.bar';
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const instanceUnderTest = setup();
 

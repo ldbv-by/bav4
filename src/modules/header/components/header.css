@@ -65,6 +65,7 @@
 	width: 8em;
 	background-image: url('assets/Coat_of_arms_of_Bavaria.svg');
 	background-repeat: no-repeat;
+	background-size: contain;
 }
 .header__nav {
 	position: absolute;

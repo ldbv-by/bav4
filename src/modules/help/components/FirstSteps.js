@@ -93,7 +93,7 @@ export class FirstSteps extends MvuElement {
 
 
 		const openModalFirstSteps = () => {
-			openModal(translate('help_firstSteps_notification_first_steps'), html`<iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} style="border:none;" width='100%' height='600px'></iframe`);
+			openModal(translate('help_firstSteps_notification_first_steps'), html`<style>${css}</style><iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe`);
 		};
 
 		const openModalShowCase = () => {
@@ -137,10 +137,10 @@ export class FirstSteps extends MvuElement {
 		return html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<div class='first_steps__button ${getOverlayClass()}'>				
+				<button class='first_steps__button ${getOverlayClass()}'  @click=${contentAvailable ? openModalFirstSteps : openModalShowCase} >				
 					<i class='first_steps__button-icon'></i>
-					<span class="first_steps__button-text" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>${translate('help_firstSteps_button')}</span>					
-				</div>		
+					<span class="first_steps__button-text">${translate('help_firstSteps_button')}</span>					
+				</button>		
 			</div>		
 
 		` ;

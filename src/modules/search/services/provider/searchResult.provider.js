@@ -30,7 +30,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/layers/searchText';
 
 
-	const result = await httpService.get(`${url}/${query}`);
+	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
 	if (result.ok) {
 		const raw = await result.json();
@@ -47,7 +47,7 @@ export const loadBvvLocationSearchResults = async (query) => {
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/locations/searchText';
 
-	const result = await httpService.get(`${url}/${query}`);
+	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
 	if (result.ok) {
 		const raw = await result.json();
@@ -64,7 +64,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/cp/searchText';
 
-	const result = await httpService.get(`${url}/${query}`);
+	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
 	if (result.ok) {
 		const raw = await result.json();

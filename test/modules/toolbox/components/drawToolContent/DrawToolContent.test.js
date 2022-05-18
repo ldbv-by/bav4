@@ -38,6 +38,13 @@ describe('DrawToolContent', () => {
 		}
 	};
 
+	const securityServiceMock = {
+		sanitizeHtml(html) {
+			return html;
+		}
+	};
+
+
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => { } };
 
 	const drawDefaultState = {
@@ -83,7 +90,8 @@ describe('DrawToolContent', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
-			.registerSingleton('UrlService', urlServiceMock);
+			.registerSingleton('UrlService', urlServiceMock)
+			.registerSingleton('SecurityService', securityServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
 
@@ -136,7 +144,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('line');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#line-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -149,7 +160,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('marker');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#marker-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -162,7 +176,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('text');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#text-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -175,7 +192,10 @@ describe('DrawToolContent', () => {
 			toolButton.click();
 
 			expect(toolButton.classList.contains('is-active')).toBeTrue();
+			expect(store.getState().draw.reset).toBeTruthy();
 			expect(store.getState().draw.type).toBe('polygon');
+			expect(store.getState().draw.style.text).toBeNull();
+			expect(store.getState().draw.description).toBeNull();
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#polygon-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
@@ -437,7 +457,45 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.scale).toBe(newScale);
 		});
 
-		it('sets the style, after text changes in text-input', async () => {
+		it('sets the style with sanitized text, after text changes in text-input', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = 'bar';
+			const element = await setup({ ...drawDefaultState, style });
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+			expect(sanitizeSpy).toHaveBeenCalled();
+		});
+
+		it('resets the style, after empty text-input lost focus', async () => {
+			const style = { ...StyleOptionTemplate, text: 'foo' };
+			const newText = '';
+			const element = await setup({ ...drawDefaultState, style });
+
+			setType('text');
+			const textInput = element.shadowRoot.querySelector('#style_text');
+			expect(textInput).toBeTruthy();
+			expect(textInput.value).toBe('foo');
+
+			textInput.value = newText;
+			textInput.dispatchEvent(new Event('input'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBeNull();
+		});
+
+		it('does NOT resets the style, after valid text-input lost focus', async () => {
 			const style = { ...StyleOptionTemplate, text: 'foo' };
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, style });
@@ -451,9 +509,13 @@ describe('DrawToolContent', () => {
 			textInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
+
+			textInput.dispatchEvent(new Event('blur'));
+
+			expect(store.getState().draw.style.text).toBe(newText);
 		});
 
-		it('sets the style, after symbol changes in iconSelect', async (done) => {
+		it('sets the style, after symbol changes in iconSelect', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const style = { ...StyleOptionTemplate, text: 'foo', symbolSrc: null };
 			const element = await setup({ ...drawDefaultState, style });
@@ -462,24 +524,22 @@ describe('DrawToolContent', () => {
 			const iconSelect = element.shadowRoot.querySelector('ba-iconselect');
 			expect(iconSelect).toBeTruthy();
 			// wait to get icons loaded....
-			setTimeout(() => {
-				// ..then perform ui-actions
-				const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
-				iconButton.click();
+			await TestUtils.timeout();
+			// ..then perform ui-actions
+			const iconButton = iconSelect.shadowRoot.querySelector('.iconselect__toggle-button');
+			iconButton.click();
 
-				const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
-				selectableIcon.click();
+			const selectableIcon = iconSelect.shadowRoot.querySelector('#svg_foo');
+			selectableIcon.click();
 
-				expect(store.getState().draw.style.symbolSrc).toBeTruthy();
-				done();
-			});
-
+			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
 		});
 
-		it('sets the description, after description changes in textarea', async () => {
+		it('sets the sanitized description, after description changes in textarea', async () => {
 
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, description: 'Foo', style: StyleOptionTemplate });
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
 
 			setType('text');
 			const descriptionTextArea = element.shadowRoot.querySelector('textarea');
@@ -490,6 +550,7 @@ describe('DrawToolContent', () => {
 			descriptionTextArea.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.description).toBe(newText);
+			expect(sanitizeSpy).toHaveBeenCalled();
 		});
 
 		it('sets the style-inputs for symbol-tool', async () => {

@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
+import { decodeHtmlEntities, TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
 
 class MvuElementParent extends MvuElement {
@@ -12,6 +12,7 @@ class MvuElementParent extends MvuElement {
 			<div class='class foo' data-test-id></div>
 			<div data-test-id></div>
 			<mvu-element-child data-test-id id='id'></mvu-element-child>
+			<mvu-element-child data-test-id class='class'></mvu-element-child>
 			<div id='id'></div>
 			<div class='class foo'></div>
 			<div></div>
@@ -46,6 +47,7 @@ class BaElementParent extends BaElement {
 			<div class='class foo' data-test-id></div>
 			<div data-test-id></div>
 			<ba-element-child data-test-id id='id'></ba-element-child>
+			<ba-element-child data-test-id class='class'></ba-element-child>
 			<div id='id'></div>
 			<div class='class foo'></div>
 			<div></div>
@@ -97,7 +99,7 @@ describe('markup utils', () => {
 				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
-				const mvuElements = element.shadowRoot.querySelectorAll(MvuElementChild.tag);
+				const mvuChildElements = element.shadowRoot.querySelectorAll(MvuElementChild.tag);
 
 				expect(element.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0');
 				expect(divElements).toHaveSize(6);
@@ -107,9 +109,10 @@ describe('markup utils', () => {
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(mvuElements).toHaveSize(2);
-				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_id');
-				expect(mvuElements.item(1).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
+				expect(mvuChildElements).toHaveSize(3);
+				expect(mvuChildElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_mvu-element-child-0');
+				expect(mvuChildElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('mvu-element-parent-0_mvu-element-child-1');
+				expect(mvuChildElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 			});
 
 			it('does nothing', async () => {
@@ -117,7 +120,7 @@ describe('markup utils', () => {
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(MvuElementChild.tag)];
 
-				expect(all).toHaveSize(8);
+				expect(all).toHaveSize(9);
 				all.forEach(el => {
 					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
 				});
@@ -132,7 +135,7 @@ describe('markup utils', () => {
 				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
-				const mvuElements = element.shadowRoot.querySelectorAll(BaElementChild.tag);
+				const baChildElements = element.shadowRoot.querySelectorAll(BaElementChild.tag);
 
 				expect(element.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0');
 				expect(divElements).toHaveSize(6);
@@ -142,9 +145,10 @@ describe('markup utils', () => {
 				expect(divElements.item(3).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(4).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 				expect(divElements.item(5).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
-				expect(mvuElements).toHaveSize(2);
-				expect(mvuElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_id');
-				expect(mvuElements.item(1).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
+				expect(baChildElements).toHaveSize(3);
+				expect(baChildElements.item(0).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-0');
+				expect(baChildElements.item(1).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('ba-element-parent-0_ba-element-child-1');
+				expect(baChildElements.item(2).hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalse();
 			});
 
 			it('does nothing', async () => {
@@ -152,11 +156,27 @@ describe('markup utils', () => {
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(BaElementChild.tag)];
 
-				expect(all).toHaveSize(8);
+				expect(all).toHaveSize(9);
 				all.forEach(el => {
 					expect(el.getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeFalsy();
 				});
 			});
+		});
+	});
+
+	describe('decodeHtmlEntities', () => {
+		it('decodes text from html-content', () => {
+			expect(decodeHtmlEntities('&sup2;')).toBe('²');
+			expect(decodeHtmlEntities('&sup3;')).toBe('³');
+			expect(decodeHtmlEntities('<b>foo</b>')).toBe('foo');
+			expect(decodeHtmlEntities('<div class="foo">bar</div>')).toBe('bar');
+		});
+
+		it('ignores js-code', () => {
+			const spy = spyOn(window, 'alert');
+			const decoded = decodeHtmlEntities('<img src="dummy" onerror="alert(\'called\')")');
+			expect(spy).not.toHaveBeenCalled();
+			expect(decoded).toBe('');
 		});
 	});
 });

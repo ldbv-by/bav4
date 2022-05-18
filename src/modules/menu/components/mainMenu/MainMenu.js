@@ -10,6 +10,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { MvuElement } from '../../../MvuElement';
+import VanillaSwipe from 'vanilla-swipe';
 
 
 const Update_Main_Menu = 'update_main_menu';
@@ -69,9 +70,29 @@ export class MainMenu extends MvuElement {
 	/**
 	* @override
 	*/
-	onAfterRender() {
+	onAfterRender(firsttime) {
 		const { tab } = this.getModel();
 		this._activateTab(tab);
+		if (firsttime) {
+
+			const handler = (event, data) => {
+				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > MainMenu.SWIPE_DELTA_PX) {
+					swipeElement.focus();
+					toggle();
+				}
+			};
+			const swipeElement = this.shadowRoot.getElementById('toggle');
+
+			const swipe = new VanillaSwipe({
+				element: swipeElement,
+				onSwipeStart: handler,
+				delta: MainMenu.SWIPE_DELTA_PX,
+				mouseTrackingEnabled: true
+			});
+
+			swipe.init();
+		}
+
 	}
 
 	/**
@@ -101,6 +122,11 @@ export class MainMenu extends MvuElement {
 			container.style.width = parseInt(event.target.value) + 'em';
 		};
 
+		const getValue = () => {
+			const container = this.shadowRoot.getElementById('mainmenu');
+			return (container && container.style.width !== '') ? parseInt(container.style.width) : MainMenu.INITIAL_WIDTH_EM;
+		};
+
 		const getSlider = () => {
 
 			const onPreventDragging = (e) => {
@@ -110,10 +136,11 @@ export class MainMenu extends MvuElement {
 
 			return html`<div class='slider-container'>
 				<input  
+					id='rangeslider'
 					type="range" 
-					min="28" 
-					max="100" 
-					value="28" 
+					min="${MainMenu.MIN_WIDTH_EM}" 
+					max="${MainMenu.MAX_WIDTH_EM}" 
+					value="${getValue()}"  
 					draggable='true' 
 					@input=${changeWidth} 
 					@dragstart=${onPreventDragging}
@@ -125,7 +152,7 @@ export class MainMenu extends MvuElement {
 			<style>${css}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
-					<button @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
+					<button id='toggle' @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class='main-menu__close-button-text'>${translate('menu_main_open_button')}</span>	
 						<i class='resize-icon'></i>	
 					</button>	
@@ -150,15 +177,15 @@ export class MainMenu extends MvuElement {
 	_getContentPanel(index) {
 		switch (index) {
 			case TabId.MAPS:
-				return html`${unsafeHTML(`<${MapsContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${MapsContentPanel.tag} data-test-id />`)}`;
 			case TabId.MISC:
-				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag} data-test-id />`)}`;
 			case TabId.SEARCH:
-				return html`${unsafeHTML(`<${SearchResultsPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${SearchResultsPanel.tag} data-test-id />`)}`;
 			case TabId.TOPICS:
-				return html`${unsafeHTML(`<${TopicsContentPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabId.FEATUREINFO:
-				return html`${unsafeHTML(`<${FeatureInfoPanel.tag}/>`)}`;
+				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
 			default:
 				return nothing;
 		}
@@ -170,6 +197,22 @@ export class MainMenu extends MvuElement {
 
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
+	}
+
+	static get SWIPE_DELTA_PX() {
+		return 50;
+	}
+
+	static get INITIAL_WIDTH_EM() {
+		return 28;
+	}
+
+	static get MIN_WIDTH_EM() {
+		return 28;
+	}
+
+	static get MAX_WIDTH_EM() {
+		return 100;
 	}
 
 	/**

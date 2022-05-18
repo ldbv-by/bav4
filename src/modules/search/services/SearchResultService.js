@@ -105,7 +105,7 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackLocationSearchResults();
 		}
-		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+		else if (!isHttpUrl(term) && term.length < MAX_QUERY_TERM_LENGTH) {
 			return this._locationResultProvider(term);
 		}
 		return [];
@@ -122,7 +122,7 @@ export class SearchResultService {
 		if (this._environmentService.isStandalone()) {
 			return this._newFallbackCadastralParcelSearchResults();
 		}
-		else if (term.length < MAX_QUERY_TERM_LENGTH) {
+		else if (!isHttpUrl(term) && term.length < MAX_QUERY_TERM_LENGTH) {
 			return this._cadastralParcelResultProvider(term);
 		}
 		return [];
@@ -130,8 +130,8 @@ export class SearchResultService {
 
 	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Layer 1', 'Base Layer 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
-			new SearchResult('atkis_sw', 'Base Layer 2', 'Base Layer 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
+			new SearchResult('atkis', 'Base Map 1', 'Base Map 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
+			new SearchResult('atkis_sw', 'Base Map 2', 'Base Map 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
 		];
 	}
 

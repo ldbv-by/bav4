@@ -11,7 +11,8 @@ import { $injector } from '../../injection';
  * @property {number} defaultSridForView default SRID in which coordinates should be displayed within the UI
  * @property {function(Coordinate):(Array<SridDefinition>)} sridDefinitionsForView function which can take a coordinate and returns an array of SridDefinition
  * @property {number} defaultGeodeticSrid default SRID for geodetic tasks
- * @property {number} maxZoomLevel the max. zoom level the map should support
+ * @property {number} minZoomLevel the minimal zoom level the map should support
+ * @property {number} maxZoomLevel the maximal zoom level the map should support
  */
 
 /**
@@ -34,7 +35,8 @@ export const getBvvMapDefinitions = () => {
 		defaultSridForView: 25832,
 		sridDefinitionsForView: getBvvSridDefinitionsForView,
 		defaultGeodeticSrid: 25832,
-		maxZoomLevel: 19
+		minZoomLevel: 5,
+		maxZoomLevel: 28 // just for Grundsteuer, needs to be reset to 19/20 later
 	};
 };
 

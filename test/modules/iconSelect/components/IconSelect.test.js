@@ -142,7 +142,7 @@ describe('IconSelect', () => {
 
 	describe('when property\'icons\' changes', () => {
 
-		it('updates the view', async (done) => {
+		it('updates the view', async () => {
 			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
 				new IconResult('bar', '42')]));
 			const state = {
@@ -152,10 +152,8 @@ describe('IconSelect', () => {
 			};
 			const element = await setup(state, {});
 
-			setTimeout(() => {
-				expect(element.icons.length).toBe(2);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(element.icons.length).toBe(2);
 		});
 	});
 

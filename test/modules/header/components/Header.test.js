@@ -79,6 +79,10 @@ describe('Header', () => {
 				hasSearchTerm: false
 			});
 		});
+
+		it('has static constants', async () => {
+			expect(Header.SWIPE_DELTA_PX).toBe(50);
+		});
 	});
 
 	describe('responsive layout ', () => {
@@ -190,7 +194,7 @@ describe('Header', () => {
 
 		it('adds a close button', async () => {
 			const element = await setup();
-
+			expect(element.shadowRoot.querySelector('button.close-menu').id).toBe('header_toggle');
 			expect(element.shadowRoot.querySelector('button.close-menu').title).toBe('header_close_button_title');
 		});
 
@@ -217,10 +221,11 @@ describe('Header', () => {
 		it('contains test-id attributes', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(4);
 			expect(element.shadowRoot.querySelector('#topics_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#maps_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#misc_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#input').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 	});
@@ -239,6 +244,77 @@ describe('Header', () => {
 			expect(store.getState().mainMenu.open).toBe(false);
 			element.shadowRoot.querySelector('button.close-menu').click();
 			expect(store.getState().mainMenu.open).toBe(true);
+		});
+	});
+
+	describe('when close button is clicked', () => {
+		it('hides the header', async () => {
+			const element = await setup();
+
+			element.shadowRoot.querySelector('.close-menu').click();
+
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeNull();
+		});
+	});
+
+	describe('when close button is swiped', () => {
+		const getCenter = (element) => {
+			const rect = element.getBoundingClientRect();
+			return { x: (rect.right + rect.left) / 2, y: (rect.top + rect.bottom) / 2 };
+		};
+
+		it('hides the header on swiped left', async () => {
+			const element = await setup();
+
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeNull();
+		});
+
+		it('does NOT hides the header on swiped right, upwards and downwards', async () => {
+			const element = await setup();
+
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			// Touch-path swipe right
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x + 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x + 200, center.y);
+
+			// Touch-path swipe upwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y - 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y - 200);
+
+			// Touch-path downwards
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
+
+			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
+		});
+
+		it('focused menue-button loses the focus after swipe', async () => {
+			const element = await setup();
+			const mapButton = element.shadowRoot.querySelector('.header__button-container').children[1];
+			const closeButton = element.shadowRoot.querySelector('.close-menu');
+			const center = getCenter(closeButton);
+
+			mapButton.focus();
+			expect(mapButton.matches(':focus')).toBeTrue();
+
+			// Touch-path swipe left
+			TestUtils.simulateTouchEvent('touchstart', closeButton, center.x, center.y, 2);
+			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x - 55, center.y, 2);
+			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
+
+			expect(mapButton.matches(':focus')).toBeFalse();
 		});
 	});
 

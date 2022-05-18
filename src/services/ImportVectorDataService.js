@@ -54,7 +54,7 @@ export class ImportVectorDataService {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
 		// check if optional sourceType is supported
-		if (sourceType && !this._mapSourceTypetoVectorSourceType(sourceType)) {
+		if (sourceType && !this._mapSourceTypeToVectorSourceType(sourceType)) {
 			console.warn(`SourceType '${sourceType}' for '${id}' is not supported`);
 			return null;
 		}
@@ -66,7 +66,11 @@ export class ImportVectorDataService {
 
 			if (result.ok) {
 				const data = await result.text();
-				const resultingSourceType = this._mapSourceTypetoVectorSourceType(sourceType) ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data, result.headers.get('Content-Type')));
+				/**
+				 * Although we think we already know the source type, we let the SourceTypeService analyze the data
+				 * and derive the final source type. They might not be what they pretend to be ...
+				 **/
+				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 				if (resultingSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
 						(prop, value) => {
@@ -97,7 +101,7 @@ export class ImportVectorDataService {
 	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = this._mapSourceTypetoVectorSourceType(sourceType) ?? this._mapSourceTypetoVectorSourceType(this._sourceTypeService.forData(data));
+		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data));
 		if (resultingSourceType) {
 			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
 				if (prop === '_label') {
@@ -115,7 +119,7 @@ export class ImportVectorDataService {
 	/**
 	 * Maps a {@link SourceType} to a {@link VectorSourceType}
 	 */
-	_mapSourceTypetoVectorSourceType(sourceType) {
+	_mapSourceTypeToVectorSourceType(sourceType) {
 
 		if (sourceType) {
 			// is it a SourceType instance?

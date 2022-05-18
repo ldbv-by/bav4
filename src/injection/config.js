@@ -12,7 +12,7 @@ import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
 import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
-import { mapModule } from '../modules/map/injection';
+import { mapModule } from '../modules/olMap/injection';
 import { AdministrationService } from '../services/AdministrationService';
 import { TopicsService } from '../services/TopicsService';
 import { topicsModule } from '../modules/topics/injection';
@@ -34,6 +34,7 @@ import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoR
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
+import { SecurityService } from '../services/SecurityService';
 
 
 $injector
@@ -58,6 +59,7 @@ $injector
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
+	.registerSingleton('SecurityService', new SecurityService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

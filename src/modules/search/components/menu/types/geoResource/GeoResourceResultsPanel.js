@@ -17,7 +17,7 @@ const Update_Results_AllShown = 'update_results_allShown';
  * @author taulinger
  * @author alsturm
  */
-export class GeoResouceResultsPanel extends MvuElement {
+export class GeoResourceResultsPanel extends MvuElement {
 
 
 	constructor() {
@@ -49,11 +49,11 @@ export class GeoResouceResultsPanel extends MvuElement {
 		const searchResultProvider = (term) => this._searchResultService.geoResourcesByTerm(term);
 
 		//requestData call has to be debounced
-		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResouceResultsPanel.Debounce_Delay,
+		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay,
 			async (term) => {
 				if (term) {
-					const results = await requestData(term, searchResultProvider, GeoResouceResultsPanel.Min_Query_Length);
-					const allShown = (results.length > GeoResouceResultsPanel.Default_Result_Item_Length) ? false : true;
+					const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
+					const allShown = (results.length > GeoResourceResultsPanel.Default_Result_Item_Length) ? false : true;
 					this.signal(Update_Results_AllShown, { results, allShown });
 				}
 				else {
@@ -95,7 +95,7 @@ export class GeoResouceResultsPanel extends MvuElement {
 			hidden: allShown || results.length === 0
 		};
 
-		const indexEnd = allShown ? results.length : GeoResouceResultsPanel.Default_Result_Item_Length;
+		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
 
 		return html`
         <style>${css}</style>
@@ -111,7 +111,7 @@ export class GeoResouceResultsPanel extends MvuElement {
 					<ul class="georesource-items">	
 						${results
 		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-georesource-item .data=${result}></<ba-search-content-panel-georesource-item>`)}
+		.map((result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`)}
 					</ul>
 					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
 					${translate('search_menu_showAll_label')}

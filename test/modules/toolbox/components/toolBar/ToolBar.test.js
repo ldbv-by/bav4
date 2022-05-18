@@ -61,7 +61,8 @@ describe('ToolBarElement', () => {
 				isOpen: true,
 				isFetching: false,
 				isPortrait: false,
-				hasMinWidth: false
+				hasMinWidth: false,
+				toolId: null
 			});
 		});
 	});
@@ -81,6 +82,19 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.import')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.close')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
+		});
+
+		it('contains test-id attributes', async () => {
+
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(6);
+			expect(element.shadowRoot.querySelector('#measure-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#draw-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#share-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#import-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#action-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('#tools-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('renders nothing when embedded', async () => {
@@ -156,22 +170,30 @@ describe('ToolBarElement', () => {
 
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
+			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBeNull();
+			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[3].click();
 			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[3].click();
+			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeFalse();
 
 			expect(element.getModel().isOpen).toBeTrue();
 			toolButtons[4].click();
@@ -180,12 +202,6 @@ describe('ToolBarElement', () => {
 			expect(element.getModel().isOpen).toBeTrue();
 
 			expect(store.getState().tools.current).toBeNull();
-			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(5);
-			expect(element.shadowRoot.querySelector('#measure-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#draw-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#share-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#import-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#action-button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('switches a tool', async () => {

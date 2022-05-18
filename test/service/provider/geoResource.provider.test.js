@@ -156,7 +156,6 @@ describe('BVV GeoResource provider', () => {
 
 		it('it parses extended attribution definitions', () => {
 
-
 			const attributionDefinition = {
 				attribution: {
 					copyright: 'label',
@@ -180,6 +179,7 @@ describe('BVV GeoResource provider', () => {
 			};
 			const result = _parseBvvAttributionDefinition(attributionDefinition);
 
+			expect(result.length).toBe(3);
 			//completely from basic attribution definition
 			expect(result[0]).toEqual({
 				copyright: {
@@ -205,6 +205,31 @@ describe('BVV GeoResource provider', () => {
 				description: 'description2'
 			});
 		});
+
+		it('it set extended attribution properties to NULL when not available', () => {
+
+			const attributionDefinition = {
+				attribution: {
+				},
+				extendedAttributions: [
+					{
+
+					}
+				]
+			};
+			const result = _parseBvvAttributionDefinition(attributionDefinition);
+
+			expect(result.length).toBe(1);
+			expect(result[0]).toEqual({
+				copyright: {
+					label: null,
+					url: null
+				},
+				description: null
+			});
+
+		});
+
 	});
 
 

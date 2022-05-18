@@ -13,7 +13,7 @@
 } 
 
 .coordinate-label {
-	padding-left: 5.5em;
+	padding-left: 1em;
 	margin: auto;
 	display: block;
 }
@@ -21,9 +21,8 @@
 .select-coordinate {
 	font-size: .7rem;
 	font-weight: bold;
-	width: min-content;
-	position: absolute;
-	bottom: .3em;
+	width: fit-content;
+	padding: 0 1.5em 0 0;
 } 
 
 .select-coordinate-option {

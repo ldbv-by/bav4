@@ -18,10 +18,15 @@ describe('ShareService', () => {
 	const mapService = {
 		getSridDefinitionsForView: () => { },
 		getDefaultSridForView: () => { },
-		getSrid: () => { }
+		getSrid: () => { },
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 	const geoResourceService = {
 		byId: () => { }
+	};
+	const environmentService = {
+		getWindow: () => { }
 	};
 
 	const setup = (state) => {
@@ -34,7 +39,8 @@ describe('ShareService', () => {
 		$injector
 			.registerSingleton('CoordinateService', coordinateService)
 			.registerSingleton('MapService', mapService)
-			.registerSingleton('GeoResourceService', geoResourceService);
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('EnvironmentService', environmentService);
 
 		return store;
 	};
@@ -48,15 +54,16 @@ describe('ShareService', () => {
 		});
 	});
 
-
 	describe('copy to clipboard', () => {
 		it('calls Clipboard API', async () => {
+			setup();
 			const mockNavigator = { clipboard: {} };
 			mockNavigator.clipboard.writeText = jasmine.createSpy().and.returnValue(Promise.resolve('success'));
 			const mockWindow = { isSecureContext: true, navigator: mockNavigator };
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 
 
-			const instanceUnderTest = new ShareService(mockWindow);
+			const instanceUnderTest = new ShareService();
 			const resolved = await instanceUnderTest.copyToClipboard('foo');
 			expect(resolved).toBe('success');
 
@@ -64,11 +71,13 @@ describe('ShareService', () => {
 		});
 
 		it('rejects when Clipboard API is not available', async () => {
+			setup();
 			const mockNavigator = { clipboard: {} };
 			mockNavigator.clipboard.writeText = jasmine.createSpy().and.returnValue(Promise.resolve('success'));
 			const mockWindow = { isSecureContext: false, navigator: mockNavigator };
+			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 
-			const instanceUnderTest = new ShareService(mockWindow);
+			const instanceUnderTest = new ShareService();
 
 			try {
 				await instanceUnderTest.copyToClipboard('foo');
@@ -114,7 +123,7 @@ describe('ShareService', () => {
 				setup();
 				const instanceUnderTest = new ShareService();
 				spyOn(geoResourceService, 'byId').and.callFake(id => {
-					return id === 'someLayer' ? { hidden: true } : { };
+					return id === 'someLayer' ? { hidden: true } : {};
 				});
 				addLayer('someLayer');
 				addLayer('anotherLayer');
@@ -236,7 +245,16 @@ describe('ShareService', () => {
 
 		describe('encodeState', () => {
 
+			const location = {
+				protocol: 'http:',
+				host: 'foo.bar',
+				pathname: '/some'
+			};
+
 			it('encodes a state object to url', () => {
+				setup();
+				const mockWindow = { location: location };
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 				const instanceUnderTest = new ShareService();
 				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
@@ -246,7 +264,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.startsWith(window.location.origin)).toBeTrue();
+				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -255,6 +273,9 @@ describe('ShareService', () => {
 			});
 
 			it('encodes a state object to url merging extra parameter', () => {
+				setup();
+				const mockWindow = { location: location };
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 				const instanceUnderTest = new ShareService();
 				const extraParam = { foo: 'bar' };
 				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
@@ -265,7 +286,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState(extraParam);
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.startsWith(window.location.origin)).toBeTrue();
+				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');

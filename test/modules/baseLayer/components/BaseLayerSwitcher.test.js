@@ -142,11 +142,11 @@ describe('BaseLayerSwitcher', () => {
 				it('removes the current base layer on index=0 and adds the new layer on index=0', async () => {
 
 					const topicsId = 'topicId';
-					const geoResoureceId0 = 'geoRsId0';
-					const geoResoureceId1 = 'geoRsId1';
-					const geoResoureceId2 = 'geoRsId2';
-					const baseLayer0 = createDefaultLayer(geoResoureceId0);
-					const otherLayer = createDefaultLayer(geoResoureceId1);
+					const geoResourceId0 = 'geoRsId0';
+					const geoResourceId1 = 'geoRsId1';
+					const geoResourceId2 = 'geoRsId2';
+					const baseLayer0 = createDefaultLayer(geoResourceId0);
+					const otherLayer = createDefaultLayer(geoResourceId1);
 					const state = {
 						topics: {
 							current: topicsId
@@ -156,7 +156,7 @@ describe('BaseLayerSwitcher', () => {
 							active: [baseLayer0, otherLayer]
 						}
 					};
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId2]));
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 						return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
 					});
@@ -167,9 +167,9 @@ describe('BaseLayerSwitcher', () => {
 					buttons[1].click();
 
 					expect(store.getState().layers.active.length).toBe(2);
-					expect(store.getState().layers.active[0].id).toContain(geoResoureceId2);
-					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResoureceId2);
-					expect(store.getState().layers.active[0].label).toBe(geoResoureceId2 + 'Label');
+					expect(store.getState().layers.active[0].id).toContain(geoResourceId2);
+					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId2);
+					expect(store.getState().layers.active[0].label).toBe(geoResourceId2 + 'Label');
 					expect(store.getState().layers.active[0].zIndex).toBe(0);
 				});
 			});
@@ -179,11 +179,11 @@ describe('BaseLayerSwitcher', () => {
 				it('adds the new layer on index=0', async () => {
 
 					const topicsId = 'topicId';
-					const geoResoureceId0 = 'geoRsId0';
-					const geoResoureceId1 = 'geoRsId1';
-					const geoResoureceId2 = 'geoRsId2';
-					const baseLayer0 = createDefaultLayer(geoResoureceId0);
-					const otherLayer = createDefaultLayer(geoResoureceId1);
+					const geoResourceId0 = 'geoRsId0';
+					const geoResourceId1 = 'geoRsId1';
+					const geoResourceId2 = 'geoRsId2';
+					const baseLayer0 = createDefaultLayer(geoResourceId0);
+					const otherLayer = createDefaultLayer(geoResourceId1);
 					const state = {
 						topics: {
 							current: topicsId
@@ -193,7 +193,7 @@ describe('BaseLayerSwitcher', () => {
 							active: [otherLayer, baseLayer0]
 						}
 					};
-					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId2]));
+					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId2]));
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 						return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
 					});
@@ -204,9 +204,9 @@ describe('BaseLayerSwitcher', () => {
 					buttons[1].click();
 
 					expect(store.getState().layers.active.length).toBe(3);
-					expect(store.getState().layers.active[0].id).toContain(geoResoureceId2);
-					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResoureceId2);
-					expect(store.getState().layers.active[0].label).toBe(geoResoureceId2 + 'Label');
+					expect(store.getState().layers.active[0].id).toContain(geoResourceId2);
+					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId2);
+					expect(store.getState().layers.active[0].label).toBe(geoResourceId2 + 'Label');
 					expect(store.getState().layers.active[0].zIndex).toBe(0);
 				});
 			});
@@ -214,9 +214,9 @@ describe('BaseLayerSwitcher', () => {
 			it('does nothing when layer is already on map', async () => {
 
 				const topicsId = 'topicId';
-				const geoResoureceId0 = 'geoRsId0';
-				const geoResoureceId1 = 'geoRsId1';
-				const baseLayer0 = { ...createDefaultLayer(geoResoureceId0), customId: 'test' };
+				const geoResourceId0 = 'geoRsId0';
+				const geoResourceId1 = 'geoRsId1';
+				const baseLayer0 = { ...createDefaultLayer(geoResourceId0), customId: 'test' };
 
 				const state = {
 					topics: {
@@ -227,7 +227,7 @@ describe('BaseLayerSwitcher', () => {
 						active: [baseLayer0]
 					}
 				};
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0, geoResoureceId1]));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId1]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
 				});
@@ -238,7 +238,7 @@ describe('BaseLayerSwitcher', () => {
 				buttons[0].click();
 
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toBe(geoResoureceId0);
+				expect(store.getState().layers.active[0].id).toBe(geoResourceId0);
 				//if we detect the custom id, the state wasn't modified
 				expect(store.getState().layers.active[0].customId).toBe('test');
 			});
@@ -249,7 +249,7 @@ describe('BaseLayerSwitcher', () => {
 			it('adds the new layer on index 0', async () => {
 
 				const topicsId = 'topicId';
-				const geoResoureceId0 = 'geoRsId0';
+				const geoResourceId0 = 'geoRsId0';
 				const state = {
 					topics: {
 						current: topicsId
@@ -259,7 +259,7 @@ describe('BaseLayerSwitcher', () => {
 						active: []
 					}
 				};
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResoureceId0]));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
 				});
@@ -270,9 +270,9 @@ describe('BaseLayerSwitcher', () => {
 				buttons[0].click();
 
 				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toContain(geoResoureceId0);
-				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResoureceId0);
-				expect(store.getState().layers.active[0].label).toBe(geoResoureceId0 + 'Label');
+				expect(store.getState().layers.active[0].id).toContain(geoResourceId0);
+				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId0);
+				expect(store.getState().layers.active[0].label).toBe(geoResourceId0 + 'Label');
 				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 		});

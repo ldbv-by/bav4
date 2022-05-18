@@ -122,7 +122,7 @@ export class TestUtils {
 			addEventListener(type, listener) {
 				listener({ matches: shouldMatch });
 			},
-			removeEventListener() {},
+			removeEventListener() { },
 			matches: shouldMatch
 		};
 	}
@@ -137,6 +137,59 @@ export class TestUtils {
 	static newBlob(data = null, mimeType = '', size = 0) {
 
 		return new TestableBlob(data, mimeType, size);
+	}
+
+	/**
+	 * Fires a new {@see TouchEvent} on the specified event source element. If TouchEvents are not supported,
+	 * MouseEvents are used instead. This currently affects Firefox only, due to the fact that FirefoxHeadless
+	 * does not provide support for TouchEvents for now.
+	 *
+	 * @param {'touchstart'|'touchmove'|'touchend'} type the specified TouchEvent-Type
+	 * @param {HTMLElement} eventSource the element which should dispatch the event
+	 * @param {number} x the x-value of the touch-coordinate
+	 * @param {number} y the y-value of the touch-coordinate
+	 * @param {number} touchCount the count of simulated touches
+	 */
+	static simulateTouchEvent(type, eventSource = document, x, y, touchCount = 1) {
+		const touchEventSupported = () => window.TouchEvent ? true : false;
+		const repeat = (toRepeat, amount) => {
+			return Array(amount).fill(toRepeat);
+		};
+		if (touchEventSupported()) {
+			const eventType = type;
+			const touches = repeat({ screenX: x, screenY: y, clientX: x, clientY: y }, touchCount);
+			const event = new Event(eventType);
+			event.touches = [...touches];
+			event.changedTouches = [...touches];
+
+			eventSource.dispatchEvent(event);
+		}
+		const translateToMouseEventType = (touchEventType) => {
+			switch (touchEventType) {
+				case 'touchstart':
+					return 'mousedown';
+				case 'touchmove':
+					return 'mousemove';
+				case 'touchend':
+					return 'mouseup';
+			}
+			return null;
+		};
+
+		const mouseEventType = translateToMouseEventType(type);
+		if (mouseEventType) {
+			const event = new MouseEvent(mouseEventType, { screenX: x, screenY: y, clientX: x, clientY: y });
+			eventSource.dispatchEvent(event);
+		}
+	}
+
+	/**
+	 * Sets a timeout timer and returns a Promise which will be resolved after the timeout function was executed.
+	 * @param {number} ms timeout in ms (default is 0)
+	 * @returns {Promise}
+	 */
+	static async timeout(ms = 0) {
+		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
 }
