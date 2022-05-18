@@ -178,12 +178,12 @@ export class PasswordCredentialPanel extends MvuElement {
 			@click=${authenticate} ></ba-button>`;
 		};
 
-		const getAuthenticatingButton = () => {
+		const getSpinnerButton = () => {
 			return html`<ba-button id='authenticating-button' .disabled=${true}
-			class="credential_footer__button" .label=${translate('auth_passwordCredentialPanel_authenticate')} .type=${'primary'}              
+			class="credential_footer__button" .label=${html`<ba-spinner>`} .type=${'primary'}              
 			></ba-button>`;
 		};
-		return authenticating ? getAuthenticatingButton() : getSubmitButton();
+		return authenticating ? getSpinnerButton() : getSubmitButton();
 
 	}
 
