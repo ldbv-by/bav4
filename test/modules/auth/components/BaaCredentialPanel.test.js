@@ -2,7 +2,6 @@ import { $injector } from '../../../../src/injection';
 import { BaaCredentialPanel } from '../../../../src/modules/auth/components/BaaCredentialPanel';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -39,10 +38,9 @@ describe('BaaCredentialPanel', () => {
 			const model = new BaaCredentialPanel().getModel();
 
 			expect(model).toEqual({
-				id: null,
-				credential: { username: null, password: null },
-				checkIsRunning: false,
-				subscription: null
+				url: null,
+				credential: null,
+				authenticating: false
 			});
 		});
 
@@ -50,22 +48,22 @@ describe('BaaCredentialPanel', () => {
 
 	describe('when panel is rendered', () => {
 
-		it('displays the id', async () => {
+		it('displays the url', async () => {
 			const element = await setup();
-			element.id = 'foo';
+			element.url = 'foo';
 
-			expect(element.shadowRoot.querySelector('.title_id').textContent).toBe('auth_baaCredentialPanel_title');
-			expect(element.shadowRoot.querySelector('.value_id').textContent).toBe('foo');
+			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_baaCredentialPanel_title');
+			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
 		});
 
 		it('receives entered username and password', async () => {
-			const checkCallback = jasmine.createSpy().withArgs('someId', { username: 'foo', password: 'bar' }).and.resolveTo(true);
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo(true);
 			const element = await setup();
-			element.id = 'someId';
-			element.onCheck = checkCallback;
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
 			const inputUsername = element.shadowRoot.querySelector('#credential_username');
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
-			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
 			inputUsername.value = 'foo';
 			inputUsername.dispatchEvent(new Event('input'));
@@ -73,86 +71,61 @@ describe('BaaCredentialPanel', () => {
 			inputPassword.dispatchEvent(new Event('input'));
 			submitButton.click();
 
-			expect(checkCallback).toHaveBeenCalled();
+			expect(authenticateCallback).toHaveBeenCalled();
 		});
 
 		it('resolves credential on successfull credential-check', async () => {
-			const checkCallback = jasmine.createSpy().and.resolveTo(true);
-			const resolveCallback = () => { };
+			const authenticateCallback = jasmine.createSpy().and.resolveTo(true);
+			const onCloseCallback = () => { };
 			const element = await setup();
-			element.id = 'someId';
-			element.onCheck = checkCallback;
-			element.onResolved = resolveCallback;
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			element.onClose = onCloseCallback;
 
-			const spy = spyOn(element, 'onResolved').and.callThrough();
-			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
+			const spy = spyOn(element, '_onClose').and.callThrough();
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
 			submitButton.click();
 			await TestUtils.timeout();
-			expect(checkCallback).toHaveBeenCalled();
-			expect(spy).toHaveBeenCalledWith({ username: null, password: null });
+			expect(authenticateCallback).toHaveBeenCalled();
+			expect(spy).toHaveBeenCalledWith(null);
 		});
 
 
-		it('emits notification on failed credential-check', async () => {
-			const checkCallback = jasmine.createSpy().and.resolveTo(false);
+		it('emits notification on failed credential-authentication', async () => {
+			const authenticateCallback = jasmine.createSpy().and.resolveTo(false);
 			const element = await setup();
-			element.id = 'someId';
-			element.onCheck = checkCallback;
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
 
-			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
-
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
+
 			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('auth_baaCredentialPanel_credential_rejected');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
-		it('calls resolve-callback after closing modal', async () => {
-			const resolveCallback = () => { };
-			const element = await setup();
-			element.id = 'someId';
-			element.onResolved = resolveCallback;
-
-			const spy = spyOn(element, 'onResolved').and.callThrough();
-
-			closeModal();
-			await TestUtils.timeout();
-			expect(spy).toHaveBeenCalledWith(null);
-		});
-
-		it('calls not resolve-callback after open modal', async () => {
-			const resolveCallback = () => { };
-			const element = await setup();
-			element.id = 'someId';
-			element.onResolved = resolveCallback;
-
-			const spy = spyOn(element, 'onResolved').and.callThrough();
-
-			openModal('', 'some');
-			await TestUtils.timeout();
-			expect(spy).not.toHaveBeenCalled();
-		});
-
-		it('displays spinner-button while check is running', async () => {
-			const checkDelay = 200;
-			const checkCallback = async () => {
-				await TestUtils.timeout(checkDelay);
+		it('displays spinner-button while authenticating', async () => {
+			const authenticationDelay = 200;
+			const authenticateCallback = async () => {
+				await TestUtils.timeout(authenticationDelay);
 				return true;
 			};
-			const resolveCallback = () => { };
+			const onCloseCallback = () => { };
 			const element = await setup();
-			element.id = 'someId';
-			element.onCheck = checkCallback;
-			element.onResolved = resolveCallback;
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			element.onClose = onCloseCallback;
 
 
-			const submitButton = element.shadowRoot.querySelector('#check-credential-button');
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
+
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelector('#check-spinner-button')).toBeTruthy();
-			await TestUtils.timeout(checkDelay);
-			expect(element.shadowRoot.querySelector('#check-credential-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#authenticating-button')).toBeTruthy();
+			await TestUtils.timeout(authenticationDelay);
+			expect(element.shadowRoot.querySelector('#authenticate-credential-button')).toBeTruthy();
 		});
 	});
 
@@ -161,16 +134,16 @@ describe('BaaCredentialPanel', () => {
 			await setup();
 			const baaCredentialPanel = new BaaCredentialPanel();
 
-			expect(baaCredentialPanel.id).toBeNull();
+			expect(baaCredentialPanel.url).toBeNull();
 		});
 
 		it('provides set methods and getters', async () => {
 			await setup();
 			const baaCredentialPanel = new BaaCredentialPanel();
 
-			baaCredentialPanel.id = 'someId';
+			baaCredentialPanel.url = 'someUrl';
 
-			expect(baaCredentialPanel.id).toBe('someId');
+			expect(baaCredentialPanel.url).toBe('someUrl');
 		});
 	});
 
