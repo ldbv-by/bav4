@@ -25,9 +25,9 @@ const Update_Authenticating = 'update_authenticating';
  */
 
 /**
- * This callback is called after the authentication was successful or the panel was closed.
+ * This callback is called after the authentication was successful.
  * @callback PasswordCredentialPanel~onCloseCallback
-  * @param {Credential|null} credential the valid credential or null, if the authentication was aborted.
+  * @param {Credential} credential the valid credential.
  */
 
 /**
@@ -39,7 +39,7 @@ const Update_Authenticating = 'update_authenticating';
  * const receivedCredential = {};
  *
  * // the authenticate-callback provides the implementation of the authentication of credential and url
- * const onAuthenticate = async (credential, url) => {
+ * const authenticate = async (credential, url) => {
  *    await sleep(3000);
  *    if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
  *       receivedCredential.username = credential.username;
@@ -49,6 +49,8 @@ const Update_Authenticating = 'update_authenticating';
  *    return false;
  * };
  *
+ * // in case of aborting the authentification-process by closing the modal,
+ * // call the onCloseCallback directly
  * const resolveBeforeClosing = (modal) => {
  *       if (!modal.data) {
  *          unsubscribe();
@@ -67,7 +69,7 @@ const Update_Authenticating = 'update_authenticating';
  *
  * // create a PasswordCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
- * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedId} .authenticate=${onCheck} .onClose=${onClose}&gt;`;
+ * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedId} .authenticate=${authenticate} .onClose=${onClose}&gt;`;
  * };
  *
  * // using the panel as content for the modal
