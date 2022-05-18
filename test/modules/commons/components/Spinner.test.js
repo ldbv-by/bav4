@@ -14,11 +14,34 @@ describe('Spinner', () => {
 
 	describe('when initialized', () => {
 
+		it('contains default values in the model', async () => {
+
+			const element = await TestUtils.render(Spinner.tag);
+
+			//model
+			expect(element.label).toBeNull();
+		});
+
 		it('renders the view', async () => {
 
 			const element = await TestUtils.render(Spinner.tag);
 
 			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('spinner_text');
+		});
+	});
+
+	describe('when property\'label\' changes', () => {
+
+		it('updates the view', async () => {
+
+			const element = await TestUtils.render(Spinner.tag);
+			const label = element.shadowRoot.querySelector('.loading');
+
+			expect(label.innerText).toBe('spinner_text');
+
+			element.label = 'foo';
+
+			expect(label.innerText).toBe('foo');
 		});
 	});
 });
