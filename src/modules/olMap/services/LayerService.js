@@ -1,9 +1,10 @@
 import { $injector } from '../../../injection';
-import { GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../services/domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
+import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -11,6 +12,15 @@ import { XYZ as XYZSource } from 'ol/source';
  * @author taulinger
  */
 export class LayerService {
+
+
+	/**
+	 *
+	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 */
+	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
+		this._baaSmageLoadFunctionProvider = baaImageLoadFunctionProvider;
+	}
 
 	/**
 	 *
@@ -48,6 +58,13 @@ export class LayerService {
 						...geoResource.extraParams
 					}
 				});
+
+				switch (geoResource.authenticationType) {
+					case GeoResourceAuthenticationType.BAA: {
+						const credential = null; // Todo: implement call of BaaCredentialService#get
+						imageWmsSource.setImageLoadFunction(this._baaSmageLoadFunctionProvider(credential));
+					}
+				}
 
 				return new ImageLayer({
 					id: id,
