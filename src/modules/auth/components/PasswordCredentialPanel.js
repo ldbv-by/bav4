@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
@@ -67,7 +67,7 @@ const Update_Authenticating = 'update_authenticating';
  *    resolveAction();
  * };
  *
- * // create a PasswordCredentialPanel-element within a templateResult
+ * // creates a PasswordCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
  * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedId} .authenticate=${authenticate} .onClose=${onClose}&gt;`;
  * };
@@ -76,9 +76,9 @@ const Update_Authenticating = 'update_authenticating';
  * openModal('Connect with restricted WMS...', getCredentialPanel());
  * </pre>
  * @class
- * @property {string} url the id, which needs credential for basic access authentication
- * @property {PasswordCredentialPanel~authenticateCallback} authenticate the authenticate callback
- * @property {PasswordCredentialPanel~onCloseCallback} onClose the onClose callback
+ * @property {string} [url] the url, which needs authentication by a password credential
+ * @property {PasswordCredentialPanel~authenticateCallback} [authenticate] the authenticate callback
+ * @property {PasswordCredentialPanel~onCloseCallback} [onClose] the onClose callback
  * @author thiloSchlemmer
  */
 export class PasswordCredentialPanel extends MvuElement {
@@ -133,12 +133,15 @@ export class PasswordCredentialPanel extends MvuElement {
 			this.signal(Update_Password, e.target.value);
 		};
 
+		const getHeaderContent = (url) => {
+			return url ? html`<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span><span class='value_url'>${url}</span>` : nothing;
+		};
+
 		return html`
 		<style>${css}</style>
 		<div class='credential__container ${getOrientationClass()}'>
 			<div class='credential_header'>
-            	<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span>
-            	<span class='value_url'>${url}</span>
+            	${getHeaderContent(url)}
             </div>
             <div class='credential_form'>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
@@ -179,6 +182,11 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const getSpinnerButton = () => {
+			// TODO: if spinner-component supports a label property in future, then
+			// this should be changed from:
+			// .label=${html`<ba-spinner>`}
+			// to:
+			// .label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}>`}
 			return html`<ba-button id='authenticating-button' .disabled=${true}
 			class="credential_footer__button" .label=${html`<ba-spinner>`} .type=${'primary'}              
 			></ba-button>`;

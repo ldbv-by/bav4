@@ -48,12 +48,22 @@ describe('PasswordCredentialPanel', () => {
 
 	describe('when panel is rendered', () => {
 
-		it('displays the url', async () => {
+		it('displays the optional url', async () => {
 			const element = await setup();
 			element.url = 'foo';
 
 			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_passwordCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
+		});
+
+		it('hides optinal but empty url', async () => {
+			const element = await setup();
+
+
+			expect(element.url).toBeNull();
+
+			expect(element.shadowRoot.querySelector('.title_url')).toBeFalsy();
+			expect(element.shadowRoot.querySelector('.value_url')).toBeFalsy();
 		});
 
 		it('receives entered username and password', async () => {

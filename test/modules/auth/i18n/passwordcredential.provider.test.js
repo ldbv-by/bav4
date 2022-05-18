@@ -12,7 +12,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Passwort');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('verbinden');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!');
-		expect(map.auth_passwordCredentialPanel_authenticate).toBe('authentifiziere...');
+		expect(map.auth_passwordCredentialPanel_authenticate).toBe('authentifiziere');
 	});
 
 	it('provides translation for en', () => {
@@ -24,7 +24,7 @@ describe('i18n for header module', () => {
 		expect(map.auth_passwordCredentialPanel_credential_password).toBe('Password');
 		expect(map.auth_passwordCredentialPanel_submit).toBe('connect');
 		expect(map.auth_passwordCredentialPanel_credential_rejected).toBe('Authentication failed. Invalid username or password!');
-		expect(map.auth_passwordCredentialPanel_authenticate).toBe('authenticate...');
+		expect(map.auth_passwordCredentialPanel_authenticate).toBe('authenticate');
 	});
 
 	it('have the expected amount of translations', () => {

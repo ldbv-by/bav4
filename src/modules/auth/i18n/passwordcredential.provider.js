@@ -9,7 +9,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_password: 'Password',
 				auth_passwordCredentialPanel_submit: 'connect',
 				auth_passwordCredentialPanel_credential_rejected: 'Authentication failed. Invalid username or password!',
-				auth_passwordCredentialPanel_authenticate: 'authenticate...'
+				auth_passwordCredentialPanel_authenticate: 'authenticate'
 			};
 
 		case 'de':
@@ -20,7 +20,7 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_password: 'Passwort',
 				auth_passwordCredentialPanel_submit: 'verbinden',
 				auth_passwordCredentialPanel_credential_rejected: 'Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!',
-				auth_passwordCredentialPanel_authenticate: 'authentifiziere...'
+				auth_passwordCredentialPanel_authenticate: 'authentifiziere'
 			};
 
 		default:
