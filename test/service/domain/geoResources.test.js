@@ -17,6 +17,15 @@ describe('GeoResource', () => {
 		});
 	});
 
+	describe('GeoResourceAuthenticationType', () => {
+
+		it('provides an enum of all available types', () => {
+
+			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
+			expect(GeoResourceAuthenticationType.PLUS).toBe('plus');
+		});
+	});
+
 	describe('abstract GeoResource', () => {
 
 		class GeoResourceNoImpl extends GeoResource {
