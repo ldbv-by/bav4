@@ -13,9 +13,7 @@ import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provid
  */
 export class LayerService {
 
-
 	/**
-	 *
 	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
 	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
