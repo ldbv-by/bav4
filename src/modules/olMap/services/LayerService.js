@@ -59,7 +59,7 @@ export class LayerService {
 
 				switch (geoResource.authenticationType) {
 					case GeoResourceAuthenticationType.BAA: {
-						const credential = null; // Todo: implement call of BaaCredentialService#get
+						const credential = null; // Todo: implement call of BaaCredentialService#get here
 						imageWmsSource.setImageLoadFunction(this._baaSmageLoadFunctionProvider(credential));
 					}
 				}
