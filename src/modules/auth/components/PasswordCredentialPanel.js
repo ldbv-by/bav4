@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
-import css from './baacredentialpanel.css';
+import css from './passwordcredentialpanel.css';
 
 const Update_URL = 'update_url';
 const Update_Username = 'update_username';
@@ -18,7 +18,7 @@ const Update_Authenticating = 'update_authenticating';
 
 /**
  * This callback provides the implementation of the authentication of id and credential.
- * @callback BaaCredentialPanel~authenticateCallback
+ * @callback PasswordCredentialPanel~authenticateCallback
  * @param {Credential} credential the credential
  * @param {string} [url] the optional url
  * @returns {true|false} whether or not the check with the id and the credential was succesfull
@@ -26,7 +26,7 @@ const Update_Authenticating = 'update_authenticating';
 
 /**
  * This callback is called after the authentication was successful or the panel was closed.
- * @callback BaaCredentialPanel~onCloseCallback
+ * @callback PasswordCredentialPanel~onCloseCallback
   * @param {Credential|null} credential the valid credential or null, if the authentication was aborted.
  */
 
@@ -34,7 +34,7 @@ const Update_Authenticating = 'update_authenticating';
  * Panel to enter credential for basic access authentication.
  *
  * usage:
- *  <pre>
+ * <pre>
  * const restrictedUrl = 'https://my.restricted.url/for/wms';
  * const receivedCredential = {};
  *
@@ -65,9 +65,9 @@ const Update_Authenticating = 'update_authenticating';
  *    resolveAction();
  * };
  *
- * // create a BaaCredentialPanel-element within a templateResult
+ * // create a PasswordCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
- * 	  return html`&lt;ba-auth-baa-credential-panel .url=${restrictedId} .authenticate=${onCheck} .onClose=${onClose}&gt;`;
+ * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedId} .authenticate=${onCheck} .onClose=${onClose}&gt;`;
  * };
  *
  * // using the panel as content for the modal
@@ -75,11 +75,11 @@ const Update_Authenticating = 'update_authenticating';
  * </pre>
  * @class
  * @property {string} url the id, which needs credential for basic access authentication
- * @property {BaaCredentialPanel~authenticateCallback} authenticate the authenticate callback
- * @property {BaaCredentialPanel~onCloseCallback} onClose the onClose callback
+ * @property {PasswordCredentialPanel~authenticateCallback} authenticate the authenticate callback
+ * @property {PasswordCredentialPanel~onCloseCallback} onClose the onClose callback
  * @author thiloSchlemmer
  */
-export class BaaCredentialPanel extends MvuElement { // TODO: possible renaming to PasswordCredentialPanel
+export class PasswordCredentialPanel extends MvuElement {
 	constructor() {
 		super({
 			url: null,
@@ -135,17 +135,17 @@ export class BaaCredentialPanel extends MvuElement { // TODO: possible renaming 
 		<style>${css}</style>
 		<div class='credential__container ${getOrientationClass()}'>
 			<div class='credential_header'>
-            	<span class='title_url'>${translate('auth_baaCredentialPanel_title')}</span>
+            	<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span>
             	<span class='value_url'>${url}</span>
             </div>
             <div class='credential_form'>
-				<div class="fieldset" title="${translate('auth_baaCredentialPanel_credential_username')}">								
+				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
 					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} >
-					<label for="credential_username" class="control-label">${translate('auth_baaCredentialPanel_credential_username')}</label><i class="bar"></i>
+					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
-				<div class="fieldset" title="${translate('auth_baaCredentialPanel_credential_password')}"">								
+				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
 					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword}>
-					<label for="credential_password" class="control-label">${translate('auth_baaCredentialPanel_credential_password')}</label><i class="bar"></i>
+					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
 				</div>
 			</div>
 			<div class='credential_footer'>
@@ -167,18 +167,18 @@ export class BaaCredentialPanel extends MvuElement { // TODO: possible renaming 
 					this._onClose(credential);
 				}
 				else {
-					emitNotification(translate('auth_baaCredentialPanel_credential_rejected'), LevelTypes.WARN);
+					emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
 				}
 				this.signal(Update_Authenticating, false);
 			};
 			return html`<ba-button id='authenticate-credential-button'
-			class="credential_footer__button" .label=${translate('auth_baaCredentialPanel_submit')} .type=${'primary'}                
+			class="credential_footer__button" .label=${translate('auth_passwordCredentialPanel_submit')} .type=${'primary'}                
 			@click=${authenticate} ></ba-button>`;
 		};
 
 		const getAuthenticatingButton = () => {
 			return html`<ba-button id='authenticating-button' .disabled=${true}
-			class="credential_footer__button" .label=${translate('auth_baaCredentialPanel_authenticate')} .type=${'primary'}              
+			class="credential_footer__button" .label=${translate('auth_passwordCredentialPanel_authenticate')} .type=${'primary'}              
 			></ba-button>`;
 		};
 		return authenticating ? getAuthenticatingButton() : getSubmitButton();
@@ -186,7 +186,7 @@ export class BaaCredentialPanel extends MvuElement { // TODO: possible renaming 
 	}
 
 	static get tag() {
-		return 'ba-auth-baa-credential-panel';
+		return 'ba-auth-password-credential-panel';
 	}
 
 	set url(value) {

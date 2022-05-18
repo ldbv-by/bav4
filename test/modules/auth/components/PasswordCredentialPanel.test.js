@@ -1,14 +1,14 @@
 import { $injector } from '../../../../src/injection';
-import { BaaCredentialPanel } from '../../../../src/modules/auth/components/BaaCredentialPanel';
+import { PasswordCredentialPanel } from '../../../../src/modules/auth/components/PasswordCredentialPanel';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(BaaCredentialPanel.tag, BaaCredentialPanel);
+window.customElements.define(PasswordCredentialPanel.tag, PasswordCredentialPanel);
 
-describe('BaaCredentialPanel', () => {
+describe('PasswordCredentialPanel', () => {
 	let store;
 	const setup = async (state = {}) => {
 		const initialState = {
@@ -28,14 +28,14 @@ describe('BaaCredentialPanel', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(BaaCredentialPanel.tag);
+		return TestUtils.render(PasswordCredentialPanel.tag);
 	};
 
 	describe('when instantiated', () => {
 
 		it('has a model containing default values', async () => {
 			await setup();
-			const model = new BaaCredentialPanel().getModel();
+			const model = new PasswordCredentialPanel().getModel();
 
 			expect(model).toEqual({
 				url: null,
@@ -52,7 +52,7 @@ describe('BaaCredentialPanel', () => {
 			const element = await setup();
 			element.url = 'foo';
 
-			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_baaCredentialPanel_title');
+			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_passwordCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
 		});
 
@@ -102,7 +102,7 @@ describe('BaaCredentialPanel', () => {
 			submitButton.click();
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('auth_baaCredentialPanel_credential_rejected');
+			expect(store.getState().notifications.latest.payload.content).toBe('auth_passwordCredentialPanel_credential_rejected');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -132,18 +132,18 @@ describe('BaaCredentialPanel', () => {
 	describe('properties', () => {
 		it('provides default properties', async () => {
 			await setup();
-			const baaCredentialPanel = new BaaCredentialPanel();
+			const passwordCredentialPanel = new PasswordCredentialPanel();
 
-			expect(baaCredentialPanel.url).toBeNull();
+			expect(passwordCredentialPanel.url).toBeNull();
 		});
 
 		it('provides set methods and getters', async () => {
 			await setup();
-			const baaCredentialPanel = new BaaCredentialPanel();
+			const passwordCredentialPanel = new PasswordCredentialPanel();
 
-			baaCredentialPanel.url = 'someUrl';
+			passwordCredentialPanel.url = 'someUrl';
 
-			expect(baaCredentialPanel.url).toBe('someUrl');
+			expect(passwordCredentialPanel.url).toBe('someUrl');
 		});
 	});
 

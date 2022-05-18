@@ -1,6 +1,6 @@
 import './i18n';
-import './components/BaaCredentialPanel';
-import { BaaCredentialPanel } from './components/BaaCredentialPanel';
-if (!window.customElements.get(BaaCredentialPanel.tag)) {
-	window.customElements.define(BaaCredentialPanel.tag, BaaCredentialPanel);
+import './components/PasswordCredentialPanel';
+import { PasswordCredentialPanel } from './components/PasswordCredentialPanel';
+if (!window.customElements.get(PasswordCredentialPanel.tag)) {
+	window.customElements.define(PasswordCredentialPanel.tag, PasswordCredentialPanel);
 }
