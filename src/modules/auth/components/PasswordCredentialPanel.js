@@ -58,6 +58,7 @@ const Update_Authenticating = 'update_authenticating';
  *       }
  *    };
  *
+ * // valid subscription for all MvuElement-Instances; BaElement-Instances may use storeUtils/observe
  * const unsubscribe = this.observe(state => state.modal, modal => resolveBeforeClosing(modal), false);
  *
  * // onClose-callback is called with a valid credential or NULL
