@@ -134,12 +134,12 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const getHeaderContent = (url) => {
-			return url ? html`<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span><span class='value_url'>${url}</span>` : nothing;
+			return url ? html`<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span><span class='value_url' title=${url} >${url}</span>` : nothing;
 		};
 
 		return html`
 		<style>${css}</style>
-		<div class='credential__container ${getOrientationClass()}'>
+		<div class='credential_container ${getOrientationClass()}'>
 			<div class='credential_header'>
             	${getHeaderContent(url)}
             </div>

@@ -54,6 +54,7 @@ describe('PasswordCredentialPanel', () => {
 
 			expect(element.shadowRoot.querySelector('.title_url').textContent).toBe('auth_passwordCredentialPanel_title');
 			expect(element.shadowRoot.querySelector('.value_url').textContent).toBe('foo');
+			expect(element.shadowRoot.querySelector('.value_url').title).toBe('foo');
 		});
 
 		it('hides optinal but empty url', async () => {
