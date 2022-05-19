@@ -54,7 +54,7 @@ describe('imageLoadFunction.provider', () => {
 
 			await imageLoadFunction(fakeImageWrapper, src);
 
-			expect(fakeImageWrapper.getImage().src).toBeDefined();
+			expect(fakeImageWrapper.getImage().src).not.toBeNull();
 		});
 
 		it('throws an exception when http status is not 200', async () => {
