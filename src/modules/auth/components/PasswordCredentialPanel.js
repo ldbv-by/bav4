@@ -69,7 +69,7 @@ const Update_Authenticating = 'update_authenticating';
  *
  * // creates a PasswordCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
- * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedId} .authenticate=${authenticate} .onClose=${onClose}&gt;`;
+ * 	  return html`&lt;ba-auth-password-credential-panel .url=${restrictedUrl} .authenticate=${authenticate} .onClose=${onClose}&gt;`;
  * };
  *
  * // using the panel as content for the modal
@@ -182,13 +182,10 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const getSpinnerButton = () => {
-			// TODO: if spinner-component supports a label property in future, then
-			// this should be changed from:
-			// .label=${html`<ba-spinner>`}
-			// to:
-			// .label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}>`}
-			return html`<ba-button id='authenticating-button' .disabled=${true}
-			class="credential_footer__button" .label=${html`<ba-spinner>`} .type=${'primary'}              
+			return html`<ba-button id='authenticating-button' class="credential_footer__button" 
+			.disabled=${true} 
+			.label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}>`} 
+			.type=${'primary'}              
 			></ba-button>`;
 		};
 		return authenticating ? getSpinnerButton() : getSubmitButton();
