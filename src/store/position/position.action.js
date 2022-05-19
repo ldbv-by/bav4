@@ -220,7 +220,7 @@ export const fit = (extent, options = {}) => {
 /**
  * Sets a fit request for a layer.
  * The fitRequest object is wrapper by an {@link EventLike} object.
- * @param {string} id layer id of this fit request
+ * @param {string} id  id of the layer this fit request targets at
  * @param {FitRequestOptions} options options for this fit request
  * @function
  */
