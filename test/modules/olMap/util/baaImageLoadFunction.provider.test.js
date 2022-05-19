@@ -21,8 +21,7 @@ describe('imageLoadFunction.provider', () => {
 
 		const getMockImageAsBlob = async () => {
 			const base64Data = 'aGV5IHRoZXJl';
-			const base64Response = await fetch(base64Data);
-			return base64Response.blob();
+			return (await fetch(base64Data)).blob();
 		};
 
 		const getFakeImageWrapperInstance = () => {
