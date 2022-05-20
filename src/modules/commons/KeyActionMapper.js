@@ -1,5 +1,5 @@
 import { isNumber } from '../../utils/checks';
-const No_Op = () => {};
+const No_Op = () => { };
 
 /**
  * Maps actions to specific key-events
@@ -26,20 +26,20 @@ export class KeyActionMapper {
 	}
 
 	/**
-     * Maps a action to a specific keyup event, where a key with the defined keyCode is pressed.
-     * @param {number} keyCode the keyCode representing a key on the keyboard
-     * @param {function} action the action which is called on keyup
-     */
+	 * Maps a action to a specific keyup event, where a key with the defined keyCode is pressed.
+	 * @param {number} keyCode the keyCode representing a key on the keyboard
+	 * @param {function} action the action which is called on keyup
+	 */
 	addForKeyUp(keyCode, action) {
 		this._add(keyCode, 'keyup', action);
 		return this;
 	}
 
 	/**
-     * Maps a action to a specific keydown event, where a key with the defined keyCode is pressed.
-     * @param {number} keyCode the keyCode representing a key on the keyboard
-     * @param {function} action the action which is called on keydown
-     */
+	 * Maps a action to a specific keydown event, where a key with the defined keyCode is pressed.
+	 * @param {number} keyCode the keyCode representing a key on the keyboard
+	 * @param {function} action the action which is called on keydown
+	 */
 	addForKeyDown(keyCode, action) {
 		this._add(keyCode, 'keydown', action);
 		return this;
@@ -62,7 +62,7 @@ export class KeyActionMapper {
 	}
 
 	_getKeyCode(event) {
-		return event.which ? event.which : event.keyCode;
+		return event.which ? event.which : event.code;
 	}
 
 	_onKeyUp(event) {
