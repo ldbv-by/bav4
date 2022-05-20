@@ -13,6 +13,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { setQuery } from '../../../../src/store/search/search.action';
 
 window.customElements.define(Header.tag, Header);
 
@@ -76,7 +77,7 @@ describe('Header', () => {
 				layers: [],
 				isPortrait: false,
 				hasMinWidth: false,
-				hasSearchTerm: false
+				searchTerm: null
 			});
 		});
 
@@ -216,6 +217,19 @@ describe('Header', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('2');
+		});
+
+		it('adopts the states query term', async () => {
+			const term = 'foo';
+			const state = {
+				search: {
+					query: new EventLike(term)
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe(term);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -671,6 +685,19 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
 			setFetching(false);
 			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+		});
+	});
+
+	describe('when search query state changes', () => {
+
+		it('adopts the states query term', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('');
+
+			setQuery('foo');
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('foo');
 		});
 	});
 });
