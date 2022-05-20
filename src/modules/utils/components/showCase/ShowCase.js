@@ -100,7 +100,7 @@ export class ShowCase extends BaElement {
 			};
 
 			// using the panel as content for the modal
-			openModal('Connect with restricted WMS...', getCredentialPanel());
+			openModal('Connect to restricted WMS...', getCredentialPanel());
 		};
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
