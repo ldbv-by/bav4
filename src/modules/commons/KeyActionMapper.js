@@ -1,4 +1,4 @@
-import { isNumber } from '../../utils/checks';
+import { isString } from '../../utils/checks';
 const No_Op = () => { };
 
 /**
@@ -26,56 +26,52 @@ export class KeyActionMapper {
 	}
 
 	/**
-	 * Maps a action to a specific keyup event, where a key with the defined keyCode is pressed.
-	 * @param {number} keyCode the keyCode representing a key on the keyboard
+	 * Maps a action to a specific keyup event, where a key with the defined key-value is pressed.
+	 * @param {string} key the key-value representing a key on the keyboard
 	 * @param {function} action the action which is called on keyup
 	 */
-	addForKeyUp(keyCode, action) {
-		this._add(keyCode, 'keyup', action);
+	addForKeyUp(key, action) {
+		this._add(key, 'keyup', action);
 		return this;
 	}
 
 	/**
-	 * Maps a action to a specific keydown event, where a key with the defined keyCode is pressed.
-	 * @param {number} keyCode the keyCode representing a key on the keyboard
+	 * Maps a action to a specific keydown event, where a key with the defined key-value is pressed.
+	 * @param {string} key the key-value representing a key on the keyboard
 	 * @param {function} action the action which is called on keydown
 	 */
-	addForKeyDown(keyCode, action) {
-		this._add(keyCode, 'keydown', action);
+	addForKeyDown(key, action) {
+		this._add(key, 'keydown', action);
 		return this;
 	}
 
-	_add(keyCode, eventType, action) {
-		if (!isNumber(keyCode)) {
-			throw new TypeError('keyCode must be a number');
+	_add(key, eventType, action) {
+		if (!isString(key)) {
+			throw new TypeError('keyCode must be a string');
 		}
 
 		if (typeof action !== 'function') {
 			throw new TypeError('action must be a function');
 		}
 
-		this._mapping[eventType] = { ...this._mapping[eventType], [keyCode]: action };
+		this._mapping[eventType] = { ...this._mapping[eventType], [key]: action };
 	}
 
 	_isInputElement(node) {
 		return /^(input|textarea)$/i.test(node.nodeName);
 	}
 
-	_getKeyCode(event) {
-		return event.which ? event.which : event.code;
-	}
-
 	_onKeyUp(event) {
-		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(this._getKeyCode(event), 'keyup');
+		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keyup');
 		action();
 	}
 
 	_onKeyDown(event) {
-		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(this._getKeyCode(event), 'keydown');
+		const action = this._isInputElement(event.target) ? No_Op : this._mapToAction(event.key, 'keydown');
 		action();
 	}
 
-	_mapToAction(keyCode, eventType) {
-		return this._mapping[eventType][keyCode] ? this._mapping[eventType][keyCode] : No_Op;
+	_mapToAction(key, eventType) {
+		return this._mapping[eventType][key] ? this._mapping[eventType][key] : No_Op;
 	}
 }

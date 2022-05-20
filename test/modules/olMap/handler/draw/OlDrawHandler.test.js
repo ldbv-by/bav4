@@ -155,8 +155,8 @@ describe('OlDrawHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode) => {
-		const keyEvent = new KeyboardEvent('keyup', { keyCode: keyCode, which: keyCode });
+	const simulateKeyEvent = (keyCode, key) => {
+		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -1301,7 +1301,7 @@ describe('OlDrawHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 			const removeSpy = spyOn(classUnderTest._draw, 'removeLastPoint');
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(removeSpy).toHaveBeenCalled();
 		});
 
@@ -1311,7 +1311,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			const deleteKeyCode = 42;
+			const backspaceKeyCode = 8;
 
 			classUnderTest.activate(map);
 			setType('line');
@@ -1319,7 +1319,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
 			feature.getGeometry().dispatchEvent('change');
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(backspaceKeyCode, 'Backspace');
 			expect(classUnderTest._draw.removeLastPoint).not.toHaveBeenCalled();
 		});
 
@@ -1338,7 +1338,7 @@ describe('OlDrawHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(startNewSpy).toHaveBeenCalled();
 		});
 
@@ -1365,7 +1365,7 @@ describe('OlDrawHandler', () => {
 			const sourceSpy = spyOn(sourceMock, 'removeFeature');
 			spyOn(classUnderTest._vectorLayer, 'getSource').and.callFake(() => sourceMock);
 			spyOn(classUnderTest._select, 'getFeatures').and.callFake(() => new Collection([feature]));
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 
 			await TestUtils.timeout();
 			expect(sourceSpy).toHaveBeenCalledWith(feature);
@@ -1535,7 +1535,7 @@ describe('OlDrawHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(classUnderTest._drawState.type).toBe(InteractionStateType.DRAW);
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));

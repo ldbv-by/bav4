@@ -77,7 +77,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp(46, () => this._remove());
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', () => this._remove())
+			.addForKeyUp('Escape', () => this._reset());
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -389,12 +391,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 
 	}
-
-	// _removeLast(event) {
-	// 	if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-	// 		this._remove();
-	// 	}
-	// }
 
 	_remove() {
 		if (this._draw && this._draw.getActive()) {

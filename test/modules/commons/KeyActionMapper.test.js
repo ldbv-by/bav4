@@ -2,7 +2,7 @@ import { KeyActionMapper } from '../../../src/modules/commons/KeyActionMapper';
 
 describe('KeyActionMapper', () => {
 
-	const keyCodes = { 'Escape': 8, 'Backspace': 27, 'Delete': 46, 'F11': 122 };
+	const keyCodes = { 'Escape': 'Escape', 'Backspace': 'Backspace', 'Delete': 'Delete', 'F11': 'F11' };
 
 	describe('when instantiated', () => {
 
@@ -26,21 +26,21 @@ describe('KeyActionMapper', () => {
 			expect(instanceUnderTest.addForKeyDown).toBeTruthy();
 		});
 
-		it('accepts only keyCodes as Numbers', () => {
+		it('accepts only key-values as String', () => {
 			const action = () => { };
 
-			expect(() => new KeyActionMapper(document).addForKeyDown({}, action)).toThrowError(TypeError, 'keyCode must be a number');
-			expect(() => new KeyActionMapper(document).addForKeyDown('42', action)).toThrowError(TypeError, 'keyCode must be a number');
-			expect(() => new KeyActionMapper(document).addForKeyDown(null, action)).toThrowError(TypeError, 'keyCode must be a number');
-			expect(() => new KeyActionMapper(document).addForKeyDown(undefined, action)).toThrowError(TypeError, 'keyCode must be a number');
+			expect(() => new KeyActionMapper(document).addForKeyDown({}, action)).toThrowError(TypeError, 'keyCode must be a string');
+			expect(() => new KeyActionMapper(document).addForKeyDown(42, action)).toThrowError(TypeError, 'keyCode must be a string');
+			expect(() => new KeyActionMapper(document).addForKeyDown(null, action)).toThrowError(TypeError, 'keyCode must be a string');
+			expect(() => new KeyActionMapper(document).addForKeyDown(undefined, action)).toThrowError(TypeError, 'keyCode must be a string');
 		});
 
 		it('accepts only functions as action', () => {
-			const keyCode = 42;
-			expect(() => new KeyActionMapper(document).addForKeyDown(keyCode, {})).toThrowError(TypeError, 'action must be a function');
-			expect(() => new KeyActionMapper(document).addForKeyDown(keyCode, 'some')).toThrowError(TypeError, 'action must be a function');
-			expect(() => new KeyActionMapper(document).addForKeyDown(keyCode, null)).toThrowError(TypeError, 'action must be a function');
-			expect(() => new KeyActionMapper(document).addForKeyDown(keyCode, undefined)).toThrowError(TypeError, 'action must be a function');
+			const key = 'some';
+			expect(() => new KeyActionMapper(document).addForKeyDown(key, {})).toThrowError(TypeError, 'action must be a function');
+			expect(() => new KeyActionMapper(document).addForKeyDown(key, 'some')).toThrowError(TypeError, 'action must be a function');
+			expect(() => new KeyActionMapper(document).addForKeyDown(key, null)).toThrowError(TypeError, 'action must be a function');
+			expect(() => new KeyActionMapper(document).addForKeyDown(key, undefined)).toThrowError(TypeError, 'action must be a function');
 		});
 	});
 
@@ -73,8 +73,8 @@ describe('KeyActionMapper', () => {
 	describe('when key is pressed', () => {
 
 		describe('and keys for keyup mapped to actions', () => {
-			const getKeyEvent = (keyCode) => {
-				return new KeyboardEvent('keyup', { code: keyCode });
+			const getKeyEvent = (key) => {
+				return new KeyboardEvent('keyup', { key: key });
 			};
 
 			it('calls the mapped actions', () => {
@@ -120,8 +120,8 @@ describe('KeyActionMapper', () => {
 
 
 		describe('and keys for keydown mapped to actions', () => {
-			const getKeyEvent = (keyCode) => {
-				return new KeyboardEvent('keydown', { code: keyCode, which: keyCode });
+			const getKeyEvent = (key) => {
+				return new KeyboardEvent('keydown', { key: key });
 			};
 
 			it('calls the mapped actions', () => {
