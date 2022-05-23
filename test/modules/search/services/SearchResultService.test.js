@@ -63,7 +63,7 @@ describe('SearchResultService', () => {
 			const results = instanceUnderTest._newFallbackGeoResourceSearchResults();
 
 			expect(results).toHaveSize(2);
-			results.forEach(r => expect(r instanceof GeoResourceSearchResult));
+			results.forEach(r => expect(r instanceof GeoResourceSearchResult).toBeTrue());
 			expect(results[0].geoResourceId).toBe('atkis');
 			expect(results[0].label).toBe('Base Map 1');
 			expect(results[1].geoResourceId).toBe('atkis_sw');
@@ -79,7 +79,7 @@ describe('SearchResultService', () => {
 			const results = instanceUnderTest._newFallbackLocationSearchResults();
 
 			expect(results).toHaveSize(2);
-			results.forEach(r => expect(r instanceof LocationSearchResult));
+			results.forEach(r => expect(r instanceof LocationSearchResult).toBeTrue());
 			expect(results[0].center).toEqual([1284841.153957037, 6132811.135477452]);
 			expect(results[0].extent).toEqual([1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]);
 			expect(results[1].center).toEqual([1290240.0895689954, 6130449.47786758]);
@@ -113,7 +113,7 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
 
 			expect(results).toHaveSize(2);
-			results.forEach(r => expect(r instanceof GeoResourceSearchResult));
+			results.forEach(r => expect(r instanceof GeoResourceSearchResult).toBeTrue());
 		});
 
 		it('provides a search result for a URL providing a vector source', async () => {
@@ -133,7 +133,7 @@ describe('SearchResultService', () => {
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
 			expect(results[0].labelFormated).toBe(label);
-			expect(results[0] instanceof GeoResourceSearchResult);
+			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
 		});
 
 		it('provides an empty array as result for a URL providing a vector source when georesource cannot be created', async () => {
@@ -177,7 +177,7 @@ describe('SearchResultService', () => {
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
 			expect(results[0].labelFormated).toBe(label);
-			expect(results[0] instanceof GeoResourceSearchResult);
+			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
 		});
 
 		it('provides an empty array as result for vector data when georesource cannot be created', async () => {
@@ -241,7 +241,7 @@ describe('SearchResultService', () => {
 
 			const results = await instanceUnderTest.locationsByTerm(term);
 
-			results.forEach(r => expect(r instanceof LocationSearchResult));
+			results.forEach(r => expect(r instanceof LocationSearchResult).toBeTrue());
 			expect(results).toHaveSize(2);
 		});
 
@@ -290,7 +290,7 @@ describe('SearchResultService', () => {
 			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
 
 			expect(results).toHaveSize(2);
-			results.forEach(r => expect(r instanceof CadastralParcelSearchResult));
+			results.forEach(r => expect(r instanceof CadastralParcelSearchResult).toBeTrue());
 		});
 
 		it('provides fallback search results', async () => {
