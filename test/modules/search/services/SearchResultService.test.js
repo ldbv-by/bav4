@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { $injector } from '../../../../src/injection';
-import { GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
 import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
@@ -282,14 +282,15 @@ describe('SearchResultService', () => {
 			const term = 'term';
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const provider = jasmine.createSpy().and.resolveTo([
-				new SearchResult('foo', 'foo', 'foo', SearchResultTypes.CADASTRAL_PARCEL),
-				new SearchResult('bar', 'bar', 'bar', SearchResultTypes.CADASTRAL_PARCEL)
+				new CadastralParcelSearchResult('foo'),
+				new CadastralParcelSearchResult('bar')
 			]);
 			const instanceUnderTest = setup(null, null, provider);
 
 			const results = await instanceUnderTest.cadastralParcelsByTerm(term);
 
 			expect(results).toHaveSize(2);
+			results.forEach(r => expect(r instanceof CadastralParcelSearchResult));
 		});
 
 		it('provides fallback search results', async () => {
