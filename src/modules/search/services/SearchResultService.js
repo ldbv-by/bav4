@@ -2,7 +2,7 @@ import { $injector } from '../../../injection';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
 import { createUniqueId } from '../../../utils/numberUtils';
-import { SearchResult, SearchResultTypes } from './domain/searchResult';
+import { GeoResourceSearchResult, SearchResult, SearchResultTypes } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
 
 /**
@@ -70,9 +70,8 @@ export class SearchResultService {
 			if (status === SourceTypeResultStatus.OK) {
 				const geoResource = this._importVectorDataService.forUrl(term, { sourceType: sourceType });
 				if (geoResource) {
-					// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
-					return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
-						SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
+					// in this case the geoResourceId is a random number provided by the importVectorDataService.
+					return [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))];
 				}
 			}
 		}
@@ -81,9 +80,8 @@ export class SearchResultService {
 			if (status === SourceTypeResultStatus.OK) {
 				const geoResource = this._importVectorDataService.forData(term, { sourceType: sourceType }); {
 					if (geoResource) {
-						// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
-						return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
-							SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
+						// in this case the geoResourceId is a random number provided by the importVectorDataService.
+						return [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))];
 					}
 				}
 			}
@@ -130,8 +128,8 @@ export class SearchResultService {
 
 	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Map 1', 'Base Map 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
-			new SearchResult('atkis_sw', 'Base Map 2', 'Base Map 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
+			new GeoResourceSearchResult('atkis', 'Base Map 1'),
+			new GeoResourceSearchResult('atkis_sw', 'Base Map 2')
 		];
 	}
 
