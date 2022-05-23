@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { $injector } from '../../../../src/injection';
-import { GeoResourceSearchResult, SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
+import { GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
 import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
@@ -63,6 +63,7 @@ describe('SearchResultService', () => {
 			const results = instanceUnderTest._newFallbackGeoResourceSearchResults();
 
 			expect(results).toHaveSize(2);
+			results.forEach(r => expect(r instanceof GeoResourceSearchResult));
 			expect(results[0].geoResourceId).toBe('atkis');
 			expect(results[0].label).toBe('Base Map 1');
 			expect(results[1].geoResourceId).toBe('atkis_sw');
@@ -78,8 +79,11 @@ describe('SearchResultService', () => {
 			const results = instanceUnderTest._newFallbackLocationSearchResults();
 
 			expect(results).toHaveSize(2);
+			results.forEach(r => expect(r instanceof LocationSearchResult));
+			expect(results[0].center).toEqual([1284841.153957037, 6132811.135477452]);
 			expect(results[0].extent).toEqual([1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]);
 			expect(results[1].center).toEqual([1290240.0895689954, 6130449.47786758]);
+			expect(results[1].extent).toBeNull();
 		});
 	});
 
@@ -94,7 +98,7 @@ describe('SearchResultService', () => {
 		});
 	});
 
-	fdescribe('geoResourceByTerm', () => {
+	describe('geoResourceByTerm', () => {
 
 		it('provides search results for geoGeoresources from the provider', async () => {
 			const term = 'term';
@@ -230,13 +234,14 @@ describe('SearchResultService', () => {
 			const term = 'term';
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const provider = jasmine.createSpy().and.resolveTo([
-				new SearchResult('foo', 'foo', 'foo', SearchResultTypes.LOCATION),
-				new SearchResult('bar', 'bar', 'bar', SearchResultTypes.LOCATION)
+				new LocationSearchResult('foo'),
+				new LocationSearchResult('bar')
 			]);
 			const instanceUnderTest = setup(provider);
 
 			const results = await instanceUnderTest.locationsByTerm(term);
 
+			results.forEach(r => expect(r instanceof LocationSearchResult));
 			expect(results).toHaveSize(2);
 		});
 

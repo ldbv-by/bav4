@@ -1,8 +1,7 @@
 import { $injector } from '../../../injection';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { GeoResourceSearchResult, SearchResult, SearchResultTypes } from './domain/searchResult';
+import { GeoResourceSearchResult, LocationSearchResult } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
 
 /**
@@ -135,8 +134,8 @@ export class SearchResultService {
 
 	_newFallbackLocationSearchResults() {
 		return [
-			new SearchResult(undefined, 'Landeshauptstadt München', 'Landeshauptstadt <b>München</b>', SearchResultTypes.LOCATION, [1284841.153957037, 6132811.135477452], [1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]),
-			new SearchResult(undefined, 'Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', SearchResultTypes.LOCATION, [1290240.0895689954, 6130449.47786758])
+			new LocationSearchResult('Landeshauptstadt München', 'Landeshauptstadt <b>München</b>', [1284841.153957037, 6132811.135477452], [1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]),
+			new LocationSearchResult('Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', [1290240.0895689954, 6130449.47786758])
 		];
 	}
 
