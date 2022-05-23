@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvCadastralParcelSearchResults, loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults } from '../../../../../src/modules/search/services/provider/searchResult.provider';
 
 describe('SearchResult provider', () => {
@@ -48,14 +48,10 @@ describe('SearchResult provider', () => {
 
 			const searchResult = searchResults[0];
 
-
-			expect(searchResult.id).toBe('6f5a389c-4ef3-4b5a-9916-475fd5c5962b');
-			expect(searchResult.layerId).toContain('6f5a389c-4ef3-4b5a-9916-475fd5c5962b_');
+			expect(searchResult instanceof GeoResourceSearchResult).toBeTrue(),
+			expect(searchResult.geoResourceId).toBe('6f5a389c-4ef3-4b5a-9916-475fd5c5962b');
 			expect(searchResult.label).toBe('Bodendenkmal');
 			expect(searchResult.labelFormated).toBe('<b>Bodendenkmal</b>');
-			expect(searchResult.type).toBe(SearchResultTypes.GEORESOURCE);
-			expect(searchResult.center).toBeNull();
-			expect(searchResult.extent).toBeNull();
 		});
 
 		it('returns an empty array when response is empty', async () => {
@@ -130,15 +126,15 @@ describe('SearchResult provider', () => {
 
 			const searchResult0 = searchResults[0];
 
-			expect(searchResult0.id).toBe('id0');
+			expect(searchResult0 instanceof LocationSearchResult).toBeTrue(),
 			expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg');
 			expect(searchResult0.labelFormated).toBe('<b>Wasserburger</b> <b>Weg</b>, Günzburg');
-			expect(searchResult0.type).toBe(SearchResultTypes.LOCATION);
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
 
 			const searchResult1 = searchResults[1];
 
+			expect(searchResult1.center).toEqual([10.257489331997931, 48.436180253047496]);
 			expect(searchResult1.extent).toBeNull();
 		});
 
@@ -215,10 +211,9 @@ describe('SearchResult provider', () => {
 
 			const searchResult0 = searchResults[0];
 
-			expect(searchResult0.id).toBe('id0');
+			expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(),
 			expect(searchResult0.label).toBe('foo, bar');
 			expect(searchResult0.labelFormated).toBe('<b>foo</b>, bar');
-			expect(searchResult0.type).toBe(SearchResultTypes.CADASTRAL_PARCEL);
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toBeNull();
 		});

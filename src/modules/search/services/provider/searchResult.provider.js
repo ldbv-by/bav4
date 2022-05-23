@@ -1,6 +1,5 @@
-import { SearchResult, SearchResultTypes } from '../domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
-import { createUniqueId } from '../../../../utils/numberUtils';
 
 /**
  *A async function that returns a promise with an array of SearchResults with type LOCATION.
@@ -35,7 +34,7 @@ export const loadBvvGeoResourceSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map(o => {
-			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.GEORESOURCE, null, null, `${o.id}_${createUniqueId()}`);
+			return new GeoResourceSearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label);
 		});
 		return data;
 	}
@@ -52,7 +51,7 @@ export const loadBvvLocationSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map(o => {
-			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.LOCATION, o.attrs.coordinate, o.attrs.extent || null);
+			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
 		});
 		return data;
 	}
@@ -69,7 +68,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 	if (result.ok) {
 		const raw = await result.json();
 		const data = raw.map(o => {
-			return new SearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label, SearchResultTypes.CADASTRAL_PARCEL, o.attrs.coordinate, o.attrs.extent || null);
+			return new CadastralParcelSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
 		});
 		return data;
 	}
