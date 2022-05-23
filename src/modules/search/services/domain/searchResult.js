@@ -1,3 +1,4 @@
+
 /**
  * @enum
  */
@@ -10,22 +11,36 @@ export const SearchResultTypes = Object.freeze({
 /**
  * Represents a single search result.
  * @class
+ * @abstract
  * @author taulinger
  */
 export class SearchResult {
 
-	constructor(id = null, label, labelFormated, type, center = null, extent = null, layerId = null) {
-		this._id = id;
+	/**
+	 *
+	 * @param {string} label the label (plan text)
+	 * @param {string} labelFormated  the label (html formatted)
+	 */
+	constructor(label, labelFormated = label) {
+		if (this.constructor === SearchResult) {
+			// Abstract class can not be constructed.
+			throw new TypeError('Can not construct abstract class.');
+		}
+		this.checkDefined(label, 'label');
+
 		this._label = label;
 		this._labelFormated = labelFormated;
-		this._type = type;
-		this._center = center;
-		this._extent = extent;
-		this._layerId = layerId;
 	}
 
-	get id() {
-		return this._id;
+	/**
+	 * protected
+	 * @param {*} value
+	 * @param {*} name
+	 */
+	checkDefined(value, name) {
+		if (!value) {
+			throw new TypeError(name + ' must not be undefined');
+		}
 	}
 
 	get label() {
@@ -36,8 +51,21 @@ export class SearchResult {
 		return this._labelFormated;
 	}
 
-	get type() {
-		return this._type;
+	/**
+	 * @abstract
+	 */
+	getType() {
+		// The child has not implemented this method.
+		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
+	}
+}
+
+export class LocationSearchResult extends SearchResult {
+
+	constructor(label, labelFormated, center = null, extent = null) {
+		super(label, labelFormated);
+		this._center = center;
+		this._extent = extent;
 	}
 
 	get center() {
@@ -48,8 +76,44 @@ export class SearchResult {
 		return this._extent;
 	}
 
-	get layerId() {
-		return this._layerId;
+	getType() {
+		return SearchResultTypes.LOCATION;
+	}
+}
+
+export class CadastralParcelSearchResult extends SearchResult {
+
+	constructor(label, labelFormated, center = null, extent = null) {
+		super(label, labelFormated);
+		this._center = center;
+		this._extent = extent;
 	}
 
+	get center() {
+		return this._center;
+	}
+
+	get extent() {
+		return this._extent;
+	}
+
+	getType() {
+		return SearchResultTypes.CADASTRAL_PARCEL;
+	}
+}
+
+export class GeoResourceSearchResult extends SearchResult {
+
+	constructor(geoResourceId, label, labelFormated) {
+		super(label, labelFormated);
+		this._geoResourceId = geoResourceId;
+	}
+
+	get geoResourceId() {
+		return this._geoResourceId;
+	}
+
+	getType() {
+		return SearchResultTypes.GEORESOURCE;
+	}
 }
