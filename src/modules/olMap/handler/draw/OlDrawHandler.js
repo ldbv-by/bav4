@@ -252,6 +252,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		this._registeredObservers = this._register(this._storeService.getStore());
 		this._keyActionMapper.activate();
+
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);
@@ -292,7 +293,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._unreg(this._drawStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
-		// document.removeEventListener('keyup', this._keyUpListener);
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
