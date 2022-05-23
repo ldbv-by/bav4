@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { $injector } from '../../../../src/injection';
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../../../../src/modules/search/services/domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from '../../../../src/modules/search/services/provider/searchResult.provider';
 import { MAX_QUERY_TERM_LENGTH, SearchResultService } from '../../../../src/modules/search/services/SearchResultService';
 import { GeoResourceFuture } from '../../../../src/services/domain/geoResources';
