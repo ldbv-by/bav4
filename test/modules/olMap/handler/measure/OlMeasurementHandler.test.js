@@ -942,6 +942,29 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
 		});
+
+		it('aborts measurement if keypressed', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const abortKeyCode = 27;
+
+			classUnderTest.activate(map);
+
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_');
+			const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._modify.setActive(true);
+			simulateKeyEvent(abortKeyCode, 'Escape');
+
+
+			await TestUtils.timeout();
+			expect(startNewSpy).toHaveBeenCalled();
+		});
 	});
 
 	describe('when storing layer', () => {

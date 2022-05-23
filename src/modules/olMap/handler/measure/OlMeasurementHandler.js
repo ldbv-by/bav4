@@ -58,7 +58,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		// this._keyUpListener = (e) => this._removeLast(e);
 		this._keyActionMapper = new KeyActionMapper(document)
 			.addForKeyUp('Delete', () => this._remove())
 			.addForKeyUp('Escape', () => this._startNew());
@@ -251,7 +250,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
 			this._registeredObservers = this._register(this._storeService.getStore());
-			//document.addEventListener('keyup', this._keyUpListener);
 			this._keyActionMapper.activate();
 
 			olMap.addInteraction(this._select);
@@ -286,7 +284,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unreg(this._measureStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
 		this._keyActionMapper.deactivate();
-		//document.removeEventListener('keyup', this._keyUpListener);
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -328,12 +325,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			observe(store, state => state.measurement.reset, () => this._startNew()),
 			observe(store, state => state.measurement.remove, () => this._remove()),
 			observe(store, state => state.measurement.selection, (ids) => this._setSelection(ids))];
-	}
-
-	_removeLast(event) {
-		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-			this._remove();
-		}
 	}
 
 	_remove() {
