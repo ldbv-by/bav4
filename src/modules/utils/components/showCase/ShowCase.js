@@ -272,7 +272,8 @@ export class ShowCase extends BaElement {
 			
 			<h3>Loading hint</h3>
 			<div class='example'>									
-			<ba-spinner></ba-spinner>				
+			<ba-spinner></ba-spinner>
+			<ba-spinner .label=${'Waiting'}></ba-spinner>				
 			</div>
 
 			</div>	

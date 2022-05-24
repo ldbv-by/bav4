@@ -34,6 +34,7 @@ export class OlMap extends MvuElement {
 			center: null,
 			rotation: null,
 			fitRequest: null,
+			fitLayerRequest: null,
 			layers: []
 		});
 		const {
@@ -187,19 +188,11 @@ export class OlMap extends MvuElement {
 
 		//register particular obeservers on our Model
 		//handle fitRequest
-		this.observeModel('fitRequest', (fitRequest) => {
-			this._viewSyncBlocked = true;
-			const onAfterFit = () => {
-				this._viewSyncBlocked = false;
-				this._syncStore();
-			};
-			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
-			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
-		});
+		this.observeModel(['fitRequest', 'fitLayerRequest'], eventLike => this._fitToExtent(eventLike));
 		//sync layers
 		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
-		this.observeModel(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
+		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
 	}
 
 	/**
@@ -326,6 +319,20 @@ export class OlMap extends MvuElement {
 			this._map.getLayers().remove(olLayer);
 			this._map.getLayers().insertAt(layer.zIndex, olLayer);
 		});
+	}
+
+	_fitToExtent(eventLike) {
+		const onAfterFit = () => {
+			this._viewSyncBlocked = false;
+			this._syncStore();
+		};
+		const extent = eventLike.payload.id ? getLayerById(this._map, eventLike.payload.id).getSource()?.getExtent() : eventLike.payload.extent;
+
+		if (extent) {
+			this._viewSyncBlocked = true;
+			const maxZoom = eventLike.payload.options.maxZoom || this._view.getMaxZoom();
+			this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit }); // Todo: fit map with padding parameter by calling mapService#calculatePadding
+		}
 	}
 
 	/**
