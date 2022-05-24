@@ -29,6 +29,7 @@ describe('abstract SearchResult', () => {
 	}
 
 	describe('constructor', () => {
+
 		it('throws exception when instantiated without inheritance', () => {
 			expect(() => new SearchResult()).toThrowError(TypeError, 'Can not construct abstract class.');
 		});
