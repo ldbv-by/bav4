@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const ZOOM_CHANGED = 'position/zoom';
 export const ZOOM_ROTATION_CHANGED = 'position/zoom_rotation';
 export const CENTER_CHANGED = 'position/center';
@@ -7,6 +9,7 @@ export const ZOOM_CENTER_ROTATION_CHANGED = 'position/zoom_center_rotation';
 export const ROTATION_CHANGED = 'position/rotation';
 export const LIVE_ROTATION_CHANGED = 'position/live_rotation';
 export const FIT_REQUESTED = 'position/fit';
+export const FIT_LAYER_REQUESTED = 'position/fit_layer';
 
 
 export const initialState = {
@@ -14,7 +17,8 @@ export const initialState = {
 	center: [1288239.2412306187, 6130212.561641981],
 	rotation: 0,
 	liveRotation: 0,
-	fitRequest: null
+	fitRequest: new EventLike(null),
+	fitLayerRequest: new EventLike(null)
 };
 
 export const positionReducer = (state = initialState, action) => {
@@ -94,6 +98,14 @@ export const positionReducer = (state = initialState, action) => {
 			return {
 				...state,
 				fitRequest: payload
+			};
+		}
+
+		case FIT_LAYER_REQUESTED: {
+
+			return {
+				...state,
+				fitLayerRequest: payload
 			};
 		}
 	}
