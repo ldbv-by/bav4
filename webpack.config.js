@@ -45,7 +45,8 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',
-			templateParameters: templateParameters
+			templateParameters: templateParameters,
+			chunks: ['bundle']
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'offline.html',
