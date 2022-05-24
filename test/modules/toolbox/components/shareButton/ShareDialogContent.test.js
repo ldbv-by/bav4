@@ -134,7 +134,7 @@ describe('ShareDialogContent', () => {
 		expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
 	});
 
-	it('copies the url to the clipboard, when click', async (done) => {
+	it('copies the url to the clipboard, when click', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
 
 		const element = await setup();
@@ -143,17 +143,15 @@ describe('ShareDialogContent', () => {
 
 		copyButton.click();
 
-		setTimeout(() => {
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
-			expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
-			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_link_notification_text toolbox_clipboard_success');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-			done();
-		});
+		await TestUtils.timeout();
+		expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
+		expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
+		//check notification
+		expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_link_notification_text toolbox_clipboard_success');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 	});
 
-	it('calls the shareApi, when click', async (done) => {
+	it('calls the shareApi, when click', async () => {
 		const element = await setup({}, { share: () => Promise.resolve(true) });
 		const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
 		element.shareurls = shareUrls;
@@ -161,14 +159,12 @@ describe('ShareDialogContent', () => {
 
 		shareButton.click();
 
-		setTimeout(() => {
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(shareSpy).toHaveBeenCalledWith({ title: 'toolbox_measureTool_share_link_title', url: shareUrls.fileId });
-			done();
-		});
+		await TestUtils.timeout();
+		expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
+		expect(shareSpy).toHaveBeenCalledWith({ title: 'toolbox_measureTool_share_link_title', url: shareUrls.fileId });
 	});
 
-	it('logs a warning when shareApi fails', async (done) => {
+	it('logs a warning when shareApi fails', async () => {
 		const element = await setup({}, { share: () => Promise.resolve(true) });
 		const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
 		const errorSpy = spyOn(console, 'error');
@@ -177,14 +173,12 @@ describe('ShareDialogContent', () => {
 
 		shareButton.click();
 
-		setTimeout(() => {
-			expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
-			expect(shareSpy).toHaveBeenCalledWith({ title: 'toolbox_measureTool_share_link_title', url: shareUrls.fileId });
-			done();
-		});
+		await TestUtils.timeout();
+		expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
+		expect(shareSpy).toHaveBeenCalledWith({ title: 'toolbox_measureTool_share_link_title', url: shareUrls.fileId });
 	});
 
-	it('logs a warning when copyToClipboard fails', async (done) => {
+	it('logs a warning when copyToClipboard fails', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
 		const warnSpy = spyOn(console, 'warn');
 		const element = await setup();
@@ -193,13 +187,11 @@ describe('ShareDialogContent', () => {
 
 		copyElement.click();
 
-		setTimeout(() => {
-			expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
-			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-			done();
-		});
+		await TestUtils.timeout();
+		expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
+		//check notification
+		expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 	});
 });

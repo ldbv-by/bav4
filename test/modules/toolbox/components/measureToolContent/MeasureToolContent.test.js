@@ -267,7 +267,7 @@ describe('MeasureToolContent', () => {
 			expect(unitSpans[0].textContent).toBe('?');
 		});
 
-		it('copies the measurement length value to the clipboard', async (done) => {
+		it('copies the measurement length value to the clipboard', async () => {
 			const length = '42 m';
 			const state = {
 				measurement: {
@@ -282,17 +282,15 @@ describe('MeasureToolContent', () => {
 			const copyDistanceElement = element.shadowRoot.querySelector('.tool-container__text-item .close');
 			copyDistanceElement.click();
 
-			setTimeout(() => {
-				expect(copyDistanceElement).toBeTruthy();
-				expect(copyToClipboardMock).toHaveBeenCalledWith(length);
-				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(copyDistanceElement).toBeTruthy();
+			expect(copyToClipboardMock).toHaveBeenCalledWith(length);
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
-		it('copies the measurement area value to the clipboard', async (done) => {
+		it('copies the measurement area value to the clipboard', async () => {
 			const area = '2 m²';
 			const state = {
 				measurement: {
@@ -307,17 +305,15 @@ describe('MeasureToolContent', () => {
 			const copyAreaElement = element.shadowRoot.querySelector('.tool-container__text-item.area.is-area .close');
 			copyAreaElement.click();
 
-			setTimeout(() => {
-				expect(copyAreaElement).toBeTruthy();
-				expect(copyToClipboardMock).toHaveBeenCalledWith(area);
-				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-				done();
-			});
+			await TestUtils.timeout();
+			expect(copyAreaElement).toBeTruthy();
+			expect(copyToClipboardMock).toHaveBeenCalledWith(area);
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
-		it('logs a warning when copyToClipboard fails', async (done) => {
+		it('logs a warning when copyToClipboard fails', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 2 },
@@ -333,15 +329,12 @@ describe('MeasureToolContent', () => {
 			const copyToClipboardButton = element.shadowRoot.querySelector('.tool-container__text-item .close');
 			copyToClipboardButton.click();
 
-			setTimeout(() => {
-				expect(copySpy).toHaveBeenCalledWith('42 m');
-				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
-				done();
-			});
-
+			await TestUtils.timeout();
+			expect(copySpy).toHaveBeenCalledWith('42 m');
+			//check notification
+			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 
 

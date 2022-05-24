@@ -41,10 +41,49 @@ describe('Icons provider', () => {
 		expect(fooIconResult1.matches('foo1')).toBeTrue();
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
 		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
+		expect(fooIconResult1.matches(null)).toBeFalse();
 		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1');
 	});
 
-	it('warns when backend have not icons', async () => {
+	it('finds by ID in loaded icons', async () => {
+
+		const backendUrl = 'https://backend.url/';
+		const payload = JSON.stringify([
+			{ id: 'foo1', svg: '<svg>bar1</svg>' },
+			{ id: 'foo2', svg: '<svg>bar2</svg>' },
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
+		);
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+
+		const icons = await loadBvvIcons();
+
+		const fooIconResult1 = icons[0];
+		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult1.matches('foo1')).toBeTrue();
+		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
+	});
+
+	it('finds by URL in loaded icons', async () => {
+
+		const backendUrl = 'https://backend.url/';
+		const payload = JSON.stringify([
+			{ id: 'foo1', svg: '<svg>bar1</svg>' },
+			{ id: 'foo2', svg: '<svg>bar2</svg>' },
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
+		);
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
+
+		const icons = await loadBvvIcons();
+
+		const fooIconResult1 = icons[0];
+		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/some-foo1')).toBeFalse();
+	});
+
+	it('warns when backend does not have icons', async () => {
 
 		const backendUrl = 'https://backend.url';
 		const payload = JSON.stringify([]);
@@ -59,7 +98,6 @@ describe('Icons provider', () => {
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(warnSpy).toHaveBeenCalledWith('The backend provides no icons');
 		expect(icons.length).toBe(0);
-
 	});
 
 

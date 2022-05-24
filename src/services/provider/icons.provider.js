@@ -21,7 +21,7 @@ export const loadBvvIcons = async () => {
 		const payload = await result.json();
 
 		const matcher = (id) => {
-			return (idOrUrl) => idOrUrl === id || idOrUrl.endsWith(id);
+			return (idOrUrl) => idOrUrl === id || !!(idOrUrl?.endsWith(`/${id}`));
 		};
 
 		const urlFactoryFunction = (id) => {

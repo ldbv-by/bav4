@@ -6,6 +6,9 @@ import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/ma
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
 import { $injector } from '../../src/injection/index.js';
 import { QueryParameters } from '../../src/services/domain/queryParameters.js';
+import { EventLike } from '../../src/utils/storeUtils.js';
+import { searchReducer } from '../../src/store/search/search.reducer.js';
+import { setQuery } from '../../src/store/search/search.action.js';
 
 
 describe('MainMenuPlugin', () => {
@@ -27,12 +30,16 @@ describe('MainMenuPlugin', () => {
 				open: false,
 				tab: null
 			},
+			search: {
+				query: new EventLike(null)
+			},
 			...state
 		};
 
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			featureInfo: featureInfoReducer
+			featureInfo: featureInfoReducer,
+			search: searchReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
@@ -88,8 +95,6 @@ describe('MainMenuPlugin', () => {
 				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
 			});
 		});
-
-
 	});
 
 	describe('register', () => {
@@ -109,6 +114,19 @@ describe('MainMenuPlugin', () => {
 			expect(instanceUnderTest._open).toBeTrue();
 			expect(instanceUnderTest._previousTab).toBe(defaultTabId);
 			expect(initSpy).toHaveBeenCalled();
+		});
+
+		it('opens the search panel when query is available', async () => {
+			const store = setup({
+				search: {
+					query: new EventLike('foo')
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
+			expect(store.getState().mainMenu.open).toBeTrue();
 		});
 	});
 
@@ -281,6 +299,39 @@ describe('MainMenuPlugin', () => {
 			setTab(TabId.FEATUREINFO);
 
 			expect(instanceUnderTest._open).toBeTrue();
+		});
+	});
+
+	describe('when search.query property changes', () => {
+
+		it('opens the search panel', async () => {
+			const store = setup({
+				mainMenu: {
+					open: false
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			setQuery('foo');
+
+			expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
+			expect(store.getState().mainMenu.open).toBeTrue();
+		});
+
+		it('does NOT open the search panel when query is not available', async () => {
+			const store = setup({
+				mainMenu: {
+					open: false
+				}
+			});
+			const instanceUnderTest = new MainMenuPlugin();
+			await instanceUnderTest.register(store);
+
+			setQuery(null);
+
+			expect(store.getState().mainMenu.open).toBeFalse();
+			expect(store.getState().mainMenu.tab).not.toBe(TabId.SEARCH);
 		});
 	});
 });

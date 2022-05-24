@@ -7,14 +7,14 @@ describe('i18n for header module', () => {
 
 		const map = provide('de');
 
-		expect(map.baselayer_switcher_header).toBe('Hintergrund');
+		expect(map.baselayer_switcher_header).toBe('Basiskarten');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.baselayer_switcher_header).toBe('Background');
+		expect(map.baselayer_switcher_header).toBe('Base maps');
 	});
 
 	it('have the expected amount of translations', () => {

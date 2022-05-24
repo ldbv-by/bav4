@@ -19,15 +19,15 @@ import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResou
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
 export const FALLBACK_GEORESOURCE_ID_1 = 'atkis_sw';
-export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Layer 1';
-export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Layer 2';
+export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Map 1';
+export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Map 2';
 
 /**
  * Service for managing {@link GeoResource}s.
  *
  *
  * Georesources that should be available a startup time are loaded by the registered georesourceProvider.
- * GeoResouces which should be loaded on-demand during runtime, are loaded by the registered georesourceByIdProviders.
+ * GeoResources which should be loaded on-demand during runtime, are loaded by the registered georesourceByIdProviders.
  *
  * @class
  * @author taulinger
@@ -114,10 +114,10 @@ export class GeoResourceService {
 	 */
 	asyncById(id) {
 		for (const byIdProvider of this._byIdProvider) {
-			const geoResouce = byIdProvider(id);
-			if (geoResouce?.id === id) {
-				this.addOrReplace(geoResouce);
-				return geoResouce;
+			const geoResource = byIdProvider(id);
+			if (geoResource?.id === id) {
+				this.addOrReplace(geoResource);
+				return geoResource;
 			}
 		}
 		return null;
@@ -126,7 +126,7 @@ export class GeoResourceService {
 	/**
 	 * Adds a {@link GeoResource} to the internal cache.
 	 * An existing GeoResource will be replaced by the new one.
-	 * The replacement is done based on the id of the GeoResoure.
+	 * The replacement is done based on the id of the GeoResource.
 	 * @param {GeoResource} georesource
 	 */
 	addOrReplace(georesource) {

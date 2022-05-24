@@ -39,7 +39,7 @@
 
 /* global variables (custom properties) */
 :root {
-	font-size: calc(0.7em + 0.225vw);
+	font-size: calc(0.75em + 0.15vw);
 
 	--border-radius-button: 2.5em;
 	--border-radius-button-b: .5em;

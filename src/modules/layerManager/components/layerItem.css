@@ -2,6 +2,7 @@
 	width: 50%;
 	padding-top: 1em;
 }
+
 ba-icon {
 	border-radius: 2.5em;
 	width: 2.6em;
@@ -9,28 +10,38 @@ ba-icon {
 	display: block;
 	margin: 0 .3em;
 }
+
 ba-icon:hover {
 	background: var(--primary-color);
 
 }
+
 ba-icon:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
+
 .ba-list-item:hover {
 	background: transparent;
 }
+
 .iscollapse {
 	display: none;
 }
 
-.collapse-content > * {
+.ishidden {
+	visibility: hidden;
+}
+
+.collapse-content>* {
 	border-right: 1px dotted var(--header-background-color);
 }
-.collapse-content > *:first-child {
+
+.collapse-content>*:first-child {
 	border-right: 0;
 	margin-right: .5em;
 }
-.collapse-content > *:last-child {
+
+.collapse-content>*:last-child {
 	padding-right: 1em;
 	border-right: 0;
 }

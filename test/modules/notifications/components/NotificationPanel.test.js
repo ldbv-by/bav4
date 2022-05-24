@@ -127,7 +127,7 @@ describe('NotificationPanel', () => {
 		expect(notificationElement._model.notification.autocloseTime).toBe(NOTIFICATION_AUTOCLOSE_TIME_NEVER);
 	});
 
-	it('removes notificationItem, when a notification-item closes', async (done) => {
+	it('removes notificationItem, when a notification-item closes', async () => {
 		const autocloseTime = 1000;
 		const laterThenPanelAutoCloseTime = autocloseTime + 100;
 		const element = await setup();
@@ -139,14 +139,9 @@ describe('NotificationPanel', () => {
 		const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
 		const notificationItemElement = notificationElement.shadowRoot.querySelector('.notification_item');
 
-		setTimeout(() => {
-			notificationItemElement.dispatchEvent(new Event('animationend'));
-			setTimeout(() => {
-				expect(element.shadowRoot.querySelector('ba-notification-item')).toBeFalsy();
-			});
-			done();
-		}, laterThenPanelAutoCloseTime);
+		await TestUtils.timeout(laterThenPanelAutoCloseTime);
+		notificationItemElement.dispatchEvent(new Event('animationend'));
+		await TestUtils.timeout();
+		expect(element.shadowRoot.querySelector('ba-notification-item')).toBeFalsy();
 	});
-
-
 });

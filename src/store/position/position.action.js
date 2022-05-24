@@ -2,7 +2,7 @@
  * Action creators to change/update the properties concerning the zoom level and center of a map.
  * @module position/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED, ZOOM_ROTATION_CHANGED, CENTER_ROTATION_CHANGED } from './position.reducer';
+import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED, ZOOM_ROTATION_CHANGED, CENTER_ROTATION_CHANGED, FIT_LAYER_REQUESTED } from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -209,10 +209,25 @@ export const changeCenter = (center) => {
  * @param {FitRequestOptions} options options for this fit request
  * @function
  */
-export const setFit = (extent, options = {}) => {
+export const fit = (extent, options = {}) => {
 	getStore().dispatch({
 		type: FIT_REQUESTED,
 		payload: new EventLike({ extent, options })
+	});
+};
+
+
+/**
+ * Sets a fit request for a layer.
+ * The fitRequest object is wrapper by an {@link EventLike} object.
+ * @param {string} id  id of the layer this fit request targets at
+ * @param {FitRequestOptions} options options for this fit request
+ * @function
+ */
+export const fitLayer = (id, options = {}) => {
+	getStore().dispatch({
+		type: FIT_LAYER_REQUESTED,
+		payload: new EventLike({ id, options })
 	});
 };
 

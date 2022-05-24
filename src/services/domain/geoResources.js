@@ -141,7 +141,7 @@ export class GeoResource {
 
 	/**
 	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
-	 * for this GeoResouce.
+	 * for this GeoResource.
 	 * It returns `null` when no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
 	 * @returns {Array<Attribution>|null} attributions
@@ -194,7 +194,7 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 * Registers a function called when the loader resolves.
 	 * The callback function will be called with two arguments: the loaded `GeoResource` and the current `GeoResourceFuture`.
-	 * @param {function (GeoResouce, GeoResourceFuture): GeoResource|undefined} callback
+	 * @param {function (GeoResource, GeoResourceFuture): GeoResource|undefined} callback
 	 */
 	onResolve(callback) {
 		this._onResolve.push(callback);

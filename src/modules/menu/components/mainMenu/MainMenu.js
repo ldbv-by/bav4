@@ -77,6 +77,7 @@ export class MainMenu extends MvuElement {
 
 			const handler = (event, data) => {
 				if (['touchmove', 'mousemove'].includes(event.type) && data.directionY === 'TOP' && data.absY > MainMenu.SWIPE_DELTA_PX) {
+					swipeElement.focus();
 					toggle();
 				}
 			};

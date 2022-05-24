@@ -15,6 +15,7 @@ import * as config from './injection/config';
 import './modules/header';
 import './modules/footer';
 import './modules/map';
+import './modules/olMap';
 import './modules/menu';
 import './modules/toolbox';
 import './modules/commons';
