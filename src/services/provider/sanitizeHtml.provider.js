@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+
 const Black_List = [
 	'form',
 	'fieldset',
@@ -19,8 +20,8 @@ const Black_List = [
 /**
  * Sanitizes HTML content by removing unsafe HTML-, SVG-, mathML-Tags
  * and scripts.
- * @param {string} dirty the potentially dirty html content
- * @returns {string} the cleaned html content
+ * @param {string} dirty the potentially dirty content
+ * @returns {string} the cleaned content
  */
 export const domPurifySanitizeHtml = (dirty) => {
 	return DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true }, FORBID_TAGS: Black_List });
