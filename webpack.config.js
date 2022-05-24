@@ -15,7 +15,7 @@ module.exports = {
 		config: './src/assets/config.js',
 		sw: './src/assets/sw.js',
 		offline: './src/offline.js',
-		bundle: './src/main.js'
+		main: './src/main.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -46,7 +46,7 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',
 			templateParameters: templateParameters,
-			chunks: ['bundle']
+			chunks: ['main']
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'offline.html',
