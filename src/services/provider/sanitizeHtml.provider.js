@@ -1,13 +1,5 @@
 import DOMPurify from 'dompurify';
 const Black_List = [
-	'style',
-	'iframe',
-	'embed',
-	'object',
-	'param',
-	'video',
-	'audio',
-	'track',
 	'form',
 	'fieldset',
 	'input',
@@ -21,8 +13,6 @@ const Black_List = [
 	'keygen',
 	'script',
 	'noscript',
-	'canvas',
-	'template',
 	'dialog'
 ];
 
