@@ -121,7 +121,5 @@ describe('bvvCapabilitiesProvider', () => {
 
 		expect(wmsGeoResources).toEqual([]);
 	});
-
-
 });
 
