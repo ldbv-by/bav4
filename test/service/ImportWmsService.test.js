@@ -1,9 +1,15 @@
+import { $injector } from '../../src/injection';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
+import { TestUtils } from '../test-utils';
 
 describe('ImportWmsService', () => {
-
+	const geoResourceService = {
+		addOrReplace() { }
+	};
 	const setup = (provider = bvvCapabilitiesProvider) => {
+		TestUtils.setupStoreAndDi();
+		$injector.registerSingleton('GeoResourceService', geoResourceService);
 		return new ImportWmsService(provider);
 	};
 
@@ -17,10 +23,16 @@ describe('ImportWmsService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
+			TestUtils.setupStoreAndDi();
+			$injector.registerSingleton('GeoResourceService', geoResourceService);
 			const instanceUnderTest = new ImportWmsService();
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toEqual(bvvCapabilitiesProvider);
 		});
 
+
+	});
+
+	describe('forUrl', () => {
 		it('calls the provider', async () => {
 			const url = 'https://some.url/wms';
 			const credential = { username: 'foo', password: 'bar' };
@@ -32,6 +44,20 @@ describe('ImportWmsService', () => {
 
 			expect(result).toEqual([]);
 			expect(providerSpy).toHaveBeenCalled();
+		});
+
+		it('registers the georesources', async () => {
+			const url = 'https://some.url/wms';
+			const credential = { username: 'foo', password: 'bar' };
+			const resultMock = [{}, {}, {}];
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const instanceUnderTest = setup(async () => {
+				return resultMock;
+			});
+			const result = await instanceUnderTest.forUrl(url, credential);
+
+			expect(result).toHaveSize(3);
+			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
 		});
 	});
 
