@@ -20,15 +20,18 @@ export const bvvCapabilitiesProvider = async (url, credential = null) => {
 		return wgr;
 	};
 	const readCapabilities = (capabilities) => {
-		return capabilities.layers.map(
+		return capabilities.layers?.map(
 			(layer) => toWmsGeoResource(layer, capabilities)
 		);
 	};
 
-	const failed = () => {
-		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
-	};
-
 	const result = await httpService.post(endpoint, { url: url, username: credential?.username, password: credential?.password });
-	return result.ok ? readCapabilities(result.json()) : failed();
+	switch (result.status) {
+		case 200:
+			return readCapabilities(result.json());
+		case 404:
+			return [];
+		default:
+			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+	}
 };
