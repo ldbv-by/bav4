@@ -19,6 +19,9 @@ describe('DOMPurify sanitize HTML provider', () => {
 		// any HTML form elements not allowed
 		expect(domPurifySanitizeHtml('<p>abc<div onclick=alert(0)><form onsubmit=alert(1)><input onfocus=alert(2) name=parentNode>123</form></div></p>')).toBe('<p>abc</p><div>123</div><p></p>');
 
+		// any HTML style (as element or inline) not allowed
+		expect(domPurifySanitizeHtml('<style>*{color: red}</style>')).toBe('');
+		expect(domPurifySanitizeHtml('<div id="33"><a style="pointer-events:none;position:absolute;"><a style="position:absolute;" onclick="alert(33);">XXX</a></a></div>')).toBe('<div id="33"><a></a><a>XXX</a></div>');
 	});
 
 });
