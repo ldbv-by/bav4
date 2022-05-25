@@ -50,12 +50,12 @@ describe('LocationResultItem', () => {
 		});
 
 		it('renders the view', async () => {
-			const data = new LocationSearchResult('label', 'labelFormated');
+			const data = new LocationSearchResult('label', 'labelFormatted');
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormated');
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 		});
 	});
 
@@ -65,7 +65,7 @@ describe('LocationResultItem', () => {
 
 			it('sets a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const data = new LocationSearchResult('label', 'labelFormated', coordinate);
+				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup();
 				element.data = data;
 
@@ -83,7 +83,7 @@ describe('LocationResultItem', () => {
 
 			it('removes a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const data = new LocationSearchResult('label', 'labelFormated', coordinate);
+				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup({
 					highlight: {
 						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
@@ -107,7 +107,7 @@ describe('LocationResultItem', () => {
 
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
 
-				const data = new LocationSearchResult('label', 'labelFormated', coordinate, extent);
+				const data = new LocationSearchResult('label', 'labelFormatted', coordinate, extent);
 				const element = await setup({
 					highlight: {
 						features: [

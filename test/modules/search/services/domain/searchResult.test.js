@@ -52,16 +52,16 @@ describe('abstract SearchResult', () => {
 			const label = 'label';
 			const georesource = new SearchResultImpl(label);
 
-			expect(georesource.labelFormated).toBe(label);
+			expect(georesource.labelFormatted).toBe(label);
 		});
 
 		it('provides getter ', () => {
 			const label = 'label';
-			const labelFormated = 'labelFormatted';
-			const georesource = new SearchResultImpl(label, labelFormated);
+			const labelFormatted = 'labelFormatted';
+			const georesource = new SearchResultImpl(label, labelFormatted);
 
 			expect(georesource.label).toBe(label);
-			expect(georesource.labelFormated).toBe(labelFormated);
+			expect(georesource.labelFormatted).toBe(labelFormatted);
 		});
 	});
 });
@@ -70,27 +70,27 @@ describe('LocationSearchResult', () => {
 
 	it('instantiates a LocationSearchResult', () => {
 		const label = 'label';
-		const labelFormated = 'labelFormatted';
+		const labelFormatted = 'labelFormatted';
 		const center = [1, 2], extent = [3, 4, 5, 6];
 
-		const locationSearchResult = new LocationSearchResult(label, labelFormated, center, extent);
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
 
 		expect(locationSearchResult.getType()).toEqual(SearchResultTypes.LOCATION);
 		expect(locationSearchResult.label).toBe(label);
-		expect(locationSearchResult.labelFormated).toBe(labelFormated);
+		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(locationSearchResult.center).toEqual(center);
 		expect(locationSearchResult.extent).toEqual(extent);
 	});
 
 	it('provides default properties', () => {
 		const label = 'label';
-		const labelFormated = 'labelFormatted';
+		const labelFormatted = 'labelFormatted';
 
-		const locationSearchResult = new LocationSearchResult(label, labelFormated);
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted);
 
 		expect(locationSearchResult.getType()).toEqual(SearchResultTypes.LOCATION);
 		expect(locationSearchResult.label).toBe(label);
-		expect(locationSearchResult.labelFormated).toBe(labelFormated);
+		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(locationSearchResult.center).toBeNull();
 		expect(locationSearchResult.extent).toBeNull();
 	});
@@ -100,27 +100,27 @@ describe('CadastralParcelSearchResult', () => {
 
 	it('instantiates a CadastralParcelSearchResult', () => {
 		const label = 'label';
-		const labelFormated = 'labelFormatted';
+		const labelFormatted = 'labelFormatted';
 		const center = [1, 2], extent = [3, 4, 5, 6];
 
-		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormated, center, extent);
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent);
 
 		expect(cadastralParcelSearchResult.getType()).toEqual(SearchResultTypes.CADASTRAL_PARCEL);
 		expect(cadastralParcelSearchResult.label).toBe(label);
-		expect(cadastralParcelSearchResult.labelFormated).toBe(labelFormated);
+		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(cadastralParcelSearchResult.center).toEqual(center);
 		expect(cadastralParcelSearchResult.extent).toEqual(extent);
 	});
 
 	it('provides default properties', () => {
 		const label = 'label';
-		const labelFormated = 'labelFormatted';
+		const labelFormatted = 'labelFormatted';
 
-		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormated);
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted);
 
 		expect(cadastralParcelSearchResult.getType()).toEqual(SearchResultTypes.CADASTRAL_PARCEL);
 		expect(cadastralParcelSearchResult.label).toBe(label);
-		expect(cadastralParcelSearchResult.labelFormated).toBe(labelFormated);
+		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
 		expect(cadastralParcelSearchResult.center).toBeNull();
 		expect(cadastralParcelSearchResult.extent).toBeNull();
 	});
@@ -131,13 +131,13 @@ describe('GeoResourceSearchResult', () => {
 	it('instantiates a GeoResourceSearchResult', () => {
 		const geoResourceId = 'geoResourceId';
 		const label = 'label';
-		const labelFormated = 'labelFormatted';
+		const labelFormatted = 'labelFormatted';
 
-		const geoResourceSearchResult = new GeoResourceSearchResult(geoResourceId, label, labelFormated);
+		const geoResourceSearchResult = new GeoResourceSearchResult(geoResourceId, label, labelFormatted);
 
 		expect(geoResourceSearchResult.getType()).toEqual(SearchResultTypes.GEORESOURCE);
 		expect(geoResourceSearchResult.geoResourceId).toBe(geoResourceId);
 		expect(geoResourceSearchResult.label).toBe(label);
-		expect(geoResourceSearchResult.labelFormated).toBe(labelFormated);
+		expect(geoResourceSearchResult.labelFormatted).toBe(labelFormatted);
 	});
 });

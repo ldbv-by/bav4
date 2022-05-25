@@ -160,7 +160,7 @@ export class AutocompleteSearch extends MvuElement {
 		 <div class="autocomplete">
 			<input id='autoComplete'  @input=${onInput} @keydown=${onKeyDown}/>
 			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(candidates, (candidate) => candidate.label, (candidate, index) => html`
-			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
+			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormatted)}</div>
 		  `)}</div>`} 
 		 </div>
 		`;

@@ -19,9 +19,9 @@ export class SearchResult {
 	/**
 	 *
 	 * @param {string} label the label (plan text)
-	 * @param {string} labelFormated  the label (html formatted)
+	 * @param {string} labelFormatted  the label (html formatted)
 	 */
-	constructor(label, labelFormated = label) {
+	constructor(label, labelFormatted = label) {
 		if (this.constructor === SearchResult) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
@@ -29,7 +29,7 @@ export class SearchResult {
 		this.checkDefined(label, 'label');
 
 		this._label = label;
-		this._labelFormated = labelFormated;
+		this._labelFormatted = labelFormatted;
 	}
 
 	/**
@@ -47,8 +47,8 @@ export class SearchResult {
 		return this._label;
 	}
 
-	get labelFormated() {
-		return this._labelFormated;
+	get labelFormatted() {
+		return this._labelFormatted;
 	}
 
 	/**
@@ -62,8 +62,8 @@ export class SearchResult {
 
 export class LocationSearchResult extends SearchResult {
 
-	constructor(label, labelFormated, center = null, extent = null) {
-		super(label, labelFormated);
+	constructor(label, labelFormatted, center = null, extent = null) {
+		super(label, labelFormatted);
 		this._center = center;
 		this._extent = extent;
 	}
@@ -83,8 +83,8 @@ export class LocationSearchResult extends SearchResult {
 
 export class CadastralParcelSearchResult extends SearchResult {
 
-	constructor(label, labelFormated, center = null, extent = null) {
-		super(label, labelFormated);
+	constructor(label, labelFormatted, center = null, extent = null) {
+		super(label, labelFormatted);
 		this._center = center;
 		this._extent = extent;
 	}
@@ -104,8 +104,8 @@ export class CadastralParcelSearchResult extends SearchResult {
 
 export class GeoResourceSearchResult extends SearchResult {
 
-	constructor(geoResourceId, label, labelFormated) {
-		super(label, labelFormated);
+	constructor(geoResourceId, label, labelFormatted) {
+		super(label, labelFormatted);
 		this._geoResourceId = geoResourceId;
 	}
 

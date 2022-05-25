@@ -132,7 +132,7 @@ describe('SearchResultService', () => {
 			expect(results).toHaveSize(1);
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
-			expect(results[0].labelFormated).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
 			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
 		});
 
@@ -176,7 +176,7 @@ describe('SearchResultService', () => {
 			expect(results).toHaveSize(1);
 			expect(results[0].geoResourceId).toBe(geoResourceId);
 			expect(results[0].label).toBe(label);
-			expect(results[0].labelFormated).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
 			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
 		});
 

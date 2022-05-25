@@ -49,12 +49,12 @@ describe('CpResultItem', () => {
 		});
 
 		it('renders the view', async () => {
-			const data = new CadastralParcelSearchResult('label', 'labelFormated');
+			const data = new CadastralParcelSearchResult('label', 'labelFormatted');
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormated');
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 		});
 	});
 
@@ -64,7 +64,7 @@ describe('CpResultItem', () => {
 
 			it('sets a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const data = new CadastralParcelSearchResult('label', 'labelFormated', coordinate);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup();
 				element.data = data;
 
@@ -82,7 +82,7 @@ describe('CpResultItem', () => {
 
 			it('removes a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const data = new CadastralParcelSearchResult('label', 'labelFormated', coordinate);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup({
 					highlight: {
 						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
@@ -106,7 +106,7 @@ describe('CpResultItem', () => {
 
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
 
-				const data = new CadastralParcelSearchResult('label', 'labelFormated', coordinate, extent);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent);
 				const element = await setup({
 					highlight: {
 						features: [

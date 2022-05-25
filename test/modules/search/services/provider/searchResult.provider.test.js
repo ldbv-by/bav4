@@ -51,7 +51,7 @@ describe('SearchResult provider', () => {
 			expect(searchResult instanceof GeoResourceSearchResult).toBeTrue(),
 			expect(searchResult.geoResourceId).toBe('6f5a389c-4ef3-4b5a-9916-475fd5c5962b');
 			expect(searchResult.label).toBe('Bodendenkmal');
-			expect(searchResult.labelFormated).toBe('<b>Bodendenkmal</b>');
+			expect(searchResult.labelFormatted).toBe('<b>Bodendenkmal</b>');
 		});
 
 		it('returns an empty array when response is empty', async () => {
@@ -128,7 +128,7 @@ describe('SearchResult provider', () => {
 
 			expect(searchResult0 instanceof LocationSearchResult).toBeTrue(),
 			expect(searchResult0.label).toBe('Wasserburger Weg, Günzburg');
-			expect(searchResult0.labelFormated).toBe('<b>Wasserburger</b> <b>Weg</b>, Günzburg');
+			expect(searchResult0.labelFormatted).toBe('<b>Wasserburger</b> <b>Weg</b>, Günzburg');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toEqual([10.268321055918932, 48.441788353957236, 10.271912282332778, 48.450982798822224]);
 
@@ -213,7 +213,7 @@ describe('SearchResult provider', () => {
 
 			expect(searchResult0 instanceof CadastralParcelSearchResult).toBeTrue(),
 			expect(searchResult0.label).toBe('foo, bar');
-			expect(searchResult0.labelFormated).toBe('<b>foo</b>, bar');
+			expect(searchResult0.labelFormatted).toBe('<b>foo</b>, bar');
 			expect(searchResult0.center).toEqual([10.270116669125855, 48.44638557638974]);
 			expect(searchResult0.extent).toBeNull();
 		});

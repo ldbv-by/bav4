@@ -62,12 +62,12 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		it('renders the view', async () => {
-			const data = new GeoResourceSearchResult('id', 'label', 'labelFormated');
+			const data = new GeoResourceSearchResult('id', 'label', 'labelFormatted');
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormated');
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 		});
 	});
 
@@ -77,7 +77,7 @@ describe('GeoResourceResultItem', () => {
 
 			it('adds a preview layer', async () => {
 				const geoResourceId = 'geoResourceId';
-				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormated');
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup();
 				element.data = data;
 
@@ -94,7 +94,7 @@ describe('GeoResourceResultItem', () => {
 			it('removes the preview layer', async () => {
 				const geoResourceId = 'geoResourceId';
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
-				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormated');
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup({
 					layers: {
 						active: [previewLayer]
@@ -125,7 +125,7 @@ describe('GeoResourceResultItem', () => {
 			const setupOnClickTests = async (portraitOrientation) => {
 
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
-				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormated');
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup({
 					layers: {
 						active: [previewLayer]
