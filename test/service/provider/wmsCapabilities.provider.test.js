@@ -51,7 +51,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const responseMock = { ok: true, json: () => {
+		const responseMock = { ok: true, status: 200, json: () => {
 			return { layers: [] };
 		} };
 		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
@@ -67,7 +67,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const responseMock = { ok: true, json: () => {
+		const responseMock = { ok: true, status: 200, json: () => {
 			return Default_Capabilities_Result;
 		} };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
@@ -83,7 +83,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const responseMock = { ok: true, json: () => {
+		const responseMock = { ok: true, status: 200, json: () => {
 			return { ...Default_Capabilities_Result, maxHeight: 2000, maxWidth: 2000 };
 		} };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
@@ -107,6 +107,19 @@ describe('bvvCapabilitiesProvider', () => {
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and.resolveTo(failedResponseMock);
 
 		await expectAsync(bvvCapabilitiesProvider(url, { username: username, password: password })).toBeRejectedWithError('GeoResource for \'https://some.url/wms\' could not be loaded: Http-Status 420');
+	});
+
+	it('returns empty list for 404-response', async () => {
+		const url = 'https://some.url/wms';
+		const username = 'foo';
+		const password = 'bar';
+		const emptyResponseMock = { ok: false, status: 404 };
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and.resolveTo(emptyResponseMock);
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, { username: username, password: password });
+
+		expect(wmsGeoResources).toEqual([]);
 	});
 
 
