@@ -18,7 +18,7 @@ export class SearchResult {
 
 	/**
 	 *
-	 * @param {string} label the label (plan text)
+	 * @param {string} label the label (plain text)
 	 * @param {string} labelFormatted  the label (html formatted)
 	 */
 	constructor(label, labelFormatted = label) {
