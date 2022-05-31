@@ -45,9 +45,9 @@ const Update_Authenticating = 'update_authenticating';
  *    if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
  *       receivedCredential.username = credential.username;
  *       receivedCredential.password = credential.password;
- *       return true;
+ *       return { message: 'Credential is valid' };
  *    }
- *    return false;
+ *    return null;
  * };
  *
  * // in case of aborting the authentification-process by closing the modal,
@@ -63,11 +63,18 @@ const Update_Authenticating = 'update_authenticating';
  * const unsubscribe = this.observe(state => state.modal, modal => resolveBeforeClosing(modal), false);
  *
  * // onClose-callback is called with a valid credential or NULL
- * const onClose = (credential) => {
- *    unsubscribe();
- *    const resolveAction = credential ? closeModal : () => emitNotification('Authentication aborted', LevelTypes.WARN);
- *    resolveAction();
- * };
+ * const onClose = (credential, result) => {
+ *       unsubscribe();
+ *       const succeed = () => {
+ *          emitNotification(result.message, LevelTypes.INFO);
+ *          closeModal();
+ *          };
+ *       const abort = () => {
+ *          emitNotification('Authentication aborted', LevelTypes.WARN);
+ *       };
+ *       const resolveAction = credential ? succeed : abort;
+ *       resolveAction();
+ *    };
  *
  * // creates a PasswordCredentialPanel-element within a templateResult
  * const getCredentialPanel = () => {
