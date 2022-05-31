@@ -71,15 +71,15 @@ export class ShowCase extends BaElement {
 				if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
 					receivedCredential.username = credential.username;
 					receivedCredential.password = credential.password;
-					return true;
+					return { message: 'Credential is valid' };
 				}
-				return false;
+				return null;
 			};
 
 			// in case of aborting the authentification-process by closing the modal,
 			// call the onCloseCallback directly
 			const resolveBeforeClosing = (modal) => {
-				if (!modal.data) {
+				if (!modal.active) {
 					unsubscribe();
 					onClose(null);
 				}
@@ -88,9 +88,20 @@ export class ShowCase extends BaElement {
 			const unsubscribe = observe(this._storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
 
 			// onClose-callback is called with a valid credential or NULL
-			const onClose = (credential) => {
+			const onClose = (credential, result) => {
+
 				unsubscribe();
-				const resolveAction = credential ? closeModal : () => emitNotification('Authentication aborted', LevelTypes.WARN);
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
 				resolveAction();
 			};
 

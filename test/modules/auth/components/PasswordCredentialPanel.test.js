@@ -86,20 +86,21 @@ describe('PasswordCredentialPanel', () => {
 		});
 
 		it('resolves credential on successfull credential-check', async () => {
-			const authenticateCallback = jasmine.createSpy().and.resolveTo(true);
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'someUser', password: '42' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const onCloseCallback = () => { };
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
-
+			element.signal('update_username', 'someUser');
+			element.signal('update_password', '42');
 			const spy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
 			submitButton.click();
 			await TestUtils.timeout();
 			expect(authenticateCallback).toHaveBeenCalled();
-			expect(spy).toHaveBeenCalledWith(null);
+			expect(spy).toHaveBeenCalledWith({ username: 'someUser', password: '42' }, { foo: 'bar' });
 		});
 
 

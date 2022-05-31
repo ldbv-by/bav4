@@ -21,13 +21,14 @@ const Update_Authenticating = 'update_authenticating';
  * @callback PasswordCredentialPanel~authenticateCallback
  * @param {Credential} credential the credential
  * @param {string} [url] the optional url
- * @returns {true|false} whether or not the check with the id and the credential was succesfull
+ * @returns {Object| null} whether or not the check with the id and the credential was succesfull an object is returned or null.
  */
 
 /**
  * This callback is called after the authentication was successful.
  * @callback PasswordCredentialPanel~onCloseCallback
   * @param {Credential} credential the valid credential.
+  * @param {Object} result the authentication-result.
  */
 
 /**
@@ -52,7 +53,7 @@ const Update_Authenticating = 'update_authenticating';
  * // in case of aborting the authentification-process by closing the modal,
  * // call the onCloseCallback directly
  * const resolveBeforeClosing = (modal) => {
- *       if (!modal.data) {
+ *       if (!modal.active) {
  *          unsubscribe();
  *          onClose(null);
  *       }
@@ -168,9 +169,9 @@ export class PasswordCredentialPanel extends MvuElement {
 		const getSubmitButton = () => {
 			const authenticate = async () => {
 				this.signal(Update_Authenticating, true);
-				const isValid = await this._authenticate(credential, url);
-				if (isValid) {
-					this._onClose(credential);
+				const result = await this._authenticate(credential, url);
+				if (result) {
+					this._onClose(credential, result);
 				}
 				else {
 					emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
