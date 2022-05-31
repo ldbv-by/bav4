@@ -20,7 +20,27 @@ const Default_Capabilities_Result = {
 		'minResolution': 8192.0,
 		'maxResolution': 0.0,
 		'legendUrl': 'https://legend.url/0',
-		'metadataUrl': 'https://metadata.url/0'
+		'metadataUrl': 'https://metadata.url/0',
+		'referenceSystems': [
+			{
+				'code': 31467,
+				'urn': false,
+				'axisOrderLatLong': false,
+				'value': 'EPSG:31467'
+			},
+			{
+				'code': 3857,
+				'urn': false,
+				'axisOrderLatLong': false,
+				'value': 'EPSG:3857'
+			},
+			{
+				'code': 31468,
+				'urn': false,
+				'axisOrderLatLong': true,
+				'value': 'EPSG:31468'
+			}
+		]
 	}, {
 		'name': 'layer1',
 		'title': 'Layer 1',
@@ -28,7 +48,49 @@ const Default_Capabilities_Result = {
 		'minResolution': 8192.0,
 		'maxResolution': 0.0,
 		'legendUrl': 'https://legend.url/1',
-		'metadataUrl': 'https://metadata.url/1'
+		'metadataUrl': 'https://metadata.url/1',
+		'referenceSystems': [
+			{
+				'code': 31467,
+				'urn': false,
+				'axisOrderLatLong': false,
+				'value': 'EPSG:31467'
+			},
+			{
+				'code': 3857,
+				'urn': false,
+				'axisOrderLatLong': false,
+				'value': 'EPSG:3857'
+			},
+			{
+				'code': 31468,
+				'urn': false,
+				'axisOrderLatLong': true,
+				'value': 'EPSG:31468'
+			}
+		]
+	}, {
+		'name': 'layer2',
+		'title': 'Layer 2',
+		'description': 'The description of layer 2',
+		'minResolution': 8192.0,
+		'maxResolution': 0.0,
+		'legendUrl': 'https://legend.url/1',
+		'metadataUrl': 'https://metadata.url/1',
+		'referenceSystems': [
+			{
+				'code': 31467,
+				'urn': false,
+				'axisOrderLatLong': false,
+				'value': 'EPSG:31467'
+			},
+			{
+				'code': 31468,
+				'urn': false,
+				'axisOrderLatLong': true,
+				'value': 'EPSG:31468'
+			}
+		]
 	}] }
     ;
 
@@ -48,6 +110,21 @@ describe('bvvCapabilitiesProvider', () => {
 	});
 
 	it('use services to build a backend request', () => {
+		const url = 'https://some.url/wms';
+
+		const responseMock = { ok: true, status: 200, json: () => {
+			return { layers: [] };
+		} };
+		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		const httpSpy = spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
+
+		bvvCapabilitiesProvider(url);
+
+		expect(configSpy).toHaveBeenCalled();
+		expect(httpSpy).toHaveBeenCalled();
+	});
+
+	it('use services to build a backend request with credentials', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';

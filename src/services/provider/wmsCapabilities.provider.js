@@ -1,7 +1,11 @@
 import { $injector } from '../../injection';
 import { WmsGeoResource } from '../domain/geoResources';
 
-export const bvvCapabilitiesProvider = async (url, credential = null) => {
+const Default_Credential = { username: null, password: null };
+
+const isValidCredential = (credential) => (credential.username && credential.password) || (credential === Default_Credential) ;
+
+export const bvvCapabilitiesProvider = async (url, credential = Default_Credential) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
@@ -20,12 +24,15 @@ export const bvvCapabilitiesProvider = async (url, credential = null) => {
 		return wgr;
 	};
 	const readCapabilities = (capabilities) => {
-		return capabilities.layers?.map(
+		const contains3857 = (layer) => layer.referenceSystems.some(srs => srs.code === 3857);
+		return capabilities.layers?.filter((l) => contains3857(l)).map(
 			(layer) => toWmsGeoResource(layer, capabilities)
 		);
 	};
 
-	const result = await httpService.post(endpoint, { url: url, username: credential?.username, password: credential?.password });
+	const requestCredential = isValidCredential(credential) ? credential : Default_Credential;
+
+	const result = await httpService.post(endpoint, { url: url, username: requestCredential.username, password: requestCredential.password });
 	switch (result.status) {
 		case 200:
 			return readCapabilities(result.json());
