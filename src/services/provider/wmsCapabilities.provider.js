@@ -24,8 +24,11 @@ export const bvvCapabilitiesProvider = async (url, credential = Default_Credenti
 		return wgr;
 	};
 	const readCapabilities = (capabilities) => {
-		const contains3857 = (layer) => layer.referenceSystems.some(srs => srs.code === 3857);
-		return capabilities.layers?.filter((l) => contains3857(l)).map(
+		const {	MapService: mapService } = $injector.inject('MapService');
+		const defaultGeodeticSRID = mapService.defaultGeodeticSRID();
+
+		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
+		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
 			(layer) => toWmsGeoResource(layer, capabilities)
 		);
 	};

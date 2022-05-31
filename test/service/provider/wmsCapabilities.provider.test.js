@@ -103,10 +103,15 @@ describe('bvvCapabilitiesProvider', () => {
 		async post() { }
 	};
 
+	const mapService = {
+		defaultGeodeticSRID: () => 3857
+	};
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('MapService', mapService);
 	});
 
 	it('use services to build a backend request', () => {
