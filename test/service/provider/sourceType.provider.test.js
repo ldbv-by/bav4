@@ -273,8 +273,11 @@ describe('sourceType provider', () => {
 					const createAuthenticationUiFunction = async (url, authenticateFunction) => {
 						// simulate call by UI
 						await authenticateFunction(mockCredential, url);
+
 						expect(store.getState().modal.active).toBeTrue();
 						expect(store.getState().modal.data.title).toBe('importPlugin_authenticationModal_title');
+
+						//now let's close the modal
 						closeModal();
 					};
 					const backendUrl = 'https://backend.url/';
