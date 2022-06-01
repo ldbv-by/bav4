@@ -101,8 +101,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 			const translate = (key) => translationService.translate(key);
 
 			const authenticate = async (credential, url) => {
-				const resultFetchedWithCredentials = await post(url, credential);
-				return resultFetchedWithCredentials.status === 401 ? false : resultFetchedWithCredentials;
+				const responseFetchedWithCredentials = await post(url, credential);
+				return responseFetchedWithCredentials.status === 401 ? false : responseFetchedWithCredentials;
 			};
 
 			// in case of aborting the authentification-process by closing the modal we call the onClose callback
