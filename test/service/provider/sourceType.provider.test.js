@@ -1,7 +1,7 @@
 import { $injector } from '../../../src/injection';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
 import { MediaType } from '../../../src/services/HttpService';
-import { bvvUrlSourceTypeProvider, createCredentialPanel, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../../src/services/provider/sourceType.provider';
+import { bvvUrlSourceTypeProvider, _createCredentialPanel, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../../src/services/provider/sourceType.provider';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
 import { isTemplateResultOf } from '../../../src/utils/checks';
 import { TestUtils } from '../../test-utils';
@@ -12,7 +12,7 @@ describe('createCredentialPanel', () => {
 
 	it('returns a PasswordCredentialPanel template result', async () => {
 
-		const templateResult = createCredentialPanel('url', () => { }, () => { });
+		const templateResult = _createCredentialPanel('url', () => { }, () => { });
 		expect(isTemplateResultOf(templateResult, PasswordCredentialPanel.tag)).toBeTrue();
 	});
 });
@@ -200,7 +200,7 @@ describe('sourceType provider', () => {
 						)
 					);
 					const response401 = new Response(null, { status: 401 });
-					const authenticationUiCreateFunction = async (url, authenticateFunction, onCloseFunction) => {
+					const createAuthenticationUiFunction = async (url, authenticateFunction, onCloseFunction) => {
 						// simulate call by UI
 						const authenticationResult = await authenticateFunction(mockCredential, url);
 
@@ -225,7 +225,7 @@ describe('sourceType provider', () => {
 							return Promise.resolve(response401);
 						});
 
-					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, authenticationUiCreateFunction);
+					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
 					expect(sourceType).toBeInstanceOf(SourceType);
 					expect(sourceType.name).toBe(SourceTypeName.GPX);
@@ -239,7 +239,7 @@ describe('sourceType provider', () => {
 				it('opens a credential UI and returns a SourceTypeServiceResult with status RESTRICTED', async () => {
 					const mockCredential = { username: 'username', password: 'password' };
 					const response401 = new Response(null, { status: 401 });
-					const authenticationUiCreateFunction = async (url, authenticateFunction, onCloseFunction) => {
+					const createAuthenticationUiFunction = async (url, authenticateFunction, onCloseFunction) => {
 						// simulate call by UI
 						const authenticationResult = await authenticateFunction(mockCredential, url);
 
@@ -259,7 +259,7 @@ describe('sourceType provider', () => {
 							return Promise.resolve(response401);
 						});
 
-					const { status } = await bvvUrlSourceTypeProvider(url, authenticationUiCreateFunction);
+					const { status } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
 					expect(status).toEqual(SourceTypeResultStatus.RESTRICTED);
 				});
@@ -270,7 +270,7 @@ describe('sourceType provider', () => {
 				it('returns a SourceTypeServiceResult with status RESTRICTED', async () => {
 					const mockCredential = { username: 'username', password: 'password' };
 					const response401 = new Response(null, { status: 401 });
-					const authenticationUiCreateFunction = async (url, authenticateFunction) => {
+					const createAuthenticationUiFunction = async (url, authenticateFunction) => {
 						// simulate call by UI
 						await authenticateFunction(mockCredential, url);
 						expect(store.getState().modal.active).toBeTrue();
@@ -285,7 +285,7 @@ describe('sourceType provider', () => {
 							return Promise.resolve(response401);
 						});
 
-					const { status } = await bvvUrlSourceTypeProvider(url, authenticationUiCreateFunction);
+					const { status } = await bvvUrlSourceTypeProvider(url, createAuthenticationUiFunction);
 
 					expect(status).toEqual(SourceTypeResultStatus.RESTRICTED);
 				});

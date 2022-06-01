@@ -26,7 +26,14 @@ import { MediaType } from '../HttpService';
  * @typedef {function(Source) : (SourceTypeResult)} mediaSourceTypeProvider
  */
 
-export const createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
+/**
+ * Returns the default authentification panel bound to the corresponding url and required callback functions.
+ * @param {string} url
+ * @param {function} authenticateFunction
+ * @param {function} onCloseFunction
+ * @returns TemplateResult
+ */
+export const _createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
 	return html`<ba-auth-password-credential-panel .url=${url} .authenticate=${authenticateFunction} .onClose=${onCloseFunction}>`;
 };
 
@@ -34,13 +41,13 @@ export const createCredentialPanel = (url, authenticateFunction, onCloseFunction
  * Uses a BVV endpoint to detect the source type for a url.
  * @function
  * @param {string} url
+ * @param {function} createModalContent function that provides the credential ui as the modals content
  * @returns {SourceTypeResult}
  */
-export const bvvUrlSourceTypeProvider = async (url, createModalContent = createCredentialPanel) => {
+export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
-	// const result = await httpService.get(`${endpointUrl}?url=${encodeURIComponent(url)}`);
 
 	const post = async (url, credential = null) => {
 		const requestPayload = {
@@ -69,7 +76,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = createC
 					}
 				};
 
-				return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK, new SourceType(sourceTypeNameFor(name), version));
+				return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+					new SourceType(sourceTypeNameFor(name), version));
 			}
 			case 204: {
 				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
@@ -81,9 +89,10 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = createC
 		return new SourceTypeResult(SourceTypeResultStatus.OTHER);
 	};
 
-	const result = await post(url);
+	const response = await post(url);
 
-	if (result.status === 401) {
+	// in that case we open the credential ui as modal window
+	if (response.status === 401) {
 
 		return new Promise((resolve) => {
 
@@ -96,8 +105,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = createC
 				return resultFetchedWithCredentials.status === 401 ? false : resultFetchedWithCredentials;
 			};
 
-			// in case of aborting the authentification-process by closing the modal,
-			// call the onCloseCallback directly
+			// in case of aborting the authentification-process by closing the modal we call the onClose callback
 			const resolveBeforeClosing = ({ active }) => {
 				if (!active) {
 					onClose(null);
@@ -106,27 +114,26 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = createC
 
 			const unsubscribe = observe(storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
 
-			// onClose-callback is called with a verified credential object and a result object or simply NULL
-			const onClose = async (credential, resultFetchedWithCredentials) => {
+			// onClose-callback is called with a verified credential object and the result object or simply null
+			const onClose = async (credential, latestResponse) => {
 				unsubscribe();
 				closeModal();
-				if (credential) {
+				if (credential && latestResponse) {
 					// Todo: store credential
-					resolve(await mapResponseToSourceType(resultFetchedWithCredentials, true));
+					//resolve with the latest response
+					resolve(await mapResponseToSourceType(latestResponse, true));
 				}
 				else {
-					resolve(await mapResponseToSourceType(result));
+					// resolve with the original response
+					resolve(await mapResponseToSourceType(response));
 				}
 			};
 
-			// using the panel as content for the modal
 			openModal(translate('importPlugin_authenticationModal_title'), createModalContent(url, authenticate, onClose));
 		});
 	}
 
-
-
-	return await mapResponseToSourceType(result);
+	return await mapResponseToSourceType(response);
 };
 
 /**
