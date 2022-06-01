@@ -18,9 +18,6 @@ describe('PasswordCredentialPanel', () => {
 			media: {
 				portrait: false
 			},
-			modal: {
-				data: null
-			},
 			...state
 		};
 		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, modal: modalReducer, media: createNoInitialStateMediaReducer() });
@@ -85,6 +82,21 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalled();
 		});
 
+		it('does NOT resolves credential with default authenticate-callback', async () => {
+			const element = await setup();
+			element.url = 'someUrl';
+			element.signal('update_username', 'someUser');
+			element.signal('update_password', '42');
+			const authenticateSpy = spyOn(element, '_authenticate').and.callThrough();
+			const onCloseSpy = spyOn(element, '_onClose').and.callThrough();
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+
+			submitButton.click();
+			await TestUtils.timeout();
+			expect(authenticateSpy).toHaveBeenCalledWith({ username: 'someUser', password: '42' }, 'someUrl');
+			expect(onCloseSpy).not.toHaveBeenCalled();
+		});
+
 		it('resolves credential on successfull credential-check', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'someUser', password: '42' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const onCloseCallback = () => { };
@@ -135,9 +147,9 @@ describe('PasswordCredentialPanel', () => {
 			submitButton.click();
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelector('#authenticating-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('#authenticating-button')).toHaveSize(1);
 			await TestUtils.timeout(authenticationDelay);
-			expect(element.shadowRoot.querySelector('#authenticate-credential-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('#authenticate-credential-button')).toHaveSize(1);
 		});
 	});
 
