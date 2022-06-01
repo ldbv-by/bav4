@@ -265,7 +265,7 @@ describe('sourceType provider', () => {
 				});
 			});
 
-			describe('model is closed by user', () => {
+			describe('modal is closed by user', () => {
 
 				it('returns a SourceTypeServiceResult with status RESTRICTED', async () => {
 					const mockCredential = { username: 'username', password: 'password' };
