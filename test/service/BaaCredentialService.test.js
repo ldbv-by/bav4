@@ -118,8 +118,5 @@ describe('BaaService', () => {
 
 			expect(result).toEqual(credential);
 		});
-
 	});
-
-
 });
