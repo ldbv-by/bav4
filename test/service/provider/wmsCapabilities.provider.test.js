@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { WmsGeoResource } from '../../../src/services/domain/geoResources';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/services/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
 import { bvvCapabilitiesProvider } from '../../../src/services/provider/wmsCapabilities.provider';
 
@@ -158,7 +158,7 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(baaCredentialSpy).toHaveBeenCalled();
 	});
 
-	it('maps geoResources from layers', async () => {
+	it('maps geoResources from BAA authenticated layers ', async () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
@@ -174,6 +174,23 @@ describe('bvvCapabilitiesProvider', () => {
 
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.any(WmsGeoResource), jasmine.any(WmsGeoResource)]));
+		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.objectContaining({ authenticationType: GeoResourceAuthenticationType.BAA }), jasmine.objectContaining({ authenticationType: GeoResourceAuthenticationType.BAA })]));
+	});
+
+	it('maps geoResources from unrestricted layers ', async () => {
+		const url = 'https://some.url/wms';
+		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.OK);
+		const responseMock = { ok: true, status: 200, json: () => {
+			return Default_Capabilities_Result;
+		} };
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceTypeResult);
+
+		expect(wmsGeoResources).toHaveSize(2);
+		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.any(WmsGeoResource), jasmine.any(WmsGeoResource)]));
+		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.objectContaining({ authenticationType: null }), jasmine.objectContaining({ authenticationType: null })]));
 	});
 
 	it('recognize extraParams from layers', async () => {

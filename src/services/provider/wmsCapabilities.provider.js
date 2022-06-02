@@ -1,5 +1,5 @@
 import { $injector } from '../../injection';
-import { WmsGeoResource } from '../domain/geoResources';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../domain/geoResources';
 import { SourceTypeResultStatus } from '../domain/sourceType';
 
 const Default_Credential = { username: null, password: null };
@@ -8,19 +8,23 @@ export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
-	const toWmsGeoResource = (layer, capabilities) => {
-		const wgr = new WmsGeoResource(
+	const getExtraParams = (capabilities) => {
+		return capabilities.maxHeight && capabilities.maxWidth ? { maxHeight: capabilities.maxHeight, maxWidth: capabilities.maxWidth } : {};
+	};
+
+	const getAuthenticationType = (isBaaAuthenticated) => {
+		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
+	};
+
+	const toWmsGeoResource = (layer, capabilities, isBaaAuthenticated = false) => {
+		return new WmsGeoResource(
 			`${capabilities.onlineResourceGetMap}${layer.name}`,
 			layer.title,
 			capabilities.onlineResourceGetMap,
 			layer.name,
-			capabilities.formatsGetMap[0]);
-
-		if (capabilities.maxHeight && capabilities.maxWidth) {
-			wgr.setExtraParams({ maxHeight: capabilities.maxHeight, maxWidth: capabilities.maxWidth });
-		}
-
-		return wgr;
+			capabilities.formatsGetMap[0])
+			.setAuthenticationType(getAuthenticationType(isBaaAuthenticated))
+			.setExtraParams(getExtraParams(capabilities));
 	};
 	const readCapabilities = (capabilities) => {
 		const {	MapService: mapService } = $injector.inject('MapService');
@@ -28,7 +32,7 @@ export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
 
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
-			(layer) => toWmsGeoResource(layer, capabilities)
+			(layer) => toWmsGeoResource(layer, capabilities, sourceTypeResult.status === SourceTypeResultStatus.BAA_AUTHENTICATED)
 		);
 	};
 
