@@ -35,7 +35,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 		);
 	};
 
-	const getCredentialorFail = (url) => {
+	const getCredentialOrFail = (url) => {
 		const failed = () => {
 			throw new Error(`Import of WMS failed. Credential for '${url}' not found.`);
 		};
@@ -45,7 +45,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 		return credential ? { username: credential.username, password: credential.password } : failed();
 	};
 
-	const data = isAuthenticated ? { url: url, ...getCredentialorFail(url) } : { url: url };
+	const data = isAuthenticated ? { url: url, ...getCredentialOrFail(url) } : { url: url };
 	const result = await httpService.post(endpoint, data);
 	switch (result.status) {
 		case 200:
