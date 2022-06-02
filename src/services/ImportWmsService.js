@@ -6,9 +6,8 @@ import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 /**
  *
  * @typedef {Object} ImportWmsOptions
- * @property {string} [id] the id of the created VectorGeoResource. If not set, id will be created
- * @property {string} [label] the label of the created VectorGeoResource
  * @property {SourceType} [sourceType] the source type
+ * @property {boolean} [isAuthenticated] Whether or not the wms needs a authentication.
  */
 
 /**
@@ -41,8 +40,7 @@ export class ImportWmsService {
 	/**
      * Imports WMS from an URL and returns an array of {@link WmsGeoResource}.
      * @param {string} url the url of a WMS
-     * @param {SourceTypeResult} sourceTypeResult the sourceType and status of the WMS.
-	 * @param {ImportWmsOptions} [options]
+	 * @param {ImportWmsOptions} [options] the importWmsOptions, if not or partially specified, the options will be filled with default values.
      * @returns {Array<WmsGeoResource>} list of WMS GeoResources available at the specified URL
      */
 	async forUrl(url, options = {}) {
