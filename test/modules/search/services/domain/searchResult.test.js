@@ -1,4 +1,4 @@
-import { SearchResult, SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
 
 describe('searchResult', () => {
 
@@ -14,25 +14,130 @@ describe('searchResult', () => {
 	});
 });
 
-describe('SearchResult', () => {
+describe('abstract SearchResult', () => {
 
-	it('test constructor and getters', () => {
-		const searchResult = new SearchResult('id', 'label', 'labelFormated', SearchResultTypes.LOCATION);
-		expect(searchResult.id).toBe('id');
-		expect(searchResult.label).toBe('label');
-		expect(searchResult.labelFormated).toBe('labelFormated');
-		expect(searchResult.type).toEqual(SearchResultTypes.LOCATION);
-		expect(searchResult.center).toBeNull();
-		expect(searchResult.extent).toBeNull();
-		expect(searchResult.layerId).toBeNull();
+	class SearchResultNoImpl extends SearchResult {
+		constructor(label, labelFormatted) {
+			super(label, labelFormatted);
+		}
+	}
 
-		const searchResult2 = new SearchResult('id1', 'label1', 'labelFormated1', SearchResultTypes.CADASTRAL_PARCEL, [0, 0], [0, 0, 1, 1]);
-		expect(searchResult2.center).toEqual([0, 0]);
-		expect(searchResult2.extent).toEqual([0, 0, 1, 1]);
+	class SearchResultImpl extends SearchResult {
+		constructor(label, labelFormatted) {
+			super(label, labelFormatted);
+		}
+	}
 
-		const searchResult3 = new SearchResult(undefined, 'label1', 'labelFormated1', SearchResultTypes.GEORESOURCE, null, null, 'layerId');
-		expect(searchResult3.id).toBeNull();
-		expect(searchResult3.layerId).toBe('layerId');
+	describe('constructor', () => {
+
+		it('throws exception when instantiated without inheritance', () => {
+			expect(() => new SearchResult()).toThrowError(TypeError, 'Can not construct abstract class.');
+		});
+
+		it('throws exception when instantiated without id', () => {
+			expect(() => new SearchResultNoImpl()).toThrowError(TypeError, 'label must not be undefined');
+		});
+	});
+
+	describe('methods', () => {
+
+		it('throws exception when abstract #getType is called without overriding', () => {
+			expect(() => new SearchResultNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+		});
+	});
+
+	describe('properties', () => {
+
+		it('provides default properties', () => {
+			const label = 'label';
+			const georesource = new SearchResultImpl(label);
+
+			expect(georesource.labelFormatted).toBe(label);
+		});
+
+		it('provides getter ', () => {
+			const label = 'label';
+			const labelFormatted = 'labelFormatted';
+			const georesource = new SearchResultImpl(label, labelFormatted);
+
+			expect(georesource.label).toBe(label);
+			expect(georesource.labelFormatted).toBe(labelFormatted);
+		});
 	});
 });
 
+describe('LocationSearchResult', () => {
+
+	it('instantiates a LocationSearchResult', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+		const center = [1, 2], extent = [3, 4, 5, 6];
+
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
+
+		expect(locationSearchResult.getType()).toEqual(SearchResultTypes.LOCATION);
+		expect(locationSearchResult.label).toBe(label);
+		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(locationSearchResult.center).toEqual(center);
+		expect(locationSearchResult.extent).toEqual(extent);
+	});
+
+	it('provides default properties', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+
+		const locationSearchResult = new LocationSearchResult(label, labelFormatted);
+
+		expect(locationSearchResult.getType()).toEqual(SearchResultTypes.LOCATION);
+		expect(locationSearchResult.label).toBe(label);
+		expect(locationSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(locationSearchResult.center).toBeNull();
+		expect(locationSearchResult.extent).toBeNull();
+	});
+});
+
+describe('CadastralParcelSearchResult', () => {
+
+	it('instantiates a CadastralParcelSearchResult', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+		const center = [1, 2], extent = [3, 4, 5, 6];
+
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent);
+
+		expect(cadastralParcelSearchResult.getType()).toEqual(SearchResultTypes.CADASTRAL_PARCEL);
+		expect(cadastralParcelSearchResult.label).toBe(label);
+		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(cadastralParcelSearchResult.center).toEqual(center);
+		expect(cadastralParcelSearchResult.extent).toEqual(extent);
+	});
+
+	it('provides default properties', () => {
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+
+		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted);
+
+		expect(cadastralParcelSearchResult.getType()).toEqual(SearchResultTypes.CADASTRAL_PARCEL);
+		expect(cadastralParcelSearchResult.label).toBe(label);
+		expect(cadastralParcelSearchResult.labelFormatted).toBe(labelFormatted);
+		expect(cadastralParcelSearchResult.center).toBeNull();
+		expect(cadastralParcelSearchResult.extent).toBeNull();
+	});
+});
+
+describe('GeoResourceSearchResult', () => {
+
+	it('instantiates a GeoResourceSearchResult', () => {
+		const geoResourceId = 'geoResourceId';
+		const label = 'label';
+		const labelFormatted = 'labelFormatted';
+
+		const geoResourceSearchResult = new GeoResourceSearchResult(geoResourceId, label, labelFormatted);
+
+		expect(geoResourceSearchResult.getType()).toEqual(SearchResultTypes.GEORESOURCE);
+		expect(geoResourceSearchResult.geoResourceId).toBe(geoResourceId);
+		expect(geoResourceSearchResult.label).toBe(label);
+		expect(geoResourceSearchResult.labelFormatted).toBe(labelFormatted);
+	});
+});

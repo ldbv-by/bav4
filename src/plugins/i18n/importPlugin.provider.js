@@ -7,7 +7,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related plugin
 				importPlugin_url_failed: 'URL-Import failed',
 				importPlugin_data_failed: 'Importing data failed',
-				importPlugin_unsupported_sourceType: 'Source type could not be detected or is not supported'
+				importPlugin_unsupported_sourceType: 'Source type could not be detected or is not supported',
+				importPlugin_authenticationModal_title: 'Authentication required'
 			};
 
 		case 'de':
@@ -15,7 +16,8 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related plugin
 				importPlugin_url_failed: 'URL-Import schlug fehl',
 				importPlugin_data_failed: 'Import der Daten schlug fehl',
-				importPlugin_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt'
+				importPlugin_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt',
+				importPlugin_authenticationModal_title: 'Anmeldung erforderlich'
 			};
 
 		default:

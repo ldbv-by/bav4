@@ -98,7 +98,7 @@ export class CpResultItem extends MvuElement {
 						</span>
 					</span>
 					<span class="ba-list-item__text ">
-					${unsafeHTML(cpSearchResult.labelFormated)}
+					${unsafeHTML(cpSearchResult.labelFormatted)}
 					</span>
 				</li>
             `;

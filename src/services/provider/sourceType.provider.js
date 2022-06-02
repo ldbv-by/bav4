@@ -1,7 +1,10 @@
 
 
+import { html } from 'lit-html';
 import { $injector } from '../../injection';
+import { closeModal, openModal } from '../../store/modal/modal.action';
 import { isString } from '../../utils/checks';
+import { observe } from '../../utils/storeUtils';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
 import { MediaType } from '../HttpService';
 
@@ -24,39 +27,113 @@ import { MediaType } from '../HttpService';
  */
 
 /**
+ * Returns the default authentification panel bound to the corresponding url and required callback functions.
+ * @param {string} url
+ * @param {function} authenticateFunction
+ * @param {function} onCloseFunction
+ * @returns TemplateResult
+ */
+export const _createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
+	return html`<ba-auth-password-credential-panel .url=${url} .authenticate=${authenticateFunction} .onClose=${onCloseFunction}>`;
+};
+
+/**
  * Uses a BVV endpoint to detect the source type for a url.
  * @function
  * @param {string} url
+ * @param {function} createModalContent function that provides the credential ui as the modals content
  * @returns {SourceTypeResult}
  */
-export const bvvUrlSourceTypeProvider = async (url) => {
+export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
-	const result = await httpService.get(`${endpointUrl}?url=${encodeURIComponent(url)}`);
 
-	switch (result.status) {
-		case 200: {
-			const { name, version } = await result.json();
+	const post = async (url, credential = null) => {
+		const requestPayload = {
+			url: url,
+			username: credential?.username,
+			password: credential?.password
+		};
+		return await httpService.post(endpointUrl, JSON.stringify(requestPayload), MediaType.JSON);
+	};
 
-			const sourceTypeNameFor = name => {
-				switch (name) {
-					case 'KML':
-						return SourceTypeName.KML;
-					case 'GPX':
-						return SourceTypeName.GPX;
-					case 'GeoJSON':
-						return SourceTypeName.GEOJSON;
+	const mapResponseToSourceType = async (result, authenticated) => {
+		switch (result.status) {
+			case 200: {
+				const { name, version } = await result.json();
+
+				const sourceTypeNameFor = name => {
+					switch (name) {
+						case 'KML':
+							return SourceTypeName.KML;
+						case 'GPX':
+							return SourceTypeName.GPX;
+						case 'GeoJSON':
+							return SourceTypeName.GEOJSON;
+						case 'WMS':
+							return SourceTypeName.WMS;
+					}
+				};
+
+				return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+					new SourceType(sourceTypeNameFor(name), version));
+			}
+			case 204: {
+				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
+			}
+			case 401: {
+				return new SourceTypeResult(SourceTypeResultStatus.RESTRICTED);
+			}
+		}
+		return new SourceTypeResult(SourceTypeResultStatus.OTHER);
+	};
+
+	const response = await post(url);
+
+	// in that case we open the credential ui as modal window
+	if (response.status === 401) {
+
+		return new Promise((resolve) => {
+
+			const { StoreService: storeService, TranslationService: translationService }
+				= $injector.inject('StoreService', 'TranslationService');
+			const translate = (key) => translationService.translate(key);
+
+			const authenticate = async (credential, url) => {
+				const responseFetchedWithCredentials = await post(url, credential);
+				return responseFetchedWithCredentials.status === 401 ? false : responseFetchedWithCredentials;
+			};
+
+			// in case of aborting the authentification-process by closing the modal we call the onClose callback
+			const resolveBeforeClosing = ({ active }) => {
+				if (!active) {
+					onClose(null);
 				}
 			};
 
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(sourceTypeNameFor(name), version));
-		}
-		case 204: {
-			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
-		}
+			const unsubscribe = observe(storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
+
+			// onClose-callback is called with a verified credential object and the result object or simply null
+			const onClose = async (credential, latestResponse) => {
+				unsubscribe();
+				closeModal();
+				if (credential && latestResponse) {
+					// Todo: store credential
+					//resolve with the latest response
+					resolve(await mapResponseToSourceType(latestResponse, true));
+				}
+				else {
+					// resolve with the original response
+					resolve(await mapResponseToSourceType(response));
+				}
+			};
+
+			openModal(translate('importPlugin_authenticationModal_title'), createModalContent(url, authenticate, onClose));
+		});
 	}
-	return new SourceTypeResult(SourceTypeResultStatus.OTHER);
+
+	return await mapResponseToSourceType(response);
 };
 
 /**
