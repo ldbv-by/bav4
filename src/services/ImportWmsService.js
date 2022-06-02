@@ -41,7 +41,8 @@ export class ImportWmsService {
      * Imports WMS from an URL and returns an array of {@link WmsGeoResource}.
      * @param {string} url the url of a WMS
 	 * @param {ImportWmsOptions} [options] the importWmsOptions, if not or partially specified, the options will be filled with default values.
-     * @returns {Array<WmsGeoResource>} list of WMS GeoResources available at the specified URL
+     * @returns {Array<WmsGeoResource>} list of WMS GeoResources available at the specified URL;
+	 * @throws Will throw an error if the provider could not read the WMS
      */
 	async forUrl(url, options = {}) {
 		const { isAuthenticated, sourceType } = { ...this._newDefaultImportWmsOptions(), ...options };
