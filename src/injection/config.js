@@ -61,7 +61,7 @@ $injector
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('SourceTypeService', SourceTypeService)
 	.registerSingleton('SecurityService', new SecurityService())
-	.registerSingleton('BaaService', new BaaCredentialService())
+	.registerSingleton('BaaCredentialService', new BaaCredentialService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
