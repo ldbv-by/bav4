@@ -10,7 +10,7 @@ describe('BaaService', () => {
 
 	describe('addOrReplace', () => {
 
-		it('adds a credential object base64-encoded', async () => {
+		it('adds a credential object base64-encoded', () => {
 			const url = 'http://foo.bar/';
 			const credential = {
 				username: 'username',
@@ -25,7 +25,7 @@ describe('BaaService', () => {
 			expect(result).toBeTrue();
 		});
 
-		it('accepts only valid urls', async () => {
+		it('accepts only valid urls', () => {
 			const url = 'some';
 			const credential = {
 				username: 'username',
@@ -37,7 +37,7 @@ describe('BaaService', () => {
 			expect(result).toBeFalse();
 		});
 
-		it('accepts only a complete credential', async () => {
+		it('accepts only a complete credential', () => {
 			const url = 'http://foo.bar/';
 
 			expect(instanceUnderTest.addOrReplace(url)).toBeFalse();
@@ -45,7 +45,7 @@ describe('BaaService', () => {
 			expect(instanceUnderTest.addOrReplace(url, { password: 'password' })).toBeFalse();
 		});
 
-		it('normalizes the url parameter', async () => {
+		it('normalizes the url parameter', () => {
 			const url = 'http://foo.bar';
 			const urlNormalized = 'http://foo.bar/';
 			const credential = {
@@ -61,7 +61,7 @@ describe('BaaService', () => {
 
 	describe('addOrReplace', () => {
 
-		it('return a credential object decoded', async () => {
+		it('return a credential object decoded', () => {
 			const url = 'http://foo.bar/';
 			const credential = {
 				username: 'username',
@@ -75,7 +75,7 @@ describe('BaaService', () => {
 			expect(result).toEqual(credential);
 		});
 
-		it('accepts only valid urls', async () => {
+		it('accepts only valid urls', () => {
 			const url = 'http://foo.bar/';
 			const credential = {
 				username: 'username',
@@ -90,7 +90,7 @@ describe('BaaService', () => {
 		});
 
 
-		it('returns NULL when url is unknown', async () => {
+		it('returns NULL when url is unknown', () => {
 			const url = 'http://foo.bar/';
 			const credential = {
 				username: 'username',
@@ -104,7 +104,7 @@ describe('BaaService', () => {
 			expect(result).toBeNull();
 		});
 
-		it('normalizes the url parameter', async () => {
+		it('normalizes the url parameter', () => {
 			const url = 'http://foo.bar';
 			const urlNormalized = 'http://foo.bar/';
 			const credential = {
