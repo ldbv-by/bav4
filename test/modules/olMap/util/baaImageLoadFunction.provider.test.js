@@ -65,7 +65,6 @@ describe('imageLoadFunction.provider', () => {
 				})
 			}).and.resolveTo(new Response(null, { status: 404 }));
 			const errorSpy = spyOn(console, 'error');
-			//we have to bind the mocked vector source
 			const imageLoadFunction = getBvvBaaImageLoadFunction(credential);
 
 			await imageLoadFunction(fakeImageWrapper, src);
