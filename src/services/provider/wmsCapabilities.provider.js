@@ -28,7 +28,6 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 	const readCapabilities = (capabilities) => {
 		const {	MapService: mapService } = $injector.inject('MapService');
 		const defaultGeodeticSRID = mapService.defaultGeodeticSRID();
-
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
 			(layer) => toWmsGeoResource(layer, capabilities, isAuthenticated)
@@ -49,7 +48,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 	const result = await httpService.post(endpoint, data);
 	switch (result.status) {
 		case 200:
-			return readCapabilities(result.json());
+			return readCapabilities(result.json()) ?? [];
 		case 404:
 			return [];
 		default:

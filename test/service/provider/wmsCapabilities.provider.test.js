@@ -252,5 +252,20 @@ describe('bvvCapabilitiesProvider', () => {
 
 		expect(wmsGeoResources).toEqual([]);
 	});
+
+	it('returns empty list for capabitilies with invalid content', async () => {
+		const url = 'https://some.url/wms';
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
+		const responseMock = { ok: true, status: 200, json: () => {
+			return { ...Default_Capabilities_Result, layers: null };
+		} };
+		spyOn(mapService, 'defaultGeodeticSRID').and.returnValue(42);
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url }).and.resolveTo(responseMock);
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType);
+
+		expect(wmsGeoResources).toEqual([]);
+	});
 });
 
