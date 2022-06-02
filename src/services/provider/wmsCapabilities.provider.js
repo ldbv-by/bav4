@@ -1,10 +1,10 @@
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../domain/geoResources';
-import { SourceTypeResultStatus } from '../domain/sourceType';
+
 
 const Default_Credential = { username: null, password: null };
 
-export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
+export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
@@ -16,23 +16,24 @@ export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
 	};
 
-	const toWmsGeoResource = (layer, capabilities, isBaaAuthenticated = false) => {
+	const toWmsGeoResource = (layer, capabilities, isAuthenticated = false) => {
 		return new WmsGeoResource(
 			`${capabilities.onlineResourceGetMap}${layer.name}`,
 			layer.title,
 			capabilities.onlineResourceGetMap,
 			layer.name,
 			capabilities.formatsGetMap[0])
-			.setAuthenticationType(getAuthenticationType(isBaaAuthenticated))
+			.setAuthenticationType(getAuthenticationType(isAuthenticated))
 			.setExtraParams(getExtraParams(capabilities));
 	};
+
 	const readCapabilities = (capabilities) => {
 		const {	MapService: mapService } = $injector.inject('MapService');
 		const defaultGeodeticSRID = mapService.defaultGeodeticSRID();
 
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
-			(layer) => toWmsGeoResource(layer, capabilities, sourceTypeResult.status === SourceTypeResultStatus.BAA_AUTHENTICATED)
+			(layer) => toWmsGeoResource(layer, capabilities, isAuthenticated)
 		);
 	};
 
@@ -42,7 +43,7 @@ export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
 		return credential ? credential : Default_Credential;
 	};
 
-	const credential = sourceTypeResult.status === SourceTypeResultStatus.BAA_AUTHENTICATED ? getCredential(url) : Default_Credential;
+	const credential = isAuthenticated ? getCredential(url) : Default_Credential;
 
 	const result = await httpService.post(endpoint, { url: url, username: credential.username, password: credential.password });
 	switch (result.status) {

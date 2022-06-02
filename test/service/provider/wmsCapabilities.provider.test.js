@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/services/domain/geoResources';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName } from '../../../src/services/domain/sourceType';
 import { bvvCapabilitiesProvider } from '../../../src/services/provider/wmsCapabilities.provider';
 
 const Default_Capabilities_Result = {
@@ -95,8 +95,6 @@ const Default_Capabilities_Result = {
 	}] }
     ;
 
-const getSourceTypeResult = (status) => new SourceTypeResult(status, new SourceType(SourceTypeName.WMS, '42'));
-
 describe('bvvCapabilitiesProvider', () => {
 	const configService = {
 		getValueAsPath() { }
@@ -128,11 +126,11 @@ describe('bvvCapabilitiesProvider', () => {
 		const responseMock = { ok: true, status: 200, json: () => {
 			return { layers: [] };
 		} };
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.OK);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42');
 		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		const httpSpy = spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
 
-		bvvCapabilitiesProvider(url, sourceTypeResult);
+		bvvCapabilitiesProvider(url, sourceType, false);
 
 		expect(configSpy).toHaveBeenCalled();
 		expect(httpSpy).toHaveBeenCalled();
@@ -142,7 +140,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const responseMock = { ok: true, status: 200, json: () => {
 			return { layers: [] };
 		} };
@@ -151,7 +149,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const httpSpy = spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and .resolveTo(responseMock);
 		const baaCredentialSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
-		bvvCapabilitiesProvider(url, sourceTypeResult);
+		bvvCapabilitiesProvider(url, sourceType, true);
 
 		expect(configSpy).toHaveBeenCalled();
 		expect(httpSpy).toHaveBeenCalled();
@@ -162,7 +160,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const responseMock = { ok: true, status: 200, json: () => {
 			return Default_Capabilities_Result;
 		} };
@@ -170,7 +168,7 @@ describe('bvvCapabilitiesProvider', () => {
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and .resolveTo(responseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
-		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceTypeResult);
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType, true);
 
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.any(WmsGeoResource), jasmine.any(WmsGeoResource)]));
@@ -179,14 +177,14 @@ describe('bvvCapabilitiesProvider', () => {
 
 	it('maps geoResources from unrestricted layers ', async () => {
 		const url = 'https://some.url/wms';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.OK);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const responseMock = { ok: true, status: 200, json: () => {
 			return Default_Capabilities_Result;
 		} };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
 
-		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceTypeResult);
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType);
 
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.any(WmsGeoResource), jasmine.any(WmsGeoResource)]));
@@ -197,7 +195,7 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const responseMock = { ok: true, status: 200, json: () => {
 			return { ...Default_Capabilities_Result, maxHeight: 2000, maxWidth: 2000 };
 		} };
@@ -205,7 +203,7 @@ describe('bvvCapabilitiesProvider', () => {
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and .resolveTo(responseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
-		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceTypeResult);
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType, true);
 
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([
@@ -218,26 +216,26 @@ describe('bvvCapabilitiesProvider', () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const failedResponseMock = { ok: false, status: 420 };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and.resolveTo(failedResponseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
-		await expectAsync(bvvCapabilitiesProvider(url, sourceTypeResult)).toBeRejectedWithError('GeoResource for \'https://some.url/wms\' could not be loaded: Http-Status 420');
+		await expectAsync(bvvCapabilitiesProvider(url, sourceType, true)).toBeRejectedWithError('GeoResource for \'https://some.url/wms\' could not be loaded: Http-Status 420');
 	});
 
 	it('returns empty list for 404-response', async () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';
 		const password = 'bar';
-		const sourceTypeResult = getSourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED);
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
 		const emptyResponseMock = { ok: false, status: 404 };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and.resolveTo(emptyResponseMock);
 		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue({ username: username, password: password });
 
-		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceTypeResult);
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType, true);
 
 		expect(wmsGeoResources).toEqual([]);
 	});

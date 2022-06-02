@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
 import { TestUtils } from '../test-utils';
@@ -34,16 +34,18 @@ describe('ImportWmsService', () => {
 	});
 
 	describe('forUrl', () => {
-		const getSourceTypeResult = () => new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.WMS, '42'));
+		const getOptions = () => {
+			return { isAuthenticated: false, sourceType: new SourceType(SourceTypeName.WMS, '42') };
+		};
 
 		it('calls the provider', async () => {
 			const url = 'https://some.url/wms';
-			const sourceTypeResult = getSourceTypeResult();
+			const options = getOptions();
 			const resultMock = [];
-			const providerSpy = jasmine.createSpy('provider').withArgs(url, sourceTypeResult).and.resolveTo(resultMock);
+			const providerSpy = jasmine.createSpy('provider').withArgs(url, options.sourceType, options.isAuthenticated).and.resolveTo(resultMock);
 			const instanceUnderTest = setup(providerSpy);
 
-			const result = await instanceUnderTest.forUrl(url, sourceTypeResult);
+			const result = await instanceUnderTest.forUrl(url, options);
 
 			expect(result).toEqual([]);
 			expect(providerSpy).toHaveBeenCalled();
@@ -51,16 +53,29 @@ describe('ImportWmsService', () => {
 
 		it('registers the georesources', async () => {
 			const url = 'https://some.url/wms';
-			const sourceTypeResult = getSourceTypeResult();
+			const options = getOptions();
 			const resultMock = [{}, {}, {}];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup(async () => {
 				return resultMock;
 			});
-			const result = await instanceUnderTest.forUrl(url, sourceTypeResult);
+			const result = await instanceUnderTest.forUrl(url, options);
 
 			expect(result).toHaveSize(3);
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
+		});
+
+		it('use defaultOptions', async () => {
+			const url = 'https://some.url/wms';
+
+			const resultMock = [];
+			const providerSpy = jasmine.createSpy('provider').withArgs(url, jasmine.any(SourceType), false).and.resolveTo(resultMock);
+			const instanceUnderTest = setup(providerSpy);
+
+			const result = await instanceUnderTest.forUrl(url);
+
+			expect(result).toEqual([]);
+			expect(providerSpy).toHaveBeenCalled();
 		});
 	});
 
