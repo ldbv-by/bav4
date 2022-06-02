@@ -36,6 +36,7 @@ import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
 import { ImportWmsService } from '../services/ImportWmsService';
+import { BaaCredentialService } from '../services/BaaCredentialService';
 
 
 $injector
@@ -62,6 +63,7 @@ $injector
 	.register('ImportWmsService', ImportWmsService)
 	.register('SourceTypeService', SourceTypeService)
 	.registerSingleton('SecurityService', new SecurityService())
+	.registerSingleton('BaaCredentialService', new BaaCredentialService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
