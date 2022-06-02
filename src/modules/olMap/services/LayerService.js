@@ -17,7 +17,7 @@ export class LayerService {
 	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
 	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
-		this._baaSmageLoadFunctionProvider = baaImageLoadFunctionProvider;
+		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;
 	}
 
 	/**
@@ -60,7 +60,7 @@ export class LayerService {
 				switch (geoResource.authenticationType) {
 					case GeoResourceAuthenticationType.BAA: {
 						const credential = null; // Todo: implement call of BaaCredentialService#get here
-						imageWmsSource.setImageLoadFunction(this._baaSmageLoadFunctionProvider(credential));
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
 					}
 				}
 
