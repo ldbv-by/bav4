@@ -1,4 +1,5 @@
 import { $injector } from '../injection';
+
 import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 
 /**
@@ -20,11 +21,11 @@ export class ImportWmsService {
 	/**
      * Imports WMS from an URL and returns an array of {@link WmsGeoResource}.
      * @param {string} url the url of a WMS
-     * @param {Credential} [credential] the optional credential, depending on whether the WMS specified by the URL is restricted or not.
+     * @param {SourceTypeResult} sourceTypeResult the sourceType and status of the WMS.
      * @returns {Array<WmsGeoResource>} list of WMS GeoResources available at the specified URL
      */
-	async forUrl(url, credential = null) {
-		const geoResources = await this._wmsCapabilitiesProvider(url, credential);
+	async forUrl(url, sourceTypeResult) {
+		const geoResources = await this._wmsCapabilitiesProvider(url, sourceTypeResult);
 		geoResources.forEach(geoResource => this._geoResourceService.addOrReplace(geoResource));
 		return geoResources;
 	}

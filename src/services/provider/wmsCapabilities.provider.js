@@ -1,11 +1,10 @@
 import { $injector } from '../../injection';
 import { WmsGeoResource } from '../domain/geoResources';
+import { SourceTypeResultStatus } from '../domain/sourceType';
 
 const Default_Credential = { username: null, password: null };
 
-const isValidCredential = (credential) => (credential.username && credential.password) || (credential === Default_Credential) ;
-
-export const bvvCapabilitiesProvider = async (url, credential = Default_Credential) => {
+export const bvvCapabilitiesProvider = async (url, sourceTypeResult) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
@@ -33,9 +32,15 @@ export const bvvCapabilitiesProvider = async (url, credential = Default_Credenti
 		);
 	};
 
-	const requestCredential = isValidCredential(credential) ? credential : Default_Credential;
+	const getCredential = (url) => {
+		const {	BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
+		const credential = baaCredentialService.get(url);
+		return credential ? credential : Default_Credential;
+	};
 
-	const result = await httpService.post(endpoint, { url: url, username: requestCredential.username, password: requestCredential.password });
+	const credential = sourceTypeResult.status === SourceTypeResultStatus.BAA_AUTHENTICATED ? getCredential(url) : Default_Credential;
+
+	const result = await httpService.post(endpoint, { url: url, username: credential.username, password: credential.password });
 	switch (result.status) {
 		case 200:
 			return readCapabilities(result.json());
