@@ -2,8 +2,6 @@ import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../domain/geoResources';
 
 
-const Default_Credential = { username: null, password: null };
-
 export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
@@ -37,15 +35,18 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 		);
 	};
 
-	const getCredential = (url) => {
+	const getCredentialorFail = (url) => {
+		const failed = () => {
+			throw new Error(`Import of WMS failed. Credential for '${url}' not found.`);
+		};
+
 		const {	BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
 		const credential = baaCredentialService.get(url);
-		return credential ? credential : Default_Credential;
+		return credential ? { username: credential.username, password: credential.password } : failed();
 	};
 
-	const credential = isAuthenticated ? getCredential(url) : Default_Credential;
-
-	const result = await httpService.post(endpoint, { url: url, username: credential.username, password: credential.password });
+	const data = isAuthenticated ? { url: url, ...getCredentialorFail(url) } : { url: url };
+	const result = await httpService.post(endpoint, data);
 	switch (result.status) {
 		case 200:
 			return readCapabilities(result.json());

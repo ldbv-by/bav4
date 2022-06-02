@@ -128,7 +128,7 @@ describe('bvvCapabilitiesProvider', () => {
 		} };
 		const sourceType = new SourceType(SourceTypeName.WMS, '42');
 		const configSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
-		const httpSpy = spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
+		const httpSpy = spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url }).and .resolveTo(responseMock);
 
 		bvvCapabilitiesProvider(url, sourceType, false);
 
@@ -182,7 +182,7 @@ describe('bvvCapabilitiesProvider', () => {
 			return Default_Capabilities_Result;
 		} };
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
-		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: null, password: null }).and .resolveTo(responseMock);
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url }).and .resolveTo(responseMock);
 
 		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType);
 
@@ -210,6 +210,19 @@ describe('bvvCapabilitiesProvider', () => {
 			jasmine.objectContaining({ extraParams: { maxHeight: 2000, maxWidth: 2000 } }),
 			jasmine.objectContaining({ extraParams: { maxHeight: 2000, maxWidth: 2000 } })
 		]));
+	});
+
+	it('throws an error on missing credential', async () => {
+		const url = 'https://some.url/wms';
+		const username = 'foo';
+		const password = 'bar';
+		const sourceType = new SourceType(SourceTypeName.WMS, '42') ;
+		const failedResponseMock = { ok: false, status: 420 };
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', { url: url, username: username, password: password }).and.resolveTo(failedResponseMock);
+		spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
+
+		await expectAsync(bvvCapabilitiesProvider(url, sourceType, true)).toBeRejectedWithError('Import of WMS failed. Credential for \'https://some.url/wms\' not found.');
 	});
 
 	it('throws an error on failed request', async () => {
