@@ -16,8 +16,8 @@ describe('LayerService', () => {
 		byId: () => { }
 	};
 
-	const setup = (baaSmageLoadFunctionProvider) => {
-		return new LayerService(baaSmageLoadFunctionProvider);
+	const setup = (baaImageLoadFunctionProvider) => {
+		return new LayerService(baaImageLoadFunctionProvider);
 	};
 
 	beforeEach(() => {
@@ -32,14 +32,14 @@ describe('LayerService', () => {
 		it('initializes the service with default providers', () => {
 
 			const instanceUnderTest = new LayerService();
-			expect(instanceUnderTest._baaSmageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
+			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
 		});
 
 		it('initializes the service with custom provider', () => {
 
 			const getBvvBaaImageLoadFunctionCustomProvider = () => { };
 			const instanceUnderTest = setup(getBvvBaaImageLoadFunctionCustomProvider);
-			expect(instanceUnderTest._baaSmageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
+			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
 		});
 	});
 
