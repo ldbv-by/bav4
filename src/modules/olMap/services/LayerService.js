@@ -31,8 +31,9 @@ export class LayerService {
 
 		const {
 			GeoResourceService: georesourceService,
-			VectorLayerService: vectorLayerService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService');
+			VectorLayerService: vectorLayerService,
+			BaaCredentialService: baaCredentialService
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -59,7 +60,10 @@ export class LayerService {
 
 				switch (geoResource.authenticationType) {
 					case GeoResourceAuthenticationType.BAA: {
-						const credential = null; // Todo: implement call of BaaCredentialService#get here
+						const credential = baaCredentialService.get(geoResource.url);
+						if (!credential) {
+							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+						}
 						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
 					}
 				}
