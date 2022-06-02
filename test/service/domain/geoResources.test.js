@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable } from '../../../src/services/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType } from '../../../src/services/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 
@@ -14,6 +14,15 @@ describe('GeoResource', () => {
 			expect(GeoResourceTypes.VECTOR).toBeTruthy();
 			expect(GeoResourceTypes.VECTOR_TILES).toBeTruthy();
 			expect(GeoResourceTypes.AGGREGATE).toBeTruthy();
+		});
+	});
+
+	describe('GeoResourceAuthenticationType', () => {
+
+		it('provides an enum of all available types', () => {
+
+			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
+			expect(GeoResourceAuthenticationType.PLUS).toBe('plus');
 		});
 	});
 
@@ -127,6 +136,7 @@ describe('GeoResource', () => {
 				expect(georesource.maxZoom).toBeNull();
 				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
+				expect(georesource.authenticationType).toBeNull();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 			});
 
@@ -139,7 +149,8 @@ describe('GeoResource', () => {
 					.setMaxZoom(19)
 					.setHidden(true)
 					.setLabel('some label')
-					.setAttribution('some attribution');
+					.setAttribution('some attribution')
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 
 
 				expect(georesource.hidden).toBeTrue();
@@ -148,6 +159,7 @@ describe('GeoResource', () => {
 				expect(georesource.maxZoom).toBe(19);
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
+				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
 			});
 		});
 
