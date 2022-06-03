@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../../src/injection';
 import { GeoResourceResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultsPanel';
-import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
@@ -59,7 +59,7 @@ describe('GeoResourceResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
+			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -85,7 +85,7 @@ describe('GeoResourceResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with more than "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
+			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
 
 			const query = 'foo';
 			const initialState = {
@@ -120,7 +120,7 @@ describe('GeoResourceResultsPanel', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
 			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+				.and.resolveTo([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')]);
 			const element = await setup();
 
 			setQuery(query);
@@ -163,7 +163,7 @@ describe('GeoResourceResultsPanel', () => {
 					}
 				};
 				const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-					.and.resolveTo([new SearchResult('geoResource', 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE)]);
+					.and.resolveTo([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')]);
 
 				const element = await setup(initialState);
 
@@ -220,7 +220,7 @@ describe('GeoResourceResultsPanel', () => {
 	describe('show-all button', () => {
 
 		it('displays all results on click', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`geoResource${i}`, 'labelGeoResource', 'labelGeoResourceFormated', SearchResultTypes.GEORESOURCE));
+			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {

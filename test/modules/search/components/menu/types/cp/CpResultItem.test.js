@@ -1,6 +1,6 @@
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { CpResultItem } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultItem';
-import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { HighlightFeatureType } from '../../../../../../../src/store/highlight/highlight.action';
 import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
@@ -49,12 +49,12 @@ describe('CpResultItem', () => {
 		});
 
 		it('renders the view', async () => {
-			const data = new SearchResult('id', 'label', 'labelFormated', SearchResultTypes.CADASTRAL_PARCEL);
+			const data = new CadastralParcelSearchResult('label', 'labelFormatted');
 			const element = await setup();
 
 			element.data = data;
 
-			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormated');
+			expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 		});
 	});
 
@@ -64,8 +64,7 @@ describe('CpResultItem', () => {
 
 			it('sets a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const id = 'id';
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.CADASTRAL_PARCEL, coordinate);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup();
 				element.data = data;
 
@@ -83,8 +82,7 @@ describe('CpResultItem', () => {
 
 			it('removes a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
-				const id = 'id';
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.CADASTRAL_PARCEL, coordinate);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
 				const element = await setup({
 					highlight: {
 						features: [{ id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, data: coordinate }]
@@ -105,11 +103,10 @@ describe('CpResultItem', () => {
 			const previousCoordinate = [1, 2];
 			const coordinate = [21, 42];
 			const extent = [0, 1, 2, 3];
-			const id = 'id';
 
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
 
-				const data = new SearchResult(id, 'label', 'labelFormated', SearchResultTypes.CADASTRAL_PARCEL, coordinate, extent);
+				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent);
 				const element = await setup({
 					highlight: {
 						features: [
