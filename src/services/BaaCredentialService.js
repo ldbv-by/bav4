@@ -39,8 +39,8 @@ export class BaaCredentialService {
 
 	/**
 	 *
-	 * @param {string} raw
-	 * @returns
+	 * @param {string} urls as string
+	 * @returns normalized url as string
 	 */
 	_normalizeUrl(raw) {
 		const url = new URL(raw);
