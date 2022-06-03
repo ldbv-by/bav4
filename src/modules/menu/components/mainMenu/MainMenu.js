@@ -108,6 +108,8 @@ export class MainMenu extends MvuElement {
 
 		const getFullSizeClass = () => (tab === TabId.FEATUREINFO) ? 'is-full-size' : '';
 
+		const getFullSizeCssScrollBar = () => (tab === TabId.FEATUREINFO) ? '::-webkit-scrollbar {width: .8em ;} ::-webkit-scrollbar-thumb{background: var(--secondary-color);border-radius: 1.8em;}' : '';
+
 		const getOverlayClass = () => open ? 'is-open' : '';
 
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
@@ -149,7 +151,7 @@ export class MainMenu extends MvuElement {
 
 
 		return html`
-			<style>${css}</style>
+			<style>${css}${getFullSizeCssScrollBar()}</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
 					<button id='toggle' @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
