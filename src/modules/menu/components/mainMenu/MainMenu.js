@@ -1,5 +1,6 @@
 import { html, nothing } from 'lit-html';
 import css from './mainMenu.css';
+import scrollbarCss from './scrollbar.css';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
@@ -108,8 +109,6 @@ export class MainMenu extends MvuElement {
 
 		const getFullSizeClass = () => (tab === TabId.FEATUREINFO) ? 'is-full-size' : '';
 
-		const getFullSizeCssScrollBar = () => (tab === TabId.FEATUREINFO) ? '::-webkit-scrollbar {width: .8em ;} ::-webkit-scrollbar-thumb{background: var(--secondary-color);border-radius: 1.8em;}' : '';
-
 		const getOverlayClass = () => open ? 'is-open' : '';
 
 		const getPreloadClass = () => observeResponsiveParameter ? '' : 'prevent-transition';
@@ -128,6 +127,8 @@ export class MainMenu extends MvuElement {
 			const container = this.shadowRoot.getElementById('mainmenu');
 			return (container && container.style.width !== '') ? parseInt(container.style.width) : MainMenu.INITIAL_WIDTH_EM;
 		};
+
+		const getScrollbarStyle = () => (tab === TabId.FEATUREINFO) ? html`<style>${scrollbarCss}</style>` : nothing;
 
 		const getSlider = () => {
 
@@ -151,7 +152,8 @@ export class MainMenu extends MvuElement {
 
 
 		return html`
-			<style>${css}${getFullSizeCssScrollBar()}</style>
+			<style>${css}</style>
+			${getScrollbarStyle()}
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
 				<div id='mainmenu' class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">            
 					<button id='toggle' @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
