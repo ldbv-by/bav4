@@ -122,12 +122,13 @@ describe('BaaService', () => {
 
 	describe('_normalizeUrl', () => {
 
-		it('normailzes a URL', () => {
+		it('normalizes a URL', () => {
 
 			expect(instanceUnderTest._normalizeUrl('http://foo.bar/')).toBe('http://foo.bar/');
 			expect(instanceUnderTest._normalizeUrl('http://foo.bar')).toBe('http://foo.bar/');
 			expect(instanceUnderTest._normalizeUrl('http://foo.bar/?=')).toBe('http://foo.bar/');
-			expect(instanceUnderTest._normalizeUrl('http://foo.bar/?=foo=bar')).toBe('http://foo.bar/');
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar/?foo=bar')).toBe('http://foo.bar/');
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar/foo.cgi?%27;')).toBe('http://foo.bar/foo.cgi');
 		});
 	});
 });
