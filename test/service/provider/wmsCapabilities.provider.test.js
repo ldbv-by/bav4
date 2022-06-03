@@ -114,6 +114,7 @@ describe('bvvCapabilitiesProvider', () => {
 		get() { }
 	};
 
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
@@ -181,6 +182,28 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.any(WmsGeoResource), jasmine.any(WmsGeoResource)]));
 		expect(wmsGeoResources).toEqual(jasmine.arrayWithExactContents([jasmine.objectContaining({ authenticationType: GeoResourceAuthenticationType.BAA }), jasmine.objectContaining({ authenticationType: GeoResourceAuthenticationType.BAA })]));
+	});
+
+	it('maps wmsGeoResource with valid properties from layer ', async () => {
+		const url = 'https://some.url/wms';
+		const responseMock = {
+			ok: true, status: 200, json: () => {
+				return Default_Capabilities_Result;
+			}
+		};
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
+
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url);
+
+		expect(wmsGeoResources).toHaveSize(2);
+		expect(wmsGeoResources[0]).toEqual(jasmine.objectContaining({
+			id: jasmine.stringMatching(/^\d{12}$/),
+			label: 'Layer 0',
+			url: 'https://online.resource/GetMap?',
+			format: 'image/png'
+		}));
 	});
 
 	it('maps geoResources from unrestricted layers ', async () => {
