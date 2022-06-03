@@ -139,27 +139,27 @@ describe('SearchResultService', () => {
 		};
 
 		it('returns search results for KML source type', async () => {
-			checkGeoResourceSearchResultForVectorSource(SourceTypeName.KML);
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.KML);
 		});
 
 		it('returns search results for GPX source type', async () => {
-			checkGeoResourceSearchResultForVectorSource(SourceTypeName.GPX);
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.GPX);
 		});
 
 		it('returns search results for GeoJson source type', async () => {
-			checkGeoResourceSearchResultForVectorSource(SourceTypeName.GEOJSON);
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.GEOJSON);
 		});
 
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
-			checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
 		});
 
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
-			checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
 		});
 
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
-			checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
 		});
 
 		it('returns search results for Wms source type', async () => {
