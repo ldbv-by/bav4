@@ -199,7 +199,7 @@ describe('bvvCapabilitiesProvider', () => {
 
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources[0]).toEqual(jasmine.objectContaining({
-			id: jasmine.stringMatching(/^\d{12}$/),
+			id: jasmine.stringMatching(/^\d*$/),
 			label: 'Layer 0',
 			url: 'https://online.resource/GetMap?',
 			format: 'image/png'
