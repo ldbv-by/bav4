@@ -1,0 +1,11 @@
+NOOP_BOOLEAN=false
+NOOP_NUMBER=1.2345
+SOFTWARE_INFO=    
+DEFAULT_LANG=en
+BACKEND_URL=https://geotest.bvv.bayern.de/ba-backend-v4
+#BACKEND_URL=http://geotest.bvv.bayern.de:8075/ba-backend-v4
+#BACKEND_URL=http://localhost:8085/ba-backend
+PROXY_URL=http://geotest.bvv.bayern.de:8075/ba-backend-v4/proxy/vector
+SHORTENING_SERVICE_URL=https://v.bayern.de
+
+FIRST_STEPS_CONTENT_URL=https://www.geodaten.bayern.de/bayernatlas-info/brradl21/
