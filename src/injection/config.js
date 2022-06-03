@@ -35,6 +35,7 @@ import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
+import { ImportWmsService } from '../services/ImportWmsService';
 import { BaaCredentialService } from '../services/BaaCredentialService';
 
 
@@ -59,6 +60,7 @@ $injector
 	.register('FeatureInfoService', FeatureInfoService)
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
+	.register('ImportWmsService', ImportWmsService)
 	.register('SourceTypeService', SourceTypeService)
 	.registerSingleton('SecurityService', new SecurityService())
 	.registerSingleton('BaaCredentialService', new BaaCredentialService())
