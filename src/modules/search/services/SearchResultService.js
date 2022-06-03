@@ -56,7 +56,7 @@ export class SearchResultService {
 
 	async _getGeoResourcesForUrl(url) {
 		const { status, sourceType } = await this._sourceTypeService.forUrl(url);
-		if (status === SourceTypeResultStatus.OK) {
+		if (status === SourceTypeResultStatus.OK || status === SourceTypeResultStatus.BAA_AUTHENTICATED) {
 			switch (sourceType.name) {
 				case SourceTypeName.GEOJSON:
 				case SourceTypeName.GPX:
@@ -66,7 +66,7 @@ export class SearchResultService {
 					return geoResource ? [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))] : [];
 				}
 				case SourceTypeName.WMS: {
-					const geoResources = await this._importWmsService.forUrl(url, { sourceType: sourceType });
+					const geoResources = await this._importWmsService.forUrl(url, { sourceType: sourceType, isAuthenticated: status === SourceTypeResultStatus.BAA_AUTHENTICATED });
 					// in this case the geoResourceId is a random number provided by the importWmsService.
 					return geoResources.length
 						? geoResources.map(gr => new GeoResourceSearchResult(gr.id, gr.label))

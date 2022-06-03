@@ -168,7 +168,26 @@ describe('SearchResultService', () => {
 			const geoResourceId = 'id';
 			const label = 'label';
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType })
+			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, isAuthenticated: false })
+				.and.resolveTo([new WmsGeoResource('id', label, 'url', 'layers')]);
+			const instanceUnderTest = setup();
+
+			const results = await instanceUnderTest._getGeoResourcesForUrl(url);
+
+			expect(results).toHaveSize(1);
+			expect(results[0].geoResourceId).toBe(geoResourceId);
+			expect(results[0].label).toBe(label);
+			expect(results[0].labelFormatted).toBe(label);
+			expect(results[0] instanceof GeoResourceSearchResult).toBeTrue();
+		});
+
+		it('returns search results for baa authenticated Wms source type', async () => {
+			const sourceType = new SourceType(SourceTypeName.WMS);
+			const url = 'http://foo.bar';
+			const geoResourceId = 'id';
+			const label = 'label';
+			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, isAuthenticated: true })
 				.and.resolveTo([new WmsGeoResource('id', label, 'url', 'layers')]);
 			const instanceUnderTest = setup();
 
@@ -185,7 +204,7 @@ describe('SearchResultService', () => {
 			const sourceType = new SourceType(SourceTypeName.WMS);
 			const url = 'http://foo.bar';
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType })
+			spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, isAuthenticated: false })
 				.and.resolveTo([]);
 			const instanceUnderTest = setup();
 
