@@ -119,4 +119,15 @@ describe('BaaService', () => {
 			expect(result).toEqual(credential);
 		});
 	});
+
+	describe('_normalizeUrl', () => {
+
+		it('normailzes a URL', () => {
+
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar/')).toBe('http://foo.bar/');
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar')).toBe('http://foo.bar/');
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar/?=')).toBe('http://foo.bar/');
+			expect(instanceUnderTest._normalizeUrl('http://foo.bar/?=foo=bar')).toBe('http://foo.bar/');
+		});
+	});
 });
