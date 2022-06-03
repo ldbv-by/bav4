@@ -7,7 +7,7 @@ const No_Op = () => { };
  * @author thiloSchlemmer
  */
 export class KeyActionMapper {
-
+	// TODO: remove keyUp-Parts as suggested in https://www.mutuallyhuman.com/blog/keydown-is-the-only-keyboard-event-we-need/
 	constructor(document) {
 		this._document = document;
 		this._mapping = { keyup: {}, keydown: {} };
