@@ -151,6 +151,24 @@ describe('PasswordCredentialPanel', () => {
 			await TestUtils.timeout(authenticationDelay);
 			expect(element.shadowRoot.querySelectorAll('#authenticate-credential-button')).toHaveSize(1);
 		});
+
+		it('toogles the visibility of password-characters', async () => {
+			const element = await setup();
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+			const togglePassword = element.shadowRoot.querySelector('#toggle_password');
+
+			expect(inputPassword.getAttribute('type')).toBe('password');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).not.toHaveClass('eye');
+			togglePassword.click();
+			expect(inputPassword.getAttribute('type')).toBe('text');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eye');
+			togglePassword.click();
+			expect(inputPassword.getAttribute('type')).toBe('password');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).not.toHaveClass('eye');
+		});
 	});
 
 	describe('properties', () => {

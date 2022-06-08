@@ -21,7 +21,7 @@ const Update_Authenticating = 'update_authenticating';
  * @callback PasswordCredentialPanel~authenticateCallback
  * @param {Credential} credential the credential
  * @param {string} [url] the optional url
- * @returns {Object| null} whether or not the check with the id and the credential was succesfull an object is returned or null.
+ * @returns {Object| null} whether or not the check with the id and the credential was successful an object is returned or null.
  */
 
 /**
@@ -50,7 +50,7 @@ const Update_Authenticating = 'update_authenticating';
  *    return null;
  * };
  *
- * // in case of aborting the authentification-process by closing the modal,
+ * // in case of aborting the authentication-process by closing the modal,
  * // call the onCloseCallback directly
  * const resolveBeforeClosing = (modal) => {
  *       if (!modal.active) {
@@ -146,6 +146,17 @@ export class PasswordCredentialPanel extends MvuElement {
 			return url ? html`<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span><span class='value_url' title=${url} >${url}</span>` : nothing;
 		};
 
+		const togglePassword = () => {
+			const togglePassword = this.shadowRoot.querySelector('#toggle_password');
+			const password = this.shadowRoot.querySelector('#credential_password');
+
+			const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+			password.setAttribute('type', type);
+
+			// toggle the icon
+			togglePassword.classList.toggle('eye');
+		};
+
 		return html`
 		<style>${css}</style>
 		<div class='credential_container ${getOrientationClass()}'>
@@ -160,7 +171,7 @@ export class PasswordCredentialPanel extends MvuElement {
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
 					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword}>
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
-				</div>
+				</div><i class="eye-slash" id="toggle_password" @click=${togglePassword} ></i>
 			</div>
 			<div class='credential_footer'>
 			${this._getSubmitOrSpinner(model)}
