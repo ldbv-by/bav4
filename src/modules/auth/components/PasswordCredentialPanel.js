@@ -128,7 +128,7 @@ export class PasswordCredentialPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, url } = model;
+		const { portrait, url, credential } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
@@ -140,6 +140,14 @@ export class PasswordCredentialPanel extends MvuElement {
 
 		const onChangePassword = (e) => {
 			this.signal(Update_Password, e.target.value);
+		};
+
+		const onEnterAuthenticate = (e) => {
+			const no_op = () => { };
+			const authenticate = () => this._tryAuthenticate(credential, url);
+
+			const keyAction = e.key === 'Enter' ? authenticate : no_op;
+			keyAction();
 		};
 
 		const getHeaderContent = (url) => {
@@ -154,11 +162,11 @@ export class PasswordCredentialPanel extends MvuElement {
             </div>
             <div class='credential_form'>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
-					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} >
+					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword}>
+					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
 				</div>
 			</div>
@@ -174,17 +182,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const getSubmitButton = () => {
-			const authenticate = async () => {
-				this.signal(Update_Authenticating, true);
-				const result = await this._authenticate(credential, url);
-				if (result) {
-					this._onClose(credential, result);
-				}
-				else {
-					emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
-				}
-				this.signal(Update_Authenticating, false);
-			};
+			const authenticate = () => this._tryAuthenticate(credential, url);
 			return html`<ba-button id='authenticate-credential-button'
 			class="credential_footer__button" .label=${translate('auth_passwordCredentialPanel_submit')} .type=${'primary'}                
 			@click=${authenticate} ></ba-button>`;
@@ -199,6 +197,19 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 		return authenticating ? getSpinnerButton() : getSubmitButton();
 
+	}
+
+	async _tryAuthenticate(credential, url) {
+		const translate = (key) => this._translationService.translate(key);
+		this.signal(Update_Authenticating, true);
+		const result = await this._authenticate(credential, url);
+		if (result) {
+			this._onClose(credential, result);
+		}
+		else {
+			emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
+		}
+		this.signal(Update_Authenticating, false);
 	}
 
 	static get tag() {
