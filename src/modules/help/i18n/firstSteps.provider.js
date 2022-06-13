@@ -18,7 +18,7 @@ export const firstStepsProvide = (lang) => {
 				help_firstSteps_button: 'Erste Schritte',
 				help_firstSteps_notification_header: 'Erste Schritte',
 				help_firstSteps_notification_text: 'Sie brauchen Hilfe bei der Erfassung Ihrer Flurstücksdaten?',
-				help_firstSteps_notification_close: 'Nein Danke',
+				help_firstSteps_notification_close: 'Nein danke',
 				help_firstSteps_notification_first_steps: 'Erste Schritte',
 				help_firstSteps_link: 'https://bayernatlas.de'
 			};
