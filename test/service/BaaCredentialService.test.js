@@ -89,7 +89,6 @@ describe('BaaService', () => {
 			expect(result).toBeNull();
 		});
 
-
 		it('returns NULL when url is unknown', () => {
 			const instanceUnderTest = new BaaCredentialService();
 			const url = 'http://foo.bar/';
