@@ -22,7 +22,7 @@ describe('i18n for coordinate select', () => {
 		expect(map.help_firstSteps_button).toBe('Erste Schritte');
 		expect(map.help_firstSteps_notification_header).toBe('Erste Schritte');
 		expect(map.help_firstSteps_notification_text).toBe('Sie brauchen Hilfe bei der Erfassung Ihrer Flurstücksdaten?');
-		expect(map.help_firstSteps_notification_close).toBe('Nein Danke');
+		expect(map.help_firstSteps_notification_close).toBe('Nein danke');
 		expect(map.help_firstSteps_notification_first_steps).toBe('Erste Schritte');
 		expect(map.help_firstSteps_link).toBe('https://bayernatlas.de');
 	});
