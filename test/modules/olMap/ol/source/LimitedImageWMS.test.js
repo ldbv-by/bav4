@@ -1,6 +1,7 @@
 import { getHeight, getWidth } from 'ol/extent';
-import { LimitedImageWMS } from '../../../../../src/modules/olMap/ol/source/LimitedImageWMS';
+import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../../../../../src/modules/olMap/ol/source/LimitedImageWMS';
 import { get as getProjection } from 'ol/proj.js';
+import { ImageWMS } from 'ol/source';
 
 describe('LimitedImageWMS', () => {
 
@@ -107,5 +108,110 @@ describe('LimitedImageWMS', () => {
 				expect(bboxAspectRatio).toBeCloseTo(imageAspectRatio, 1e-12);
 			});
 		});
+	});
+});
+
+describe('getPrerenderFunctionForImageLayer', () => {
+
+	it('draws on the canvas when canvas size > maxSize', async () => {
+
+		const source = new LimitedImageWMS({ maxSize: [2000, 2000] });
+		const target = {
+			getSource: () => source
+		};
+		const canvas = {
+			width: 4000,
+			height: 4000
+		};
+		const saveSpy = jasmine.createSpy();
+		const beginPathSpy = jasmine.createSpy();
+		const moveToSpy = jasmine.createSpy();
+		const lineToSpy = jasmine.createSpy();
+		const closePathSpy = jasmine.createSpy();
+		const fillSpy = jasmine.createSpy();
+		const restoreSpy = jasmine.createSpy();
+		const ctx = {
+			canvas: canvas,
+			save: saveSpy,
+			beginPath: beginPathSpy,
+			moveTo: moveToSpy,
+			lineTo: lineToSpy,
+			closePath: closePathSpy,
+			fill: fillSpy,
+			restore: restoreSpy,
+			fillStyle: null
+		};
+		const event = {
+			target: target,
+			context: ctx
+		};
+		const prerenderFunction = getPrerenderFunctionForImageLayer();
+
+		prerenderFunction(event);
+
+		expect(saveSpy).toHaveBeenCalledTimes(1);
+		expect(beginPathSpy).toHaveBeenCalledTimes(1);
+		expect(moveToSpy.calls.allArgs()).toEqual([[0, 0], [1000, 1000]]);
+		expect(lineToSpy.calls.allArgs()).toEqual([[4000, 0], [4000, 4000], [0, 4000], [0, 0], [1000, 3000], [3000, 3000], [3000, 1000], [1000, 1000]]);
+		expect(closePathSpy).toHaveBeenCalledTimes(2);
+		expect(fillSpy).toHaveBeenCalledTimes(1);
+		expect(ctx.fillStyle).toBe('rgba(0, 5, 25, 0.2)');
+		expect(restoreSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('does NOT draws on the canvas when canvas size <= maxSize', async () => {
+
+		const source = new LimitedImageWMS({ maxSize: [2000, 2000] });
+		const target = {
+			getSource: () => source
+		};
+		const canvas = {
+			width: 2000,
+			height: 2000
+		};
+		const saveSpy = jasmine.createSpy();
+		const restoreSpy = jasmine.createSpy();
+		const ctx = {
+			canvas: canvas,
+			save: saveSpy
+		};
+		const event = {
+			target: target,
+			context: ctx
+		};
+		const prerenderFunction = getPrerenderFunctionForImageLayer();
+
+		prerenderFunction(event);
+
+		expect(saveSpy).not.toHaveBeenCalled();
+		expect(restoreSpy).not.toHaveBeenCalled();
+	});
+
+	it('does NOT draws on the canvas when source is not an LimitedImageWMS instance', async () => {
+
+		const source = new ImageWMS();
+		const target = {
+			getSource: () => source
+		};
+		const canvas = {
+			width: 4000,
+			height: 4000
+		};
+		const saveSpy = jasmine.createSpy();
+		const restoreSpy = jasmine.createSpy();
+		const ctx = {
+			canvas: canvas,
+			save: saveSpy
+		};
+		const event = {
+			target: target,
+			context: ctx
+		};
+		const prerenderFunction = getPrerenderFunctionForImageLayer();
+
+		prerenderFunction(event);
+
+		expect(saveSpy).not.toHaveBeenCalled();
+		expect(restoreSpy).not.toHaveBeenCalled();
 	});
 });
