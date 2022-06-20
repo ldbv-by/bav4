@@ -162,7 +162,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('#authenticate-credential-button')).toHaveSize(1);
 		});
 
-		it('toogles the visibility of password-characters', async () => {
+		it('toggles the visibility of password-characters', async () => {
 			const element = await setup();
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
 			const togglePassword = element.shadowRoot.querySelector('#toggle_password');
