@@ -31,11 +31,13 @@ export class SearchResultService {
 		this._georesourceResultProvider = georesourceResultProvider;
 		this._cadastralParcelResultProvider = cadastralParcelResultProvider;
 
-		const { EnvironmentService: environmentService, SourceTypeService: sourceTypeService, ImportVectorDataService: importVectorDataService }
-			= $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService');
+		const { EnvironmentService: environmentService, SourceTypeService: sourceTypeService,
+			ImportVectorDataService: importVectorDataService, ImportWmsService: importWmsService }
+			= $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
 		this._environmentService = environmentService;
 		this._sourceTypeService = sourceTypeService;
 		this._importVectorDataService = importVectorDataService;
+		this._importWmsService = importWmsService;
 	}
 
 	_mapSourceTypeToLabel(sourceType) {
@@ -52,6 +54,29 @@ export class SearchResultService {
 		return null;
 	}
 
+	async _getGeoResourcesForUrl(url) {
+		const { status, sourceType } = await this._sourceTypeService.forUrl(url);
+		if (status === SourceTypeResultStatus.OK || status === SourceTypeResultStatus.BAA_AUTHENTICATED) {
+			switch (sourceType.name) {
+				case SourceTypeName.GEOJSON:
+				case SourceTypeName.GPX:
+				case SourceTypeName.KML: {
+					const geoResource = this._importVectorDataService.forUrl(url, { sourceType: sourceType });
+					// in this case the geoResourceId is a random number provided by the importVectorDataService.
+					return geoResource ? [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))] : [];
+				}
+				case SourceTypeName.WMS: {
+					const geoResources = await this._importWmsService.forUrl(url, { sourceType: sourceType, isAuthenticated: status === SourceTypeResultStatus.BAA_AUTHENTICATED });
+					// in this case the geoResourceId is a random number provided by the importWmsService.
+					return geoResources.length
+						? geoResources.map(gr => new GeoResourceSearchResult(gr.id, gr.label))
+						: [];
+				}
+			}
+		}
+		return [];
+	}
+
 	/**
 	 * Provides search results for geoResources.
 	 * Possible errors of the configured provider will be passed.
@@ -65,14 +90,7 @@ export class SearchResultService {
 			return this._newFallbackGeoResourceSearchResults();
 		}
 		else if (isHttpUrl(term)) {
-			const { status, sourceType } = await this._sourceTypeService.forUrl(term);
-			if (status === SourceTypeResultStatus.OK) {
-				const geoResource = this._importVectorDataService.forUrl(term, { sourceType: sourceType });
-				if (geoResource) {
-					// in this case the geoResourceId is a random number provided by the importVectorDataService.
-					return [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))];
-				}
-			}
+			return this._getGeoResourcesForUrl(term);
 		}
 		else {
 			const { status, sourceType } = this._sourceTypeService.forData(term);

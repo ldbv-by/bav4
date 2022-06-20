@@ -46,7 +46,8 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
  */
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService }
+	= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
 
 	const post = async (url, credential = null) => {
@@ -119,8 +120,9 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				unsubscribe();
 				closeModal();
 				if (credential && latestResponse) {
-					// Todo: store credential
-					//resolve with the latest response
+					// store credential
+					baaCredentialService.addOrReplace(url, credential);
+					// resolve with the latest response
 					resolve(await mapResponseToSourceType(latestResponse, true));
 				}
 				else {
