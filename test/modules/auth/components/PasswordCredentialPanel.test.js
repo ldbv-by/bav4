@@ -75,7 +75,7 @@ describe('PasswordCredentialPanel', () => {
 		});
 
 		it('receives entered username and password', async () => {
-			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo(true);
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -93,7 +93,7 @@ describe('PasswordCredentialPanel', () => {
 		});
 
 		it('calls authenticate-callback after Enter-key is pressed on input-element', async () => {
-			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo(null);
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -133,7 +133,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.signal('update_username', 'someUser');
 			element.signal('update_password', '42');
-			const authenticateSpy = spyOn(element, '_authenticate').and.callThrough();
+			const authenticateSpy = spyOn(element, '_authenticate').and.resolveTo(null);
 			const onCloseSpy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
@@ -163,7 +163,7 @@ describe('PasswordCredentialPanel', () => {
 
 
 		it('emits notification on failed credential-authentication', async () => {
-			const authenticateCallback = jasmine.createSpy().and.resolveTo(false);
+			const authenticateCallback = jasmine.createSpy().and.resolveTo(null);
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;

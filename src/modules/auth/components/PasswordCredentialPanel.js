@@ -164,8 +164,9 @@ export class PasswordCredentialPanel extends MvuElement {
 
 		const onEnterAuthenticate = (e) => {
 			const no_op = () => { };
-			const authenticate = () => this._tryAuthenticate(credential, url);
-
+			const authenticate = () => {
+				this._tryAuthenticate(credential, url);
+			};
 			const keyAction = e.key === 'Enter' ? authenticate : no_op;
 			keyAction();
 		};
@@ -190,11 +191,7 @@ export class PasswordCredentialPanel extends MvuElement {
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-<<<<<<< HEAD
-					<input required="required"  type=${showPassword ? 'text' : 'password'} id="credential_password"  @input=${onChangePassword}>
-=======
-					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
->>>>>>> master
+					<input required="required"   type=${showPassword ? 'text' : 'password'} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
 				</div><i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
 			</div>
