@@ -37,13 +37,33 @@ describe('PasswordCredentialPanel', () => {
 			expect(model).toEqual({
 				url: null,
 				credential: null,
-				authenticating: false
+				authenticating: false,
+				showPassword: false
 			});
 		});
 
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new PasswordCredentialPanel();
+
+			expect(instanceUnderTest._authenticate).toBeDefined();
+			expect(instanceUnderTest._authenticate()).toBeFalse();
+
+			expect(instanceUnderTest._onClose).toBeDefined();
+		});
 	});
 
 	describe('when panel is rendered', () => {
+
+		describe('the first time', () => {
+			it('displays the username-input with focus', async () => {
+				const element = await setup();
+				const inputUsername = element.shadowRoot.querySelector('#credential_username');
+
+				expect(element.shadowRoot.activeElement).toBe(inputUsername);
+			});
+		});
 
 		it('displays the optional url', async () => {
 			const element = await setup();
@@ -54,7 +74,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(element.shadowRoot.querySelector('.value_url').title).toBe('foo');
 		});
 
-		it('hides optinal but empty url', async () => {
+		it('hides optimal but empty url', async () => {
 			const element = await setup();
 
 
@@ -65,7 +85,7 @@ describe('PasswordCredentialPanel', () => {
 		});
 
 		it('receives entered username and password', async () => {
-			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo(true);
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -83,7 +103,7 @@ describe('PasswordCredentialPanel', () => {
 		});
 
 		it('calls authenticate-callback after Enter-key is pressed on input-element', async () => {
-			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.resolveTo(null);
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -123,7 +143,7 @@ describe('PasswordCredentialPanel', () => {
 			element.url = 'someUrl';
 			element.signal('update_username', 'someUser');
 			element.signal('update_password', '42');
-			const authenticateSpy = spyOn(element, '_authenticate').and.callThrough();
+			const authenticateSpy = spyOn(element, '_authenticate').and.resolveTo(null);
 			const onCloseSpy = spyOn(element, '_onClose').and.callThrough();
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 
@@ -133,7 +153,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(onCloseSpy).not.toHaveBeenCalled();
 		});
 
-		it('resolves credential on successfull credential-check', async () => {
+		it('resolves credential on successful credential-check', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'someUser', password: '42' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const onCloseCallback = () => { };
 			const element = await setup();
@@ -153,7 +173,7 @@ describe('PasswordCredentialPanel', () => {
 
 
 		it('emits notification on failed credential-authentication', async () => {
-			const authenticateCallback = jasmine.createSpy().and.resolveTo(false);
+			const authenticateCallback = jasmine.createSpy().and.resolveTo(null);
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -186,6 +206,24 @@ describe('PasswordCredentialPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('#authenticating-button')).toHaveSize(1);
 			await TestUtils.timeout(authenticationDelay);
 			expect(element.shadowRoot.querySelectorAll('#authenticate-credential-button')).toHaveSize(1);
+		});
+
+		it('toggles the visibility of password-characters', async () => {
+			const element = await setup();
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+			const togglePassword = element.shadowRoot.querySelector('#toggle_password');
+
+			expect(inputPassword.getAttribute('type')).toBe('password');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).not.toHaveClass('eye');
+			togglePassword.click();
+			expect(inputPassword.getAttribute('type')).toBe('text');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).toHaveClass('eye');
+			togglePassword.click();
+			expect(inputPassword.getAttribute('type')).toBe('password');
+			expect(togglePassword).toHaveClass('eye-slash');
+			expect(togglePassword).not.toHaveClass('eye');
 		});
 	});
 
