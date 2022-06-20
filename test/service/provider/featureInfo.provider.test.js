@@ -167,7 +167,6 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
 
-
 			try {
 				await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 				throw new Error('Promise should not be resolved');
