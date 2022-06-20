@@ -7,7 +7,6 @@ const No_Op = () => { };
  * @author thiloSchlemmer
  */
 export class KeyActionMapper {
-	// TODO: remove keyUp-Parts as suggested in https://www.mutuallyhuman.com/blog/keydown-is-the-only-keyboard-event-we-need/
 	constructor(document) {
 		this._document = document;
 		this._mapping = { keyup: {}, keydown: {} };
@@ -27,6 +26,8 @@ export class KeyActionMapper {
 
 	/**
 	 * Maps a action to a specific keyup event, where a key with the defined key-value is pressed.
+	 * The {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keyup_event|keyup-event} is fired only once per
+	 * keystroke and is best suited for actions, which does not need any cancellation or should only be started once per keystroke.
 	 * @param {string} key the key-value representing a key on the keyboard
 	 * @param {function} action the action which is called on keyup
 	 */
@@ -37,6 +38,9 @@ export class KeyActionMapper {
 
 	/**
 	 * Maps a action to a specific keydown event, where a key with the defined key-value is pressed.
+	 * The {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/keydown_event|keydown-event} is fired multiple times, while the
+	 * key is pressed down by the user. It is best suited for actions, which can be canceled by any condition and should not cause
+	 * time-consuming calculations.
 	 * @param {string} key the key-value representing a key on the keyboard
 	 * @param {function} action the action which is called on keydown
 	 */
