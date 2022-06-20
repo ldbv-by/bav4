@@ -40,7 +40,6 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 	if (geoResource) {
 
-
 		const determineId = geoResource => {
 			if (geoResource.importedByUser) {
 
@@ -64,7 +63,6 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			srid: 3857,
 			resolution: mapResolution
 		}, ...determineCredential(geoResource) };
-
 
 		const url = `${configService.getValueAsPath('BACKEND_URL')}getFeature`;
 
