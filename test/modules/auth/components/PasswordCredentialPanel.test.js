@@ -107,7 +107,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(onCloseSpy).not.toHaveBeenCalled();
 		});
 
-		it('resolves credential on successfull credential-check', async () => {
+		it('resolves credential on successful credential-check', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'someUser', password: '42' }, 'someUrl').and.resolveTo({ foo: 'bar' });
 			const onCloseCallback = () => { };
 			const element = await setup();
