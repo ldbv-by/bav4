@@ -1,5 +1,7 @@
 import { $injector } from '../../injection';
+import { createUniqueId } from '../../utils/numberUtils';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../domain/geoResources';
+import { MediaType } from '../HttpService';
 
 
 export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
@@ -16,10 +18,10 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 
 	const toWmsGeoResource = (layer, capabilities, isAuthenticated = false) => {
 		return new WmsGeoResource(
-			`${capabilities.onlineResourceGetMap}${layer.name}`,
+			createUniqueId().toString(),
 			layer.title,
-			capabilities.onlineResourceGetMap,
-			layer.name,
+			`${capabilities.onlineResourceGetMap}`,
+			`${layer.name}`,
 			capabilities.formatsGetMap[0])
 			.setAuthenticationType(getAuthenticationType(isAuthenticated))
 			.setExtraParams(getExtraParams(capabilities));
@@ -27,7 +29,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 
 	const readCapabilities = (capabilities) => {
 		const {	MapService: mapService } = $injector.inject('MapService');
-		const defaultGeodeticSRID = mapService.defaultGeodeticSRID();
+		const defaultGeodeticSRID = mapService.getDefaultGeodeticSrid();
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
 			(layer) => toWmsGeoResource(layer, capabilities, isAuthenticated)
@@ -45,10 +47,10 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 	};
 
 	const data = isAuthenticated ? { url: url, ...getCredentialOrFail(url) } : { url: url };
-	const result = await httpService.post(endpoint, data);
+	const result = await httpService.post(endpoint, JSON.stringify(data), MediaType.JSON);
 	switch (result.status) {
 		case 200:
-			return readCapabilities(result.json()) ?? [];
+			return readCapabilities(await result.json()) ?? [];
 		case 404:
 			return [];
 		default:

@@ -2,35 +2,34 @@ import { $injector } from '../../src/injection';
 import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
-import { TestUtils } from '../test-utils';
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {
 		addOrReplace() { }
 	};
-	const setup = (provider = bvvCapabilitiesProvider) => {
-		TestUtils.setupStoreAndDi();
-		$injector.registerSingleton('GeoResourceService', geoResourceService);
-		return new ImportWmsService(provider);
+	const urlService = {
+		originAndPathname() { }
 	};
+
+	beforeAll(() => {
+		$injector
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('UrlService', urlService);
+	});
 
 	describe('init', () => {
 
-		it('initializes the service with custom provider', async () => {
+		it('initializes the service with custom provider', () => {
 			const customProvider = async () => { };
-			const instanceUnderTest = setup(customProvider);
+			const instanceUnderTest = new ImportWmsService(customProvider);
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toBeDefined();
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toEqual(customProvider);
 		});
 
-		it('initializes the service with default provider', async () => {
-			TestUtils.setupStoreAndDi();
-			$injector.registerSingleton('GeoResourceService', geoResourceService);
+		it('initializes the service with default provider', () => {
 			const instanceUnderTest = new ImportWmsService();
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toEqual(bvvCapabilitiesProvider);
 		});
-
-
 	});
 
 	describe('forUrl', () => {
@@ -43,7 +42,8 @@ describe('ImportWmsService', () => {
 			const options = getOptions();
 			const resultMock = [];
 			const providerSpy = jasmine.createSpy('provider').withArgs(url, options.sourceType, options.isAuthenticated).and.resolveTo(resultMock);
-			const instanceUnderTest = setup(providerSpy);
+			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
+			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url, options);
 
@@ -56,13 +56,15 @@ describe('ImportWmsService', () => {
 			const options = getOptions();
 			const resultMock = [{}, {}, {}];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
-			const instanceUnderTest = setup(async () => {
+			const urlServiceSpy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
+			const instanceUnderTest = new ImportWmsService(async () => {
 				return resultMock;
 			});
 			const result = await instanceUnderTest.forUrl(url, options);
 
 			expect(result).toHaveSize(3);
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
+			expect(urlServiceSpy).toHaveBeenCalled();
 		});
 
 		it('use defaultOptions', async () => {
@@ -70,7 +72,8 @@ describe('ImportWmsService', () => {
 
 			const resultMock = [];
 			const providerSpy = jasmine.createSpy('provider').withArgs(url, jasmine.any(SourceType), false).and.resolveTo(resultMock);
-			const instanceUnderTest = setup(providerSpy);
+			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
+			const instanceUnderTest = new ImportWmsService(providerSpy);
 
 			const result = await instanceUnderTest.forUrl(url);
 
@@ -78,5 +81,4 @@ describe('ImportWmsService', () => {
 			expect(providerSpy).toHaveBeenCalled();
 		});
 	});
-
 });

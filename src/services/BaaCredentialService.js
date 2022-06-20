@@ -1,12 +1,16 @@
+import { $injector } from '../injection';
 import { isHttpUrl } from '../utils/checks';
 
 /**
  * @class
+ * @author taulinger
  */
 export class BaaCredentialService {
 
 	constructor() {
 		this._credentials = new Map();
+		const { UrlService: urlService } = $injector.inject('UrlService');
+		this._urlService = urlService;
 	}
 
 	/**
@@ -17,7 +21,7 @@ export class BaaCredentialService {
 	 */
 	get(url) {
 		if (isHttpUrl(url)) {
-			const credential = this._credentials.get(new URL(url).toString());
+			const credential = this._credentials.get(this._urlService.originAndPathname(url));
 			return credential ? JSON.parse(atob(credential)) : null;
 		}
 		return null;
@@ -31,10 +35,9 @@ export class BaaCredentialService {
 	 */
 	addOrReplace(url, credential) {
 		if (isHttpUrl(url) && credential?.username && credential?.password) {
-			this._credentials.set(new URL(url).toString(), btoa(JSON.stringify({ ...credential })));
+			this._credentials.set(this._urlService.originAndPathname(url), btoa(JSON.stringify({ ...credential })));
 			return true;
 		}
 		return false;
 	}
-
 }

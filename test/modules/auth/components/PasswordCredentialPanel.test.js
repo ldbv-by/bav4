@@ -92,6 +92,42 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalled();
 		});
 
+		it('calls authenticate-callback after Enter-key is pressed on input-element', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+
+			element.signal('update_username', 'foo');
+			element.signal('update_password', 'bar');
+
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+			inputPassword.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+
+			expect(authenticateCallback).toHaveBeenCalledTimes(2);
+		});
+
+		it('does NOT calls authenticate-callback after other than Enter-key is pressed on input-element', async () => {
+			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'foo', password: 'bar' }, 'someUrl').and.callThrough();
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+
+			element.signal('update_username', 'foo');
+			element.signal('update_password', 'bar');
+
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'f' }));
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Backspace' }));
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'F11' }));
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Delete' }));
+			inputUsername.dispatchEvent(new KeyboardEvent('keydown', { key: 'Some' }));
+
+			expect(authenticateCallback).not.toHaveBeenCalled();
+		});
+
 		it('does NOT resolves credential with default authenticate-callback', async () => {
 			const element = await setup();
 			element.url = 'someUrl';
