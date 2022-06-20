@@ -42,6 +42,16 @@ describe('PasswordCredentialPanel', () => {
 			});
 		});
 
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new PasswordCredentialPanel();
+
+			expect(instanceUnderTest._authenticate).toBeDefined();
+			expect(instanceUnderTest._authenticate()).toBeFalse();
+
+			expect(instanceUnderTest._onClose).toBeDefined();
+		});
 	});
 
 	describe('when panel is rendered', () => {
