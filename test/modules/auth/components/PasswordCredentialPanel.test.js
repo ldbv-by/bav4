@@ -37,13 +37,23 @@ describe('PasswordCredentialPanel', () => {
 			expect(model).toEqual({
 				url: null,
 				credential: null,
-				authenticating: false
+				authenticating: false,
+				showPassword: false
 			});
 		});
 
 	});
 
 	describe('when panel is rendered', () => {
+
+		describe('the first time', () => {
+			it('displays the username-input with focus', async () => {
+				const element = await setup();
+				const inputUsername = element.shadowRoot.querySelector('#credential_username');
+
+				expect(element.shadowRoot.activeElement).toBe(inputUsername);
+			});
+		});
 
 		it('displays the optional url', async () => {
 			const element = await setup();
@@ -54,7 +64,7 @@ describe('PasswordCredentialPanel', () => {
 			expect(element.shadowRoot.querySelector('.value_url').title).toBe('foo');
 		});
 
-		it('hides optinal but empty url', async () => {
+		it('hides optimal but empty url', async () => {
 			const element = await setup();
 
 

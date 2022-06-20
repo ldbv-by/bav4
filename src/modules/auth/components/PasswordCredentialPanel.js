@@ -1,4 +1,5 @@
 import { html, nothing } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { MvuElement } from '../../MvuElement';
@@ -7,6 +8,7 @@ import css from './passwordcredentialpanel.css';
 const Update_URL = 'update_url';
 const Update_Username = 'update_username';
 const Update_Password = 'update_password';
+const Update_Show_Password = 'update_show_password';
 const Update_IsPortrait_Value = 'update_isportrait_value';
 const Update_Authenticating = 'update_authenticating';
 
@@ -95,7 +97,8 @@ export class PasswordCredentialPanel extends MvuElement {
 		super({
 			url: null,
 			credential: null,
-			authenticating: false
+			authenticating: false,
+			showPassword: false
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -108,6 +111,17 @@ export class PasswordCredentialPanel extends MvuElement {
 		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
 	}
 
+	/**
+	* @override
+	*/
+	onAfterRender(firsttime) {
+		if (firsttime) {
+			const credential_username = this.shadowRoot.getElementById('credential_username');
+			credential_username.focus();
+		}
+	}
+
+
 	update(type, data, model) {
 
 		switch (type) {
@@ -117,6 +131,8 @@ export class PasswordCredentialPanel extends MvuElement {
 				return { ...model, credential: { ...model.credential, username: data } };
 			case Update_Password:
 				return { ...model, credential: { ...model.credential, password: data } };
+			case Update_Show_Password:
+				return { ...model, showPassword: data };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
 			case Update_Authenticating:
@@ -128,10 +144,14 @@ export class PasswordCredentialPanel extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, url } = model;
+		const { portrait, url, showPassword } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const getOrientationClass = () => {
 			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
+		const passwordClasses = {
+			eye: showPassword
 		};
 
 		const onChangeUserName = (e) => {
@@ -147,14 +167,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const togglePassword = () => {
-			const togglePassword = this.shadowRoot.querySelector('#toggle_password');
-			const password = this.shadowRoot.querySelector('#credential_password');
-
-			const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-			password.setAttribute('type', type);
-
-			// toggle the icon
-			togglePassword.classList.toggle('eye');
+			this.signal(Update_Show_Password, !showPassword);
 		};
 
 		return html`
@@ -169,9 +182,9 @@ export class PasswordCredentialPanel extends MvuElement {
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input required="required"  type="password" id="credential_password"  @input=${onChangePassword}>
+					<input required="required"  type=${showPassword ? 'text' : 'password'} id="credential_password"  @input=${onChangePassword}>
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
-				</div><i class="eye-slash" id="toggle_password" @click=${togglePassword} ></i>
+				</div><i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
 			</div>
 			<div class='credential_footer'>
 			${this._getSubmitOrSpinner(model)}
