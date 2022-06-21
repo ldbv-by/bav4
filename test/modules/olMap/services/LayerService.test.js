@@ -94,9 +94,10 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmsOlLayer.getMaxZoom()).toBePositiveInfinity();
-				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
-				expect(wmsSource.constructor.name).toBe('ImageWMS');
+				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
 				expect(wmsSource.ratio_).toBe(1);
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
@@ -119,9 +120,10 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.getOpacity()).toBe(.5);
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
-				const wmsSource = wmsOlLayer.getSource();
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
-				expect(wmsSource.constructor.name).toBe('ImageWMS');
+				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
+				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');

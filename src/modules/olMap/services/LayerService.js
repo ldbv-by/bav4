@@ -1,10 +1,10 @@
 import { $injector } from '../../../injection';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../services/domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
-import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
+import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -46,7 +46,7 @@ export class LayerService {
 
 			case GeoResourceTypes.WMS: {
 
-				const imageWmsSource = new ImageWMS({
+				const imageWmsSource = new LimitedImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
 					ratio: 1,
@@ -68,13 +68,16 @@ export class LayerService {
 					}
 				}
 
-				return new ImageLayer({
+				const layer = new ImageLayer({
 					id: id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
+				const onPrerenderFunctionKey = layer.on('prerender', getPrerenderFunctionForImageLayer());
+				layer.set('onPrerenderFunctionKey', onPrerenderFunctionKey);
+				return layer;
 			}
 
 			case GeoResourceTypes.WMTS: {
