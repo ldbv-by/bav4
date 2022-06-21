@@ -55,7 +55,7 @@ export class MapService {
 	}
 
 	/**
-	 * Default SRID for geodatic tasks.
+	 * Default SRID for geodetic tasks.
 	 * @returns {number} srid
 	 */
 	getDefaultGeodeticSrid() {

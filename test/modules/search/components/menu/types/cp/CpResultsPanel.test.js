@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../../src/injection';
 import { CpResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/cp/CpResultsPanel';
-import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { CadastralParcelSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
@@ -57,7 +57,7 @@ describe('CpResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
+			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -84,7 +84,7 @@ describe('CpResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with more than "maxShow" results', async () => {
-			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
+			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -115,7 +115,7 @@ describe('CpResultsPanel', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
 			const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
-				.and.resolveTo([new SearchResult('cp', 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL)]);
+				.and.resolveTo([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
 
 			const element = await setup();
 			setQuery(query);
@@ -156,7 +156,7 @@ describe('CpResultsPanel', () => {
 					}
 				};
 				const getCpSearchResultProvider = spyOn(searchResultServiceMock, 'cadastralParcelsByTerm')
-					.and.resolveTo([new SearchResult('cp', 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL)]);
+					.and.resolveTo([new CadastralParcelSearchResult('labelCp', 'labelCpFormated')]);
 
 				const element = await setup(initialState);
 
@@ -213,7 +213,7 @@ describe('CpResultsPanel', () => {
 	describe('show-all button', () => {
 
 		it('displays all results on click', async () => {
-			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`cp${i}`, 'labelCp', 'labelCpFormated', SearchResultTypes.CADASTRAL_PARCEL));
+			const results = Array.from({ length: CpResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new CadastralParcelSearchResult(`labelCp${i}`, `labelCpFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {

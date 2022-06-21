@@ -142,6 +142,7 @@ export class Header extends MvuElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
