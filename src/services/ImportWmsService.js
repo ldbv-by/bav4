@@ -21,7 +21,9 @@ export class ImportWmsService {
 	 * @param {wmsCapabilitiesProvider} [wmsCapabilitiesProvider = bvvCapabilitiesProvider]
 	 */
 	constructor(wmsCapabilitiesProvider = bvvCapabilitiesProvider) {
-		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
+		const { GeoResourceService: geoResourceService, UrlService: urlService } = $injector.inject('GeoResourceService', 'UrlService');
+		this._geoResourceService = geoResourceService;
+		this._urlService = urlService;
 		this._geoResourceService = geoResourceService;
 		this._wmsCapabilitiesProvider = wmsCapabilitiesProvider;
 	}
@@ -46,7 +48,7 @@ export class ImportWmsService {
      */
 	async forUrl(url, options = {}) {
 		const { isAuthenticated, sourceType } = { ...this._newDefaultImportWmsOptions(), ...options };
-		const geoResources = await this._wmsCapabilitiesProvider(url, sourceType, isAuthenticated);
+		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), sourceType, isAuthenticated);
 		geoResources.forEach(geoResource => this._geoResourceService.addOrReplace(geoResource));
 		return geoResources;
 	}

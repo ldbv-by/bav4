@@ -29,6 +29,10 @@ describe('sourceType provider', () => {
 			post: async () => { }
 		};
 
+		const baaCredentialService = {
+			addOrReplace: () => {}
+		};
+
 		let store;
 		beforeEach(() => {
 
@@ -44,6 +48,7 @@ describe('sourceType provider', () => {
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
+				.registerSingleton('BaaCredentialService', baaCredentialService)
 				.registerSingleton('TranslationService', { translate: (key) => key });
 		});
 
@@ -215,6 +220,7 @@ describe('sourceType provider', () => {
 					const backendUrl = 'https://backend.url/';
 					const url = 'http://foo.bar';
 					const version = 'version';
+					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'addOrReplace');
 					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 					spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', jasmine.anything(), MediaType.JSON).and
 						.callFake((_, payloadAsJson) => {
@@ -231,6 +237,7 @@ describe('sourceType provider', () => {
 					expect(sourceType.name).toBe(SourceTypeName.GPX);
 					expect(sourceType.version).toBe(version);
 					expect(status).toEqual(SourceTypeResultStatus.BAA_AUTHENTICATED);
+					expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url, mockCredential);
 				});
 			});
 
