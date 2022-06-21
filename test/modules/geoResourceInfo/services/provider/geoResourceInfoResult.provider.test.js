@@ -11,15 +11,26 @@ describe('GeoResourceInfo provider', () => {
 		get: async () => { }
 	};
 
+	const geoResourceService = {
+		byId: () => {}
+	};
+
+	const baaCredentialService = {
+		get: () => {}
+	};
+
 	beforeAll(() => {
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('GeoResourceService', geoResourceService)
+			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
 	it('should load GeoResourceInfo', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -39,6 +50,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should return null when backend provides empty payload', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -56,6 +68,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should reject when backend request cannot be fulfilled', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
