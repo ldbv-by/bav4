@@ -1,4 +1,5 @@
 import { $injector } from '../../src/injection';
+import { WmsGeoResource } from '../../src/services/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
@@ -54,7 +55,7 @@ describe('ImportWmsService', () => {
 		it('registers the georesources', async () => {
 			const url = 'https://some.url/wms';
 			const options = getOptions();
-			const resultMock = [{}, {}, {}];
+			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const urlServiceSpy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(async () => {
@@ -63,6 +64,9 @@ describe('ImportWmsService', () => {
 			const result = await instanceUnderTest.forUrl(url, options);
 
 			expect(result).toHaveSize(3);
+			result.forEach(gr => {
+				expect(gr.importedByUser).toBeTrue();
+			});
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
 			expect(urlServiceSpy).toHaveBeenCalled();
 		});
