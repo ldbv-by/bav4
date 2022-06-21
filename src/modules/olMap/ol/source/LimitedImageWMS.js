@@ -56,3 +56,48 @@ export class LimitedImageWMS extends ImageWMS {
 	}
 }
 
+
+/**
+ * Returns a function drawing a rectangular to visualize the max. size of the current image layer.
+ */
+export const getPrerenderFunctionForImageLayer = () => {
+	return 	(evt) => {
+
+		const ctx = evt.context;
+		if (evt.target.getSource() instanceof LimitedImageWMS) {
+			const width = ctx.canvas.width;
+			const height = ctx.canvas.height;
+			const maxWmsWidth = evt.target.getSource().getMaxSize()[0];
+			const maxWmsHeight = evt.target.getSource().getMaxSize()[1];
+			if (width > maxWmsWidth || height > maxWmsHeight) {
+				const minx = width / 2 - maxWmsWidth / 2;
+				const maxx = width / 2 + maxWmsWidth / 2;
+				const miny = height / 2 - maxWmsHeight / 2;
+				const maxy = height / 2 + maxWmsHeight / 2;
+				ctx.save();
+				ctx.beginPath();
+				// outside polygon, must be clockwise
+				ctx.moveTo(0, 0);
+				ctx.lineTo(width, 0);
+				ctx.lineTo(width, height);
+				ctx.lineTo(0, height);
+				ctx.lineTo(0, 0);
+				ctx.closePath();
+
+				// inner polygon, must be counter-clockwise
+				ctx.moveTo(minx, miny);
+				ctx.lineTo(minx, maxy);
+				ctx.lineTo(maxx, maxy);
+				ctx.lineTo(maxx, miny);
+				ctx.lineTo(minx, miny);
+				ctx.closePath();
+
+				ctx.fillStyle = 'rgba(0, 5, 25, 0.2)';
+				ctx.fill();
+
+				ctx.restore();
+			}
+		}
+	};
+};
+
