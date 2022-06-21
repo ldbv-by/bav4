@@ -94,6 +94,18 @@ describe('GeoResourceInfo provider', () => {
 		expect(result.content).toBe('<b>hello</b>');
 	});
 
+	it('should throw an error a external BAA-authenticated georesource with missing credential', async () => {
+
+		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, label: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
+		spyOn(baaCredentialService, 'get').withArgs('http://some.url/').and.returnValue(null);
+		const backendUrl = 'https://backend.url/';
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+
+		await expectAsync(loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788')).toBeRejectedWithError('No credential available for GeoResource with id \'914c9263-5312-453e-b3eb-5104db1bf788\' and url \'http://some.url/\'');
+
+	});
+
 	it('should return null when backend provides empty payload', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
