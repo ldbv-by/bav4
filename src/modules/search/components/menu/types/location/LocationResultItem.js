@@ -98,7 +98,7 @@ export class LocationResultItem extends MvuElement {
 						</span>
 					</span>
 					<span class="ba-list-item__text ">
-					${unsafeHTML(locationSearchResult.labelFormated)}
+					${unsafeHTML(locationSearchResult.labelFormatted)}
 					</span>
 				</li>
             `;

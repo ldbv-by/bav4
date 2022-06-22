@@ -6,7 +6,8 @@ import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { closeModal } from '../../../../store/modal/modal.action';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 
@@ -55,6 +56,62 @@ export class ShowCase extends BaElement {
 				zoom: 11,
 				center: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
+		};
+
+		const onClickAuthenticate = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedUrl = 'https://my.restricted.url/for/wms';
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, url) => {
+				await sleep(3000);
+				if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			const unsubscribe = observe(this._storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel .url=${restrictedUrl} .authenticate=${authenticate} .onClose=${onClose}>`;
+			};
+
+			// using the panel as content for the modal
+			openModal('Connect to restricted WMS...', getCredentialPanel());
 		};
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
@@ -262,19 +319,23 @@ export class ShowCase extends BaElement {
 				<input type='range'></input>
 			</div>
 
-
-
-
 			<h3>Toggle-Button</h3>
 			<div class='example row'>		
 				<div>Toggle me!</div><ba-toggle id='toggle' .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 			</div>
 			
 			<h3>Loading hint</h3>
-			<div class='example'>									
-			<ba-spinner></ba-spinner>				
+			<div class='example row'>									
+			<ba-spinner></ba-spinner>
+			<ba-spinner .label=${'Waiting'}></ba-spinner>				
 			</div>
 
+			<h3>Credentials</h3>
+			<div class='example row'>
+			<ba-button id='button0' .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
+			<div>Hint: Demo Credentials are foo/bar</div>
+			</div>
+				
 			</div>	
 		</div > `;
 	}

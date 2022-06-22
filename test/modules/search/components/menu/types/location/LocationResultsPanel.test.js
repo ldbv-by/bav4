@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../../../src/injection';
 import { LocationResultsPanel } from '../../../../../../../src/modules/search/components/menu/types/location/LocationResultsPanel';
-import { SearchResult, SearchResultTypes } from '../../../../../../../src/modules/search/services/domain/searchResult';
+import { LocationSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { setQuery } from '../../../../../../../src/store/search/search.action';
 import { searchReducer } from '../../../../../../../src/store/search/search.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../../src/utils/markup';
@@ -58,7 +58,7 @@ describe('LocationResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -87,7 +87,7 @@ describe('LocationResultsPanel', () => {
 
 
 		it('renders the view based on a current query with more than "maxShow" results', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {
@@ -119,7 +119,7 @@ describe('LocationResultsPanel', () => {
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
 			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+				.and.resolveTo([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
 
 			const element = await setup();
 			setQuery(query);
@@ -160,7 +160,7 @@ describe('LocationResultsPanel', () => {
 					}
 				};
 				const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-					.and.resolveTo([new SearchResult('location', 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION)]);
+					.and.resolveTo([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
 
 				const element = await setup(initialState);
 
@@ -217,7 +217,7 @@ describe('LocationResultsPanel', () => {
 	describe('show-all button', () => {
 
 		it('displays all results on click', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new SearchResult(`location${i}`, 'labelLocation', 'labelLocationFormated', SearchResultTypes.LOCATION));
+			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
 			const query = 'foo';
 			const initialState = {
 				search: {

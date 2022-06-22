@@ -18,6 +18,10 @@ describe('FeatureInfo provider', () => {
 		getDefaultGeodeticSrid: () => 25832
 	};
 
+	const securityServiceMock = {
+		sanitizeHtml: (h) => h
+	};
+
 	const coordinateServiceMock = {
 		stringify() { },
 		toLonLat() { }
@@ -30,7 +34,8 @@ describe('FeatureInfo provider', () => {
 
 		formatArea: (area) => {
 			return area + ' m²';
-		} };
+		}
+	};
 
 
 
@@ -38,6 +43,7 @@ describe('FeatureInfo provider', () => {
 		TestUtils.setupStoreAndDi();
 		$injector
 			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('SecurityService', securityServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
@@ -52,7 +58,7 @@ describe('FeatureInfo provider', () => {
 			it('returns null', () => {
 
 				const layer = createDefaultLayer('foo');
-				const feature = new Feature({ });
+				const feature = new Feature({});
 
 				const featureInfo = getBvvFeatureInfo(feature, layer);
 
@@ -112,6 +118,34 @@ describe('FeatureInfo provider', () => {
 				expect(target.innerText).toBe('desc');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 
+			});
+
+			it('should sanitize description content', () => {
+				const target = document.createElement('div');
+				const layerProperties = { ...createDefaultLayerProperties(), label: 'foo' };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('description', 'description');
+				const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('description').and.callThrough();
+				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				expect(sanitizeSpy).toHaveBeenCalled();
+			});
+
+			it('should sanitize name content', () => {
+				const target = document.createElement('div');
+				const layerProperties = { ...createDefaultLayerProperties(), label: 'foo' };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('name', 'name');
+				const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('name').and.callThrough();
+				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				expect(sanitizeSpy).toHaveBeenCalled();
 			});
 		});
 	});

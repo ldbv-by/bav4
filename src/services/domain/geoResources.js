@@ -30,6 +30,16 @@ export const GeoResourceTypes = Object.freeze({
 });
 
 /**
+ * Enum of all supported authentication types.
+ * @enum
+ */
+export const GeoResourceAuthenticationType = Object.freeze({
+	BAA: 'baa',
+	PLUS: 'plus'
+});
+
+
+/**
 * Parent class of all GeoResource types.
 * Obligatory fields are set in the constructor.
 * Optional fields have a setter method which returns the GeoResource instance for chaining.
@@ -53,6 +63,8 @@ export class GeoResource {
 		this._maxZoom = null;
 		this._attribution = null;
 		this._attributionProvider = getDefaultAttribution;
+		this._authenticationType = null;
+		this._importedByUser = false;
 	}
 
 	/**
@@ -92,6 +104,14 @@ export class GeoResource {
 
 	get attribution() {
 		return this._attribution;
+	}
+
+	get authenticationType() {
+		return this._authenticationType;
+	}
+
+	get importedByUser() {
+		return this._importedByUser;
 	}
 
 	setLabel(label) {
@@ -136,6 +156,16 @@ export class GeoResource {
 	 */
 	setAttributionProvider(provider) {
 		this._attributionProvider = provider;
+		return this;
+	}
+
+	setAuthenticationType(type) {
+		this._authenticationType = type;
+		return this;
+	}
+
+	setImportedByUser(userImported) {
+		this._importedByUser = userImported;
 		return this;
 	}
 

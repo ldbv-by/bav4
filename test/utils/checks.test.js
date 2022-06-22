@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { isCoordinate, isHttpUrl, isNumber, isObject, isPromise, isString, isTemplateResult } from '../../src/utils/checks';
+import { isCoordinate, isHttpUrl, isNumber, isObject, isPromise, isString, isTemplateResult, isTemplateResultOf } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
 
@@ -79,6 +79,18 @@ describe('provides checks for commons types', () => {
 		expect(isTemplateResult(5)).toBeFalse();
 
 		expect(isTemplateResult(html`foo`)).toBeTrue();
+	});
+
+	it('checks for a lit-html TemplateResult', () => {
+		expect(isTemplateResultOf()).toBeFalse();
+		expect(isTemplateResultOf(null)).toBeFalse();
+		expect(isTemplateResultOf([21])).toBeFalse();
+		expect(isTemplateResultOf({})).toBeFalse();
+		expect(isTemplateResultOf('some')).toBeFalse();
+		expect(isTemplateResultOf(5)).toBeFalse();
+
+		expect(isTemplateResultOf(html`<foo>`, 'foo')).toBeTrue();
+		expect(isTemplateResultOf(html`<foo>`, 'bar')).toBeFalse();
 	});
 
 	it('checks for a URL', () => {

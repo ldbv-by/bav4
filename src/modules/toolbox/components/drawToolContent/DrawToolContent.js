@@ -7,7 +7,8 @@ import css from './drawToolContent.css';
 import { StyleSizeTypes } from '../../../../services/domain/styles';
 import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { AssetSourceType, getAssetSource, hexToRgb } from '../../../olMap/utils/olStyleUtils';
+import { hexToRgb } from '../../../../utils/colors';
+import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -35,11 +36,12 @@ export class DrawToolContent extends AbstractToolContent {
 			tools: null
 		});
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
+		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService, SecurityService: securityService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService', 'SecurityService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
 		this._urlService = urlService;
+		this._securityService = securityService;
 		this.signal(Update_Tools, this._buildTools());
 	}
 
@@ -259,7 +261,7 @@ export class DrawToolContent extends AbstractToolContent {
 				setStyle(changedStyle);
 			};
 			const onChangeText = (e) => {
-				const changedStyle = { ...style, text: e.target.value };
+				const changedStyle = { ...style, text: this._securityService.sanitizeHtml(e.target.value) };
 				setStyle(changedStyle);
 			};
 
@@ -270,7 +272,7 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeDescription = (e) => {
-				setDescription(e.target.value);
+				setDescription(this._securityService.sanitizeHtml(e.target.value));
 			};
 
 			const onChangeSymbol = (e) => {

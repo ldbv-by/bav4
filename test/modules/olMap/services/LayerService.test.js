@@ -1,9 +1,10 @@
 import { $injector } from '../../../../src/injection';
-import { AggregateGeoResource, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
 import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
+import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
 
 
 describe('LayerService', () => {
@@ -14,17 +15,36 @@ describe('LayerService', () => {
 	const georesourceService = {
 		byId: () => { }
 	};
+	const baaCredentialService = {
+		get: () => { }
+	};
 
-	let instanceUnderTest;
-
+	const setup = (baaImageLoadFunctionProvider) => {
+		return new LayerService(baaImageLoadFunctionProvider);
+	};
 
 	beforeEach(() => {
 		TestUtils.setupStoreAndDi({});
 		$injector
 			.registerSingleton('VectorLayerService', vectorLayerService)
-			.registerSingleton('GeoResourceService', georesourceService);
+			.registerSingleton('GeoResourceService', georesourceService)
+			.registerSingleton('BaaCredentialService', baaCredentialService);
+	});
 
-		instanceUnderTest = new LayerService();
+	describe('constructor', () => {
+
+		it('initializes the service with default providers', () => {
+
+			const instanceUnderTest = new LayerService();
+			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
+		});
+
+		it('initializes the service with custom provider', () => {
+
+			const getBvvBaaImageLoadFunctionCustomProvider = () => { };
+			const instanceUnderTest = setup(getBvvBaaImageLoadFunctionCustomProvider);
+			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
+		});
 	});
 
 	describe('toOlLayer', () => {
@@ -32,6 +52,7 @@ describe('LayerService', () => {
 		describe('GeoResourceFuture', () => {
 
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmsGeoresource = new GeoResourceFuture('geoResourceId', () => { });
 
@@ -48,6 +69,7 @@ describe('LayerService', () => {
 		describe('VectorGeoresource', () => {
 
 			it('calls the VectorLayerService', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
@@ -63,6 +85,7 @@ describe('LayerService', () => {
 		describe('WmsGeoresource', () => {
 
 			it('converts a WmsGeoresource to a olLayer', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', 'https://some.url', 'layer', 'image/png');
 
@@ -71,9 +94,10 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmsOlLayer.getMaxZoom()).toBePositiveInfinity();
-				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
-				expect(wmsSource.constructor.name).toBe('ImageWMS');
+				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
 				expect(wmsSource.ratio_).toBe(1);
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
@@ -82,6 +106,7 @@ describe('LayerService', () => {
 			});
 
 			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
@@ -95,20 +120,63 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.getOpacity()).toBe(.5);
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
-				const wmsSource = wmsOlLayer.getSource();
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
-				expect(wmsSource.constructor.name).toBe('ImageWMS');
+				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
+				const wmsSource = wmsOlLayer.getSource();
+				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
 				expect(wmsSource.getParams().LAYERS).toBe('layer');
 				expect(wmsSource.getParams().FORMAT).toBe('image/png');
 				expect(wmsSource.getParams().VERSION).toBe('1.1.1');
 				expect(wmsSource.getParams().STYLES).toBe('some');
 			});
+
+			describe('BAA Authentication', () => {
+
+				it('handles authentication type BAA', () => {
+					const url = 'https://some.url';
+					const credential = { username: 'u', password: 'p' };
+					const mockImageLoadFunction = () => { };
+					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
+
+					const instanceUnderTest = setup(providerSpy);
+					const id = 'id';
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', url, 'layer', 'image/png')
+						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+
+					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
+
+					expect(providerSpy).toHaveBeenCalledWith(credential);
+					expect(wmsOlLayer.getSource().getImageLoadFunction()).toBe(mockImageLoadFunction);
+				});
+
+				it('logs an error statement when credential is not available', () => {
+					const url = 'https://some.url';
+					const credential = null;
+					const mockImageLoadFunction = () => { };
+					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
+					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
+
+					const instanceUnderTest = setup(providerSpy);
+					const id = 'id';
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', url, 'layer', 'image/png')
+						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+
+
+					expect(providerSpy).not.toHaveBeenCalledWith(credential);
+					expect(() => {
+						instanceUnderTest.toOlLayer(id, wmsGeoresource);
+					})
+						.toThrowError(`No credential available for GeoResource with id '${wmsGeoresource.id}' and url '${wmsGeoresource.url}'`);
+				});
+			});
 		});
 
 		describe('WmtsGeoresource', () => {
 
 			it('converts a WmtsGeoresource to a olLayer', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
@@ -125,6 +193,7 @@ describe('LayerService', () => {
 			});
 
 			it('converts a WmtsGeoresource containing optional properties to a olLayer', () => {
+				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(.5)
@@ -146,6 +215,7 @@ describe('LayerService', () => {
 		});
 
 		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
+			const instanceUnderTest = setup();
 			const id = 'id';
 			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'Label', 'https://some.url', 'layer', 'image/png');
@@ -171,6 +241,7 @@ describe('LayerService', () => {
 		});
 
 		it('converts a AggregateGeoresource containing optional properties to a olLayer(Group)', () => {
+			const instanceUnderTest = setup();
 			const id = 'id';
 			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'Label', 'https://some.url', 'layer', 'image/png');
@@ -200,6 +271,7 @@ describe('LayerService', () => {
 		});
 
 		it('throws an error when georesource type is not supported', () => {
+			const instanceUnderTest = setup();
 			const id = 'id';
 			expect(() => {
 				instanceUnderTest.toOlLayer(id, {

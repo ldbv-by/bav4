@@ -38,6 +38,13 @@ describe('DrawToolContent', () => {
 		}
 	};
 
+	const securityServiceMock = {
+		sanitizeHtml(html) {
+			return html;
+		}
+	};
+
+
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => { } };
 
 	const drawDefaultState = {
@@ -83,7 +90,8 @@ describe('DrawToolContent', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
-			.registerSingleton('UrlService', urlServiceMock);
+			.registerSingleton('UrlService', urlServiceMock)
+			.registerSingleton('SecurityService', securityServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
 
@@ -449,10 +457,11 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.scale).toBe(newScale);
 		});
 
-		it('sets the style, after text changes in text-input', async () => {
+		it('sets the style with sanitized text, after text changes in text-input', async () => {
 			const style = { ...StyleOptionTemplate, text: 'foo' };
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, style });
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
 
 			setType('text');
 			const textInput = element.shadowRoot.querySelector('#style_text');
@@ -463,6 +472,7 @@ describe('DrawToolContent', () => {
 			textInput.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.style.text).toBe(newText);
+			expect(sanitizeSpy).toHaveBeenCalled();
 		});
 
 		it('resets the style, after empty text-input lost focus', async () => {
@@ -525,10 +535,11 @@ describe('DrawToolContent', () => {
 			expect(store.getState().draw.style.symbolSrc).toBeTruthy();
 		});
 
-		it('sets the description, after description changes in textarea', async () => {
+		it('sets the sanitized description, after description changes in textarea', async () => {
 
 			const newText = 'bar';
 			const element = await setup({ ...drawDefaultState, description: 'Foo', style: StyleOptionTemplate });
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').withArgs('bar').and.callThrough();
 
 			setType('text');
 			const descriptionTextArea = element.shadowRoot.querySelector('textarea');
@@ -539,6 +550,7 @@ describe('DrawToolContent', () => {
 			descriptionTextArea.dispatchEvent(new Event('input'));
 
 			expect(store.getState().draw.description).toBe(newText);
+			expect(sanitizeSpy).toHaveBeenCalled();
 		});
 
 		it('sets the style-inputs for symbol-tool', async () => {
