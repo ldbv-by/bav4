@@ -26,9 +26,8 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 			const defaultPayload = {
 				url: geoResource.url,
-				layers: [geoResource.label]
+				layers: [...geoResource.layers.split(',')]
 			};
-
 			const extendWithCredential = (payload) => {
 				const credential = baaCredentialService.get(geoResource.url);
 				if (!credential) {

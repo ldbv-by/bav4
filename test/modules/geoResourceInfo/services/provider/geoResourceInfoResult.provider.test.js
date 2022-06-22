@@ -53,7 +53,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should load a external GeoResourceInfo', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, label: 'foo', url: 'http://some.url/', importedByUser: true });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
 		const expectedPayLoad = '{"url":"http://some.url/","layers":["foo"]}';
@@ -74,7 +74,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should load a external GeoResourceInfo from a BAA-authenticated georesource', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, label: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
 		const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs('http://some.url/').and.returnValue({ username: 'username', password: 'password' });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
@@ -97,7 +97,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should throw an error a external BAA-authenticated georesource with missing credential', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, label: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
 		spyOn(baaCredentialService, 'get').withArgs('http://some.url/').and.returnValue(null);
 		const backendUrl = 'https://backend.url/';
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
