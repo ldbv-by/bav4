@@ -34,7 +34,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 				if (!credential) {
 					throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 				}
-				return { ...payload, username: credential.username, password: credential.password };
+				return { ...payload, ...credential };
 			};
 
 			const payload = geoResource.authenticationType === GeoResourceAuthenticationType.BAA ? extendWithCredential(defaultPayload) : defaultPayload;
@@ -54,7 +54,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			const htmlContent = await result.text();
 			return new GeoResourceInfoResult(htmlContent);
 		}
-		case 404: {
+		case 204: {
 			return null;
 		}
 	}

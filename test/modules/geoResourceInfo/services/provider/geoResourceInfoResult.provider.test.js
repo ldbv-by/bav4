@@ -15,11 +15,11 @@ describe('GeoResourceInfo provider', () => {
 	};
 
 	const geoResourceService = {
-		byId: () => {}
+		byId: () => { }
 	};
 
 	const baaCredentialService = {
-		get: () => {}
+		get: () => { }
 	};
 
 	beforeAll(() => {
@@ -114,7 +114,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
-			new Response(JSON.stringify(), { status: 404 })
+			new Response(JSON.stringify(), { status: 204 })
 		));
 
 		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
