@@ -24,6 +24,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 			`${layer.name}`,
 			capabilities.formatsGetMap[0])
 			.setAuthenticationType(getAuthenticationType(isAuthenticated))
+			.setQueryable(layer.queryable)
 			.setExtraParams(getExtraParams(capabilities));
 	};
 

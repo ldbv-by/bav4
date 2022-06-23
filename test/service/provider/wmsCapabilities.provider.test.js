@@ -23,6 +23,7 @@ const Default_Capabilities_Result = {
 		'maxResolution': 0.0,
 		'legendUrl': 'https://legend.url/0',
 		'metadataUrl': 'https://metadata.url/0',
+		'queryable': true,
 		'referenceSystems': [
 			{
 				'code': 31467,
@@ -51,6 +52,7 @@ const Default_Capabilities_Result = {
 		'maxResolution': 0.0,
 		'legendUrl': 'https://legend.url/1',
 		'metadataUrl': 'https://metadata.url/1',
+		'queryable': false,
 		'referenceSystems': [
 			{
 				'code': 31467,
@@ -79,6 +81,7 @@ const Default_Capabilities_Result = {
 		'maxResolution': 0.0,
 		'legendUrl': 'https://legend.url/1',
 		'metadataUrl': 'https://metadata.url/1',
+		'queryable': false,
 		'referenceSystems': [
 			{
 				'code': 31467,
@@ -202,7 +205,15 @@ describe('bvvCapabilitiesProvider', () => {
 			id: jasmine.stringMatching(/^\d*$/),
 			label: 'Layer 0',
 			url: 'https://online.resource/GetMap?',
-			format: 'image/png'
+			format: 'image/png',
+			queryable: true
+		}));
+		expect(wmsGeoResources[1]).toEqual(jasmine.objectContaining({
+			id: jasmine.stringMatching(/^\d*$/),
+			label: 'Layer 1',
+			url: 'https://online.resource/GetMap?',
+			format: 'image/png',
+			queryable: false
 		}));
 	});
 
