@@ -139,6 +139,7 @@ describe('GeoResource', () => {
 				expect(georesource.authenticationType).toBeNull();
 				expect(georesource.importedByUser).toBeFalse();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
+				expect(georesource._queryable).toBeTrue();
 			});
 
 			it('provides set methods and getters', () => {
@@ -152,7 +153,8 @@ describe('GeoResource', () => {
 					.setLabel('some label')
 					.setAttribution('some attribution')
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setImportedByUser(true);
+					.setImportedByUser(true)
+					.setQueryable(false);
 
 
 				expect(georesource.hidden).toBeTrue();
@@ -163,6 +165,7 @@ describe('GeoResource', () => {
 				expect(georesource.attribution).toBe('some attribution');
 				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
 				expect(georesource.importedByUser).toBeTrue();
+				expect(georesource.queryable).toBeFalse();
 			});
 		});
 
