@@ -6,6 +6,8 @@ import { importReducer } from '../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { searchReducer } from '../../../../src/store/search/search.reducer';
+import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
 
 
@@ -31,13 +33,17 @@ describe('DndImportPanel', () => {
 			import: {
 				latest: null
 			},
+			search: {
+				query: new EventLike(null)
+			},
 			...state
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			import: importReducer,
 			notifications: notificationReducer,
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			search: searchReducer
 		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
@@ -238,6 +244,21 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest.payload.data).toBe('<kml>foo</kml>');
 				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 				expect(store.getState().import.latest.payload.url).toBeNull();
+			});
+
+			it('updates the search-store with a dropped wms-url', async () => {
+				const dataTransferMock = { ...defaultDataTransferMock, types: ['text/plain'], getData: () => 'http://some.url/wms' };
+				const sourceTypeWMS = new SourceType(SourceTypeName.WMS, '1.1.1');
+				const sourceTypeResultMock = { status: SourceTypeResultStatus.OK, sourceType: sourceTypeWMS };
+				const dataSpy = spyOn(sourceTypeService, 'forUrl').and.callFake(() => sourceTypeResultMock);
+				const element = await setup();
+				const dropZone = element.shadowRoot.querySelector('#dropzone');
+				simulateDragDropEvent('drop', dataTransferMock, dropZone);
+
+				await TestUtils.timeout();
+
+				expect(dataSpy).toHaveBeenCalledWith('http://some.url/wms');
+				expect(store.getState().search.query.payload).toBe('http://some.url/wms');
 			});
 
 			it('updates the import-store with a dropped file as URL', async () => {
