@@ -102,6 +102,10 @@ describe('FeatureInfoService', () => {
 
 				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeTrue();
 
+				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId).setQueryable(false));
+
+				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
+
 				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new WMTSGeoResource(geoResourceId));
 
 				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();

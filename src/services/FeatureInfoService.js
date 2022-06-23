@@ -47,7 +47,7 @@ export class FeatureInfoService {
 	 */
 	isQueryable(geoResourceId) {
 		const geoResource = this._geoResourceService.byId(geoResourceId);
-		return geoResource instanceof WmsGeoResource;
+		return geoResource.queryable && geoResource instanceof WmsGeoResource;
 	}
 }
 
