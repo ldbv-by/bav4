@@ -171,4 +171,46 @@ describe('UrlService', () => {
 			expect(() => instanceUnderTest.qrCode(123)).toThrowError(Error, 'Parameter \'url\' must be a string');
 		});
 	});
+
+	describe('originAndPathname', () => {
+
+		it('extracts the origin following by the pathname of an URL', () => {
+
+			expect(instanceUnderTest.originAndPathname('http://foo.bar')).toBe('http://foo.bar');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/?=')).toBe('http://foo.bar');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar:1234/?foo=bar')).toBe('http://foo.bar:1234');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/some')).toBe('http://foo.bar/some');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/some/')).toBe('http://foo.bar/some/');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/some/?=')).toBe('http://foo.bar/some/');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar/some?foo=bar')).toBe('http://foo.bar/some');
+			expect(instanceUnderTest.originAndPathname('http://foo.bar:1234/some/?foo=bar')).toBe('http://foo.bar:1234/some/');
+		});
+
+		it('throws a TypeError when parameter is not valid', () => {
+
+			expect(() => instanceUnderTest.originAndPathname('foo')).toThrowError(TypeError);
+		});
+	});
+
+	describe('origin', () => {
+
+		it('extracts the origin of an URL', () => {
+
+			expect(instanceUnderTest.origin('http://foo.bar')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar/?=')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar:1234/?foo=bar')).toBe('http://foo.bar:1234');
+			expect(instanceUnderTest.origin('http://foo.bar/some')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar/some/')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar/some/?=')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar/some/?foo=bar')).toBe('http://foo.bar');
+			expect(instanceUnderTest.origin('http://foo.bar:1234/some/?foo=bar')).toBe('http://foo.bar:1234');
+		});
+
+		it('throws a TypeError when parameter is not valid', () => {
+
+			expect(() => instanceUnderTest.origin('foo')).toThrowError(TypeError);
+		});
+	});
 });
