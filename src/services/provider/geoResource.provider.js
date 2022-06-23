@@ -36,6 +36,7 @@ export const _definitionToGeoResource = definition => {
 		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
 		geoResource.setMinZoom(definition.minZoom ?? null);
 		geoResource.setMaxZoom(definition.maxZoom ?? null);
+		geoResource.setQueryable(definition.queryable ?? true);
 		return geoResource;
 	}
 	return null;
