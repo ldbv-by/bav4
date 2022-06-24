@@ -12,7 +12,7 @@ import infoSvg from './assets/info.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { fitLayer } from '../../../store/position/position.action';
 
 
 const Update_Layer = 'update_layer';
@@ -146,7 +146,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		};
 
 		const zoomToExtent = () => {
-			emitNotification('Zoom to Extent', LevelTypes.INFO);
+			fitLayer(layer.id);
 		};
 
 		const remove = () => {
