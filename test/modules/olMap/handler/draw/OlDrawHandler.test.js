@@ -548,6 +548,25 @@ describe('OlDrawHandler', () => {
 				expect(abortSpy).toHaveBeenCalled();
 			});
 
+			it('aborts current drawing if keyup', () => {
+				setup();
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				map.addInteraction = jasmine.createSpy();
+				const abortKeyCode = 27;
+
+				classUnderTest.activate(map);
+				setStyle({ symbolSrc: 'something' });
+				setType('marker');
+				const abortSpy = spyOn(classUnderTest._draw, 'abortDrawing').and.callThrough();
+				expect(classUnderTest._draw.getActive()).toBeTrue();
+				setType('line');
+
+				simulateKeyEvent(abortKeyCode, 'Escape');
+
+				expect(abortSpy).toHaveBeenCalled();
+			});
+
 			it('deactivates active modify after type-change', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();

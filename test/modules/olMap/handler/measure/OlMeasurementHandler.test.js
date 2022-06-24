@@ -943,7 +943,7 @@ describe('OlMeasurementHandler', () => {
 			expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
 		});
 
-		it('aborts measurement if keypressed', async () => {
+		it('aborts measurement if keyup', async () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
