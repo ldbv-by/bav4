@@ -1,4 +1,4 @@
-import { isString } from '../../utils/checks';
+import { isString } from './checks';
 const No_Op = () => { };
 
 /**
