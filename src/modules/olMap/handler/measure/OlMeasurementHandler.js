@@ -28,7 +28,7 @@ import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
-import { KeyActionMapper } from '../../../commons/KeyActionMapper';
+import { KeyActionMapper } from '../../../utils/KeyActionMapper';
 
 const Debounce_Delay = 1000;
 

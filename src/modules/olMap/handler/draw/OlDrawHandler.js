@@ -30,7 +30,7 @@ import { setSelection as setMeasurementSelection } from '../../../../store/measu
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
 import { hexToRgb } from '../../../../utils/colors';
-import { KeyActionMapper } from '../../../commons/KeyActionMapper';
+import { KeyActionMapper } from '../../../utils/KeyActionMapper';
 
 
 

@@ -1,4 +1,4 @@
-import { KeyActionMapper } from '../../../src/modules/commons/KeyActionMapper';
+import { KeyActionMapper } from '../../../src/modules/utils/KeyActionMapper';
 
 describe('KeyActionMapper', () => {
 
