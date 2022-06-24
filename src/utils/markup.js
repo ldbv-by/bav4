@@ -68,6 +68,23 @@ export const generateTestIds = (element) => {
 
 };
 
+export const forEachByAttribute = (element, attribute, callback) => {
+
+	element.childNodes.forEach(el => {
+		if (el.hasAttribute && el.hasAttribute(attribute)) {
+			callback(el);
+		}
+		forEachByAttribute(el.shadowRoot ?? el, attribute, callback);
+	});
+};
+
+export const findAllByAttribute = (element, attribute) => {
+
+	const elements = [];
+	forEachByAttribute(element, attribute, el => elements.push(el));
+	return elements;
+};
+
 /**
  * Decodes the given htmlValue
  * @param {string} htmlValue the encoded html
