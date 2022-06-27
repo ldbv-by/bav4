@@ -88,7 +88,7 @@ export const forEachByAttribute = (element, attribute, callback) => {
 };
 
 /**
- * Returns an array containing all elements owning the given attribute starting from a a given element.
+ * Returns an array containing all elements owning the given attribute starting from a given element.
  * The start element will be excluded.
  * @param {HTMLElement} element
  * @param {string} attribute target attribute
