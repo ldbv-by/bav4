@@ -68,16 +68,32 @@ export const generateTestIds = (element) => {
 
 };
 
+/**
+ * Applies a function on all children (including custom elements) of a given element containing a given attribute.
+ * The start element will be excluded.
+ * @param {HTMLElement} element start element
+ * @param {string} attribute target attribute
+ * @param {Function} callback callback function
+ */
 export const forEachByAttribute = (element, attribute, callback) => {
 
-	element.childNodes.forEach(el => {
+	const checkShadowDOM = el => el.shadowRoot ?? el;
+
+	checkShadowDOM(element).childNodes.forEach(el => {
 		if (el.hasAttribute && el.hasAttribute(attribute)) {
 			callback(el);
 		}
-		forEachByAttribute(el.shadowRoot ?? el, attribute, callback);
+		forEachByAttribute(checkShadowDOM(el), attribute, callback);
 	});
 };
 
+/**
+ * Returns an array containing all elements owning the given attribute starting from a a given element.
+ * The start element will be excluded.
+ * @param {HTMLElement} element
+ * @param {string} attribute target attribute
+ * @returns array
+ */
 export const findAllByAttribute = (element, attribute) => {
 
 	const elements = [];
