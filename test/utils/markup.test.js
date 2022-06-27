@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
-import { decodeHtmlEntities, TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
+import { calculateWorkingArea, decodeHtmlEntities, TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
 
 class MvuElementParent extends MvuElement {
@@ -177,6 +177,81 @@ describe('markup utils', () => {
 			const decoded = decodeHtmlEntities('<img src="dummy" onerror="alert(\'called\')")');
 			expect(spy).not.toHaveBeenCalled();
 			expect(decoded).toBe('');
+		});
+	});
+
+	fdescribe('calculateWorkingArea', () => {
+
+		it('subtract one element rect from workingArea', () => {
+			const baseMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 1000 }) };
+			const dirtyElementsMock = [{ getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 100, height: 100 }) }];
+
+			const result = calculateWorkingArea(baseMock, dirtyElementsMock);
+
+			expect(result.left).toBe(150);
+			expect(result.top).toBe(0);
+			expect(result.right).toBe(1000);
+			expect(result.bottom).toBe(1000);
+		});
+
+		it('subtract overlapping element-rects from workingArea', () => {
+			const baseMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 1000 }) };
+			const dirtyElementsMock = [
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 100, height: 100 }) },
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 75, y: 75, width: 75, height: 75 }) }
+			];
+
+			const result = calculateWorkingArea(baseMock, dirtyElementsMock);
+
+			expect(result.left).toBe(150);
+			expect(result.top).toBe(0);
+			expect(result.right).toBe(1000);
+			expect(result.bottom).toBe(1000);
+		});
+
+
+		it('subtract disjoint element-rects from workingArea', () => {
+			const baseMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 1000 }) };
+			const dirtyElementsMock = [
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 100, height: 100 }) },
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 800, y: 800, width: 100, height: 100 }) }
+			];
+
+			const result = calculateWorkingArea(baseMock, dirtyElementsMock);
+
+			expect(result.left).toBe(150);
+			expect(result.top).toBe(0);
+			expect(result.right).toBe(800);
+			expect(result.bottom).toBe(1000);
+		});
+
+		it('subtract partially overlapping element-rects from workingArea', () => {
+			const baseMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 1000 }) };
+			const dirtyElementsMock = [
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 100, height: 100 }) },
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 100, width: 100, height: 100 }) }
+			];
+
+			const result = calculateWorkingArea(baseMock, dirtyElementsMock);
+
+			expect(result.left).toBe(150);
+			expect(result.top).toBe(0);
+			expect(result.right).toBe(1000);
+			expect(result.bottom).toBe(1000);
+		});
+
+		it('subtract centered element-rect from workingArea', () => {
+			const baseMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 1000 }) };
+			const dirtyElementsMock = [
+				{ getBoundingClientRect: () => DOMRect.fromRect({ x: 450, y: 450, width: 100, height: 100 }) }
+			];
+
+			const result = calculateWorkingArea(baseMock, dirtyElementsMock);
+
+			expect(result.left).toBe(550);
+			expect(result.top).toBe(0);
+			expect(result.right).toBe(1000);
+			expect(result.bottom).toBe(1000);
 		});
 	});
 });
