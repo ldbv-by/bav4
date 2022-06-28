@@ -250,7 +250,6 @@ describe('sourceType provider', () => {
 				});
 			});
 
-
 			describe('credential already in store', () => {
 
 				it('fetches the credential from the BaaService', async () => {
