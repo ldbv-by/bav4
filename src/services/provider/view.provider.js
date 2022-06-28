@@ -4,7 +4,7 @@
  * @param {Array<HTMLElement>} dirtyElements
  * @returns {DOMRect}
  */
-export const calculateCleanRectangle = (base, dirtyElements) => {
+export const cleanRectangleByElementsProvider = (base, dirtyElements) => {
 	const workingRect = base.getBoundingClientRect();
 	const dirtyRects = dirtyElements.map(e => e.getBoundingClientRect());
 

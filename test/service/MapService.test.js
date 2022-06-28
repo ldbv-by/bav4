@@ -27,7 +27,11 @@ describe('MapService', () => {
 				maxZoomLevel: 21
 			};
 		};
-		return new MapService(definitionsProvider);
+		const cleanRectangleProvider = () => {
+			// return a clean rectangle
+			return DOMRect.fromRect();
+		};
+		return new MapService(definitionsProvider, cleanRectangleProvider);
 	};
 
 	describe('constructor', () => {
@@ -35,6 +39,7 @@ describe('MapService', () => {
 			const service = new MapService();
 
 			expect(service._definitions).toBeDefined();
+			expect(service._cleanRectangleProvider).toBeDefined();
 		});
 	});
 
@@ -185,6 +190,14 @@ describe('MapService', () => {
 
 			expect(document.querySelector).toHaveBeenCalled();
 			expect(element).toBeNull();
+		});
+	});
+
+	describe('getCleanRectangle', () => {
+		it('returns a clean rectangle', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.getCleanRectangle()).toEqual(jasmine.any(DOMRect));
 		});
 	});
 });
