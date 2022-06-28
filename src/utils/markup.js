@@ -117,144 +117,84 @@ export const decodeHtmlEntities = (htmlValue) => {
  * @param {Array<HTMLElement>} dirtyElements
  */
 export const calculateWorkingArea = (base, dirtyElements) => {
-	const workingRect = fromDOMRect(base.getBoundingClientRect());
+	const workingRect = base.getBoundingClientRect();
+	const dirtyRects = dirtyElements.map(e => e.getBoundingClientRect());
 
-	const dirtyRects = dirtyElements.map(e => fromDOMRect(e.getBoundingClientRect()));
+	const isEmpty = (rect) => {
+		return rect.left >= rect.right || rect.top >= rect.bottom;
+	};
 
-	const candidates = workingRect.subtractAll(dirtyRects);
+	const clone = (domRect) => {
+		return DOMRect.fromRect({ x: domRect.x, y: domRect.y, width: domRect.width, height: domRect.height });
+	};
+
+	const fromBounds = (left, top, right, bottom) => {
+		return DOMRect.fromRect({ x: left, y: top, width: right - left, height: bottom - top });
+	};
+
+	const intersect = (base, other) => {
+		if (isEmpty(base) || isEmpty(other)) {
+			return DOMRect.fromRect();
+		}
+
+		const x1 = Math.max(base.left, other.left);
+		const x2 = Math.min(base.right, other.right);
+		const y1 = Math.max(base.top, other.top);
+		const y2 = Math.min(base.bottom, other.bottom);
+		// If width or height is 0, the intersection was empty.
+		return DOMRect.fromRect({ x: x1, y: y1, width: Math.max(0, x2 - x1), height: Math.max(0, y2 - y1) });
+	};
+
+	const subtract = (base, other) => {
+
+		const result = [];
+		other = intersect(other, base);
+		if (isEmpty(other)) {
+			return [clone(base)];
+		}
+
+		const leftStrip = fromBounds(base.left, base.top, other.left, base.bottom);
+		if (!isEmpty(leftStrip)) {
+			result.push(leftStrip);
+		}
+
+		const upperInsideStrip = fromBounds(other.left, base.top, other.right, other.top);
+		if (!isEmpty(upperInsideStrip)) {
+			result.push(upperInsideStrip);
+		}
+
+		const lowerInsideStrip = fromBounds(other.left, other.bottom, other.right, base.bottom);
+		if (!isEmpty(lowerInsideStrip)) {
+			result.push(lowerInsideStrip);
+		}
+
+		const rightStrip = fromBounds(other.right, base.top, base.right, base.bottom);
+
+		if (!isEmpty(rightStrip)) {
+			result.push(rightStrip);
+		}
+
+		return result;
+	};
+
+	const subtractAll = (base, others) => {
+		const subtractOthers = (previousResult, other) => {
+			return previousResult.map(r => subtract(r, other)).flat();
+		};
+
+		const getArea = (rect) => rect.width * rect.height;
+		const byAreaThenXThenY = (a, b) => getArea(a) - getArea(b) || a.x - b.x || a.y - b.y;
+
+		return others.reduce(subtractOthers, [base]).sort(byAreaThenXThenY);
+	};
+
+	const candidates = subtractAll(workingRect, dirtyRects);
 
 	return candidates[candidates.length - 1];
 };
 
 
-const fromDOMRect = (rect) => {
-	return new Rect(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-};
 
-const fromBounds = (left, top, right, bottom) => {
-	return new Rect(left, top, right - left, bottom - top);
-};
-class Rect {
 
-	constructor(x, y, width, height) {
-		this._left = x;
-		this._top = y;
-		this._right = x + width;
-		this._bottom = y + height;
-	}
 
-	get x() {
-		return this.left;
-	}
 
-	get left() {
-		return this._left;
-	}
-
-	get y() {
-		return this.top;
-	}
-
-	get top() {
-		return this._top;
-	}
-
-	get right() {
-		return this._right;
-	}
-
-	get bottom() {
-		return this._bottom;
-	}
-
-	get width() {
-		return this.right - this.left;
-	}
-
-	get height() {
-		return this.bottom - this.top;
-	}
-
-	get area() {
-		return this.width * this.height;
-	}
-
-	clone() {
-		return new Rect(
-			this.left,
-			this.top,
-			this.width,
-			this.height
-		);
-	}
-
-	isEmpty() {
-		return this.left >= this.right || this.top >= this.bottom;
-	}
-
-	/**
-	 *
-	 * @param {Rect} other
-	 * @returns
-	 */
-	restrictTo(other) {
-		if (this.isEmpty() || other.isEmpty()) {
-			return new Rect(0, 0, 0, 0);
-		}
-
-		const x1 = Math.max(this.left, other.left);
-		const x2 = Math.min(this.right, other.right);
-		const y1 = Math.max(this.top, other.top);
-		const y2 = Math.min(this.bottom, other.bottom);
-		// If width or height is 0, the intersection was empty.
-		return new Rect(x1, y1, Math.max(0, x2 - x1), Math.max(0, y2 - y1));
-	}
-
-	intersect(other) {
-		return this.clone().restrictTo(other);
-	}
-
-	subtract(other) {
-
-		const result = [];
-		other = other.intersect(this);
-		if (other.isEmpty()) {
-			return [this.clone()];
-		}
-
-		const leftStrip = fromBounds(this.left, this.top, other.left, this.bottom);
-		if (!leftStrip.isEmpty()) {
-			result.push(leftStrip);
-		}
-
-		const upperInsideStrip = fromBounds(other.left, this.top, other.right, other.top);
-		if (!upperInsideStrip.isEmpty()) {
-			result.push(upperInsideStrip);
-		}
-
-		const lowerInsideStrip = fromBounds(other.left, other.bottom, other.right, this.bottom);
-		if (!lowerInsideStrip.isEmpty()) {
-			result.push(lowerInsideStrip);
-		}
-
-		const rightStrip = fromBounds(other.right, this.top, this.right, this.bottom);
-
-		if (!rightStrip.isEmpty()) {
-			result.push(rightStrip);
-		}
-
-		return result;
-	}
-
-	subtractAll(others) {
-
-		const subtractOthers = (previousResult, other) => {
-			const concat = (accumulator, currentValue) => accumulator.concat(currentValue);
-			return previousResult.map(r => r.subtract(other)).reduceRight(concat);
-
-		};
-
-		const byAreaOrXOrY = (a, b) => a.area - b.area || a.x - b.x || a.y - b.y;
-		return others.reduce(subtractOthers, [this]).sort(byAreaOrXOrY);
-	}
-}
