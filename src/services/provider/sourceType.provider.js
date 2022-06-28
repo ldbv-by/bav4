@@ -90,7 +90,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 		return new SourceTypeResult(SourceTypeResultStatus.OTHER);
 	};
 
-	const response = await post(url);
+	const credential = baaCredentialService.get(url);
+	const response = await post(url, credential);
 
 	// in that case we open the credential ui as modal window
 	if (response.status === 401) {
@@ -134,8 +135,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 			openModal(translate('importPlugin_authenticationModal_title'), createModalContent(url, authenticate, onClose));
 		});
 	}
-
-	return await mapResponseToSourceType(response);
+	return await mapResponseToSourceType(response, !!credential);
 };
 
 /**

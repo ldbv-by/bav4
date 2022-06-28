@@ -30,7 +30,8 @@ describe('sourceType provider', () => {
 		};
 
 		const baaCredentialService = {
-			addOrReplace: () => {}
+			addOrReplace: () => {},
+			get: () => {}
 		};
 
 		let store;
@@ -60,6 +61,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'KML', version: 'version' };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -76,6 +78,7 @@ describe('sourceType provider', () => {
 			expect(sourceType.name).toBe(SourceTypeName.KML);
 			expect(sourceType.version).toBe(version);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for GPX', async () => {
@@ -86,6 +89,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'GPX', version: 'version' };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -102,6 +106,7 @@ describe('sourceType provider', () => {
 			expect(sourceType.name).toBe(SourceTypeName.GPX);
 			expect(sourceType.version).toBe(version);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for GeoJSON', async () => {
@@ -112,6 +117,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version' };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -128,6 +134,7 @@ describe('sourceType provider', () => {
 			expect(sourceType.name).toBe(SourceTypeName.GEOJSON);
 			expect(sourceType.version).toBe(version);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for WMS', async () => {
@@ -138,6 +145,7 @@ describe('sourceType provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
 			const sourceTypeResultPayload = { name: 'WMS', version: 'version' };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
@@ -154,6 +162,7 @@ describe('sourceType provider', () => {
 			expect(sourceType.name).toBe(SourceTypeName.WMS);
 			expect(sourceType.version).toBe(version);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns SourceTypeServiceResultStatus.UNSUPPORTED_TYPE_ERROR when no content is available', async () => {
@@ -238,6 +247,34 @@ describe('sourceType provider', () => {
 					expect(sourceType.version).toBe(version);
 					expect(status).toEqual(SourceTypeResultStatus.BAA_AUTHENTICATED);
 					expect(baaCredentialServiceSpy).toHaveBeenCalledWith(url, mockCredential);
+				});
+			});
+
+
+			describe('credential already in store', () => {
+
+				it('fetches the credential from the BaaService', async () => {
+					const sourceTypeResultPayload = { name: 'GPX', version: 'version' };
+					const mockCredential = { username: 'username', password: 'password' };
+					const response200 = new Response(
+						JSON.stringify(
+							sourceTypeResultPayload
+						)
+					);
+					const backendUrl = 'https://backend.url/';
+					const url = 'http://foo.bar';
+					const version = 'version';
+					const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(mockCredential);
+					spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+					spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', JSON.stringify({ url: url, ...mockCredential }), MediaType.JSON).and.resolveTo(response200);
+
+					const { status, sourceType } = await bvvUrlSourceTypeProvider(url, true);
+
+					expect(sourceType).toBeInstanceOf(SourceType);
+					expect(sourceType.name).toBe(SourceTypeName.GPX);
+					expect(sourceType.version).toBe(version);
+					expect(status).toEqual(SourceTypeResultStatus.BAA_AUTHENTICATED);
+					expect(baaCredentialServiceSpy).toHaveBeenCalled();
 				});
 			});
 
