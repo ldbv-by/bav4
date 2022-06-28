@@ -1,7 +1,14 @@
 import { BaElement } from '../modules/BaElement';
 import { MvuElement } from '../modules/MvuElement';
 
+/**
+ * An element containing this attribute will be provided with a generated test id.
+ */
 export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
+/**
+ * An element containing this attribute registers for taking part in viewport calculation.
+ */
+export const REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME = 'data-register-for-viewport-calc';
 
 /**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
@@ -88,7 +95,7 @@ export const forEachByAttribute = (element, attribute, callback) => {
 };
 
 /**
- * Returns an array containing all elements owning the given attribute starting from a a given element.
+ * Returns an array containing all elements owning the given attribute starting from a given element.
  * The start element will be excluded.
  * @param {HTMLElement} element
  * @param {string} attribute target attribute
