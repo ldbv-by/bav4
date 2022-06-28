@@ -137,7 +137,7 @@ export class MapService {
 	 */
 	getVisibleViewport() {
 		const baseElement = document.body;
-		const overlappingElements = findAllByAttribute(document, 'data-calculate-viewport');
+		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
 
 		return calculateVisibleViewport(baseElement, overlappingElements);
 	}
