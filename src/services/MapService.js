@@ -1,7 +1,9 @@
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
+import { findAllByAttribute } from '../utils/markup';
+import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
-import { cleanRectangleByElementsProvider } from './provider/view.provider';
+
 
 /**
 * A function that provides map releated meta data
@@ -23,11 +25,10 @@ export class MapService {
 	 *
 	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
 	 */
-	constructor(mapDefinitionProvider = getBvvMapDefinitions, cleanRectangleProvider = cleanRectangleByElementsProvider) {
+	constructor(mapDefinitionProvider = getBvvMapDefinitions) {
 		const { CoordinateService } = $injector.inject('CoordinateService');
 		this._coordinateService = CoordinateService;
 		this._definitions = mapDefinitionProvider();
-		this._cleanRectangleProvider = cleanRectangleProvider;
 	}
 
 	/**
@@ -131,12 +132,13 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a clean rectangle, where the map element is not overlapped by any dirty element
-	 * @param {HTMLElement} mapElement
-	 * @param {Array<HTMLElement>} dirtyElements
+	 * Returns a visible rectangle, where the map element is not overlapped by any other relevant element
 	 * @returns {DOMRect}
 	 */
-	getCleanRectangle(mapElement, dirtyElements) {
-		return this._cleanRectangleProvider(mapElement, dirtyElements);
+	getVisibleViewport() {
+		const baseElement = document.body;
+		const overlappingElements = findAllByAttribute(document, 'data-calculate-viewport');
+
+		return calculateVisibleViewport(baseElement, overlappingElements);
 	}
 }

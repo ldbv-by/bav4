@@ -27,11 +27,7 @@ describe('MapService', () => {
 				maxZoomLevel: 21
 			};
 		};
-		const cleanRectangleProvider = () => {
-			// return a clean rectangle
-			return DOMRect.fromRect();
-		};
-		return new MapService(definitionsProvider, cleanRectangleProvider);
+		return new MapService(definitionsProvider);
 	};
 
 	describe('constructor', () => {
@@ -39,7 +35,6 @@ describe('MapService', () => {
 			const service = new MapService();
 
 			expect(service._definitions).toBeDefined();
-			expect(service._cleanRectangleProvider).toBeDefined();
 		});
 	});
 
@@ -193,11 +188,11 @@ describe('MapService', () => {
 		});
 	});
 
-	describe('getCleanRectangle', () => {
+	describe('getVisibleViewport', () => {
 		it('returns a clean rectangle', () => {
 			const instanceUnderTest = setup();
 
-			expect(instanceUnderTest.getCleanRectangle()).toEqual(jasmine.any(DOMRect));
+			expect(instanceUnderTest.getVisibleViewport()).toEqual(jasmine.any(DOMRect));
 		});
 	});
 });

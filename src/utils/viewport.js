@@ -1,15 +1,15 @@
 /**
- * Calculates a clean rectangle, where the base element is not overlapped by any dirty element
- * @param {HTMLElement} base
- * @param {Array<HTMLElement>} dirtyElements
+ * Calculates a visible rectangle, where the base element is not overlapped by any specified element
+ * @param {HTMLElement} baseElement
+ * @param {Array<HTMLElement>} overlappingElements
  * @returns {DOMRect}
  */
-export const cleanRectangleByElementsProvider = (base, dirtyElements) => {
-	const workingRect = base.getBoundingClientRect();
-	const dirtyRects = dirtyElements.map(e => e.getBoundingClientRect());
+export const calculateVisibleViewport = (baseElement, overlappingElements) => {
+	const baseRectangle = baseElement.getBoundingClientRect();
+	const overlappingRectangles = overlappingElements.map(e => e.getBoundingClientRect());
 
-	const isEmpty = (rect) => {
-		return rect.left >= rect.right || rect.top >= rect.bottom;
+	const isEmpty = (domRect) => {
+		return domRect.left >= domRect.right || domRect.top >= domRect.bottom;
 	};
 
 	const clone = (domRect) => {
@@ -76,7 +76,7 @@ export const cleanRectangleByElementsProvider = (base, dirtyElements) => {
 		return others.reduce(subtractOthers, [base]).sort(byAreaThenXThenY);
 	};
 
-	const candidates = subtractAll(workingRect, dirtyRects);
+	const candidates = subtractAll(baseRectangle, overlappingRectangles);
 
 	return candidates[candidates.length - 1];
 };
