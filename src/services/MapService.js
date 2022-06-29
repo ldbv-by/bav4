@@ -132,7 +132,7 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a visible rectangle, where the map element is not overlapped by any other relevant element
+	 * Returns a rectangle, where the map element is not overlapped by any other relevant element
 	 * @returns {DOMRect}
 	 */
 	getVisibleViewport() {
