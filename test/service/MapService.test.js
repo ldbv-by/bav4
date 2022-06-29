@@ -190,13 +190,9 @@ describe('MapService', () => {
 
 	describe('getVisibleViewport', () => {
 		it('returns a visible rectangle', () => {
-			document.body.innerHTML = '<div></div>'
-									+ '<div id="overlapping1" data-register-for-viewport-calc></div>'
-									+ '<div id="non-overlapping"></div>'
-									+ '<div id="overlapping2" data-register-for-viewport-calc></div>'
-									+ '<div></div>'
-									+ '<div class="class foo"></div>'
-									+ '<div></div>';
+			document.body.innerHTML = '<div id="overlapping1" data-register-for-viewport-calc></div>'
+				+ '<div id="non-overlapping"></div>'
+				+ '<div id="overlapping2" data-register-for-viewport-calc></div>';
 			const bodySpy = spyOnProperty(document, 'body', 'get').and.returnValue({ getBoundingClientRect: () => DOMRect.fromRect() });
 			const overlappingElement1 = document.getElementById('overlapping1');
 			const overlappingElement2 = document.getElementById('overlapping2');

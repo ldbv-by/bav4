@@ -132,13 +132,13 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a viewport rectangle, where the map element is not overlapped by any other relevant element
+	 * Returns a DOMRect instance describing the visible part of the map
+	 * (which means the part of the map that is not overlapped by any other UI element)
 	 * @returns {DOMRect}
 	 */
 	getVisibleViewport() {
-		const viewportElement = document.body;
 		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
 
-		return calculateVisibleViewport(viewportElement, overlappingElements);
+		return calculateVisibleViewport(document.body, overlappingElements);
 	}
 }
