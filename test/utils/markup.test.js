@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
-import { decodeHtmlEntities, findAllByAttribute, forEachByAttribute, TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
+import { decodeHtmlEntities, findAllByAttribute, forEachByAttribute, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
 
 class MvuElementParent extends MvuElement {
@@ -78,6 +78,10 @@ describe('markup utils', () => {
 
 		it('provides an attribute name for test ids', () => {
 			expect(TEST_ID_ATTRIBUTE_NAME).toBe('data-test-id');
+		});
+
+		it('provides an attribute name to register for viewport calculation', () => {
+			expect(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME).toBe('data-register-for-viewport-calc');
 		});
 	});
 
