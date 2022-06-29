@@ -1,11 +1,11 @@
 /**
- * Calculates a visible rectangle, where the base element is not overlapped by any specified element
- * @param {HTMLElement} baseElement
+ * Calculates a rectangle, where the element, which defines the viewport, is not overlapped by any specified element
+ * @param {HTMLElement} viewportElement the HTMLElement, which defines the max. available viewport
  * @param {Array<HTMLElement>} overlappingElements
  * @returns {DOMRect}
  */
-export const calculateVisibleViewport = (baseElement, overlappingElements) => {
-	const baseRectangle = baseElement.getBoundingClientRect();
+export const calculateVisibleViewport = (viewportElement, overlappingElements) => {
+	const viewportRectangle = viewportElement.getBoundingClientRect();
 	const overlappingRectangles = overlappingElements.map(e => e.getBoundingClientRect());
 
 	const isEmpty = (domRect) => {
@@ -20,43 +20,43 @@ export const calculateVisibleViewport = (baseElement, overlappingElements) => {
 		return DOMRect.fromRect({ x: left, y: top, width: right - left, height: bottom - top });
 	};
 
-	const intersect = (base, other) => {
-		if (isEmpty(base) || isEmpty(other)) {
+	const intersect = (that, other) => {
+		if (isEmpty(that) || isEmpty(other)) {
 			return DOMRect.fromRect();
 		}
 
-		const x1 = Math.max(base.left, other.left);
-		const x2 = Math.min(base.right, other.right);
-		const y1 = Math.max(base.top, other.top);
-		const y2 = Math.min(base.bottom, other.bottom);
+		const x1 = Math.max(that.left, other.left);
+		const x2 = Math.min(that.right, other.right);
+		const y1 = Math.max(that.top, other.top);
+		const y2 = Math.min(that.bottom, other.bottom);
 		// If width or height is 0, the intersection was empty.
 		return DOMRect.fromRect({ x: x1, y: y1, width: Math.max(0, x2 - x1), height: Math.max(0, y2 - y1) });
 	};
 
-	const subtract = (base, other) => {
+	const subtract = (that, other) => {
 
 		const result = [];
-		other = intersect(other, base);
+		other = intersect(other, that);
 		if (isEmpty(other)) {
-			return [clone(base)];
+			return [clone(that)];
 		}
 
-		const leftStrip = fromBounds(base.left, base.top, other.left, base.bottom);
+		const leftStrip = fromBounds(that.left, that.top, other.left, that.bottom);
 		if (!isEmpty(leftStrip)) {
 			result.push(leftStrip);
 		}
 
-		const upperInsideStrip = fromBounds(other.left, base.top, other.right, other.top);
+		const upperInsideStrip = fromBounds(other.left, that.top, other.right, other.top);
 		if (!isEmpty(upperInsideStrip)) {
 			result.push(upperInsideStrip);
 		}
 
-		const lowerInsideStrip = fromBounds(other.left, other.bottom, other.right, base.bottom);
+		const lowerInsideStrip = fromBounds(other.left, other.bottom, other.right, that.bottom);
 		if (!isEmpty(lowerInsideStrip)) {
 			result.push(lowerInsideStrip);
 		}
 
-		const rightStrip = fromBounds(other.right, base.top, base.right, base.bottom);
+		const rightStrip = fromBounds(other.right, that.top, that.right, that.bottom);
 
 		if (!isEmpty(rightStrip)) {
 			result.push(rightStrip);
@@ -65,7 +65,7 @@ export const calculateVisibleViewport = (baseElement, overlappingElements) => {
 		return result;
 	};
 
-	const subtractAll = (base, others) => {
+	const subtractAll = (that, others) => {
 		const subtractOthers = (previousResult, other) => {
 			return previousResult.map(r => subtract(r, other)).flat();
 		};
@@ -73,10 +73,10 @@ export const calculateVisibleViewport = (baseElement, overlappingElements) => {
 		const getArea = (rect) => rect.width * rect.height;
 		const byAreaThenXThenY = (a, b) => getArea(a) - getArea(b) || a.x - b.x || a.y - b.y;
 
-		return others.reduce(subtractOthers, [base]).sort(byAreaThenXThenY);
+		return others.reduce(subtractOthers, [that]).sort(byAreaThenXThenY);
 	};
 
-	const candidates = subtractAll(baseRectangle, overlappingRectangles);
+	const candidates = subtractAll(viewportRectangle, overlappingRectangles);
 
 	return candidates[candidates.length - 1];
 };

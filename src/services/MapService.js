@@ -132,13 +132,13 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a rectangle, where the map element is not overlapped by any other relevant element
+	 * Returns a viewport rectangle, where the map element is not overlapped by any other relevant element
 	 * @returns {DOMRect}
 	 */
 	getVisibleViewport() {
-		const baseElement = document.body;
+		const viewportElement = document.body;
 		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
 
-		return calculateVisibleViewport(baseElement, overlappingElements);
+		return calculateVisibleViewport(viewportElement, overlappingElements);
 	}
 }
