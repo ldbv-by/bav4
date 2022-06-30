@@ -28,6 +28,7 @@ import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
+import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 
 const Debounce_Delay = 1000;
 
@@ -57,7 +58,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e);
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', () => this._remove())
+			.addForKeyUp('Escape', () => this._startNew());
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -246,8 +249,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERUP, pointerUpHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
-			document.addEventListener('keyup', this._keyUpListener);
 			this._registeredObservers = this._register(this._storeService.getStore());
+			this._keyActionMapper.activate();
 
 			olMap.addInteraction(this._select);
 			olMap.addInteraction(this._modify);
@@ -280,7 +283,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._unreg(this._mapListeners);
 		this._unreg(this._measureStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
-		document.removeEventListener('keyup', this._keyUpListener);
+		this._keyActionMapper.deactivate();
 
 		this._convertToPermanentLayer();
 		this._vectorLayer.getSource().getFeatures().forEach(f => this._overlayService.remove(f, this._map));
@@ -324,12 +327,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			observe(store, state => state.measurement.selection, (ids) => this._setSelection(ids))];
 	}
 
-	_removeLast(event) {
-		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-			this._remove();
-		}
-	}
-
 	_remove() {
 		if (this._draw && this._draw.getActive()) {
 
@@ -369,6 +366,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		this._draw.setActive(true);
 		setSelection([]);
+		setStatistic({ length: 0, area: 0 });
 		this._modify.setActive(false);
 		this._helpTooltip.deactivate();
 		this._helpTooltip.activate(this._map);

@@ -1,7 +1,14 @@
 import { BaElement } from '../modules/BaElement';
 import { MvuElement } from '../modules/MvuElement';
 
+/**
+ * An element containing this attribute will be provided with a generated test id.
+ */
 export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
+/**
+ * An element containing this attribute registers for taking part in viewport calculation.
+ */
+export const REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME = 'data-register-for-viewport-calc';
 
 /**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
@@ -66,6 +73,39 @@ export const generateTestIds = (element) => {
 	}
 
 
+};
+
+/**
+ * Applies a function on all children (including custom elements) of a given element containing a given attribute.
+ * The start element will be excluded.
+ * @param {HTMLElement} element start element
+ * @param {string} attribute target attribute
+ * @param {Function} callback callback function
+ */
+export const forEachByAttribute = (element, attribute, callback) => {
+
+	const checkShadowDOM = el => el.shadowRoot ?? el;
+
+	checkShadowDOM(element).childNodes.forEach(el => {
+		if (el.hasAttribute && el.hasAttribute(attribute)) {
+			callback(el);
+		}
+		forEachByAttribute(checkShadowDOM(el), attribute, callback);
+	});
+};
+
+/**
+ * Returns an array containing all elements owning the given attribute starting from a given element.
+ * The start element will be excluded.
+ * @param {HTMLElement} element
+ * @param {string} attribute target attribute
+ * @returns array
+ */
+export const findAllByAttribute = (element, attribute) => {
+
+	const elements = [];
+	forEachByAttribute(element, attribute, el => elements.push(el));
+	return elements;
 };
 
 /**

@@ -187,5 +187,28 @@ describe('MapService', () => {
 			expect(element).toBeNull();
 		});
 	});
+
+	describe('getVisibleViewport', () => {
+		it('returns a visible rectangle', () => {
+			document.body.innerHTML = '<div id="overlapping1" data-register-for-viewport-calc></div>'
+				+ '<div id="non-overlapping"></div>'
+				+ '<div id="overlapping2" data-register-for-viewport-calc></div>';
+			const bodySpy = spyOnProperty(document, 'body', 'get').and.returnValue({ getBoundingClientRect: () => DOMRect.fromRect() });
+			const overlappingElement1 = document.getElementById('overlapping1');
+			const overlappingElement2 = document.getElementById('overlapping2');
+			const nonOverlappingElement = document.getElementById('non-overlapping');
+			const spy1 = spyOn(overlappingElement1, 'getBoundingClientRect').and.returnValue(() => DOMRect.fromRect());
+			const spy2 = spyOn(overlappingElement2, 'getBoundingClientRect').and.returnValue(() => DOMRect.fromRect());
+			const spy3 = spyOn(nonOverlappingElement, 'getBoundingClientRect').and.returnValue(() => DOMRect.fromRect());
+			const instanceUnderTest = setup();
+			const visibleViewPort = instanceUnderTest.getVisibleViewport();
+
+			expect(visibleViewPort).toEqual(jasmine.any(DOMRect));
+			expect(bodySpy).toHaveBeenCalled();
+			expect(spy1).toHaveBeenCalled();
+			expect(spy2).toHaveBeenCalled();
+			expect(spy3).not.toHaveBeenCalled();
+		});
+	});
 });
 

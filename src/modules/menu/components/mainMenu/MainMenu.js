@@ -157,7 +157,7 @@ export class MainMenu extends MvuElement {
 						<i class='resize-icon'></i>	
 					</button>	
 					${getSlider()} 
-					<div id='mainMenuContainer' class='main-menu__container'>					
+					<div id='mainMenuContainer' class='main-menu__container' data-register-for-viewport-calc>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
 								<div class="tabcontent">						

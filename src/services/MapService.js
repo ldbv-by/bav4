@@ -1,6 +1,9 @@
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
+import { findAllByAttribute } from '../utils/markup';
+import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
+
 
 /**
 * A function that provides map releated meta data
@@ -126,5 +129,16 @@ export class MapService {
 	getScaleLineContainer() {
 		const element = document.querySelector('ba-footer')?.shadowRoot.querySelector('.scale');
 		return element ?? null;
+	}
+
+	/**
+	 * Returns a DOMRect instance describing the visible part of the map
+	 * (which means the part of the map that is not overlapped by any other UI element)
+	 * @returns {DOMRect}
+	 */
+	getVisibleViewport() {
+		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
+
+		return calculateVisibleViewport(document.body, overlappingElements);
 	}
 }
