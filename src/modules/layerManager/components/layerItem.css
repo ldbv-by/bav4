@@ -1,7 +1,6 @@
 .slider-container {
-	width: 100%;
-	/* padding-top: 1em; */
-	margin-top: -1.5em;
+	width: 50%;
+	padding-top: 1em; 	
 }
 
 ba-icon {
@@ -31,12 +30,6 @@ ba-icon:focus {
 
 .ishidden {
 	visibility: hidden;
-}
-
-.collapse-content {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
 }
 
 .collapse-content>* {
