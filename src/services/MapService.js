@@ -132,14 +132,29 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a DOMRect instance describing the visible part of the specified map
+	 * Additional Padding of a Viewport in pixel.
+	 * @typedef ViewportPadding
+	 * @property {number} top
+	 * @property {number} right
+	 * @property {number} button
+	 * @property {number} left
+	 */
+
+	/**
+	 * Returns a {@see ViewportPadding} describing the visible part of the specified map
 	 * (which means the part of the map that is not overlapped by any other UI element)
 	 * @param {HTMLElement} mapElement the map containing element
-	 * @returns {DOMRect}
+	 * @returns {ViewportPadding}
 	 */
 	getVisibleViewport(mapElement) {
 		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
+		const visibleRectangle = calculateVisibleViewport(mapElement, overlappingElements);
 
-		return calculateVisibleViewport(mapElement, overlappingElements);
+		const baseRectangle = mapElement.getBoundingClientRect();
+		return {
+			top: visibleRectangle.top - baseRectangle.top,
+			right:	baseRectangle.right - visibleRectangle.right,
+			bottom: baseRectangle.bottom - visibleRectangle.bottom,
+			left: visibleRectangle.left - baseRectangle.left };
 	}
 }
