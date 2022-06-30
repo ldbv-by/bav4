@@ -17,7 +17,8 @@ import { EventLike } from '../../utils/storeUtils';
 /**
  * Options for a FitRequest.
  * @typedef {Object} FitRequestOptions
- * @property {maxZoom} maxZoom max zoom level that is set even if extent would result in a higher zoom level
+ * @property {number} maxZoom max zoom level that is set even if extent would result in a higher zoom level
+ * @property {boolean} useVisibleViewport if `true` the map view is fitted by taking care of the currently visible viewport. Defaults to `true`.
  */
 
 /**
@@ -202,32 +203,36 @@ export const changeCenter = (center) => {
 	});
 };
 
+const defaultFitOptions = {
+	useVisibleViewport: true
+};
+
 /**
  * Sets a fit request.
  * The fitRequest object is wrapper by an {@link EventLike} object.
  * @param {extent} extent extent for this fit request
- * @param {FitRequestOptions} options options for this fit request
+ * @param {FitRequestOptions} opts options for this fit request
  * @function
  */
-export const fit = (extent, options = {}) => {
+export const fit = (extent, opts = {}) => {
+	const options = { ...defaultFitOptions, ...opts };
 	getStore().dispatch({
 		type: FIT_REQUESTED,
 		payload: new EventLike({ extent, options })
 	});
 };
 
-
 /**
  * Sets a fit request for a layer.
  * The fitRequest object is wrapper by an {@link EventLike} object.
  * @param {string} id  id of the layer this fit request targets at
- * @param {FitRequestOptions} options options for this fit request
+ * @param {FitRequestOptions} opts options for this fit request
  * @function
  */
-export const fitLayer = (id, options = {}) => {
+export const fitLayer = (id, opts = {}) => {
+	const options = { ...defaultFitOptions, ...opts };
 	getStore().dispatch({
 		type: FIT_LAYER_REQUESTED,
 		payload: new EventLike({ id, options })
 	});
 };
-
