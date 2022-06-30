@@ -74,7 +74,7 @@ export class PositionPlugin extends BaPlugin {
 		} = $injector.inject('MapService');
 
 		setTimeout(() => {
-			fit(mapService.getDefaultMapExtent());
+			fit(mapService.getDefaultMapExtent(), { useVisibleViewport: false });
 		});
 	}
 
