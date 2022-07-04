@@ -191,6 +191,11 @@ export class ShowCase extends BaElement {
 			emitFixedNotification(getContent(version));
 			version = nextVersion(version, 1, 3);
 		};
+		const menuitems = [{ label: 'item 1', action: () => emitNotification('Item 1', LevelTypes.INFO) },
+			{ label: 'Item 2', action: () => emitNotification('Item 2', LevelTypes.INFO) },
+			{ label: 'item 3', action: () => emitNotification('Item 3', LevelTypes.INFO) },
+			{ label: 'item 4', disabled: true, action: () => emitNotification('Item 4', LevelTypes.INFO) }
+		];
 
 		return html`
 		<style>
@@ -264,6 +269,11 @@ export class ShowCase extends BaElement {
 				<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>		
+			</div>
+
+			<h3>Menu</h3>
+			<div class='example menu'>		
+				<ba-kebab .items=${menuitems}></ba-kebab>
 			</div>
 
 			<h3>Checkbox</h3>

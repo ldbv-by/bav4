@@ -1,9 +1,10 @@
 import { html } from 'lit-html';
+import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './kebabmenu.css';
 
 const Update_IsCollapsed = 'update_is_collapsed';
-const Update_Commands = 'update_commands';
+const Update_Menu_Items = 'update_menu_items';
 
 
 /**
@@ -12,8 +13,11 @@ const Update_Commands = 'update_commands';
  * @property {string} [icon] the icon of the menu item; Data-URI of Base64 encoded SVG
  * @property {function} [action] the action to perform, when user press the menu item
  * @property {boolean} [disabled] whether or not the menu item is enabled
+ * @property {boolean} [isDivider] whether or not the menu item stands for a divider
  */
 
+
+const DefaultMenuOption = { label: null, icon: null, action: null, disabled: false, isDivider: false };
 /**
  *
  * @class
@@ -21,53 +25,84 @@ const Update_Commands = 'update_commands';
  */
 export class KebabMenu extends MvuElement {
 
-    constructor() {
-        super({
-            commands: [],
-            isCollapsed: true
-        });
+	constructor() {
+		super({
+			menuItems: [],
+			isCollapsed: true
+		});
 
-    }
+	}
 
-    update(type, data, model) {
+	update(type, data, model) {
 
-        switch (type) {
-            case Update_IsCollapsed:
-                return { ...model, isCollapsed: data };
-            case Update_Commands:
-                return { ...model, commands: data };
-        }
-    }
+		switch (type) {
+			case Update_IsCollapsed:
+				return { ...model, isCollapsed: data };
+			case Update_Menu_Items:
+				return {
+					...model, menuItems: data.map(i => {
+						return { ...DefaultMenuOption, ...i };
+					})
+				};
+		}
+	}
 
-    /**
-     * @override
-     */
-    createView(model) {
-        const { disabled, label, type } = model;
-        const onClick = () => {
-            this._onClick();
-        };
 
-        const classes = {
-            primary: type === 'primary',
-            secondary: type !== 'primary',
-            disabled: disabled
-        };
+	/**
+ * @override
+ */
+	createView(model) {
+		const { isCollapsed, menuItems } = model;
+		const onClick = () => {
+			this.signal(Update_IsCollapsed, !isCollapsed);
+		};
 
-        return html`
+		const isCollapsedClass = {
+			iscollapsed: isCollapsed
+		};
+		return html`
 		 <style>${css}</style> 
-         <div class='kebabmenu__container'>
-         <div class='kebab_header'>							
-             <button id="kebab-icon" data-test-id class='kebabmenu__toggle-button' @click=${onClick}  ></button>	
-         </div>
-         <div class='kebab_container'>
-             ${getIcons()}
+         <button id="kebab-icon" data-test-id class='kebabmenu__button' @click=${onClick} ></button>	         
+         <div class='kebab__container ${classMap(isCollapsedClass)}'>
+             ${isCollapsed ? '' : this._getItems(menuItems)}
          </div>
      </div>
 		`;
-    }
+	}
 
-    static get tag() {
-        return 'ba-kebab';
-    }
+	/**
+ *
+ * @param {Array<MenuItemOption>} menuItems
+ * @returns
+ */
+	_getItems(menuItems) {
+		const toHtml = (menuItem) => {
+			const { label, icon, action, disabled } = menuItem;
+
+			const customIconClass = icon ? `.icon-custom {
+                mask : url("${icon}");
+                -webkit-mask-image : url("${icon}");
+            }` : '';
+
+			const isDisabledClass = {
+				isdisabled: disabled
+			};
+
+			return html`
+            <style>
+            ${customIconClass}
+            </style>
+            <div class='menuitem icon-custom ${classMap(isDisabledClass)}' @click=${action}>${label}</div>`;
+		};
+
+		return menuItems.map(menuItem => toHtml(menuItem));
+	}
+
+	set items(menuItemOptions) {
+		this.signal(Update_Menu_Items, menuItemOptions);
+	}
+
+	static get tag() {
+		return 'ba-kebab';
+	}
 }

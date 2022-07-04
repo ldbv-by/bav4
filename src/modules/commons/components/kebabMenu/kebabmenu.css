@@ -1,0 +1,31 @@
+.kebabmenu__button {
+	mask: url("../../assets/kebab.svg");
+	-webkit-mask-image: url(" ../../assets/kebab.svg");
+	cursor: pointer;
+	display: inline-block;
+	height: 2em;
+	width: 2em;
+	background-color: var(--primary-color);
+
+}
+
+.kebab__container {
+	position: fixed;
+	border: 3px solid var(--primary-bg-color);
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+	background-color: var(--primary-bg-color);
+	z-index: 100;
+}
+
+.menuitem {
+	padding: 0.5em;
+	cursor: pointer;
+}
+
+.menuitem:hover {
+	background-color: var(--tertiary-bg-color);
+}
+
+.iscollapsed {
+	display: none
+}
