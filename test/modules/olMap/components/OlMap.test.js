@@ -25,6 +25,8 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import ImageLayer from 'ol/layer/Image';
+import { ImageWMS } from 'ol/source';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -749,7 +751,7 @@ describe('OlMap', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('fits to an layers extent', async () => {
+		it('fits to a vector layers extent', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
@@ -777,7 +779,7 @@ describe('OlMap', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('fits to an layers extent with custom maxZoom option', async () => {
+		it('fits to a vector layers extent with custom maxZoom option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
@@ -806,7 +808,7 @@ describe('OlMap', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 
-		it('fits to an layers extent with custom useVisibleViewport option', async () => {
+		it('fits to  vector layers extent with custom useVisibleViewport option', async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
@@ -831,6 +833,36 @@ describe('OlMap', () => {
 			expect(element._viewSyncBlocked).toBeFalse();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('does nothing when layer has no source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new LayerGroup({ id }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
+		it('does nothing when layers source is not a vector source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new ImageLayer({ id, source: new ImageWMS() }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
 		it('does nothing when source can\'t provide an extent', async () => {
