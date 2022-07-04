@@ -43,7 +43,6 @@ export class MainMenu extends MvuElement {
 		this.observe(state => state.media, data => this.signal(Update_Media, data), true);
 	}
 
-
 	update(type, data, model) {
 		switch (type) {
 			case Update_Main_Menu:
@@ -92,7 +91,6 @@ export class MainMenu extends MvuElement {
 
 			swipe.init();
 		}
-
 	}
 
 	/**
@@ -157,7 +155,7 @@ export class MainMenu extends MvuElement {
 						<i class='resize-icon'></i>	
 					</button>	
 					${getSlider()} 
-					<div id='mainMenuContainer' class='main-menu__container' data-register-for-viewport-calc>					
+					<div id='mainMenuContainer' class='main-menu__container' ?data-register-for-viewport-calc=${!portrait}>					
 						<div class="overlay-content">
 							${contentPanels.map(item => html`
 								<div class="tabcontent">						

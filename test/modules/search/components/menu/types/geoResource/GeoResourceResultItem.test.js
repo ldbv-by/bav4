@@ -6,6 +6,7 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../../../../src/store/mainMenu/mainMenu.action';
 import { $injector } from '../../../../../../../src/injection';
+import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
@@ -36,7 +37,8 @@ describe('GeoResourceResultItem', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			layers: layersReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
-			media: createNoInitialStateMediaReducer()
+			media: createNoInitialStateMediaReducer(),
+			position: positionReducer
 		});
 
 		$injector
@@ -86,6 +88,7 @@ describe('GeoResourceResultItem', () => {
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
+				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			});
 		});
 
@@ -153,6 +156,7 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
 				expect(store.getState().layers.active[0].label).toBe('label');
+				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			});
 
 			it('optionally updates the real layers label', async () => {

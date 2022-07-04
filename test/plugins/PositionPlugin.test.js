@@ -139,6 +139,7 @@ describe('PositionPlugin', () => {
 				await TestUtils.timeout();
 				expect(mapServiceSpy).toHaveBeenCalledTimes(1);
 				expect(store.getState().position.fitRequest).not.toEqual(initialFitRequest);
+				expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
 			});
 		});
 
