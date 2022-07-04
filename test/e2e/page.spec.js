@@ -67,6 +67,10 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
+		test('should contain 13 top level ba-components', async ({ page }) => {
+			expect(await page.locator('body > *').count()).toBe(13);
+		});
+
 		test('should contain a <ba-header> component', async ({ page }) => {
 			expect(await page.$$('ba-header')).toHaveLength(1);
 		});
@@ -88,10 +92,6 @@ test.describe('page', () => {
 
 		test('should contain a <ba-footer> component', async ({ page }) => {
 			expect(await page.$$('ba-footer')).toHaveLength(1);
-		});
-
-		test('should contain a <ba-first-steps> component', async ({ page }) => {
-			expect(await page.$$('ba-first-steps')).toHaveLength(1);
 		});
 
 		test('should contain a <ba-tool-container> component', async ({ page }) => {
