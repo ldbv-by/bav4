@@ -1,7 +1,8 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import css from './devInfo.css';
+import { openModal } from '../../../../store/modal/modal.action';
+import { MvuElement } from '../../../MvuElement';
 
 
 /**
@@ -10,7 +11,7 @@ import css from './devInfo.css';
  * @class
  * @author taulinger
  */
-export class DevInfo extends BaElement {
+export class DevInfo extends MvuElement {
 
 	constructor() {
 		super();
@@ -25,9 +26,13 @@ export class DevInfo extends BaElement {
 	createView() {
 		const info = this._configService.getValue('SOFTWARE_INFO', false);
 
+		const onShowcaseButtonClick = () => {
+			openModal('Showcase', html`<ba-showcase>`);
+		};
+
 		return html`
 			<style>${css}</style>
-			<div class='container'>${info}</div>
+			<div class='container'><ba-button @click=${onShowcaseButtonClick} .size=${2.0} .label=${info} .type=${'secondary'}><ba-button></div>
 		`;
 	}
 
