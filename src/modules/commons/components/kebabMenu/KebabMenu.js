@@ -62,7 +62,10 @@ export class KebabMenu extends MvuElement {
 		};
 		return html`
 		 <style>${css}</style> 
-         <button id="kebab-icon" data-test-id class='kebabmenu__button' @click=${onClick} ></button>	         
+         <button class='anchor'>
+            <span id="kebab-icon" data-test-id class='kebabmenu__button' @click=${onClick} >
+            </span>
+         </button>	         
          <div class='kebab__container ${classMap(isCollapsedClass)}'>
              ${isCollapsed ? '' : this._getItems(menuItems)}
          </div>

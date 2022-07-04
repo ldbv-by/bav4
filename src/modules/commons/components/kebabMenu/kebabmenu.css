@@ -6,7 +6,25 @@
 	height: 2em;
 	width: 2em;
 	background-color: var(--primary-color);
+}
 
+.kebabmenu__button:hover {
+	border-width: 3px;
+	border-radius: 0.1em;
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+}
+
+.anchor {
+	display: inline-block;
+	background: transparent;
+	border: none;
+	border-radius: calc(2.5em / 2);
+	height: 2.5em;
+	width: 2.5em
+}
+
+.anchor:hover {
+	background: var(--primary-bg-color);
 }
 
 .kebab__container {
@@ -18,7 +36,7 @@
 }
 
 .menuitem {
-	padding: 0.5em;
+	padding: 1em;
 	cursor: pointer;
 }
 
