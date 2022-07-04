@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './firststeps.css';
 import { MvuElement } from '../../MvuElement';
-import { emitFixedNotification, emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { emitFixedNotification } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../services/domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
