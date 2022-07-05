@@ -222,12 +222,17 @@ describe('positionReducer', () => {
 		fit([21, 21, 42, 42], { maxZoom: 42 });
 
 		expect(store.getState().position.fitRequest.payload.extent).toEqual([21, 21, 42, 42]);
-		expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(42);
+		expect(store.getState().position.fitRequest.payload.options).toEqual({ maxZoom: 42, useVisibleViewport: true });
+
+		fit([21, 21, 42, 42], { useVisibleViewport: false });
+
+		expect(store.getState().position.fitRequest.payload.extent).toEqual([21, 21, 42, 42]);
+		expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
 
 		fit([22, 22, 43, 43]);
 
 		expect(store.getState().position.fitRequest.payload.extent).toEqual([22, 22, 43, 43]);
-		expect(store.getState().position.fitRequest.payload.options).toEqual({});
+		expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: true });
 	});
 
 	it('places a \'fitLayerRequest\' property', () => {
@@ -236,11 +241,16 @@ describe('positionReducer', () => {
 		fitLayer('foo', { maxZoom: 42 });
 
 		expect(store.getState().position.fitLayerRequest.payload.id).toBe('foo');
-		expect(store.getState().position.fitLayerRequest.payload.options.maxZoom).toBe(42);
+		expect(store.getState().position.fitLayerRequest.payload.options).toEqual({ maxZoom: 42, useVisibleViewport: true });
+
+		fitLayer('foo', { useVisibleViewport: false });
+
+		expect(store.getState().position.fitLayerRequest.payload.id).toBe('foo');
+		expect(store.getState().position.fitLayerRequest.payload.options).toEqual({ useVisibleViewport: false });
 
 		fitLayer('bar');
 
 		expect(store.getState().position.fitLayerRequest.payload.id).toBe('bar');
-		expect(store.getState().position.fitLayerRequest.payload.options).toEqual({});
+		expect(store.getState().position.fitLayerRequest.payload.options).toEqual({ useVisibleViewport: true });
 	});
 });

@@ -11,6 +11,7 @@ import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { positionReducer } from '../../src/store/position/position.reducer';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
 
@@ -44,7 +45,8 @@ describe('ImportPlugin', () => {
 			layers: layersReducer,
 			import: importReducer,
 			notifications: notificationReducer,
-			mainMenu: createNoInitialStateMainMenuReducer()
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			position: positionReducer
 		});
 		$injector
 			.registerSingleton('ImportVectorDataService', importVectorDataServiceMock)
@@ -91,6 +93,8 @@ describe('ImportPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
+			expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
 			setUrl('http://some.url', sourceType);
 
 			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
@@ -99,7 +103,7 @@ describe('ImportPlugin', () => {
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
 			expect(store.getState().layers.active[0].label).toBe('labelBar');
 			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 		});
 
 		it('emits a notification and logs a warning when sourceType is NULL', async () => {

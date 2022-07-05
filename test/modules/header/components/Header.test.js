@@ -12,8 +12,9 @@ import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
+import { setIsPortrait } from '../../../../src/store/media/media.action';
 
 window.customElements.define(Header.tag, Header);
 
@@ -700,4 +701,31 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('foo');
 		});
 	});
+
+	describe('when orientation changes', () => {
+
+		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					observeResponsiveParameter: true
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+
+			setIsPortrait(true);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+
+			setIsPortrait(false);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+		});
+	});
+
 });
