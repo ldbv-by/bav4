@@ -168,7 +168,7 @@ For example, they could be responsible for setting an initial state or reacting 
 
 ## Links
 ### Various topics relating web components
-- Introduction into custom elements and web components: https://javascript.info/web-components
+- Introduction to custom elements and web components: https://javascript.info/web-components
 - https://www.thinktecture.com/de/articles/web-components/
 - https://alligator.io/web-components/attributes-properties/
 - https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
