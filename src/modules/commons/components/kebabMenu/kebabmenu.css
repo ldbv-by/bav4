@@ -23,6 +23,10 @@
 	width: 2.5em
 }
 
+.menu_icon_placeholder{
+	width: 2.5em;;
+}
+
 .anchor:hover {
 	background: var(--primary-bg-color);
 }
@@ -54,12 +58,22 @@
 }
 
 .menuitem {
-	padding: 1em;
-	cursor: pointer;
+	
+    padding: 1em;
+    cursor: pointer;
+ 	display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .menuitem:hover {
 	background-color: var(--tertiary-bg-color);
+}
+
+.isdisabled {
+	background-color: var(--tertiary-bg-color);
+	color: var(--text1);
+	opacity:0.5;
 }
 
 .iscollapsed {

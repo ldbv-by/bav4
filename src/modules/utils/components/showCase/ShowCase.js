@@ -191,7 +191,7 @@ export class ShowCase extends BaElement {
 			emitFixedNotification(getContent(version));
 			version = nextVersion(version, 1, 3);
 		};
-		const menuitems = [{ label: 'Apple', action: () => emitNotification('Apple', LevelTypes.INFO) }, { label: 'Lemon', action: () => emitNotification('Lemon', LevelTypes.INFO) }, { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) }, { label: 'Banana', disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }];
+		const menuitems = [{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) }, { label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) }, { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) }, { label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }];
 
 		return html`
 		<style>
