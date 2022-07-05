@@ -211,7 +211,7 @@ describe('HighlightPlugin', () => {
 			expect(store.getState().highlight.features[0].id).not.toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
 		});
 
-		it('adds a success highlight feature', async () => {
+		it('adds a success highlight feature when containing a FeatureInfo owning no geometry', async () => {
 			const coordinate = [21, 42];
 			const store = setup();
 			const queryId = 'foo';
@@ -220,12 +220,28 @@ describe('HighlightPlugin', () => {
 
 			startRequest(coordinate);
 			registerQuery(queryId);
-			// add a result
-			addFeatureInfoItems({ title: 'title0', content: 'content0' });
+			// add results
+			addFeatureInfoItems({ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1', geometry: {} });
 			resolveQuery(queryId);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
+		});
+
+		it('does NOT add a success highlight feature when containing solely FeatureInfo objects owning a geometry', async () => {
+			const coordinate = [21, 42];
+			const store = setup();
+			const queryId = 'foo';
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			startRequest(coordinate);
+			registerQuery(queryId);
+			// add results
+			addFeatureInfoItems({ title: 'title0', content: 'content0', geometry: {} }, { title: 'title1', content: 'content1', geometry: {} });
+			resolveQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 	});
 });

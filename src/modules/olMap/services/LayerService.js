@@ -1,9 +1,10 @@
 import { $injector } from '../../../injection';
-import { GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../services/domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
-import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
+import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
+import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -11,6 +12,13 @@ import { XYZ as XYZSource } from 'ol/source';
  * @author taulinger
  */
 export class LayerService {
+
+	/**
+	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 */
+	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
+		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;
+	}
 
 	/**
 	 *
@@ -23,8 +31,9 @@ export class LayerService {
 
 		const {
 			GeoResourceService: georesourceService,
-			VectorLayerService: vectorLayerService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService');
+			VectorLayerService: vectorLayerService,
+			BaaCredentialService: baaCredentialService
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -37,7 +46,7 @@ export class LayerService {
 
 			case GeoResourceTypes.WMS: {
 
-				const imageWmsSource = new ImageWMS({
+				const imageWmsSource = new LimitedImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
 					ratio: 1,
@@ -49,13 +58,26 @@ export class LayerService {
 					}
 				});
 
-				return new ImageLayer({
+				switch (geoResource.authenticationType) {
+					case GeoResourceAuthenticationType.BAA: {
+						const credential = baaCredentialService.get(geoResource.url);
+						if (!credential) {
+							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+						}
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
+					}
+				}
+
+				const layer = new ImageLayer({
 					id: id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
+				const onPrerenderFunctionKey = layer.on('prerender', getPrerenderFunctionForImageLayer());
+				layer.set('onPrerenderFunctionKey', onPrerenderFunctionKey);
+				return layer;
 			}
 
 			case GeoResourceTypes.WMTS: {

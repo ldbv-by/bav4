@@ -66,59 +66,59 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
+		test('should contain 13 top level ba-components', async ({ page }) => {
+			expect(await page.locator('body > *').count()).toBe(13);
+		});
+
 		test('should contain a <ba-header> component', async ({ page }) => {
-			expect(await page.$$('ba-header')).toHaveLength(1);
+			expect(await page.locator('ba-header').count()).toBe(1);
 		});
 
 		test('should contain a <ba-main-menu> component', async ({ page }) => {
-			expect(await page.$$('ba-main-menu')).toHaveLength(1);
+			expect(await page.locator('ba-main-menu').count()).toBe(1);
 		});
 		test('should contain a <ba-ol-map> component', async ({ page }) => {
-			expect(await page.$$('ba-ol-map')).toHaveLength(1);
+			expect(await page.locator('ba-ol-map').count()).toBe(1);
 		});
 
 		test('should contain a <ba-map-button-container> component', async ({ page }) => {
-			expect(await page.$$('ba-map-button-container')).toHaveLength(1);
+			expect(await page.locator('ba-map-button-container').count()).toBe(1);
 		});
 
 		test('should contain a <ba-tool-bar> component', async ({ page }) => {
-			expect(await page.$$('ba-tool-bar')).toHaveLength(1);
+			expect(await page.locator('ba-tool-bar').count()).toBe(1);
 		});
 
 		test('should contain a <ba-footer> component', async ({ page }) => {
-			expect(await page.$$('ba-footer')).toHaveLength(1);
-		});
-
-		test('should contain a <ba-first-steps> component', async ({ page }) => {
-			expect(await page.$$('ba-first-steps')).toHaveLength(1);
+			expect(await page.locator('ba-footer').count()).toBe(1);
 		});
 
 		test('should contain a <ba-tool-container> component', async ({ page }) => {
-			expect(await page.$$('ba-tool-container')).toHaveLength(1);
+			expect(await page.locator('ba-tool-container').count()).toBe(1);
 		});
 
 		test('should contain a <ba-nonembedded-hint> component', async ({ page }) => {
-			expect(await page.$$('ba-nonembedded-hint')).toHaveLength(1);
+			expect(await page.locator('ba-nonembedded-hint').count()).toBe(1);
 		});
 
 		test('should contain a <ba-theme-provider> component', async ({ page }) => {
-			expect(await page.$$('ba-theme-provider')).toHaveLength(1);
+			expect(await page.locator('ba-theme-provider').count()).toBe(1);
 		});
 
 		test('should contain a <ba-modal> component', async ({ page }) => {
-			expect(await page.$$('ba-modal')).toHaveLength(1);
+			expect(await page.locator('ba-modal').count()).toBe(1);
 		});
 
 		test('should contain a <ba-notification-panel> component', async ({ page }) => {
-			expect(await page.$$('ba-notification-panel')).toHaveLength(1);
+			expect(await page.locator('ba-notification-panel').count()).toBe(1);
 		});
 
 		test('should contain a <ba-map-context-menu> component', async ({ page }) => {
-			expect(await page.$$('ba-map-context-menu')).toHaveLength(1);
+			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 		});
 
 		test('should contain a <ba-dnd-import-panel> component', async ({ page }) => {
-			expect(await page.$$('ba-dnd-import-panel')).toHaveLength(1);
+			expect(await page.locator('ba-dnd-import-panel').count()).toBe(1);
 		});
 	});
 });

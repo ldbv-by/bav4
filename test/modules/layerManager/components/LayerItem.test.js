@@ -7,6 +7,8 @@ import { $injector } from '../../../../src/injection';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { EventLike } from '../../../../src/utils/storeUtils';
+import { positionReducer } from '../../../../src/store/position/position.reducer';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);
@@ -189,9 +191,12 @@ describe('LayerItem', () => {
 				layers: {
 					active: [layer],
 					background: 'bg0'
+				},
+				position: {
+					fitRequest: new EventLike(null)
 				}
 			};
-			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer });
+			const store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, modal: modalReducer, position: positionReducer });
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			return store;
 		};
@@ -244,6 +249,18 @@ describe('LayerItem', () => {
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
+		});
+
+		it('click on zoomToExtent icon changes state in store', async () => {
+			const store = setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			const zoomToExtentButton = element.shadowRoot.querySelector('#zoomToExtent');
+
+			zoomToExtentButton.click();
+
+			expect(store.getState().position.fitLayerRequest.payload.id).toEqual('id0');
 		});
 	});
 

@@ -6,6 +6,7 @@ import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../services/domain/sourceType';
 import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
+import { fitLayer } from '../store/position/position.action';
 
 /**
  * Amount of time waiting before adding a layer in ms.
@@ -44,6 +45,7 @@ export class ImportPlugin extends BaPlugin {
 				//add the layer after some delay, which gives the user a better feedback
 				setTimeout(() => {
 					addLayer(id, { label: label });
+					fitLayer(id);
 				}, LAYER_ADDING_DELAY_MS);
 			}
 		};

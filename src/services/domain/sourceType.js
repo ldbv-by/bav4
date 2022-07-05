@@ -71,6 +71,8 @@ export const SourceTypeResultStatus = Object.freeze({
 	OK: 0,
 	UNSUPPORTED_TYPE: 1,
 	MAX_SIZE_EXCEEDED: 2,
-	OTHER: 3
+	OTHER: 3,
+	BAA_AUTHENTICATED: 4,
+	RESTRICTED: 5
 });
 

@@ -162,8 +162,8 @@ describe('OlMeasurementHandler', () => {
 		draw.dispatchEvent(drawEvent);
 	};
 
-	const simulateKeyEvent = (keyCode) => {
-		const keyEvent = new KeyboardEvent('keyup', { keyCode: keyCode, which: keyCode });
+	const simulateKeyEvent = (keyCode, key) => {
+		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
 	};
@@ -880,7 +880,7 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
 		});
 
@@ -890,14 +890,14 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
 			const feature = new Feature({ geometry: geometry });
-			const deleteKeyCode = 42;
+			const someKeyCode = 42;
 
 			classUnderTest.activate(map);
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 			classUnderTest._draw.removeLastPoint = jasmine.createSpy();
 			feature.getGeometry().dispatchEvent('change');
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(someKeyCode, 'some');
 			expect(classUnderTest._draw.removeLastPoint).not.toHaveBeenCalled();
 		});
 
@@ -915,7 +915,7 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(startNewSpy).toHaveBeenCalled();
 		});
 
@@ -936,11 +936,34 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 			classUnderTest._select.getFeatures().push(feature);
 			classUnderTest._modify.setActive(true);
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 
 
 			await TestUtils.timeout();
 			expect(removeFeatureSpy).toHaveBeenCalledWith(feature);
+		});
+
+		it('aborts measurement if keyup', async () => {
+			setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const abortKeyCode = 27;
+
+			classUnderTest.activate(map);
+
+			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('measure_');
+			const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
+
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+			classUnderTest._select.getFeatures().push(feature);
+			classUnderTest._modify.setActive(true);
+			simulateKeyEvent(abortKeyCode, 'Escape');
+
+
+			await TestUtils.timeout();
+			expect(startNewSpy).toHaveBeenCalled();
 		});
 	});
 
@@ -1268,7 +1291,7 @@ describe('OlMeasurementHandler', () => {
 			feature.getGeometry().dispatchEvent('change');
 			expect(classUnderTest._modify.getActive()).toBeFalse();
 
-			simulateKeyEvent(deleteKeyCode);
+			simulateKeyEvent(deleteKeyCode, 'Delete');
 			expect(classUnderTest._measureState.type).toBe(InteractionStateType.DRAW);
 			expect(classUnderTest._draw.removeLastPoint).toHaveBeenCalled();
 			expect(classUnderTest._draw.handleEvent).toHaveBeenCalledWith(jasmine.any(MapBrowserEvent));

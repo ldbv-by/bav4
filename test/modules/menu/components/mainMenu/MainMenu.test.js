@@ -10,11 +10,11 @@ import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/Dev
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../../../src/store/media/media.action';
+import { disableResponsiveParameterObservation, enableResponsiveParameterObservation, setIsPortrait } from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(MainMenu.tag, MainMenu);
 
@@ -135,7 +135,6 @@ describe('MainMenu', () => {
 		});
 	});
 
-
 	describe('when initialized', () => {
 
 		it('adds a div which holds the main menu and a close button', async () => {
@@ -254,6 +253,32 @@ describe('MainMenu', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.main-menu').parentElement.classList.contains('prevent-transition')).toBeFalse();
+		});
+	});
+
+	describe('when orientation changes', () => {
+
+		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+			const state = {
+				media: {
+					portrait: true,
+					observeResponsiveParameter: true
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+
+			setIsPortrait(false);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+
+			setIsPortrait(true);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('#mainMenuContainer').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
 		});
 	});
 

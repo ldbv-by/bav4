@@ -5,6 +5,8 @@ import { close as closeMainMenu, setTab, TabId } from '../../../../../../store/m
 import css from './geoResourceResultItem.css';
 import { MvuElement } from '../../../../../MvuElement';
 import { $injector } from '../../../../../../injection';
+import { createUniqueId } from '../../../../../../utils/numberUtils';
+import { fitLayer } from '../../../../../../store/position/position.action';
 
 const Update_IsPortrait = 'update_isPortrait';
 const Update_GeoResourceSearchResult = 'update_geoResourceSearchResult';
@@ -64,21 +66,25 @@ export class GeoResourceResultItem extends MvuElement {
 		 * These events are not fired on touch devices, so there's no extra handling needed.
 		 */
 		const onMouseEnter = (result) => {
+			const id = GeoResourceResultItem._tmpLayerId(result.geoResourceId);
 			//add a preview layer
-			addLayer(GeoResourceResultItem._tmpLayerId(result.layerId),
-				{ label: result.label, geoResourceId: result.id, constraints: { hidden: true, alwaysTop: true } });
+			addLayer(id,
+				{ label: result.label, geoResourceId: result.geoResourceId, constraints: { hidden: true, alwaysTop: true } });
+			fitLayer(id);
 		};
 		const onMouseLeave = (result) => {
 			//remove the preview layer
-			removeLayer(GeoResourceResultItem._tmpLayerId(result.layerId));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
 		};
 		const onClick = (result) => {
 			//remove the preview layer
-			removeLayer(GeoResourceResultItem._tmpLayerId(result.layerId));
+			removeLayer(GeoResourceResultItem._tmpLayerId(result.geoResourceId));
 			//add the "real" layer after some delay, which gives the user a better feedback
 			setTimeout(() => {
+				const id = `${result.geoResourceId}_${createUniqueId()}`;
 				//we ask the GeoResourceService for an optionally updated label
-				addLayer(result.layerId, { geoResourceId: result.id, label: this._geoResourceService.byId(result.id)?.label ?? result.label });
+				addLayer(id, { geoResourceId: result.geoResourceId, label: this._geoResourceService.byId(result.geoResourceId)?.label ?? result.label });
+				fitLayer(id);
 			}, LAYER_ADDING_DELAY_MS);
 
 			if (isPortrait) {
@@ -104,7 +110,7 @@ export class GeoResourceResultItem extends MvuElement {
 							</span>
 						</span>
 						<span class="ba-list-item__text ">
-						${unsafeHTML(geoResourceSearchResult.labelFormated)}
+						${unsafeHTML(geoResourceSearchResult.labelFormatted)}
 						</span>
 				</li>				
             `;

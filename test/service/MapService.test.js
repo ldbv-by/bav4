@@ -187,5 +187,62 @@ describe('MapService', () => {
 			expect(element).toBeNull();
 		});
 	});
+
+	describe('getVisibleViewport', () => {
+		it('returns a visible viewportPadding', () => {
+			document.body.innerHTML = '<div id="overlapping1" data-register-for-viewport-calc></div>'
+									+ '<div id="non-overlapping"></div>'
+									+ '<div id="overlapping2" data-register-for-viewport-calc></div>';
+			const overlappingElement1 = document.getElementById('overlapping1');
+			const overlappingElement2 = document.getElementById('overlapping2');
+			const nonOverlappingElement = document.getElementById('non-overlapping');
+			const spy1 = spyOn(overlappingElement1, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
+			const spy2 = spyOn(overlappingElement2, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
+			const spy3 = spyOn(nonOverlappingElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect());
+			const mapElementMock = { getBoundingClientRect: () => DOMRect.fromRect() };
+			const instanceUnderTest = setup();
+
+			const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
+
+			expect(visibleViewPort).toEqual({ top: 0, right: 0, bottom: 0, left: 0 });
+			expect(spy1).toHaveBeenCalled();
+			expect(spy2).toHaveBeenCalled();
+			expect(spy3).not.toHaveBeenCalled();
+		});
+
+		describe('returns a visible viewportPadding relative to the mapElement', () => {
+			const mapElementMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 500, height: 500 }) };
+
+			it('with a leftSideElement and a bottomElement', () => {
+				document.body.innerHTML = '<div id="leftSideElement" data-register-for-viewport-calc></div>'
+										+ '<div id="non-overlapping"></div>'
+										+ '<div id="bottomElement" data-register-for-viewport-calc></div>';
+				const leftSideElement = document.getElementById('leftSideElement');
+				const bottomElement = document.getElementById('bottomElement');
+				spyOn(leftSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 50, y: 50, width: 50, height: 550 }));
+				spyOn(bottomElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 100, y: 500, width: 450, height: 50 }));
+				const instanceUnderTest = setup();
+
+				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
+
+				expect(visibleViewPort).toEqual({ top: 0, right: 0, bottom: 50, left: 50 });
+			});
+
+			it('with a rightSideElement and a topElement', () => {
+				document.body.innerHTML = '<div id="rightSideElement" data-register-for-viewport-calc></div>'
+										+ '<div id="non-overlapping"></div>'
+										+ '<div id="topElement" data-register-for-viewport-calc></div>';
+				const rightSideElement = document.getElementById('rightSideElement');
+				const topElement = document.getElementById('topElement');
+				spyOn(rightSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 500, y: 50, width: 50, height: 550 }));
+				spyOn(topElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 50, y: 50, width: 450, height: 50 }));
+				const instanceUnderTest = setup();
+
+				const visibleViewPort = instanceUnderTest.getVisibleViewport(mapElementMock);
+
+				expect(visibleViewPort).toEqual({ top: 50, right: 50, bottom: 0, left: 0 });
+			});
+		});
+	});
 });
 

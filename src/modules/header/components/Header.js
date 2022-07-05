@@ -142,6 +142,7 @@ export class Header extends MvuElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
@@ -212,7 +213,7 @@ export class Header extends MvuElement {
 					</div>
 					<div class='header__emblem'>
 					</div>
-					<div  class="header ${getOverlayClass()}">  
+					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
 						</button> 

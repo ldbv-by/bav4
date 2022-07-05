@@ -34,6 +34,7 @@ import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
 import './modules/dndImport';
+import './modules/auth';
 
 if ('serviceWorker' in navigator) {
 

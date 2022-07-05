@@ -6,7 +6,8 @@ import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../services/HttpService';
 import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
-import { SourceTypeResultStatus } from '../../../services/domain/sourceType';
+import { setQuery } from '../../../store/search/search.action';
+import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';
@@ -168,7 +169,10 @@ export class DndImportPanel extends MvuElement {
 
 		const importAsUrl = async (url) => {
 			const sourceTypeResult = await this._sourceTypeService.forUrl(url);
-			this._importOrNotify(sourceTypeResult, () => setImportUrl(url, sourceTypeResult.sourceType));
+			const getImportAction = () => {
+				return sourceTypeResult.sourceType?.name === SourceTypeName.WMS ? () => setQuery(url) : () => setImportUrl(url, sourceTypeResult.sourceType);
+			};
+			this._importOrNotify(sourceTypeResult, getImportAction());
 		};
 
 		const importAction = isHttpUrl(textData) ? importAsUrl : importAsLocalData;
