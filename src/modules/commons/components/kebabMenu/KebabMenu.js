@@ -122,11 +122,6 @@ export class KebabMenu extends MvuElement {
 		return 3;
 	}
 
-	/**
- *
- * @param {Array<MenuItemOption>} menuItems
- * @returns
- */
 	_getItems(menuItems) {
 		const toHtml = (menuItem) => {
 			const { label, icon, action, disabled } = menuItem;
@@ -136,7 +131,7 @@ export class KebabMenu extends MvuElement {
                 -webkit-mask-image : url("${icon}");
             }` : '';
 
-			const isDisabledClass = {
+			const classes = {
 				isdisabled: disabled
 			};
 
@@ -144,7 +139,7 @@ export class KebabMenu extends MvuElement {
             <style>
             ${customIconClass}
             </style>
-            <div class='menuitem icon-custom ${classMap(isDisabledClass)}' @click=${action}>${label}</div>`;
+            <div class='menuitem icon-custom ${classMap(classes)}' @click=${action}>${label}</div>`;
 		};
 
 		return menuItems.map(menuItem => toHtml(menuItem));
