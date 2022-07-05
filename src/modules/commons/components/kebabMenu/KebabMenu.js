@@ -1,10 +1,12 @@
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './kebabmenu.css';
 
 const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Items = 'update_menu_items';
+const Update_Anchor_Position = 'update_last_anchor_position';
 
 
 /**
@@ -28,7 +30,8 @@ export class KebabMenu extends MvuElement {
 	constructor() {
 		super({
 			menuItems: [],
-			isCollapsed: true
+			isCollapsed: true,
+			anchorPosition: null
 		});
 
 	}
@@ -44,6 +47,8 @@ export class KebabMenu extends MvuElement {
 						return { ...DefaultMenuOption, ...i };
 					})
 				};
+			case Update_Anchor_Position:
+				return { ...model, anchorPosition: data };
 		}
 	}
 
@@ -52,20 +57,15 @@ export class KebabMenu extends MvuElement {
  * @override
  */
 	createView(model) {
-		const { isCollapsed, menuItems } = model;
-		const onClick = () => {
+		const { isCollapsed } = model;
+		const onClick = (e) => {
+			const rect = this.getBoundingClientRect();
+			const delta = [e.x - e.offsetX, e.y - e.offsetY];
+			this.signal(Update_Anchor_Position, { absolute: [rect.x, rect.y], relative: [rect.x - delta[0], rect.y - delta[1]] });
 			this.signal(Update_IsCollapsed, !isCollapsed);
 		};
 
-		const isCollapsedClass = {
-			iscollapsed: isCollapsed
-		};
-
-		const content = html`
-            <div class='kebab__container ${classMap(isCollapsedClass)}'>
-             ${isCollapsed ? '' : this._getItems(menuItems)} 
-             </div>`;
-
+		const menu = this._getMenu(model);
 
 		return html`
 		 <style>${css}</style> 
@@ -73,8 +73,53 @@ export class KebabMenu extends MvuElement {
             <span id="kebab-icon" data-test-id class='kebabmenu__button' @click=${onClick} >
             </span>
          </button>	         
-         ${content}
+         ${menu}
      </div>`;
+	}
+
+	_getMenu(model) {
+		const { isCollapsed, menuItems, anchorPosition } = model;
+
+		const sector = anchorPosition ? this._calculateSector(anchorPosition.absolute) : 0;
+
+		//consider css arrow offset of 10px
+		const yOffset = (sector < 2 ? 0 : -1) * 35;
+		const xOffset = (sector === 1 || sector === 2 ? 1 : 0) * 35;
+
+		const style = anchorPosition ? { '--anchor-x': anchorPosition.relative[0] + xOffset + 'px', '--anchor-y': anchorPosition.relative[1] + yOffset + 'px' } : {};
+
+		const classes = {
+			iscollapsed: isCollapsed,
+			sector0: sector === 0,
+			sector1: sector === 1,
+			sector2: sector === 2,
+			sector3: sector === 3
+		};
+
+		return html`<div class='menu__container ${classMap(classes)}' style=${styleMap(style)}'>
+             ${isCollapsed ? '' : this._getItems(menuItems)} 
+             </div>`;
+
+	}
+
+	_calculateSector(coordinate) {
+		const widthBorder = window.innerWidth * .66;
+		const heightBorder = window.innerHeight * .66;
+
+		//window sector the click event occurred:
+		//0-1
+		//3-2
+
+		if (coordinate[0] <= widthBorder && coordinate[1] <= heightBorder) {
+			return 0;
+		}
+		else if (coordinate[0] > widthBorder && coordinate[1] <= heightBorder) {
+			return 1;
+		}
+		else if (coordinate[0] > widthBorder && coordinate[1] > heightBorder) {
+			return 2;
+		}
+		return 3;
 	}
 
 	/**

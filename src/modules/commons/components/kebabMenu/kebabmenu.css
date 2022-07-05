@@ -27,12 +27,30 @@
 	background: var(--primary-bg-color);
 }
 
-.kebab__container {
+.menu__container {
+	--anchor-x: 0;
+	--anchor-y: 0;
 	position: fixed;
 	border: 3px solid var(--primary-bg-color);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	background-color: var(--primary-bg-color);
 	z-index: 100;
+}
+
+.sector0 {
+	transform: translateX(calc(var(--anchor-x))) translateY(calc(var(--anchor-y)));
+}
+
+.sector1 {
+	transform: translateX(calc(var(--anchor-x) - 100%)) translateY(calc(var(--anchor-y)));
+}
+
+.sector2 {
+	transform: translateX(calc(var(--anchor-x) - 100%)) translateY(calc(var(--anchor-y) - 100%));
+}
+
+.sector3 {
+	transform: translateX(calc(var(--anchor-x))) translateY(calc(var(--anchor-y) - 100%));
 }
 
 .menuitem {
