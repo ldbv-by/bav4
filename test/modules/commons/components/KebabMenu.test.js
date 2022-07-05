@@ -26,4 +26,18 @@ describe('KebabMenu', () => {
 			expect(menu.classList.contains('iscollapsed')).toBeTrue();
 		});
 	});
+
+	describe('when button is clicked', () => {
+
+		it('opens menu with the menu-items', async () => {
+
+			const element = await TestUtils.render(KebabMenu.tag);
+			element.items = [{ label: 'item 1', action: () => {} }, { label: 'Item 2', action: () => {} }, { label: 'item 3', action: () => {} }];
+			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+
+			button.click();
+
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+		});
+	});
 });
