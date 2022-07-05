@@ -1,10 +1,17 @@
+import { $injector } from '../../../../src/injection';
 import { KebabMenu } from '../../../../src/modules/commons/components/kebabMenu/KebabMenu';
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(KebabMenu.tag, KebabMenu);
+
 describe('KebabMenu', () => {
+	const environmentService = {
+		isTouch: () => false
+	};
 
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
+		$injector
+			.registerSingleton('EnvironmentService', environmentService);
 	});
 
 	describe('when initialized', () => {
@@ -16,14 +23,13 @@ describe('KebabMenu', () => {
 
 		});
 
-		it('renders the view', async () => {
+		fit('renders the view', async () => {
 
 			const element = await TestUtils.render(KebabMenu.tag);
 
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
 			expect(anchorElements).toHaveSize(1);
-			const menu = element.shadowRoot.querySelector('.menu__container');
-			expect(menu.classList.contains('iscollapsed')).toBeTrue();
+			expect(element.shadowRoot.querySelector('.menu__container')).toBeNull();
 		});
 	});
 

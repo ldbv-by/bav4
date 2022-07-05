@@ -1,6 +1,8 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
+import { $injector } from '../../../../injection';
+import { emitFixedNotification } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './kebabmenu.css';
 
@@ -65,8 +67,7 @@ export class KebabMenu extends MvuElement {
 			this.signal(Update_IsCollapsed, !isCollapsed);
 		};
 
-		const menu = this._getMenu(model);
-
+		const menu = isCollapsed ? nothing : this._getMenuOrFixedNotification(model);
 		return html`
 		 <style>${css}</style> 
          <button class='anchor'>
@@ -77,8 +78,14 @@ export class KebabMenu extends MvuElement {
      </div>`;
 	}
 
-	_getMenu(model) {
+	_getMenuOrFixedNotification(model) {
 		const { isCollapsed, menuItems, anchorPosition } = model;
+
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		if (environmentService.isTouch()) {
+			emitFixedNotification(this._getItems(menuItems));
+			return nothing;
+		}
 
 		const sector = anchorPosition ? this._calculateSector(anchorPosition.absolute) : 0;
 
