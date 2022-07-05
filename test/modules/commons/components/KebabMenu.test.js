@@ -23,7 +23,7 @@ describe('KebabMenu', () => {
 
 		});
 
-		fit('renders the view', async () => {
+		it('renders the view', async () => {
 
 			const element = await TestUtils.render(KebabMenu.tag);
 
