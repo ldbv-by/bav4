@@ -270,8 +270,8 @@ export class ShowCase extends BaElement {
 			<h3>Menu</h3>
 			<div class='example menu'>		
 				<ba-kebab .items=${menuitems} ></ba-kebab>
-				<ba-kebab .items=${menuitems} ></ba-kebab>
-				<ba-kebab .items=${menuitems}></ba-kebab>
+				<ba-kebab .type=${'meatball'} .items=${menuitems} ></ba-kebab>
+				<ba-kebab .type=${'kebab'} .items=${menuitems}></ba-kebab>
 				
 			</div>
 

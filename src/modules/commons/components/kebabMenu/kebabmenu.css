@@ -1,6 +1,4 @@
-.kebabmenu__button {
-	mask: url("../../assets/kebab.svg");
-	-webkit-mask-image: url(" ../../assets/kebab.svg");
+.menu__button {
 	cursor: pointer;
 	display: inline-block;
 	height: 2em;
@@ -8,10 +6,20 @@
 	background-color: var(--primary-color);
 }
 
-.kebabmenu__button:hover {
+.menu__button:hover {
 	border-width: 3px;
 	border-radius: 0.1em;
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+}
+
+.kebab {
+	mask: url("../../assets/kebab.svg");
+	-webkit-mask-image: url(" ../../assets/kebab.svg");
+}
+
+.meatball {
+	mask: url("../../assets/meatball.svg");
+	-webkit-mask-image: url(" ../../assets/meatball.svg");
 }
 
 .anchor {

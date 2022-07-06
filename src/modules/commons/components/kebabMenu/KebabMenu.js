@@ -8,6 +8,7 @@ import css from './kebabmenu.css';
 import itemcss from './menuitem.css';
 
 const Update_IsCollapsed = 'update_is_collapsed';
+const Update_Menu_Type = 'update_menu_type';
 const Update_Menu_Items = 'update_menu_items';
 const Update_Anchor_Position = 'update_last_anchor_position';
 
@@ -22,6 +23,24 @@ const Update_Anchor_Position = 'update_last_anchor_position';
 
 
 const DefaultMenuOption = { label: null, icon: null, action: null, disabled: false, isDivider: false };
+
+/**
+ * @enum
+ */
+export const MenuTypes = Object.freeze({
+	MEATBALL: 'meatball',
+	KEBAB: 'kebab',
+	valueOf: raw => {
+		switch (raw) {
+			case 'meatball':
+				return MenuTypes.MEATBALL;
+			case 'kebab':
+				return MenuTypes.KEBAB;
+		}
+		return null;
+	}
+});
+
 /**
  *
  * @class
@@ -31,6 +50,7 @@ export class KebabMenu extends MvuElement {
 
 	constructor() {
 		super({
+			type: MenuTypes.MEATBALL,
 			menuItems: [],
 			isCollapsed: true,
 			anchorPosition: null
@@ -39,10 +59,12 @@ export class KebabMenu extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_IsCollapsed:
 				return { ...model, isCollapsed: data };
+			case Update_Menu_Type:
+
+				return { ...model, type: data };
 			case Update_Menu_Items:
 				return {
 					...model, menuItems: data.map(i => {
@@ -59,7 +81,7 @@ export class KebabMenu extends MvuElement {
  * @override
  */
 	createView(model) {
-		const { isCollapsed } = model;
+		const { isCollapsed, type } = model;
 		const onClick = (e) => {
 			e.preventDefault();
 			e.stopPropagation();
@@ -75,7 +97,7 @@ export class KebabMenu extends MvuElement {
 		return html`
 		 <style>${css}</style> 
          <button class='anchor'>
-            <span id="kebab-icon" data-test-id class='kebabmenu__button' @click=${onClick} >
+            <span id="menu-icon" data-test-id class='menu__button ${type} ' @click=${onClick} >
             </span>
          </button>	         
          ${menu}
@@ -172,6 +194,14 @@ export class KebabMenu extends MvuElement {
 
 	set items(menuItemOptions) {
 		this.signal(Update_Menu_Items, menuItemOptions);
+	}
+
+	set type(typeValue) {
+
+		const type = MenuTypes.valueOf(typeValue);
+		if (type) {
+			this.signal(Update_Menu_Type, type);
+		}
 	}
 
 	static get tag() {
