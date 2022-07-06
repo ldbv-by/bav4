@@ -1,0 +1,22 @@
+.menuitem {
+    padding: 1em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.menuitem:hover {
+    background-color: var(--tertiary-bg-color);
+}
+
+.menuitem:hover span {
+    font-weight: bolder;
+}
+
+.isdisabled {
+    background-color: var(--tertiary-bg-color);
+    color: var(--text1);
+    opacity: 0.5;
+    cursor: default
+}

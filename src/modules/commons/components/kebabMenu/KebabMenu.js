@@ -2,14 +2,14 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { $injector } from '../../../../injection';
-import { emitFixedNotification } from '../../../../store/notifications/notifications.action';
+import { clearFixedNotification, emitFixedNotification } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './kebabmenu.css';
+import itemcss from './menuitem.css';
 
 const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Items = 'update_menu_items';
 const Update_Anchor_Position = 'update_last_anchor_position';
-
 
 /**
  * @typedef {Object} MenuOption
@@ -61,10 +61,14 @@ export class KebabMenu extends MvuElement {
 	createView(model) {
 		const { isCollapsed } = model;
 		const onClick = (e) => {
+			e.preventDefault();
+			e.stopPropagation();
 			const rect = this.getBoundingClientRect();
 			const delta = [e.x - e.offsetX, e.y - e.offsetY];
 			this.signal(Update_Anchor_Position, { absolute: [rect.x, rect.y], relative: [rect.x - delta[0], rect.y - delta[1]] });
 			this.signal(Update_IsCollapsed, !isCollapsed);
+
+			this._registerDocumentListener();
 		};
 
 		const menu = isCollapsed ? nothing : this._getMenuOrFixedNotification(model);
@@ -109,6 +113,18 @@ export class KebabMenu extends MvuElement {
 
 	}
 
+	_registerDocumentListener() {
+		const handler = () => {
+			document.removeEventListener('pointerup', handler);
+			const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+			const closeAction = environmentService.isTouch() ? clearFixedNotification : () => this.signal(Update_IsCollapsed, true);
+
+			closeAction();
+		};
+
+		document.addEventListener('pointerup', handler);
+	}
+
 	_calculateSector(coordinate) {
 		const widthBorder = window.innerWidth * .66;
 		const heightBorder = window.innerHeight * .66;
@@ -144,13 +160,14 @@ export class KebabMenu extends MvuElement {
 			};
 
 			return html`            			
-			<div class='menuitem ${classMap(classes)}' @click=${action}>
+			<div class='menuitem ${classMap(classes)}' @pointerdown=${action}>
 			${getIcon()}
 			<span>${label}</span>
 			</div>`;
 		};
 
-		return menuItems.map(menuItem => toHtml(menuItem));
+		return html`<style>${itemcss}
+		</style>${menuItems.map(menuItem => toHtml(menuItem))}`;
 	}
 
 	set items(menuItemOptions) {
