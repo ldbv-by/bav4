@@ -1,22 +1,33 @@
-.menuitem {
+button {
+    width: 100%;
     padding: 1em;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    border: none;
+    background-color: var(--tertiary-bg-color);
 }
 
-.menuitem:hover {
+button:hover {
     background-color: var(--header-background-color);
 }
 
-.menuitem:hover span {
-    font-weight: bolder;
-}
-
-.isdisabled {
+button:disabled,
+button[disabled] {
     background-color: var(--tertiary-bg-color);
     color: var(--text1);
     opacity: 0.5;
     cursor: default
+}
+
+.menuitem__icon {
+    height: 2em;
+    width: 2em;
+    background-color: var(--primary-color);
+}
+
+.menuitem__text {
+
+    padding-left: 0.2em;
 }

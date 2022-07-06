@@ -167,28 +167,32 @@ export class OverflowMenu extends MvuElement {
 	}
 
 	_getItems(menuItems) {
-		const toHtml = (menuItem) => {
+		const toHtml = (menuItem, id) => {
 			const { label, icon, action, disabled } = menuItem;
 
-			const getIcon = () => {
-				const createBaIcon = () => html`<ba-icon .icon='${icon}' .title=${label} ></ba-icon>`;
-				const createPlaceholder = () => html`<div class='menu_icon_placeholder'></div>`;
-				return icon ? createBaIcon() : createPlaceholder();
-			};
-
-			const classes = {
-				isdisabled: disabled
+			const getIcon = (id) => {
+				const createIcon = () => {
+					const iconClassName = `menuitem__icon_${id}`;
+					const iconClass = `.${iconClassName} { mask : url(${icon});-webkit-mask-image : url(${icon});mask-size:cover;-webkit-mask-size:cover;}`;
+					return html`
+					<style>
+					${iconClass}
+					</style>
+					<div class='menuitem__icon ${iconClassName}' ></div>`;
+				};
+				const createPlaceholder = () => html`<div></div>`;
+				return icon ? createIcon() : createPlaceholder();
 			};
 
 			return html`            			
-			<div class='menuitem ${classMap(classes)}' @pointerdown=${action}>
-			${getIcon()}
-			<span>${label}</span>
-			</div>`;
+			<button class='menuitem' ?disabled=${disabled} .title=${label} @pointerdown=${action}>
+				${getIcon(id)}
+				<div class="menuitem-text">${label}</div>
+			</button>`;
 		};
 
 		return html`<style>${itemcss}
-		</style>${menuItems.map(menuItem => toHtml(menuItem))}`;
+		</style>${menuItems.map((menuItem, index) => toHtml(menuItem, index))}`;
 	}
 
 	set items(menuItemOptions) {
