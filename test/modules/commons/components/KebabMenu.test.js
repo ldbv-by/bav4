@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { KebabMenu } from '../../../../src/modules/commons/components/kebabMenu/KebabMenu';
+import { KebabMenu, MenuTypes } from '../../../../src/modules/commons/components/kebabMenu/KebabMenu';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TestUtils } from '../../../test-utils';
@@ -22,7 +22,7 @@ describe('KebabMenu', () => {
 
 			const element = await TestUtils.render(KebabMenu.tag);
 
-			expect(element.getModel()).toEqual({ menuItems: [], isCollapsed: true, anchorPosition: null });
+			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null });
 
 		});
 
@@ -57,7 +57,7 @@ describe('KebabMenu', () => {
 		it('opens menu with the menu-items', async () => {
 			const element = await TestUtils.render(KebabMenu.tag);
 			element.items = menuItems;
-			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 
@@ -73,7 +73,7 @@ describe('KebabMenu', () => {
 				{ label: 'item 1', action: actionSpy1 },
 				{ label: 'Item 2', action: actionSpy2 },
 				{ label: 'item 3', action: actionSpy3 }];
-			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 			const menuItems = element.shadowRoot.querySelectorAll('.menuitem');
@@ -88,7 +88,7 @@ describe('KebabMenu', () => {
 
 			it('0 (default)', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
-				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				element.signal('update_last_anchor_position', null);
@@ -101,7 +101,7 @@ describe('KebabMenu', () => {
 				const element = await TestUtils.render(KebabMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(0);
 
-				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
@@ -113,7 +113,7 @@ describe('KebabMenu', () => {
 				const element = await TestUtils.render(KebabMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(1);
 
-				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
@@ -125,7 +125,7 @@ describe('KebabMenu', () => {
 				const element = await TestUtils.render(KebabMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(2);
 
-				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
@@ -137,7 +137,7 @@ describe('KebabMenu', () => {
 				const element = await TestUtils.render(KebabMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(3);
 
-				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
 				const menuContainer = element.shadowRoot.querySelector('.menu__container');
@@ -149,7 +149,7 @@ describe('KebabMenu', () => {
 		it('close the menu on any click on the screen', async () => {
 			const element = await TestUtils.render(KebabMenu.tag);
 			element.items = menuItems;
-			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 
@@ -166,7 +166,7 @@ describe('KebabMenu', () => {
 			spyOn(environmentService, 'isTouch').and.returnValue(true);
 			const element = await TestUtils.render(KebabMenu.tag);
 			element.items = menuItems;
-			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 
