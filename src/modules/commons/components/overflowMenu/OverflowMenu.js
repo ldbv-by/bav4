@@ -4,7 +4,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { $injector } from '../../../../injection';
 import { clearFixedNotification, emitFixedNotification } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
-import css from './kebabmenu.css';
+import css from './overflowmenu.css';
 import itemcss from './menuitem.css';
 
 const Update_IsCollapsed = 'update_is_collapsed';
@@ -46,7 +46,7 @@ export const MenuTypes = Object.freeze({
  * @class
  * @author thiloSchlemmer
  */
-export class KebabMenu extends MvuElement {
+export class OverflowMenu extends MvuElement {
 
 	constructor() {
 		super({
@@ -204,6 +204,6 @@ export class KebabMenu extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-kebab';
+		return 'ba-overflow-menu';
 	}
 }

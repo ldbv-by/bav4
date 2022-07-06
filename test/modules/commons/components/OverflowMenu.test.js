@@ -1,11 +1,11 @@
 import { $injector } from '../../../../src/injection';
-import { KebabMenu, MenuTypes } from '../../../../src/modules/commons/components/kebabMenu/KebabMenu';
+import { OverflowMenu, MenuTypes } from '../../../../src/modules/commons/components/overflowMenu/OverflowMenu';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TestUtils } from '../../../test-utils';
-window.customElements.define(KebabMenu.tag, KebabMenu);
+window.customElements.define(OverflowMenu.tag, OverflowMenu);
 
-describe('KebabMenu', () => {
+describe('OverflowMenu', () => {
 	let store;
 	const environmentService = {
 		isTouch: () => false
@@ -20,7 +20,7 @@ describe('KebabMenu', () => {
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 
 			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null });
 
@@ -28,7 +28,7 @@ describe('KebabMenu', () => {
 
 		it('renders the view', async () => {
 
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
 			expect(anchorElements).toHaveSize(1);
@@ -36,7 +36,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('calculates the sector', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			spyOnProperty(window, 'innerWidth').and.returnValue(100);
 			spyOnProperty(window, 'innerHeight').and.returnValue(100);
 
@@ -47,7 +47,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('updates menu type to kebab', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'kebab').and.callThrough();
 
 			element.type = 'kebab';
@@ -56,7 +56,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('updates menu type to meatball', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'meatball').and.callThrough();
 
 			element.type = 'meatball';
@@ -65,7 +65,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('does NOT updates menu type to invalid type name', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'foo').and.callThrough();
 
 			element.type = 'foo';
@@ -82,7 +82,7 @@ describe('KebabMenu', () => {
 			{ label: 'item 3', action: () => { } }];
 
 		it('opens menu with the menu-items', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
 
@@ -92,7 +92,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('opens menu with clickable menu-items', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			const actionSpy1 = jasmine.createSpy('action1');
 			const actionSpy2 = jasmine.createSpy('action2');
 			const actionSpy3 = jasmine.createSpy('action3');
@@ -114,7 +114,7 @@ describe('KebabMenu', () => {
 		describe('creates menu for sector', () => {
 
 			it('0 (default)', async () => {
-				const element = await TestUtils.render(KebabMenu.tag);
+				const element = await TestUtils.render(OverflowMenu.tag);
 				const button = element.shadowRoot.querySelector('.menu__button');
 
 				button.click();
@@ -125,7 +125,7 @@ describe('KebabMenu', () => {
 			});
 
 			it('0', async () => {
-				const element = await TestUtils.render(KebabMenu.tag);
+				const element = await TestUtils.render(OverflowMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(0);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
@@ -137,7 +137,7 @@ describe('KebabMenu', () => {
 			});
 
 			it('1', async () => {
-				const element = await TestUtils.render(KebabMenu.tag);
+				const element = await TestUtils.render(OverflowMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(1);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
@@ -149,7 +149,7 @@ describe('KebabMenu', () => {
 			});
 
 			it('2', async () => {
-				const element = await TestUtils.render(KebabMenu.tag);
+				const element = await TestUtils.render(OverflowMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(2);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
@@ -161,7 +161,7 @@ describe('KebabMenu', () => {
 			});
 
 			it('3', async () => {
-				const element = await TestUtils.render(KebabMenu.tag);
+				const element = await TestUtils.render(OverflowMenu.tag);
 				spyOn(element, '_calculateSector').and.returnValue(3);
 
 				const button = element.shadowRoot.querySelector('.menu__button');
@@ -174,7 +174,7 @@ describe('KebabMenu', () => {
 		});
 
 		it('close the menu on any click on the screen', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
 
@@ -191,7 +191,7 @@ describe('KebabMenu', () => {
 
 		it('close the menu on any touch on the screen', async () => {
 			spyOn(environmentService, 'isTouch').and.returnValue(true);
-			const element = await TestUtils.render(KebabMenu.tag);
+			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
 

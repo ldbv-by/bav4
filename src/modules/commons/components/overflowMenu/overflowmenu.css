@@ -37,7 +37,7 @@
 }
 
 .anchor:hover {
-	background: var(--primary-bg-color);
+	background: var(--header-background-color);
 }
 
 .menu__container {

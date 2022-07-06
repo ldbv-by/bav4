@@ -267,12 +267,11 @@ export class ShowCase extends BaElement {
 				<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>		
 			</div>
 
-			<h3>Menu</h3>
+			<h3>Overflow-Menu</h3>
 			<div class='example menu'>		
-				<ba-kebab .items=${menuitems} ></ba-kebab>
-				<ba-kebab .type=${'meatball'} .items=${menuitems} ></ba-kebab>
-				<ba-kebab .type=${'kebab'} .items=${menuitems}></ba-kebab>
-				
+				<div><ba-overflow-menu .items=${menuitems} ></ba-overflow-menu>Type:(Default)</div>
+				<div><ba-overflow-menu .type=${'meatball'} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
+				<div><ba-overflow-menu .type=${'kebab'} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
 			</div>
 
 			<h3>Checkbox</h3>
