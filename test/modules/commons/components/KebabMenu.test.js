@@ -85,11 +85,6 @@ describe('KebabMenu', () => {
 		});
 
 		describe('creates menu for sector', () => {
-			const model = {
-				menuItems: menuItems,
-				isCollapsed: false,
-				anchorPosition: { absolute: [50, 50], relative: [10, 10] }
-			};
 
 			it('0 (default)', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
