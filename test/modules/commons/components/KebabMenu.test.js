@@ -91,9 +91,19 @@ describe('KebabMenu', () => {
 				anchorPosition: { absolute: [50, 50], relative: [10, 10] }
 			};
 
+			it('0 (default)', async () => {
+				const element = await TestUtils.render(KebabMenu.tag);
+				const button = element.shadowRoot.querySelector('.kebabmenu__button');
+
+				button.click();
+				element.signal('update_last_anchor_position', null);
+				const menuContainer = element.shadowRoot.querySelector('.menu__container');
+
+				expect(menuContainer.classList.contains('sector0')).toBeTrue();
+			});
+
 			it('0', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
-				spyOn(element, 'getModel').and.returnValue(model);
 				spyOn(element, '_calculateSector').and.returnValue(0);
 
 				const button = element.shadowRoot.querySelector('.kebabmenu__button');
@@ -106,7 +116,6 @@ describe('KebabMenu', () => {
 
 			it('1', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
-				spyOn(element, 'getModel').and.returnValue(model);
 				spyOn(element, '_calculateSector').and.returnValue(1);
 
 				const button = element.shadowRoot.querySelector('.kebabmenu__button');
@@ -119,7 +128,6 @@ describe('KebabMenu', () => {
 
 			it('2', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
-				spyOn(element, 'getModel').and.returnValue(model);
 				spyOn(element, '_calculateSector').and.returnValue(2);
 
 				const button = element.shadowRoot.querySelector('.kebabmenu__button');
@@ -132,7 +140,6 @@ describe('KebabMenu', () => {
 
 			it('3', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
-				spyOn(element, 'getModel').and.returnValue(model);
 				spyOn(element, '_calculateSector').and.returnValue(3);
 
 				const button = element.shadowRoot.querySelector('.kebabmenu__button');
