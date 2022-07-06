@@ -29,19 +29,14 @@ const DefaultMenuOption = { label: null, icon: null, action: null, disabled: fal
  */
 export const MenuTypes = Object.freeze({
 	MEATBALL: 'meatball',
-	KEBAB: 'kebab',
-	valueOf: raw => {
-		switch (raw) {
-			case 'meatball':
-				return MenuTypes.MEATBALL;
-			case 'kebab':
-				return MenuTypes.KEBAB;
-		}
-		return null;
-	}
+	KEBAB: 'kebab'
 });
 
 /**
+ *
+ * Properties:
+ * - `items`
+  * - `type`
  *
  * @class
  * @author thiloSchlemmer
@@ -121,7 +116,7 @@ export class OverflowMenu extends MvuElement {
 		const style = anchorPosition ? { '--anchor-x': anchorPosition.relative[0] + xOffset + 'px', '--anchor-y': anchorPosition.relative[1] + yOffset + 'px' } : {};
 
 		const classes = {
-			iscollapsed: isCollapsed,
+			collapsed: isCollapsed,
 			sector0: sector === 0,
 			sector1: sector === 1,
 			sector2: sector === 2,
@@ -195,16 +190,18 @@ export class OverflowMenu extends MvuElement {
 		</style>${menuItems.map((menuItem, index) => toHtml(menuItem, index))}`;
 	}
 
+	/**
+	 * @property {Array<MenuOption>} items - an array of {@see MenuOption} to build the menu items from
+	 */
 	set items(menuItemOptions) {
 		this.signal(Update_Menu_Items, menuItemOptions);
 	}
 
+	/**
+	 * @property {'meatball'|'kebab'} type - the type of the menu icon
+	 */
 	set type(typeValue) {
-
-		const type = MenuTypes.valueOf(typeValue);
-		if (type) {
-			this.signal(Update_Menu_Type, type);
-		}
+		this.signal(Update_Menu_Type, typeValue);
 	}
 
 	static get tag() {

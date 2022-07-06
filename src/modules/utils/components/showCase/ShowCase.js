@@ -10,6 +10,7 @@ import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -270,8 +271,8 @@ export class ShowCase extends BaElement {
 			<h3>Overflow-Menu</h3>
 			<div class='example menu'>		
 				<div><ba-overflow-menu .items=${menuitems} ></ba-overflow-menu>Type:(Default)</div>
-				<div><ba-overflow-menu .type=${'meatball'} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
-				<div><ba-overflow-menu .type=${'kebab'} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
+				<div><ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
+				<div><ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
 			</div>
 
 			<h3>Checkbox</h3>

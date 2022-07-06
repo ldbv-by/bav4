@@ -50,7 +50,7 @@ describe('OverflowMenu', () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'kebab').and.callThrough();
 
-			element.type = 'kebab';
+			element.type = MenuTypes.KEBAB;
 
 			expect(spy).toHaveBeenCalled();
 		});
@@ -59,18 +59,9 @@ describe('OverflowMenu', () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'meatball').and.callThrough();
 
-			element.type = 'meatball';
+			element.type = MenuTypes.MEATBALL;
 
 			expect(spy).toHaveBeenCalled();
-		});
-
-		it('does NOT updates menu type to invalid type name', async () => {
-			const element = await TestUtils.render(OverflowMenu.tag);
-			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'foo').and.callThrough();
-
-			element.type = 'foo';
-
-			expect(spy).not.toHaveBeenCalled();
 		});
 	});
 

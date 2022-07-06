@@ -55,6 +55,6 @@
 	transform: translateX(calc(var(--anchor-x))) translateY(calc(var(--anchor-y) - 100%));
 }
 
-.iscollapsed {
+.collapsed {
 	display: none
 }
