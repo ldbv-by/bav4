@@ -45,6 +45,33 @@ describe('KebabMenu', () => {
 			expect(element._calculateSector([80, 80])).toBe(2);
 			expect(element._calculateSector([20, 80])).toBe(3);
 		});
+
+		it('updates menu type to kebab', async () => {
+			const element = await TestUtils.render(KebabMenu.tag);
+			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'kebab').and.callThrough();
+
+			element.type = 'kebab';
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('updates menu type to meatball', async () => {
+			const element = await TestUtils.render(KebabMenu.tag);
+			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'meatball').and.callThrough();
+
+			element.type = 'meatball';
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('does NOT updates menu type to invalid type name', async () => {
+			const element = await TestUtils.render(KebabMenu.tag);
+			const spy = spyOn(element, 'signal').withArgs('update_menu_type', 'foo').and.callThrough();
+
+			element.type = 'foo';
+
+			expect(spy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when button is clicked', () => {

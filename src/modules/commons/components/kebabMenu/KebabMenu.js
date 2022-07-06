@@ -63,7 +63,6 @@ export class KebabMenu extends MvuElement {
 			case Update_IsCollapsed:
 				return { ...model, isCollapsed: data };
 			case Update_Menu_Type:
-
 				return { ...model, type: data };
 			case Update_Menu_Items:
 				return {
