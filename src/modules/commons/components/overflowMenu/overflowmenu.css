@@ -6,12 +6,6 @@
 	background-color: var(--primary-color);
 }
 
-.menu__button:hover {
-	border-width: 3px;
-	border-radius: 0.1em;
-	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
-}
-
 .kebab {
 	mask: url("../../assets/kebab.svg");
 	-webkit-mask-image: url(" ../../assets/kebab.svg");
@@ -29,11 +23,6 @@
 	border-radius: calc(2.5em / 2);
 	height: 2.5em;
 	width: 2.5em
-}
-
-.menu_icon_placeholder {
-	width: 2.5em;
-	;
 }
 
 .anchor:hover {

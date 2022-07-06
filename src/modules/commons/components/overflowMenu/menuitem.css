@@ -1,4 +1,4 @@
-button {
+.menuitem {
     width: 100%;
     padding: 1em;
     cursor: pointer;
@@ -9,12 +9,12 @@ button {
     background-color: var(--tertiary-bg-color);
 }
 
-button:hover {
+.menuitem:hover {
     background-color: var(--header-background-color);
 }
 
-button:disabled,
-button[disabled] {
+.menuitem:disabled,
+.menuitem[disabled] {
     background-color: var(--tertiary-bg-color);
     color: var(--text1);
     opacity: 0.5;
