@@ -7,7 +7,7 @@
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ldbv-by/bav4-nomigration/Node.js%20CI?style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4-nomigration/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
-[![GitHub](https://img.shields.io/github/license/ldbv-by/bav4-nomigration?style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
+[https://img.shields.io/github/license/ldbv-by/bav4-nomigration?color=blue&style=for-the-badge](http://www.apache.org/licenses/LICENSE-2.0)
 
 
 Next-generation web-map viewer based on web standards.
