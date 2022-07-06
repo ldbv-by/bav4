@@ -187,7 +187,7 @@ export class OverflowMenu extends MvuElement {
 			return html`            			
 			<button class='menuitem' ?disabled=${disabled} .title=${label} @pointerdown=${action}>
 				${getIcon(id)}
-				<div class="menuitem-text">${label}</div>
+				<div class="menuitem__text">${label}</div>
 			</button>`;
 		};
 
