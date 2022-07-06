@@ -4,6 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 [![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
+
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ldbv-by/bav4-nomigration/Node.js%20CI?style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)(https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
+[![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4-nomigration/master?style=for-the-badge)]
+[![GitHub](https://img.shields.io/github/license/ldbv-by/bav4-nomigration?style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
+
+
 Next-generation web-map viewer based on web standards.
 
 #### Table of Contents
