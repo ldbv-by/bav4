@@ -1,15 +1,18 @@
 import { $injector } from '../../../../src/injection';
 import { KebabMenu } from '../../../../src/modules/commons/components/kebabMenu/KebabMenu';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { isTemplateResult } from '../../../../src/utils/checks';
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(KebabMenu.tag, KebabMenu);
 
 describe('KebabMenu', () => {
+	let store;
 	const environmentService = {
 		isTouch: () => false
 	};
 
 	beforeEach(async () => {
-		TestUtils.setupStoreAndDi({});
+		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
 		$injector
 			.registerSingleton('EnvironmentService', environmentService);
 	});
@@ -30,6 +33,17 @@ describe('KebabMenu', () => {
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
 			expect(anchorElements).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.menu__container')).toBeNull();
+		});
+
+		it('calculates the sector', async () => {
+			const element = await TestUtils.render(KebabMenu.tag);
+			spyOnProperty(window, 'innerWidth').and.returnValue(100);
+			spyOnProperty(window, 'innerHeight').and.returnValue(100);
+
+			expect(element._calculateSector([20, 20])).toBe(0);
+			expect(element._calculateSector([80, 20])).toBe(1);
+			expect(element._calculateSector([80, 80])).toBe(2);
+			expect(element._calculateSector([20, 80])).toBe(3);
 		});
 	});
 
@@ -68,17 +82,6 @@ describe('KebabMenu', () => {
 			expect(actionSpy1).toHaveBeenCalled();
 			expect(actionSpy2).toHaveBeenCalled();
 			expect(actionSpy3).toHaveBeenCalled();
-		});
-
-		it('calculates the sector', async () => {
-			const element = await TestUtils.render(KebabMenu.tag);
-			spyOnProperty(window, 'innerWidth').and.returnValue(100);
-			spyOnProperty(window, 'innerHeight').and.returnValue(100);
-
-			expect(element._calculateSector([20, 20])).toBe(0);
-			expect(element._calculateSector([80, 20])).toBe(1);
-			expect(element._calculateSector([80, 80])).toBe(2);
-			expect(element._calculateSector([20, 80])).toBe(3);
 		});
 
 		describe('creates menu for sector', () => {
@@ -141,5 +144,37 @@ describe('KebabMenu', () => {
 			});
 		});
 
+		it('close the menu on any click on the screen', async () => {
+			const element = await TestUtils.render(KebabMenu.tag);
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+
+			button.click();
+
+			// menu is open
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+
+			document.dispatchEvent(new Event('pointerup'));
+
+			// menu is closed
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
+		});
+
+		it('close the menu on any touch on the screen', async () => {
+			spyOn(environmentService, 'isTouch').and.returnValue(true);
+			const element = await TestUtils.render(KebabMenu.tag);
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.kebabmenu__button');
+
+			button.click();
+
+			// menu is open
+			expect(isTemplateResult(store.getState().notifications.latest.payload));
+
+			document.dispatchEvent(new Event('pointerup'));
+
+			// menu is closed
+			expect(store.getState().notifications.latest.payload).toEqual({ content: null });
+		});
 	});
 });
