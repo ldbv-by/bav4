@@ -36,9 +36,9 @@ describe('KebabMenu', () => {
 	describe('when button is clicked', () => {
 
 		const menuItems = [
-			{ label: 'item 1', action: () => {} },
-			{ label: 'Item 2', action: () => {} },
-			{ label: 'item 3', action: () => {} }];
+			{ label: 'item 1', action: () => { } },
+			{ label: 'Item 2', action: () => { } },
+			{ label: 'item 3', action: () => { } }];
 
 		it('opens menu with the menu-items', async () => {
 			const element = await TestUtils.render(KebabMenu.tag);
@@ -63,7 +63,7 @@ describe('KebabMenu', () => {
 
 			button.click();
 			const menuItems = element.shadowRoot.querySelectorAll('.menuitem');
-			menuItems.forEach(item => item.click());
+			menuItems.forEach(item => item.dispatchEvent(new Event('pointerdown')));
 
 			expect(actionSpy1).toHaveBeenCalled();
 			expect(actionSpy2).toHaveBeenCalled();
@@ -82,9 +82,11 @@ describe('KebabMenu', () => {
 		});
 
 		describe('creates menu for sector', () => {
-			const model = { menuItems: menuItems,
+			const model = {
+				menuItems: menuItems,
 				isCollapsed: false,
-				anchorPosition: { absolute: [50, 50], relative: [10, 10] } };
+				anchorPosition: { absolute: [50, 50], relative: [10, 10] }
+			};
 
 			it('0', async () => {
 				const element = await TestUtils.render(KebabMenu.tag);
