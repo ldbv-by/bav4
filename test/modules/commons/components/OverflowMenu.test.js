@@ -111,6 +111,27 @@ describe('OverflowMenu', () => {
 			expect(actionSpy3).toHaveBeenCalled();
 		});
 
+		it('renders menuitems with icons', async () => {
+			const icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
+			const element = await TestUtils.render(OverflowMenu.tag);
+			element.items = [
+				{ label: 'item 1', icon: icon },
+				{ label: 'Item 2', icon: icon },
+				{ label: 'item 3', icon: icon }];
+
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+			//element.shadowRoot.styleSheets[0] --> baElement.css
+			//element.shadowRoot.styleSheets[1] --> overflowmenu.css
+			//element.shadowRoot.styleSheets[2] --> menuitem.css
+			expect(element.shadowRoot.styleSheets[3].cssRules.item(0).cssText).toContain('.menuitem__icon_0 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
+			expect(element.shadowRoot.styleSheets[4].cssRules.item(0).cssText).toContain('.menuitem__icon_1 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
+			expect(element.shadowRoot.styleSheets[5].cssRules.item(0).cssText).toContain('.menuitem__icon_2 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
+
+		});
+
 		describe('creates menu for sector', () => {
 
 			it('0 (default)', async () => {
