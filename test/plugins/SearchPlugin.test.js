@@ -2,10 +2,10 @@ import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
 import { QueryParameters } from '../../src/services/domain/queryParameters.js';
 import { searchReducer } from '../../src/store/search/search.reducer.js';
-import { QueryPlugin } from '../../src/plugins/QueryPlugin.js';
+import { SearchPlugin } from '../../src/plugins/SearchPlugin.js';
 
 
-describe('QueryPlugin', () => {
+describe('SearchPlugin', () => {
 
 	const windowMock = {
 		location: {
@@ -47,7 +47,7 @@ describe('QueryPlugin', () => {
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				const store = setup();
 				spyOn(securityService, 'sanitizeHtml').withArgs(term).and.returnValue(term);
-				const instanceUnderTest = new QueryPlugin();
+				const instanceUnderTest = new SearchPlugin();
 
 				await instanceUnderTest.register();
 
@@ -60,7 +60,7 @@ describe('QueryPlugin', () => {
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				const store = setup();
 				const securityServiceSpy = spyOn(securityService, 'sanitizeHtml');
-				const instanceUnderTest = new QueryPlugin();
+				const instanceUnderTest = new SearchPlugin();
 
 				await instanceUnderTest.register();
 

@@ -8,7 +8,7 @@ import { BaPlugin } from './BaPlugin';
  * @class
  * @author taulinger
  */
-export class QueryPlugin extends BaPlugin {
+export class SearchPlugin extends BaPlugin {
 
 	/**
 	 * @override
