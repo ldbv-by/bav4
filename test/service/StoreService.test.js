@@ -41,6 +41,9 @@ describe('StoreService', () => {
 		const importPluginMock = {
 			register: () => { }
 		};
+		const searchPluginMock = {
+			register: () => { }
+		};
 		const mainMenuPluginMock = {
 			register() { }
 		};
@@ -73,6 +76,7 @@ describe('StoreService', () => {
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
+				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 				.registerSingleton('ConfigService', configService)
 
@@ -125,6 +129,7 @@ describe('StoreService', () => {
 			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
+			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -146,6 +151,7 @@ describe('StoreService', () => {
 			expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
+			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 		});
 
 		describe('query parameter', () => {
