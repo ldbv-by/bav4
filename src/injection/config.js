@@ -37,6 +37,7 @@ import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
 import { ImportWmsService } from '../services/ImportWmsService';
 import { BaaCredentialService } from '../services/BaaCredentialService';
+import { SearchPlugin } from '../plugins/SearchPlugin';
 
 
 $injector
@@ -77,6 +78,7 @@ $injector
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
 	.registerSingleton('ImportPlugin', new ImportPlugin())
+	.registerSingleton('SearchPlugin', new SearchPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

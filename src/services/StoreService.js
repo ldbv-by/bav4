@@ -79,6 +79,7 @@ export class StoreService {
 				MainMenuPlugin: mainMenuPlugin,
 				EnvironmentService: environmentService,
 				ImportPlugin: importPlugin,
+				SearchPlugin: searchPlugin,
 				ConfigService: configService
 			}
 				= $injector.inject(
@@ -95,6 +96,7 @@ export class StoreService {
 					'MainMenuPlugin',
 					'EnvironmentService',
 					'ImportPlugin',
+					'SearchPlugin',
 					'ConfigService'
 				);
 
@@ -112,6 +114,7 @@ export class StoreService {
 				await featureInfoPlugin.register(this._store);
 				await mainMenuPlugin.register(this._store);
 				await importPlugin.register(this._store);
+				await searchPlugin.register(this._store);
 				//we remove all query params shown in the browsers address bar
 				if (configService.getValue('RUNTIME_MODE') !== 'development') {
 					environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
