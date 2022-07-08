@@ -50,7 +50,7 @@ export class OverflowMenu extends MvuElement {
 			menuItems: [],
 			isCollapsed: true,
 			anchorPosition: null,
-			documentListener: null
+			documentListener: { pointerdown: null, pointerup: null }
 		});
 
 	}
@@ -70,28 +70,33 @@ export class OverflowMenu extends MvuElement {
 			case Update_Anchor_Position:
 				return { ...model, anchorPosition: data };
 			case Update_Document_Listener:
-				return { ...model, documentListener: data };
+				return { ...model, documentListener: { ...model.documentListener, ...data } };
 		}
 	}
 
 
 	/**
- * @override
- */
+	 * @override
+	 */
 	createView(model) {
 		const { isCollapsed, type } = model;
 		const onClick = (e) => {
-			e.preventDefault();
-			e.stopPropagation();
+			if (isCollapsed) {
+				this._registerDocumentListener('pointerdown');
+				this._registerDocumentListener('pointerup');
+			}
+			else {
+				this._deregisterDocumentListener('pointerdown');
+				this._deregisterDocumentListener('pointerup');
+			}
 			const rect = this.getBoundingClientRect();
 			const delta = [e.x - e.offsetX, e.y - e.offsetY];
 			this.signal(Update_Anchor_Position, { absolute: [rect.x, rect.y], relative: [rect.x - delta[0], rect.y - delta[1]] });
-			this.signal(Update_IsCollapsed, !isCollapsed);
 
-			this._registerDocumentListener();
+			this.signal(Update_IsCollapsed, !isCollapsed);
 		};
 
-		const menu = isCollapsed ? nothing : this._getMenuOrFixedNotification(model);
+		const menu = this._getMenuOrFixedNotification(model);
 		return html`
 		 <style>${css}</style> 
          <button class='anchor'>
@@ -107,7 +112,12 @@ export class OverflowMenu extends MvuElement {
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		if (environmentService.isTouch()) {
-			emitFixedNotification(this._getItems(menuItems));
+			if (isCollapsed) {
+				clearFixedNotification();
+			}
+			else {
+				emitFixedNotification(this._getItems(menuItems));
+			}
 			return nothing;
 		}
 
@@ -133,24 +143,28 @@ export class OverflowMenu extends MvuElement {
 
 	}
 
-	_registerDocumentListener() {
+	_registerDocumentListener(type) {
 		const handler = (e) => {
-			e.preventDefault();
-			e.stopPropagation();
-			this._closeMenu();
+			const path = e.composedPath();
+			path.includes(this);
+			if (!path.includes(this)) {
+				//e.preventDefault();
+				this._closeMenu();
+			}
 		};
-		this.signal(Update_Document_Listener, handler);
-		document.addEventListener('pointerdown', handler);
+		this.signal(Update_Document_Listener, { [type]: handler });
+		document.addEventListener(type, handler);
 	}
 
-	_deregisterDocumentListener() {
+	_deregisterDocumentListener(type) {
 		const { documentListener } = this.getModel();
-		document.removeEventListener('pointerdown', documentListener);
-		this.signal(Update_Document_Listener, null);
+		document.removeEventListener(type, documentListener[type]);
+		this.signal(Update_Document_Listener, { [type]: null });
 	}
 
 	_closeMenu() {
-		this._deregisterDocumentListener();
+		this._deregisterDocumentListener('pointerdown');
+		this._deregisterDocumentListener('pointerup');
 
 		const closeTouch = () => {
 			clearFixedNotification();
@@ -200,10 +214,12 @@ export class OverflowMenu extends MvuElement {
 				const createPlaceholder = () => html`<div></div>`;
 				return icon ? createIcon() : createPlaceholder();
 			};
-			const onPointerDown = (e) => {
+			const onPointerDown = () => {
+				this._deregisterDocumentListener('pointerdown');
+			};
+
+			const onClick = () => {
 				this._closeMenu();
-				e.preventDefault();
-				e.stopPropagation();
 				action();
 			};
 
@@ -213,7 +229,7 @@ export class OverflowMenu extends MvuElement {
 				touch: environmentService.isTouch()
 			};
 			return html`            			
-			<button class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @pointerdown=${onPointerDown}>
+			<button class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @click=${onClick} @pointerdown=${onPointerDown} @pointerup=${onClick} >
 				${getIcon(id)}
 				<div class="menuitem__text">${label}</div>
 			</button>`;

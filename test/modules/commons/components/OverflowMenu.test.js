@@ -22,7 +22,7 @@ describe('OverflowMenu', () => {
 
 			const element = await TestUtils.render(OverflowMenu.tag);
 
-			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null, documentListener: null });
+			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null, documentListener: { pointerdown: null, pointerup: null } });
 
 		});
 
@@ -32,7 +32,7 @@ describe('OverflowMenu', () => {
 
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
 			expect(anchorElements).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.menu__container')).toBeNull();
+			expect(element.shadowRoot.querySelector('.menu__container').classList.contains('collapsed')).toBeTrue();
 		});
 
 		it('calculates the sector', async () => {
@@ -95,7 +95,7 @@ describe('OverflowMenu', () => {
 
 			button.click();
 			const menuItems = element.shadowRoot.querySelectorAll('.menuitem');
-			menuItems.forEach(item => item.dispatchEvent(new Event('pointerdown')));
+			menuItems.forEach(item => item.click());
 
 			expect(actionSpy1).toHaveBeenCalled();
 			expect(actionSpy2).toHaveBeenCalled();
