@@ -11,6 +11,7 @@ const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Type = 'update_menu_type';
 const Update_Menu_Items = 'update_menu_items';
 const Update_Anchor_Position = 'update_last_anchor_position';
+const Update_Document_Listener = 'update_document_listener';
 
 /**
  * @typedef {Object} MenuOption
@@ -48,7 +49,8 @@ export class OverflowMenu extends MvuElement {
 			type: MenuTypes.MEATBALL,
 			menuItems: [],
 			isCollapsed: true,
-			anchorPosition: null
+			anchorPosition: null,
+			documentListener: null
 		});
 
 	}
@@ -67,6 +69,8 @@ export class OverflowMenu extends MvuElement {
 				};
 			case Update_Anchor_Position:
 				return { ...model, anchorPosition: data };
+			case Update_Document_Listener:
+				return { ...model, documentListener: data };
 		}
 	}
 
@@ -130,15 +134,32 @@ export class OverflowMenu extends MvuElement {
 	}
 
 	_registerDocumentListener() {
-		const handler = () => {
-			document.removeEventListener('pointerup', handler);
-			const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-			const closeAction = environmentService.isTouch() ? clearFixedNotification : () => this.signal(Update_IsCollapsed, true);
-
-			closeAction();
+		const handler = (e) => {
+			e.preventDefault();
+			e.stopPropagation();
+			this._closeMenu();
 		};
+		this.signal(Update_Document_Listener, handler);
+		document.addEventListener('pointerdown', handler);
+	}
 
-		document.addEventListener('pointerup', handler);
+	_deregisterDocumentListener() {
+		const { documentListener } = this.getModel();
+		document.removeEventListener('pointerdown', documentListener);
+		this.signal(Update_Document_Listener, null);
+	}
+
+	_closeMenu() {
+		this._deregisterDocumentListener();
+
+		const closeTouch = () => {
+			clearFixedNotification();
+			this.signal(Update_IsCollapsed, true);
+		};
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const closeAction = environmentService.isTouch() ? closeTouch : () => this.signal(Update_IsCollapsed, true);
+
+		closeAction();
 	}
 
 	_calculateSector(coordinate) {
@@ -165,6 +186,7 @@ export class OverflowMenu extends MvuElement {
 		const toHtml = (menuItem, id) => {
 			const { label, icon, action, disabled } = menuItem;
 
+
 			const getIcon = (id) => {
 				const createIcon = () => {
 					const iconClassName = `menuitem__icon_${id}`;
@@ -178,9 +200,20 @@ export class OverflowMenu extends MvuElement {
 				const createPlaceholder = () => html`<div></div>`;
 				return icon ? createIcon() : createPlaceholder();
 			};
+			const onPointerDown = (e) => {
+				this._closeMenu();
+				e.preventDefault();
+				e.stopPropagation();
+				action();
+			};
 
+			const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+
+			const classes = {
+				touch: environmentService.isTouch()
+			};
 			return html`            			
-			<button class='menuitem' ?disabled=${disabled} .title=${label} @pointerdown=${action}>
+			<button class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @pointerdown=${onPointerDown}>
 				${getIcon(id)}
 				<div class="menuitem__text">${label}</div>
 			</button>`;

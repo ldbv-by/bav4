@@ -22,7 +22,7 @@ describe('OverflowMenu', () => {
 
 			const element = await TestUtils.render(OverflowMenu.tag);
 
-			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null });
+			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null, documentListener: null });
 
 		});
 
@@ -195,7 +195,7 @@ describe('OverflowMenu', () => {
 			// menu is open
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
 
-			document.dispatchEvent(new Event('pointerup'));
+			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
@@ -212,7 +212,7 @@ describe('OverflowMenu', () => {
 			// menu is open
 			expect(isTemplateResult(store.getState().notifications.latest.payload));
 
-			document.dispatchEvent(new Event('pointerup'));
+			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
 			expect(store.getState().notifications.latest.payload).toEqual({ content: null });

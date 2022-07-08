@@ -9,6 +9,10 @@
 	background-color: var(--tertiary-bg-color);
 }
 
+.touch {
+	background-color: var(--primary-bg-color);
+}
+
 .menuitem:hover {
 	background-color: var(--header-background-color);
 }
