@@ -13,6 +13,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
+import { VectorGeoResource } from '../../../services/domain/geoResources';
 
 
 const Update_Layer = 'update_layer';
@@ -39,8 +40,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 		super({
 			layer: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
+		this._geoResourceService = GeoResourceService;
 
 
 		this._onCollapse = () => { };
@@ -106,7 +108,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return nothing;
 		}
 		const currentLabel = layer.label === '' ? layer.id : layer.label;
-
 		const getCollapseTitle = () => {
 			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -200,6 +201,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 			ishidden: !layer.constraints?.metaData
 		};
 
+		const hasZoomToExtentClass = {
+			ishidden: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource)
+		};
+
 		return html`
         <style>${css}</style>
         <div class='ba-section divider'>
@@ -223,7 +228,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 					<ba-icon id='copy' class='${classMap(cloneableClass)}' .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
 				</div>                                                                                              
 				<div>                                                                                              
-					<ba-icon id='zoomToExtent' .icon='${zoomToExtend}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_zoom_to_extent')} @click=${zoomToExtent}></ba-icon>                                
+					<ba-icon id='zoomToExtent' class='${classMap(hasZoomToExtentClass)}' .icon='${zoomToExtend}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_zoom_to_extent')} @click=${zoomToExtent}></ba-icon>                                
 				</div>                                                                                              
 				<div>                                                                                              
 					<ba-icon id='info' class='${classMap(hasLayerInfoClass)}' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
