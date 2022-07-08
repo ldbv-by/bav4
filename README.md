@@ -74,6 +74,16 @@ With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 | `npm run es-check` | Checks if source files use only allowed es-version language features|
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
+### Configuration
+
+Configuration properties are read at build time from an `.env` file located in the projects root directory.
+
+The app can be run without any configuration and uses default values for that case.
+However, to enable the showcase component, the `SOFTWARE_INFO` property must be set, e.g.:
+
+```
+SOFTWARE_INFO=LOCAL_BULD
+```
 
 ## Structure
 
