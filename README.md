@@ -50,23 +50,20 @@ With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 
 Configuration properties are read at build time from an `.env` file located in the projects root directory.
 Currently used properties are:
-| key| default value|
-|----|----|
-| `DEFAULT_LANG` | `en` |
-| `BACKEND_URL` |  |
-| `SOFTWARE_INFO` |  |
-| `PROXY_URL` |  |
-| `SHORTENING_SERVICE_URL` |  |
 
-The app can be run without any configuration and uses default values and fallback mechanisms for that case.
-However, to enable the showcase component, the `SOFTWARE_INFO` property must be set, e.g.:
+| key| default value|description |
+|----|----|----|
+| `DEFAULT_LANG` | `en` | current locale (available locales are `en` and `de`) |
+| `BACKEND_URL` |  | |
+| `PROXY_URL` |  | |
+| `SHORTENING_SERVICE_URL` |  | |
+| `SOFTWARE_INFO` |  | e.g. build information
 
-```
-SOFTWARE_INFO=LOCAL_BULD
-```
+The app can be run without any configuration and uses default values and fallback mechanisms for that case.  
+That is also the case when the `BACKEND_URL` property is missing.  
+To enable the showcase component, the `SOFTWARE_INFO` property must be set.
 
 ### List of npm scripts
-
 
 | Run/Build | |
 |----|----|
