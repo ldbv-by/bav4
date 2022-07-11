@@ -77,11 +77,9 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
-				EnvironmentService: environmentService,
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
-				HistoryStatePlugin: HistoryStatePlugin,
-				ConfigService: configService
+				HistoryStatePlugin: HistoryStatePlugin
 			}
 				= $injector.inject(
 					'TopicsPlugin',
@@ -95,11 +93,9 @@ export class StoreService {
 					'MediaPlugin',
 					'FeatureInfoPlugin',
 					'MainMenuPlugin',
-					'EnvironmentService',
 					'ImportPlugin',
 					'SearchPlugin',
-					'HistoryStatePlugin',
-					'ConfigService'
+					'HistoryStatePlugin'
 				);
 
 			setTimeout(async () => {

@@ -53,14 +53,6 @@ describe('StoreService', () => {
 		const mediaPluginMock = {
 			register() { }
 		};
-		const windowMock = {
-			history: {
-				replaceState() { }
-			}
-		};
-		const configService = {
-			getValue: () => { }
-		};
 
 		const setupInjector = () => {
 			$injector
@@ -81,8 +73,6 @@ describe('StoreService', () => {
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
-				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-				.registerSingleton('ConfigService', configService)
 
 				.ready();
 		};
