@@ -44,19 +44,14 @@ describe('StoreService', () => {
 		const searchPluginMock = {
 			register: () => { }
 		};
+		const historyStatePluginMock = {
+			register: () => { }
+		};
 		const mainMenuPluginMock = {
 			register() { }
 		};
 		const mediaPluginMock = {
 			register() { }
-		};
-		const windowMock = {
-			history: {
-				replaceState() { }
-			}
-		};
-		const configService = {
-			getValue: () => { }
 		};
 
 		const setupInjector = () => {
@@ -77,8 +72,7 @@ describe('StoreService', () => {
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
-				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-				.registerSingleton('ConfigService', configService)
+				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 
 				.ready();
 		};
@@ -130,6 +124,7 @@ describe('StoreService', () => {
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
+			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -152,35 +147,7 @@ describe('StoreService', () => {
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
-		});
-
-		describe('query parameter', () => {
-
-			it('removes all query params by calling #replaceState on history', async () => {
-				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
-				new StoreService();
-
-				setupInjector();
-
-				//we need two timeout calls: async plugins registration is done within a timeout function
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-
-				expect(replaceStateMock).toHaveBeenCalled();
-			});
-
-			it('does NOT remove query params in deployment mode', async () => {
-				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
-				spyOn(configService, 'getValue').and.returnValue('development');
-				new StoreService();
-
-				setupInjector();
-
-				//we need two timeout calls: async plugins registration is done within a timeout function
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(replaceStateMock).not.toHaveBeenCalled();
-			});
+			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

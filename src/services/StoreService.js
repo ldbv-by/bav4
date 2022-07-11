@@ -77,10 +77,9 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
-				EnvironmentService: environmentService,
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
-				ConfigService: configService
+				HistoryStatePlugin: HistoryStatePlugin
 			}
 				= $injector.inject(
 					'TopicsPlugin',
@@ -94,10 +93,9 @@ export class StoreService {
 					'MediaPlugin',
 					'FeatureInfoPlugin',
 					'MainMenuPlugin',
-					'EnvironmentService',
 					'ImportPlugin',
 					'SearchPlugin',
-					'ConfigService'
+					'HistoryStatePlugin'
 				);
 
 			setTimeout(async () => {
@@ -115,10 +113,7 @@ export class StoreService {
 				await mainMenuPlugin.register(this._store);
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
-				//we remove all query params shown in the browsers address bar
-				if (configService.getValue('RUNTIME_MODE') !== 'development') {
-					environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
-				}
+				await HistoryStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});
 	}
