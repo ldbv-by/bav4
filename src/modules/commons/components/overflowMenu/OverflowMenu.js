@@ -11,7 +11,7 @@ const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Type = 'update_menu_type';
 const Update_Menu_Items = 'update_menu_items';
 const Update_Anchor_Position = 'update_last_anchor_position';
-const Update_Document_Listener = 'update_document_listener';
+
 
 /**
  * @typedef {Object} MenuOption
@@ -49,10 +49,9 @@ export class OverflowMenu extends MvuElement {
 			type: MenuTypes.MEATBALL,
 			menuItems: [],
 			isCollapsed: true,
-			anchorPosition: null,
-			documentListener: { pointerdown: null, pointerup: null }
+			anchorPosition: null
 		});
-
+		this._documentListener = { pointerdown: null, pointerup: null };
 	}
 
 	update(type, data, model) {
@@ -69,8 +68,6 @@ export class OverflowMenu extends MvuElement {
 				};
 			case Update_Anchor_Position:
 				return { ...model, anchorPosition: data };
-			case Update_Document_Listener:
-				return { ...model, documentListener: { ...model.documentListener, ...data } };
 		}
 	}
 
@@ -151,14 +148,13 @@ export class OverflowMenu extends MvuElement {
 				this._closeMenu();
 			}
 		};
-		this.signal(Update_Document_Listener, { [type]: handler });
+		this._documentListener[type] = handler;
 		document.addEventListener(type, handler);
 	}
 
 	_deregisterDocumentListener(type) {
-		const { documentListener } = this.getModel();
-		document.removeEventListener(type, documentListener[type]);
-		this.signal(Update_Document_Listener, { [type]: null });
+		document.removeEventListener(type, this._documentListener[type]);
+		this._documentListener[type] = null;
 	}
 
 	_closeMenu() {

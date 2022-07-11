@@ -22,7 +22,7 @@ describe('OverflowMenu', () => {
 
 			const element = await TestUtils.render(OverflowMenu.tag);
 
-			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null, documentListener: { pointerdown: null, pointerup: null } });
+			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null });
 
 		});
 
