@@ -82,6 +82,20 @@ describe('OverflowMenu', () => {
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
 		});
 
+		it('registers document listeners', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			const registerSpy = spyOn(element, '_registerDocumentListener').and.callThrough();
+
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+
+			expect(registerSpy).toHaveBeenCalledWith('pointerdown');
+			expect(registerSpy).toHaveBeenCalledWith('pointerup');
+		});
+
 		it('opens menu with clickable menu-items', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			const actionSpy1 = jasmine.createSpy('action1');
@@ -121,6 +135,26 @@ describe('OverflowMenu', () => {
 			expect(element.shadowRoot.styleSheets[4].cssRules.item(0).cssText).toContain('.menuitem__icon_1 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
 			expect(element.shadowRoot.styleSheets[5].cssRules.item(0).cssText).toContain('.menuitem__icon_2 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
 
+		});
+
+		it('closes the open menu and deregister document listener', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').and.callThrough();
+
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+			// menu is open
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+
+			button.click();
+
+			// menu is closed
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
+			expect(deregisterSpy).toHaveBeenCalledWith('pointerdown');
+			expect(deregisterSpy).toHaveBeenCalledWith('pointerup');
 		});
 
 		describe('creates menu for sector', () => {
@@ -217,5 +251,47 @@ describe('OverflowMenu', () => {
 			// menu is closed
 			expect(store.getState().notifications.latest.payload).toEqual({ content: null });
 		});
+
+		it('deregister the document listener on pointerdown', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').withArgs('pointerdown').and.callThrough();
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+			// menu is open
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+
+			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
+			const menuItemElement = menuItemElements[0];
+
+			// menuitem is clicked/touched
+			menuItemElement.dispatchEvent(new Event('pointerdown'));
+
+			expect(deregisterSpy).toHaveBeenCalled();
+		});
+
+		it('stop eventPropagation on pointer', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+			// menu is open
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+
+			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
+			const menuItemElement = menuItemElements[0];
+			const event = new Event('pointerup');
+			const eventSpy = spyOn(event, 'stopPropagation').and.callThrough();
+
+			// menuitem is clicked/touched
+			menuItemElement.dispatchEvent(event);
+
+			expect(eventSpy).toHaveBeenCalled();
+		});
+
 	});
 });

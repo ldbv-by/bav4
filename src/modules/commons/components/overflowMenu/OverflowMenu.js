@@ -227,6 +227,8 @@ export class OverflowMenu extends MvuElement {
 			};
 
 			const onPointerUp = (e) => {
+				// stop any further event propagation to give the followed click-event a chance to fire and to be handled by the button
+				e.preventDefault();
 				e.stopPropagation();
 			};
 
