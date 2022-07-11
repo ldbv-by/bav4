@@ -37,6 +37,7 @@
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	background-color: var(--primary-bg-color);
 	z-index: 100;
+	pointer-events: auto;
 }
 
 .sector0 {

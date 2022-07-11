@@ -148,7 +148,6 @@ export class OverflowMenu extends MvuElement {
 			const path = e.composedPath();
 			path.includes(this);
 			if (!path.includes(this)) {
-				//e.preventDefault();
 				this._closeMenu();
 			}
 		};
@@ -199,7 +198,7 @@ export class OverflowMenu extends MvuElement {
 	_getItems(menuItems) {
 		const toHtml = (menuItem, id) => {
 			const { label, icon, action, disabled } = menuItem;
-
+			const menuitemId = `menuitem_${id}`;
 
 			const getIcon = (id) => {
 				const createIcon = () => {
@@ -214,13 +213,21 @@ export class OverflowMenu extends MvuElement {
 				const createPlaceholder = () => html`<div></div>`;
 				return icon ? createIcon() : createPlaceholder();
 			};
+
 			const onPointerDown = () => {
 				this._deregisterDocumentListener('pointerdown');
 			};
 
-			const onClick = () => {
+			const onClick = (e) => {
+				this._deregisterDocumentListener('pointerdown');
+				this._deregisterDocumentListener('pointerup');
+				e.stopPropagation();
 				this._closeMenu();
 				action();
+			};
+
+			const onPointerUp = (e) => {
+				e.stopPropagation();
 			};
 
 			const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -229,7 +236,7 @@ export class OverflowMenu extends MvuElement {
 				touch: environmentService.isTouch()
 			};
 			return html`            			
-			<button class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @click=${onClick} @pointerdown=${onPointerDown} @pointerup=${onClick} >
+			<button id=${menuitemId} class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @pointerdown=${onPointerDown} @click=${onClick} @pointerup=${onPointerUp}>
 				${getIcon(id)}
 				<div class="menuitem__text">${label}</div>
 			</button>`;
