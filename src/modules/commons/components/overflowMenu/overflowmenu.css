@@ -7,13 +7,13 @@
 }
 
 .kebab {
-	mask: url("../../assets/kebab.svg");
-	-webkit-mask-image: url(" ../../assets/kebab.svg");
+	mask: url("./assets/kebab.svg");
+	-webkit-mask-image: url(" ./assets/kebab.svg");
 }
 
 .meatball {
-	mask: url("../../assets/meatball.svg");
-	-webkit-mask-image: url(" ../../assets/meatball.svg");
+	mask: url("./assets/meatball.svg");
+	-webkit-mask-image: url(" ./assets/meatball.svg");
 }
 
 .anchor {

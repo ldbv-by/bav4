@@ -118,9 +118,14 @@ export class OverflowMenu extends MvuElement {
 			return nothing;
 		}
 
+		/**
+		* Correct positioning of the menu is (analog to the context menu) a bit tricky, because we don't know
+		* (and can't calculate) the dimensions of the menu and its content child before rendering.
+		* Therefore we translate the element after rendering by a css transformation.
+		*/
 		const sector = anchorPosition ? this._calculateSector(anchorPosition.absolute) : 0;
 
-		//consider css arrow offset of 10px
+		//consider css button offset of 35px
 		const yOffset = (sector < 2 ? 0 : -1) * 35;
 		const xOffset = (sector === 1 || sector === 2 ? 1 : 0) * 35;
 
@@ -143,7 +148,6 @@ export class OverflowMenu extends MvuElement {
 	_registerDocumentListener(type) {
 		const handler = (e) => {
 			const path = e.composedPath();
-			path.includes(this);
 			if (!path.includes(this)) {
 				this._closeMenu();
 			}

@@ -91,7 +91,6 @@ describe('OverflowMenu', () => {
 
 			button.click();
 
-
 			expect(registerSpy).toHaveBeenCalledWith('pointerdown');
 			expect(registerSpy).toHaveBeenCalledWith('pointerup');
 		});
@@ -137,7 +136,7 @@ describe('OverflowMenu', () => {
 
 		});
 
-		it('closes the open menu and deregister document listener', async () => {
+		it('closes the open menu and deregisters document listener', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').and.callThrough();
 
@@ -155,6 +154,26 @@ describe('OverflowMenu', () => {
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
 			expect(deregisterSpy).toHaveBeenCalledWith('pointerdown');
 			expect(deregisterSpy).toHaveBeenCalledWith('pointerup');
+		});
+
+		it('does not close the menu by document listener', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+
+			// menu is open
+			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+
+			const pointerDownEvent = new Event('pointerdown');
+			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').and.callThrough();
+			spyOn(pointerDownEvent, 'composedPath').and.returnValue([element]);
+
+			document.dispatchEvent(pointerDownEvent);
+
+			expect(deregisterSpy).not.toHaveBeenCalledWith('pointerdown');
+			expect(deregisterSpy).not.toHaveBeenCalledWith('pointerup');
 		});
 
 		describe('creates menu for sector', () => {
@@ -219,7 +238,7 @@ describe('OverflowMenu', () => {
 			});
 		});
 
-		it('close the menu on any click on the screen', async () => {
+		it('closes the menu on any click on the screen', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
@@ -235,7 +254,7 @@ describe('OverflowMenu', () => {
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(0);
 		});
 
-		it('close the menu on any touch on the screen', async () => {
+		it('closes the menu on any touch on the screen', async () => {
 			spyOn(environmentService, 'isTouch').and.returnValue(true);
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
