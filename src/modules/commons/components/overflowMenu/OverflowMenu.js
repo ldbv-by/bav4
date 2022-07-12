@@ -135,12 +135,11 @@ export class OverflowMenu extends MvuElement {
 
 		const getAnchor = () => {
 			//consider css offset of this web component
-			const offsetX = 38.78;//px
-			const offsetY = 19.89;//px
+			const offset = 35;//px
 			const vector = getVector();
 			return {
-				'--anchor-x': vector.x * (anchorPosition.relative[0] + offsetX) + 'px',
-				'--anchor-y': vector.y * (anchorPosition.relative[1] + offsetY) + 'px'
+				'--anchor-x': vector.x * (anchorPosition.relative[0] + offset) + 'px',
+				'--anchor-y': vector.y * (anchorPosition.relative[1] + offset) + 'px'
 			};
 		};
 

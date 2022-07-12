@@ -271,7 +271,7 @@ describe('OverflowMenu', () => {
 			expect(store.getState().notifications.latest.payload).toEqual({ content: null });
 		});
 
-		it('deregister the document listener on pointerdown', async () => {
+		it('deregisters the document listener on pointerdown', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			const deregisterSpy = spyOn(element, '_deregisterDocumentListener').withArgs('pointerdown').and.callThrough();
 			element.items = menuItems;
@@ -291,7 +291,7 @@ describe('OverflowMenu', () => {
 			expect(deregisterSpy).toHaveBeenCalled();
 		});
 
-		it('stop eventPropagation on pointer', async () => {
+		it('stops eventPropagation on pointer', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = menuItems;
 			const button = element.shadowRoot.querySelector('.menu__button');
