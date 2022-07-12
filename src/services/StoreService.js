@@ -18,7 +18,7 @@ import { mapReducer } from '../store/map/map.reducer';
 import { measurementReducer } from '../store/measurement/measurement.reducer';
 import { pointerReducer } from '../store/pointer/pointer.reducer';
 import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.reducer';
-import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
+import { createMainMenuReducerWithDefaultValues } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 
@@ -41,7 +41,7 @@ export class StoreService {
 			map: mapReducer,
 			pointer: pointerReducer,
 			position: positionReducer,
-			mainMenu: createMainMenuReducer(),
+			mainMenu: createMainMenuReducerWithDefaultValues(),
 			tools: toolsReducer,
 			modal: modalReducer,
 			layers: layersReducer,
