@@ -59,7 +59,7 @@ describe('MainMenuPlugin', () => {
 
 	describe('_init', () => {
 
-		describe('query parameter available', () => {
+		describe('query parameter \'mid\' is available', () => {
 
 			it('sets the requested tab id', async () => {
 				const queryParam = `${QueryParameters.MENU_ID}=3`;
@@ -70,6 +70,7 @@ describe('MainMenuPlugin', () => {
 				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(TabId.valueOf(3));
+				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 
 			it('sets the default tab id when param is not parseable', async () => {
@@ -81,10 +82,11 @@ describe('MainMenuPlugin', () => {
 				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});
 
-		describe('query parameter is NOT available', () => {
+		describe('query parameter \'mid\' is NOT available', () => {
 
 			it('sets the default tab id', async () => {
 				const store = setup();
@@ -93,6 +95,7 @@ describe('MainMenuPlugin', () => {
 				instanceUnderTest._init();
 
 				expect(store.getState().mainMenu.tab).toEqual(defaultTabId);
+				expect(store.getState().mainMenu.open).toBeFalse();
 			});
 		});
 	});

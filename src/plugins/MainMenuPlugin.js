@@ -26,6 +26,7 @@ export class MainMenuPlugin extends BaPlugin {
 		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
 		if (tabId) {
 			setTab(tabId);
+			open();
 		}
 		else { // set default tab id
 			setTab(TabId.TOPICS);
