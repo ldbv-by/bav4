@@ -10,6 +10,7 @@ import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -191,6 +192,7 @@ export class ShowCase extends BaElement {
 			emitFixedNotification(getContent(version));
 			version = nextVersion(version, 1, 3);
 		};
+		const menuitems = [{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) }, { label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) }, { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) }, { label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }];
 
 		return html`
 		<style>
@@ -264,6 +266,13 @@ export class ShowCase extends BaElement {
 				<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>		
+			</div>
+
+			<h3>Overflow-Menu</h3>
+			<div class='example menu'>		
+				<div><ba-overflow-menu .items=${menuitems} ></ba-overflow-menu>Type:(Default)</div>
+				<div><ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
+				<div><ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
 			</div>
 
 			<h3>Checkbox</h3>
