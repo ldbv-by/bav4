@@ -1,23 +1,47 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './attributionInfo.css';
+import { MvuElement } from '../../../MvuElement';
+
+const Update_Open_Property = 'update_open_property';
+const Update_ActiveLayers_Property = 'update_activeLayers_property';
+const Update_ZoomLevel_Property = 'update_zoomLevel_property';
 
 /**
- * a class for displaying the attribution of the basemap
+ * Displays the attribution of the basemap
  * @class
  * @author bakir_en
  * @author taulinger
  */
-export class AttributionInfo extends BaElement {
+export class AttributionInfo extends MvuElement {
 
 	constructor() {
-		super();
+		super({
+			open: false,
+			activeLayers: null,
+			zoomLevel: null
+		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
-		this._isOpen = false;
+	}
+
+	onInitialize() {
+		this.observe(state => state.layers.active, activeLayers => this.signal(Update_ActiveLayers_Property, activeLayers));
+		this.observe(state => state.position.zoom, zoomLevel => this.signal(Update_ZoomLevel_Property, zoomLevel));
+	}
+
+	update(type, data, model) {
+
+		switch (type) {
+			case Update_Open_Property:
+				return { ...model, open: data };
+			case Update_ActiveLayers_Property:
+				return { ...model, activeLayers: data };
+			case Update_ZoomLevel_Property:
+				return { ...model, zoomLevel: data };
+		}
 	}
 
 	_getAttributions(activeLayers, zoomLevel) {
@@ -36,33 +60,30 @@ export class AttributionInfo extends BaElement {
 	/**
 	 * @override
 	 */
-	createView(state) {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { active, zoom } = state;
+		const { activeLayers, zoomLevel, open } = model;
 
 		const attributionTemplates =
-			this._getAttributions(active, zoom).map((attribution, index, array) => {
+			this._getAttributions(activeLayers, zoomLevel).map((attribution, index, array) => {
 				const separator = index === array.length - 1 ? '' : ',';
 				return attribution.copyright.url
 					? html`<a class='attribution attribution-link' target='_blank' href=${attribution.copyright.url}>${attribution.copyright.label}${separator}</a>`
 					: html`<span class='attribution'>${attribution.copyright.label}${separator}</span>`;
 			});
 
-		const toggleOpen = () => {
-			this._isOpen = !this._isOpen;
-			this.render();
-		};
+		const toggleVisibilitiy = () => this.signal(Update_Open_Property, !open);
 
 		const classes = {
-			isopen: this._isOpen
+			isopen: open
 		};
 
 		const getCollapseClass = () => {
-			return (attributionTemplates.length > 1 || this._isOpen) ? 'is-collapse' : '';
+			return (attributionTemplates.length > 1 || open) ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {
-			return this._isOpen ? 'map_attributionInfo_collapse_title_close' : 'map_attributionInfo_collapse_title_open';
+			return open ? 'map_attributionInfo_collapse_title_close' : 'map_attributionInfo_collapse_title_open';
 		};
 
 		return html`
@@ -70,20 +91,11 @@ export class AttributionInfo extends BaElement {
             <div class='attribution-container ${classMap(classes)}'>
 				© ${translate('map_attributionInfo_label')}: 
 				${attributionTemplates} 
-				<div @click=${toggleOpen} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
+				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
 				<i class="icon chevron  "></i>
 				</div>
 			</div>
 			`;
-	}
-
-	/**
-	  * @override
-	  * @param {Object} globalState
-	  */
-	extractState(globalState) {
-		const { layers: { active }, position: { zoom } } = globalState;
-		return { active, zoom };
 	}
 
 	static get tag() {

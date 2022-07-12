@@ -73,6 +73,20 @@ describe('AttributionInfo', () => {
 		});
 	});
 
+	describe('when instantiated', () => {
+
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new AttributionInfo().getModel();
+
+			expect(model).toEqual({
+				open: false,
+				activeLayers: null,
+				zoomLevel: null
+			});
+		});
+	});
+
 
 	describe('when initialized', () => {
 
