@@ -97,11 +97,15 @@ describe('AttributionInfo', () => {
 			const layerId1 = 'id1';
 			const geoResourceId1 = 'geoResourceId1';
 			const url1 = 'http://foo.bar/';
+			const url2 = 'http://foo.bar/2/';
 			const attribution1 = {
-				copyright: {
+				copyright: [{
 					label: layerId1,
 					url: url1
-				}
+				}, {
+					label: layerId1 + '_2',
+					url: url2
+				}]
 			};
 			const layer = [
 				{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 },
@@ -129,15 +133,18 @@ describe('AttributionInfo', () => {
 
 			const element = await setup(state);
 
-			// we expect two kinds of attribution: a <span> containing a plain string and an <a> element
+			// we expect two kinds of attribution: a <span> containing a plain string and two <a> elements
 			expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId0 + ','); //should contain also a separator
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain('© map_attributionInfo_label');
-			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('a.attribution.attribution-link').href).toBe(url1);
-			expect(element.shadowRoot.querySelector('a.attribution.attribution-link').target).toBe('_blank');
-			expect(element.shadowRoot.querySelector('a.attribution.attribution-link').innerText).toBe(layerId1);
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].href).toBe(url1);
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].target).toBe('_blank');
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].innerText).toBe(layerId1 + ',');
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].href).toBe(url2);
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].target).toBe('_blank');
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].innerText).toBe(layerId1 + '_2');
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveSize(1);
 		});

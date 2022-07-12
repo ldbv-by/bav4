@@ -65,12 +65,14 @@ export class AttributionInfo extends MvuElement {
 		const { activeLayers, zoomLevel, open } = model;
 
 		const attributionTemplates =
-			this._getAttributions(activeLayers, zoomLevel).map((attribution, index, array) => {
-				const separator = index === array.length - 1 ? '' : ',';
-				return attribution.copyright.url
-					? html`<a class='attribution attribution-link' target='_blank' href=${attribution.copyright.url}>${attribution.copyright.label}${separator}</a>`
-					: html`<span class='attribution'>${attribution.copyright.label}${separator}</span>`;
-			});
+			this._getAttributions(activeLayers, zoomLevel)
+				.flatMap(attribution => Array.isArray(attribution.copyright) ? attribution.copyright : [attribution.copyright]) // copyright field could also be an array
+				.map((copyright, index, array) => {
+					const separator = index === array.length - 1 ? '' : ',';
+					return copyright.url
+						? html`<a class='attribution attribution-link' target='_blank' href=${copyright.url}>${copyright.label}${separator}</a>`
+						: html`<span class='attribution'>${copyright.label}${separator}</span>`;
+				});
 
 		const toggleVisibilitiy = () => this.signal(Update_Open_Property, !open);
 
