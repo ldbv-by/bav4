@@ -5,8 +5,8 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { addLayer, modifyLayer, removeLayer } from './../../../store/layers/layers.action';
 import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
-import clone from './assets/clone.svg';
-import zoomToExtend from './assets/zoomToExtent.svg';
+import cloneSvg from './assets/clone.svg';
+import zoomToExtentSvg from './assets/zoomToExtent.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -14,6 +14,7 @@ import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
 import { VectorGeoResource } from '../../../services/domain/geoResources';
+import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 
 
 const Update_Layer = 'update_layer';
@@ -193,16 +194,12 @@ export class LayerItem extends AbstractMvuContentPanel {
 			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
-		const cloneableClass = {
-			ishidden: !layer.constraints?.cloneable
-		};
-
-		const hasLayerInfoClass = {
-			ishidden: !layer.constraints?.metaData
-		};
-
-		const hasZoomToExtentClass = {
-			ishidden: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource)
+		const getMenuItems = () => {
+			return [
+				{ label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints?.cloneable },
+				{ label: translate('layerManager_zoom_to_extent'), icon: zoomToExtentSvg, action: zoomToExtent, disabled: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource) },
+				{ label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
+			];
 		};
 
 		return html`
@@ -223,19 +220,11 @@ export class LayerItem extends AbstractMvuContentPanel {
 				</div>                                                                                              
 				<div>                                                                                              
 					<ba-icon id='decrease' .icon='${arrowDownSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_move_down')} @click=${decreaseIndex}></ba-icon>                                
-				</div>                                                                                              
-				<div>                                                                                              
-					<ba-icon id='copy' class='${classMap(cloneableClass)}' .icon='${clone}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_to_copy')} @click=${cloneLayer}></ba-icon>                                
-				</div>                                                                                              
-				<div>                                                                                              
-					<ba-icon id='zoomToExtent' class='${classMap(hasZoomToExtentClass)}' .icon='${zoomToExtend}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_zoom_to_extent')} @click=${zoomToExtent}></ba-icon>                                
-				</div>                                                                                              
-				<div>                                                                                              
-					<ba-icon id='info' class='${classMap(hasLayerInfoClass)}' data-test-id .icon='${infoSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} @click=${openGeoResourceInfoPanel}></ba-icon>                 
-				</div>                                                                                              
+				</div>                                                                          
 				<div>                                                                                              
 					<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               
-				</div>           				
+				</div>
+				<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()} ></ba-overflow-menu>
             </div>
         </div>`;
 	}
