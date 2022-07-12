@@ -146,7 +146,7 @@ describe('LayerItem', () => {
 			expect(element.shadowRoot.querySelector('ba-overflow-menu')).toBeTruthy();
 		});
 
-		it('have a menu-item for info', async () => {
+		it('contains a menu-item for info', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 
@@ -160,7 +160,7 @@ describe('LayerItem', () => {
 			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
 		});
 
-		it('have a disabled menu-item for info', async () => {
+		it('contains a disabled menu-item for info', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { metaData: false } };
 			const element = await setup(layer);
 
@@ -174,7 +174,7 @@ describe('LayerItem', () => {
 			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
 		});
 
-		it('have a menu-item for copy', async () => {
+		it('contains a menu-item for copy', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 
@@ -188,7 +188,7 @@ describe('LayerItem', () => {
 			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
-		it('have a disabled menu-item for copy', async () => {
+		it('contains a disabled menu-item for copy', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
 			const element = await setup(layer);
 
@@ -202,7 +202,7 @@ describe('LayerItem', () => {
 			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
-		it('have a menu-item for zoomToExtent', async () => {
+		it('contains a menu-item for zoomToExtent', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new VectorGeoResource('geoResourceId0', 'id0', VectorSourceType.KML));
 			const element = await setup(layer);
@@ -217,7 +217,7 @@ describe('LayerItem', () => {
 			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
-		it('have a disabled menu-item for zoomToExtent', async () => {
+		it('contains a disabled menu-item for zoomToExtent', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);
