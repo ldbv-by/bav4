@@ -121,15 +121,30 @@ export class OverflowMenu extends MvuElement {
 		/**
 		* Correct positioning of the menu is (analog to the context menu) a bit tricky, because we don't know
 		* (and can't calculate) the dimensions of the menu and its content child before rendering.
-		* Therefore we translate the element after rendering by a css transformation.
+		* Therefore we translate the element after rendering by a css transformation. We have to take the
+		* size of the web component itself into account as a offset vor the calculated anchor-position.
 		*/
 		const sector = anchorPosition ? this._calculateSector(anchorPosition.absolute) : 0;
 
-		//consider css button offset of 35px
-		const yOffset = (sector < 2 ? 0 : -1) * 35;
-		const xOffset = (sector === 1 || sector === 2 ? 1 : 0) * 35;
+		const getVector = () => {
+			return {
+				x: sector === 1 || sector === 2 ? 1 : 0,
+				y: sector < 2 ? 0 : -1
+			};
+		};
 
-		const style = anchorPosition ? { '--anchor-x': anchorPosition.relative[0] + xOffset + 'px', '--anchor-y': anchorPosition.relative[1] + yOffset + 'px' } : {};
+		const getAnchor = () => {
+			//consider css offset of this web component
+			const offsetX = 38.78;//px
+			const offsetY = 19.89;//px
+			const vector = getVector();
+			return {
+				'--anchor-x': vector.x * (anchorPosition.relative[0] + offsetX) + 'px',
+				'--anchor-y': vector.y * (anchorPosition.relative[1] + offsetY) + 'px'
+			};
+		};
+
+		const style = anchorPosition ? getAnchor() : {};
 
 		const classes = {
 			collapsed: isCollapsed,
