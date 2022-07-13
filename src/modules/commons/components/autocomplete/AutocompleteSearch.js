@@ -95,18 +95,18 @@ export class AutocompleteSearch extends MvuElement {
 		};
 
 		const addActive = (x) => {
-			/*a function to classify an item as "active":*/
-			if (!x || x.length < 1) {
-				return false;
-			}
+			// /*a function to classify an item as "active":*/
+			// if (!x || x.length < 1) {
+			// 	return false;
+			// }
 			/*start by removing the "active" class on all items:*/
-			removeActive(x);
-			if (this._currentFocus >= x.length) {
-				this._currentFocus = 0;
-			}
-			if (this._currentFocus < 0) {
-				this._currentFocus = (x.length - 1);
-			}
+			//removeActive(x);
+			// if (this._currentFocus >= x.length) {
+			// 	this._currentFocus = 0;
+			// }
+			// if (this._currentFocus < 0) {
+			// 	this._currentFocus = (x.length - 1);
+			// }
 			/*add class "autocomplete-active":*/
 			x[this._currentFocus].classList.add('autocomplete-active');
 		};
@@ -134,14 +134,23 @@ export class AutocompleteSearch extends MvuElement {
 				increase the currentFocus variable:*/
 				this._currentFocus++;
 				/*and and make the current item more visible:*/
-				addActive(x);
+				if (x && x.length >= 1) {
+					removeActive(x);
+					this._syncFocusWith(x);
+					addActive(x);
+				}
+
 			}
 			else if (e.keyCode === 38) { //up
 				/*If the arrow UP key is pressed,
 				decrease the currentFocus variable:*/
 				this._currentFocus--;
 				/*and and make the current item more visible:*/
-				addActive(x);
+				if (x && x.length >= 1) {
+					removeActive(x);
+					this._syncFocusWith(x);
+					addActive(x);
+				}
 			}
 			else if (e.keyCode === 13) {
 				/*If the ENTER key is pressed, prevent the form from being submitted,*/
@@ -164,6 +173,15 @@ export class AutocompleteSearch extends MvuElement {
 		  `)}</div>`} 
 		 </div>
 		`;
+	}
+
+	_syncFocusWith(autocompleteList) {
+		if (this._currentFocus >= autocompleteList.length) {
+			this._currentFocus = 0;
+		}
+		if (this._currentFocus < 0) {
+			this._currentFocus = (autocompleteList.length - 1);
+		}
 	}
 
 	static get tag() {

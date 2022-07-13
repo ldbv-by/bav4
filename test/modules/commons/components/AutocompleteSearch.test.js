@@ -228,4 +228,24 @@ describe('Button', () => {
 			});
 		});
 	});
+
+	describe('_syncFocusWith', () => {
+		it('resets the currentFocus on a smaller autocomplete list', () => {
+			const classUnderTest = new AutocompleteSearch();
+			const smallAutocompleteList = [{}, {}];
+
+			classUnderTest._currentFocus = 2;
+			classUnderTest._syncFocusWith(smallAutocompleteList);
+			expect(classUnderTest._currentFocus).toBe(0);
+		});
+
+		it('resets the currentFocus on a larger autocomplete list', () => {
+			const classUnderTest = new AutocompleteSearch();
+			const largerAutocompleteList = [{}, {}, {}];
+
+			classUnderTest._currentFocus = -1;
+			classUnderTest._syncFocusWith(largerAutocompleteList);
+			expect(classUnderTest._currentFocus).toBe(2);
+		});
+	});
 });
