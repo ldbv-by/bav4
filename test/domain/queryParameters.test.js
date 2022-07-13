@@ -1,4 +1,4 @@
-import { QueryParameters } from '../../../src/services/domain/queryParameters';
+import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 

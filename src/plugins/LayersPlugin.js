@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
-import { GeoResourceTypes } from '../services/domain/geoResources';
-import { QueryParameters } from '../services/domain/queryParameters';
+import { GeoResourceTypes } from '../domain/geoResources';
+import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, modifyLayer, setReady } from '../store/layers/layers.action';
 import { provide as provider } from './i18n/layersPlugin.provider';

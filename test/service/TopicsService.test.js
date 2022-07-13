@@ -1,5 +1,5 @@
 import { FALLBACK_TOPICS_IDS, TopicsService } from '../../src/services/TopicsService';
-import { Topic } from '../../src/services/domain/topic';
+import { Topic } from '../../src/domain/topic';
 import { loadBvvTopics } from '../../src/services/provider/topics.provider';
 import { $injector } from '../../src/injection';
 

@@ -1,4 +1,4 @@
-import { getDefaultAttribution } from '../provider/attribution.provider';
+import { getDefaultAttribution } from '../services/provider/attribution.provider';
 
 
 /**

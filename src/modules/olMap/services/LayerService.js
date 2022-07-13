@@ -1,5 +1,5 @@
 import { $injector } from '../../../injection';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';

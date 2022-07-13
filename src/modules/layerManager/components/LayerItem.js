@@ -13,7 +13,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { VectorGeoResource } from '../../../services/domain/geoResources';
+import { VectorGeoResource } from '../../../domain/geoResources';
 
 
 const Update_Layer = 'update_layer';

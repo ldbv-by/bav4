@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
-import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/services/domain/geoResources';
-import { SourceType, SourceTypeName } from '../../../src/services/domain/sourceType';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/domain/geoResources';
+import { SourceType, SourceTypeName } from '../../../src/domain/sourceType';
 import { bvvCapabilitiesProvider } from '../../../src/services/provider/wmsCapabilities.provider';
 import { MediaType } from '../../../src/services/HttpService';
 

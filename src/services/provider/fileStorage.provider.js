@@ -1,5 +1,5 @@
 import { $injector } from '../../injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
 
 export const _newLoader = id => {

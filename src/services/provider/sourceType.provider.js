@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
 import { isString } from '../../utils/checks';
 import { observe } from '../../utils/storeUtils';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
+import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
 import { MediaType } from '../HttpService';
 
 /**

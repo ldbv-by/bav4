@@ -1,7 +1,7 @@
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../services/HttpService';
-import { GeoResourceAuthenticationType } from '../../../../services/domain/geoResources';
+import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 
 /**
  * Uses the BVV endpoint to load GeoResourceInfoResult.

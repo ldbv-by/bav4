@@ -1,4 +1,4 @@
-import { QueryParameters } from './services/domain/queryParameters';
+import { QueryParameters } from './domain/queryParameters';
 import globalCss from './main.css';
 
 //import global css

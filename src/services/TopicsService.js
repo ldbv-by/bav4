@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { Topic } from './domain/topic';
+import { Topic } from '../domain/topic';
 import { loadBvvTopics } from './provider/topics.provider';
 
 /**

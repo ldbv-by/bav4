@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
-import { QueryParameters } from '../../../../services/domain/queryParameters';
+import { QueryParameters } from '../../../../domain/queryParameters';
 import { openModal } from '../../../../store/modal/modal.action';
 import { MvuElement } from '../../../MvuElement';
 

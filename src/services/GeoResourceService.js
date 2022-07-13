@@ -13,7 +13,7 @@
  */
 
 import { $injector } from '../injection';
-import { WMTSGeoResource } from './domain/geoResources';
+import { WMTSGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 

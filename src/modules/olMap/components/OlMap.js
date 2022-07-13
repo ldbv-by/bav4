@@ -13,7 +13,7 @@ import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../.
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
-import { GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceTypes } from '../../../domain/geoResources';
 import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
