@@ -139,42 +139,97 @@ describe('LayerItem', () => {
 			expect(dragstartContainerSpy).not.toHaveBeenCalled();
 		});
 
-		it('displays info button', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
-			const element = await setup(layer);
-			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
-		});
-
-		it('hides inactive copy button', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
-			const element = await setup(layer);
-
-			expect(element.shadowRoot.querySelector('#copy')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#copy').matches('.ishidden')).toBeTrue();
-		});
-
-		it('hides inactive info button', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { metaData: false } };
-			const element = await setup(layer);
-
-			expect(element.shadowRoot.querySelector('#info')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#info').matches('.ishidden')).toBeTrue();
-		});
-
-		it('displays zoomToExtent button', async () => {
+		it('displays a overflow-menu', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new VectorGeoResource('geoResourceId0', 'id0', VectorSourceType.KML));
 			const element = await setup(layer);
-			expect(element.shadowRoot.querySelector('#zoomToExtent')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('ba-overflow-menu')).toBeTruthy();
 		});
 
-		it('hides inactive zoomToExtent button', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { metaData: false } };
+		it('contains a menu-item for info', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const infoMenuItem = menu.items.find(item => item.label === 'Info');
+
+			expect(infoMenuItem).not.toBeNull();
+			expect(infoMenuItem.label).toEqual('Info');
+			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
+			expect(infoMenuItem.disabled).toBeFalse();
+			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
+		});
+
+		it('contains a disabled menu-item for info', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { metaData: false } };
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const infoMenuItem = menu.items.find(item => item.label === 'Info');
+
+			expect(infoMenuItem).not.toBeNull();
+			expect(infoMenuItem.label).toEqual('Info');
+			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
+			expect(infoMenuItem.disabled).toBeTrue();
+			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
+		});
+
+		it('contains a menu-item for copy', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const copyMenuItem = menu.items.find(item => item.label === 'layerManager_to_copy');
+
+			expect(copyMenuItem).not.toBeNull();
+			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
+			expect(copyMenuItem.action).toEqual(jasmine.any(Function));
+			expect(copyMenuItem.disabled).toBeFalse();
+			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+		});
+
+		it('contains a disabled menu-item for copy', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const copyMenuItem = menu.items.find(item => item.label === 'layerManager_to_copy');
+
+			expect(copyMenuItem).not.toBeNull();
+			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
+			expect(copyMenuItem.action).toEqual(jasmine.any(Function));
+			expect(copyMenuItem.disabled).toBeTrue();
+			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+		});
+
+		it('contains a menu-item for zoomToExtent', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new VectorGeoResource('geoResourceId0', 'id0', VectorSourceType.KML));
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find(item => item.label === 'layerManager_zoom_to_extent');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeFalse();
+			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+		});
+
+		it('contains a disabled menu-item for zoomToExtent', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', visible: true, zIndex: 0, opacity: 1, collapsed: true, constraints: { cloneable: false } };
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);
 
-			expect(element.shadowRoot.querySelector('#zoomToExtent')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#zoomToExtent').matches('.ishidden')).toBeTrue();
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find(item => item.label === 'layerManager_zoom_to_extent');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeTrue();
+			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
 		it('contains test-id attributes', async () => {
@@ -183,7 +238,7 @@ describe('LayerItem', () => {
 
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(2);
 			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+			expect(element.shadowRoot.querySelector('ba-overflow-menu').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('uses geoResourceId for a InfoPanel ', async () => {
@@ -191,8 +246,9 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
 
-			const infoButton = element.shadowRoot.querySelector('#info');
-			infoButton.click();
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const infoMenuItem = menu.items.find(item => item.label === 'Info');
+			infoMenuItem.action();
 
 			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
 		});
@@ -221,7 +277,6 @@ describe('LayerItem', () => {
 			return store;
 		};
 
-
 		it('click on layer toggle change state in store', async () => {
 			const store = setup();
 			const element = await TestUtils.render(LayerItem.tag);
@@ -247,6 +302,39 @@ describe('LayerItem', () => {
 			expect(actualLayer.opacity).toBe(0.66);
 		});
 
+		it('click on opacity slider change style-property', async () => {
+			setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			const propertySpy = spyOn(slider.style, 'setProperty').withArgs('--track-fill', `${slider.value}%`).and.callThrough();
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalled();
+		});
+
+		it('click on opacity slider without \'max\'-attribute change style-property', async () => {
+			setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			spyOn(slider, 'getAttribute').withArgs('max').and.returnValue(null);
+			const propertySpy = spyOn(slider.style, 'setProperty').withArgs('--track-fill', `${slider.value}%`).and.callThrough();
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalled();
+		});
+
 		it('click on layer collapse button change collapsed property', async () => {
 			setup();
 			const element = await TestUtils.render(LayerItem.tag);
@@ -263,9 +351,9 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer };
 
-			const infoButton = element.shadowRoot.querySelector('#info');
-
-			infoButton.click();
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const infoMenuItem = menu.items.find(item => item.label === 'Info');
+			infoMenuItem.action();
 
 			expect(store.getState().modal.data.title).toBe('label0');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
@@ -276,9 +364,9 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer };
 
-			const zoomToExtentButton = element.shadowRoot.querySelector('#zoomToExtent');
-
-			zoomToExtentButton.click();
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find(item => item.label === 'layerManager_zoom_to_extent');
+			zoomToExtentMenuItem.action();
 
 			expect(store.getState().position.fitLayerRequest.payload.id).toEqual('id0');
 		});
@@ -415,8 +503,9 @@ describe('LayerItem', () => {
 
 			expect(store.getState().layers.active[0].id).toBe('id0');
 
-			const copyButton = element.shadowRoot.querySelector('#copy');
-			copyButton.click();
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const copyMenuItem = menu.items.find(item => item.label === 'layerManager_to_copy');
+			copyMenuItem.action();
 
 			expect(store.getState().layers.active[0].id).toBe(layer0.id);
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
