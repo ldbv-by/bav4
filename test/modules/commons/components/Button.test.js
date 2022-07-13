@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { Button } from '../../../../src/modules/commons/components/button/Button';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Button.tag, Button);
 
@@ -32,6 +33,10 @@ describe('Button', () => {
 			expect(button.classList.contains('secondary')).toBeTrue();
 			expect(button.classList.contains('disabled')).toBeFalse();
 			expect(button.innerText).toBe('label');
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(Button.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 
