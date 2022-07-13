@@ -317,6 +317,23 @@ describe('LayerItem', () => {
 			expect(propertySpy).toHaveBeenCalled();
 		});
 
+		it('click on opacity slider without \'max\'-attribute change style-property', async () => {
+			setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			spyOn(slider, 'getAttribute').withArgs('max').and.returnValue(null);
+			const propertySpy = spyOn(slider.style, 'setProperty').withArgs('--track-fill', `${slider.value}%`).and.callThrough();
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalled();
+		});
+
 		it('click on layer collapse button change collapsed property', async () => {
 			setup();
 			const element = await TestUtils.render(LayerItem.tag);
