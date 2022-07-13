@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 
 import { Icon } from '../../../../src/modules/commons/components/icon/Icon';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Icon.tag, Icon);
 
@@ -41,6 +42,10 @@ describe('Icon', () => {
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(1).cssText).toContain('transform: scale(1.1)');
 			//customIconClass
 			expect(element.shadowRoot.styleSheets[1].cssRules.item(2).cssText).toContain('data:image/svg+xml;base64,PHN2ZyB4');
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(Icon.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 
