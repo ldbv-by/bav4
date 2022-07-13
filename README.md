@@ -96,6 +96,10 @@ The project's source code is located under `src`, unit, component and e2e tests 
 
 The source code is distributed among the following directories:
 
+###  `src/domain`
+
+Contains global domain-specific classes and types definitions.
+
 ###  `src/injection`
 
 Contains the built-in dependency injection. The central configuration is done in `config.js`.
