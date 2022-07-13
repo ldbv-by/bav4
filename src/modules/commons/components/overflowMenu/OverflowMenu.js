@@ -6,6 +6,7 @@ import { clearFixedNotification, emitFixedNotification } from '../../../../store
 import { MvuElement } from '../../../MvuElement';
 import css from './overflowmenu.css';
 import itemcss from './menuitem.css';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Type = 'update_menu_type';
@@ -53,6 +54,10 @@ export class OverflowMenu extends MvuElement {
 			anchorPosition: null
 		});
 		this._documentListener = { pointerdown: null, pointerup: null };
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {
