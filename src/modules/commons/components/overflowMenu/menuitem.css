@@ -34,4 +34,5 @@
 
 .menuitem__text {
 	padding-left: 0.5em;
+	white-space: nowrap
 }
