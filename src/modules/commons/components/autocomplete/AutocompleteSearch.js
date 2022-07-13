@@ -136,7 +136,7 @@ export class AutocompleteSearch extends MvuElement {
 				/*and and make the current item more visible:*/
 				if (x && x.length >= 1) {
 					removeActive(x);
-					this._syncFocusWith(x);
+					this._syncFocusWith(x);// todo: refactor to pure function -> this._currentFocus=this._syncFocusWith(this._currentFocus,x)
 					addActive(x);
 				}
 
@@ -148,7 +148,7 @@ export class AutocompleteSearch extends MvuElement {
 				/*and and make the current item more visible:*/
 				if (x && x.length >= 1) {
 					removeActive(x);
-					this._syncFocusWith(x);
+					this._syncFocusWith(x); // todo: refactor to pure function -> this._currentFocus=this._syncFocusWith(this._currentFocus,x)
 					addActive(x);
 				}
 			}
@@ -176,6 +176,7 @@ export class AutocompleteSearch extends MvuElement {
 	}
 
 	_syncFocusWith(autocompleteList) {
+		// todo: find a better name for this method and refactor to a pure function -> return newFocus
 		if (this._currentFocus >= autocompleteList.length) {
 			this._currentFocus = 0;
 		}

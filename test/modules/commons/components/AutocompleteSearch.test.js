@@ -231,6 +231,7 @@ describe('Button', () => {
 
 	describe('_syncFocusWith', () => {
 		it('resets the currentFocus on a smaller autocomplete list', () => {
+			// todo: find a better description for this test case
 			const classUnderTest = new AutocompleteSearch();
 			const smallAutocompleteList = [{}, {}];
 
@@ -240,6 +241,7 @@ describe('Button', () => {
 		});
 
 		it('resets the currentFocus on a larger autocomplete list', () => {
+			// todo: find a better description for this test case
 			const classUnderTest = new AutocompleteSearch();
 			const largerAutocompleteList = [{}, {}, {}];
 
