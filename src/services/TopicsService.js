@@ -87,13 +87,13 @@ export class TopicsService {
 
 			new Topic(fallbackId0, 'Topic 1', 'This is a fallback topic...', [
 				//see fallback georesources in GeoResourceService
-				'atkis',
-				'atkis_sw'
+				'tpo',
+				'tpo_mono'
 			]),
 			new Topic(fallbackId1, 'Topic 2', 'This is another fallback topic...', [
 				//see fallback georesources in GeoResourceService
-				'atkis',
-				'atkis_sw'
+				'tpo',
+				'tpo_mono'
 			])
 		];
 	}
