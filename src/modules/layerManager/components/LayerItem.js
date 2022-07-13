@@ -196,9 +196,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getMenuItems = () => {
 			return [
-				{ label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints?.cloneable },
-				{ label: translate('layerManager_zoom_to_extent'), icon: zoomToExtentSvg, action: zoomToExtent, disabled: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource) },
-				{ label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
+				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints?.cloneable },
+				{ id: 'zoomToExtent', label: translate('layerManager_zoom_to_extent'), icon: zoomToExtentSvg, action: zoomToExtent, disabled: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource) },
+				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
 			];
 		};
 
@@ -224,7 +224,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				<div>                                                                                              
 					<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               
 				</div>
-				<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()} ></ba-overflow-menu>
+				<ba-overflow-menu .type=${MenuTypes.MEATBALL} data-test-id .items=${getMenuItems()} ></ba-overflow-menu>
             </div>
         </div>`;
 	}

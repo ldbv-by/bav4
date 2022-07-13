@@ -2,6 +2,7 @@ import { $injector } from '../../../../src/injection';
 import { OverflowMenu, MenuTypes } from '../../../../src/modules/commons/components/overflowMenu/OverflowMenu';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(OverflowMenu.tag, OverflowMenu);
 
@@ -68,9 +69,9 @@ describe('OverflowMenu', () => {
 	describe('when button is clicked', () => {
 
 		const menuItems = [
-			{ label: 'item 1', action: () => { } },
+			{ label: 'Item 1', action: () => { } },
 			{ label: 'Item 2', action: () => { } },
-			{ label: 'item 3', action: () => { } }];
+			{ label: 'Item 3', action: () => { } }];
 
 		it('opens menu with the menu-items', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
@@ -80,6 +81,46 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			expect(element.shadowRoot.querySelectorAll('.menuitem')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll(`button[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(3);
+		});
+
+		it('has menu-items with indexed-based ids', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			element.items = menuItems;
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
+
+			expect(menuItemElements[0].id).toBe('menuitem_0');
+			expect(menuItemElements[0].title).toBe('Item 1');
+
+			expect(menuItemElements[1].id).toBe('menuitem_1');
+			expect(menuItemElements[1].title).toBe('Item 2');
+
+			expect(menuItemElements[2].id).toBe('menuitem_2');
+			expect(menuItemElements[2].title).toBe('Item 3');
+		});
+
+		it('has menu-items with custom ids', async () => {
+			const element = await TestUtils.render(OverflowMenu.tag);
+			element.items = [
+				{ id: 'foo', label: 'Item 1', action: () => { } },
+				{ id: 'bar', label: 'Item 2', action: () => { } },
+				{ id: 'baz', label: 'Item 3', action: () => { } }];
+			const button = element.shadowRoot.querySelector('.menu__button');
+
+			button.click();
+			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
+
+			expect(menuItemElements[0].id).toBe('menuitem_foo');
+			expect(menuItemElements[0].title).toBe('Item 1');
+
+			expect(menuItemElements[1].id).toBe('menuitem_bar');
+			expect(menuItemElements[1].title).toBe('Item 2');
+
+			expect(menuItemElements[2].id).toBe('menuitem_baz');
+			expect(menuItemElements[2].title).toBe('Item 3');
 		});
 
 		it('registers document listeners', async () => {
