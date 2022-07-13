@@ -237,7 +237,6 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelector('#button-detail').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-			expect(element.shadowRoot.querySelector('ba-overflow-menu').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('uses geoResourceId for a InfoPanel ', async () => {
