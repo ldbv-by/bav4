@@ -276,7 +276,6 @@ describe('LayerItem', () => {
 			return store;
 		};
 
-
 		it('click on layer toggle change state in store', async () => {
 			const store = setup();
 			const element = await TestUtils.render(LayerItem.tag);
@@ -300,6 +299,22 @@ describe('LayerItem', () => {
 
 			const actualLayer = store.getState().layers.active[0];
 			expect(actualLayer.opacity).toBe(0.66);
+		});
+
+		it('click on opacity slider change style-property', async () => {
+			setup();
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = { ...layer };
+
+			// explicit call to fake/step over render-phase
+			element.onAfterRender(true);
+			const slider = element.shadowRoot.querySelector('.opacity-slider');
+			slider.value = 66;
+			const propertySpy = spyOn(slider.style, 'setProperty').withArgs('--track-fill', `${slider.value}%`).and.callThrough();
+
+			slider.dispatchEvent(new Event('input'));
+
+			expect(propertySpy).toHaveBeenCalled();
 		});
 
 		it('click on layer collapse button change collapsed property', async () => {
