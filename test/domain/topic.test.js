@@ -1,4 +1,4 @@
-import { Topic } from '../../../src/services/domain/topic';
+import { Topic } from '../../src/domain/topic';
 
 
 describe('Topic', () => {

@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { QueryParameters } from '../services/domain/queryParameters';
+import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { changeCenterAndRotation, changeZoomAndRotation, changeZoomCenterAndRotation, fit } from '../store/position/position.action';
 import { isCoordinate, isNumber } from '../utils/checks';

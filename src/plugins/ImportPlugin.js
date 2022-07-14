@@ -4,7 +4,7 @@ import { emitNotification, LevelTypes } from '../store/notifications/notificatio
 import { observe } from '../utils/storeUtils';
 import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
-import { SourceTypeName } from '../services/domain/sourceType';
+import { SourceTypeName } from '../domain/sourceType';
 import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
 import { fitLayer } from '../store/position/position.action';
 

@@ -1,8 +1,8 @@
 import { $injector } from '../injection';
 import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from './domain/geoResources';
-import { SourceType, SourceTypeName } from './domain/sourceType';
+import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { SourceType, SourceTypeName } from './../domain/sourceType';
 
 /**
  *

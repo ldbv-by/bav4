@@ -2,7 +2,7 @@ import { PositionPlugin } from '../../src/plugins/PositionPlugin';
 import { TestUtils } from '../test-utils.js';
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { $injector } from '../../src/injection';
-import { QueryParameters } from '../../src/services/domain/queryParameters';
+import { QueryParameters } from '../../src/domain/queryParameters';
 
 
 describe('PositionPlugin', () => {

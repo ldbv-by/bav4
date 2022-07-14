@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
-import { QueryParameters } from './domain/queryParameters';
+import { QueryParameters } from '../domain/queryParameters';
 
 export class ShareService {
 

@@ -3,7 +3,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
+import { WMTSGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 
 

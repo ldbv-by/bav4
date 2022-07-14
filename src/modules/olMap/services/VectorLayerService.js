@@ -1,4 +1,4 @@
-import { VectorSourceType } from '../../../services/domain/geoResources';
+import { VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';

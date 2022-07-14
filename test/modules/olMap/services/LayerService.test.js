@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/domain/geoResources';
 import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';

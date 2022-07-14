@@ -4,7 +4,7 @@ import { layersReducer, createDefaultLayerProperties } from '../../../../../src/
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { changeZoom } from '../../../../../src/store/position/position.action';
-import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
+import { WMTSGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';
 

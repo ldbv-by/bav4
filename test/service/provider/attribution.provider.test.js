@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/services/domain/geoResources';
+import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/domain/geoResources';
 import { getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 describe('Attribution provider', () => {

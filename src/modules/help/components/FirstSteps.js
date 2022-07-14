@@ -4,7 +4,7 @@ import css from './firststeps.css';
 import { MvuElement } from '../../MvuElement';
 import { emitFixedNotification } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
-import { QueryParameters } from '../../../services/domain/queryParameters';
+import { QueryParameters } from '../../../domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
 import { isHttpUrl } from '../../../utils/checks';
 
