@@ -1,6 +1,6 @@
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection/index.js';
-import { QueryParameters } from '../../src/services/domain/queryParameters.js';
+import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { searchReducer } from '../../src/store/search/search.reducer.js';
 import { SearchPlugin } from '../../src/plugins/SearchPlugin.js';
 

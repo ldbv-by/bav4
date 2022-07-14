@@ -9,7 +9,7 @@ import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 
 
 window.customElements.define(LayerItem.tag, LayerItem);

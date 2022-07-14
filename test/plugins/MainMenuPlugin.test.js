@@ -5,7 +5,7 @@ import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featu
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
 import { $injector } from '../../src/injection/index.js';
-import { QueryParameters } from '../../src/services/domain/queryParameters.js';
+import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { EventLike } from '../../src/utils/storeUtils.js';
 import { searchReducer } from '../../src/store/search/search.reducer.js';
 import { setQuery } from '../../src/store/search/search.action.js';

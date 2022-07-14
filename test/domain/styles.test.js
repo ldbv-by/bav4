@@ -1,4 +1,4 @@
-import { StyleSizeTypes } from '../../../src/services/domain/styles';
+import { StyleSizeTypes } from '../../src/domain/styles';
 
 
 describe('StyleSizeTypes', () => {

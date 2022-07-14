@@ -6,7 +6,7 @@ import { $injector } from '../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
-import { StyleSizeTypes } from '../../../../services/domain/styles';
+import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
@@ -16,7 +16,7 @@ import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
-import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { debounced } from '../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';

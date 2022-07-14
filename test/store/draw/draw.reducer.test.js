@@ -2,7 +2,7 @@ import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setTyp
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { StyleTypes } from '../../../src/modules/olMap/services/StyleService';
-import { StyleSizeTypes } from '../../../src/services/domain/styles';
+import { StyleSizeTypes } from '../../../src/domain/styles';
 import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
 
 

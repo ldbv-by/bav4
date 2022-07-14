@@ -15,7 +15,7 @@ import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { create as createKML, readFeatures } from '../../formats/kml';
 import { debounced } from '../../../../utils/timer';
-import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { saveManualOverlayPosition } from '../../overlayStyle/MeasurementOverlayStyle';
 import { getOverlays } from '../../overlayStyle/OverlayStyle';
 import { StyleTypes } from '../../services/StyleService';

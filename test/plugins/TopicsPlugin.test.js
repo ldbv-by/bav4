@@ -1,9 +1,9 @@
 import { TopicsPlugin } from '../../src/plugins/TopicsPlugin';
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection';
-import { Topic } from '../../src/services/domain/topic';
+import { Topic } from '../../src/domain/topic';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { QueryParameters } from '../../src/services/domain/queryParameters';
+import { QueryParameters } from '../../src/domain/queryParameters';
 
 
 describe('TopicsPlugin', () => {

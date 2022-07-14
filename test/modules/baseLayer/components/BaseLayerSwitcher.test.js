@@ -4,8 +4,8 @@ import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/
 import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
 import { setCurrent } from '../../../../src/store/topics/topics.action';
 import { TestUtils } from '../../../test-utils.js';
-import { Topic } from '../../../../src/services/domain/topic';
-import { WMTSGeoResource } from '../../../../src/services/domain/geoResources';
+import { Topic } from '../../../../src/domain/topic';
+import { WMTSGeoResource } from '../../../../src/domain/geoResources';
 
 window.customElements.define(BaseLayerSwitcher.tag, BaseLayerSwitcher);
 

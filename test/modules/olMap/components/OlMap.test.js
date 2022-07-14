@@ -7,7 +7,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/services/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
 import { changeRotation, changeZoomAndCenter, fit, fitLayer } from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';

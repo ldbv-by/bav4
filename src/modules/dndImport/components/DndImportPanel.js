@@ -7,7 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MediaType } from '../../../services/HttpService';
 import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
 import { setQuery } from '../../../store/search/search.action';
-import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
+import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
 
 const Update_DropZone_Content = 'update_dropzone_content';

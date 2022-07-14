@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/services/domain/geoResources';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { MediaType } from '../../../src/services/HttpService';
 import { loadBvvFeatureInfo } from '../../../src/services/provider/featureInfo.provider';
 

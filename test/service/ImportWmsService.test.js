@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
-import { WmsGeoResource } from '../../src/services/domain/geoResources';
-import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
+import { WmsGeoResource } from '../../src/domain/geoResources';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
 

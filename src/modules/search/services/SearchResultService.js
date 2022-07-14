@@ -1,5 +1,5 @@
 import { $injector } from '../../../injection';
-import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
+import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
 import { GeoResourceSearchResult, LocationSearchResult } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';

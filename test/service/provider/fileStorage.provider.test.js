@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../../src/services/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../../src/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../src/services/FileStorageService';
 import { loadBvvFileStorageResourceById, _newLoader } from '../../../src/services/provider/fileStorage.provider';
 

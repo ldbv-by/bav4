@@ -40,7 +40,7 @@ Next-generation web-map viewer based on web standards.
 - Node.js 16
 - npm 8
 
-With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
+Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && nvm use`
 
 ### Install
 
@@ -95,6 +95,10 @@ To enable the showcase component, the `SOFTWARE_INFO` property must be set.
 The project's source code is located under `src`, unit, component and e2e tests under `test`.
 
 The source code is distributed among the following directories:
+
+###  `src/domain`
+
+Contains global domain-specific classes and types definitions.
 
 ###  `src/injection`
 

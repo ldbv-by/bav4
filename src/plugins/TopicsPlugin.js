@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { QueryParameters } from '../services/domain/queryParameters';
+import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { setCurrent, setReady } from '../store/topics/topics.action';
 
