@@ -253,7 +253,7 @@ export class OverflowMenu extends MvuElement {
 				touch: environmentService.isTouch()
 			};
 			return html`            			
-			<button id=${menuitemId} data-test-id class='menuitem ${classMap(classes)}' ?disabled=${disabled} .title=${label} @pointerdown=${onPointerDown} @click=${onClick} @pointerup=${onPointerUp}>
+			<button id=${menuitemId} data-test-id class='menuitem ${classMap(classes)}' ?disabled=${disabled} @pointerdown=${onPointerDown} @click=${onClick} @pointerup=${onPointerUp}>
 				${getIcon(customId ? customId : id)}
 				<div class="menuitem__text">${label}</div>
 			</button>`;

@@ -93,13 +93,10 @@ describe('OverflowMenu', () => {
 			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
 
 			expect(menuItemElements[0].id).toBe('menuitem_0');
-			expect(menuItemElements[0].title).toBe('Item 1');
 
 			expect(menuItemElements[1].id).toBe('menuitem_1');
-			expect(menuItemElements[1].title).toBe('Item 2');
 
 			expect(menuItemElements[2].id).toBe('menuitem_2');
-			expect(menuItemElements[2].title).toBe('Item 3');
 		});
 
 		it('has menu-items with custom ids', async () => {
@@ -114,13 +111,10 @@ describe('OverflowMenu', () => {
 			const menuItemElements = element.shadowRoot.querySelectorAll('.menuitem');
 
 			expect(menuItemElements[0].id).toBe('menuitem_foo');
-			expect(menuItemElements[0].title).toBe('Item 1');
 
 			expect(menuItemElements[1].id).toBe('menuitem_bar');
-			expect(menuItemElements[1].title).toBe('Item 2');
 
 			expect(menuItemElements[2].id).toBe('menuitem_baz');
-			expect(menuItemElements[2].title).toBe('Item 3');
 		});
 
 		it('registers document listeners', async () => {
