@@ -233,21 +233,15 @@ describe('Button', () => {
 		it('resets the currentFocus on a smaller autocomplete list', () => {
 			// todo: find a better description for this test case
 			const classUnderTest = new AutocompleteSearch();
-			const smallAutocompleteList = [{}, {}];
 
-			classUnderTest._currentFocus = 2;
-			classUnderTest._syncFocusWith(smallAutocompleteList);
-			expect(classUnderTest._currentFocus).toBe(0);
+			expect(classUnderTest._syncFocusWith([{}, {}], 2)).toBe(0);
 		});
 
 		it('resets the currentFocus on a larger autocomplete list', () => {
 			// todo: find a better description for this test case
 			const classUnderTest = new AutocompleteSearch();
-			const largerAutocompleteList = [{}, {}, {}];
 
-			classUnderTest._currentFocus = -1;
-			classUnderTest._syncFocusWith(largerAutocompleteList);
-			expect(classUnderTest._currentFocus).toBe(2);
+			expect(classUnderTest._syncFocusWith([{}, {}, {}], -1)).toBe(2);
 		});
 	});
 });

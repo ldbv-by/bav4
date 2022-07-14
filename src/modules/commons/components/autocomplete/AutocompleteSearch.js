@@ -94,26 +94,28 @@ export class AutocompleteSearch extends MvuElement {
 
 		};
 
+		const isEmpty = (x) => {
+			/*a function to check, whether a list is null/empty or not:*/
+			return !x || x.length < 1;
+		};
+
 		const addActive = (x) => {
-			// /*a function to classify an item as "active":*/
-			// if (!x || x.length < 1) {
-			// 	return false;
-			// }
-			/*start by removing the "active" class on all items:*/
-			//removeActive(x);
-			// if (this._currentFocus >= x.length) {
-			// 	this._currentFocus = 0;
-			// }
-			// if (this._currentFocus < 0) {
-			// 	this._currentFocus = (x.length - 1);
-			// }
 			/*add class "autocomplete-active":*/
 			x[this._currentFocus].classList.add('autocomplete-active');
 		};
 		const removeActive = (x) => {
 			/*a function to remove the "active" class from all autocomplete items:*/
-			for (let i = 0; i < x.length; i++) {
-				x[i].classList.remove('autocomplete-active');
+			x.forEach(element => element.classList.remove('autocomplete-active'));
+		};
+
+		const updateActive = (x) => {
+			/*a function to classify an item as "active":*/
+			if (!isEmpty(x)) {
+				/*start by removing the "active" class on all items:*/
+				removeActive(x);
+				this._currentFocus = this._syncFocusWith(x, this._currentFocus);
+				/*add class "autocomplete-active":*/
+				addActive(x);
 			}
 		};
 
@@ -134,23 +136,14 @@ export class AutocompleteSearch extends MvuElement {
 				increase the currentFocus variable:*/
 				this._currentFocus++;
 				/*and and make the current item more visible:*/
-				if (x && x.length >= 1) {
-					removeActive(x);
-					this._syncFocusWith(x);// todo: refactor to pure function -> this._currentFocus=this._syncFocusWith(this._currentFocus,x)
-					addActive(x);
-				}
-
+				updateActive(x);
 			}
 			else if (e.keyCode === 38) { //up
 				/*If the arrow UP key is pressed,
 				decrease the currentFocus variable:*/
 				this._currentFocus--;
 				/*and and make the current item more visible:*/
-				if (x && x.length >= 1) {
-					removeActive(x);
-					this._syncFocusWith(x); // todo: refactor to pure function -> this._currentFocus=this._syncFocusWith(this._currentFocus,x)
-					addActive(x);
-				}
+				updateActive(x);
 			}
 			else if (e.keyCode === 13) {
 				/*If the ENTER key is pressed, prevent the form from being submitted,*/
@@ -175,14 +168,15 @@ export class AutocompleteSearch extends MvuElement {
 		`;
 	}
 
-	_syncFocusWith(autocompleteList) {
-		// todo: find a better name for this method and refactor to a pure function -> return newFocus
-		if (this._currentFocus >= autocompleteList.length) {
-			this._currentFocus = 0;
+	_syncFocusWith(autocompleteList, focus) {
+		// todo: find a better name for this method
+		if (focus >= autocompleteList.length) {
+			return 0;
 		}
-		if (this._currentFocus < 0) {
-			this._currentFocus = (autocompleteList.length - 1);
+		if (focus < 0) {
+			return (autocompleteList.length - 1);
 		}
+		return focus;
 	}
 
 	static get tag() {
