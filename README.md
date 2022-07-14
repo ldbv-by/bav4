@@ -98,7 +98,7 @@ The source code is distributed among the following directories:
 
 ###  `src/domain`
 
-Contains global domain-specific classes and types definitions.
+Contains global domain-specific classes and type definitions.
 
 ###  `src/injection`
 
