@@ -208,7 +208,7 @@ describe('MeasureToolContent', () => {
 			expect(unitSpans[1].textContent).toBe('m²');
 		});
 
-		fit('contains test-id attributes', async () => {
+		it('contains test-id attributes', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 0 },
