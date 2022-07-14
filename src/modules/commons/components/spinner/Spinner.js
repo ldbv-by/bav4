@@ -1,5 +1,6 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
 import css from './spinner.css';
 
@@ -23,6 +24,10 @@ export class Spinner extends MvuElement {
 			= $injector.inject('TranslationService');
 
 		this._translationService = translationService;
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {

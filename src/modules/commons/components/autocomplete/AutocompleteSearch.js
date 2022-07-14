@@ -4,6 +4,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';
 import { MvuElement } from '../../../MvuElement';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Candidates = 'update_candidates';
 /**
@@ -30,6 +31,10 @@ export class AutocompleteSearch extends MvuElement {
 		this._provider = null;
 
 		this._onSelect = () => { };
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {

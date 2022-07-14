@@ -36,6 +36,10 @@ describe('OverflowMenu', () => {
 			expect(element.shadowRoot.querySelector('.menu__container').classList.contains('collapsed')).toBeTrue();
 		});
 
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(OverflowMenu.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
+		});
+
 		it('calculates the sector', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			spyOnProperty(window, 'innerWidth').and.returnValue(100);

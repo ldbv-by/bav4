@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Spinner.tag, Spinner);
 
@@ -27,6 +28,10 @@ describe('Spinner', () => {
 			const element = await TestUtils.render(Spinner.tag);
 
 			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('spinner_text');
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(Spinner.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 

@@ -1,4 +1,5 @@
 import { Checkbox } from '../../../../src/modules/commons/components/checkbox/Checkbox';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Checkbox.tag, Checkbox);
 
@@ -35,6 +36,10 @@ describe('Checkbox', () => {
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
 			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(Checkbox.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 

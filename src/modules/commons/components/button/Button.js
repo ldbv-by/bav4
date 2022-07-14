@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 
 const Update_Disabled = 'update_disabled';
@@ -31,6 +32,10 @@ export class Button extends MvuElement {
 			type: 'secondary'
 		});
 		this._onClick = () => { };
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {

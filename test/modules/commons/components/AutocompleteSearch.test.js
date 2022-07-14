@@ -2,6 +2,7 @@
 
 import { AutocompleteSearch } from '../../../../src/modules/commons/components/autocomplete/AutocompleteSearch';
 import { LocationSearchResult } from '../../../../src/modules/search/services/domain/searchResult';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
@@ -40,6 +41,10 @@ describe('Button', () => {
 			expect(input).toBeTruthy();
 			expect(input.getAttribute('id')).toBe('autoComplete');
 			expect(element.shadowRoot.querySelector('#autoCompleteautocomplete-list')).toBeNull();
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(AutocompleteSearch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 

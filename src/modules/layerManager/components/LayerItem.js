@@ -224,7 +224,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 				<div>                                                                                              
 					<ba-icon id='remove' .icon='${removeSvg}' .color=${'var(--primary-color)'} .color_hover=${'var(--text3)'} .size=${2.6} .title=${translate('layerManager_remove')} @click=${remove}></ba-icon>               
 				</div>
-				<ba-overflow-menu .type=${MenuTypes.MEATBALL} data-test-id .items=${getMenuItems()} ></ba-overflow-menu>
+				<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()} ></ba-overflow-menu>
             </div>
         </div>`;
 	}
