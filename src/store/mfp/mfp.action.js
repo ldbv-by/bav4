@@ -12,7 +12,6 @@ const getStore = () => {
 	return storeService.getStore();
 };
 
-
 /**
  * Activates the mfp tool.
  * @function
