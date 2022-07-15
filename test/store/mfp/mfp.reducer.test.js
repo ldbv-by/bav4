@@ -10,7 +10,6 @@ describe('mfpReducer', () => {
 		});
 	};
 
-
 	it('updates the active property', () => {
 		const store = setup();
 
