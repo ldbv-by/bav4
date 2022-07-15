@@ -4,7 +4,7 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSizeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -700,10 +700,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		const featureColor = getColorFrom(feature);
 		const featureSymbol = getSymbolFrom(feature);
 		const featureText = getTextFrom(feature);
+		const featureScale = getSizeFrom(feature);
 		const color = featureColor ? featureColor : currentStyleOption.color;
 		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
 		const text = featureText ? featureText : currentStyleOption.text;
-		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text };
+		const scale = featureScale ? featureScale : currentStyleOption.scale;
+		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 		setSelectedStyle(selectedStyle);
 	}
