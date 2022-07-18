@@ -21,6 +21,7 @@ import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.re
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
+import { mfpReducer } from '../store/mfp/mfp.reducer';
 
 
 
@@ -58,7 +59,8 @@ export class StoreService {
 			notifications: notificationReducer,
 			featureInfo: featureInfoReducer,
 			media: createMediaReducer(),
-			import: importReducer
+			import: importReducer,
+			mfp: mfpReducer
 		});
 
 		this._store = createStore(rootReducer);
