@@ -21,6 +21,7 @@ import { mapContextMenuReducer } from '../store/mapContextMenu/mapContextMenu.re
 import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
+import { mfpReducer } from '../store/mfp/mfp.reducer';
 
 
 
@@ -58,7 +59,8 @@ export class StoreService {
 			notifications: notificationReducer,
 			featureInfo: featureInfoReducer,
 			media: createMediaReducer(),
-			import: importReducer
+			import: importReducer,
+			mfp: mfpReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -77,9 +79,9 @@ export class StoreService {
 				MediaPlugin: mediaPlugin,
 				FeatureInfoPlugin: featureInfoPlugin,
 				MainMenuPlugin: mainMenuPlugin,
-				EnvironmentService: environmentService,
 				ImportPlugin: importPlugin,
-				ConfigService: configService
+				SearchPlugin: searchPlugin,
+				HistoryStatePlugin: HistoryStatePlugin
 			}
 				= $injector.inject(
 					'TopicsPlugin',
@@ -93,9 +95,9 @@ export class StoreService {
 					'MediaPlugin',
 					'FeatureInfoPlugin',
 					'MainMenuPlugin',
-					'EnvironmentService',
 					'ImportPlugin',
-					'ConfigService'
+					'SearchPlugin',
+					'HistoryStatePlugin'
 				);
 
 			setTimeout(async () => {
@@ -112,10 +114,8 @@ export class StoreService {
 				await featureInfoPlugin.register(this._store);
 				await mainMenuPlugin.register(this._store);
 				await importPlugin.register(this._store);
-				//we remove all query params shown in the browsers address bar
-				if (configService.getValue('RUNTIME_MODE') !== 'development') {
-					environmentService.getWindow().history.replaceState(null, '', location.href.split('?')[0]);
-				}
+				await searchPlugin.register(this._store);
+				await HistoryStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});
 	}

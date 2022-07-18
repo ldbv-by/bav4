@@ -8,7 +8,7 @@
 
 import { $injector } from '../../injection';
 import { isString } from '../../utils/checks';
-import { GeoResourceTypes } from '../domain/geoResources';
+import { GeoResourceTypes } from '../../domain/geoResources';
 
 /**
  * Provides BVV specific determined attributions.

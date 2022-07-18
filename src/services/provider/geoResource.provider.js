@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 

@@ -5,7 +5,7 @@ import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { layersReducer } from '../../../../../../src/store/layers/layers.reducer';
 import { createDefaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
-import { WMTSGeoResource } from '../../../../../../src/services/domain/geoResources';
+import { WMTSGeoResource } from '../../../../../../src/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
@@ -92,7 +92,6 @@ describe('CatalogLeaf', () => {
 				expect(element.shadowRoot.querySelectorAll('.ba-icon-button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 
-				expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('#info').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			});
 

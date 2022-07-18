@@ -5,4 +5,5 @@ import './components/checkbox';
 import './components/icon';
 import './components/autocomplete';
 import './components/spinner';
+import './components/overflowMenu';
 

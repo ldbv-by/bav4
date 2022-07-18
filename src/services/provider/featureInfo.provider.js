@@ -2,7 +2,7 @@
  * @module service/provider
  */
 import { $injector } from '../../injection';
-import { GeoResourceAuthenticationType, GeoResourceTypes } from '../domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../domain/geoResources';
 import { FeatureInfoResult } from '../FeatureInfoService';
 import { MediaType } from '../HttpService';
 

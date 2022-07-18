@@ -2,7 +2,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
 import { $injector } from '../injection';
-import { QueryParameters } from '../services/domain/queryParameters';
+import { QueryParameters } from '../domain/queryParameters';
 
 
 /**

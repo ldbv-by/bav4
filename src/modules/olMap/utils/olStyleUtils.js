@@ -55,6 +55,21 @@ const getTextScale = (sizeKeyword) => {
 	}
 };
 
+
+export const textScaleToKeyword = (scaleCandidate) => {
+	const scale = typeof (scaleCandidate) === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
+
+	switch (scale) {
+		case 2:
+			return 'large';
+		case 1.5:
+			return 'medium';
+		case 1:
+		default:
+			return 'small';
+	}
+};
+
 const getMarkerScale = (sizeKeyword) => {
 	if (typeof (sizeKeyword) === 'number') {
 		return sizeKeyword;
@@ -655,6 +670,34 @@ export const getTextFrom = (feature) => {
 			return textStyle.getText();
 		}
 	}
+	return null;
+};
+
+/**
+ * Extracts from the specified feature the size-value if the
+ * StyleType is Marker/Text or null for all other StyleTypes.
+ * @param {Feature} feature the feature with or without a style
+ * @returns {StyleSizeTypes|null} the Size-Value or null
+ */
+export const getSizeFrom = (feature) => {
+	if (feature == null) {
+		return null;
+	}
+	const styles = getStyleArray(feature); feature.getStyle();
+	if (styles) {
+		const style = styles[0];
+		const image = style?.getImage();
+		const text = style?.getText();
+
+		if (image) {
+			return markerScaleToKeyword(image.getScale());
+		}
+
+		if (text) {
+			return textScaleToKeyword(text.getScale());
+		}
+	}
+
 	return null;
 };
 

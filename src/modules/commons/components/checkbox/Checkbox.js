@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';
 import css from './checkbox.css';
 
@@ -50,6 +51,8 @@ export class Checkbox extends MvuElement {
 				event.stopPropagation();
 			}
 		});
+
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {

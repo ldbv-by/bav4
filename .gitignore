@@ -5,6 +5,7 @@ docs
 stats.json
 coverage
 .env
+.env~
 nbproject
 reports
 

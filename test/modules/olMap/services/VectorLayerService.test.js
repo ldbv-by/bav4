@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { VectorGeoResource, VectorSourceType } from '../../../../src/services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType } from '../../../../src/domain/geoResources';
 import { load } from '../../../../src/modules/olMap/utils/feature.provider';
 import { iconUrlFunction, mapVectorSourceTypeToFormat, VectorLayerService } from '../../../../src/modules/olMap/services/VectorLayerService';
 import VectorSource, { VectorSourceEvent } from 'ol/source/Vector';

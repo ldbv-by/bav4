@@ -1,5 +1,5 @@
 import { isHttpUrl } from '../utils/checks';
-import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from './domain/sourceType';
+import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 

@@ -1,8 +1,8 @@
-# BA v4
+# BayernAtlas v4
 
-[![Build Status](https://github.com/ldbv-by/bav4-nomigration/workflows/Node.js%20CI/badge.svg)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
-[![Coverage Status](https://coveralls.io/repos/github/ldbv-by/bav4-nomigration/badge.svg?branch=master)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
-[![Apache License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ldbv-by/bav4-nomigration/Node.js%20CI?style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
+[![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4-nomigration/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
+[![GitHub](https://img.shields.io/github/license/ldbv-by/bav4-nomigration?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Next-generation web-map viewer based on web standards.
 
@@ -27,6 +27,8 @@ Next-generation web-map viewer based on web standards.
   - [OpenLayers](https://openlayers.org/): Mapping API
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
+  - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
+  - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
   - [webpack](https://webpack.js.org): Bundler
   - [jasmin](https://jasmine.github.io/)/[karma](https://karma-runner.github.io/latest/index.html): Tests
   - [playwright](https://playwright.dev/) E2E Tests
@@ -38,14 +40,30 @@ Next-generation web-map viewer based on web standards.
 - Node.js 16
 - npm 8
 
-With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
+Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && nvm use`
 
 ### Install
 
 `npm i`
 
-### List of npm scripts
+### Configuration
 
+Configuration properties are read at build time from an `.env` file located in the projects root directory.
+Currently used properties are:
+
+| key| default value|description |
+|----|----|----|
+| `DEFAULT_LANG` | `en` | current locale (available locales are `en` and `de`) |
+| `BACKEND_URL` |  | |
+| `PROXY_URL` |  | |
+| `SHORTENING_SERVICE_URL` |  | |
+| `SOFTWARE_INFO` |  | e.g. build information
+
+The app can be run without any configuration and uses default values and fallback mechanisms for that case.  
+That is also the case when the `BACKEND_URL` property is missing.  
+To enable the showcase component, the `SOFTWARE_INFO` property must be set.
+
+### List of npm scripts
 
 | Run/Build | |
 |----|----|
@@ -72,12 +90,15 @@ With [nvm](https://github.com/nvm-sh/nvm) run `nvm install && nvm use`
 | `npm run es-check` | Checks if source files use only allowed es-version language features|
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
-
 ## Structure
 
 The project's source code is located under `src`, unit, component and e2e tests under `test`.
 
 The source code is distributed among the following directories:
+
+###  `src/domain`
+
+Contains global domain-specific classes and type definitions.
 
 ###  `src/injection`
 
@@ -165,25 +186,23 @@ For example, they could be responsible for setting an initial state or reacting 
 - If an update of the global state has an event-like character, it's recommended to wrap the payload within another object. This makes it possible to track changes and avoids second dispatching in order to "reset" the state. For this purpose, you can use use `EventLike` in storeUtils.js
 
 ## Links
-
-- Introduction into custom elements and web components: https://javascript.info/web-components
-- lit-html guide: https://lit-html.polymer-project.org/guide
-- Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
-- Webpack intro: https://ui.dev/webpack/ 
-- Redux query-param sync: https://github.com/Treora/redux-query-sync
-
 ### Various topics relating web components
+- Introduction to custom elements and web components: https://javascript.info/web-components
 - https://www.thinktecture.com/de/articles/web-components/
-
-
-### Data handling
 - https://alligator.io/web-components/attributes-properties/
 - https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
 
 ### CSS
 - A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
-
+### lit-html
+- lit-html guide: https://lit-html.polymer-project.org/guide
 ### Redux
+- Redux tutorial: https://redux.js.org/tutorials/essentials/part-1-overview-concepts  
 - Few Ways to Update a State Array in Redux Reducer https://medium.com/swlh/few-ways-to-update-a-state-array-in-redux-reducer-f2621ae8061
+- Redux query-param sync: https://github.com/Treora/redux-query-sync
+### Webpack
+- Webpack Intro: https://ui.dev/webpack/ 
+### Common
+- Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 
 *USE THE PLATFORM*

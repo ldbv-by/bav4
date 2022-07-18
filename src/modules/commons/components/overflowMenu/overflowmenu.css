@@ -1,0 +1,66 @@
+:host {
+	display: inline-block
+}
+
+.menu__button {
+	cursor: pointer;
+	display: inline-block;
+	height: 1.9em;
+	width: 1.9em;
+	background-color: var(--primary-color);
+}
+
+.kebab {
+	mask: url("./assets/kebab.svg");
+	-webkit-mask-image: url(" ./assets/kebab.svg");
+}
+
+.meatball {
+	mask: url("./assets/meatball.svg");
+	-webkit-mask-image: url(" ./assets/meatball.svg");
+}
+
+.anchor {
+	display: inline-block;
+	background: transparent;
+	border: none;
+	border-radius: calc(2.5em / 2);
+	height: 2.5em;
+	width: 2.5em;
+	padding: 0.3em;
+}
+
+.anchor:hover {
+	background: var(--header-background-color);
+}
+
+.menu__container {
+	--anchor-x: 0;
+	--anchor-y: 0;
+	position: fixed;
+	border: 1px solid var(--primary-bg-color);
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+	background-color: var(--primary-bg-color);
+	z-index: 100;
+	pointer-events: auto;
+}
+
+.sector0 {
+	transform: translateX(calc(var(--anchor-x))) translateY(calc(var(--anchor-y)));
+}
+
+.sector1 {
+	transform: translateX(calc(var(--anchor-x) - 100%)) translateY(calc(var(--anchor-y)));
+}
+
+.sector2 {
+	transform: translateX(calc(var(--anchor-x) - 100%)) translateY(calc(var(--anchor-y) - 100%));
+}
+
+.sector3 {
+	transform: translateX(calc(var(--anchor-x))) translateY(calc(var(--anchor-y) - 100%));
+}
+
+.collapsed {
+	display: none
+}

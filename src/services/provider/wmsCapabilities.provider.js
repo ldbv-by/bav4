@@ -1,6 +1,6 @@
 import { $injector } from '../../injection';
 import { createUniqueId } from '../../utils/numberUtils';
-import { GeoResourceAuthenticationType, WmsGeoResource } from '../domain/geoResources';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../HttpService';
 
 

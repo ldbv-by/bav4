@@ -13,7 +13,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils.js';
 import proj4 from 'proj4';
-import { VectorGeoResource, VectorSourceType } from '../../../../../src/services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType } from '../../../../../src/domain/geoResources';
 import { register } from 'ol/proj/proj4';
 import { MEASUREMENT_LAYER_ID } from '../../../../../src/plugins/MeasurementPlugin';
 import { ModifyEvent } from 'ol/interaction/Modify';

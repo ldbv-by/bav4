@@ -13,14 +13,14 @@
  */
 
 import { $injector } from '../injection';
-import { WMTSGeoResource } from './domain/geoResources';
+import { WMTSGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 
-export const FALLBACK_GEORESOURCE_ID_0 = 'atkis';
-export const FALLBACK_GEORESOURCE_ID_1 = 'atkis_sw';
-export const FALLBACK_GEORESOURCE_LABEL_0 = 'Base Map 1';
-export const FALLBACK_GEORESOURCE_LABEL_1 = 'Base Map 2';
+export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
+export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
+export const FALLBACK_GEORESOURCE_LABEL_0 = 'TopPlusOpen';
+export const FALLBACK_GEORESOURCE_LABEL_1 = 'TopPlusOpen monochrome';
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -146,10 +146,16 @@ export class GeoResourceService {
 	 */
 	_newFallbackGeoResources() {
 		return [
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkis/{z}/{x}/{y}'),
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}')
+			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'),
+			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png')
 		].map(gr => {
-			return gr.setAttribution('Bayerische Vermessungsverwaltung');
+			return gr.setAttribution({
+				description: 'TopPlusOpen',
+				copyright: [
+					{ label: 'Bundesamt für Kartographie und Geodäsie (2021)', url: 'http://www.bkg.bund.de/' },
+					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
+				] }
+			);
 		});
 	}
 }

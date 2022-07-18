@@ -1,11 +1,11 @@
-import { getDefaultAttribution } from '../provider/attribution.provider';
+import { getDefaultAttribution } from '../services/provider/attribution.provider';
 
 
 /**
  * Attribution data of a GeoResource.
  * It contains at least a copyright label.
  * @typedef Attribution
- * @property {Copyright} copyright
+ * @property {Copyright|Array<Copyright>} copyright
  * @property {string} [description] description
  */
 

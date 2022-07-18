@@ -8,7 +8,7 @@ import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlu
 import { MediaType } from '../../src/services/HttpService';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
-import { SourceType, SourceTypeName } from '../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabId } from '../../src/store/mainMenu/mainMenu.action';
 import { positionReducer } from '../../src/store/position/position.reducer';

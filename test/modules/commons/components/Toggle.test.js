@@ -1,4 +1,5 @@
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Toggle.tag, Toggle);
 
@@ -35,6 +36,10 @@ describe('Toggle', () => {
 			expect(element.shadowRoot.querySelector('slot')).toBeTruthy();
 			//has slot assigned content?
 			expect(element.shadowRoot.querySelector('slot').assignedNodes().length).toBe(1);
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(Toggle.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 
