@@ -37,7 +37,6 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.mapSize).toEqual({ width: 21, height: 42 });
 	});
 
-
 	it('updates the scale property', () => {
 		const store = setup();
 
