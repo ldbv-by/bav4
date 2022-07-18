@@ -79,6 +79,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_share_button: 'Share',
 				toolbox_toolbar_measure_button: 'Measure',
 				toolbox_toolbar_import_button: 'Import',
+				toolbox_toolbar_export_button: 'Export',
 				toolbox_clipboard_link_notification_text: 'The link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'The area',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance',
@@ -86,7 +87,11 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'was copied to clipboard',
 				toolbox_copy_icon: 'Copy to clipboard',
 				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing',
-				toolbox_toolbar_logo_badge: '4.0'
+				toolbox_toolbar_logo_badge: '4.0',
+				toolbox_exportMfp_header: 'Export to PDF',
+				toolbox_exportMfp_format: 'Format',
+				toolbox_exportMfp_scale: 'Scale',
+				toolbox_exportMfp_submit: 'Create PDF'
 			};
 
 		case 'de':
@@ -167,6 +172,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_share_button: 'Teilen',
 				toolbox_toolbar_measure_button: 'Messen',
 				toolbox_toolbar_import_button: 'Import',
+				toolbox_toolbar_export_button: 'Export',
 				toolbox_clipboard_link_notification_text: 'Der Link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'Die Fläche',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
@@ -174,7 +180,11 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert',
 				toolbox_copy_icon: 'In die Zwischenablage kopieren',
 				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
-				toolbox_toolbar_logo_badge: '4.0'
+				toolbox_toolbar_logo_badge: '4.0',
+				toolbox_exportMfp_header: 'Export nach PDF',
+				toolbox_exportMfp_format: 'Format',
+				toolbox_exportMfp_scale: 'Maßstab',
+				toolbox_exportMfp_submit: 'PDF erzeugen'
 			};
 
 		default:
