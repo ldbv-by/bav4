@@ -49,6 +49,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const capabilitiesAvailable = capabilities.length > 0;
 
 		const onClick = () => emitNotification(`Export to MapFishPrint with ${mapSize.width}*${mapSize.height} and ${scale}`, LevelTypes.INFO);
+
+		const disabled = !(capabilitiesAvailable && scale && mapSize);
 		return html`
         <div class="ba-tool-container">
 			<div class="ba-tool-container__title">
@@ -58,7 +60,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${capabilitiesAvailable ? this._getContent(mapSize, scale, capabilities) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-				<ba-button id='btn_submit' class="tool-container__button" .label=${translate('toolbox_exportMfp_submit')} @click=${onClick} .disabled=${!capabilitiesAvailable}></ba-button>
+				<ba-button id='btn_submit' class="tool-container__button" .label=${translate('toolbox_exportMfp_submit')} @click=${onClick} .disabled=${disabled}></ba-button>
 			</div>			
 		</div>`;
 	}
@@ -107,13 +109,15 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		};
 		return html`<div class="fieldset">
 						<select id='select_layout' @change=${onChangeMapSize}>
+							${!mapSize ? html`<option value=''>${translate('toolbox_exportMfp_select_option')}</option>` : html.nothing}
 							${getMapSizeOptions(mapSizes, mapSize)}
 						</select>
 						<label for="select_layout" class="control-label">${translate('toolbox_exportMfp_layout')}</label><i class="bar"></i>
 					</div>
 					<div class="fieldset">
 						<select id='select_scale' @change=${onChangeScale}>
-						${getScaleOptions(scales, scale)}
+							${!scale ? html`<option value=''>${translate('toolbox_exportMfp_select_option')}</option>` : html.nothing}							
+							${getScaleOptions(scales, scale)}
 						</select>
 						<label for="select_scale" class="control-label">${translate('toolbox_exportMfp_scale')}</label><i class="bar"></i>
 					</div>`;

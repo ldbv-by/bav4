@@ -91,7 +91,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_header: 'Export to PDF',
 				toolbox_exportMfp_layout: 'Page layout',
 				toolbox_exportMfp_scale: 'Scale',
-				toolbox_exportMfp_submit: 'Create PDF'
+				toolbox_exportMfp_submit: 'Create PDF',
+				toolbox_exportMfp_select_option: 'select...'
 			};
 
 		case 'de':
@@ -184,7 +185,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_header: 'Export nach PDF',
 				toolbox_exportMfp_layout: 'Seitenformat',
 				toolbox_exportMfp_scale: 'Maßstab',
-				toolbox_exportMfp_submit: 'PDF erzeugen'
+				toolbox_exportMfp_submit: 'PDF erzeugen',
+				toolbox_exportMfp_select_option: 'auswählen...'
 			};
 
 		default:

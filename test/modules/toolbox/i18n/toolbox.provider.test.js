@@ -93,6 +93,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
+		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
 	});
 
 	it('provides translation for en', () => {
@@ -185,10 +186,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_layout).toBe('Page layout');
 		expect(map.toolbox_exportMfp_scale).toBe('Scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
+		expect(map.toolbox_exportMfp_select_option).toBe('select...');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 88;
+		const expectedSize = 89;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

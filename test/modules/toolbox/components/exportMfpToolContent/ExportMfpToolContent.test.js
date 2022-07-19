@@ -72,6 +72,7 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when initialized', () => {
+		const defaultSelectOptionCount = 1;
 		const scales = [42, 21, 1];
 		const dpis = [125, 200];
 		const capabilities = [{ name: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { name: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
@@ -91,7 +92,7 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelector('#select_layout')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#select_scale')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
 
 		});
 
@@ -109,11 +110,11 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2);
-			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2 + defaultSelectOptionCount);
+			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3 + defaultSelectOptionCount);
 		});
 
-		it('create empty select options, when capabilities are empty', async () => {
+		it('does NOT create select options, when capabilities are empty', async () => {
 			const element = await setup();
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
@@ -127,18 +128,18 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup();
 
-			const layoutOption = element.shadowRoot.querySelector('#select_layout option');
+			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
 
-			expect(layoutOption.textContent).toBe('foo');
+			expect(layoutOptions[1].textContent).toBe('foo');
 		});
 
 		it('labels the scale options with a formatted scale from the capabilities', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup();
 
-			const layoutOption = element.shadowRoot.querySelector('#select_scale option');
+			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
-			expect(layoutOption.textContent).toMatch(/1:\d+/);
+			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
 		});
 
 		it('changes store, when a layout is selected', async () => {
@@ -146,7 +147,7 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup();
 
 			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(1);
+			const layoutOption = layoutSelectElement.item(2);
 			layoutOption.selected = true;
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
@@ -161,7 +162,7 @@ describe('ExportMfpToolContent', () => {
 			element.signal('update_scale', 99);
 
 			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(1);
+			const layoutOption = layoutSelectElement.item(2);
 			layoutOption.selected = true;
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
@@ -174,7 +175,7 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup();
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(1); //21
+			const layoutOption = scaleSelectElement.item(2); //21
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
@@ -189,7 +190,7 @@ describe('ExportMfpToolContent', () => {
 			element.signal('update_map_size', { width: 420, height: 210 });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(1); //21
+			const layoutOption = scaleSelectElement.item(2); //21
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
