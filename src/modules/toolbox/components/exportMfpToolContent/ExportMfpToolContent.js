@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { setMapSize, setScale } from '../../../../store/mfp/mfp.action';
+import { setCurrent } from '../../../../store/mfp/mfp.action';
 
 const Update_Scale = 'update_scale';
 const Update_Map_Size = 'update_map_size';
@@ -78,15 +78,23 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const scales = capabilities.find(c => this._isMapSizeEqual(c.mapSize, currentOrDefaultMapSize))?.scales ;
 
 		const onChangeMapSize = (e) => {
+			// todo: getting a valid dpi-value instead of default
 			const layout = e.target.value;
 			const mapSize = capabilities.find(c => c.name === layout)?.mapSize;
-			setMapSize(mapSize);
+			const scaleOrDefault = scale ? scale : scales[0];
+			const dpiOrDefault = capabilities.find(c => c.name === layout)?.dpis[0];
+
+			setCurrent({ mapSize: mapSize, scale: scaleOrDefault, dpi: dpiOrDefault });
 			this.signal(Update_Map_Size, mapSize);
 		};
 
 		const onChangeScale = (e) => {
+			// todo: getting a valid dpi-value instead of default
 			const parsedScale = parseInt(e.target.value);
-			setScale(parsedScale);
+			const currentMapSize = mapSize ? mapSize : currentOrDefaultMapSize;
+			const dpiOrDefault = capabilities.find(c => this._isMapSizeEqual(c.mapSize, currentMapSize))?.dpis[0];
+
+			setCurrent({ mapSize: currentMapSize, scale: parsedScale, dpi: dpiOrDefault });
 			this.signal(Update_Scale, parsedScale);
 		};
 
