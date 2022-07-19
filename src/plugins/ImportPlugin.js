@@ -7,6 +7,8 @@ import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../domain/sourceType';
 import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
 import { fitLayer } from '../store/position/position.action';
+import { QueryParameters } from '../domain/queryParameters';
+import { isHttpUrl } from '../utils/checks';
 
 /**
  * Amount of time waiting before adding a layer in ms.
@@ -15,6 +17,7 @@ export const LAYER_ADDING_DELAY_MS = 500;
 
 
 /**
+ * Observes the 'import' slice of state and initially handles the 'data' query parameter
  * @class
  * @author thiloSchlemmer
  * @author taulinger
@@ -34,23 +37,35 @@ export class ImportPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+
+		const data = queryParams.get(QueryParameters.DATA);
+		if (data) {
+			this._import(data);
+		}
+
 		const onChange = async (latestImport) => {
 			const { payload: { url, data, sourceType } } = latestImport;
-
-			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
-			if (geoResource) {
-				const { id, label } = geoResource;
-				//switch to the main menu's maps tab
-				setTab(TabId.MAPS);
-				//add the layer after some delay, which gives the user a better feedback
-				setTimeout(() => {
-					addLayer(id, { label: label });
-					fitLayer(id);
-				}, LAYER_ADDING_DELAY_MS);
-			}
+			this._import(url ?? data, sourceType);
 		};
 
 		observe(store, state => state.import.latest, onChange);
+	}
+
+	_import(dataOrUrl, sourceType) {
+
+		const geoResource = isHttpUrl(dataOrUrl) ? this._importByUrl(dataOrUrl, sourceType) : this._importByData(dataOrUrl, sourceType);
+		if (geoResource) {
+			const { id, label } = geoResource;
+			//switch to the main menu's maps tab
+			setTab(TabId.MAPS);
+			//add the layer after some delay, which gives the user a better feedback
+			setTimeout(() => {
+				addLayer(id, { label: label });
+				fitLayer(id);
+			}, LAYER_ADDING_DELAY_MS);
+		}
 	}
 
 	/**
@@ -58,7 +73,7 @@ export class ImportPlugin extends BaPlugin {
 	 * @param {string} url the url to the data
 	 * @returns {Promise<GeoResource>} the imported GeoResource
 	 */
-	async _importByUrl(url, sourceType) {
+	_importByUrl(url, sourceType) {
 		const createGeoResource = (url, sourceType) => {
 			if (sourceType) {
 				switch (sourceType.name) {

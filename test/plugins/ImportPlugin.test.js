@@ -12,6 +12,7 @@ import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { TabId } from '../../src/store/mainMenu/mainMenu.action';
 import { positionReducer } from '../../src/store/position/position.reducer';
+import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
 
@@ -22,6 +23,14 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 });
 
 describe('ImportPlugin', () => {
+
+	const windowMock = {
+		location: {
+			get search() {
+				return null;
+			}
+		}
+	};
 
 	const importVectorDataServiceMock = {
 		forUrl: async () => { },
@@ -49,6 +58,7 @@ describe('ImportPlugin', () => {
 			position: positionReducer
 		});
 		$injector
+			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
 			.registerSingleton('ImportVectorDataService', importVectorDataServiceMock)
 			.registerSingleton('TranslationService', translationServiceMock);
 		return store;
@@ -66,44 +76,109 @@ describe('ImportPlugin', () => {
 		});
 	});
 
-	describe('when import.url property changes', () => {
+	describe('_import', () => {
+
+		describe('from URL', () => {
+
+			it('adds a layer and set the correct MainMenu tab index', async () => {
+				const store = setup();
+				const geoResourceFutureMock = {
+					id: 'idFoo', label: 'labelBar', onReject: () => { }
+				};
+				const url = 'http://some.url';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				const instanceUnderTest = new ImportPlugin();
+				spyOn(instanceUnderTest, '_importByUrl').withArgs(url, sourceType).and.callFake(() => geoResourceFutureMock);
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+				instanceUnderTest._import(url, sourceType);
+
+				await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('idFoo');
+				expect(store.getState().layers.active[0].label).toBe('labelBar');
+				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			});
+
+			it('does nothing when GeoResource is not available', async () => {
+				const store = setup();
+				const url = 'http://some.url';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				const instanceUnderTest = new ImportPlugin();
+				spyOn(instanceUnderTest, '_importByUrl').withArgs(url, sourceType).and.returnValue(null);
+				await instanceUnderTest.register(store);
+
+				setUrl(url, sourceType);
+
+				await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+			});
+		});
+
+		describe('from data', () => {
+
+			it('adds a layer and set the correct MainMenu tab index', async () => {
+				const store = setup();
+				const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
+				const instanceUnderTest = new ImportPlugin();
+				const data = '<kml some=thing></kml>';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				spyOn(instanceUnderTest, '_importByData').withArgs(data, sourceType).and.callFake(() => geoResourceStub);
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+
+				setData(data, sourceType);
+
+				await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe('idFoo');
+				expect(store.getState().layers.active[0].label).toBe('labelBar');
+				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			});
+
+			it('does nothing when GeoResource is not available', async () => {
+				const store = setup();
+				const instanceUnderTest = new ImportPlugin();
+				const data = '<kml some=thing></kml>';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				spyOn(instanceUnderTest, '_importByData').withArgs(data, sourceType).and.returnValue(null);
+				await instanceUnderTest.register(store);
+
+				expect(store.getState().layers.active.length).toBe(0);
+				setData(data, sourceType);
+
+				await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
+				expect(store.getState().layers.active.length).toBe(0);
+				expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
+				expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+			});
+
+		});
+	});
+
+	describe('_importByUrl', () => {
 
 		it('calls the ImportVectorDataService for vector-url', async () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
-			const spy = spyOn(importVectorDataServiceMock, 'forUrl');
-			const instanceUnderTest = new ImportPlugin();
-			await instanceUnderTest.register(store);
-
-			setUrl('http://some.url', sourceType);
-
-			await TestUtils.timeout();
-			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
-
-		});
-
-		it('adds a layer and set the correct MainMenu tab index', async () => {
-			const store = setup();
 			const geoResourceFutureMock = {
-				id: 'idFoo', label: 'labelBar', onReject: () => { }
+				id: 'idFoo', label: 'labelBar', onReject: () => {}
 			};
-			const sourceType = new SourceType(SourceTypeName.KML);
-			const spy = spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
+			spyOn(importVectorDataServiceMock, 'forUrl').withArgs('http://some.url', { sourceType: sourceType }).and.returnValue(geoResourceFutureMock);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().layers.active.length).toBe(0);
-			expect(store.getState().position.fitLayerRequest.payload).toBeNull();
+			const result = instanceUnderTest._importByUrl('http://some.url', sourceType);
 
-			setUrl('http://some.url', sourceType);
-
-			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
-			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(result).toEqual(result);
 		});
 
 		it('emits a notification and logs a warning when sourceType is NULL', async () => {
@@ -111,9 +186,8 @@ describe('ImportPlugin', () => {
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
-			setUrl('http://some.url', null);
+			instanceUnderTest._importByUrl('http://some.url', null);
 
-			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
@@ -125,9 +199,8 @@ describe('ImportPlugin', () => {
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
-			setUrl('http://some.url', sourceType);
+			instanceUnderTest._importByUrl('http://some.url', sourceType);
 
-			await TestUtils.timeout();
 			expect(spy).not.toHaveBeenCalled();
 			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
@@ -147,43 +220,42 @@ describe('ImportPlugin', () => {
 			await instanceUnderTest.register(store);
 
 			expect(store.getState().layers.active.length).toBe(0);
-			setUrl('http://some.url', sourceType);
+			instanceUnderTest._importByUrl('http://some.url', sourceType);
 
-			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 
-	describe('when import.data property changes', () => {
+	describe('when import.url property changes', () => {
+
+		it('calls #_import', async () => {
+			const store = setup();
+			const url = 'http://some.url';
+			const sourceType = new SourceType(SourceTypeName.KML);
+			const instanceUnderTest = new ImportPlugin();
+			const spy = spyOn(instanceUnderTest, '_import');
+			await instanceUnderTest.register(store);
+
+			setUrl(url, sourceType);
+
+			expect(spy).toHaveBeenCalledWith(url, sourceType);
+		});
+	});
+
+	describe('_importByData', () => {
 
 		it('calls the ImportVectorDataService', async () => {
 			const store = setup();
-			const spy = spyOn(importVectorDataServiceMock, 'forData');
-			const instanceUnderTest = new ImportPlugin();
-			const sourceType = new SourceType(SourceTypeName.KML);
-			await instanceUnderTest.register(store);
-
-			setData('<kml some=thing></kml>', sourceType);
-
-			expect(spy).toHaveBeenCalledWith('<kml some=thing></kml>', { sourceType: sourceType });
-		});
-
-		it('adds a layer and set the correct MainMenu tab index', async () => {
-			const store = setup();
 			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
-			spyOn(importVectorDataServiceMock, 'forData').and.callFake(() => geoResourceStub);
+			const sourceType = new SourceType(SourceTypeName.KML);
+			spyOn(importVectorDataServiceMock, 'forData').withArgs('<kml some=thing></kml>', { sourceType: sourceType }).and.returnValue(geoResourceStub);
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().layers.active.length).toBe(0);
-			setData('<kml some=thing></kml>', MediaType.KML);
+			const result = instanceUnderTest._importByData('<kml some=thing></kml>', sourceType);
 
-			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
-			expect(store.getState().layers.active.length).toBe(1);
-			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			expect(result).toEqual(geoResourceStub);
 		});
 
 		it('emits a notification when importVectorDataService returns NULL', async () => {
@@ -192,11 +264,60 @@ describe('ImportPlugin', () => {
 			const instanceUnderTest = new ImportPlugin();
 			await instanceUnderTest.register(store);
 
-			setData('<kml some=thing></kml>', MediaType.KML);
+			instanceUnderTest._importByData('<kml some=thing></kml>', MediaType.KML);
 
-			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+	});
+
+	describe('when import.data property changes', () => {
+
+		it('calls #_import', async () => {
+			const store = setup();
+			const instanceUnderTest = new ImportPlugin();
+			const data = '<kml some=thing></kml>';
+			const sourceType = new SourceType(SourceTypeName.KML);
+			const spy = spyOn(instanceUnderTest, '_import');
+			await instanceUnderTest.register(store);
+
+			setData(data, sourceType);
+
+			expect(spy).toHaveBeenCalledWith(data, sourceType);
+		});
+	});
+
+	describe('query parameter available', () => {
+
+		it('adds a layer and set the correct MainMenu tab index', async () => {
+			const store = setup();
+			const geoResourceStub = { id: 'idFoo', label: 'labelBar' };
+			const instanceUnderTest = new ImportPlugin();
+			const term = '<kml some=thing></kml>';
+			const queryParam = `${QueryParameters.DATA}=${term}`;
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(instanceUnderTest, '_importByData').withArgs(term, undefined).and.callFake(() => geoResourceStub);
+
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe('idFoo');
+			expect(store.getState().layers.active[0].label).toBe('labelBar');
+			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+		});
+
+		it('does nothing when term is not available', async () => {
+			const store = setup();
+			const spy = spyOn(importVectorDataServiceMock, 'forData');
+			const instanceUnderTest = new ImportPlugin();
+			const term = '';
+			const queryParam = `${QueryParameters.DATA}=${term}`;
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+
+			await instanceUnderTest.register(store);
+
+			expect(spy).not.toHaveBeenCalledWith();
 		});
 	});
 });
