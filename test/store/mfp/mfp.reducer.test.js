@@ -1,4 +1,4 @@
-import { activate, deactivate, setMapSize, setScale } from '../../../src/store/mfp/mfp.action';
+import { activate, deactivate, setCurrent, setMapSize, setScale } from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
 import { TestUtils } from '../../test-utils';
 
@@ -9,6 +9,14 @@ describe('mfpReducer', () => {
 			mfp: mfpReducer
 		});
 	};
+
+	it('initiales the store with default values', () => {
+		const store = setup();
+		expect(store.getState().mfp.active).toBeFalse();
+		expect(store.getState().mfp.current.scale).toBeNull();
+		expect(store.getState().mfp.current.mapSize).toBeNull();
+		expect(store.getState().mfp.current.dpi).toBeNull();
+	});
 
 	it('updates the active property', () => {
 		const store = setup();
@@ -22,26 +30,29 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.active).toBeFalse();
 	});
 
-	it('initiales the store with default values', () => {
-		const store = setup();
-		expect(store.getState().mfp.active).toBeFalse();
-		expect(store.getState().mfp.scale).toBeNull();
-		expect(store.getState().mfp.mapSize).toBeNull();
-	});
-
-	it('updates the mapSize property', () => {
+	it('updates the current.mapSize property', () => {
 		const store = setup();
 
 		setMapSize({ width: 21, height: 42 });
 
-		expect(store.getState().mfp.mapSize).toEqual({ width: 21, height: 42 });
+		expect(store.getState().mfp.current.mapSize).toEqual({ width: 21, height: 42 });
 	});
 
-	it('updates the scale property', () => {
+	it('updates the current.scale property', () => {
 		const store = setup();
 
 		setScale(42);
 
-		expect(store.getState().mfp.scale).toBe(42);
+		expect(store.getState().mfp.current.scale).toBe(42);
+	});
+
+	it('updates the current property', () => {
+		const store = setup();
+
+		setCurrent({ scale: 5, dpi: 128, mapSize: { width: 21, height: 42 } });
+
+		expect(store.getState().mfp.current.scale).toBe(5);
+		expect(store.getState().mfp.current.dpi).toBe(128);
+		expect(store.getState().mfp.current.mapSize).toEqual({ width: 21, height: 42 });
 	});
 });

@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="logo.svg" height="175">
+   <img src="./logo.svg" height="128">
 </p>
 <h1 align="center">
    BayernAtlas v4 <br><br>

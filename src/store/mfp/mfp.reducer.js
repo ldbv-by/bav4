@@ -1,8 +1,8 @@
 
 export const ACTIVE_CHANGED = 'mfp/active';
-export const FORMAT_CHANGED = 'mfp/format';
-export const SCALE_CHANGED = 'mfp/scale';
-export const MAP_SIZE_CHANGED = 'mfp/map_size';
+export const SCALE_CHANGED = 'mfp/current/scale';
+export const MAP_SIZE_CHANGED = 'mfp/current/map_size';
+export const CURRENT_CHANGED = 'mfp/current';
 
 export const initialState = {
 
@@ -11,13 +11,13 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @property {number}
+	 * @property {MfpSetting}
 	 */
-	scale: null,
-	/**
-	 * @property {MapSize}
-	 */
-	mapSize: null
+	current: {
+		scale: null,
+		mapSize: null,
+		dpi: null
+	}
 };
 
 export const mfpReducer = (state = initialState, action) => {
@@ -30,15 +30,23 @@ export const mfpReducer = (state = initialState, action) => {
 			};
 		}
 		case SCALE_CHANGED: {
+			const { current } = state;
 			return {
 				...state,
-				scale: payload
+				current: { ...current, scale: payload }
 			};
 		}
 		case MAP_SIZE_CHANGED: {
+			const { current } = state;
 			return {
 				...state,
-				mapSize: payload
+				current: { ...current, mapSize: payload }
+			};
+		}
+		case CURRENT_CHANGED: {
+			return {
+				...state,
+				current: payload
 			};
 		}
 	}
