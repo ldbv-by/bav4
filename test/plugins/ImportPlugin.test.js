@@ -206,7 +206,6 @@ describe('ImportPlugin', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
-
 		it('emits a notification when GeoResourceFuture rejects', async () => {
 			const store = setup();
 			const geoResourceFutureMock = {
