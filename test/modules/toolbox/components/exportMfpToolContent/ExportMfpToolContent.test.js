@@ -76,12 +76,23 @@ describe('ExportMfpToolContent', () => {
 		const scales = [42, 21, 1];
 		const dpis = [125, 200];
 		const capabilities = [{ name: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }];
-		it('renders the view', async () => {
+
+		it('renders the view WITHOUT capabilities', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('ba-spinner')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
+		});
+
+		it('renders the view with loaded capabilities', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('#select_layout')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#select_scale')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 
 		});
 

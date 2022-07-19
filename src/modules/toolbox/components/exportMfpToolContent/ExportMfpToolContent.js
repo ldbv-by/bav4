@@ -48,16 +48,34 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const capabilitiesAvailable = capabilities.length > 0;
 
-		const mapSizes = capabilitiesAvailable ? capabilities.map(capability => {
+		const onClick = () => emitNotification(`Export to MapFishPrint with ${mapSize.width}*${mapSize.height} and ${scale}`, LevelTypes.INFO);
+		return html`
+        <div class="ba-tool-container">
+			<div class="ba-tool-container__title">
+						${translate('toolbox_exportMfp_header')}
+			</div>
+			<div class='ba-tool-container__content'>
+				${capabilitiesAvailable ? this._getContent(mapSize, scale, capabilities) : this._getSpinner()}				
+			</div>
+			<div class="ba-tool-container__actions"> 
+				<ba-button id='btn_submit' class="tool-container__button" .label=${translate('toolbox_exportMfp_submit')} @click=${onClick} .disabled=${!capabilitiesAvailable}></ba-button>
+			</div>			
+		</div>`;
+	}
+
+	_getSpinner() {
+		return html`<ba-spinner></ba-spinner>`;
+	}
+
+	_getContent(mapSize, scale, capabilities) {
+		const translate = (key) => this._translationService.translate(key);
+		const mapSizes = capabilities.map(capability => {
 			return { name: capability.name, mapSize: capability.mapSize };
-		}) : [];
+		});
 
-		const currentMapSize = capabilitiesAvailable ? (mapSize ? mapSize : mapSizes[0].mapSize) : null;
+		const currentOrDefaultMapSize = (mapSize ? mapSize : mapSizes[0].mapSize);
 
-		const scales = capabilitiesAvailable ? capabilities.find(c => this._isMapSizeEqual(c.mapSize, currentMapSize))?.scales : [];
-		const currentLayout = capabilitiesAvailable ? capabilities.find(capability => this._isMapSizeEqual(capability.mapSize, mapSize)) : null;
-
-		const onClick = () => emitNotification(`Export to MapFishPrint with ${currentLayout} and ${scale}`, LevelTypes.INFO);
+		const scales = capabilities.find(c => this._isMapSizeEqual(c.mapSize, currentOrDefaultMapSize))?.scales ;
 
 		const onChangeMapSize = (e) => {
 			const layout = e.target.value;
@@ -73,42 +91,24 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		};
 
 		const getScaleOptions = (scales, selectedScale) => {
-			if (scales && scales.length > 0) {
-				return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
-			}
-			return html.nothing;
+			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
 		};
 
 		const getMapSizeOptions = (mapSizes, selectedMapSize) => {
-			if (mapSizes && mapSizes.length > 0) {
-				return mapSizes.map((m) => html`<option value=${m.name} ?selected=${m.mapSize === selectedMapSize}>${m.name}</option>)}`);
-			}
-			return html.nothing;
+			return mapSizes.map((m) => html`<option value=${m.name} ?selected=${m.mapSize === selectedMapSize}>${m.name}</option>)}`);
 		};
-
-		return html`
-        <div class="ba-tool-container">
-			<div class="ba-tool-container__title">
-						${translate('toolbox_exportMfp_header')}
-			</div>
-			<div class='ba-tool-container__content'>
-				<div class="fieldset">
+		return html`<div class="fieldset">
 						<select id='select_layout' @change=${onChangeMapSize}>
 							${getMapSizeOptions(mapSizes, mapSize)}
 						</select>
 						<label for="select_layout" class="control-label">${translate('toolbox_exportMfp_layout')}</label><i class="bar"></i>
-				</div>
-				<div class="fieldset">
+					</div>
+					<div class="fieldset">
 						<select id='select_scale' @change=${onChangeScale}>
 						${getScaleOptions(scales, scale)}
 						</select>
 						<label for="select_scale" class="control-label">${translate('toolbox_exportMfp_scale')}</label><i class="bar"></i>
-				</div>
-			</div>
-			<div class="ba-tool-container__actions"> 
-				<ba-button id='btn_submit' class="tool-container__button" .label=${translate('toolbox_exportMfp_submit')} @click=${onClick}></ba-button>
-			</div>			
-		</div>`;
+					</div>`;
 	}
 
 	_isMapSizeEqual(a, b) {
