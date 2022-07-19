@@ -329,23 +329,6 @@ describe('ImportVectorDataService', () => {
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 
-		it('logs a warning and returns Null when sourceType is not available', async () => {
-			const instanceUnderTest = setup();
-			const data = 'data';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
-			const warnSpy = spyOn(console, 'warn');
-			const options = {
-				id: 'id',
-				detectVectorSourceType: () => null
-			};
-
-			const vgr = instanceUnderTest.forData(data, options);
-
-			expect(vgr).toBeNull();
-			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
-			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
-		});
-
 		it('logs a warning and returns Null when sourceType is not is not supported', async () => {
 			const instanceUnderTest = setup();
 			const data = 'data';
