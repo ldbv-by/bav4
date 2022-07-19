@@ -160,8 +160,8 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('_isMapSizeEqual', () => {
-		it('checks equality of MapSizes', () => {
-			const classUnderTest = new ExportMfpToolContent();
+		it('checks equality of MapSizes', async () => {
+			const classUnderTest = await setup();
 
 			expect(classUnderTest._isMapSizeEqual(null, null)).toBeFalse();
 			expect(classUnderTest._isMapSizeEqual(undefined, undefined)).toBeFalse();
