@@ -11,7 +11,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @property {number}
+	 * @property {MfpSetting}
 	 */
 	current: {
 		scale: null,
