@@ -329,7 +329,7 @@ describe('ImportVectorDataService', () => {
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 
-		it('logs a warning and returns Null when sourceType is not is not supported', async () => {
+		it('logs a warning and returns Null when sourceType is not supported', async () => {
 			const instanceUnderTest = setup();
 			const data = 'data';
 			const sourceType = 'foo';
