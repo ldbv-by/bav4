@@ -90,7 +90,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
 		expect(map.toolbox_toolbar_export_button).toBe('Export');
 		expect(map.toolbox_exportMfp_header).toBe('Export nach PDF');
-		expect(map.toolbox_exportMfp_format).toBe('Format');
+		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
 	});
@@ -182,7 +182,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
 		expect(map.toolbox_toolbar_export_button).toBe('Export');
 		expect(map.toolbox_exportMfp_header).toBe('Export to PDF');
-		expect(map.toolbox_exportMfp_format).toBe('Format');
+		expect(map.toolbox_exportMfp_layout).toBe('Page layout');
 		expect(map.toolbox_exportMfp_scale).toBe('Scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
 	});

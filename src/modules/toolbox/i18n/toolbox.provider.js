@@ -89,7 +89,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing',
 				toolbox_toolbar_logo_badge: '4.0',
 				toolbox_exportMfp_header: 'Export to PDF',
-				toolbox_exportMfp_format: 'Format',
+				toolbox_exportMfp_layout: 'Page layout',
 				toolbox_exportMfp_scale: 'Scale',
 				toolbox_exportMfp_submit: 'Create PDF'
 			};
@@ -182,7 +182,7 @@ export const provide = (lang) => {
 				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
 				toolbox_toolbar_logo_badge: '4.0',
 				toolbox_exportMfp_header: 'Export nach PDF',
-				toolbox_exportMfp_format: 'Format',
+				toolbox_exportMfp_layout: 'Seitenformat',
 				toolbox_exportMfp_scale: 'Maßstab',
 				toolbox_exportMfp_submit: 'PDF erzeugen'
 			};
