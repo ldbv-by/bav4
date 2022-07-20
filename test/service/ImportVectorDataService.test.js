@@ -292,8 +292,8 @@ describe('ImportVectorDataService', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
-			const sourceType = new SourceType(SourceTypeName.GEOJSON);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceType);
+			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
+			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 			const _mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
 				.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
 
@@ -329,14 +329,17 @@ describe('ImportVectorDataService', () => {
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 
-		it('logs a warning and returns Null when sourceType is not available', async () => {
+		it('logs a warning and returns Null when sourceType is not supported', async () => {
 			const instanceUnderTest = setup();
 			const data = 'data';
+			const sourceType = 'foo';
+			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
+			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const warnSpy = spyOn(console, 'warn');
 			const options = {
 				id: 'id',
-				detectVectorSourceType: () => null
+				sourceType: sourceType
 			};
 
 			const vgr = instanceUnderTest.forData(data, options);
@@ -344,23 +347,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
-		});
-
-		it('logs a warning and returns Null when sourceType is not is not supported', async () => {
-			const instanceUnderTest = setup();
-			const data = 'data';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
-			const warnSpy = spyOn(console, 'warn');
-			const options = {
-				id: 'id',
-				sourceType: 'foo'
-			};
-
-			const vgr = instanceUnderTest.forData(data, options);
-
-			expect(vgr).toBeNull();
-			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
-			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
+			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 		});
 	});
 
