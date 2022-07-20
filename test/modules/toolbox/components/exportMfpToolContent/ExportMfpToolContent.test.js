@@ -154,7 +154,7 @@ describe('ExportMfpToolContent', () => {
 			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
 		});
 
-		it('changes store, when a layout is selected', async () => {
+		it('changes store, when a layout(id) is selected', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -167,7 +167,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
 		});
 
-		it('changes store, when a layout is selected and scale already specified', async () => {
+		it('changes store, when a layout(id) is selected and scale already specified', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -195,7 +195,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
 		});
 
-		it('changes store, when a scale is selected and mapSize already specified', async () => {
+		it('changes store, when a scale is selected and layout(id) already specified', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 

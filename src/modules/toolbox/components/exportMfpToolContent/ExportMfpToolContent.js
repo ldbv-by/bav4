@@ -76,7 +76,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	_getContent(id, scale, capabilities) {
 		const translate = (key) => this._translationService.translate(key);
 
-		const ids = capabilities.map(capability => {
+		const layoutItems = capabilities.map(capability => {
 			return { name: translate(`toolbox_exportMfp_id_${capability.id}`), id: capability.id };
 		});
 
@@ -100,12 +100,12 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
 		};
 
-		const getIdOptions = (ids, selectedId) => {
-			return ids.map((element) => html`<option value=${element.id} ?selected=${element.id === selectedId}>${element.name}</option>)}`);
+		const getLayoutOptions = (layoutItems, selectedId) => {
+			return layoutItems.map((item) => html`<option value=${item.id} ?selected=${item.id === selectedId}>${item.name}</option>)}`);
 		};
 		return html`<div class="fieldset">
 						<select id='select_layout' @change=${onChangeId}>							
-							${getIdOptions(ids, id)}
+							${getLayoutOptions(layoutItems, id)}
 						</select>
 						<label for="select_layout" class="control-label">${translate('toolbox_exportMfp_layout')}</label><i class="bar"></i>
 					</div>
