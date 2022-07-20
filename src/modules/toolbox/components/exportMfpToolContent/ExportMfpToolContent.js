@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { setMapSize, setScale } from '../../../../store/mfp/mfp.action';
+import { setId, setScale } from '../../../../store/mfp/mfp.action';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
@@ -73,29 +73,19 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		return html`<ba-spinner></ba-spinner>`;
 	}
 
-	_getCapabilityByName(name, capabilities) {
-		return capabilities.find(c => c.name === name);
-	}
-
-	_getCapabilityByMapSize(mapSize, capabilities) {
-		return capabilities.find(c => this._isMapSizeEqual(c.mapSize, mapSize));
-	}
-
 	_getContent(id, scale, capabilities) {
 		const translate = (key) => this._translationService.translate(key);
-		const mapSize = this._getCapabilityByName(id, capabilities).mapSize;
+
 		const ids = capabilities.map(capability => {
-			return { name: translate(`toolbox_exportMfp_id_${capability.name}`), id: capability.name };
+			return { name: translate(`toolbox_exportMfp_id_${capability.id}`), id: capability.id };
 		});
 
-		const scales = this._getCapabilityByMapSize(mapSize, capabilities)?.scales;
+		const scales = this._mfpService.byId(id)?.scales;
 
 		const onChangeId = (e) => {
-			// todo: getting a valid dpi-value instead of default
 			const id = e.target.value;
-			const mapSize = this._getCapabilityByName(id, capabilities)?.mapSize;
 
-			setMapSize(mapSize);
+			setId(id);
 			this.signal(Update_Id, id);
 		};
 
@@ -111,7 +101,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		};
 
 		const getIdOptions = (ids, selectedId) => {
-			return ids.map((item) => html`<option value=${item.id} ?selected=${item.id === selectedId}>${item.name}</option>)}`);
+			return ids.map((element) => html`<option value=${element.id} ?selected=${element.id === selectedId}>${element.name}</option>)}`);
 		};
 		return html`<div class="fieldset">
 						<select id='select_layout' @change=${onChangeId}>							
@@ -125,13 +115,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						</select>
 						<label for="select_scale" class="control-label">${translate('toolbox_exportMfp_scale')}</label><i class="bar"></i>
 					</div>`;
-	}
-
-	_isMapSizeEqual(a, b) {
-		if (!a || !b) {
-			return false;
-		}
-		return a.width === b.width && a.height === b.height;
 	}
 
 	static get tag() {

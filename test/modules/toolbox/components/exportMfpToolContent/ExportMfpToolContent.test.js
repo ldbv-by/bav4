@@ -18,12 +18,15 @@ describe('ExportMfpToolContent', () => {
 	const mfpServiceMock = {
 		getCapabilities() {
 			return Promise.resolve([]);
+		},
+		byId() {
+			return { scales: [42, 21, 1] };
 		}
 	};
 	const initialCurrent = { id: 'foo', scale: 42, dpi: 125 };
 	const mfpDefaultState = {
 		active: false,
-		current: null
+		current: { id: null, scale: null, dpi: null }
 	};
 
 	const setup = async (mfpState = mfpDefaultState, config = {}) => {
@@ -75,7 +78,7 @@ describe('ExportMfpToolContent', () => {
 
 		const scales = [42, 21, 1];
 		const dpis = [125, 200];
-		const capabilities = [{ name: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { name: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
+		const capabilities = [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
 
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
@@ -161,7 +164,7 @@ describe('ExportMfpToolContent', () => {
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
 			expect(element.getModel().id).toEqual('bar');
-			expect(store.getState().mfp.current).toEqual({ id: 'foo', mapSize: { width: 420, height: 210 }, scale: 42, dpi: 125 });
+			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
 		});
 
 		it('changes store, when a layout is selected and scale already specified', async () => {
@@ -176,10 +179,10 @@ describe('ExportMfpToolContent', () => {
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
 			expect(element.getModel().id).toEqual('bar');
-			expect(store.getState().mfp.current).toEqual({ id: 'foo', mapSize: { width: 420, height: 210 }, scale: 42, dpi: 125 });
+			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
 		});
 
-		fit('changes store, when a scale is selected', async () => {
+		it('changes store, when a scale is selected', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -207,19 +210,5 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
 		});
 
-	});
-
-	describe('_isMapSizeEqual', () => {
-		it('checks equality of MapSizes', async () => {
-			const classUnderTest = await setup();
-
-			expect(classUnderTest._isMapSizeEqual(null, null)).toBeFalse();
-			expect(classUnderTest._isMapSizeEqual(undefined, undefined)).toBeFalse();
-			expect(classUnderTest._isMapSizeEqual({}, null)).toBeFalse();
-			expect(classUnderTest._isMapSizeEqual({}, {})).toBeTrue();
-			expect(classUnderTest._isMapSizeEqual({ width: 42, height: 21 }, {})).toBeFalse();
-			expect(classUnderTest._isMapSizeEqual({ width: 42, height: 21 }, { width: 42, height: 21 })).toBeTrue();
-			expect(classUnderTest._isMapSizeEqual({ width: 42, height: 21 }, { width: 21, height: 42 })).toBeFalse();
-		});
 	});
 });
