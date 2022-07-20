@@ -9,6 +9,10 @@ const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
 const Update_Capabilities = 'update_capabilities';
 
+/**
+ * @class
+ * @author thiloSchlemmer
+ */
 export class ExportMfpToolContent extends AbstractToolContent {
 	constructor() {
 		super({

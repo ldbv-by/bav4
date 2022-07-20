@@ -94,6 +94,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
+		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 Querformat');
+		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
+		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 Querformat');
+		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 Hochformat');
 	});
 
 	it('provides translation for en', () => {
@@ -187,10 +191,14 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_scale).toBe('Scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
 		expect(map.toolbox_exportMfp_select_option).toBe('select...');
+		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 landscape');
+		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
+		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 landscape');
+		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 portrait');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 89;
+		const expectedSize = 93;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -92,7 +92,11 @@ export const provide = (lang) => {
 				toolbox_exportMfp_layout: 'Page layout',
 				toolbox_exportMfp_scale: 'Scale',
 				toolbox_exportMfp_submit: 'Create PDF',
-				toolbox_exportMfp_select_option: 'select...'
+				toolbox_exportMfp_select_option: 'select...',
+				toolbox_exportMfp_id_a4_landscape: 'A4 landscape',
+				toolbox_exportMfp_id_a4_portrait: 'A4 portrait',
+				toolbox_exportMfp_id_a3_landscape: 'A3 landscape',
+				toolbox_exportMfp_id_a3_portrait: 'A3 portrait'
 			};
 
 		case 'de':
@@ -186,7 +190,11 @@ export const provide = (lang) => {
 				toolbox_exportMfp_layout: 'Seitenformat',
 				toolbox_exportMfp_scale: 'Maßstab',
 				toolbox_exportMfp_submit: 'PDF erzeugen',
-				toolbox_exportMfp_select_option: 'auswählen...'
+				toolbox_exportMfp_select_option: 'auswählen...',
+				toolbox_exportMfp_id_a4_landscape: 'A4 Querformat',
+				toolbox_exportMfp_id_a4_portrait: 'A4 Hochformat',
+				toolbox_exportMfp_id_a3_landscape: 'A3 Querformat',
+				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat'
 			};
 
 		default:
