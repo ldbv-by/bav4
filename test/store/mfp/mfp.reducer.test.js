@@ -1,4 +1,4 @@
-import { activate, deactivate, setCurrent, setMapSize, setScale } from '../../../src/store/mfp/mfp.action';
+import { activate, deactivate, setCurrent, setId, setScale } from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
 import { TestUtils } from '../../test-utils';
 
@@ -13,8 +13,8 @@ describe('mfpReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().mfp.active).toBeFalse();
+		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
-		expect(store.getState().mfp.current.mapSize).toBeNull();
 		expect(store.getState().mfp.current.dpi).toBeNull();
 	});
 
@@ -30,12 +30,12 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.active).toBeFalse();
 	});
 
-	it('updates the current.mapSize property', () => {
+	it('updates the current.id property', () => {
 		const store = setup();
 
-		setMapSize({ width: 21, height: 42 });
+		setId('foo');
 
-		expect(store.getState().mfp.current.mapSize).toEqual({ width: 21, height: 42 });
+		expect(store.getState().mfp.current.id).toBe('foo');
 	});
 
 	it('updates the current.scale property', () => {

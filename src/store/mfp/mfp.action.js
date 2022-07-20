@@ -12,7 +12,7 @@
  */
 
 import { $injector } from '../../injection';
-import { ACTIVE_CHANGED, CURRENT_CHANGED, MAP_SIZE_CHANGED, SCALE_CHANGED } from './mfp.reducer';
+import { ACTIVE_CHANGED, CURRENT_CHANGED, ID_CHANGED, SCALE_CHANGED } from './mfp.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -41,6 +41,10 @@ export const deactivate = () => {
 	});
 };
 
+/**
+ *
+ * @param {number} scale
+ */
 export const setScale = (scale) => {
 	getStore().dispatch({
 		type: SCALE_CHANGED,
@@ -49,12 +53,12 @@ export const setScale = (scale) => {
 };
 
 /**
- * @param {MapSize} mapSize
+ * @param {string} id
  */
-export const setMapSize = (mapSize) => {
+export const setId = (id) => {
 	getStore().dispatch({
-		type: MAP_SIZE_CHANGED,
-		payload: mapSize
+		type: ID_CHANGED,
+		payload: id
 	});
 };
 
