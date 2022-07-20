@@ -3,6 +3,8 @@ import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/compone
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
@@ -34,12 +36,15 @@ describe('ExportMfpToolContent', () => {
 			mfp: mfpState,
 			media: {
 				portrait: false
+			},
+			notifications: {
+				notification: null
 			}
 		};
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { mfp: mfpReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(state, { mfp: mfpReducer, notifications: notificationReducer, media: createNoInitialStateMediaReducer() });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -74,11 +79,11 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
-	describe('when initialized', () => {
+	const scales = [42, 21, 1];
+	const dpis = [125, 200];
+	const capabilities = [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
 
-		const scales = [42, 21, 1];
-		const dpis = [125, 200];
-		const capabilities = [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
+	describe('when initialized', () => {
 
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
@@ -153,8 +158,11 @@ describe('ExportMfpToolContent', () => {
 
 			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
 		});
+	});
 
-		it('changes store, when a layout(id) is selected', async () => {
+	describe('when the user selects a layout(id)', () => {
+
+		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -167,22 +175,30 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
 		});
 
-		it('changes store, when a layout(id) is selected and scale already specified', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+		describe('and scale already specified', () => {
 
-			element.signal('update_scale', 99);
+			it('changes store', async () => {
+				spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(1);
-			layoutOption.selected = true;
-			layoutSelectElement.dispatchEvent(new Event('change'));
+				element.signal('update_scale', 99);
 
-			expect(element.getModel().id).toEqual('bar');
-			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
+				const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
+				const layoutOption = layoutSelectElement.item(1);
+				layoutOption.selected = true;
+				layoutSelectElement.dispatchEvent(new Event('change'));
+
+				expect(element.getModel().id).toEqual('bar');
+				expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
+			});
+
 		});
 
-		it('changes store, when a scale is selected', async () => {
+	});
+
+	describe('when the user selects a scale', () => {
+
+		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -195,20 +211,37 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
 		});
 
-		it('changes store, when a scale is selected and layout(id) already specified', async () => {
+		describe('and layout(id) already specified', () => {
+
+			it('changes store, when a scale is selected and layout(id) already specified', async () => {
+				spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+				element.signal('update_map_size', { width: 420, height: 210 });
+
+				const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+				const layoutOption = scaleSelectElement.item(2); //21
+				layoutOption.selected = true;
+				scaleSelectElement.dispatchEvent(new Event('change'));
+
+				expect(element.getModel().scale).toBe(1);
+				expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+			});
+		});
+	});
+
+	describe('when the user clicks the submit-button', () => {
+
+		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			element.signal('update_map_size', { width: 420, height: 210 });
+			const submitButton = element.shadowRoot.querySelector('#btn_submit');
+			submitButton.click();
 
-			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(2); //21
-			layoutOption.selected = true;
-			scaleSelectElement.dispatchEvent(new Event('change'));
-
-			expect(element.getModel().scale).toBe(1);
-			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+			// todo: replace with real implementation after mfp slice of state is complete
+			expect(store.getState().notifications.latest.payload.content).toBe('Export to MapFishPrint with \'foo\' and scale 1:42');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
-
 	});
 });
