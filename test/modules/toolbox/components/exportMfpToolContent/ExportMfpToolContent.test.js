@@ -20,7 +20,7 @@ describe('ExportMfpToolContent', () => {
 			return Promise.resolve([]);
 		}
 	};
-
+	const initialCurrent = { id: 'foo', scale: 42, dpi: 125 };
 	const mfpDefaultState = {
 		active: false,
 		current: null
@@ -64,7 +64,7 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
-				mapSize: null,
+				id: null,
 				scale: null,
 				capabilities: []
 			});
@@ -72,7 +72,7 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when initialized', () => {
-		const defaultSelectOptionCount = 1;
+
 		const scales = [42, 21, 1];
 		const dpis = [125, 200];
 		const capabilities = [{ name: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { name: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
@@ -87,19 +87,19 @@ describe('ExportMfpToolContent', () => {
 
 		it('renders the view with loaded capabilities', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(element.shadowRoot.querySelector('#select_layout')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#select_scale')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
-			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
+			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
 
 			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(capabilitiesSpy).toHaveBeenCalledTimes(1);
 			expect(element.getModel().capabilities).toEqual(capabilities);
@@ -108,13 +108,23 @@ describe('ExportMfpToolContent', () => {
 		it('creates select options from the capabilities', async () => {
 
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2 + defaultSelectOptionCount);
-			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3 + defaultSelectOptionCount);
+			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3);
 		});
 
 		it('does NOT create select options, when capabilities are empty', async () => {
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
+			const scaleOptions = element.shadowRoot.querySelectorAll('#select_scale option');
+
+			expect(layoutOptions).toHaveSize(0);
+			expect(scaleOptions).toHaveSize(0);
+		});
+
+		it('does NOT create select options, when current in store is empty', async () => {
 			const element = await setup();
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
@@ -126,16 +136,15 @@ describe('ExportMfpToolContent', () => {
 
 		it('labels the layout options with a name from the capabilities', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
-
-			expect(layoutOptions[1].textContent).toBe('foo');
+			expect(layoutOptions[0].textContent).toBe('toolbox_exportMfp_id_foo');
 		});
 
 		it('labels the scale options with a formatted scale from the capabilities', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
@@ -144,48 +153,48 @@ describe('ExportMfpToolContent', () => {
 
 		it('changes store, when a layout is selected', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(2);
+			const layoutOption = layoutSelectElement.item(1);
 			layoutOption.selected = true;
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().mapSize).toEqual({ width: 420, height: 210 });
-			expect(store.getState().mfp.current).toEqual({ mapSize: { width: 420, height: 210 }, scale: 42, dpi: 125 });
+			expect(element.getModel().id).toEqual('bar');
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', mapSize: { width: 420, height: 210 }, scale: 42, dpi: 125 });
 		});
 
 		it('changes store, when a layout is selected and scale already specified', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			element.signal('update_scale', 99);
 
 			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(2);
+			const layoutOption = layoutSelectElement.item(1);
 			layoutOption.selected = true;
 			layoutSelectElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().mapSize).toEqual({ width: 420, height: 210 });
-			expect(store.getState().mfp.current).toEqual({ mapSize: { width: 420, height: 210 }, scale: 99, dpi: 125 });
+			expect(element.getModel().id).toEqual('bar');
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', mapSize: { width: 420, height: 210 }, scale: 42, dpi: 125 });
 		});
 
-		it('changes store, when a scale is selected', async () => {
+		fit('changes store, when a scale is selected', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(2); //21
+			const layoutOption = scaleSelectElement.item(1); //21
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
 			expect(element.getModel().scale).toBe(21);
-			expect(store.getState().mfp.current).toEqual({ mapSize: { width: 42, height: 21 }, scale: 21, dpi: 125 });
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
 		});
 
 		it('changes store, when a scale is selected and mapSize already specified', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup();
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			element.signal('update_map_size', { width: 420, height: 210 });
 
@@ -194,8 +203,8 @@ describe('ExportMfpToolContent', () => {
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
-			expect(element.getModel().scale).toBe(21);
-			expect(store.getState().mfp.current).toEqual({ mapSize: { width: 420, height: 210 }, scale: 21, dpi: 125 });
+			expect(element.getModel().scale).toBe(1);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
 		});
 
 	});
