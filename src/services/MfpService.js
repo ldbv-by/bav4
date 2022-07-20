@@ -25,8 +25,8 @@ export class MfpService {
 		const dpis = [125, 200];
 
 		return [
-			{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } },
 			{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
+			{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } },
 			{ id: 'a3_portrait', scales: scales, dpis: dpis, mapSize: { width: 786, height: 1041 } },
 			{ id: 'a3_landscape', scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 		];
@@ -34,7 +34,7 @@ export class MfpService {
 
 	/**
 	 * @returns {Array<MfpCapabilities>} available capbilities
-     */
+	 */
 	async getCapabilities() {
 		return this._getMockCapabilities();
 	}

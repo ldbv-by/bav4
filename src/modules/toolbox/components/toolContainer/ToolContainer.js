@@ -9,6 +9,7 @@ import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
+import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
 
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -74,6 +75,8 @@ export class ToolContainer extends MvuElement {
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
 				case ToolId.IMPORT:
 					return html`${unsafeHTML(`<${ImportToolContent.tag}/>`)}`;
+				case ToolId.EXPORT:
+					return html`${unsafeHTML(`<${ExportMfpToolContent.tag}/>`)}`;
 				default:
 					return nothing;
 			}
