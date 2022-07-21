@@ -23,7 +23,7 @@ export class ExportMfpPlugin extends BaPlugin {
 	 */
 	async register(store) {
 
-		const initialize = async () => {
+		const lazyInitialize = async () => {
 
 			if (!this._initialized) {
 				// let's set the initial mfp properties
@@ -41,7 +41,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				deactivate();
 			}
 			else {
-				await initialize();
+				await lazyInitialize();
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => activate());
 			}
