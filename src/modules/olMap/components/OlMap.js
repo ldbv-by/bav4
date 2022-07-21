@@ -58,8 +58,8 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
-		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler], [olMfpHandler.id, olMfpHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
+		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 
 	/**
