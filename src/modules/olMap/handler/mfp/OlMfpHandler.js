@@ -9,7 +9,8 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
-import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from '../geolocation/styleUtils';
+import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from './styleUtils';
+import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -23,7 +24,7 @@ const Units_Ratio = 39.37; // inches per meter
 export class OlMfpHandler extends OlLayerHandler {
 
 	constructor() {
-		super('mfp_layer');
+		super(MFP_LAYER_ID);
 		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService }
 			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService');
 
@@ -31,6 +32,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._translationService = translationService;
 		this._mapService = mapService;
 		this._mfpService = mfpService;
+		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._map = null;
 	}
@@ -50,17 +52,23 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		observe(this._storeService.getStore(), state => state.mfp.current, (current) => {
 			if (current) {
-				this._mfpBoundaryFeature.setGeometry(this._createMpfBoundary(current));
+				const geometry = this._createMpfBoundary(current);
+				this._mfpBoundaryFeature.setGeometry(geometry);
+				this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction());
+				this._map.renderSync();
 			}
 		});
 		const optimalScale = this._getOptimalScale(olMap);
 		if (optimalScale) {
 			setScale(optimalScale);
 		}
-		setScale();
 
+		const geometry = this._createMpfBoundary(this._storeService.getStore().getState().mfp.current);
+
+		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction);
-		this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
+		const boundaryMask = createMapMaskFunction(this._map, this._mfpBoundaryFeature);
+		this._mfpLayer.on('postrender', boundaryMask);
 		return this._mfpLayer;
 	}
 
@@ -95,30 +103,34 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.byId(id).scales];
-		const bestScale = scaleCandidates.sort((a, b) => a - b).some(scale => testScale > scale);
+		const bestScale = scaleCandidates.sort((a, b) => a - b).find(scale => testScale > scale);
+
 		return bestScale ? bestScale : fallbackScale;
 	}
 
 	_createMpfBoundary(mfpSettings) {
+		if (!mfpSettings) {
+			return null;
+		}
 		const { id, scale } = mfpSettings;
-
 		const layoutSize = this._mfpService.byId(id).mapSize;
-		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale ;
-		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale ;
-
+		const currentScale = scale ? scale : this._mfpService.byId(id).scales[0];
+		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
+		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
 		const getVisibleCenter = () => {
 			const viewPort = this._mapService.getVisibleViewport(this._map.getTarget());
 			return [(viewPort.right + viewPort.left) / 2, (viewPort.bottom + viewPort.top) / 2];
 		};
 
-		const center = this._map.getCoordinateFromPixel(getVisibleCenter());
-		const geodeticCenter = new Point(center).clone().transform('EPSG:' + this._mapService.getDefaultSridForView(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
+		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+		const geodeticCenter = center.clone().transform('EPSG:' + this._mapService.getSrid(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
 
+		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
 		const geodeticBoundingBox = {
-			minX: geodeticCenter[0] - (w / 2),
-			minY: geodeticCenter[1] - (h / 2),
-			maxX: geodeticCenter[0] + (w / 2),
-			maxY: geodeticCenter[1] + (h / 2)
+			minX: geodeticCenterCoordinate[0] - (w / 2),
+			minY: geodeticCenterCoordinate[1] - (h / 2),
+			maxX: geodeticCenterCoordinate[0] + (w / 2),
+			maxY: geodeticCenterCoordinate[1] + (h / 2)
 		};
 		const geodeticBoundary = new Polygon([[
 			[geodeticBoundingBox.minX, geodeticBoundingBox.minY],
