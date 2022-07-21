@@ -4,13 +4,14 @@ import { observe } from '../../../../utils/storeUtils';
 import { setScale } from '../../../../store/mfp/mfp.action';
 
 import { Point, Polygon } from 'ol/geom';
-import { unByKey } from 'ol/Observable';
+
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
+
 
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -79,18 +80,19 @@ export class OlMfpHandler extends OlLayerHandler {
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
-		this._listeners.forEach(l => unByKey(l));
+		//this._listeners.forEach(l => unByKey(l));
 		this._listeners = [];
+		this._mfpLayer = null;
 		this._map = null;
 	}
 
 	_getOptimalScale(map) {
-		const getEffectiveSizeFromPadding = (padding) => {
-			return { width: padding.right - padding.left, height: padding.bottom - padding.top };
-		};
-		const availableSize = getEffectiveSizeFromPadding(this._mapService.getVisibleViewport(map.getTarget()));
+		// const getEffectiveSizeFromPadding = (padding) => {
+		// 	return { width: padding.right - padding.left, height: padding.bottom - padding.top };
+		// };
+		// const availableSize = getEffectiveSizeFromPadding(this._mapService.getVisibleViewport(map.getTarget()));
 
-		// const availableSize = { width: map.getSize()[0], height: map.getSize()[1] };
+		const availableSize = { width: map.getSize()[0], height: map.getSize()[1] };
 		const resolution = map.getView().getResolution();
 		const width = resolution * availableSize.width;
 		const height = resolution * availableSize.height;
@@ -103,7 +105,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.byId(id).scales];
-		const bestScale = scaleCandidates.sort((a, b) => a - b).find(scale => testScale > scale);
+		const bestScale = [...scaleCandidates].find(scale => testScale > scale);
 
 		return bestScale ? bestScale : fallbackScale;
 	}
@@ -115,14 +117,22 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale } = mfpSettings;
 		const layoutSize = this._mfpService.byId(id).mapSize;
 		const currentScale = scale ? scale : this._mfpService.byId(id).scales[0];
+
 		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
 		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
+
 		const getVisibleCenter = () => {
 			const viewPort = this._mapService.getVisibleViewport(this._map.getTarget());
 			return [(viewPort.right + viewPort.left) / 2, (viewPort.bottom + viewPort.top) / 2];
 		};
 
-		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+		const getCenter = () => {
+			const size = this._map.getSize();
+			return [size[0] / 2, size[1] / 2];
+		};
+
+		const center = new Point(this._map.getCoordinateFromPixel(getCenter()));
+
 		const geodeticCenter = center.clone().transform('EPSG:' + this._mapService.getSrid(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
@@ -139,6 +149,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY],
 			[geodeticBoundingBox.minX, geodeticBoundingBox.minY]
 		]]);
-		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getDefaultSridForView());
+		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
 	}
 }
