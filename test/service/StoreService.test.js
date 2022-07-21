@@ -44,6 +44,9 @@ describe('StoreService', () => {
 		const searchPluginMock = {
 			register: () => { }
 		};
+		const exportMfpPluginMock = {
+			register: () => { }
+		};
 		const historyStatePluginMock = {
 			register: () => { }
 		};
@@ -72,6 +75,7 @@ describe('StoreService', () => {
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
+				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 
 				.ready();
@@ -125,6 +129,7 @@ describe('StoreService', () => {
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
+			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -148,6 +153,7 @@ describe('StoreService', () => {
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
+			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});

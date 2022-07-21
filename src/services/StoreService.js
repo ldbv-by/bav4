@@ -81,7 +81,8 @@ export class StoreService {
 				MainMenuPlugin: mainMenuPlugin,
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
-				HistoryStatePlugin: HistoryStatePlugin
+				ExportMfpPlugin: exportMfpPlugin,
+				HistoryStatePlugin: historyStatePlugin
 			}
 				= $injector.inject(
 					'TopicsPlugin',
@@ -97,6 +98,7 @@ export class StoreService {
 					'MainMenuPlugin',
 					'ImportPlugin',
 					'SearchPlugin',
+					'ExportMfpPlugin',
 					'HistoryStatePlugin'
 				);
 
@@ -115,7 +117,8 @@ export class StoreService {
 				await mainMenuPlugin.register(this._store);
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
-				await HistoryStatePlugin.register(this._store); // should be registered as last plugin
+				await exportMfpPlugin.register(this._store);
+				await historyStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});
 	}
