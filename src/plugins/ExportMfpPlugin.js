@@ -3,6 +3,14 @@ import { BaPlugin } from './BaPlugin';
 import { ToolId } from '../store/tools/tools.action';
 import { activate, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
+import { addLayer, removeLayer } from '../store/layers/layers.action';
+
+/**
+ * Id of the layer used for mfp export visualization.
+ * LayerHandler of a map implementation will also use this id as their key.
+ */
+export const MFP_LAYER_ID = 'mfp_layer';
+
 
 /**
  * This plugin observes the tool slice-of-state and sets the initial mfp slice-of-state.
@@ -46,6 +54,17 @@ export class ExportMfpPlugin extends BaPlugin {
 				setTimeout(() => activate());
 			}
 		};
+
+		const onChange = (changedState) => {
+			if (changedState) {
+				addLayer(MFP_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
+			}
+			else {
+				removeLayer(MFP_LAYER_ID);
+			}
+		};
+
 		observe(store, state => state.tools.current, onToolChanged);
+		observe(store, state => state.mfp.active, onChange);
 	}
 }

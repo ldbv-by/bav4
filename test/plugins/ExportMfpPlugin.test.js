@@ -2,8 +2,10 @@ import { TestUtils } from '../test-utils.js';
 import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { mfpReducer } from '../../src/store/mfp/mfp.reducer.js';
-import { ExportMfpPlugin } from '../../src/plugins/ExportMfpPlugin.js';
+import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin.js';
 import { $injector } from '../../src/injection/index.js';
+import { activate, deactivate } from '../../src/store/mfp/mfp.action.js';
+import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 
 
 
@@ -16,6 +18,7 @@ describe('ExportMfpPlugin', () => {
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			mfp: mfpReducer,
+			layers: layersReducer,
 			tools: toolsReducer
 		});
 		$injector
@@ -82,6 +85,26 @@ describe('ExportMfpPlugin', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeFalse();
+		});
+	});
+
+	describe('when active property changes', () => {
+
+		it('adds or removes the mfp layer', async () => {
+			const store = setup();
+			const instanceUnderTest = new ExportMfpPlugin();
+			await instanceUnderTest.register(store);
+
+			activate();
+
+			expect(store.getState().layers.active.length).toBe(1);
+			expect(store.getState().layers.active[0].id).toBe(MFP_LAYER_ID);
+			expect(store.getState().layers.active[0].constraints.alwaysTop).toBeTrue();
+			expect(store.getState().layers.active[0].constraints.hidden).toBeTrue();
+
+			deactivate();
+
+			expect(store.getState().layers.active.length).toBe(0);
 		});
 	});
 });
