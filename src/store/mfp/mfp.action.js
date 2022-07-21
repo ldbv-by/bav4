@@ -1,14 +1,8 @@
 /**
- * @typedef {Object} MapSize
- * @property {number} width
- * @property {number} height
- */
-
-/**
  * @typedef {Object} MfpSetting
+ * @property {string} id
  * @property {number} scale
  * @property {number} dpi
- * @property {MapSize} mapSize
  */
 
 import { $injector } from '../../injection';
