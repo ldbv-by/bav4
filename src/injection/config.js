@@ -40,6 +40,7 @@ import { BaaCredentialService } from '../services/BaaCredentialService';
 import { SearchPlugin } from '../plugins/SearchPlugin';
 import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
 import { MfpService } from '../services/MfpService';
+import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 
 
 $injector
@@ -82,6 +83,7 @@ $injector
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
 	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerSingleton('SearchPlugin', new SearchPlugin())
+	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
