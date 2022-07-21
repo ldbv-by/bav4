@@ -26,6 +26,7 @@ export class ExportMfpPlugin extends BaPlugin {
 		const initialize = async () => {
 
 			if (!this._initialized) {
+				// let's set the initial mfp properties
 				const { MfpService: mfpService } = $injector.inject('MfpService');
 				const capabilities = await mfpService.getCapabilities();
 				const { id, scales, dpis } = capabilities[0];
