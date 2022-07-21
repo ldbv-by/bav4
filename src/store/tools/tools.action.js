@@ -18,7 +18,8 @@ export const ToolId = Object.freeze({
 	MEASURING: 'measuring',
 	DRAWING: 'drawing',
 	SHARING: 'sharing',
-	IMPORT: 'import'
+	IMPORT: 'import',
+	EXPORT: 'export'
 });
 
 

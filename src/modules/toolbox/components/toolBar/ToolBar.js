@@ -139,14 +139,21 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button-text">
 						${translate('toolbox_toolbar_import_button')}							
 						</div>  					
-					</button>  				               
+					</button>
+					<button  id="export-button" data-test-id @click="${() => toggleTool(ToolId.EXPORT)}" class="tool-bar__button ${getActiveClass(ToolId.EXPORT)}">
+						<div class="tool-bar__button_icon export">							
+						</div>
+						<div class="tool-bar__button-text">
+							${translate('toolbox_toolbar_export_button')}
+						</div>  
+					</button>  			               
 					<button  id="share-button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button ${getActiveClass(ToolId.SHARING)}">
 						<div class="tool-bar__button_icon share">							
 						</div>
 						<div class="tool-bar__button-text">
 							${translate('toolbox_toolbar_share_button')}
 						</div>  
-					</button> 
+					</button>
 					<button  id="close-button" class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 						<div class="tool-bar__button_icon close arrowright">							
 						</div>						
