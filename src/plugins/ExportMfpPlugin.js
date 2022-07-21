@@ -6,7 +6,7 @@ import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 
 /**
- * Id of the layer used for draw interaction.
+ * Id of the layer used for mfp export visualization.
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const MFP_LAYER_ID = 'mfp_layer';
