@@ -11,6 +11,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
+import { unByKey } from 'ol/Observable';
 
 
 
@@ -36,6 +37,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._map = null;
+		this._registeredObservers = [];
 	}
 
 	/**
@@ -43,6 +45,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
+
 		this._map = olMap;
 		if (this._mfpLayer === null) {
 			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
@@ -51,24 +54,16 @@ export class OlMfpHandler extends OlLayerHandler {
 			});
 		}
 
-		observe(this._storeService.getStore(), state => state.mfp.current, (current) => {
-			if (current) {
-				const geometry = this._createMpfBoundary(current);
-				this._mfpBoundaryFeature.setGeometry(geometry);
-				this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction());
-				this._map.renderSync();
-			}
-		});
+
+		this._registeredObservers = this._register(this._storeService.getStore());
+
 		const optimalScale = this._getOptimalScale(olMap);
 		if (optimalScale) {
 			setScale(optimalScale);
 		}
-
-		const geometry = this._createMpfBoundary(this._storeService.getStore().getState().mfp.current);
-
-		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction);
+		const mfpSettings = this._storeService.getStore().getState().mfp.current;
 		const boundaryMask = createMapMaskFunction(this._map, this._mfpBoundaryFeature);
+		this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(mfpSettings)));
 		this._mfpLayer.on('postrender', boundaryMask);
 		return this._mfpLayer;
 	}
@@ -80,10 +75,41 @@ export class OlMfpHandler extends OlLayerHandler {
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
-		//this._listeners.forEach(l => unByKey(l));
+		this._unregister(this._registeredObservers);
+		this._listeners.forEach(l => unByKey(l));
 		this._listeners = [];
 		this._mfpLayer = null;
 		this._map = null;
+	}
+
+	_register(store) {
+		return [
+			observe(store, state => state.mfp.current, (current) => this._updateMfpPreview(current)),
+			observe(store, state => state.position.center, () => this._updateMfpPreview())
+		];
+	}
+
+	_unregister(observers) {
+		observers.forEach(unsubscribe => unsubscribe());
+		observers = [];
+	}
+
+	_updateMfpPreview(mfpSettings = null) {
+		const current = mfpSettings ? mfpSettings : this._storeService.getStore().getState().mfp.current;
+		if (current) {
+			const geometry = this._createMpfBoundary(current);
+			this._mfpBoundaryFeature.setGeometry(geometry);
+
+			this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(current)));
+			this._map.renderSync();
+		}
+	}
+
+	_getPageLabel(mfpSettings) {
+		const translate = (key) => this._translationService.translate(key);
+		const { id, scale } = mfpSettings;
+		const layout = translate(`olMap_handler_mfp_id_${id}`);
+		return `${layout}\n1:${scale}`;
 	}
 
 	_getOptimalScale(map) {
@@ -106,8 +132,19 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.byId(id).scales].reverse();
-		const bestScale = [...scaleCandidates].findLast(scale => testScale > scale);
+		const findLast = (array, matcher) => {
+			let last = null;
+			array.forEach(e => {
+				if (!last || matcher(e)) {
+					last = e;
+				}
+			});
+			return last;
+		};
 
+		// array.findLast() is experimental in Firefox
+		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
+		// const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		return bestScale ? bestScale : fallbackScale;
 	}
 
@@ -145,11 +182,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			maxY: geodeticCenterCoordinate[1] + (h / 2)
 		};
 		const geodeticBoundary = new Polygon([[
-			[geodeticBoundingBox.minX, geodeticBoundingBox.minY],
-			[geodeticBoundingBox.maxX, geodeticBoundingBox.minY],
-			[geodeticBoundingBox.maxX, geodeticBoundingBox.maxY],
 			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY],
-			[geodeticBoundingBox.minX, geodeticBoundingBox.minY]
+			[geodeticBoundingBox.maxX, geodeticBoundingBox.maxY],
+			[geodeticBoundingBox.maxX, geodeticBoundingBox.minY],
+			[geodeticBoundingBox.minX, geodeticBoundingBox.minY],
+			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY]
 		]]);
 		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
 	}
