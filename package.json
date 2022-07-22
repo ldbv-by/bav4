@@ -2,7 +2,7 @@
   "name": "bav4-nomigration",
   "dependencies": {
     "dompurify": "^2.3.10",
-    "lit-html": "^2.2.6",
+    "lit-html": "^2.2.7",
     "ol": "^6.15.1",
     "proj4": "^2.8.0",
     "redux": "^4.2.0",
