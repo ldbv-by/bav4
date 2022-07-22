@@ -11,7 +11,6 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { unByKey } from 'ol/Observable';
 
 
 
@@ -76,7 +75,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
 		this._unregister(this._registeredObservers);
-		this._listeners.forEach(l => unByKey(l));
 		this._listeners = [];
 		this._mfpLayer = null;
 		this._map = null;
@@ -163,11 +161,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			const size = this._map.getSize();
 			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
-		};
-
-		const getCenter = () => {
-			const size = this._map.getSize();
-			return [size[0] / 2, size[1] / 2];
 		};
 
 		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
