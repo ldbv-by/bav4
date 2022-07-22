@@ -1,6 +1,7 @@
 import { EventLike } from '../../utils/storeUtils';
 
 export const ZOOM_CHANGED = 'position/zoom';
+export const LIVE_ZOOM_CHANGED = 'position/live_zoom';
 export const ZOOM_ROTATION_CHANGED = 'position/zoom_rotation';
 export const CENTER_CHANGED = 'position/center';
 export const LIVE_CENTER_CHANGED = 'position/live_center';
@@ -13,9 +14,11 @@ export const FIT_REQUESTED = 'position/fit';
 export const FIT_LAYER_REQUESTED = 'position/fit_layer';
 
 const defaultCenter = [1288239.2412306187, 6130212.561641981];
+const defaultZoom = 12;
 
 export const initialState = {
-	zoom: 12,
+	zoom: defaultZoom,
+	liveZoom: defaultZoom,
 	center: defaultCenter,
 	liveCenter: defaultCenter,
 	rotation: 0,
@@ -33,6 +36,14 @@ export const positionReducer = (state = initialState, action) => {
 			return {
 				...state,
 				zoom: payload
+
+			};
+		}
+		case LIVE_ZOOM_CHANGED: {
+
+			return {
+				...state,
+				liveZoom: payload
 
 			};
 		}
