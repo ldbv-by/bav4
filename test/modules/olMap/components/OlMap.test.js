@@ -267,12 +267,42 @@ describe('OlMap', () => {
 				const rotationValue = .56786786;
 				const element = await setup();
 				const view = element._view;
-				const changeRotationEvent = new Event('change:rotation');
-				changeRotationEvent.target = { getRotation: () => rotationValue };
+				const event = new Event('change:rotation');
+				event.target = { getRotation: () => rotationValue };
 
-				view.dispatchEvent(changeRotationEvent);
+				view.dispatchEvent(event);
 
 				expect(store.getState().position.liveRotation).toBe(rotationValue);
+			});
+		});
+
+		describe('change:center', () => {
+
+			it('updates the liveCenter property of the position state', async () => {
+				const center = [21, 42];
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:center');
+				event.target = { getCenter: () => center };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveCenter).toBe(center);
+			});
+		});
+
+		describe('change:resolution', () => {
+
+			it('updates the liveZoom property of the position state', async () => {
+				const zoom = 5.55;
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:resolution');
+				event.target = { getZoom: () => zoom };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveZoom).toBe(zoom);
 			});
 		});
 	});
