@@ -15,7 +15,7 @@ import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
-const MM_Per_Inches = 25.4 ;
+const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 
 /**
@@ -87,15 +87,16 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_getOptimalScale(map) {
-		// const getEffectiveSizeFromPadding = (padding) => {
-		// 	return { width: padding.right - padding.left, height: padding.bottom - padding.top };
-		// };
-		// const availableSize = getEffectiveSizeFromPadding(this._mapService.getVisibleViewport(map.getTarget()));
+		const getEffectiveSizeFromPadding = (size, padding) => {
+			//			return { width: padding.left - padding.right, height: padding.bottom - padding.top };
+			return { width: size[0] - (padding.left + padding.right), height: size[1] - (padding.bottom + padding.top) };
+		};
+		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
-		const availableSize = { width: map.getSize()[0], height: map.getSize()[1] };
+		//const availableSize =
 		const resolution = map.getView().getResolution();
-		const width = resolution * availableSize.width;
-		const height = resolution * availableSize.height;
+		const width = resolution * (availableSize.width - 100);
+		const height = resolution * (availableSize.height - 100);
 
 		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.byId(id).mapSize;
@@ -104,8 +105,8 @@ export class OlMfpHandler extends OlLayerHandler {
 		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
-		const scaleCandidates = [...this._mfpService.byId(id).scales];
-		const bestScale = [...scaleCandidates].find(scale => testScale > scale);
+		const scaleCandidates = [...this._mfpService.byId(id).scales].reverse();
+		const bestScale = [...scaleCandidates].findLast(scale => testScale > scale);
 
 		return bestScale ? bestScale : fallbackScale;
 	}
@@ -118,12 +119,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		const layoutSize = this._mfpService.byId(id).mapSize;
 		const currentScale = scale ? scale : this._mfpService.byId(id).scales[0];
 
-		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
-		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale ;
+		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 
 		const getVisibleCenter = () => {
-			const viewPort = this._mapService.getVisibleViewport(this._map.getTarget());
-			return [(viewPort.right + viewPort.left) / 2, (viewPort.bottom + viewPort.top) / 2];
+			const size = this._map.getSize();
+			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
+			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
 
 		const getCenter = () => {
@@ -131,7 +133,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			return [size[0] / 2, size[1] / 2];
 		};
 
-		const center = new Point(this._map.getCoordinateFromPixel(getCenter()));
+		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
 
 		const geodeticCenter = center.clone().transform('EPSG:' + this._mapService.getSrid(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
 
