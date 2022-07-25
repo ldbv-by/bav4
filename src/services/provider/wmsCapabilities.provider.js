@@ -11,7 +11,7 @@ export const supportedGetMapMediaTypes = [
 	'image/png',
 	'image/gif',
 	'image/jpeg', // no transparency
-	'image/svg+xml' // experimental
+	'image/svg+xml' // supports transparency, but is more kind of experimental
 ];
 
 export const _determinePreferredFormat = (arr) => {
