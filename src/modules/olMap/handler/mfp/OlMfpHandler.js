@@ -83,7 +83,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	_register(store) {
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPreview(current)),
-			observe(store, state => state.position.center, () => this._updateMfpPreview())
+			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview())
 		];
 	}
 
