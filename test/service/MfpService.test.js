@@ -14,14 +14,14 @@ describe('MfpService', () => {
 		});
 	});
 
-	describe('byId', () => {
+	describe('getCapabilitiesById', () => {
 
 		it('provides a mocked MfpCapabilities by id', async () => {
 
 			const instanceUnderTest = new MfpService();
 
-			expect(instanceUnderTest.byId('a4_landscape')).not.toBeNull();
-			expect(instanceUnderTest.byId('foo')).toBeNull();
+			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).not.toBeNull();
+			expect(instanceUnderTest.getCapabilitiesById('foo')).toBeNull();
 		});
 	});
 });
