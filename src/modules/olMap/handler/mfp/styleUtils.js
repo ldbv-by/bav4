@@ -71,18 +71,31 @@ const getPixelWidth = (geometry, map) => {
 	return boundingBoxPixel[1][0] - boundingBoxPixel[0][0];
 };
 
+const getMaskGeometry = (map, innerGeometry) => {
+	const size = map.getSize();
+	const width = size[0] * DEVICE_PIXEL_RATIO;
+	const height = size[1] * DEVICE_PIXEL_RATIO;
+	const outerPixels = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]];
+	const mask = new Polygon([outerPixels.map(p => map.getCoordinateFromPixel(p))]);
+	mask.appendLinearRing(innerGeometry.getLinearRing(0));
 
+	return mask;
+};
 
 export const createMapMaskFunction = (map, feature, text) => {
 	const textLines = text ? text.split('\n') : null;
-	const textStyles = textLines ? textLines.map((l, i) => mfpTextStyleFunction(l, i)) : [];
+	const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
 
 	const innerStyle = mfpBoundaryStyleFunction();
 	const outerStyle = maskFeatureStyleFunction();
+
 	const renderMask = (event) => {
 		const context2d = event.context.canvas.getContext('2d');
-		const vectorContext = getVectorContext(event);
 		const innerPolygon = feature.getGeometry();
+		const mask = getMaskGeometry(map, innerPolygon);
+		const vectorContext = getVectorContext(event);
+
+
 		vectorContext.setStyle(innerStyle);
 		vectorContext.drawGeometry(innerPolygon);
 
@@ -98,13 +111,6 @@ export const createMapMaskFunction = (map, feature, text) => {
 		}
 
 		vectorContext.setStyle(outerStyle);
-
-		const size = map.getSize();
-		const width = size[0] * DEVICE_PIXEL_RATIO;
-		const height = size[1] * DEVICE_PIXEL_RATIO;
-		const outerPixels = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]];
-		const mask = new Polygon([outerPixels.map(p => map.getCoordinateFromPixel(p))]);
-		mask.appendLinearRing(innerPolygon.getLinearRing(0));
 		vectorContext.drawGeometry(mask);
 	};
 	return renderMask;
