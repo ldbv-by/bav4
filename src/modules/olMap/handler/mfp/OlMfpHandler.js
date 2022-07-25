@@ -9,7 +9,7 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
-import { createMapMaskFunction, mfpBoundaryStyleFunction, nullStyleFunction } from './styleUtils';
+import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 
 
@@ -61,8 +61,10 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(optimalScale);
 		}
 		const mfpSettings = this._storeService.getStore().getState().mfp.current;
-		const boundaryMask = createMapMaskFunction(this._map, this._mfpBoundaryFeature);
-		this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(mfpSettings)));
+		const boundaryMask = createMapMaskFunction(this._map, this._mfpBoundaryFeature, this._getPageLabel(mfpSettings));
+		this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
+
+
 		this._mfpLayer.on('postrender', boundaryMask);
 		return this._mfpLayer;
 	}
@@ -100,7 +102,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			const geometry = this._createMpfBoundary(current);
 			this._mfpBoundaryFeature.setGeometry(geometry);
 
-			this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(current)));
+			// this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(current)));
 			this._map.renderSync();
 		}
 	}
