@@ -17,7 +17,7 @@ import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
-
+const Map_View_Margin = 50;
 /**
  * @class
  * @author thiloSchlemmer
@@ -95,6 +95,8 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview(mfpSettings = null) {
 		const current = mfpSettings ? mfpSettings : this._storeService.getStore().getState().mfp.current;
 		if (current) {
+			// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
+			// bvv version (print in UTM32) is not fitting
 			const geometry = this._createMpfBoundary(current);
 			this._mfpBoundaryFeature.setGeometry(geometry);
 
@@ -112,15 +114,13 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getOptimalScale(map) {
 		const getEffectiveSizeFromPadding = (size, padding) => {
-			//			return { width: padding.left - padding.right, height: padding.bottom - padding.top };
 			return { width: size[0] - (padding.left + padding.right), height: size[1] - (padding.bottom + padding.top) };
 		};
 		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
-		//const availableSize =
 		const resolution = map.getView().getResolution();
-		const width = resolution * (availableSize.width - 100);
-		const height = resolution * (availableSize.height - 100);
+		const width = resolution * (availableSize.width - Map_View_Margin * 2);
+		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
 		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.byId(id).mapSize;
@@ -130,6 +130,8 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.byId(id).scales].reverse();
+
+		// todo: move to utils
 		const findLast = (array, matcher) => {
 			let last = null;
 			array.forEach(e => {
@@ -140,9 +142,9 @@ export class OlMfpHandler extends OlLayerHandler {
 			return last;
 		};
 
-		// array.findLast() is experimental in Firefox
+		// array.findLast() is {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLast#browser_compatibility|experimental}
+		// in Firefox, the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
-		// const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		return bestScale ? bestScale : fallbackScale;
 	}
 

@@ -3,7 +3,7 @@ import { getVectorContext } from 'ol/render';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { Polygon } from 'ol/geom';
 
-export const mfpBoundaryStyleFunction = (label) => [new Style({
+export const mfpBoundaryStyleFunction = (label = null) => [new Style({
 	fill: new Fill({
 		color: [9, 157, 220, 0.1]
 	}),
@@ -11,7 +11,7 @@ export const mfpBoundaryStyleFunction = (label) => [new Style({
 		color: [9, 157, 220, 0.9],
 		width: 1
 	}),
-	text: new TextStyle({
+	text: label ? new TextStyle({
 		text: label,
 		font: 'normal 70px sans-serif',
 		stroke: new Stroke({
@@ -26,8 +26,7 @@ export const mfpBoundaryStyleFunction = (label) => [new Style({
 		scale: 1,
 		placement: 'point',
 		baseline: 'hanging'
-	})
-
+	}) : null
 })];
 
 export const nullStyleFunction = () => [new Style({})];
