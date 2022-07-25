@@ -132,6 +132,17 @@ describe('OlMap', () => {
 		}
 	};
 
+	const mfpHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'mfpLayerHandlerMockId';
+		},
+		get options() {
+			return getDefaultLayerOptions();
+		}
+	};
+
 	const vectorLayerServiceMock = {};
 
 	let store;
@@ -176,6 +187,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
+			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
