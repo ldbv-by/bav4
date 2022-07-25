@@ -1,5 +1,5 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit, fitLayer } from '../../../src/store/position/position.action';
+import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit, fitLayer, changeLiveCenter, changeLiveZoom } from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
 
@@ -25,6 +25,7 @@ describe('positionReducer', () => {
 		const store = setup();
 		expect(store.getState().position.zoom).toBe(initialZoomLevel);
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);
+		expect(store.getState().position.liveCenter).toEqual([1288239.2412306187, 6130212.561641981]);
 		expect(store.getState().position.rotation).toBe(0);
 		expect(store.getState().position.liveRotation).toBe(0);
 		expect(store.getState().position.fitRequest.payload).toBeNull();
@@ -53,6 +54,30 @@ describe('positionReducer', () => {
 		changeZoom(maxZoomLevel + 1);
 
 		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+	});
+
+	it('changes the \'liveZoom\' property', () => {
+		const store = setup();
+
+		changeLiveZoom(10);
+
+		expect(store.getState().position.liveZoom).toBe(10);
+
+		changeLiveZoom(minZoomLevel);
+
+		expect(store.getState().position.liveZoom).toBe(minZoomLevel);
+
+		changeLiveZoom(maxZoomLevel);
+
+		expect(store.getState().position.liveZoom).toBe(maxZoomLevel);
+
+		changeLiveZoom(minZoomLevel - 1);
+
+		expect(store.getState().position.liveZoom).toBe(minZoomLevel);
+
+		changeLiveZoom(maxZoomLevel + 1);
+
+		expect(store.getState().position.liveZoom).toBe(maxZoomLevel);
 	});
 
 	it('changes \'zoom\' and  \'rotation\' property', () => {
@@ -90,6 +115,14 @@ describe('positionReducer', () => {
 		changeCenter([21, 42]);
 
 		expect(store.getState().position.center).toEqual([21, 42]);
+	});
+
+	it('changes the \'liveCenter\' property', () => {
+		const store = setup();
+
+		changeLiveCenter([21, 42]);
+
+		expect(store.getState().position.liveCenter).toEqual([21, 42]);
 	});
 
 	it('changes the \'center\'  \'rotation\' property', () => {
