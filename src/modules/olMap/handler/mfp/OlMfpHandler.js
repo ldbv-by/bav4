@@ -13,6 +13,8 @@ import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 
 
+
+
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
@@ -99,8 +101,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const geometry = this._createMpfBoundary(this._pageSize);
+		const rotation = this._getRotation(geometry);
+		console.log(rotation);
 		this._mfpBoundaryFeature.setGeometry(geometry);
-
 		this._map.renderSync();
 	}
 
@@ -186,5 +189,15 @@ export class OlMfpHandler extends OlLayerHandler {
 			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY]
 		]]);
 		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
+	}
+
+	_getRotation(polygon) {
+		const coordinates = polygon.getCoordinates()[0];
+		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+		const topAngle = getAngle(coordinates[0], coordinates[1]) ;
+		const bottomAngle = getAngle(coordinates[3], coordinates[2]);
+
+		const angle = (topAngle + bottomAngle) / 2;
+		return angle;
 	}
 }
