@@ -32,7 +32,7 @@ describe('RotationButton', () => {
 
 			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
 			expect(RotationButton.THROTTLE_DELAY_MS).toBe(10);
-			expect(RotationButton.VISIBILITY_THRESHOLD_RAD).toBe(.1);
+			expect(RotationButton.VISIBILITY_THRESHOLD_RAD).toBe(.0001);
 		});
 	});
 
@@ -50,7 +50,7 @@ describe('RotationButton', () => {
 		describe('liveRotation < threshold value', () => {
 
 			it('renders a rotation button', async () => {
-				const liveRotationValue = RotationButton.VISIBILITY_THRESHOLD_RAD - .01;
+				const liveRotationValue = RotationButton.VISIBILITY_THRESHOLD_RAD - .00001;
 				const element = await setup({ liveRotation: liveRotationValue });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -97,7 +97,7 @@ describe('RotationButton', () => {
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation: RotationButton.VISIBILITY_THRESHOLD_RAD - .01 });
+			const element = await setup({ liveRotation: RotationButton.VISIBILITY_THRESHOLD_RAD - .00001 });
 
 			changeLiveRotation();
 
