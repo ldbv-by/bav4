@@ -11,6 +11,9 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
+import { changeRotation } from '../../../../store/position/position.action';
+import { round } from '../../../../utils/numberUtils';
+
 
 
 
@@ -39,6 +42,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
+		this._lastCenter = [-1, -1];
 	}
 
 	/**
@@ -100,11 +104,18 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
+		const newCenter = this._storeService.getStore().getState().position.center;
+
 		const geometry = this._createMpfBoundary(this._pageSize);
-		const rotation = this._getRotation(geometry);
-		console.log(rotation);
+		const actualRotation = round(this._storeService.getStore().getState().position.rotation, 4);
+		const rotation = round(this._getRotation(geometry), 4);
 		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._map.renderSync();
+		if (Math.abs(this._lastCenter[0] - newCenter[0]) > 0.000001 || Math.abs(this._lastCenter[1] - newCenter[1]) > 0.000001) {
+			this._lastCenter = newCenter;
+			if (Math.abs(actualRotation - rotation) > 0.0001) {
+				changeRotation(rotation);
+			}
+		}
 	}
 
 	_updateMfpPage(mfpSettings) {
