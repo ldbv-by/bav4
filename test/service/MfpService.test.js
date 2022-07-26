@@ -43,7 +43,7 @@ describe('MfpService', () => {
 
 			const promise = instanceUnderTest.createJob(mfpSpec);
 
-			expectAsync(promise).toBeResolvedTo('http://www.africau.edu/images/default/sample.pdf');
+			await expectAsync(promise).toBeResolvedTo('http://www.africau.edu/images/default/sample.pdf');
 		});
 	});
 
