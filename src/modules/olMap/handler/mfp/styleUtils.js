@@ -87,6 +87,7 @@ const getMaskGeometry = (map, innerGeometry) => {
 };
 
 export const createMapMaskFunction = (map, feature) => {
+	const textBuffer = 20;
 
 	const innerStyle = mfpBoundaryStyleFunction();
 	const outerStyle = maskFeatureStyleFunction();
@@ -108,7 +109,7 @@ export const createMapMaskFunction = (map, feature) => {
 		const maxTextWidth = Math.max(...textLines.map(t => context2d.measureText(t).width));
 		const geomWidth = getPixelWidth(innerPolygon, map);
 
-		const isTextOverflow = maxTextWidth > geomWidth;
+		const isTextOverflow = maxTextWidth + textBuffer > geomWidth;
 		if (!isTextOverflow) {
 			textStyles.forEach(style => {
 				vectorContext.setStyle(style);
