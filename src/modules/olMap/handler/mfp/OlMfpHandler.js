@@ -37,6 +37,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpBoundaryFeature = new Feature();
 		this._map = null;
 		this._registeredObservers = [];
+		this._pageSize = null;
 	}
 
 	/**
@@ -66,6 +67,8 @@ export class OlMfpHandler extends OlLayerHandler {
 
 
 		this._mfpLayer.on('postrender', boundaryMask);
+		this._updateMfpPage(mfpSettings);
+		this._updateMfpPreview();
 		return this._mfpLayer;
 	}
 
@@ -84,7 +87,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_register(store) {
 		return [
-			observe(store, state => state.mfp.current, (current) => this._updateMfpPreview(current)),
+			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview())
 		];
 	}
@@ -94,17 +97,23 @@ export class OlMfpHandler extends OlLayerHandler {
 		observers = [];
 	}
 
-	_updateMfpPreview(mfpSettings = null) {
-		const current = mfpSettings ? mfpSettings : this._storeService.getStore().getState().mfp.current;
-		if (current) {
-			// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
-			// bvv version (print in UTM32) is not fitting
-			const geometry = this._createMpfBoundary(current);
-			this._mfpBoundaryFeature.setGeometry(geometry);
+	_updateMfpPreview() {
+		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
+		// bvv version (print in UTM32) is not fitting
+		const geometry = this._createMpfBoundary(this._pageSize);
+		this._mfpBoundaryFeature.setGeometry(geometry);
 
-			// this._mfpBoundaryFeature.setStyle(mfpBoundaryStyleFunction(this._getPageLabel(current)));
-			this._map.renderSync();
-		}
+		this._map.renderSync();
+	}
+
+	_updateMfpPage(mfpSettings) {
+		const { id, scale } = mfpSettings;
+		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
+		const currentScale = scale ? scale : this._mfpService.getCapabilitiesById(id).scales[0];
+
+		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+		this._pageSize = { width: w, height: h };
 	}
 
 	_getPageLabel(mfpSettings) {
@@ -125,13 +134,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
 		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
-		const layoutSize = this._mfpService.byId(id).mapSize;
+		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
 
 		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
 		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
-		const scaleCandidates = [...this._mfpService.byId(id).scales].reverse();
+		const scaleCandidates = [...this._mfpService.getCapabilitiesById(id).scales].reverse();
 
 		// todo: move to utils
 		const findLast = (array, matcher) => {
@@ -150,17 +159,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		return bestScale ? bestScale : fallbackScale;
 	}
 
-	_createMpfBoundary(mfpSettings) {
-		if (!mfpSettings) {
-			return null;
-		}
-		const { id, scale } = mfpSettings;
-		const layoutSize = this._mfpService.byId(id).mapSize;
-		const currentScale = scale ? scale : this._mfpService.byId(id).scales[0];
-
-		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-
+	_createMpfBoundary(pageSize) {
 		const getVisibleCenter = () => {
 			const size = this._map.getSize();
 			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
@@ -173,10 +172,10 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
 		const geodeticBoundingBox = {
-			minX: geodeticCenterCoordinate[0] - (w / 2),
-			minY: geodeticCenterCoordinate[1] - (h / 2),
-			maxX: geodeticCenterCoordinate[0] + (w / 2),
-			maxY: geodeticCenterCoordinate[1] + (h / 2)
+			minX: geodeticCenterCoordinate[0] - (pageSize.width / 2),
+			minY: geodeticCenterCoordinate[1] - (pageSize.height / 2),
+			maxX: geodeticCenterCoordinate[0] + (pageSize.width / 2),
+			maxY: geodeticCenterCoordinate[1] + (pageSize.height / 2)
 		};
 		const geodeticBoundary = new Polygon([[
 			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY],

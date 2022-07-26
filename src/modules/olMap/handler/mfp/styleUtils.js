@@ -40,9 +40,11 @@ export const mfpBoundaryStyleFunction = () => new Style({
 });
 
 export const thumbnailStyleFunction = () => [new Style({
-	fill: new Fill({
-		color: [255, 255, 255, 0.0]
-	})
+	stroke: new Stroke(
+		{
+			color: [9, 157, 220, 0.1],
+			width: 3
+		})
 })];
 
 export const nullStyleFunction = () => [new Style({})];
