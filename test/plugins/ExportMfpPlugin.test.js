@@ -126,13 +126,14 @@ describe('ExportMfpPlugin', () => {
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
 				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
-				const mockWindow = { location: null };
+				const mockWindow = { open: () => {} };
 				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const windowSpy = spyOn(mockWindow, 'open');
 
 				startJob(spec);
 
 				await TestUtils.timeout();
-				expect(mockWindow.location).toBe(url);
+				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
 			});
 		});
 

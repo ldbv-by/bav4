@@ -67,7 +67,7 @@ export class ExportMfpPlugin extends BaPlugin {
 		const onJobSpecChanged = async ({ payload: spec }) => {
 			if (spec) {
 				const url = await mfpService.createJob(spec);
-				environmentService.getWindow().location = url;
+				environmentService.getWindow().open(url, '_blank');
 			}
 			else {
 				mfpService.cancelJob();
