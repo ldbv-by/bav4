@@ -14,12 +14,10 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 			text: label,
 			font: `normal ${fontSizePX}px sans-serif`,
 			stroke: new Stroke({
-				//color: [9, 157, 220, 0.9],
 				color: [0, 0, 0, 0.8],
 				width: 2
 			}),
 			fill: new Fill({
-				//color: [9, 157, 220, 0.4]
 				color: [0, 0, 0, 0.4]
 			}),
 			scale: 1,
@@ -69,6 +67,7 @@ export const maskFeatureStyleFunction = () => {
 
 	return maskStyle;
 };
+
 const getPixelWidth = (geometry, map) => {
 	const boundingBox = geometry.getExtent();
 	const boundingBoxPixel = [map.getPixelFromCoordinate(getTopLeft(boundingBox)), map.getPixelFromCoordinate(getBottomRight(boundingBox))];
@@ -121,5 +120,4 @@ export const createMapMaskFunction = (map, feature) => {
 		vectorContext.drawGeometry(mask);
 	};
 	return renderMask;
-
 };
