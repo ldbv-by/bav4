@@ -13,7 +13,6 @@ import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 
 
-
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
@@ -45,7 +44,6 @@ export class OlMfpHandler extends OlLayerHandler {
 	 * @override
 	 */
 	onActivate(olMap) {
-
 		this._map = olMap;
 		if (this._mfpLayer === null) {
 			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
@@ -170,7 +168,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
-
 		const geodeticCenter = center.clone().transform('EPSG:' + this._mapService.getSrid(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
