@@ -85,11 +85,11 @@ export const requestJob = () => {
  * @param {object} mfp spec
  * @function
  */
-export const startJob = (request) => {
+export const startJob = (spec) => {
 
 	getStore().dispatch({
 		type: JOB_SPEC_CHANGED,
-		payload: new EventLike(request)
+		payload: new EventLike(spec)
 	});
 };
 
