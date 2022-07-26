@@ -63,11 +63,12 @@ export class MfpService {
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		await sleep(2500); // let's fake latency
+		this._abortController = null;
 		return 'http://www.africau.edu/images/default/sample.pdf';
 	}
 
 	/**
-	 * Cancels an running MFP job.
+	 * Cancels a running MFP job.
 	 */
 	cancelJob() {
 		this._abortController?.abort();

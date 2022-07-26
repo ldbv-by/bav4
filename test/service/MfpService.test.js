@@ -43,7 +43,9 @@ describe('MfpService', () => {
 
 			const promise = instanceUnderTest.createJob(mfpSpec);
 
+			expect(instanceUnderTest._abortController).not.toBeNull();
 			await expectAsync(promise).toBeResolvedTo('http://www.africau.edu/images/default/sample.pdf');
+			expect(instanceUnderTest._abortController).toBeNull();
 		});
 	});
 
