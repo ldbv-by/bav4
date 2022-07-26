@@ -1,3 +1,4 @@
+import { sleep } from '../utils/sleep';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -19,6 +20,10 @@
  * @author taulinger
  */
 export class MfpService {
+
+	constructor() {
+		this._abortController = null;
+	}
 
 	_getMockCapabilities() {
 		const scales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
@@ -47,5 +52,24 @@ export class MfpService {
 	*/
 	getCapabilitiesById(id) {
 		return this._getMockCapabilities().find(cp => cp.id === id) ?? null;
+	}
+
+	/**
+	 * Creates a new MFP job and returns a URL pointing to the generated resource.
+	 * @param {object} mfp spec
+	 * @returns url as string
+	 */
+	// eslint-disable-next-line no-unused-vars
+	async createJob(spec) {
+		this._abortController = new AbortController();
+		await sleep(2500); // let's fake latency
+		return 'http://www.africau.edu/images/default/sample.pdf';
+	}
+
+	/**
+	 * Cancels an running MFP job.
+	 */
+	cancelJob() {
+		this._abortController?.abort();
 	}
 }
