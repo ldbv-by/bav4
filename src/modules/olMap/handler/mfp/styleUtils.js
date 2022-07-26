@@ -5,8 +5,10 @@ import { Polygon } from 'ol/geom';
 
 import { getBottomRight, getTopLeft } from 'ol/extent';
 
-export const mfpTextStyleFunction = (label, index = 0) => {
-	const fontSizePX = 70;
+const fontSizePX = 70;
+
+export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
+
 	return new Style({
 		text: new TextStyle({
 			text: label,
@@ -21,7 +23,7 @@ export const mfpTextStyleFunction = (label, index = 0) => {
 				color: [0, 0, 0, 0.4]
 			}),
 			scale: 1,
-			offsetY: fontSizePX * index,
+			offsetY: fontSizePX * index - (globalOffset / 2) * fontSizePX,
 			overflow: false,
 			placement: 'point',
 			baseline: 'hanging'
@@ -84,14 +86,16 @@ const getMaskGeometry = (map, innerGeometry) => {
 	return mask;
 };
 
-export const createMapMaskFunction = (map, feature, text) => {
-	const textLines = text ? text.split('\n') : null;
-	const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
+export const createMapMaskFunction = (map, feature) => {
 
 	const innerStyle = mfpBoundaryStyleFunction();
 	const outerStyle = maskFeatureStyleFunction();
 
 	const renderMask = (event) => {
+		const text = feature.get('name');
+		const textLines = text ? text.split('\n') : null;
+		const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
+
 		const context2d = event.context.canvas.getContext('2d');
 		const innerPolygon = feature.getGeometry();
 		const mask = getMaskGeometry(map, innerPolygon);

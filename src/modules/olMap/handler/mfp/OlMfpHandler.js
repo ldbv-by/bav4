@@ -62,11 +62,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(optimalScale);
 		}
 		const mfpSettings = this._storeService.getStore().getState().mfp.current;
-		const boundaryMask = createMapMaskFunction(this._map, this._mfpBoundaryFeature, this._getPageLabel(mfpSettings));
+
 		this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
+		this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
-
-		this._mfpLayer.on('postrender', boundaryMask);
+		this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 		this._updateMfpPage(mfpSettings);
 		this._updateMfpPreview();
 		return this._mfpLayer;
@@ -108,12 +108,15 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
+		const label = this._getPageLabel(mfpSettings);
+		this._mfpBoundaryFeature.set('name', label);
 		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
 		const currentScale = scale ? scale : this._mfpService.getCapabilitiesById(id).scales[0];
 
 		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 		this._pageSize = { width: w, height: h };
+		this._updateMfpPreview();
 	}
 
 	_getPageLabel(mfpSettings) {
