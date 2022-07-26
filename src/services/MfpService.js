@@ -33,7 +33,7 @@ export class MfpService {
 	}
 
 	/**
-	 * @returns {Array<MfpCapabilities>} available capbilities
+	 * @returns {Array<MfpCapabilities>} all available capbilities
 	 */
 	async getCapabilities() {
 		return this._getMockCapabilities();
@@ -43,9 +43,9 @@ export class MfpService {
 	* Returns the corresponding  {@link MfpCapabilities} for an id.
 	* @public
 	* @param {string} id Id of the desired {@link MfpCapabilities}
-	* @returns {MfpCapabilities | null}
+	* @returns {MfpCapabilities|null}
 	*/
-	byId(id) {
+	getCapabilitiesById(id) {
 		return this._getMockCapabilities().find(cp => cp.id === id) ?? null;
 	}
 }

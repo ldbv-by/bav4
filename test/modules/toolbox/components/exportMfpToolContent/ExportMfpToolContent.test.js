@@ -21,7 +21,7 @@ describe('ExportMfpToolContent', () => {
 		getCapabilities() {
 			return Promise.resolve([]);
 		},
-		byId() {
+		getCapabilitiesById() {
 			return { scales: [42, 21, 1] };
 		}
 	};

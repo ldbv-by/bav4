@@ -84,7 +84,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			return { name: translate(`toolbox_exportMfp_id_${capability.id}`), id: capability.id };
 		});
 
-		const scales = this._mfpService.byId(id)?.scales;
+		const scales = this._mfpService.getCapabilitiesById(id)?.scales;
 
 		const onChangeId = (e) => {
 			const id = e.target.value;

@@ -1,7 +1,7 @@
 import { $injector } from '../../../src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../../src/domain/sourceType';
-import { bvvCapabilitiesProvider } from '../../../src/services/provider/wmsCapabilities.provider';
+import { bvvCapabilitiesProvider, supportedGetMapMediaTypes, _determinePreferredFormat } from '../../../src/services/provider/wmsCapabilities.provider';
 import { MediaType } from '../../../src/services/HttpService';
 
 const Default_Capabilities_Result = {
@@ -97,8 +97,49 @@ const Default_Capabilities_Result = {
 			}
 		]
 	}]
-}
-	;
+};
+
+describe('supportedGetMapMediaTypes', () => {
+
+	it('provides an ordered array of supported media types', () => {
+
+		expect(supportedGetMapMediaTypes).toEqual([
+			'image/webp',
+			'image/png',
+			'image/gif',
+			'image/jpeg', // no transparency
+			'image/svg+xml' // experimental
+		]);
+	});
+});
+
+describe('_determinePreferredFormat', () => {
+
+	it('returns an ordered array of supported media types', () => {
+
+		expect(_determinePreferredFormat()).toEqual([]);
+		expect(_determinePreferredFormat('foo')).toEqual([]);
+		expect(_determinePreferredFormat([])).toEqual([]);
+		expect(_determinePreferredFormat(['foo'])).toEqual([]);
+		expect(_determinePreferredFormat([
+			'image/jpeg',
+			'image/tiff',
+			'image/png'
+		])).toEqual([
+			'image/png',
+			'image/jpeg'
+		]);
+	});
+
+	it('logs a warn statement when no supported mediy types are found', async () => {
+		const warnSpy = spyOn(console, 'warn');
+
+		expect(_determinePreferredFormat(['foo'])).toEqual([]);
+
+		expect(warnSpy).toHaveBeenCalledWith(`No supported media type found. Valid media types are: ${supportedGetMapMediaTypes}`);
+	});
+});
+
 
 describe('bvvCapabilitiesProvider', () => {
 	const configService = {
@@ -308,6 +349,22 @@ describe('bvvCapabilitiesProvider', () => {
 			}
 		};
 		spyOn(mapService, 'getDefaultGeodeticSrid').and.returnValue(42);
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, sourceType);
+
+		expect(wmsGeoResources).toEqual([]);
+	});
+
+	it('returns empty list for capabilities with unsupported getMap media types', async () => {
+		const url = 'https://some.url/wms';
+		const sourceType = new SourceType(SourceTypeName.WMS, '42');
+		const responseMock = {
+			ok: true, status: 200, json: () => {
+				return { ...Default_Capabilities_Result, formatsGetMap: ['unsupported'] };
+			}
+		};
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
 
