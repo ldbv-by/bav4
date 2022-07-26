@@ -14,7 +14,7 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @property {MfpSetting}
+	 * @property {MfpConstraint}
 	 */
 	current: {
 		id: null,

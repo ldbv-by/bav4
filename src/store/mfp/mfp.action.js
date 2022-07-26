@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} MfpSetting
+ * @typedef {Object} MfpConstraint
  * @property {string} id
  * @property {number} scale
  * @property {number} dpi
@@ -58,7 +58,8 @@ export const setId = (id) => {
 };
 
 /**
- * @param {MfpSetting} setting
+ * Updates the current mfp constraint.
+ * @param {MfpConstraint} setting
  */
 export const setCurrent = (setting) => {
 	getStore().dispatch({
@@ -80,7 +81,7 @@ export const requestJob = () => {
 };
 
 /**
- * Starts a new job by adding a mfp spec
+ * Starts a new job by adding a mfp spec.
  * @param {object} mfp spec
  * @function
  */
