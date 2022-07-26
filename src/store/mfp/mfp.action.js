@@ -6,7 +6,8 @@
  */
 
 import { $injector } from '../../injection';
-import { ACTIVE_CHANGED, CURRENT_CHANGED, ID_CHANGED, SCALE_CHANGED } from './mfp.reducer';
+import { EventLike } from '../../utils/storeUtils';
+import { ACTIVE_CHANGED, CURRENT_CHANGED, ID_CHANGED, JOB_REQUEST_CHANGED, JOB_SPEC_CHANGED, SCALE_CHANGED } from './mfp.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -63,5 +64,42 @@ export const setCurrent = (setting) => {
 	getStore().dispatch({
 		type: CURRENT_CHANGED,
 		payload: setting
+	});
+};
+
+/**
+ * Places a new job request.
+ * @function
+ */
+export const requestJob = () => {
+
+	getStore().dispatch({
+		type: JOB_REQUEST_CHANGED,
+		payload: new EventLike(null)
+	});
+};
+
+/**
+ * Starts a new job by adding a mfp spec
+ * @param {object} mfp spec
+ * @function
+ */
+export const startJob = (request) => {
+
+	getStore().dispatch({
+		type: JOB_SPEC_CHANGED,
+		payload: new EventLike(request)
+	});
+};
+
+/**
+* Cancels a currently running job.
+* @function
+*/
+export const cancelJob = () => {
+
+	getStore().dispatch({
+		type: JOB_SPEC_CHANGED,
+		payload: new EventLike(null)
 	});
 };
