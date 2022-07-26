@@ -50,6 +50,35 @@ describe('OlMfpHandler', () => {
 		register(proj4);
 	};
 
+	const initialCenter = fromLonLat([11.57245, 48.14021]);
+
+	const getTarget = () => {
+		const target = document.createElement('div');
+		target.style.height = '100px';
+		target.style.width = '100px';
+		return target;
+	};
+
+	const setupMap = () => {
+		const map = new Map({
+			layers: [
+				new TileLayer({
+					source: new OSM()
+				}),
+				new TileLayer({
+					source: new TileDebug()
+				})],
+			target: getTarget(),
+			view: new View({
+				center: initialCenter,
+				zoom: 1
+			})
+		});
+		spyOn(map, 'getSize').and.callFake(() => [100, 100]);
+		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => initialCenter);
+		return map;
+	};
+
 	it('instantiates the handler', () => {
 		setup();
 		const handler = new OlMfpHandler();
@@ -65,42 +94,41 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-
-		const setupMap = () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: initialCenter,
-					zoom: 1
-				})
-			});
-		};
-
-
 		it('creates a mfp-layer', () => {
-			setup({ ...initialState, active: true });
+			setup();
 			const classUnderTest = new OlMfpHandler();
 			const map = setupMap();
-			spyOn(map, 'getSize').and.callFake(() => [100, 100]);
-			spyOn(map, 'getCoordinateFromPixel').and.callFake(() => initialCenter);
 			const layer = classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
 		});
+
+		it('registers observer', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			const actualLayer = handler.activate(map);
+
+			expect(actualLayer).toBeTruthy();
+			expect(handler._registeredObservers).toHaveSize(2);
+		});
+	});
+
+	describe('when deactivate', () => {
+		it('unregisters observer', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+			const spyOnUnregister = spyOn(handler, '_unregister').withArgs(handler._registeredObservers).and.callThrough();
+			handler.deactivate(map);
+
+			expect(handler._mfpLayer).toBeNull();
+			expect(spyOnUnregister).toHaveBeenCalled();
+		});
+
+
 	});
 });

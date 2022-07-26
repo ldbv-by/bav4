@@ -86,7 +86,7 @@ const getMaskGeometry = (map, innerGeometry) => {
 };
 
 export const createMapMaskFunction = (map, feature) => {
-	const textBuffer = 20;
+	const textBuffer = 50;
 
 	const innerStyle = mfpBoundaryStyleFunction();
 	const outerStyle = maskFeatureStyleFunction();

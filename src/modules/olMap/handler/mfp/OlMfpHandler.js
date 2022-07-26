@@ -121,7 +121,8 @@ export class OlMfpHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const { id, scale } = mfpSettings;
 		const layout = translate(`olMap_handler_mfp_id_${id}`);
-		return `${layout}\n1:${scale}`;
+		const formattedScale = scale ? `1:${scale}` : '';
+		return `${layout}\n${formattedScale}`;
 	}
 
 	_getOptimalScale(map) {
