@@ -1,6 +1,6 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-
+import { debounced, throttled } from '../../../../utils/timer';
 import { setScale } from '../../../../store/mfp/mfp.action';
 
 import { Point, Polygon } from 'ol/geom';
@@ -22,6 +22,7 @@ const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
+const THROTTLE_DELAY_MS = 10;
 /**
  * @class
  * @author thiloSchlemmer
@@ -90,9 +91,15 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
+		const afterAnimationTimeout = 300; // todo: replace with constant of openlayers
+		const updatePreview = throttled(THROTTLE_DELAY_MS, () => this._updateMfpPreview());
+		const updateRotation = debounced(afterAnimationTimeout, () => this._updateRotation());
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
-			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview())
+			observe(store, state => state.position.liveCenter, updatePreview),
+			observe(store, state => state.position.center, updateRotation),
+			observe(store, state => state.position.zoom, updateRotation),
+			observe(store, state => state.position.rotation, updateRotation)
 		];
 	}
 
@@ -104,18 +111,14 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
-		const newCenter = this._storeService.getStore().getState().position.center;
-
 		const geometry = this._createMpfBoundary(this._pageSize);
-		const actualRotation = round(this._storeService.getStore().getState().position.rotation, 4);
-		const rotation = round(this._getRotation(geometry), 4);
 		this._mfpBoundaryFeature.setGeometry(geometry);
-		if (Math.abs(this._lastCenter[0] - newCenter[0]) > 0.000001 || Math.abs(this._lastCenter[1] - newCenter[1]) > 0.000001) {
-			this._lastCenter = newCenter;
-			if (Math.abs(actualRotation - rotation) > 0.0001) {
-				changeRotation(rotation);
-			}
-		}
+	}
+
+	_updateRotation() {
+		const rotation = round(this._getRotation(this._mfpBoundaryFeature.getGeometry()), 4);
+		changeRotation(rotation);
+		//setTimeout(() => changeRotation(rotation), afterAnimationTimeout);
 	}
 
 	_updateMfpPage(mfpSettings) {
@@ -205,7 +208,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	_getRotation(polygon) {
 		const coordinates = polygon.getCoordinates()[0];
 		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
-		const topAngle = getAngle(coordinates[0], coordinates[1]) ;
+		const topAngle = getAngle(coordinates[0], coordinates[1]);
 		const bottomAngle = getAngle(coordinates[3], coordinates[2]);
 
 		const angle = (topAngle + bottomAngle) / 2;
