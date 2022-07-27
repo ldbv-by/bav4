@@ -40,6 +40,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpService = mfpService;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
+		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
@@ -109,13 +110,28 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
+
+		const buffer = (size, buffer) => {
+			return { width: size.width + buffer, height: size.height + buffer };
+		};
 		const geometry = this._createMpfBoundary(this._pageSize);
+		const buffered = this._createMpfBoundary(this._bufferSize);
+
 		this._mfpBoundaryFeature.setGeometry(geometry);
+		this._mfpBoundaryFeature.set('buffered', buffered);
+
+	}
+
+	_updateAzimuth(e) {
+		const feature = e.target;
+		const rotation = this._getAzimuth(feature.getGeometry());
+		feature.set('azimuth', rotation);
 	}
 
 	_updateRotation(state) {
 		const currentRotation = state.position.rotation;
-		const rotation = round(this._getRotation(this._mfpBoundaryFeature.getGeometry()), 4);
+		const rotation = round(this._mfpBoundaryFeature.get('azimuth'), 4);
+
 		if (round(currentRotation, 5) !== round(rotation, 5)) {
 			changeRotation(rotation);
 		}
@@ -131,6 +147,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 		this._pageSize = { width: w, height: h };
+		this._bufferSize = { width: (layoutSize.width + 50) / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale, height: (layoutSize.height + 50) / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale };
 		this._updateMfpPreview();
 	}
 
@@ -205,7 +222,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
 	}
 
-	_getRotation(polygon) {
+	_getAzimuth(polygon) {
 		const coordinates = polygon.getCoordinates()[0];
 		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
 		const topAngle = getAngle(coordinates[0], coordinates[1]);
