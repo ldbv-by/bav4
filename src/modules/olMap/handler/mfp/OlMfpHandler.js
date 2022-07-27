@@ -2,9 +2,7 @@ import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
 import { throttled } from '../../../../utils/timer';
 import { setScale } from '../../../../store/mfp/mfp.action';
-
 import { Point, Polygon } from 'ol/geom';
-
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -15,14 +13,15 @@ import { changeRotation } from '../../../../store/position/position.action';
 import { round } from '../../../../utils/numberUtils';
 
 
-
-
+export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
+export const FIELD_NAME_AZIMUTH = 'azimuth';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
 const THROTTLE_DELAY_MS = 10;
+
 /**
  * @class
  * @author thiloSchlemmer
@@ -110,16 +109,11 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
-
-		const buffer = (size, buffer) => {
-			return { width: size.width + buffer, height: size.height + buffer };
-		};
 		const geometry = this._createMpfBoundary(this._pageSize);
-		const buffered = this._createMpfBoundary(this._bufferSize);
+		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._mfpBoundaryFeature.set('buffered', buffered);
-
+		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
 	}
 
 	_updateAzimuth(e) {
@@ -144,10 +138,14 @@ export class OlMfpHandler extends OlLayerHandler {
 		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
 		const currentScale = scale ? scale : this._mfpService.getCapabilitiesById(id).scales[0];
 
+		const toGeographicSize = (size) => {
+			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+			return { width: toGeographic(size.width), height: toGeographic(size.height) };
+		};
 		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-		this._pageSize = { width: w, height: h };
-		this._bufferSize = { width: (layoutSize.width + 50) / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale, height: (layoutSize.height + 50) / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale };
+		this._pageSize = toGeographicSize(layoutSize);
+		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
 		this._updateMfpPreview();
 	}
 

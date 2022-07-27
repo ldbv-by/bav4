@@ -4,6 +4,7 @@ import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { Polygon } from 'ol/geom';
 
 import { getBottomRight, getTopLeft } from 'ol/extent';
+import { FIELD_NAME_PAGE_BUFFER } from './OlMfpHandler';
 
 const fontSizePX = 70;
 
@@ -90,7 +91,7 @@ export const createMapMaskFunction = (map, feature) => {
 
 	const renderMask = (event) => {
 		const text = feature.get('name');
-		const buffer = feature.get('buffered').clone();
+		const pageBuffer = feature.get(FIELD_NAME_PAGE_BUFFER).clone();
 		const textLines = text ? text.split('\n') : null;
 		const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
 
@@ -116,9 +117,9 @@ export const createMapMaskFunction = (map, feature) => {
 		vectorContext.setStyle(outerStyle);
 		vectorContext.drawGeometry(mask);
 
-		buffer.appendLinearRing(innerPolygon.getLinearRing(0));
+		pageBuffer.appendLinearRing(innerPolygon.getLinearRing(0));
 		vectorContext.setStyle(pageStyle);
-		vectorContext.drawGeometry(buffer);
+		vectorContext.drawGeometry(pageBuffer);
 	};
 	return renderMask;
 };
