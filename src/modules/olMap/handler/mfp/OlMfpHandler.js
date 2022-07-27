@@ -1,6 +1,6 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { debounced, throttled } from '../../../../utils/timer';
+import { throttled } from '../../../../utils/timer';
 import { setScale } from '../../../../store/mfp/mfp.action';
 
 import { Point, Polygon } from 'ol/geom';
@@ -91,15 +91,13 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
-		const afterAnimationTimeout = 300; // todo: replace with constant of openlayers
 		const updatePreview = throttled(THROTTLE_DELAY_MS, () => this._updateMfpPreview());
-		const updateRotation = debounced(afterAnimationTimeout, () => this._updateRotation());
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
-			observe(store, state => state.position.liveCenter, updatePreview),
-			observe(store, state => state.position.center, updateRotation),
-			observe(store, state => state.position.zoom, updateRotation),
-			observe(store, state => state.position.rotation, updateRotation)
+			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
+			observe(store, state => state.position.center, (_, state) => this._updateRotation(state)),
+			observe(store, state => state.position.zoom, (_, state) => this._updateRotation(state)),
+			observe(store, state => state.position.rotation, (_, state) => this._updateRotation(state))
 		];
 	}
 
@@ -115,10 +113,12 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpBoundaryFeature.setGeometry(geometry);
 	}
 
-	_updateRotation() {
+	_updateRotation(state) {
+		const currentRotation = state.position.rotation;
 		const rotation = round(this._getRotation(this._mfpBoundaryFeature.getGeometry()), 4);
-		changeRotation(rotation);
-		//setTimeout(() => changeRotation(rotation), afterAnimationTimeout);
+		if (round(currentRotation, 5) !== round(rotation, 5)) {
+			changeRotation(rotation);
+		}
 	}
 
 	_updateMfpPage(mfpSettings) {
