@@ -142,8 +142,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
 			return { width: toGeographic(size.width), height: toGeographic(size.height) };
 		};
-		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+
 		this._pageSize = toGeographicSize(layoutSize);
 		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
 		this._updateMfpPreview();
