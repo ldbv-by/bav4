@@ -2,9 +2,18 @@ import { MfpService } from '../../src/services/MfpService';
 
 describe('MfpService', () => {
 
+	describe('init', () => {
+
+		it('initializes the service', async () => {
+			const instanceUnderTest = new MfpService();
+
+			expect(instanceUnderTest._abortController).toBeNull();
+		});
+	});
+
 	describe('getCapabilities', () => {
 
-		it('provides ab array of mocked MfpCapabilities', async () => {
+		it('provides an array of MfpCapabilities', async () => {
 
 			const instanceUnderTest = new MfpService();
 
@@ -16,12 +25,41 @@ describe('MfpService', () => {
 
 	describe('getCapabilitiesById', () => {
 
-		it('provides a mocked MfpCapabilities by id', async () => {
+		it('provides a MfpCapabilities object by its id', () => {
 
 			const instanceUnderTest = new MfpService();
 
 			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).not.toBeNull();
 			expect(instanceUnderTest.getCapabilitiesById('foo')).toBeNull();
+		});
+	});
+
+
+	describe('createJob', () => {
+
+		it('creates a new MFP job and returns a URL pointing to the generated resource', async () => {
+			const instanceUnderTest = new MfpService();
+			const mfpSpec = { foo: 'bar' };
+
+			const promise = instanceUnderTest.createJob(mfpSpec);
+
+			expect(instanceUnderTest._abortController).not.toBeNull();
+			await expectAsync(promise).toBeResolvedTo('http://www.africau.edu/images/default/sample.pdf');
+			expect(instanceUnderTest._abortController).toBeNull();
+		});
+	});
+
+	describe('cancelJob', () => {
+
+		it('cancels an running MFP job', async () => {
+			const instanceUnderTest = new MfpService();
+			const mfpSpec = { foo: 'bar' };
+			instanceUnderTest.createJob(mfpSpec);
+			const spy = spyOn(instanceUnderTest._abortController, 'abort');
+
+			instanceUnderTest.cancelJob();
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });
