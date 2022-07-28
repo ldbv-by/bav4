@@ -6,11 +6,17 @@ import { $injector } from '../../../src/injection';
 
 describe('positionReducer', () => {
 	const initialZoomLevel = 12;
-	const minZoomLevel = 3;
-	const maxZoomLevel = 20;
+	const minZoom = 3;
+	const maxZoom = 20;
+	const zoomRaw = 10.2222;
+	const zoomRounded = 10.222; // rounded to 3 decimal digits
+	const centerRaw = [21.11111111, 21.11111111, 42.22222222, 42.22222222];
+	const centerRounded = [21.1111111, 21.1111111, 42.2222222, 42.2222222]; // rounded to 7 decimal digits
+	const rotationRaw = .444444;
+	const rotationRounded = .44444; // rounded to 5 decimal digits
 	const mapServiceMock = {
-		getMinZoomLevel: () => minZoomLevel,
-		getMaxZoomLevel: () => maxZoomLevel
+		getMinZoomLevel: () => minZoom,
+		getMaxZoomLevel: () => maxZoom
 	};
 
 	const setup = (state) => {
@@ -35,111 +41,111 @@ describe('positionReducer', () => {
 	it('changes the \'zoom\' property', () => {
 		const store = setup();
 
-		changeZoom(10);
+		changeZoom(zoomRaw);
 
-		expect(store.getState().position.zoom).toBe(10);
+		expect(store.getState().position.zoom).toBe(zoomRounded);
 
-		changeZoom(minZoomLevel);
+		changeZoom(minZoom);
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.zoom).toBe(minZoom);
 
-		changeZoom(maxZoomLevel);
+		changeZoom(maxZoom);
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.zoom).toBe(maxZoom);
 
-		changeZoom(minZoomLevel - 1);
+		changeZoom(minZoom - 1);
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.zoom).toBe(minZoom);
 
-		changeZoom(maxZoomLevel + 1);
+		changeZoom(maxZoom + 1);
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.zoom).toBe(maxZoom);
 	});
 
 	it('changes the \'liveZoom\' property', () => {
 		const store = setup();
 
-		changeLiveZoom(10);
+		changeLiveZoom(zoomRaw);
 
-		expect(store.getState().position.liveZoom).toBe(10);
+		expect(store.getState().position.liveZoom).toBe(zoomRounded);
 
-		changeLiveZoom(minZoomLevel);
+		changeLiveZoom(minZoom);
 
-		expect(store.getState().position.liveZoom).toBe(minZoomLevel);
+		expect(store.getState().position.liveZoom).toBe(minZoom);
 
-		changeLiveZoom(maxZoomLevel);
+		changeLiveZoom(maxZoom);
 
-		expect(store.getState().position.liveZoom).toBe(maxZoomLevel);
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
 
-		changeLiveZoom(minZoomLevel - 1);
+		changeLiveZoom(minZoom - 1);
 
-		expect(store.getState().position.liveZoom).toBe(minZoomLevel);
+		expect(store.getState().position.liveZoom).toBe(minZoom);
 
-		changeLiveZoom(maxZoomLevel + 1);
+		changeLiveZoom(maxZoom + 1);
 
-		expect(store.getState().position.liveZoom).toBe(maxZoomLevel);
+		expect(store.getState().position.liveZoom).toBe(maxZoom);
 	});
 
 	it('changes \'zoom\' and  \'rotation\' property', () => {
 		const store = setup();
 
-		changeZoomAndRotation({ zoom: 10, rotation: .5 });
+		changeZoomAndRotation({ zoom: zoomRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(10);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(zoomRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomAndCenter({ zoom: minZoomLevel, rotation: .5 });
+		changeZoomAndRotation({ zoom: minZoom, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomAndCenter({ zoom: maxZoomLevel, rotation: .5 });
+		changeZoomAndRotation({ zoom: maxZoom, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomAndCenter({ zoom: minZoomLevel - 1, rotation: .5 });
+		changeZoomAndRotation({ zoom: minZoom - 1, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomAndCenter({ zoom: maxZoomLevel + 1, rotation: .5 });
+		changeZoomAndRotation({ zoom: maxZoom + 1, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
 	it('changes the \'center\' property', () => {
 		const store = setup();
 
-		changeCenter([21, 42]);
+		changeCenter(centerRaw);
 
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.center).toEqual(centerRounded);
 	});
 
 	it('changes the \'liveCenter\' property', () => {
 		const store = setup();
 
-		changeLiveCenter([21, 42]);
+		changeLiveCenter(centerRaw);
 
-		expect(store.getState().position.liveCenter).toEqual([21, 42]);
+		expect(store.getState().position.liveCenter).toEqual(centerRounded);
 	});
 
 	it('changes the \'center\'  \'rotation\' property', () => {
 		const store = setup();
 
-		changeCenterAndRotation({ center: [21, 42], rotation: .5 });
+		changeCenterAndRotation({ center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
 	it('changes the \'rotation\' property', () => {
 		const store = setup();
 
-		changeRotation(.5);
+		changeRotation(rotationRaw);
 
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
 	it('changes the \'liveRotation\' property', () => {
@@ -153,64 +159,64 @@ describe('positionReducer', () => {
 	it('changes \'zoom\' and  \'center\' property', () => {
 		const store = setup();
 
-		changeZoomAndCenter({ zoom: 10, center: [21, 42] });
+		changeZoomAndCenter({ zoom: zoomRaw, center: centerRaw });
 
-		expect(store.getState().position.zoom).toBe(10);
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.zoom).toBe(zoomRounded);
+		expect(store.getState().position.center).toEqual(centerRounded);
 
-		changeZoomAndCenter({ zoom: minZoomLevel, center: [21, 42] });
+		changeZoomAndCenter({ zoom: minZoom, center: centerRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
 
-		changeZoomAndCenter({ zoom: maxZoomLevel, center: [21, 42] });
+		changeZoomAndCenter({ zoom: maxZoom, center: centerRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
 
-		changeZoomAndCenter({ zoom: minZoomLevel - 1, center: [21, 42] });
+		changeZoomAndCenter({ zoom: minZoom - 1, center: centerRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
 
-		changeZoomAndCenter({ zoom: maxZoomLevel + 1, center: [21, 42] });
+		changeZoomAndCenter({ zoom: maxZoom + 1, center: centerRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
 	});
 
 	it('changes \'zoom\',  \'center\' and  \'rotation\' property', () => {
 		const store = setup();
 
-		changeZoomCenterAndRotation({ zoom: 10, center: [21, 42], rotation: .5 });
+		changeZoomCenterAndRotation({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(10);
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(zoomRounded);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomCenterAndRotation({ zoom: minZoomLevel, center: [21, 42], rotation: .5 });
+		changeZoomCenterAndRotation({ zoom: minZoom, center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomCenterAndRotation({ zoom: maxZoomLevel, center: [21, 42], rotation: .5 });
+		changeZoomCenterAndRotation({ zoom: maxZoom, center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomCenterAndRotation({ zoom: minZoomLevel - 1, center: [21, 42], rotation: .5 });
+		changeZoomCenterAndRotation({ zoom: minZoom - 1, center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(minZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 
-		changeZoomCenterAndRotation({ zoom: maxZoomLevel + 1, center: [21, 42], rotation: .5 });
+		changeZoomCenterAndRotation({ zoom: maxZoom + 1, center: centerRaw, rotation: rotationRaw });
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
-		expect(store.getState().position.center).toEqual([21, 42]);
-		expect(store.getState().position.rotation).toBe(.5);
+		expect(store.getState().position.zoom).toBe(maxZoom);
+		expect(store.getState().position.center).toEqual(centerRounded);
+		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
 	it('increases the \'zoom\' property by plus one', () => {
@@ -228,7 +234,7 @@ describe('positionReducer', () => {
 		increaseZoom();
 		increaseZoom();
 
-		expect(store.getState().position.zoom).toBe(maxZoomLevel);
+		expect(store.getState().position.zoom).toBe(maxZoom);
 	});
 
 	it('decreases the \'zoom\' property by minus one', () => {
@@ -246,7 +252,7 @@ describe('positionReducer', () => {
 		decreaseZoom();
 		decreaseZoom();
 
-		expect(store.getState().position.zoom).toBe(minZoomLevel);
+		expect(store.getState().position.zoom).toBe(minZoom);
 	});
 
 	it('places a \'fitRequest\' property', () => {
