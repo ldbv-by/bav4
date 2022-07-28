@@ -10,7 +10,6 @@ import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
-import { round } from '../../../../utils/numberUtils';
 
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
@@ -95,9 +94,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
-			observe(store, state => state.position.center, (_, state) => this._updateRotation(state)),
-			observe(store, state => state.position.zoom, (_, state) => this._updateRotation(state)),
-			observe(store, state => state.position.rotation, (_, state) => this._updateRotation(state))
+			observe(store, state => state.position.center, () => this._updateRotation()),
+			observe(store, state => state.position.zoom, () => this._updateRotation()),
+			observe(store, state => state.position.rotation, () => this._updateRotation())
 		];
 	}
 
@@ -122,13 +121,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		feature.set('azimuth', rotation);
 	}
 
-	_updateRotation(state) {
-		const currentRotation = state.position.rotation;
-		const rotation = round(this._mfpBoundaryFeature.get('azimuth'), 4);
-
-		if (round(currentRotation, 5) !== round(rotation, 5)) {
-			changeRotation(rotation);
-		}
+	_updateRotation() {
+		const rotation = this._mfpBoundaryFeature.get('azimuth');
+		changeRotation(rotation);
 	}
 
 	_updateMfpPage(mfpSettings) {
