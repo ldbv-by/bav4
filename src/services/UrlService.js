@@ -100,7 +100,7 @@ export class UrlService {
 	}
 
 	/**
-	 * Extracts the origin of an URL following by its pathname.
+	 * Extracts the origin of a URL following by its pathname.
 	 * If the URL has no pathname the result is the same like it would be calling {@link UrlService#origin}
 	 * @param {string} url
 	 * @throws TypeError
@@ -111,7 +111,7 @@ export class UrlService {
 	}
 
 	/**
-	 * Extracts the origin of an URL.
+	 * Extracts the origin of a URL.
 	 * @param {string} url
 	 * @throws TypeError
 	 */

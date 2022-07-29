@@ -44,7 +44,7 @@ export class ImportVectorDataService {
 	}
 
 	/**
-	* Imports vector data from an URL and returns a {@link GeoResourceFuture}.
+	* Imports vector data from a URL and returns a {@link GeoResourceFuture}.
 	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
 	* @param {string} url
 	* @param {ImportVectorDataOptions} [options]

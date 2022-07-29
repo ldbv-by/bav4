@@ -5,7 +5,7 @@
 import { $injector } from '../../injection';
 
 /**
- * Takes an url and returns a proxified url.
+ * Takes a URL and returns a proxified url.
  *
  * @typedef {function(url) : (string)} proxifyUrlProvider
  */
