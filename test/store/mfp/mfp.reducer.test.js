@@ -1,5 +1,6 @@
-import { activate, deactivate, setCurrent, setId, setScale } from '../../../src/store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, requestJob, setCurrent, setId, setScale, startJob } from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
+import { EventLike } from '../../../src/utils/storeUtils';
 import { TestUtils } from '../../test-utils';
 
 describe('mfpReducer', () => {
@@ -15,7 +16,8 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.active).toBeFalse();
 		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
-		expect(store.getState().mfp.current.dpi).toBeNull();
+		expect(store.getState().mfp.jobRequest).toBeNull();
+		expect(store.getState().mfp.jobSpec).toBeNull();
 	});
 
 	it('updates the active property', () => {
@@ -54,5 +56,37 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.scale).toBe(5);
 		expect(store.getState().mfp.current.dpi).toBe(128);
 		expect(store.getState().mfp.current.mapSize).toEqual({ width: 21, height: 42 });
+	});
+
+	it('places a new request for an mfp job', () => {
+		const store = setup();
+
+		requestJob();
+
+		expect(store.getState().mfp.jobRequest).not.toBeNull();
+		expect(store.getState().mfp.jobRequest).toBeInstanceOf(EventLike);
+	});
+
+	it('starts an mfp job by adding an mfp spec', () => {
+		const store = setup();
+		const spec = { foo: 'bar' };
+
+		startJob(spec);
+
+		expect(store.getState().mfp.jobSpec.payload).toEqual(spec);
+	});
+
+	it('cancel an existing an mfp job', () => {
+		const store = setup({
+			mfp: {
+				jobSpec: new EventLike({ foo: 'bar' })
+			}
+		});
+
+		expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+
+		cancelJob();
+
+		expect(store.getState().mfp.jobSpec.payload).toBeNull();
 	});
 });

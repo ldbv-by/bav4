@@ -230,6 +230,7 @@ describe('OlMap', () => {
 			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
+			expect(element._view.get('constrainRotation')).toBeFalse();
 			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
 			//all default controls are removed, ScaleLine control added

@@ -134,7 +134,7 @@ Modules meet the following conventions:
 Contains all plugins (see [Plugins](#plugins)).
 
 ### `src/services`
-All global services like the `HttpService`, providers and domain classes are located here.
+All global services like the `HttpService` and their providers are located here.
 
 ### `src/store`
 All redux related files like reducers and actions.

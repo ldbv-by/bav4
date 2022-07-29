@@ -108,6 +108,6 @@ export class RotationButton extends MvuElement {
 	}
 
 	static get VISIBILITY_THRESHOLD_RAD() {
-		return .1;
+		return .0001;
 	}
 }

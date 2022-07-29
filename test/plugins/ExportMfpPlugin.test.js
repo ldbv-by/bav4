@@ -4,7 +4,7 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { mfpReducer } from '../../src/store/mfp/mfp.reducer.js';
 import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin.js';
 import { $injector } from '../../src/injection/index.js';
-import { activate, deactivate } from '../../src/store/mfp/mfp.action.js';
+import { activate, cancelJob, deactivate, startJob } from '../../src/store/mfp/mfp.action.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 
 
@@ -12,7 +12,12 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 describe('ExportMfpPlugin', () => {
 
 	const mfpService = {
-		async getCapabilities() { }
+		async getCapabilities() { },
+		async createJob() { },
+		cancelJob() { }
+	};
+	const environmentService = {
+		getWindow: () => { }
 	};
 
 	const setup = (state) => {
@@ -22,6 +27,7 @@ describe('ExportMfpPlugin', () => {
 			tools: toolsReducer
 		});
 		$injector
+			.registerSingleton('EnvironmentService', environmentService)
 			.registerSingleton('MfpService', mfpService);
 		return store;
 	};
@@ -105,6 +111,46 @@ describe('ExportMfpPlugin', () => {
 			deactivate();
 
 			expect(store.getState().layers.active.length).toBe(0);
+		});
+	});
+
+
+	describe('when jobSpec property changes', () => {
+
+		describe('and jobSpec is available', () => {
+
+			it('it creates a new job by calling the MpfService', async () => {
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const spec = { foo: 'bar' };
+				const url = 'http://foo.bar';
+				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
+				const mockWindow = { open: () => {} };
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const windowSpy = spyOn(mockWindow, 'open');
+
+				startJob(spec);
+
+				await TestUtils.timeout();
+				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
+			});
+		});
+
+		describe('and jobSpec is NOT available', () => {
+
+			it('it cancels the current job by calling the MpfService', async () => {
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const mfpServiceSpy = spyOn(mfpService, 'cancelJob');
+				const mockWindow = { location: null };
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+
+				cancelJob();
+
+				expect(mfpServiceSpy).toHaveBeenCalled();
+			});
 		});
 	});
 });
