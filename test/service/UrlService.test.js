@@ -71,7 +71,7 @@ describe('UrlService', () => {
 			}
 			catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must represent an URL');
+				expect(error.message).toBe('Parameter \'url\' must represent a URL');
 			}
 		});
 	});
@@ -89,7 +89,7 @@ describe('UrlService', () => {
 
 			it('rejects when argument  represents not  an URL', () => {
 
-				expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent an URL/);
+				expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent a URL/);
 			});
 		});
 
@@ -127,7 +127,7 @@ describe('UrlService', () => {
 				}
 				catch (error) {
 					expect(error).toEqual(jasmine.any(TypeError));
-					expect(error.message).toBe('Parameter \'url\' must represent an URL');
+					expect(error.message).toBe('Parameter \'url\' must represent a URL');
 				}
 			});
 		});
@@ -151,7 +151,7 @@ describe('UrlService', () => {
 			}
 			catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must represent an URL');
+				expect(error.message).toBe('Parameter \'url\' must represent a URL');
 			}
 		});
 	});
@@ -168,7 +168,7 @@ describe('UrlService', () => {
 
 		it('throws an exception when argument  represents not  an URL', () => {
 
-			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, 'Parameter \'url\' must represent an URL');
+			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, 'Parameter \'url\' must represent a URL');
 		});
 	});
 
