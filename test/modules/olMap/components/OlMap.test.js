@@ -265,7 +265,7 @@ describe('OlMap', () => {
 		describe('rotation:change', () => {
 
 			it('updates the liveRotation property of the position state', async () => {
-				const rotationValue = .56786786;
+				const rotationValue = .5678;
 				const element = await setup();
 				const view = element._view;
 				const event = new Event('change:rotation');
@@ -288,7 +288,7 @@ describe('OlMap', () => {
 
 				view.dispatchEvent(event);
 
-				expect(store.getState().position.liveCenter).toBe(center);
+				expect(store.getState().position.liveCenter).toEqual(center);
 			});
 		});
 
@@ -360,15 +360,15 @@ describe('OlMap', () => {
 			it('updates the position state properties', async () => {
 				const element = await setup();
 				const view = element._view;
-				spyOn(view, 'getZoom');
-				spyOn(view, 'getCenter');
-				spyOn(view, 'getRotation');
+				spyOn(view, 'getZoom').and.returnValue(5);
+				spyOn(view, 'getCenter').and.returnValue([21, 42]);
+				spyOn(view, 'getRotation').and.returnValue(.5);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
-				expect(view.getZoom).toHaveBeenCalledTimes(1);
-				expect(view.getCenter).toHaveBeenCalledTimes(1);
-				expect(view.getRotation).toHaveBeenCalledTimes(1);
+				expect(store.getState().position.zoom).toBe(5);
+				expect(store.getState().position.center).toEqual([21, 42]);
+				expect(store.getState().position.rotation).toBe(.5);
 			});
 		});
 	});
@@ -688,11 +688,11 @@ describe('OlMap', () => {
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'animate');
 
-			changeZoomAndCenter({ zoom: 5, center: fromLonLat([11, 48]) });
+			changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
 			expect(viewSpy).toHaveBeenCalledWith({
 				zoom: 5,
-				center: fromLonLat([11, 48]),
+				center: [21, 42],
 				rotation: initialRotationValue,
 				duration: 200
 			});

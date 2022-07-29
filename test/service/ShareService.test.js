@@ -153,7 +153,7 @@ describe('ShareService', () => {
 			describe('and rotation = 0', () => {
 
 				it('extracts the position state', () => {
-					const zoomLevel = 5.353673;
+					const zoomLevel = 5.35;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
 					setup();
@@ -175,7 +175,7 @@ describe('ShareService', () => {
 			describe('and rotation != 0', () => {
 
 				it('extracts the current position state', () => {
-					const zoomLevel = 5.353673;
+					const zoomLevel = 5.35;
 					const rotationValue = .5347485;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
