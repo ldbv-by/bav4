@@ -20,6 +20,7 @@ import { $injector } from '../../injection';
  */
 export const bvvQrCodeProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
-	const shortenGetRequestUrl = `${configService.getValueAsPath('SHORTENING_SERVICE_URL')}?url=${encodeURIComponent(url)}`;
-	return shortenGetRequestUrl;
+	return (url.trim().startsWith(configService.getValueAsPath('SHORTENING_SERVICE_URL')))
+		? `${url}.png` // we already have a shortened URL
+		: `${configService.getValueAsPath('SHORTENING_SERVICE_URL')}?url=${encodeURIComponent(url)}`;
 };
