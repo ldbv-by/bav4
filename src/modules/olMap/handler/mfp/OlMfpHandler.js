@@ -1,22 +1,26 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-
+import { throttled } from '../../../../utils/timer';
 import { setScale } from '../../../../store/mfp/mfp.action';
-
 import { Point, Polygon } from 'ol/geom';
-
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
+import { changeRotation } from '../../../../store/position/position.action';
 
+
+export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
+export const FIELD_NAME_AZIMUTH = 'azimuth';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
+const THROTTLE_DELAY_MS = 10;
+
 /**
  * @class
  * @author thiloSchlemmer
@@ -34,9 +38,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpService = mfpService;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
+		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
+		this._lastCenter = [-1, -1];
 	}
 
 	/**
@@ -67,6 +73,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 		this._updateMfpPage(mfpSettings);
 		this._updateMfpPreview();
+		this._updateRotation();
 		return this._mfpLayer;
 	}
 
@@ -84,9 +91,13 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
+		const updatePreview = throttled(THROTTLE_DELAY_MS, () => this._updateMfpPreview());
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
-			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview())
+			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
+			observe(store, state => state.position.center, () => this._updateRotation()),
+			observe(store, state => state.position.zoom, () => this._updateRotation()),
+			observe(store, state => state.position.rotation, () => this._updateRotation())
 		];
 	}
 
@@ -99,9 +110,21 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const geometry = this._createMpfBoundary(this._pageSize);
-		this._mfpBoundaryFeature.setGeometry(geometry);
+		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize);
 
-		this._map.renderSync();
+		this._mfpBoundaryFeature.setGeometry(geometry);
+		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
+	}
+
+	_updateAzimuth(e) {
+		const feature = e.target;
+		const rotation = this._getAzimuth(feature.getGeometry());
+		feature.set('azimuth', rotation);
+	}
+
+	_updateRotation() {
+		const rotation = this._mfpBoundaryFeature.get('azimuth');
+		changeRotation(rotation);
 	}
 
 	_updateMfpPage(mfpSettings) {
@@ -111,9 +134,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
 		const currentScale = scale ? scale : this._mfpService.getCapabilitiesById(id).scales[0];
 
-		const w = layoutSize.width / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-		const h = layoutSize.height / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
-		this._pageSize = { width: w, height: h };
+		const toGeographicSize = (size) => {
+			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+			return { width: toGeographic(size.width), height: toGeographic(size.height) };
+		};
+
+		this._pageSize = toGeographicSize(layoutSize);
+		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
 		this._updateMfpPreview();
 	}
 
@@ -186,5 +213,15 @@ export class OlMfpHandler extends OlLayerHandler {
 			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY]
 		]]);
 		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
+	}
+
+	_getAzimuth(polygon) {
+		const coordinates = polygon.getCoordinates()[0];
+		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+		const topAngle = getAngle(coordinates[0], coordinates[1]);
+		const bottomAngle = getAngle(coordinates[3], coordinates[2]);
+
+		const angle = (topAngle + bottomAngle) / 2;
+		return angle;
 	}
 }

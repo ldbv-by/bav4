@@ -4,6 +4,7 @@ import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { Polygon } from 'ol/geom';
 
 import { getBottomRight, getTopLeft } from 'ol/extent';
+import { FIELD_NAME_PAGE_BUFFER } from './OlMfpHandler';
 
 const fontSizePX = 70;
 
@@ -14,11 +15,11 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 			text: label,
 			font: `normal ${fontSizePX}px sans-serif`,
 			stroke: new Stroke({
-				color: [0, 0, 0, 0.8],
+				color: [0, 0, 0, 0.5],
 				width: 2
 			}),
 			fill: new Fill({
-				color: [0, 0, 0, 0.4]
+				color: [80, 80, 80, 0.3]
 			}),
 			scale: 1,
 			offsetY: fontSizePX * index - (globalOffset / 2) * fontSizePX,
@@ -30,19 +31,22 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 };
 
 export const mfpBoundaryStyleFunction = () => new Style({
-	fill: new Fill({
-		color: [9, 157, 220, 0.1]
-	}),
 	stroke: new Stroke({
-		color: [9, 157, 220, 0.9],
-		width: 1
+		color: [9, 157, 220, 1],
+		width: 3
+	})
+});
+
+export const mfpPageStyleFunction = () => new Style({
+	fill: new Fill({
+		color: [255, 255, 255, 0.4]
 	})
 });
 
 export const thumbnailStyleFunction = () => [new Style({
 	stroke: new Stroke(
 		{
-			color: [9, 157, 220, 0.1],
+			color: [9, 157, 220, 0.3],
 			width: 3
 		})
 })];
@@ -51,18 +55,11 @@ export const nullStyleFunction = () => [new Style({})];
 
 export const maskFeatureStyleFunction = () => {
 
-	const stroke = new Stroke(
-		{
-			color: [0, 0, 0, 0.8],
-			width: 1
-		}
-	);
 	const fill = new Fill({
 		color: [0, 0, 0, 0.4]
 	});
 	const maskStyle = new Style({
-		fill: fill,
-		stroke: stroke
+		fill: fill
 	});
 
 	return maskStyle;
@@ -90,9 +87,11 @@ export const createMapMaskFunction = (map, feature) => {
 
 	const innerStyle = mfpBoundaryStyleFunction();
 	const outerStyle = maskFeatureStyleFunction();
+	const pageStyle = mfpPageStyleFunction();
 
 	const renderMask = (event) => {
 		const text = feature.get('name');
+		const pageBuffer = feature.get(FIELD_NAME_PAGE_BUFFER).clone();
 		const textLines = text ? text.split('\n') : null;
 		const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
 
@@ -100,7 +99,6 @@ export const createMapMaskFunction = (map, feature) => {
 		const innerPolygon = feature.getGeometry();
 		const mask = getMaskGeometry(map, innerPolygon);
 		const vectorContext = getVectorContext(event);
-
 
 		vectorContext.setStyle(innerStyle);
 		vectorContext.drawGeometry(innerPolygon);
@@ -118,6 +116,10 @@ export const createMapMaskFunction = (map, feature) => {
 
 		vectorContext.setStyle(outerStyle);
 		vectorContext.drawGeometry(mask);
+
+		pageBuffer.appendLinearRing(innerPolygon.getLinearRing(0));
+		vectorContext.setStyle(pageStyle);
+		vectorContext.drawGeometry(pageBuffer);
 	};
 	return renderMask;
 };

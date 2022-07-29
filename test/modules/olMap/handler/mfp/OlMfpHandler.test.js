@@ -111,7 +111,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(2);
+			expect(handler._registeredObservers).toHaveSize(5);
 		});
 	});
 
