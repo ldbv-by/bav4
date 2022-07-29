@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { isString } from '../utils/checks';
+import { isHttpUrl } from '../utils/checks';
 import { bvvProxifyUrlProvider } from './provider/proxifyUrl.provider';
 import { bvvQrCodeProvider } from './provider/qrCodeUrlProvider';
 import { shortenBvvUrls } from './provider/urlShorteningProvider';
@@ -31,8 +31,8 @@ export class UrlService {
 	* @returns {string} proxified URL
 	*/
 	proxifyInstant(url) {
-		if (!isString(url)) {
-			throw new TypeError('Parameter \'url\' must be a string');
+		if (!isHttpUrl(url)) {
+			throw new TypeError('Parameter \'url\' must represent an URL');
 		}
 		return this._proxifyUrlProvider(url);
 	}
@@ -44,8 +44,8 @@ export class UrlService {
 	* @returns {Promise<string>|Promise.reject} proxified URL
 	*/
 	async proxify(url) {
-		if (!isString(url)) {
-			throw new TypeError('Parameter \'url\' must be a string');
+		if (!isHttpUrl(url)) {
+			throw new TypeError('Parameter \'url\' must represent an URL');
 		}
 		const corsEnabled = await this.isCorsEnabled(url);
 		if (corsEnabled) {
@@ -61,8 +61,8 @@ export class UrlService {
 	* @returns {Promise<boolean>|Promise.reject} `true`, if cors is enabled
 	*/
 	async isCorsEnabled(url) {
-		if (!isString(url)) {
-			throw new TypeError('Parameter \'url\' must be a string');
+		if (!isHttpUrl(url)) {
+			throw new TypeError('Parameter \'url\' must represent an URL');
 		}
 
 		const result = await this._httpService.head(url, {
@@ -80,8 +80,8 @@ export class UrlService {
 	 * @throws Error of the underlying provider
 	 */
 	async shorten(url) {
-		if (!isString(url)) {
-			throw new TypeError('Parameter \'url\' must be a string');
+		if (!isHttpUrl(url)) {
+			throw new TypeError('Parameter \'url\' must represent an URL');
 		}
 		return this._urlShorteningProvider(url);
 	}
@@ -93,8 +93,8 @@ export class UrlService {
 	 * @throws Error of the underlying provider
 	 */
 	qrCode(url) {
-		if (!isString(url)) {
-			throw new TypeError('Parameter \'url\' must be a string');
+		if (!isHttpUrl(url)) {
+			throw new TypeError('Parameter \'url\' must represent an URL');
 		}
 		return this._qrCodeUrlProvider(url);
 	}
