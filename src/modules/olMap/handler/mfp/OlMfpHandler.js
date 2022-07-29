@@ -73,6 +73,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 		this._updateMfpPage(mfpSettings);
 		this._updateMfpPreview();
+		this._updateRotation();
 		return this._mfpLayer;
 	}
 
