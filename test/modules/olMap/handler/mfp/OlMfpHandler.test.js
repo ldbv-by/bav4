@@ -12,6 +12,7 @@ import { TestUtils } from '../../../../test-utils';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { Polygon } from 'ol/geom';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -135,5 +136,18 @@ describe('OlMfpHandler', () => {
 		});
 
 
+	});
+
+	describe('_getAzimuth', () => {
+
+		it('calculates the intermediate azimuth for a quadrangle polygon', () => {
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			const nonUniformQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+			const squaredQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
+
+			expect(classUnderTest._getAzimuth(nonUniformQuadrangle)).toBeCloseTo(0.048863, 4);
+			expect(classUnderTest._getAzimuth(squaredQuadrangle)).toBeCloseTo(0.0, 5);
+		});
 	});
 });
