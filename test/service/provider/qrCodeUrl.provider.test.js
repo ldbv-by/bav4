@@ -26,7 +26,7 @@ describe('QrCode provider', () => {
 			expect(qrCodeUrl).toBe(expectedQrCodeUrl);
 		});
 
-		it('returns a qrCode URL for a already shortened URL', () => {
+		it('returns a qrCode URL for an already shortened URL', () => {
 			const urlShorteningServiceUrl = 'https://shortening.url';
 			const urlToEncode = `${urlShorteningServiceUrl}/foo`;
 			const expectedQrCodeUrl = `${urlToEncode}.png`;
