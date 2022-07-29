@@ -13,6 +13,9 @@ import { TestUtils } from '../../../../test-utils';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { Polygon } from 'ol/geom';
+import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -31,7 +34,9 @@ describe('OlMfpHandler', () => {
 			return { top: 10, right: 20, bottom: 30, left: 40 };
 		},
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832
+		getDefaultGeodeticSrid: () => 25832,
+		getMinZoomLevel: () => 0,
+		getMaxZoomLevel: () => 42
 	};
 
 	const mfpServiceMock = {
@@ -118,6 +123,72 @@ describe('OlMfpHandler', () => {
 
 			expect(actualLayer).toBeTruthy();
 			expect(handler._registeredObservers).toHaveSize(5);
+		});
+
+		it('initializing mfpBoundaryFeature only once', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			const mfpBoundaryFeatureSpy = spyOn(handler._mfpBoundaryFeature, 'setStyle').and.callThrough();
+
+			handler.activate(map); // --> mfpLayer is now initialized
+			const mfpLayerSpy = spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function)).and.callThrough();
+			handler.activate(map);
+
+			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(thumbnailStyleFunction);
+			expect(mfpLayerSpy).not.toHaveBeenCalled();
+		});
+
+		it('updates mfpPage after store changes', () => {
+			const current = { id: 'bar', scale: 42 };
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+
+			const updateSpy = spyOn(handler, '_updateMfpPage').withArgs(current).and.callThrough();
+			setCurrent(current);
+
+			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates mfpPreview after store changes', () => {
+			const center = [0, 0];
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+
+			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
+			changeLiveCenter(center);
+
+			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates rotation after store changes', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			const updateSpy = spyOn(handler, '_updateRotation').and.callThrough();
+
+
+			handler.activate(map);
+			changeCenter([0, 42]);
+
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.calls.reset();
+
+			changeZoom(2);
+
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.calls.reset();
+
+			changeRotation(42);
+			expect(updateSpy).toHaveBeenCalled();
 		});
 	});
 

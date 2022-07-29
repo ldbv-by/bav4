@@ -55,22 +55,20 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._mfpLayer = new VectorLayer({
 				source: source
 			});
+			setScale(this._getOptimalScale(olMap));
+
+			// init mfpBoundaryFeature
+			const mfpSettings = this._storeService.getStore().getState().mfp.current;
+			this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
+			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
+
+			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
+			this._registeredObservers = this._register(this._storeService.getStore());
+			this._updateMfpPage(mfpSettings);
+			this._updateMfpPreview();
+			this._updateRotation();
 		}
 
-
-		this._registeredObservers = this._register(this._storeService.getStore());
-
-		setScale(this._getOptimalScale(olMap));
-
-		// init mfpBoundaryFeature
-		const mfpSettings = this._storeService.getStore().getState().mfp.current;
-		this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
-		this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
-
-		this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
-		this._updateMfpPage(mfpSettings);
-		this._updateMfpPreview();
-		this._updateRotation();
 		return this._mfpLayer;
 	}
 
