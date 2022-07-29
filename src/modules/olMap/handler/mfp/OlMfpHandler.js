@@ -1,6 +1,5 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { throttled } from '../../../../utils/timer';
 import { setScale } from '../../../../store/mfp/mfp.action';
 import { Point, Polygon } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
@@ -19,7 +18,7 @@ const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
-const THROTTLE_DELAY_MS = 10;
+const Locales_Fallback = 'en';
 
 /**
  * @class
@@ -61,12 +60,10 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		this._registeredObservers = this._register(this._storeService.getStore());
 
-		const optimalScale = this._getOptimalScale(olMap);
-		if (optimalScale) {
-			setScale(optimalScale);
-		}
-		const mfpSettings = this._storeService.getStore().getState().mfp.current;
+		setScale(this._getOptimalScale(olMap));
 
+		// init mfpBoundaryFeature
+		const mfpSettings = this._storeService.getStore().getState().mfp.current;
 		this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
 		this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
@@ -91,7 +88,6 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
-		const updatePreview = throttled(THROTTLE_DELAY_MS, () => this._updateMfpPreview());
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
@@ -132,10 +128,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const label = this._getPageLabel(mfpSettings);
 		this._mfpBoundaryFeature.set('name', label);
 		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
-		const currentScale = scale ? scale : this._mfpService.getCapabilitiesById(id).scales[0];
 
 		const toGeographicSize = (size) => {
-			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * currentScale;
+			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
 			return { width: toGeographic(size.width), height: toGeographic(size.height) };
 		};
 
@@ -144,12 +139,17 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._updateMfpPreview();
 	}
 
+	_getLocales() {
+		const { ConfigService: configService } = $injector.inject('ConfigService');
+		return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
+	}
+
 	_getPageLabel(mfpSettings) {
 		const translate = (key) => this._translationService.translate(key);
 		const { id, scale } = mfpSettings;
 		const layout = translate(`olMap_handler_mfp_id_${id}`);
-		const formattedScale = scale ? `1:${scale}` : '';
-		return `${layout}\n${formattedScale}`;
+		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 }) ;
+		return `${layout}\n1:${formattedScale}`;
 	}
 
 	_getOptimalScale(map) {

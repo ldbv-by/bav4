@@ -19,6 +19,10 @@ describe('OlMfpHandler', () => {
 		current: { id: 'foo', scale: null }
 	};
 
+	const configService = {
+		getValue: (key, defaultValue) => defaultValue
+	};
+
 	const translationServiceMock = { translate: (key) => key };
 
 	const mapServiceMock = {
@@ -44,6 +48,7 @@ describe('OlMfpHandler', () => {
 		};
 		TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
+			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('MfpService', mfpServiceMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
