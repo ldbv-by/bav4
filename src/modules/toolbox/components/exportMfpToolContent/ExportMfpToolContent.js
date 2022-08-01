@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { setId, setScale } from '../../../../store/mfp/mfp.action';
+import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../store/mfp/mfp.action';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
 const Update_Capabilities = 'update_capabilities';
+const Update_Job_Started = 'update_job_started';
 
 /**
  * @class
@@ -18,7 +18,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		super({
 			id: null,
 			scale: null,
-			capabilities: []
+			capabilities: [],
+			isJobStarted: false
 		});
 
 		const { TranslationService: translationService, MfpService: mfpService } = $injector.inject('TranslationService', 'MfpService');
@@ -28,6 +29,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.mfp.current, data => this.signal(Update, data));
+		this.observe(state => state.mfp.jobSpec, data => this.signal(Update_Job_Started, data));
 		this._loadCapabilities();
 	}
 
@@ -41,6 +43,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, id: data };
 			case Update_Capabilities:
 				return { ...model, capabilities: [...data] };
+			case Update_Job_Started:
+				return { ...model, isJobStarted: data ? data.payload !== null : false };
 		}
 	}
 
@@ -52,11 +56,19 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	}
 
 	createView(model) {
-		const { id, scale, capabilities } = model;
+		const { id, scale, capabilities, isJobStarted } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilitiesAvailable = capabilities.length > 0;
 
-		const onClick = () => emitNotification(`Export to MapFishPrint with '${id}' and scale 1:${scale}`, LevelTypes.INFO);
+		const onClickAction = isJobStarted ? () => cancelJob() : () => {
+			requestJob();
+
+			// FIXME: FOR DEMO ONLY
+			// REMOVE after implemented and connected actions in OlMfpHandler
+			startJob({});
+		};
+		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
+		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 
 		const areSettingsComplete = (capabilitiesAvailable && scale && id);
 		return html`
@@ -68,7 +80,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${areSettingsComplete ? this._getContent(id, scale, capabilities) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-				<ba-button id='btn_submit' class="tool-container__button" .label=${translate('toolbox_exportMfp_submit')} @click=${onClick} .disabled=${!areSettingsComplete}></ba-button>
+				<ba-button id='${btnId}' class="tool-container__button" .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
 			</div>			
 		</div>`;
 	}
