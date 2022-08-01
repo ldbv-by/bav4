@@ -4,8 +4,8 @@ import { Polygon } from 'ol/geom';
 import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
-import { Text as TextStyle } from 'ol/style';
-import { createMapMaskFunction, mfpTextStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { Style, Text as TextStyle } from 'ol/style';
+import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 
@@ -44,6 +44,46 @@ describe('mfp style utility functions', () => {
 			expect(mfpTextStyleFunction('foo', 2, 3).getText().getOffsetY()).toBe(35);
 		});
 	});
+
+	describe('thumbnailStyleFunction', () => {
+
+		it('should create a style ', () => {
+
+			const styles = thumbnailStyleFunction();
+			expect(styles).toHaveSize(1);
+			expect(styles).toEqual([jasmine.any(Style)]);
+		});
+
+		it('should create a style with a stroke style ', () => {
+			const styles = thumbnailStyleFunction();
+
+			expect(styles).toHaveSize(1);
+			const style = styles[0];
+			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
+			expect(style.getStroke().getWidth()).toBe(3);
+		});
+	});
+
+	describe('nullStyleFunction', () => {
+
+		it('should create a style', () => {
+
+			const styles = nullStyleFunction();
+
+			expect(styles).toHaveSize(1);
+			expect(styles).toEqual([jasmine.any(Style)]);
+		});
+
+		it('should create a style without any further style ', () => {
+			const styles = nullStyleFunction();
+
+			expect(styles[0].getStroke()).toBeNull();
+			expect(styles[0].getFill()).toBeNull();
+			expect(styles[0].getImage()).toBeNull();
+			expect(styles[0].getText()).toBeNull();
+		});
+	});
+
 
 	describe('createMapMaskFunction', () => {
 
