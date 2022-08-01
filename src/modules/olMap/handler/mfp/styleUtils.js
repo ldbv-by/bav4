@@ -92,8 +92,8 @@ export const createMapMaskFunction = (map, feature) => {
 	const renderMask = (event) => {
 		const text = feature.get('name');
 		const pageBuffer = feature.get(FIELD_NAME_PAGE_BUFFER).clone();
-		const textLines = text ? text.split('\n') : null;
-		const textStyles = textLines ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
+		const textLines = text ? text.split('\n') : [];
+		const textStyles = textLines.length > 0 ? textLines.map((l, i, a) => mfpTextStyleFunction(l, i, a.length)) : [];
 
 		const context2d = event.context.canvas.getContext('2d');
 		const innerPolygon = feature.getGeometry();
@@ -105,7 +105,6 @@ export const createMapMaskFunction = (map, feature) => {
 
 		const maxTextWidth = Math.max(...textLines.map(t => context2d.measureText(t).width));
 		const geomWidth = getPixelWidth(innerPolygon, map);
-
 		const isTextOverflow = maxTextWidth + textBuffer > geomWidth;
 		if (!isTextOverflow) {
 			textStyles.forEach(style => {

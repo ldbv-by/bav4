@@ -47,6 +47,22 @@ describe('mfp style utility functions', () => {
 
 	describe('createMapMaskFunction', () => {
 
+		const createFeature = (name) => {
+			const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+			const feature = new Feature({ geometry: geometry });
+			const pageBuffer = geometry.clone();
+			feature.set('name', name);
+			feature.set('page_buffer', pageBuffer);
+
+			return feature;
+		};
+
+		const createMapMock = () => {
+			return {
+				getSize: () => [10, 10], getCoordinateFromPixel: (p) => p, getPixelFromCoordinate: (c) => c
+			};
+		};
+
 		it('creates a function', () => {
 			const mapMock = {};
 			const feature = new Feature();
@@ -62,28 +78,122 @@ describe('mfp style utility functions', () => {
 		};
 		const setupFrameState = (time) => {
 			return {
-				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState, extent: [0, 0, 10, 10]
 			};
 		};
-		xit('draws a innerPolygon', () => {
 
-			const mapMock = { getSize: () => [10, 10], getCoordinateFromPixel: (p) => p };
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-			const pageBuffer = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
-			feature.set('name', '');
-			feature.set('page_buffer', pageBuffer);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
+		it('draws a innerPolygon with mfpBoundaryStyle', () => {
+			const expectedStrokeColor = 'rgba(9,157,220,1)';
+			const expectedStrokeWidth = 3;
+			const feature = createFeature('');
+			const mapMock = createMapMock();
 			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => {
-				10;
-			});
+			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
+			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
+
 			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
 
-
-
+			const renderFunction = createMapMaskFunction(mapMock, feature);
 			renderFunction(getPostRenderEvent(0));
+
 			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(strokeStylePropertySpy).toHaveBeenCalledWith(expectedStrokeColor);
+			expect(strokeWidthPropertySpy).toHaveBeenCalledWith(expectedStrokeWidth);
+		});
+
+		it('draws a outerPolygon with maskFeatureStyle', () => {
+			const expectedFillColor = 'rgba(0,0,0,0.4)';
+			const feature = createFeature('');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
+			const mapSizeForMaskSpy = spyOn(mapMock, 'getSize').and.callThrough();
+			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
+			expect(mapSizeForMaskSpy).toHaveBeenCalled();
+		});
+
+		it('draws a pagePolygon with mfpPageStyle', () => {
+			const expectedFillColor = 'rgba(255,255,255,0.4)';
+			const feature = createFeature('');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
+			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
+			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
+			expect(featurePropertySpy).toHaveBeenCalledWith('page_buffer');
+		});
+
+		it('draws text with mfpTextStyle', () => {
+			const expectedFillColor = 'rgba(255,255,255,0.4)';
+			const feature = createFeature('foo');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
+			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
+			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
+			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
+			expect(fillTextSpy).toHaveBeenCalledWith('foo', 0.5, -34.5);
+			expect(featurePropertySpy).toHaveBeenCalledWith('name');
+		});
+
+		it('draws text with mfpTextStyle', () => {
+			const feature = createFeature('foo\nbar\nbaz');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
+			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillTextSpy).toHaveBeenCalledTimes(3);
+		});
+
+		it('does NOT draw overflowing text', () => {
+			const feature = createFeature('overflow text');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			spyOn(context, 'measureText').and.callFake(() => {
+				return { width: 10 };
+			});
+
+			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
+			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillTextSpy).toHaveBeenCalledTimes(0);
 		});
 	});
 });
