@@ -1,5 +1,6 @@
 
 import Point from 'ol/geom/Point';
+import { intersects as extentIntersects } from 'ol/extent';
 import { $injector } from '../../../injection';
 
 /**
@@ -39,21 +40,29 @@ export class Mfp3Encoder {
 		const mfpProjection = `EPSG:${mapService.getDefaultGeodeticSrid()}`;
 
 		const getDefaultMapCenter = () => {
-			const size = olMap.getSize();
-			return new Point(olMap.getCoordinateFromPixel([size[0] / 2, size[1] / 2]));
+			return olMap.getView().getCenter();
+		};
+		const getDefaultMapExtent = () => {
+			return olMap.getView().calculateExtent(olMap.getSize());
 		};
 
 		const mfpCenter = encodingProperties.mapCenter && typeof encodingProperties.mapCenter === Point
 			? encodingProperties.mapCenter.clone().transform(mapProjection, mfpProjection)
 			: getDefaultMapCenter().clone().transform(mapProjection, mfpProjection);
 
+		const mapExtent = encodingProperties.mapExtent
+			? encodingProperties.mapExtent
+			: getDefaultMapExtent();
+
 		const mfpLayout = encodingProperties.layoutId;
 		const mfpScale = encodingProperties.scale;
 		const mfpDpi = encodingProperties.dpi;
 		const mfpRotation = encodingProperties.rotation ? encodingProperties.rotation : 0;
 
+		const layersInExtent = olMap.getLayers().getArray().filter(l => extentIntersects(l.getExtent(), mapExtent));
+		const mfpLayers = layersInExtent.map(l => Mfp3Encoder._encodeLayer(l));
+
 		/* todo
-        - mapSize?
         - printRectangleCoordinates: to check, if layer extent intersects with export extent
         - language?
         - layers
@@ -68,8 +77,14 @@ export class Mfp3Encoder {
 					scale: mfpScale,
 					projection: mfpProjection,
 					dpi: mfpDpi,
-					rotation: mfpRotation
+					rotation: mfpRotation,
+					layers: mfpLayers
 				}
 			} };
 	}
+
+	static _encodeLayer(olLayer) {
+		return {};
+	}
+
 }
