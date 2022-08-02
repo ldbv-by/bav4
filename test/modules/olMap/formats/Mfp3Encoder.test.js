@@ -9,8 +9,10 @@ import { register } from 'ol/proj/proj4';
 
 describe('Mfp3Encoder', () => {
 
-
-	const mapMock = { getSize: () => [100, 100], getCoordinateFromPixel: (p) => p };
+	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100] };
+	const mapMock = { getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
+		return { getArray: () => [] };
+	} };
 
 	const mapServiceMock = {
 		getDefaultMapExtent() { },

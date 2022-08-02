@@ -2,6 +2,8 @@
 import Point from 'ol/geom/Point';
 import { intersects as extentIntersects } from 'ol/extent';
 import { $injector } from '../../../injection';
+import LayerGroup from 'ol/layer/Group';
+import { ImageWMS, TileWMS, Vector, WMTS } from 'ol/source';
 
 /**
  * A Container-Object for properties related to a mfp encoding
@@ -84,7 +86,39 @@ export class Mfp3Encoder {
 	}
 
 	static _encodeLayer(olLayer) {
-		return {};
+		const isGroup = (l) => l instanceof LayerGroup;
+
+		const encodeBySourceType = (l) => {
+			const source = l.getSource();
+			if (source instanceof WMTS) {
+				return Mfp3Encoder._encodeWMTS(olLayer);
+			}
+
+			if (source instanceof ImageWMS || TileWMS) {
+				return Mfp3Encoder._encodeWMS(olLayer);
+			}
+
+			if (source instanceof Vector) {
+				return Mfp3Encoder._encodeVector(olLayer);
+			}
+		};
+		return isGroup(olLayer) ? Mfp3Encoder._encodeGroup(olLayer) : encodeBySourceType(olLayer);
+	}
+
+	static _encodeGroup(olGroupLayer) {
+		console.log('encode GroupLayer', olGroupLayer);
+	}
+
+	static _encodeWMTS(olWMTSLayer) {
+		console.log('encode WMTSLayer', olWMTSLayer);
+	}
+
+	static _encodeWMS(olWMSLayer) {
+		console.log('encode WMSLayer', olWMSLayer);
+	}
+
+	static _encodeVector(olVectorLayer) {
+		console.log('encode WMSLayer', olVectorLayer);
 	}
 
 }
