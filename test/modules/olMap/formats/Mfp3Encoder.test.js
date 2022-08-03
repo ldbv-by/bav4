@@ -9,10 +9,14 @@ import { register } from 'ol/proj/proj4';
 
 describe('Mfp3Encoder', () => {
 
-	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100] };
-	const mapMock = { getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
-		return { getArray: () => [] };
-	} };
+	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
+	const mapMock = {
+		getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
+			return { getArray: () => [] };
+		}
+	};
+
+	const geoResourceServiceMock = { byId: () => { } };
 
 	const mapServiceMock = {
 		getDefaultMapExtent() { },
@@ -27,7 +31,8 @@ describe('Mfp3Encoder', () => {
 		rotation: null
 	};
 
-	$injector.registerSingleton('MapService', mapServiceMock);
+	$injector.registerSingleton('MapService', mapServiceMock)
+		.registerSingleton('GeoResourceService', geoResourceServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 
@@ -49,5 +54,21 @@ describe('Mfp3Encoder', () => {
 			expect(specs.attributes.map).toEqual(jasmine.objectContaining({ scale: 1, dpi: 42, rotation: 0 }));
 		});
 
+	});
+
+	describe('_encodeDimensions', () => {
+
+		it('encodes dimensions', () => {
+			const dimensions = {
+				'foo': 'bar',
+				'baz': 42
+			};
+			const encodedDimensions = {
+				'FOO': 'bar',
+				'BAZ': 42
+			};
+
+			expect(Mfp3Encoder._encodeDimensions(dimensions)).toEqual(encodedDimensions);
+		});
 	});
 });
