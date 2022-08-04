@@ -9,12 +9,12 @@ import { register } from 'ol/proj/proj4';
 
 describe('Mfp3Encoder', () => {
 
-	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
-	const mapMock = {
-		getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
-			return { getArray: () => [] };
-		}
-	};
+	// const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
+	// const mapMock = {
+	// 	getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
+	// 		return { getArray: () => [] };
+	// 	}
+	// };
 
 	const geoResourceServiceMock = { byId: () => { } };
 
@@ -36,27 +36,28 @@ describe('Mfp3Encoder', () => {
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 
-	describe('encode', () => {
+	describe('constructor', () => {
+		it('initialize with default properties', () => {
+			const classUnderTest = new Mfp3Encoder(defaultProperties);
 
-		it('returns NULL for invalid properties', () => {
+			expect(classUnderTest).toBeInstanceOf(Mfp3Encoder);
+			expect(classUnderTest._mapService).toBeTruthy();
+			expect(classUnderTest._geoResourceService).toBeTruthy();
+			expect(classUnderTest._mfpProperties).toBe(defaultProperties);
+			expect(classUnderTest._mapProjection).toBe('EPSG:3857');
+			expect(classUnderTest._mfpProjection).toBe('EPSG:25832');
+		});
+
+		it('fails to initialize for invalid properties', () => {
 			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
-			expect(Mfp3Encoder.encode(mapMock, { ...baseProps, layoutId: null, scale: 1 })).toBeNull();
-			expect(Mfp3Encoder.encode(mapMock, { ...baseProps, layoutId: 'bar', scale: null })).toBeNull();
-			expect(Mfp3Encoder.encode(mapMock, { ...baseProps, layoutId: 'bar', scale: 0 })).toBeNull();
+
+			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: null, scale: 1 })).toThrowError();
+			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: null })).toThrowError();
+			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: 0 })).toThrowError();
 		});
-
-		it('returns a spec for valid properties', () => {
-			const specs = Mfp3Encoder.encode(mapMock, defaultProperties);
-
-			expect(specs).not.toBeNull();
-			expect(specs).toEqual(jasmine.objectContaining({ layout: 'foo' }));
-			expect(specs.attributes.map).not.toBeNull();
-			expect(specs.attributes.map).toEqual(jasmine.objectContaining({ scale: 1, dpi: 42, rotation: 0 }));
-		});
-
 	});
 
-	describe('_encodeDimensions', () => {
+	describe('encodeDimensions', () => {
 
 		it('encodes dimensions', () => {
 			const dimensions = {
@@ -68,7 +69,7 @@ describe('Mfp3Encoder', () => {
 				'BAZ': 42
 			};
 
-			expect(Mfp3Encoder._encodeDimensions(dimensions)).toEqual(encodedDimensions);
+			expect(Mfp3Encoder.encodeDimensions(dimensions)).toEqual(encodedDimensions);
 		});
 	});
 });
