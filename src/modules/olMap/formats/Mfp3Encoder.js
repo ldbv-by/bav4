@@ -12,8 +12,8 @@ import { LimitedImageWMS } from '../ol/source/LimitedImageWMS';
  * @param {Number} scale
  * @param {Number} dpi
  * @param {Number} rotation
- * @param {Point} [mapCenter]
- * @param {Extent} [mapExtent]
+ * @param {Point} [pageCenter]
+ * @param {Extent} [pageExtent]
  * @param {Number} [targetSRID]
 */
 
@@ -26,6 +26,7 @@ export class Mfp3Encoder {
 	TODO:
 	- should encode to a target srid (or DefaultGeodeticSRID)
 	- should filter layer without support of target srid
+		-> WmsGeoResource & WmtsGeoResource needs information about available srids
 	- check whether or not filter for resolution is needed
 	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
 	*/
@@ -36,8 +37,8 @@ export class Mfp3Encoder {
 		this._geoResourceService = geoResourceService;
 		this._mfpProperties = encodingProperties;
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
-		this._mfpProjection = `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
-
+		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
+		this._pageExtent = null;
 
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && (properties.scale != null && properties.scale !== 0);
@@ -67,12 +68,12 @@ export class Mfp3Encoder {
 			? this._mfpProperties.mapCenter.clone().transform(this._mapProjection, this._mfpProjection)
 			: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
-		this._mapExtent = this._mfpProperties.mapExtent
-			? this._mfpProperties.mapExtent
+		this._pageExtent = this._mfpProperties.pageExtent
+			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
 		const encodedLayers = olMap.getLayers().getArray()
-			.filter(layer => extentIntersects(layer.getExtent(), this._.mapExtent))
+			.filter(layer => extentIntersects(layer.getExtent(), this._pageExtent))
 			.map(l => this._encode(l));
 
 		return {
@@ -96,7 +97,8 @@ export class Mfp3Encoder {
 	}
 
 	_encode(layer) {
-		switch (layer.geoResource.getType()) {
+		const geoResource = this._geoResourceFrom(layer);
+		switch (geoResource.getType()) {
 			case GeoResourceTypes.AGGREGATE:
 				return this._encodeGroup(layer);
 			case GeoResourceTypes.VECTOR:
@@ -104,7 +106,7 @@ export class Mfp3Encoder {
 			case GeoResourceTypes.WMTS:
 				return this._encodeWMTS(layer);
 			case GeoResourceTypes.WMS:
-				return this._encodeWMS(layer);
+				return this._encodeWMS(layer, geoResource);
 			default:
 				return null;
 		}
@@ -124,7 +126,7 @@ export class Mfp3Encoder {
 		const baseUrl = requestEncoding === 'REST' ? Mfp3Encoder._encodeBaseURL(url) : url;
 
 		const wmtsDimensions = Mfp3Encoder.encodeDimensions(source.getDimensions());
-		const matrices = Mfp3Encoder.encodeMatrixIds(tileGrid, extent ? extent : this._mapExtent);
+		const matrices = Mfp3Encoder.encodeMatrixIds(tileGrid, extent ? extent : this._pageExtent);
 		return {
 			opacity: olLayer.getOpacity(),
 			type: 'WMTS',
@@ -140,8 +142,7 @@ export class Mfp3Encoder {
 		};
 	}
 
-	_encodeWMS(olLayer) {
-		const wmsGeoResource = this._geoResourceFrom(olLayer);
+	_encodeWMS(olLayer, wmsGeoResource) {
 		const format = wmsGeoResource.getFormat();
 		const source = olLayer.getSource();
 		const isSingleTile = source instanceof LimitedImageWMS;

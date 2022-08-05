@@ -5,16 +5,17 @@ import { Mfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { GeoResource, GeoResourceTypes } from '../../../../src/domain/geoResources';
 
 
 describe('Mfp3Encoder', () => {
 
-	// const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
-	// const mapMock = {
-	// 	getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
-	// 		return { getArray: () => [] };
-	// 	}
-	// };
+	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
+	const mapMock = {
+		getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
+			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50] }] };
+		}
+	};
 
 	const geoResourceServiceMock = { byId: () => { } };
 
@@ -55,6 +56,78 @@ describe('Mfp3Encoder', () => {
 			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: null })).toThrowError();
 			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: 0 })).toThrowError();
 		});
+	});
+
+	describe('when encoding a map', () => {
+		const setup = (initProperties) => {
+
+			const properties = { ...defaultProperties, ...initProperties };
+			return new Mfp3Encoder(properties);
+		};
+
+		class TestGeoResource extends GeoResource {
+			constructor(type) {
+				super(`test_${type.toString()}`);
+				this._type = type;
+			}
+
+			/**
+			* @override
+			*/
+			getType() {
+				return this._type;
+			}
+		}
+
+		it('requests the corresponding geoResource for a layer', () => {
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource('something'));
+			const encoder = setup();
+
+			encoder.encode(mapMock);
+
+			expect(geoResourceServiceSpy).toHaveBeenCalled();
+		});
+
+		it('encodes a aggregate layer', () => {
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE));
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => { });
+
+			encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
+		it('encodes a vector layer', () => {
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR));
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => { });
+
+			encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
+		it('encodes a WMTS layer', () => {
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => { });
+
+			encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
+		it('encodes a WMS layer', () => {
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS));
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => { });
+
+			encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalled();
+		});
+
 	});
 
 	describe('encodeDimensions', () => {
