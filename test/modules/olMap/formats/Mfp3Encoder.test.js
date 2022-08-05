@@ -128,6 +128,23 @@ describe('Mfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
+		it('resolves sublayers of a aggregate layer', () => {
+			const subLayersMock = { getArray: () => [{ get: () => 'foo1' }, { get: () => 'foo2' }, { get: () => 'foo3' }] };
+			const layersMock = { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getLayers: () => subLayersMock }] };
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE))
+				.withArgs('foo1').and.callFake(() => new TestGeoResource('something'))
+				.withArgs('foo2').and.callFake(() => new TestGeoResource('something'))
+				.withArgs('foo3').and.callFake(() => new TestGeoResource('something'));
+			spyOn(mapMock, 'getLayers').and.callFake(() => layersMock);
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encode').and.callThrough();
+
+			encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
+		});
+
 	});
 
 	describe('encodeDimensions', () => {

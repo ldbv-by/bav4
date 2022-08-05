@@ -113,7 +113,7 @@ export class Mfp3Encoder {
 	}
 
 	_encodeGroup(groupLayer) {
-		const subLayers = groupLayer.layer.getLayers();
+		const subLayers = groupLayer.getLayers().getArray();
 		return subLayers.map(l => this._encode(l));
 	}
 
