@@ -145,6 +145,51 @@ describe('Mfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
 		});
 
+		it('resolves wmts layer to a mfp spec', () => {
+			const tileGrid = {
+				getMatrixIds: () => {
+					return { 'foo': 'bar' };
+				},
+				getResolutions: () => [{}],
+				getZForResolution: () => 1,
+				getTileSize: () => 42,
+				getOrigin: () => [0, 0],
+				getTileCoordForCoordAndZ: () => [0, 0]
+			};
+			const sourceMock = {
+				getLayer: () => 'foo_wmts',
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo'],
+				getVersion: () => '42.21.1',
+				getFormat: () => 'image/png',
+				getRequestEncoding: () => 'KVP',
+				getDimensions: () => {
+					return { 'foo': 42, 'bar': 21 };
+				}
+			};
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
+
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
+
+
+			const encoder = setup();
+			const acutalSpec = encoder._encodeWMTS(wmtsLayerMock);
+
+			expect(acutalSpec).toEqual({
+				opacity: 1,
+				type: 'WMTS',
+				layer: 'foo_wmts',
+				baseURL: 'https://some.url/to/foo',
+				matrices: [Object({ identifier: undefined, resolution: 0, topLeftCorner: [0, 0], tileSize: [42, 42], matrixSize: [1, NaN] })],
+				version: '42.21.1',
+				requestEncoding: 'KVP',
+				imageFormat: 'image/png',
+				dimensions: ['FOO', 'BAR'],
+				dimensionParams: Object({ FOO: 42, BAR: 21 }),
+				matrixSet: 'EPSG:25832'
+			});
+		});
 	});
 
 	describe('encodeDimensions', () => {
