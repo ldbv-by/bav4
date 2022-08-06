@@ -63,15 +63,15 @@ describe('UrlService', () => {
 			expect(result).toBeFalse();
 		});
 
-		it('rejects when argument is not a string', async () => {
+		it('rejects when argument  represents not  an URL', async () => {
 
 			try {
-				await instanceUnderTest.isCorsEnabled(123);
+				await instanceUnderTest.isCorsEnabled('foo');
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must be a string');
+				expect(error.message).toBe('Parameter \'url\' must represent a URL');
 			}
 		});
 	});
@@ -87,9 +87,9 @@ describe('UrlService', () => {
 				expect(result).toBe('https://proxified/' + url);
 			});
 
-			it('rejects when argument is not a string', () => {
+			it('rejects when argument  represents not  an URL', () => {
 
-				expect(() => instanceUnderTest.proxifyInstant(123)).toThrowError(TypeError, /Parameter 'url' must be a string/);
+				expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent a URL/);
 			});
 		});
 
@@ -119,15 +119,15 @@ describe('UrlService', () => {
 				expect(result).toBe(url);
 			});
 
-			it('rejects when argument is not a string', async () => {
+			it('rejects when argument  represents not  an URL', async () => {
 
 				try {
-					await instanceUnderTest.proxify(123);
+					await instanceUnderTest.proxify('foo');
 					throw new Error('Promise should not be resolved');
 				}
 				catch (error) {
 					expect(error).toEqual(jasmine.any(TypeError));
-					expect(error.message).toBe('Parameter \'url\' must be a string');
+					expect(error.message).toBe('Parameter \'url\' must represent a URL');
 				}
 			});
 		});
@@ -143,15 +143,15 @@ describe('UrlService', () => {
 			expect(result).toBe('https://much.shorter');
 		});
 
-		it('rejects when argument is not a string', async () => {
+		it('rejects when argument  represents not  an URL', async () => {
 
 			try {
-				await instanceUnderTest.shorten(123);
+				await instanceUnderTest.shorten('foo');
 				throw new Error('Promise should not be resolved');
 			}
 			catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must be a string');
+				expect(error.message).toBe('Parameter \'url\' must represent a URL');
 			}
 		});
 	});
@@ -166,9 +166,9 @@ describe('UrlService', () => {
 			expect(result).toBe('https://qrcode/' + url);
 		});
 
-		it('throws an exception when argument is not a string', () => {
+		it('throws an exception when argument  represents not  an URL', () => {
 
-			expect(() => instanceUnderTest.qrCode(123)).toThrowError(Error, 'Parameter \'url\' must be a string');
+			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, 'Parameter \'url\' must represent a URL');
 		});
 	});
 

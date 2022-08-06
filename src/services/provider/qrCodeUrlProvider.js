@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes an URL (as string) and returns a URL (as string).
+ * A function that takes a URL (as string) and returns a URL (as string).
  * The returned URL references to the qrCode image for the given URL.
  *
  * @typedef {function(string) : (string)} qrCodeUrlProvider
@@ -20,6 +20,7 @@ import { $injector } from '../../injection';
  */
 export const bvvQrCodeProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
-	const shortenGetRequestUrl = `${configService.getValueAsPath('SHORTENING_SERVICE_URL')}?url=${encodeURIComponent(url)}`;
-	return shortenGetRequestUrl;
+	return (url.trim().startsWith(configService.getValueAsPath('SHORTENING_SERVICE_URL')))
+		? `${url}.png` // we already have a shortened URL
+		: `${configService.getValueAsPath('SHORTENING_SERVICE_URL')}?url=${encodeURIComponent(url)}`;
 };
