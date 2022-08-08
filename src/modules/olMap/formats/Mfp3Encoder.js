@@ -58,7 +58,7 @@ export class Mfp3Encoder {
 	encode(olMap) {
 
 		const getDefaultMapCenter = () => {
-			return olMap.getView().getCenter();
+			return new Point(olMap.getView().getCenter());
 		};
 		const getDefaultMapExtent = () => {
 			return olMap.getView().calculateExtent(olMap.getSize());
@@ -73,7 +73,11 @@ export class Mfp3Encoder {
 			: getDefaultMapExtent();
 
 		const encodedLayers = olMap.getLayers().getArray()
-			.filter(layer => extentIntersects(layer.getExtent(), this._pageExtent))
+			.filter(layer => {
+				const layerExtent = layer.getExtent();
+
+				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) : true;
+			})
 			.map(l => this._encode(l));
 
 		return {
@@ -93,11 +97,22 @@ export class Mfp3Encoder {
 
 	_geoResourceFrom(layer) {
 		const layerId = layer.get('id');
-		return this._geoResourceService.byId(layerId);
+		const geoResource = this._geoResourceService.byId(layerId);
+		if (!geoResource) {
+			const idSegments = layerId.split('_');
+			const geoResourceIdCandidate = idSegments[0];
+			return this._geoResourceService.byId(geoResourceIdCandidate);
+		}
+
+		return geoResource;
 	}
 
 	_encode(layer) {
 		const geoResource = this._geoResourceFrom(layer);
+		if (!geoResource) {
+			console.warn('No geoResource found for Layer', layer);
+			return null;
+		}
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.AGGREGATE:
 				return this._encodeGroup(layer);
@@ -118,27 +133,18 @@ export class Mfp3Encoder {
 	}
 
 	_encodeWMTS(olLayer) {
+		// all WMTS-Layers rely on {@see XYZSource}, this must be translated to spec type 'osm' in MapFishPrint V3
+		// the only required parameter is: baseURL
 		const source = olLayer.getSource();
 		const tileGrid = source.getTileGrid();
-		const extent = olLayer.getExtent();
-		const requestEncoding = source.getRequestEncoding() || 'REST';
 		const url = source.getUrls()[0];
-		const baseUrl = requestEncoding === 'REST' ? Mfp3Encoder._encodeBaseURL(url) : url;
+		const baseUrl = url;
 
-		const wmtsDimensions = Mfp3Encoder.encodeDimensions(source.getDimensions());
-		const matrices = Mfp3Encoder.encodeMatrixIds(tileGrid, extent ? extent : this._pageExtent);
 		return {
 			opacity: olLayer.getOpacity(),
-			type: 'WMTS',
-			layer: source.getLayer(),
+			type: 'osm',
 			baseURL: baseUrl,
-			matrices: matrices,
-			version: source.getVersion() || '1.0.0',
-			requestEncoding: requestEncoding,
-			imageFormat: source.getFormat(),
-			dimensions: Object.keys(wmtsDimensions),
-			dimensionParams: wmtsDimensions,
-			matrixSet: this._mfpProjection
+			tileSize: [tileGrid.getTileSize(0), tileGrid.getTileSize(0)]
 		};
 	}
 
@@ -181,39 +187,5 @@ export class Mfp3Encoder {
 	static encodeDimensions(dimensions) {
 		// todo: move to utils-module due to the general approach
 		return Object.fromEntries(Object.entries(dimensions).map(([key, value]) => [key.toUpperCase(), value]));
-	}
-
-	static encodeMatrixIds(tileGrid, extent) {
-
-		const ids = tileGrid.getMatrixIds();
-		const resolutions = tileGrid.getResolutions();
-
-
-		const matrixIds = Object.entries(resolutions).map((key, value) => {
-			const resolution = parseFloat(value);
-			const z = tileGrid.getZForResolution(resolution);
-			const tileSize = tileGrid.getTileSize(z);
-			const topLeftCorner = tileGrid.getOrigin(z);
-			const minX = topLeftCorner[0];
-			const maxY = topLeftCorner[1];
-			const maxX = extent[2];
-			const minY = extent[1];
-			const topLeftTile = tileGrid.
-				getTileCoordForCoordAndZ([minX, maxY], z);
-			const bottomRightTile = tileGrid.
-				getTileCoordForCoordAndZ([maxX, minY], z);
-			const tileWidth = 1 + bottomRightTile[1] - topLeftTile[1];
-			const tileHeight = 1 + topLeftTile[2] - bottomRightTile[2];
-
-			return {
-				identifier: ids[key],
-				resolution: resolution,
-				topLeftCorner: tileGrid.getOrigin(z),
-				tileSize: [tileSize, tileSize],
-				matrixSize: [tileWidth, tileHeight]
-			};
-
-		});
-		return matrixIds;
 	}
 }
