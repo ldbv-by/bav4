@@ -150,9 +150,7 @@ export class Mfp3Encoder {
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource) {
-		const format = wmsGeoResource.getFormat();
 		const source = olLayer.getSource();
-		const isSingleTile = source instanceof LimitedImageWMS;
 		const params = source.getParams();
 		const layers = params.LAYERS.split(',') || [];
 		const styles = (params.STYLES != null) ?
@@ -163,30 +161,18 @@ export class Mfp3Encoder {
 			(source.getUrl && source.getUrl());
 
 		return {
-			opacity: olLayer.getOpacity(),
-			layer: wmsGeoResource.id,
-			type: 'WMS',
+			type: 'wms',
 			baseURL: url,
+			imageFormat: wmsGeoResource.format,
 			layers: layers,
-			styles: styles,
-			format: `image/${format}`,
-			singleTile: isSingleTile
+			name: wmsGeoResource.id,
+			opacity: olLayer.getOpacity(),
+			styles: styles
 		};
 	}
 
 	_encodeVector(olVectorLayer) {
 		console.warn('encode WMSLayer currently not supported', olVectorLayer);
 		return null;
-	}
-
-	_encodeBaseURL(url) {
-		return url.
-			replace(/\{/g, '%7B').
-			replace(/\}/g, '%7D');
-	}
-
-	static encodeDimensions(dimensions) {
-		// todo: move to utils-module due to the general approach
-		return Object.fromEntries(Object.entries(dimensions).map(([key, value]) => [key.toUpperCase(), value]));
 	}
 }

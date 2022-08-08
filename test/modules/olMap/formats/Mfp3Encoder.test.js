@@ -169,21 +169,29 @@ describe('Mfp3Encoder', () => {
 				tileSize: [42, 42]
 			});
 		});
-	});
 
-	describe('encodeDimensions', () => {
-
-		it('encodes dimensions', () => {
-			const dimensions = {
-				'foo': 'bar',
-				'baz': 42
+		it('resolves wms layer to a mfp \'wms\' spec', () => {
+			const sourceMock = {
+				getUrls: () => ['https://some.url/to/wms'],
+				getParams: () => {
+					return { LAYERS: 'foo,bar', STYLES: 'baz' };
+				}
 			};
-			const encodedDimensions = {
-				'FOO': 'bar',
-				'BAZ': 42
-			};
+			const wmsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
 
-			expect(Mfp3Encoder.encodeDimensions(dimensions)).toEqual(encodedDimensions);
+			const wmsGeoResourceMock = { id: 'foo', format: 'image/png' };
+			const encoder = setup();
+			const actualSpec = encoder._encodeWMS(wmsLayerMock, wmsGeoResourceMock);
+
+			expect(actualSpec).toEqual({
+				opacity: 1,
+				type: 'wms',
+				name: 'foo',
+				imageFormat: 'image/png',
+				baseURL: 'https://some.url/to/wms',
+				layers: ['foo', 'bar'],
+				styles: ['baz']
+			});
 		});
 	});
 });
