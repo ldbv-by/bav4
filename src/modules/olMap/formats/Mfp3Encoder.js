@@ -1,9 +1,9 @@
 
 import Point from 'ol/geom/Point';
 import { intersects as extentIntersects } from 'ol/extent';
+import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { $injector } from '../../../injection';
 import { GeoResourceTypes } from '../../../domain/geoResources';
-import { LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 
 /**
  * A Container-Object for properties related to a mfp encoding
@@ -40,6 +40,7 @@ export class Mfp3Encoder {
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
 		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 		this._pageExtent = null;
+		this._geometryEncodingFormat = new GeoJSONFormat();
 
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && (properties.scale != null && properties.scale !== 0);
@@ -98,7 +99,8 @@ export class Mfp3Encoder {
 
 	_geoResourceFrom(layer) {
 		const layerId = layer.get('id');
-		const geoResource = this._geoResourceService.byId(layerId);
+		const geoResourceId = layer.get('geoResourceId');
+		const geoResource = geoResourceId ? this._geoResourceService.byId(geoResourceId) : this._geoResourceService.byId(layerId);
 		if (!geoResource) {
 			const idSegments = layerId.split('_');
 			const geoResourceIdCandidate = idSegments[0];
@@ -172,7 +174,48 @@ export class Mfp3Encoder {
 	}
 
 	_encodeVector(olVectorLayer) {
-		console.warn('encode WMSLayer currently not supported', olVectorLayer);
-		return null;
+		// todo: refactor to utils
+		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
+		const groupBy = (elementsToGroup, groupByFunction) => elementsToGroup.reduce((group, element) => {
+			const groupName = groupByFunction(element);
+			group[groupName] = group[groupName] ?? [];
+			group[groupName].push(element);
+			return group;
+		}, {});
+
+		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], Point: [] };
+		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
+		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
+
+		const featuresSortedByGeometryType = [
+			...groupedByGeometryType['MultiPolygon'],
+			...groupedByGeometryType['Polygon'],
+			...groupedByGeometryType['Circle'],
+			...groupedByGeometryType['GeometryCollection'],
+			...groupedByGeometryType['LineString'],
+			...groupedByGeometryType['MultiLineString'],
+			...groupedByGeometryType['Point']];
+
+		const encodingResults = featuresSortedByGeometryType.reduce((encoded, feature) => {
+			const result = this._encodeFeature(feature);
+			return {
+				features: [...encoded.features, result.feature],
+				styles: [...encoded.styles, result.style]
+			};
+		}, { features: [], styles: [] });
+
+		return {
+			type: 'geojson',
+			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
+			style: encodingResults.styles,
+			opacity: olVectorLayer.getOpacity()
+		};
+	}
+
+	_encodeFeature(feature) {
+		return {
+			feature: this._geometryEncodingFormat.writeFeatureObject(feature),
+			style: {}
+		};
 	}
 }
