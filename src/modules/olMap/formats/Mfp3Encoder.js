@@ -26,7 +26,8 @@ export class Mfp3Encoder {
 	TODO:
 	- should encode to a target srid (or DefaultGeodeticSRID)
 	- should filter layer without support of target srid
-		-> WmsGeoResource & WmtsGeoResource needs information about available srids
+		-> WmsGeoResource
+	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
 	- check whether or not filter for resolution is needed
 	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
 	*/
