@@ -3,8 +3,15 @@ import Point from 'ol/geom/Point';
 import { intersects as extentIntersects } from 'ol/extent';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { $injector } from '../../../injection';
+import { rgbToHex } from '../../../utils/colors';
+import { asArray as ColorAsArray } from 'ol/color';
 import { GeoResourceTypes } from '../../../domain/geoResources';
+import Style from 'ol/style/Style';
 
+import { Icon as IconStyle } from 'ol/style';
+
+const UnitsRatio = 39.37; //inches per meter
+const PointsPerInch = 72; // PostScript points 1/72"
 /**
  * A Container-Object for properties related to a mfp encoding
  * @typedef {Object} EncodingProperties
@@ -28,7 +35,9 @@ export class Mfp3Encoder {
 	- should filter layer without support of target srid
 		-> WmsGeoResource
 	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
-	- check whether or not filter for resolution is needed
+	- should unproxify URL to external Resources (e.g. a image in a icon style)
+	- check whether filter for resolution is needed or not
+	- check whether specific fonts are managed by the print server or not
 	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
 	*/
 
@@ -41,6 +50,7 @@ export class Mfp3Encoder {
 		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 		this._pageExtent = null;
 		this._geometryEncodingFormat = new GeoJSONFormat();
+		this._encodingStyleId = 0;
 
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && (properties.scale != null && properties.scale !== 0);
@@ -197,11 +207,11 @@ export class Mfp3Encoder {
 			...groupedByGeometryType['Point']];
 
 		const encodingResults = featuresSortedByGeometryType.reduce((encoded, feature) => {
-			const result = this._encodeFeature(feature);
-			return {
+			const result = this._encodeFeature(feature, olVectorLayer);
+			return result ? {
 				features: [...encoded.features, result.feature],
 				styles: [...encoded.styles, result.style]
-			};
+			} : encoded;
 		}, { features: [], styles: [] });
 
 		return {
@@ -212,10 +222,165 @@ export class Mfp3Encoder {
 		};
 	}
 
-	_encodeFeature(feature) {
+	_encodeFeature(olFeature, olLayer) {
+		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
+
+		const getOlStyles = (feature, layer, resolution) => {
+			const featureStyleFunction = feature.getStyleFunction();
+			if (featureStyleFunction) {
+				return feature.getStyleFunction()(feature, resolution);
+			}
+			return layer.getStyleFunction()(feature, resolution);
+		};
+
+		const getEncodableOlStyle = (styles) => {
+			return styles && styles.length > 0 ? styles[0] : null;
+		};
+
+		const initEncodedStyle = () => {
+			return { id: this._encodingStyleId++ };
+		};
+
+		const olStyleToEncode = getEncodableOlStyle(getOlStyles(olFeature, olLayer, resolution));
+
+		if (!olStyleToEncode) {
+			return null;
+		}
+
+		const encodedStyle = initEncodedStyle();
+
+		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeature);
+		encodedFeature.properties = { _gx_style: encodedStyle };
+
+
 		return {
-			feature: this._geometryEncodingFormat.writeFeatureObject(feature),
+			feature: encodedFeature,
 			style: {}
 		};
+	}
+
+	_encodeStyle(olStyle, dpi) {
+		if (!olStyle || !(olStyle instanceof Style) || !dpi) {
+			return null;
+		}
+
+		const encoded = { zIndex: olStyle.getZIndex() };
+		const fillStyle = olStyle.getFill();
+		const strokeStyle = olStyle.getStroke();
+		const textStyle = olStyle.getText();
+		const imageStyle = olStyle.getImage();
+
+		if (imageStyle) {
+			const scale = imageStyle.getScale();
+			encoded.rotation = (imageStyle.getRotation() ?? 0) * 180.0 / Math.PI;
+			const getPropertiesFromIconStyle = (iconStyle) => {
+				return {
+					size: iconStyle.getSize(),
+					anchor: iconStyle.getAnchor(),
+					imageSrc: iconStyle.getSrc().replace(/\.svg/, '.png') };
+			};
+			const getPropertiesFromShapeStyle = (shapeStyle) => {
+				const stroke = shapeStyle.getStroke();
+				const radius = shapeStyle.getRadius();
+				const width = stroke ? this.adjustDistance(2 * radius, dpi) + this.adjustDistance(stroke.getWidth() + 1, dpi) : this.adjustDistance(2 * radius, dpi);
+				return {
+					fill: shapeStyle.getFill(),
+					stroke: stroke,
+					radius: radius,
+					size: [width, width]
+				};
+			};
+
+			const styleProperties = imageStyle instanceof IconStyle ? getPropertiesFromIconStyle(imageStyle) : getPropertiesFromShapeStyle(imageStyle);
+
+			if (styleProperties.size) {
+				encoded.graphicWidth = this.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
+				encoded.graphicHeight = this.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
+			}
+
+			if (styleProperties.anchor) {
+				encoded.graphicXOffset = this.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
+				encoded.graphicHeight = this.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+			}
+
+			if (styleProperties.imageSrc) {
+				// todo: unproxify URL of imageSrc
+				encoded.externalGraphic = styleProperties.imageSrc;
+				encoded.fillOpacity = 1;
+			}
+
+			if (styleProperties.radius) {
+				encoded.pointRadius = styleProperties.radius;
+			}
+		}
+
+		if (fillStyle) {
+			const color = ColorAsArray(fillStyle.getColor());
+			encoded.fillColor = rgbToHex(color.slice(0, 3));
+			encoded.fillOpacity = color[3];
+		}
+		encoded.fillOpacity = encoded.fillOpacity ?? 0;
+
+		if (strokeStyle) {
+			const color = ColorAsArray(strokeStyle.getColor());
+			encoded.strokeWidth = this.adjustDistance(strokeStyle.getWidth(), dpi);
+			encoded.strokeColor = rgbToHex(color.slice(0, 3));
+			encoded.strokeOpacity = color[3];
+			encoded.strokeLinecap = strokeStyle.getLineCap() ?? 'round';
+			encoded.strokeLineJoin = strokeStyle.getLineJoin() ?? 'round';
+
+			if (strokeStyle.getLineDash()) {
+				encoded.strokeDashstyle = 'dash';
+			}
+		}
+		else {
+			// No stroke
+			encoded.strokeOpacity = 0;
+		}
+
+		if (textStyle && textStyle.getText()) {
+			encoded.label = encodeURIComponent(textStyle.getText());
+			encoded.labelXOffset = textStyle.getOffsetX();
+			encoded.labelYOffset = textStyle.getOffsetY();
+
+			const fromOlTextAlign = (olTextAlign) => {
+				switch (olTextAlign) {
+					case 'left':
+					case 'right':
+						return olTextAlign[0];
+					default:
+						return 'c'; // center
+				}
+			};
+
+			const fromOlTextBaseline = (olTextBaseline) => {
+				switch (olTextBaseline) {
+					case 'bottom':
+					case 'top':
+						return olTextBaseline[0];
+					default:
+						return 'm'; // middle
+				}
+			};
+			encoded.labelAlign = fromOlTextAlign(textStyle.getTextAlign) + fromOlTextBaseline(textStyle.getTextBaseline);
+
+			if (textStyle.getFill()) {
+				const fillColor = ColorAsArray(textStyle.getFill().getColor());
+				encoded.fontColor = rgbToHex(fillColor);
+			}
+
+			if (textStyle.getFont()) {
+				const fontValues = textStyle.getFont().split(' ');
+				encoded.fontFamily = fontValues[2].toUpperCase();
+				encoded.fontSize = parseInt(fontValues[1]);
+				encoded.fontWeight = fontValues[0];
+			}
+		}
+
+		return encoded;
+	}
+
+	adjustDistance(distance, dpi) {
+		return distance ? distance * 90 / dpi : null;
 	}
 }
