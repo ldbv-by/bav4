@@ -9,6 +9,7 @@ import { GeoResourceTypes } from '../../../domain/geoResources';
 import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
+import { Feature } from 'ol';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -209,8 +210,8 @@ export class Mfp3Encoder {
 		const encodingResults = featuresSortedByGeometryType.reduce((encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer);
 			return result ? {
-				features: [...encoded.features, result.feature],
-				styles: [...encoded.styles, result.style]
+				features: [...encoded.features, ...result.features],
+				styles: [...encoded.styles, ...result.styles]
 			} : encoded;
 		}, { features: [], styles: [] });
 
@@ -222,7 +223,8 @@ export class Mfp3Encoder {
 		};
 	}
 
-	_encodeFeature(olFeature, olLayer) {
+	_encodeFeature(olFeature, olLayer, presetStyles = []) {
+		const defaultResult = { features: [],	styles: [] };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
 		const getOlStyles = (feature, layer, resolution) => {
@@ -241,21 +243,43 @@ export class Mfp3Encoder {
 			return { id: this._encodingStyleId++ };
 		};
 
-		const olStyleToEncode = getEncodableOlStyle(getOlStyles(olFeature, olLayer, resolution));
+		const olStyles = presetStyles ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
+		const olStyleToEncode = getEncodableOlStyle(olStyles);
 
 		if (!olStyleToEncode) {
 			return null;
 		}
 
-		const encodedStyle = initEncodedStyle();
+		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode) };
+		if (encodedStyle.fillOpacity) {
+			encodedStyle.fillOpacity *= olLayer.getOpacity();
+		}
+
+		if (encodedStyle.strokeOpacity) {
+			encodedStyle.strokeOpacity *= olLayer.getOpacity();
+		}
+
+
+		// handle advanced styles
+		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
+			const isGeometryFunction = typeof(style.getGeometry()) === 'function';
+			if (isGeometryFunction) {
+				const geometry = style.getGeometry()(olFeature);
+				if (geometry) {
+					const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
+					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
+				}
+				return defaultResult;
+			}
+		}, defaultResult);
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeature);
-		encodedFeature.properties = { _gx_style: encodedStyle };
+		encodedFeature.properties = { _gx_style: encodedStyle.id };
 
 
 		return {
-			feature: encodedFeature,
-			style: {}
+			features: [encodedFeature, ...advancedStyleFeatures.features],
+			styles: [encodedStyle, ...advancedStyleFeatures.styles]
 		};
 	}
 
