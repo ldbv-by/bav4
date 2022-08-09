@@ -263,6 +263,7 @@ export class Mfp3Encoder {
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
 			const isGeometryFunction = typeof(style.getGeometry()) === 'function';
+			// todo: isRenderFunction & encoding should be implemented for measurement features
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeature);
 				if (geometry) {
