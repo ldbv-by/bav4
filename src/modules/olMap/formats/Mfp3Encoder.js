@@ -344,7 +344,7 @@ export class Mfp3Encoder {
 			encoded.fillColor = rgbToHex(color.slice(0, 3));
 			encoded.fillOpacity = color[3];
 		}
-		encoded.fillOpacity = encoded.fillOpacity ?? 0;
+
 
 		if (strokeStyle) {
 			const color = ColorAsArray(strokeStyle.getColor());
@@ -358,10 +358,10 @@ export class Mfp3Encoder {
 				encoded.strokeDashstyle = 'dash';
 			}
 		}
-		else {
-			// No stroke
-			encoded.strokeOpacity = 0;
-		}
+
+		encoded.fillOpacity = encoded.fillOpacity ?? 0;
+		encoded.strokeOpacity = encoded.strokeOpacity ?? 0;
+
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = encodeURIComponent(textStyle.getText());
