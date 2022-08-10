@@ -34,7 +34,7 @@ export class Mfp3Encoder {
 	TODO:
 	- should encode to a target srid (or DefaultGeodeticSRID)
 	- should filter layer without support of target srid
-		-> WmsGeoResource
+		-> WmsGeoResource (should have a list of supported srids)
 	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
 	- should support Mapfish JSON Style Version 1 AND Version 2
