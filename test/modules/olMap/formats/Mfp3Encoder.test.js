@@ -13,6 +13,8 @@ import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
+import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
+import locationIcon from '../../../../src/modules/olMap/assets/location.svg';
 
 
 describe('Mfp3Encoder', () => {
@@ -224,6 +226,41 @@ describe('Mfp3Encoder', () => {
 				return styles;
 			};
 
+			const getTextStyle = () => {
+				const fill = new Fill({
+					color: 'rgba(255,255,255,0.4)'
+				});
+				const stroke = new Stroke({
+					color: '#3399CC',
+					width: 1.25
+				});
+				const styles = [
+					new Style({
+						image: new CircleStyle({
+							fill: fill,
+							stroke: stroke,
+							radius: 5
+						}),
+						text: new TextStyle({ text: 'FooBarBaz' })
+					})
+				];
+				return styles;
+			};
+
+			const getImageStyle = () => {
+				const styles = [
+					new Style({
+						image: new IconStyle({
+							anchor: [0.5, 1],
+							anchorXUnits: 'fraction',
+							anchorYUnits: 'fraction',
+							src: 'https://some.url/to/image/foo.png'
+						})
+					})
+				];
+				return styles;
+			};
+
 			const getStrokeStyle = () => {
 				const stroke = new Stroke({
 					color: '#3399CC',
@@ -274,7 +311,8 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						}],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style',
@@ -322,7 +360,8 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						}],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style',
@@ -339,6 +378,97 @@ describe('Mfp3Encoder', () => {
 							strokeOpacity: 1,
 							strokeLinecap: 'round',
 							strokeLineJoin: 'round'
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style (image)', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							fillOpacity: 1,
+							strokeOpacity: 0,
+							externalGraphic: 'https://some.url/to/image/foo.png'
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style (text)', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getTextStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							fillOpacity: 0,
+							strokeOpacity: 0,
+							graphicWidth: 56.25,
+							graphicHeight: 56.25,
+							pointRadius: 5,
+							label: 'FooBarBaz',
+							labelXOffset: 0,
+							labelYOffset: 0,
+							labelAlign: 'cm',
+							fontColor: '#333333'
 						}
 					}
 				});
@@ -370,7 +500,8 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						}],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style',
@@ -408,7 +539,8 @@ describe('Mfp3Encoder', () => {
 					name: 'foo',
 					geoJson: {
 						features: [],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style'
@@ -445,7 +577,8 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						}],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style',
@@ -493,7 +626,8 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						}],
-						type: 'FeatureCollection' },
+						type: 'FeatureCollection'
+					},
 					style: {
 						version: '1',
 						styleProperty: '_gx_style',

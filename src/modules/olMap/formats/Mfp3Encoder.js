@@ -19,7 +19,7 @@ const PointsPerInch = 72; // PostScript points 1/72"
  * @param {string} layoutId
  * @param {Number} scale
  * @param {Number} dpi
- * @param {Number} rotation
+ * @param {Number} [rotation]
  * @param {Point} [pageCenter]
  * @param {Extent} [pageExtent]
  * @param {Number} [targetSRID]
@@ -56,7 +56,9 @@ export class Mfp3Encoder {
 		this._encodingStyleId = 0;
 
 		const validEncodingProperties = (properties) => {
-			return properties.layoutId != null && (properties.scale != null && properties.scale !== 0);
+			return properties.layoutId != null &&
+				(properties.scale != null && properties.scale !== 0) &&
+				properties.dpi != null;
 		};
 
 		if (!validEncodingProperties(this._mfpProperties)) {
@@ -254,12 +256,12 @@ export class Mfp3Encoder {
 	}
 
 	_encodeFeature(olFeature, olLayer, presetStyles = []) {
-		const defaultResult = { features: [],	styles: [] };
+		const defaultResult = { features: [], styles: [] };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
 		const getOlStyles = (feature, layer, resolution) => {
 			const featureStyles = feature.getStyle();
-			if (featureStyles != null && typeof(featureStyles) === 'function') {
+			if (featureStyles != null && typeof (featureStyles) === 'function') {
 				return featureStyles(feature, resolution);
 			}
 
@@ -285,7 +287,7 @@ export class Mfp3Encoder {
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
 		const olStyleToEncode = getEncodableOlStyle(olStyles);
 
-		if (!olStyleToEncode) {
+		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
 			return null;
 		}
 
@@ -302,7 +304,7 @@ export class Mfp3Encoder {
 
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
-			const isGeometryFunction = style.getGeometry && typeof(style.getGeometry()) === 'function';
+			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
 			// todo: isRenderFunction & encoding should be implemented for measurement features
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeature);
@@ -326,10 +328,6 @@ export class Mfp3Encoder {
 	}
 
 	_encodeStyle(olStyle, dpi) {
-		if (!olStyle || !(olStyle instanceof Style) || !dpi) {
-			return null;
-		}
-
 		const encoded = { zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
@@ -343,7 +341,8 @@ export class Mfp3Encoder {
 				return {
 					size: iconStyle.getSize(),
 					anchor: iconStyle.getAnchor(),
-					imageSrc: iconStyle.getSrc().replace(/\.svg/, '.png') };
+					imageSrc: iconStyle.getSrc().replace(/\.svg/, '.png')
+				};
 			};
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
 				const stroke = shapeStyle.getStroke();
@@ -442,7 +441,6 @@ export class Mfp3Encoder {
 				encoded.fontWeight = fontValues[0];
 			}
 		}
-
 		return encoded;
 	}
 
