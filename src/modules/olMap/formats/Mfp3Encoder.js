@@ -40,6 +40,7 @@ export class Mfp3Encoder {
 	- should support Mapfish JSON Style Version 1 AND Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
+	- check whether features to be encoded have special geometry (Circle, Point with ImageStyle of RegularShape) or not
 	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
 	*/
 
@@ -216,16 +217,31 @@ export class Mfp3Encoder {
 			} : encoded;
 		}, { features: [], styles: [] });
 
-		const styleObjectFrom = (styles) => {
+		const styleObjectFrom = (styles, version = 1) => {
 			const styleObjectV1 = {
 				version: '1',
 				styleProperty: '_gx_style'
 			};
-			styles.forEach(style => {
-				const { id, ...pureStyleProperties } = style;
-				styleObjectV1[id] = pureStyleProperties;
-			});
-			return styleObjectV1;
+			const styleObjectV2 = {
+				version: '2'
+			};
+
+			const asV1 = (styles) => {
+				styles.forEach(style => {
+					const { id, ...pureStyleProperties } = style;
+					styleObjectV1[id] = pureStyleProperties;
+				});
+				return styleObjectV1;
+			};
+
+			const asV2 = (styles) => {
+				styles.forEach(style => {
+					const { id, ...pureStyleProperties } = style;
+					styleObjectV2[`_gx_style=${id}`] = pureStyleProperties;
+				});
+				return styleObjectV2;
+			};
+			return version === 1 ? asV1(styles) : asV2(styles);
 		};
 
 		return {
@@ -251,7 +267,6 @@ export class Mfp3Encoder {
 				return featureStyles;
 			}
 
-
 			const layerStyleFunction = layer.getStyleFunction();
 			if (layerStyleFunction) {
 				return layer.getStyleFunction()(feature, resolution);
@@ -273,6 +288,7 @@ export class Mfp3Encoder {
 		if (!olStyleToEncode) {
 			return null;
 		}
+
 
 		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, this._mfpProperties.dpi) };
 		if (encodedStyle.fillOpacity) {
