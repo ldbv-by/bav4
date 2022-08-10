@@ -37,6 +37,7 @@ export class Mfp3Encoder {
 		-> WmsGeoResource
 	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
+	- should support Mapfish JSON Style Version 1 AND Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
 	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
@@ -215,10 +216,23 @@ export class Mfp3Encoder {
 			} : encoded;
 		}, { features: [], styles: [] });
 
+		const styleObjectFrom = (styles) => {
+			const styleObjectV1 = {
+				version: '1',
+				styleProperty: '_gx_style'
+			};
+			styles.forEach(style => {
+				const { id, ...pureStyleProperties } = style;
+				styleObjectV1[id] = pureStyleProperties;
+			});
+			return styleObjectV1;
+		};
+
 		return {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
-			style: encodingResults.styles,
+			name: olVectorLayer.get('id'),
+			style: styleObjectFrom(encodingResults.styles),
 			opacity: olVectorLayer.getOpacity()
 		};
 	}
@@ -228,11 +242,21 @@ export class Mfp3Encoder {
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
 		const getOlStyles = (feature, layer, resolution) => {
-			const featureStyleFunction = feature.getStyleFunction();
-			if (featureStyleFunction) {
-				return feature.getStyleFunction()(feature, resolution);
+			const featureStyles = feature.getStyle();
+			if (featureStyles != null && typeof(featureStyles) === 'function') {
+				return featureStyles(feature, resolution);
 			}
-			return layer.getStyleFunction()(feature, resolution);
+
+			if (featureStyles != null && featureStyles.length > 0) {
+				return featureStyles;
+			}
+
+
+			const layerStyleFunction = layer.getStyleFunction();
+			if (layerStyleFunction) {
+				return layer.getStyleFunction()(feature, resolution);
+			}
+			return [];
 		};
 
 		const getEncodableOlStyle = (styles) => {
@@ -243,14 +267,14 @@ export class Mfp3Encoder {
 			return { id: this._encodingStyleId++ };
 		};
 
-		const olStyles = presetStyles ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
+		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
 		const olStyleToEncode = getEncodableOlStyle(olStyles);
 
 		if (!olStyleToEncode) {
 			return null;
 		}
 
-		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode) };
+		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, this._mfpProperties.dpi) };
 		if (encodedStyle.fillOpacity) {
 			encodedStyle.fillOpacity *= olLayer.getOpacity();
 		}
@@ -262,7 +286,7 @@ export class Mfp3Encoder {
 
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
-			const isGeometryFunction = typeof(style.getGeometry()) === 'function';
+			const isGeometryFunction = style.getGeometry && typeof(style.getGeometry()) === 'function';
 			// todo: isRenderFunction & encoding should be implemented for measurement features
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeature);
@@ -272,6 +296,7 @@ export class Mfp3Encoder {
 				}
 				return defaultResult;
 			}
+			return defaultResult;
 		}, defaultResult);
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeature);
@@ -289,7 +314,7 @@ export class Mfp3Encoder {
 			return null;
 		}
 
-		const encoded = { zIndex: olStyle.getZIndex() };
+		const encoded = { zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
 		const textStyle = olStyle.getText();

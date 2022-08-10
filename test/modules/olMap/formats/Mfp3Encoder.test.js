@@ -1,11 +1,18 @@
 
 import { Point } from 'ol/geom';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../src/injection';
 import { Mfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { GeoResource, GeoResourceTypes } from '../../../../src/domain/geoResources';
+import { Feature } from 'ol';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Fill from 'ol/style/Fill';
+import CircleStyle from 'ol/style/Circle';
 
 
 describe('Mfp3Encoder', () => {
@@ -193,5 +200,197 @@ describe('Mfp3Encoder', () => {
 				styles: ['baz']
 			});
 		});
+
+		describe('when resolving a vector layer to a mfp \'geojson\' spec', () => {
+			const getStyle = () => {
+				const fill = new Fill({
+					color: 'rgba(255,255,255,0.4)'
+				});
+				const stroke = new Stroke({
+					color: '#3399CC',
+					width: 1.25
+				});
+				const styles = [
+					new Style({
+						image: new CircleStyle({
+							fill: fill,
+							stroke: stroke,
+							radius: 5
+						}),
+						fill: fill,
+						stroke: stroke
+					})
+				];
+				return styles;
+			};
+
+			it('writes a point feature with layer style', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				vectorLayer.setStyle(() => getStyle());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection' },
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							graphicWidth: 56.25,
+							graphicHeight: 56.25,
+							pointRadius: 5,
+							fillColor: '#ffffff',
+							fillOpacity: 0.4,
+							strokeWidth: 2.6785714285714284,
+							strokeColor: '#3399cc',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection' },
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							graphicWidth: 56.25,
+							graphicHeight: 56.25,
+							pointRadius: 5,
+							fillColor: '#ffffff',
+							fillOpacity: 0.4,
+							strokeWidth: 2.6785714285714284,
+							strokeColor: '#3399cc',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style function', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(() => getStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection' },
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							graphicWidth: 56.25,
+							graphicHeight: 56.25,
+							pointRadius: 5,
+							fillColor: '#ffffff',
+							fillOpacity: 0.4,
+							strokeWidth: 2.6785714285714284,
+							strokeColor: '#3399cc',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
+						}
+					}
+				});
+			});
+
+			it('does NOT writes a point feature without any style', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [],
+						type: 'FeatureCollection' },
+					style: {
+						version: '1',
+						styleProperty: '_gx_style'
+					}
+				});
+			});
+		});
+
 	});
 });
