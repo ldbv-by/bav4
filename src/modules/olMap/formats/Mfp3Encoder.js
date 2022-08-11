@@ -10,6 +10,7 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
+import { MeasurementOverlay } from '../components/MeasurementOverlay';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -89,6 +90,8 @@ export class Mfp3Encoder {
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
+		const resolution = olMap.getView().getResolution();
+
 		const encodedLayers = olMap.getLayers().getArray()
 			.filter(layer => {
 				const layerExtent = layer.getExtent();
@@ -96,6 +99,8 @@ export class Mfp3Encoder {
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) : true;
 			})
 			.map(l => this._encode(l));
+
+		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay, resolution));
 
 		return {
 			layout: this._mfpProperties.layoutId,
@@ -106,7 +111,7 @@ export class Mfp3Encoder {
 					projection: this._mfpProjection,
 					dpi: this._mfpProperties.dpi,
 					rotation: this._mfpProperties.rotation,
-					layers: encodedLayers
+					layers: [...encodedLayers, ...encodedOverlays]
 				}
 			}
 		};
@@ -328,6 +333,7 @@ export class Mfp3Encoder {
 	}
 
 	_encodeStyle(olStyle, dpi) {
+		// todo: prevent default icon style
 		const encoded = { zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
@@ -347,7 +353,7 @@ export class Mfp3Encoder {
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
 				const stroke = shapeStyle.getStroke();
 				const radius = shapeStyle.getRadius();
-				const width = stroke ? this.adjustDistance(2 * radius, dpi) + this.adjustDistance(stroke.getWidth() + 1, dpi) : this.adjustDistance(2 * radius, dpi);
+				const width = stroke ? Mfp3Encoder.adjustDistance(2 * radius, dpi) + Mfp3Encoder.adjustDistance(stroke.getWidth() + 1, dpi) : Mfp3Encoder.adjustDistance(2 * radius, dpi);
 				return {
 					fill: shapeStyle.getFill(),
 					stroke: stroke,
@@ -359,13 +365,13 @@ export class Mfp3Encoder {
 			const styleProperties = imageStyle instanceof IconStyle ? getPropertiesFromIconStyle(imageStyle) : getPropertiesFromShapeStyle(imageStyle);
 
 			if (styleProperties.size) {
-				encoded.graphicWidth = this.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
-				encoded.graphicHeight = this.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
+				encoded.graphicWidth = Mfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
+				encoded.graphicHeight = Mfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
 			}
 
 			if (styleProperties.anchor) {
-				encoded.graphicXOffset = this.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
-				encoded.graphicHeight = this.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+				encoded.graphicXOffset = Mfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
+				encoded.graphicHeight = Mfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
 			}
 
 			if (styleProperties.imageSrc) {
@@ -388,7 +394,7 @@ export class Mfp3Encoder {
 
 		if (strokeStyle) {
 			const color = ColorAsArray(strokeStyle.getColor());
-			encoded.strokeWidth = this.adjustDistance(strokeStyle.getWidth(), dpi);
+			encoded.strokeWidth = Mfp3Encoder.adjustDistance(strokeStyle.getWidth(), dpi);
 			encoded.strokeColor = rgbToHex(color.slice(0, 3));
 			encoded.strokeOpacity = color[3];
 			encoded.strokeLinecap = strokeStyle.getLineCap() ?? 'round';
@@ -444,7 +450,43 @@ export class Mfp3Encoder {
 		return encoded;
 	}
 
-	adjustDistance(distance, dpi) {
+	_encodeOverlay(overlay) {
+
+		const element = overlay.getElement();
+		const center = overlay.getPosition();
+		if (!element.tagName.toLowerCase() === MeasurementOverlay.tag) {
+			console.warn('cannot encode overlay element: No rule defined', element);
+			return null;
+		}
+		return {
+			type: 'geojson',
+			name: 'overlay',
+			opacity: 1,
+			geoJson: { type: 'FeatureCollection',
+				features: [{ type: 'Feature',
+					properties: {},
+					geometry: {
+						type: 'Point',
+						coordinates: [...center, 0]
+					}
+				}] },
+			style: { version: 2,
+				'*': { symbolizers: [{
+					type: 'text',
+					label: element.innerText,
+					labelXOffset: element.placement.offset[0],
+					labelYOffset: element.placement.offset[1],
+					fontColor: '#ffffff',
+					fontSize: 10,
+					fontWeight: 'normal',
+					fillColor: '#ff0000',
+					strokeColor: '#ff0000'
+				}] } }
+		};
+
+	}
+
+	static adjustDistance(distance, dpi) {
 		return distance ? distance * 90 / dpi : null;
 	}
 }
