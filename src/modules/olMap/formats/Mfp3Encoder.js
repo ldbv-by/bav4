@@ -451,10 +451,10 @@ export class Mfp3Encoder {
 	}
 
 	_encodeOverlay(overlay) {
-
 		const element = overlay.getElement();
 		const center = overlay.getPosition();
-		if (!element.tagName.toLowerCase() === MeasurementOverlay.tag) {
+
+		if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
 			console.warn('cannot encode overlay element: No rule defined', element);
 			return null;
 		}

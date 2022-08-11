@@ -234,6 +234,9 @@ describe('Mfp3Encoder', () => {
 				const fill = new Fill({
 					color: 'rgba(255,255,255,0.4)'
 				});
+				const textFill = new Fill({
+					color: 'rgb(0,0,0)'
+				});
 				const stroke = new Stroke({
 					color: '#3399CC',
 					width: 1.25
@@ -245,7 +248,7 @@ describe('Mfp3Encoder', () => {
 							stroke: stroke,
 							radius: 5
 						}),
-						text: new TextStyle({ text: 'FooBarBaz' })
+						text: new TextStyle({ text: 'FooBarBaz', font: 'normal 10px sans-serif', fill: textFill })
 					})
 				];
 				return styles;
@@ -472,7 +475,10 @@ describe('Mfp3Encoder', () => {
 							labelXOffset: 0,
 							labelYOffset: 0,
 							labelAlign: 'cm',
-							fontColor: '#333333'
+							fontColor: '#000000',
+							fontFamily: 'SANS-SERIF',
+							fontSize: 10,
+							fontWeight: 'normal'
 						}
 					}
 				});
@@ -644,6 +650,52 @@ describe('Mfp3Encoder', () => {
 					}
 				});
 			});
+		});
+
+		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
+			const overlayMock = { getElement: () => {
+				return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
+			},
+			getPosition: () => [42, 21] };
+			const encoder = setup();
+			const actualSpec = encoder._encodeOverlay(overlayMock);
+
+			expect(actualSpec).toEqual({
+				type: 'geojson',
+				name: 'overlay',
+				opacity: 1,
+				geoJson: { type: 'FeatureCollection',
+					features: [{ type: 'Feature',
+						properties: {},
+						geometry: {
+							type: 'Point',
+							coordinates: [42, 21, 0]
+						}
+					}] },
+				style: { version: 2,
+					'*': {
+						symbolizers: [{
+							type: 'text',
+							label: 'foo bar baz',
+							labelXOffset: 0.4,
+							labelYOffset: 2,
+							fontColor: '#ffffff',
+							fontSize: 10,
+							fontWeight: 'normal',
+							fillColor: '#ff0000',
+							strokeColor: '#ff0000'
+						}] } }
+			});
+		});
+
+
+		it('does NOT resolve overlay with invalid element to a mfp \'geojson\' spec', () => {
+			const overlayMock = { getElement: () => {
+				return { tagName: 'something', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
+			},
+			getPosition: () => [42, 21] };
+			const encoder = setup();
+			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
 		});
 
 	});
