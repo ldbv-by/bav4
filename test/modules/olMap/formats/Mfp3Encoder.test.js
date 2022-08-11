@@ -14,15 +14,19 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
-import locationIcon from '../../../../src/modules/olMap/assets/location.svg';
-
 
 describe('Mfp3Encoder', () => {
 
 	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
 	const mapMock = {
-		getSize: () => [100, 100], getCoordinateFromPixel: (p) => p, getView: () => viewMock, getLayers: () => {
+		getSize: () => [100, 100],
+		getCoordinateFromPixel: (p) => p,
+		getView: () => viewMock,
+		getLayers: () => {
 			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50] }] };
+		},
+		getOverlays: () => {
+			return { getArray: () => [] };
 		}
 	};
 

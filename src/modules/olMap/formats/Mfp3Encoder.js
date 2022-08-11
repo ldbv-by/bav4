@@ -471,17 +471,18 @@ export class Mfp3Encoder {
 					}
 				}] },
 			style: { version: 2,
-				'*': { symbolizers: [{
-					type: 'text',
-					label: element.innerText,
-					labelXOffset: element.placement.offset[0],
-					labelYOffset: element.placement.offset[1],
-					fontColor: '#ffffff',
-					fontSize: 10,
-					fontWeight: 'normal',
-					fillColor: '#ff0000',
-					strokeColor: '#ff0000'
-				}] } }
+				'*': {
+					symbolizers: [{
+						type: 'text',
+						label: element.innerText,
+						labelXOffset: element.placement.offset[0],
+						labelYOffset: element.placement.offset[1],
+						fontColor: '#ffffff',
+						fontSize: 10,
+						fontWeight: 'normal',
+						fillColor: '#ff0000',
+						strokeColor: '#ff0000'
+					}] } }
 		};
 
 	}
