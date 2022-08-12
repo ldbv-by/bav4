@@ -297,7 +297,7 @@ export class Mfp3Encoder {
 		}
 
 
-		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, this._mfpProperties.dpi) };
+		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeature.getGeometry(), this._mfpProperties.dpi) };
 		if (encodedStyle.fillOpacity) {
 			encodedStyle.fillOpacity *= olLayer.getOpacity();
 		}
@@ -332,15 +332,18 @@ export class Mfp3Encoder {
 		};
 	}
 
-	_encodeStyle(olStyle, dpi) {
-		// todo: prevent default icon style
+	_encodeStyle(olStyle, olGeometry, dpi) {
 		const encoded = { zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
 		const textStyle = olStyle.getText();
 		const imageStyle = olStyle.getImage();
+		const geometryType = olGeometry.getType();
 
-		if (imageStyle) {
+		// Encode imageStyle only for Point-geometries;
+		// LineString- and Polygon-geometries have a
+		// ImageStyle only by default (import as kml -> createFeatureStyleFunction)
+		if (imageStyle && geometryType === 'Point') {
 			const scale = imageStyle.getScale();
 			encoded.rotation = (imageStyle.getRotation() ?? 0) * 180.0 / Math.PI;
 			const getPropertiesFromIconStyle = (iconStyle) => {
@@ -390,7 +393,6 @@ export class Mfp3Encoder {
 			encoded.fillColor = rgbToHex(color.slice(0, 3));
 			encoded.fillOpacity = color[3];
 		}
-
 
 		if (strokeStyle) {
 			const color = ColorAsArray(strokeStyle.getColor());
@@ -454,6 +456,14 @@ export class Mfp3Encoder {
 		const element = overlay.getElement();
 		const center = overlay.getPosition();
 
+		const fromPositioning = (positioning) => {
+			const defaultAlignment = 'cm';
+			const verticalAndHorizontalAlignment = positioning.split('-');
+			const isValid = verticalAndHorizontalAlignment && verticalAndHorizontalAlignment.length === 2;
+
+			return isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
+		};
+
 		if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
 			console.warn('cannot encode overlay element: No rule defined', element);
 			return null;
@@ -462,27 +472,34 @@ export class Mfp3Encoder {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
-			geoJson: { type: 'FeatureCollection',
-				features: [{ type: 'Feature',
+			geoJson: {
+				type: 'FeatureCollection',
+				features: [{
+					type: 'Feature',
 					properties: {},
 					geometry: {
 						type: 'Point',
 						coordinates: [...center, 0]
 					}
-				}] },
-			style: { version: 2,
+				}]
+			},
+			style: {
+				version: 2,
 				'*': {
 					symbolizers: [{
 						type: 'text',
 						label: element.innerText,
 						labelXOffset: element.placement.offset[0],
 						labelYOffset: element.placement.offset[1],
+						labelAlign: fromPositioning(element.placement.positioning),
 						fontColor: '#ffffff',
 						fontSize: 10,
 						fontWeight: 'normal',
 						fillColor: '#ff0000',
 						strokeColor: '#ff0000'
-					}] } }
+					}]
+				}
+			}
 		};
 
 	}

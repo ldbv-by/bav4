@@ -653,10 +653,12 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
-			const overlayMock = { getElement: () => {
-				return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
-			},
-			getPosition: () => [42, 21] };
+			const overlayMock = {
+				getElement: () => {
+					return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
+				},
+				getPosition: () => [42, 21]
+			};
 			const encoder = setup();
 			const actualSpec = encoder._encodeOverlay(overlayMock);
 
@@ -664,36 +666,45 @@ describe('Mfp3Encoder', () => {
 				type: 'geojson',
 				name: 'overlay',
 				opacity: 1,
-				geoJson: { type: 'FeatureCollection',
-					features: [{ type: 'Feature',
+				geoJson: {
+					type: 'FeatureCollection',
+					features: [{
+						type: 'Feature',
 						properties: {},
 						geometry: {
 							type: 'Point',
 							coordinates: [42, 21, 0]
 						}
-					}] },
-				style: { version: 2,
+					}]
+				},
+				style: {
+					version: 2,
 					'*': {
 						symbolizers: [{
 							type: 'text',
 							label: 'foo bar baz',
 							labelXOffset: 0.4,
 							labelYOffset: 2,
+							labelAlign: 'ct',
 							fontColor: '#ffffff',
 							fontSize: 10,
 							fontWeight: 'normal',
 							fillColor: '#ff0000',
 							strokeColor: '#ff0000'
-						}] } }
+						}]
+					}
+				}
 			});
 		});
 
 
 		it('does NOT resolve overlay with invalid element to a mfp \'geojson\' spec', () => {
-			const overlayMock = { getElement: () => {
-				return { tagName: 'something', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
-			},
-			getPosition: () => [42, 21] };
+			const overlayMock = {
+				getElement: () => {
+					return { tagName: 'something', innerText: 'foo bar baz', placement: { offset: [0.4, 2] } };
+				},
+				getPosition: () => [42, 21]
+			};
 			const encoder = setup();
 			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
 		});
