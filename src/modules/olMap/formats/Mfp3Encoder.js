@@ -11,6 +11,7 @@ import Style from 'ol/style/Style';
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
+import { Circle, LineString, Polygon } from 'ol/geom';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -291,6 +292,36 @@ export class Mfp3Encoder {
 			return styles && styles.length > 0 ? styles[0] : null;
 		};
 
+		const getEncodableOlFeature = (olFeature) => {
+			const toEncodableFeature = () => {
+				const geometry = olFeature.getGeometry();
+				if (geometry instanceof Circle) {
+					// https://github.com/openlayers/openlayers/blob/master/lib/OpenLayers/Geometry/Polygon.js#L240
+					const origin = geometry.getCenter();
+					const radius = geometry.getRadius();
+					const sides = 40;
+					const angle = Math.PI * ((1 / sides) - (1 / 2));
+					const points = [];
+					for (let i = 0; i < sides; ++i) {
+						const rotatedAngle = angle + (i * 2 * Math.PI / sides);
+						const x = origin[0] + (radius * Math.cos(rotatedAngle));
+						const y = origin[1] + (radius * Math.sin(rotatedAngle));
+						points.push([x, y]);
+					}
+					points.push(points[0]);// Close the polygon
+					return new Feature(new Polygon([points]));
+				}
+			};
+
+			const isEncodable = () => {
+				const geometry = olFeature.getGeometry();
+				return geometry instanceof Polygon || geometry instanceof LineString || geometry instanceof Point;
+			};
+			return isEncodable() ? olFeature : toEncodableFeature();
+		};
+
+
+
 		const initEncodedStyle = () => {
 			return { id: this._encodingStyleId++ };
 		};
@@ -302,8 +333,9 @@ export class Mfp3Encoder {
 			return null;
 		}
 
+		const olFeatureToEncode = getEncodableOlFeature(olFeature);
 
-		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeature.getGeometry(), this._mfpProperties.dpi) };
+		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
 		if (encodedStyle.fillOpacity) {
 			encodedStyle.fillOpacity *= olLayer.getOpacity();
 		}
@@ -318,17 +350,17 @@ export class Mfp3Encoder {
 			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
 			// todo: isRenderFunction & encoding should be implemented for measurement features
 			if (isGeometryFunction) {
-				const geometry = style.getGeometry()(olFeature);
+				const geometry = style.getGeometry()(olFeatureToEncode);
 				if (geometry) {
 					const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
-				return defaultResult;
+				return styleFeatures;
 			}
-			return defaultResult;
+			return styleFeatures;
 		}, defaultResult);
 
-		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeature);
+		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyle.id };
 
 
@@ -442,7 +474,7 @@ export class Mfp3Encoder {
 						return 'm'; // middle
 				}
 			};
-			encoded.labelAlign = fromOlTextAlign(textStyle.getTextAlign) + fromOlTextBaseline(textStyle.getTextBaseline);
+			encoded.labelAlign = fromOlTextAlign(textStyle.getTextAlign()) + fromOlTextBaseline(textStyle.getTextBaseline());
 
 			if (textStyle.getFill()) {
 				const fillColor = ColorAsArray(textStyle.getFill().getColor());

@@ -14,6 +14,7 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
+import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 
 describe('Mfp3Encoder', () => {
 
@@ -230,7 +231,11 @@ describe('Mfp3Encoder', () => {
 				return styles;
 			};
 
-			const getTextStyle = () => {
+			const getGeometryStyleFunction = () => {
+				return measureStyleFunction;
+			};
+
+			const getTextStyle = (textAlign = 'center', textBaseline = 'middle') => {
 				const fill = new Fill({
 					color: 'rgba(255,255,255,0.4)'
 				});
@@ -248,7 +253,7 @@ describe('Mfp3Encoder', () => {
 							stroke: stroke,
 							radius: 5
 						}),
-						text: new TextStyle({ text: 'FooBarBaz', font: 'normal 10px sans-serif', fill: textFill })
+						text: new TextStyle({ text: 'FooBarBaz', font: 'normal 10px sans-serif', fill: textFill, textAlign: textAlign, textBaseline: textBaseline })
 					})
 				];
 				return styles;
@@ -535,6 +540,58 @@ describe('Mfp3Encoder', () => {
 				});
 			});
 
+			it('writes a point feature with feature style (text) and alignment', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getTextStyle('left', 'top'));
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							rotation: 0,
+							fillOpacity: 0,
+							strokeOpacity: 0,
+							graphicWidth: 56.25,
+							graphicHeight: 56.25,
+							pointRadius: 5,
+							label: 'FooBarBaz',
+							labelXOffset: 0,
+							labelYOffset: 0,
+							labelAlign: 'lt',
+							fontColor: '#000000',
+							fontFamily: 'SANS-SERIF',
+							fontSize: 10,
+							fontWeight: 'normal'
+						}
+					}
+				});
+			});
+
 			it('writes a point feature with feature style function', () => {
 				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
 				featureWithStyle.setStyle(() => getStyle());
@@ -697,6 +754,59 @@ describe('Mfp3Encoder', () => {
 							fillColor: '#ffffff',
 							fillOpacity: 0.4,
 							strokeOpacity: 0
+						}
+					}
+				});
+			});
+
+			it('writes a feature with a advanced feature style function (geometryFunction)', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new LineString([[30, 30], [40, 40]]) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				vectorLayer.setStyle(getGeometryStyleFunction());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'LineString',
+								coordinates: [[30, 30], [40, 40]]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						},
+						jasmine.any(Object)], // the circle geometry as polygon
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '1',
+						styleProperty: '_gx_style',
+						0: {
+							zIndex: 0,
+							fillOpacity: 0,
+							strokeWidth: 6.428571428571429,
+							strokeColor: '#ff0000',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round'
+						},
+						1: {
+							zIndex: 0,
+							strokeWidth: 6.428571428571429,
+							strokeColor: '#ff0000',
+							strokeOpacity: 1,
+							strokeLinecap: 'round',
+							strokeLineJoin: 'round',
+							fillOpacity: 0
 						}
 					}
 				});
