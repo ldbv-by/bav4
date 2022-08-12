@@ -341,7 +341,7 @@ describe('Mfp3Encoder', () => {
 				});
 			});
 
-			it('writes a point feature with feature style', () => {
+			it('writes a point feature with feature style version 1', () => {
 				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
 				featureWithStyle.setStyle(getStyle());
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
@@ -385,6 +385,57 @@ describe('Mfp3Encoder', () => {
 							strokeOpacity: 1,
 							strokeLinecap: 'round',
 							strokeLineJoin: 'round'
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style version 2', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = { id: 'foo' };
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup({ styleVersion: 2 });
+				const actualSpec = encoder._encodeVector(vectorLayer);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: [30, 30]
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
 						}
 					}
 				});

@@ -24,6 +24,7 @@ const PointsPerInch = 72; // PostScript points 1/72"
  * @param {Point} [pageCenter]
  * @param {Extent} [pageExtent]
  * @param {Number} [targetSRID]
+ * @param {Number} [styleVersion]
 */
 
 /***
@@ -235,7 +236,10 @@ export class Mfp3Encoder {
 
 			const asV1 = (styles) => {
 				styles.forEach(style => {
-					const { id, ...pureStyleProperties } = style;
+					// type-property is not needed for version 1
+					// removing this property by object destructuring
+					// eslint-disable-next-line no-unused-vars
+					const { id, type, ...pureStyleProperties } = style;
 					styleObjectV1[id] = pureStyleProperties;
 				});
 				return styleObjectV1;
@@ -244,18 +248,20 @@ export class Mfp3Encoder {
 			const asV2 = (styles) => {
 				styles.forEach(style => {
 					const { id, ...pureStyleProperties } = style;
-					styleObjectV2[`_gx_style=${id}`] = pureStyleProperties;
+					styleObjectV2[`[_gx_style = ${id}]`] = {
+						symbolizers: [pureStyleProperties]
+					};
 				});
 				return styleObjectV2;
 			};
 			return version === 1 ? asV1(styles) : asV2(styles);
 		};
-
+		const styleVersion = this._mfpProperties.styleVersion ? this._mfpProperties.styleVersion : 1;
 		return {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
-			style: styleObjectFrom(encodingResults.styles),
+			style: styleObjectFrom(encodingResults.styles, styleVersion),
 			opacity: olVectorLayer.getOpacity()
 		};
 	}
@@ -333,17 +339,18 @@ export class Mfp3Encoder {
 	}
 
 	_encodeStyle(olStyle, olGeometry, dpi) {
-		const encoded = { zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
 		const textStyle = olStyle.getText();
 		const imageStyle = olStyle.getImage();
-		const geometryType = olGeometry.getType();
+		const geometryType = olGeometry.getType().toLowerCase();
+		const encoded = { type: geometryType, zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
+
 
 		// Encode imageStyle only for Point-geometries;
 		// LineString- and Polygon-geometries have a
 		// ImageStyle only by default (import as kml -> createFeatureStyleFunction)
-		if (imageStyle && geometryType === 'Point') {
+		if (imageStyle && encoded.type === 'point') {
 			const scale = imageStyle.getScale();
 			encoded.rotation = (imageStyle.getRotation() ?? 0) * 180.0 / Math.PI;
 			const getPropertiesFromIconStyle = (iconStyle) => {
