@@ -314,6 +314,8 @@ const getRulerStyle = () => {
 
 	return new Style({
 		renderer: (pixelCoordinates, state) => {
+			// todo: extend with type-check for CanvasRenderingContext2D and other, to support
+			// usecases, where a different context is given (i.e. Mfp3Encoder)
 			const renderContext = toContext(state.context, { pixelRatio: 1 });
 			const renderToContext = (geometry, fill, stroke) => {
 				renderContext.setFillStrokeStyle(fill, stroke);

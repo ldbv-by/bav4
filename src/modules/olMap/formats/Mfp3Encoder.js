@@ -40,9 +40,10 @@ export class Mfp3Encoder {
 		-> WmsGeoResource (should have a list of supported srids)
 	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
-	- should support Mapfish JSON Style Version 1 AND Version 2
+	- should support Mapfish JSON Style Version 1 [AND|OR]? Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
+	- should render advanced styles (style with renderFunction)
 	*/
 
 	constructor(encodingProperties) {
