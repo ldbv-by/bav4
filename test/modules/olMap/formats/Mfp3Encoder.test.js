@@ -200,7 +200,7 @@ describe('Mfp3Encoder', () => {
 			});
 		});
 
-		it('encodes two layers with third party attributions', () => {
+		it('encodes layers with third party attributions', () => {
 			const tileGrid = {
 				getTileSize: () => 42
 			};
@@ -234,6 +234,46 @@ describe('Mfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null,
 						dataOwner: 'Bar CopyRight',
+						thirdPartyDataOwner: 'Foo CopyRight'
+					}
+				}
+			});
+		});
+
+		it('encodes layers with multiple attributions', () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } }).setImportedByUser(true);
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: [{ label: 'Bar CopyRight' }, { label: 'Baz CopyRight' }] });
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => geoResourceFoo)
+				.withArgs('bar').and.callFake(() => geoResourceBar);
+			const encoder = setup();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [
+					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+			});
+			const actualSpec = 	encoder.encode(mapMock);
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Point),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null,
+						dataOwner: 'Bar CopyRight,Baz CopyRight',
 						thirdPartyDataOwner: 'Foo CopyRight'
 					}
 				}
