@@ -43,8 +43,6 @@ export class Mfp3Encoder {
 	- should support Mapfish JSON Style Version 1 AND Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
-	- check whether features to be encoded have special geometry (Circle, Point with ImageStyle of RegularShape) or not
-	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
 	*/
 
 	constructor(encodingProperties) {
