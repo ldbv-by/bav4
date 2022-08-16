@@ -105,7 +105,9 @@ describe('Mfp3Encoder', () => {
 		it('encodes a aggregate layer', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE));
 			const encoder = setup();
-			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => { });
+			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
+				return { };
+			});
 
 			encoder.encode(mapMock);
 
@@ -115,7 +117,9 @@ describe('Mfp3Encoder', () => {
 		it('encodes a vector layer', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR));
 			const encoder = setup();
-			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => { });
+			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
+				return {};
+			});
 
 			encoder.encode(mapMock);
 
@@ -125,7 +129,9 @@ describe('Mfp3Encoder', () => {
 		it('encodes a WMTS layer', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
 			const encoder = setup();
-			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => { });
+			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
+				return {};
+			});
 
 			encoder.encode(mapMock);
 
@@ -135,11 +141,103 @@ describe('Mfp3Encoder', () => {
 		it('encodes a WMS layer', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS));
 			const encoder = setup();
-			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => { });
+			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
+				return {};
+			});
 
 			encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalled();
+		});
+
+		it('does NOT encode a layer, if a geoResource is not defined', () => {
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => null);
+			const encoder = setup();
+			const layerMock = { get: () => 'foo' };
+
+			const actualEncoded = encoder._encode(layerMock);
+
+			expect(actualEncoded).toEqual([]);
+		});
+
+		it('encodes two layers with attributions', () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } });
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Bar CopyRight' } });
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => geoResourceFoo)
+				.withArgs('bar').and.callFake(() => geoResourceBar);
+			const encoder = setup();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [
+					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+			});
+			const actualSpec = 	encoder.encode(mapMock);
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Point),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null,
+						dataOwner: 'Foo CopyRight,Bar CopyRight',
+						thirdPartyDataOwner: null
+					}
+				}
+			});
+		});
+
+		it('encodes two layers with third party attributions', () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } }).setImportedByUser(true);
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Bar CopyRight' } });
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => geoResourceFoo)
+				.withArgs('bar').and.callFake(() => geoResourceBar);
+			const encoder = setup();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [
+					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+			});
+			const actualSpec = 	encoder.encode(mapMock);
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Point),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null,
+						dataOwner: 'Bar CopyRight',
+						thirdPartyDataOwner: 'Foo CopyRight'
+					}
+				}
+			});
 		});
 
 		it('resolves sublayers of a aggregate layer', () => {
@@ -169,18 +267,16 @@ describe('Mfp3Encoder', () => {
 			};
 			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
 
-			spyOn(geoResourceServiceMock, 'byId')
-				.withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
-
-
 			const encoder = setup();
-			const actualSpec = encoder._encodeWMTS(wmtsLayerMock);
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, new TestGeoResource(GeoResourceTypes.WMTS));
 
 			expect(actualSpec).toEqual({
 				opacity: 1,
 				type: 'osm',
 				baseURL: 'https://some.url/to/foo/{z}/{x}/{y}',
-				tileSize: [42, 42]
+				tileSize: [42, 42],
+				attribution: null,
+				thirdPartyAttribution: null
 			});
 		});
 
@@ -193,7 +289,9 @@ describe('Mfp3Encoder', () => {
 			};
 			const wmsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
 
-			const wmsGeoResourceMock = { id: 'foo', format: 'image/png' };
+			const wmsGeoResourceMock = { id: 'foo', format: 'image/png', get attribution() {
+				return { copyright: { label: 'Foo CopyRight' } };
+			}, importedByUser: false };
 			const encoder = setup();
 			const actualSpec = encoder._encodeWMS(wmsLayerMock, wmsGeoResourceMock);
 
@@ -204,7 +302,9 @@ describe('Mfp3Encoder', () => {
 				imageFormat: 'image/png',
 				baseURL: 'https://some.url/to/wms',
 				layers: ['foo', 'bar'],
-				styles: ['baz']
+				styles: ['baz'],
+				attribution: { copyright: { label: 'Foo CopyRight' } },
+				thirdPartyAttribution: null
 			});
 		});
 
@@ -298,20 +398,28 @@ describe('Mfp3Encoder', () => {
 				return styles;
 			};
 
+			const getGeoResourceMock = () => {
+				return { id: 'foo', get attribution() {
+					return { copyright: { label: 'Foo CopyRight' } };
+				}, importedByUser: false };
+			};
+
 			it('writes a point feature with layer style', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				vectorLayer.setStyle(() => getStyle());
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -352,15 +460,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -401,15 +511,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup({ styleVersion: 2 });
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -452,15 +564,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -494,15 +608,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -546,15 +662,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -598,15 +716,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -646,15 +766,17 @@ describe('Mfp3Encoder', () => {
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [],
 						type: 'FeatureCollection'
@@ -672,15 +794,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -719,15 +843,17 @@ describe('Mfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -764,15 +890,17 @@ describe('Mfp3Encoder', () => {
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				vectorLayer.setStyle(getGeometryStyleFunction());
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = { id: 'foo' };
+				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer);
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
 					geoJson: {
 						features: [{
 							type: 'Feature',
