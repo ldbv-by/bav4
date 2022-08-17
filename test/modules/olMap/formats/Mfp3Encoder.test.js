@@ -12,8 +12,9 @@ import { Feature } from 'ol';
 import Style from 'ol/style/Style';
 import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
-import CircleStyle from 'ol/style/Circle';
+import { Circle as CircleStyle } from 'ol/style';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
+import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 
 describe('Mfp3Encoder', () => {
 
@@ -105,7 +106,7 @@ describe('Mfp3Encoder', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
-				return { };
+				return {};
 			});
 
 			encoder.encode(mapMock);
@@ -176,11 +177,13 @@ describe('Mfp3Encoder', () => {
 			const encoder = setup();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
-				return { getArray: () => [
-					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+				};
 			});
-			const actualSpec = 	encoder.encode(mapMock);
+			const actualSpec = encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -216,11 +219,13 @@ describe('Mfp3Encoder', () => {
 			const encoder = setup();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
-				return { getArray: () => [
-					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+				};
 			});
-			const actualSpec = 	encoder.encode(mapMock);
+			const actualSpec = encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -256,11 +261,13 @@ describe('Mfp3Encoder', () => {
 			const encoder = setup();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
-				return { getArray: () => [
-					{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-					{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }] };
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+				};
 			});
-			const actualSpec = 	encoder.encode(mapMock);
+			const actualSpec = encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -328,9 +335,11 @@ describe('Mfp3Encoder', () => {
 			};
 			const wmsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
 
-			const wmsGeoResourceMock = { id: 'foo', format: 'image/png', get attribution() {
-				return { copyright: { label: 'Foo CopyRight' } };
-			}, importedByUser: false };
+			const wmsGeoResourceMock = {
+				id: 'foo', format: 'image/png', get attribution() {
+					return { copyright: { label: 'Foo CopyRight' } };
+				}, importedByUser: false
+			};
 			const encoder = setup();
 			const actualSpec = encoder._encodeWMS(wmsLayerMock, wmsGeoResourceMock);
 
@@ -371,19 +380,7 @@ describe('Mfp3Encoder', () => {
 			};
 
 			const getGeometryStyleFunction = () => {
-				return [new Style({
-					stroke: new Stroke({
-						color: [255, 0, 0, 1],
-						width: 3
-					}),
-					geometry: feature => {
-						const coords = feature.getGeometry().getCoordinates();
-						const radius = 10;
-						const circle = new Circle(coords[0], radius);
-						return circle;
-					},
-					zIndex: 0
-				})];
+				return measureStyleFunction;
 			};
 
 			const getTextStyle = (textAlign = 'center', textBaseline = 'middle') => {
@@ -450,9 +447,11 @@ describe('Mfp3Encoder', () => {
 			};
 
 			const getGeoResourceMock = () => {
-				return { id: 'foo', get attribution() {
-					return { copyright: { label: 'Foo CopyRight' } };
-				}, importedByUser: false };
+				return {
+					id: 'foo', get attribution() {
+						return { copyright: { label: 'Foo CopyRight' } };
+					}, importedByUser: false
+				};
 			};
 
 			it('writes a point feature with layer style', () => {
@@ -963,7 +962,10 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						},
-						jasmine.any(Object)], // the circle geometry as polygon
+						jasmine.any(Object), // the circle geometry as polygon
+						jasmine.any(Object), // the baseLine as LineString
+						jasmine.any(Object), // the mainTicks as LineString
+						jasmine.any(Object)], // the subTicks as LineString
 						type: 'FeatureCollection'
 					},
 					style: {
@@ -986,7 +988,10 @@ describe('Mfp3Encoder', () => {
 							strokeLinecap: 'round',
 							strokeLineJoin: 'round',
 							fillOpacity: 0
-						}
+						},
+						2: jasmine.any(Object), // the style of baseLine
+						3: jasmine.any(Object), // the style of mainTicks
+						4: jasmine.any(Object) // the style of subTicks
 					}
 				});
 			});
