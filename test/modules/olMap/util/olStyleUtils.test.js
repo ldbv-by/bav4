@@ -125,6 +125,16 @@ describe('measureStyleFunction', () => {
 		expect(rulerStyle).toBeDefined();
 	});
 
+	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
+		const styles = measureStyleFunction(feature, resolution);
+		const stateMock = { context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: () => { } };
+		const spy = spyOn(stateMock, 'customContextRenderFunction');
+		const rulerStyle = styles.find(style => style.getRenderer != null && typeof style.getRenderer() == 'function');
+		rulerStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+
+		expect(spy).toHaveBeenCalled();
+	});
+
 
 	it('should draw to context with ruler-style', () => {
 		const pixelCoordinates = [[0, 0], [1, 1]];
