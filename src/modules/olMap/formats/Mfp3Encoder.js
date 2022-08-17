@@ -40,11 +40,10 @@ export class Mfp3Encoder {
 		-> WmsGeoResource (should have a list of supported srids)
 	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
-	- should support Mapfish JSON Style Version 1 AND Version 2
+	- should support Mapfish JSON Style Version 1 [AND|OR]? Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
-	- check whether features to be encoded have special geometry (Circle, Point with ImageStyle of RegularShape) or not
-	- attributions: to get 'dataOwner' and 'thirdPartyDataOwner'
+	- should render advanced styles (style with renderFunction)
 	*/
 
 	constructor(encodingProperties) {
@@ -100,10 +99,21 @@ export class Mfp3Encoder {
 
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) : true;
 			})
-			.map(l => this._encode(l));
+			.flatMap(l => this._encode(l))
+			.reduce((layerSpecs, encodedLayer) => {
+				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
+				if (attribution || thirdPartyAttribution) {
+					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright.map(c => c.label) : [attribution?.copyright.label];
+
+					return { specs: [...layerSpecs.specs, restSpec],
+						dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
+						thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners] };
+				}
+				return { specs: [], dataOwners: [], thirdPartyDataOwners: [] };
+
+			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay, resolution));
-
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -113,7 +123,9 @@ export class Mfp3Encoder {
 					projection: this._mfpProjection,
 					dpi: this._mfpProperties.dpi,
 					rotation: this._mfpProperties.rotation,
-					layers: [...encodedLayers, ...encodedOverlays]
+					layers: [...encodedLayers.specs, ...encodedOverlays],
+					dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
+					thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : null
 				}
 			}
 		};
@@ -136,19 +148,19 @@ export class Mfp3Encoder {
 		const geoResource = this._geoResourceFrom(layer);
 		if (!geoResource) {
 			console.warn('No geoResource found for Layer', layer);
-			return null;
+			return [];
 		}
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.AGGREGATE:
 				return this._encodeGroup(layer);
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(layer);
+				return this._encodeVector(layer, geoResource);
 			case GeoResourceTypes.WMTS:
-				return this._encodeWMTS(layer);
+				return this._encodeWMTS(layer, geoResource);
 			case GeoResourceTypes.WMS:
 				return this._encodeWMS(layer, geoResource);
 			default:
-				return null;
+				return [];
 		}
 	}
 
@@ -157,7 +169,7 @@ export class Mfp3Encoder {
 		return subLayers.map(l => this._encode(l));
 	}
 
-	_encodeWMTS(olLayer) {
+	_encodeWMTS(olLayer, geoResource) {
 		// all WMTS-Layers rely on {@see XYZSource}, this must be translated to spec type 'osm' in MapFishPrint V3
 		// the only required parameter is: baseURL
 		const source = olLayer.getSource();
@@ -169,14 +181,16 @@ export class Mfp3Encoder {
 			opacity: olLayer.getOpacity(),
 			type: 'osm',
 			baseURL: baseUrl,
-			tileSize: [tileGrid.getTileSize(0), tileGrid.getTileSize(0)]
+			tileSize: [tileGrid.getTileSize(0), tileGrid.getTileSize(0)],
+			attribution: geoResource.importedByUser ? null : geoResource.attribution,
+			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
 		};
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource) {
 		const source = olLayer.getSource();
 		const params = source.getParams();
-		const layers = params.LAYERS.split(',') || [];
+		const layers = params.LAYERS?.split(',') || [];
 		const styles = (params.STYLES != null) ?
 			params.STYLES.split(',') :
 			new Array(layers.length).join(',').split(',');
@@ -191,11 +205,13 @@ export class Mfp3Encoder {
 			layers: layers,
 			name: wmsGeoResource.id,
 			opacity: olLayer.getOpacity(),
-			styles: styles
+			styles: styles,
+			attribution: wmsGeoResource.importedByUser ? null : wmsGeoResource.attribution,
+			thirdPartyAttribution: wmsGeoResource.importedByUser ? wmsGeoResource.attribution : null
 		};
 	}
 
-	_encodeVector(olVectorLayer) {
+	_encodeVector(olVectorLayer, geoResource) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
 		const groupBy = (elementsToGroup, groupByFunction) => elementsToGroup.reduce((group, element) => {
@@ -263,7 +279,9 @@ export class Mfp3Encoder {
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(encodingResults.styles, styleVersion),
-			opacity: olVectorLayer.getOpacity()
+			opacity: olVectorLayer.getOpacity(),
+			attribution: geoResource.importedByUser ? null : geoResource.attribution,
+			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
 		};
 	}
 
