@@ -1,5 +1,5 @@
 import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
-import { toContext } from 'ol/render';
+import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import { $injector } from '../../../injection';
@@ -311,20 +311,22 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 
 
 const getRulerStyle = () => {
-
+	const getCanvasContextRenderFunction = (state) => {
+		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
+		return (geometry, fill, stroke) => {
+			renderContext.setFillStrokeStyle(fill, stroke);
+			renderContext.drawGeometry(geometry);
+		};
+	};
 	return new Style({
 		renderer: (pixelCoordinates, state) => {
-			const renderContext = toContext(state.context, { pixelRatio: 1 });
-			const renderToContext = (geometry, fill, stroke) => {
-				renderContext.setFillStrokeStyle(fill, stroke);
-				renderContext.drawGeometry(geometry);
-			};
-			renderRulerSegments(pixelCoordinates, state, renderToContext);
+			const getContextRenderFunction = (state) => state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+			renderRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
 		}
 	});
 };
 
-export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) => {
+export const renderRulerSegments = (pixelCoordinates, state, contextRenderFunction) => {
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
@@ -376,13 +378,13 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderer) =>
 
 	// baseLine
 	geometry.setCoordinates(pixelCoordinates);
-	contextRenderer(geometry, fill, baseStroke);
+	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
 	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
 
 	segmentCoordinates.every((coordinate, index, coordinates) => {
-		return drawTicks(contextRenderer, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 	});
 
 };

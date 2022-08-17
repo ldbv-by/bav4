@@ -1,5 +1,5 @@
 
-import { LineString, Point, Polygon } from 'ol/geom';
+import { Circle, LineString, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../src/injection';
@@ -14,7 +14,6 @@ import Stroke from 'ol/style/Stroke';
 import Fill from 'ol/style/Fill';
 import CircleStyle from 'ol/style/Circle';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
-import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 
 describe('Mfp3Encoder', () => {
 
@@ -232,7 +231,19 @@ describe('Mfp3Encoder', () => {
 			};
 
 			const getGeometryStyleFunction = () => {
-				return measureStyleFunction;
+				return [new Style({
+					stroke: new Stroke({
+						color: [255, 0, 0, 1],
+						width: 3
+					}),
+					geometry: feature => {
+						const coords = feature.getGeometry().getCoordinates();
+						const radius = 10;
+						const circle = new Circle(coords[0], radius);
+						return circle;
+					},
+					zIndex: 0
+				})];
 			};
 
 			const getTextStyle = (textAlign = 'center', textBaseline = 'middle') => {

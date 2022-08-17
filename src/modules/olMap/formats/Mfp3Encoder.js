@@ -348,7 +348,7 @@ export class Mfp3Encoder {
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
 			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
-			// todo: isRenderFunction & encoding should be implemented for measurement features
+			const isRenderFunction = style.getRenderer && typeof (style.getRenderer()) === 'function';
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeatureToEncode);
 				if (geometry) {
@@ -356,6 +356,28 @@ export class Mfp3Encoder {
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
 				return styleFeatures;
+			}
+			if (isRenderFunction) {
+				const renderResult = defaultResult;
+				const state = {
+					geometry: olFeature.getGeometry(),
+					resolution: resolution,
+					pixelRatio: 1,
+					customContextRenderFunction: (geometry, fill, stroke) => {
+						const style = new Style({ fill: fill, stroke: stroke });
+						const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
+						renderResult.features = [...renderResult.features, ...result.features];
+						renderResult.styles = [...renderResult.styles, ...result.styles];
+					}
+				};
+				const renderFunction = style.getRenderer();
+				try {
+					renderFunction(olFeature.getGeometry().getCoordinates(), state);
+				}
+				catch (error) {
+					console.warn('Style renderFunction needs full canvas context');
+				}
+				return { features: [...styleFeatures.features, ...renderResult.features], styles: [...styleFeatures.styles, ...renderResult.styles] };
 			}
 			return styleFeatures;
 		}, defaultResult);
