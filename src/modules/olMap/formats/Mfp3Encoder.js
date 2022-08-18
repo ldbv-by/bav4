@@ -35,10 +35,7 @@ const PointsPerInch = 72; // PostScript points 1/72"
 export class Mfp3Encoder {
 	/*
 	TODO:
-	- should encode to a target srid (or DefaultGeodeticSRID)
-	- should filter layer without support of target srid
-		-> WmsGeoResource (should have a list of supported srids)
-	- should translate baseURL of WmtsGeoResource (XYZSource) to a valid baseURL for target srid
+	- should have a strategy to receive or transform WmtsGeoResources (XYZSource) for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
 	- should support Mapfish JSON Style Version 1 [AND|OR]? Version 2
 	- check whether filter for resolution is needed or not
@@ -186,6 +183,7 @@ export class Mfp3Encoder {
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource) {
+		// no handling for target srid, it is assumed that the wmsGeoResource also supports the target srid
 		const source = olLayer.getSource();
 		const params = source.getParams();
 		const layers = params.LAYERS?.split(',') || [];
@@ -232,7 +230,13 @@ export class Mfp3Encoder {
 			...groupedByGeometryType['MultiLineString'],
 			...groupedByGeometryType['Point']];
 
-		const encodingResults = featuresSortedByGeometryType.reduce((encoded, feature) => {
+		const transformForMfp = (olFeature) => {
+			const mfpFeature = olFeature.clone();
+			mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
+			return mfpFeature;
+		};
+
+		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).reduce((encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer);
 			return result ? {
 				features: [...encoded.features, ...result.features],
@@ -532,6 +536,7 @@ export class Mfp3Encoder {
 	_encodeOverlay(overlay) {
 		const element = overlay.getElement();
 		const center = overlay.getPosition();
+		const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
 
 		const fromPositioning = (positioning) => {
 			const defaultAlignment = 'cm';
@@ -556,7 +561,7 @@ export class Mfp3Encoder {
 					properties: {},
 					geometry: {
 						type: 'Point',
-						coordinates: [...center, 0]
+						coordinates: [...mfpCenter, 0]
 					}
 				}]
 			},

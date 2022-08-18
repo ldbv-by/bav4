@@ -15,6 +15,7 @@ import Fill from 'ol/style/Fill';
 import { Circle as CircleStyle } from 'ol/style';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
 import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
+import { fromLonLat } from 'ol/proj';
 
 describe('Mfp3Encoder', () => {
 
@@ -454,6 +455,44 @@ describe('Mfp3Encoder', () => {
 				};
 			};
 
+			it('writes a point feature transformed to target srid', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point(fromLonLat([11.59036, 48.14165])) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				vectorLayer.setStyle(() => getStyle());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+				const expectedCoordinate = [692692, 5335289];
+				const actualCoordinate = actualSpec.geoJson.features[0].geometry.coordinates;
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: jasmine.any(Object)
+				});
+
+				expect(actualCoordinate[0]).toBeCloseTo(expectedCoordinate[0], 0);
+				expect(actualCoordinate[1]).toBeCloseTo(expectedCoordinate[1], 0);
+			});
+
 			it('writes a point feature with layer style', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
@@ -475,7 +514,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -526,7 +565,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -577,7 +616,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -630,7 +669,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -674,7 +713,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -728,7 +767,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -782,7 +821,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Point',
-								coordinates: [30, 30]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -860,10 +899,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'LineString',
-								coordinates: [
-									[30, 30],
-									[40, 40]
-								]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -909,12 +945,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Polygon',
-								coordinates: [[
-									[30, 30],
-									[40, 40],
-									[40, 30],
-									[30, 30]
-								]]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -956,7 +987,7 @@ describe('Mfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'LineString',
-								coordinates: [[30, 30], [40, 40]]
+								coordinates: jasmine.any(Array)
 							},
 							properties: {
 								_gx_style: 0
@@ -1018,7 +1049,7 @@ describe('Mfp3Encoder', () => {
 						properties: {},
 						geometry: {
 							type: 'Point',
-							coordinates: [42, 21, 0]
+							coordinates: jasmine.any(Array)
 						}
 					}]
 				},
