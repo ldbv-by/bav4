@@ -43,7 +43,6 @@ export class Mfp3Encoder {
 	- should support Mapfish JSON Style Version 1 [AND|OR]? Version 2
 	- check whether filter for resolution is needed or not
 	- check whether specific fonts are managed by the print server or not
-	- should render advanced styles (style with renderFunction)
 	*/
 
 	constructor(encodingProperties) {
@@ -91,7 +90,6 @@ export class Mfp3Encoder {
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
-		const resolution = olMap.getView().getResolution();
 
 		const encodedLayers = olMap.getLayers().getArray()
 			.filter(layer => {
@@ -113,7 +111,7 @@ export class Mfp3Encoder {
 
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
-		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay, resolution));
+		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {

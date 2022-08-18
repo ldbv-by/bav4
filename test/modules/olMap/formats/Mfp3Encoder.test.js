@@ -1,5 +1,5 @@
 
-import { Circle, LineString, Point, Polygon } from 'ol/geom';
+import { LineString, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../../src/injection';
