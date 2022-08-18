@@ -18,17 +18,19 @@ const PointsPerInch = 72; // PostScript points 1/72"
 /**
  * A Container-Object for properties related to a mfp encoding
  * @typedef {Object} EncodingProperties
- * @param {string} layoutId
- * @param {Number} scale
- * @param {Number} dpi
- * @param {Number} [rotation]
- * @param {Point} [pageCenter]
- * @param {Extent} [pageExtent]
- * @param {Number} [targetSRID]
+ * @param {string} layoutId the id of a configured mfp template
+ * @param {Number} scale the scale of the current map for the current job request
+ * @param {Number} dpi the dpi for the current job request, must be contained in the capabilities of the mfp template
+ * @param {Number} [rotation] the rotation for the current job request
+ * @param {Point} [pageCenter] the center of the map to export; Defaults to the center of map.getView()
+ * @param {Extent} [pageExtent] the extent of the map to export; Defaults to the calculated extent of map.getView()
+ * @param {Number} [targetSRID] the srid of the map to export; Defaults to the default geodetic srid
  * @param {Number} [styleVersion]
 */
 
 /***
+ * Encoder to create a MapFishPrint request-object from a OpenLayers map-instance
+ *
  * @class
  * @author thiloSchlemmer
  */
@@ -66,7 +68,7 @@ export class Mfp3Encoder {
 	}
 
 	/**
-	 *
+	 * Encodes the content of a OpenLayers {@see Map} to a MapFishPrint3 job request.
 	 * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
 	 * @returns {Object} the encoded mfp specs
 	 */
@@ -96,6 +98,7 @@ export class Mfp3Encoder {
 			})
 			.flatMap(l => this._encode(l))
 			.reduce((layerSpecs, encodedLayer) => {
+				// todo: extract to method
 				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
 				if (attribution || thirdPartyAttribution) {
 					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright.map(c => c.label) : [attribution?.copyright.label];
