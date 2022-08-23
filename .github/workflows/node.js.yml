@@ -20,11 +20,15 @@ jobs:
         npm ci
         npx playwright install-deps
 
-    - name: Run checks and tests
+    - name: Run checks
       run: |
+        npm audit --audit-level=moderate
         npm run lint
         npm run es-check
         npm run doc
+        
+    - name: Run tests
+      run: |
         npm run test:gha
      
     - name: Run e2e tests
