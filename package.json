@@ -1,7 +1,7 @@
 {
   "name": "bav4-nomigration",
   "dependencies": {
-    "dompurify": "^2.3.11",
+    "dompurify": "^2.4.0",
     "lit-html": "^2.3.1",
     "ol": "^7.0.0",
     "proj4": "^2.8.0",
