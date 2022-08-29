@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType } from '../../src/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VectorTilesGeoResource } from '../../src/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 
 
@@ -326,7 +326,7 @@ describe('GeoResource', () => {
 		});
 	});
 
-	describe('AggregateResource', () => {
+	describe('AggregateGeoResource', () => {
 
 		it('instantiates a AggregateResource', () => {
 
@@ -339,6 +339,20 @@ describe('GeoResource', () => {
 			expect(aggregateGeoResource.geoResourceIds.length).toBe(2);
 			expect(aggregateGeoResource.geoResourceIds[0].id).toBe('wmsId');
 			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
+		});
+
+	});
+
+	describe('VectorTilesGeoResource', () => {
+
+		it('instantiates a VectorTilesGeoResource', () => {
+
+			const vectorGeoResource = new VectorTilesGeoResource('id', 'label', 'styleUrl');
+
+			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR_TILES);
+			expect(vectorGeoResource.id).toBe('id');
+			expect(vectorGeoResource.label).toBe('label');
+			expect(vectorGeoResource.styleUrl).toBe('styleUrl');
 		});
 
 	});

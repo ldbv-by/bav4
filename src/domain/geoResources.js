@@ -433,6 +433,25 @@ export class AggregateGeoResource extends GeoResource {
 }
 
 
+export class VectorTilesGeoResource extends GeoResource {
+	constructor(id, label, styleUrl) {
+		super(id, label);
+		this._styleUrl = styleUrl;
+	}
+
+	get styleUrl() {
+		return this._styleUrl;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VECTOR_TILES;
+	}
+}
+
+
 /**
  * Returns an observable GeoResource.
  * All of its fields can be observed for changes.
