@@ -9,11 +9,12 @@ describe('GeoResource', () => {
 
 		it('provides an enum of all available types', () => {
 
-			expect(GeoResourceTypes.WMS).toBeTruthy();
-			expect(GeoResourceTypes.WMTS).toBeTruthy();
-			expect(GeoResourceTypes.VECTOR).toBeTruthy();
-			expect(GeoResourceTypes.VECTOR_TILES).toBeTruthy();
-			expect(GeoResourceTypes.AGGREGATE).toBeTruthy();
+			expect(GeoResourceTypes.WMS.description).toBe('wms');
+			expect(GeoResourceTypes.WMTS.description).toBe('wmts');
+			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
+			expect(GeoResourceTypes.VECTOR_TILES.description).toBe('vt');
+			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
+			expect(GeoResourceTypes.FUTURE.description).toBe('future');
 		});
 	});
 
