@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VectorTilesGeoResource } from '../../src/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 
 
@@ -344,11 +344,11 @@ describe('GeoResource', () => {
 
 	});
 
-	describe('VectorTilesGeoResource', () => {
+	describe('VTGeoResource', () => {
 
-		it('instantiates a VectorTilesGeoResource', () => {
+		it('instantiates a VTGeoResource', () => {
 
-			const vectorGeoResource = new VectorTilesGeoResource('id', 'label', 'styleUrl');
+			const vectorGeoResource = new VTGeoResource('id', 'label', 'styleUrl');
 
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VT);
 			expect(vectorGeoResource.id).toBe('id');

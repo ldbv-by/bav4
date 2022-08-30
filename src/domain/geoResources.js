@@ -433,7 +433,7 @@ export class AggregateGeoResource extends GeoResource {
 }
 
 
-export class VectorTilesGeoResource extends GeoResource {
+export class VTGeoResource extends GeoResource {
 	constructor(id, label, styleUrl) {
 		super(id, label);
 		this._styleUrl = styleUrl;

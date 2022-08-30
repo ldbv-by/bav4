@@ -13,7 +13,7 @@
  */
 
 import { $injector } from '../injection';
-import { VectorTilesGeoResource, WMTSGeoResource } from '../domain/geoResources';
+import { VTGeoResource, WMTSGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 
@@ -164,8 +164,8 @@ export class GeoResourceService {
 		});
 
 		const baseMapDeVectorGeoResources = [
-			new VectorTilesGeoResource(FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_LABEL_2, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'),
-			new VectorTilesGeoResource(FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_3, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json')
+			new VTGeoResource(FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_LABEL_2, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'),
+			new VTGeoResource(FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_3, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json')
 		].map(gr => {
 			return gr.setAttribution({
 				description: 'basemap.de Web Vektor',

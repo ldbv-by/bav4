@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, VectorTilesGeoResource, WmsGeoResource, WMTSGeoResource } from '../../../../src/domain/geoResources';
+import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource, WMTSGeoResource } from '../../../../src/domain/geoResources';
 import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
@@ -215,12 +215,12 @@ describe('LayerService', () => {
 			});
 		});
 
-		describe('VectorTilesGeoresource', () => {
+		describe('VTGeoresource', () => {
 
-			it('converts a VectorTilesGeoresource to a olLayer', () => {
+			it('converts a VTGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const vtGeoresource = new VectorTilesGeoResource('geoResourceId', 'label', 'https://some.json');
+				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', 'https://some.json');
 
 				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 
@@ -230,10 +230,10 @@ describe('LayerService', () => {
 				expect(vtOlLayer.maplibreMap instanceof maplibregl.Map).toBeTrue();
 			});
 
-			it('converts a VectorTilesGeoresource containing optional properties to a olLayer', () => {
+			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const vtGeoresource = new VectorTilesGeoResource('geoResourceId', 'label', 'https://some.json')
+				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', 'https://some.json')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
