@@ -24,7 +24,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	WMTS: Symbol.for('wmts'),
 	VECTOR: Symbol.for('vector'),
-	VECTOR_TILES: Symbol.for('vector_tiles'),
+	VECTOR_TILES: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
 });
