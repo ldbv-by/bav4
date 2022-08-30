@@ -102,7 +102,7 @@ export class LayerService {
 				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
 			}
 
-			case GeoResourceTypes.VECTOR_TILES: {
+			case GeoResourceTypes.VT: {
 				return new MapLibreLayer({
 					id: id,
 					opacity: opacity,

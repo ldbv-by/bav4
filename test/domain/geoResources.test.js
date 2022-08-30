@@ -12,7 +12,7 @@ describe('GeoResource', () => {
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.WMTS.description).toBe('wmts');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
-			expect(GeoResourceTypes.VECTOR_TILES.description).toBe('vt');
+			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
 			expect(GeoResourceTypes.FUTURE.description).toBe('future');
 		});
@@ -350,7 +350,7 @@ describe('GeoResource', () => {
 
 			const vectorGeoResource = new VectorTilesGeoResource('id', 'label', 'styleUrl');
 
-			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR_TILES);
+			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VT);
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
 			expect(vectorGeoResource.styleUrl).toBe('styleUrl');
