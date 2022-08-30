@@ -26,6 +26,8 @@ describe('BVV GeoResource provider', () => {
 	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, extraParams: { 'foo': 'bar' }, queryable: false, ...wmsDefinition };
 	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
 	const wmtsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, ...wmtsDefinition };
+	const vtDefinition = { id: 'vtId', label: 'vtLabel', styleUrl: 'vtStyleUrl', type: 'vt', attribution: basicAttribution };
+	const vtDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, ...vtDefinition };
 	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
 	const vectorDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, ...vectorDefinition };
 	const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
@@ -86,6 +88,25 @@ describe('BVV GeoResource provider', () => {
 			expect(wmtsGeoResource.minZoom).toBe(5);
 			expect(wmtsGeoResource.maxZoom).toBe(19);
 			expect(wmtsGeoResource.queryable).toBeFalse();
+		});
+
+		it('maps a VT BVV definition to a corresponding GeoResource instance', () => {
+			const vtGeoResource = _definitionToGeoResource(vtDefinition);
+
+			vadlidateGeoResourceProperties(vtGeoResource, vtDefinition);
+			expect(vtGeoResource.styleUrl).toBe(vtGeoResource.styleUrl);
+			expect(vtGeoResource._attributionProvider).toBe(getBvvAttribution);
+			expect(vtGeoResource._attribution).not.toBeNull();
+		});
+
+		it('maps a VT BVV definition with optional properties to a corresponding GeoResource instance', () => {
+			const vtGeoResource = _definitionToGeoResource(vtDefinitionOptionalProperties);
+
+			expect(vtGeoResource.opacity).toBe(0.5);
+			expect(vtGeoResource.hidden).toBeTrue();
+			expect(vtGeoResource.minZoom).toBe(5);
+			expect(vtGeoResource.maxZoom).toBe(19);
+			expect(vtGeoResource.queryable).toBeFalse();
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', () => {
