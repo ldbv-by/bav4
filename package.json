@@ -3,7 +3,7 @@
   "dependencies": {
     "dompurify": "^2.4.0",
     "lit-html": "^2.3.1",
-    "ol": "^7.0.0",
+    "ol": "^7.1.0",
     "proj4": "^2.8.0",
     "redux": "^4.2.0",
     "vanilla-swipe": "^2.3.0"
