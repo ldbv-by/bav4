@@ -5,7 +5,7 @@ import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
-import maplibregl from 'maplibre-gl';
+import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 
 
 describe('LayerService', () => {
@@ -220,20 +220,20 @@ describe('LayerService', () => {
 			it('converts a VTGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', 'https://some.json');
+				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null);
 
 				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 
 				expect(vtOlLayer.get('id')).toBe(id);
 				expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
-				expect(vtOlLayer.maplibreMap instanceof maplibregl.Map).toBeTrue();
+				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
 			});
 
 			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', 'https://some.json')
+				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null)
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -244,7 +244,7 @@ describe('LayerService', () => {
 				expect(vtOlLayer.getOpacity()).toBe(.5);
 				expect(vtOlLayer.getMinZoom()).toBe(5);
 				expect(vtOlLayer.getMaxZoom()).toBe(19);
-				expect(vtOlLayer.maplibreMap instanceof maplibregl.Map).toBeTrue();
+				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
 			});
 		});
 
