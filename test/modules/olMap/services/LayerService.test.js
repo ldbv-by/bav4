@@ -222,12 +222,24 @@ describe('LayerService', () => {
 				const id = 'id';
 				const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null);
 
-				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+				// FF currently throws an WebGL error when running in headless mode, so we catch it here
+				// See for  ore information: https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27
+				let vtOlLayer;
+				try {
+					vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+				}
+				catch {
+					// Nothing to do
+				}
+				finally {
 
-				expect(vtOlLayer.get('id')).toBe(id);
-				expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
-				expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
-				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
+					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
+					// Todo: currently we have no simple possibility to check the correctness of the styleUrl
+					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+				}
+
 			});
 
 			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
@@ -238,13 +250,23 @@ describe('LayerService', () => {
 					.setMinZoom(5)
 					.setMaxZoom(19);
 
-				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
-
-				expect(vtOlLayer.get('id')).toBe(id);
-				expect(vtOlLayer.getOpacity()).toBe(.5);
-				expect(vtOlLayer.getMinZoom()).toBe(5);
-				expect(vtOlLayer.getMaxZoom()).toBe(19);
-				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+				// FF currently throws an WebGL error when running in headless mode, so we catch it here
+				// See for  ore information: https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27
+				let vtOlLayer;
+				try {
+					vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+				}
+				catch {
+					// Nothing to do
+				}
+				finally {
+					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.getOpacity()).toBe(.5);
+					expect(vtOlLayer.getMinZoom()).toBe(5);
+					expect(vtOlLayer.getMaxZoom()).toBe(19);
+					// Todo: currently we have no simple possibility to check the correctness of the styleUrl
+					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+				}
 			});
 		});
 
