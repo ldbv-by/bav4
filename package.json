@@ -4,7 +4,7 @@
     "@geoblocks/ol-maplibre-layer": "^0.0.4",
     "dompurify": "^2.4.0",
     "lit-html": "^2.3.1",
-    "ol": "^7.0.0",
+    "ol": "^7.1.0",
     "proj4": "^2.8.0",
     "redux": "^4.2.0",
     "vanilla-swipe": "^2.3.0"
@@ -15,8 +15,8 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^8.0.1",
-    "es-check": "^7.0.0",
-    "eslint": "^8.23.0",
+    "es-check": "^7.0.1",
+    "eslint": "^8.23.1",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
@@ -46,7 +46,7 @@
     "webpack": "^5.74.0",
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0",
-    "webpack-dev-server": "^4.10.0"
+    "webpack-dev-server": "^4.11.0"
   },
   "scripts": {
     "start": "webpack serve --open --mode=development --devtool=inline-source-map",
