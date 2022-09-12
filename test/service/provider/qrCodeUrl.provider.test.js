@@ -14,10 +14,22 @@ describe('QrCode provider', () => {
 				.registerSingleton('ConfigService', configService);
 		});
 
-		it('return a qrCode URL', () => {
+		it('returns a qrCode URL', () => {
 			const urlShorteningServiceUrl = 'https://shortening.url';
 			const urlToEncode = 'https://encode.me';
-			const expectedQrCodeUrl = urlShorteningServiceUrl + '?url=' + encodeURIComponent(urlToEncode);
+			const expectedQrCodeUrl = `${urlShorteningServiceUrl}?url=${encodeURIComponent(urlToEncode)}`;
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
+
+			const qrCodeUrl = bvvQrCodeProvider(urlToEncode);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(qrCodeUrl).toBe(expectedQrCodeUrl);
+		});
+
+		it('returns a qrCode URL for an already shortened URL', () => {
+			const urlShorteningServiceUrl = 'https://shortening.url';
+			const urlToEncode = `${urlShorteningServiceUrl}/foo`;
+			const expectedQrCodeUrl = `${urlToEncode}.png`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('SHORTENING_SERVICE_URL').and.returnValue(urlShorteningServiceUrl);
 
 			const qrCodeUrl = bvvQrCodeProvider(urlToEncode);
