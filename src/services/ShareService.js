@@ -42,7 +42,7 @@ export class ShareService {
 	}
 
 	/**
-	 * Encodes the current state to an url.
+	 * Encodes the current state to a URL.
 	 * @param {object} extraParams Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
 	 * @returns {string} url

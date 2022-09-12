@@ -154,7 +154,7 @@
 .is-desktop .tool-bar {
 	font-size: .9rem;
 	max-width: none;
-	right: -25.5em;
+	right: -35.3em;
 	bottom: .8em;
 	padding: 0em;
 }
@@ -170,7 +170,7 @@
 }
 
 .is-desktop .is-open {
-	transform: translate(-27em, 0);
+	transform: translate(-37em, 0);
 }
 
 .is-portrait .is-open,
