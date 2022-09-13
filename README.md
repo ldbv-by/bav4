@@ -30,7 +30,7 @@ Next-generation web-map viewer based on web standards.
 - Map state decoupled from map implementation
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
-  - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/lo): Vector Tiles rendering
+  - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/): Vector Tiles rendering
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
