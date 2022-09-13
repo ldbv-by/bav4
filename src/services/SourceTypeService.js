@@ -5,7 +5,7 @@ import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSo
 
 
 /**
- * Determines the source type of an Url or given data.
+ * Determines the source type of a Url or given data.
  * @class
  * @author taulinger
  * @author thiloSchlemmer

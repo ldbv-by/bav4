@@ -218,6 +218,8 @@ describe('OlMap', () => {
 			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
+			expect(element._view.get('constrainRotation')).toBeFalse();
+			expect(element._view.get('constrainResolution')).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
 			//all default controls are removed, ScaleLine control added
@@ -264,15 +266,45 @@ describe('OlMap', () => {
 		describe('rotation:change', () => {
 
 			it('updates the liveRotation property of the position state', async () => {
-				const rotationValue = .56786786;
+				const rotationValue = .5678;
 				const element = await setup();
 				const view = element._view;
-				const changeRotationEvent = new Event('change:rotation');
-				changeRotationEvent.target = { getRotation: () => rotationValue };
+				const event = new Event('change:rotation');
+				event.target = { getRotation: () => rotationValue };
 
-				view.dispatchEvent(changeRotationEvent);
+				view.dispatchEvent(event);
 
 				expect(store.getState().position.liveRotation).toBe(rotationValue);
+			});
+		});
+
+		describe('change:center', () => {
+
+			it('updates the liveCenter property of the position state', async () => {
+				const center = [21, 42];
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:center');
+				event.target = { getCenter: () => center };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveCenter).toEqual(center);
+			});
+		});
+
+		describe('change:resolution', () => {
+
+			it('updates the liveZoom property of the position state', async () => {
+				const zoom = 5.55;
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:resolution');
+				event.target = { getZoom: () => zoom };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveZoom).toBe(zoom);
 			});
 		});
 	});
@@ -329,15 +361,15 @@ describe('OlMap', () => {
 			it('updates the position state properties', async () => {
 				const element = await setup();
 				const view = element._view;
-				spyOn(view, 'getZoom');
-				spyOn(view, 'getCenter');
-				spyOn(view, 'getRotation');
+				spyOn(view, 'getZoom').and.returnValue(5);
+				spyOn(view, 'getCenter').and.returnValue([21, 42]);
+				spyOn(view, 'getRotation').and.returnValue(.5);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
-				expect(view.getZoom).toHaveBeenCalledTimes(1);
-				expect(view.getCenter).toHaveBeenCalledTimes(1);
-				expect(view.getRotation).toHaveBeenCalledTimes(1);
+				expect(store.getState().position.zoom).toBe(5);
+				expect(store.getState().position.center).toEqual([21, 42]);
+				expect(store.getState().position.rotation).toBe(.5);
 			});
 		});
 	});
@@ -657,11 +689,11 @@ describe('OlMap', () => {
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'animate');
 
-			changeZoomAndCenter({ zoom: 5, center: fromLonLat([11, 48]) });
+			changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
 			expect(viewSpy).toHaveBeenCalledWith({
 				zoom: 5,
-				center: fromLonLat([11, 48]),
+				center: [21, 42],
 				rotation: initialRotationValue,
 				duration: 200
 			});

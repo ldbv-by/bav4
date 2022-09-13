@@ -88,6 +88,16 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_no_file_found).toBe('Die Datei ist leer');
 		expect(map.toolbox_import_max_size_exceeded).toBe('Die Datei überschreitet die erlaubte Größe');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
+		expect(map.toolbox_toolbar_export_button).toBe('Export');
+		expect(map.toolbox_exportMfp_header).toBe('Export nach PDF');
+		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
+		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
+		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
+		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
+		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 Querformat');
+		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
+		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 Querformat');
+		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 Hochformat');
 	});
 
 	it('provides translation for en', () => {
@@ -175,10 +185,20 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_no_file_found).toBe('File not found');
 		expect(map.toolbox_import_max_size_exceeded).toBe('Filesize is too large');
 		expect(map.toolbox_toolbar_import_button).toBe('Import');
+		expect(map.toolbox_toolbar_export_button).toBe('Export');
+		expect(map.toolbox_exportMfp_header).toBe('Export to PDF');
+		expect(map.toolbox_exportMfp_layout).toBe('Page layout');
+		expect(map.toolbox_exportMfp_scale).toBe('Scale');
+		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
+		expect(map.toolbox_exportMfp_select_option).toBe('select...');
+		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 landscape');
+		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
+		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 landscape');
+		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 portrait');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 83;
+		const expectedSize = 93;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

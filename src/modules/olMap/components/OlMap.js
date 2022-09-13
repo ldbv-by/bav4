@@ -6,7 +6,7 @@ import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../store/layers/layers.action';
-import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../store/position/position.action';
+import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
 import { $injector } from '../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener, getLayerById } from '../utils/olMapUtils';
 import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../store/pointer/pointer.action';
@@ -99,11 +99,19 @@ export class OlMap extends MvuElement {
 			zoom: zoom,
 			rotation: rotation,
 			minZoom: this._mapService.getMinZoomLevel(),
-			maxZoom: this._mapService.getMaxZoomLevel()
+			maxZoom: this._mapService.getMaxZoomLevel(),
+			constrainRotation: false,
+			constrainResolution: true
 		});
 
 		this._view.on('change:rotation', (evt) => {
 			changeLiveRotation(evt.target.getRotation());
+		});
+		this._view.on('change:center', (evt) => {
+			changeLiveCenter(evt.target.getCenter());
+		});
+		this._view.on('change:resolution', (evt) => {
+			changeLiveZoom(evt.target.getZoom());
 		});
 
 		this._map = new MapOl({

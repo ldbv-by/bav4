@@ -10,6 +10,8 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { setCurrentTool, ToolId } from '../../../../../src/store/tools/tools.action';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
+import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -117,6 +119,12 @@ describe('ToolContainer', () => {
 						break;
 					case ToolId.SHARING:
 						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
+						break;
+					case ToolId.IMPORT:
+						expect(content.innerHTML.toString().includes(ImportToolContent.tag)).toBeTrue();
+						break;
+					case ToolId.EXPORT:
+						expect(content.innerHTML.toString().includes(ExportMfpToolContent.tag)).toBeTrue();
 						break;
 				}
 			});

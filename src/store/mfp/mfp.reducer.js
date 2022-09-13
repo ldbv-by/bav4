@@ -1,8 +1,11 @@
 
 export const ACTIVE_CHANGED = 'mfp/active';
-export const FORMAT_CHANGED = 'mfp/format';
-export const SCALE_CHANGED = 'mfp/scale';
-export const MAP_SIZE_CHANGED = 'mfp/map_size';
+export const SCALE_CHANGED = 'mfp/current/scale';
+export const ID_CHANGED = 'mfp/current/id';
+export const CURRENT_CHANGED = 'mfp/current';
+export const JOB_REQUEST_CHANGED = 'mfp/job/request';
+export const JOB_SPEC_CHANGED = 'mfp/job/spec';
+
 
 export const initialState = {
 
@@ -11,13 +14,21 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 * @property {number}
+	 * @property {MfpConstraint}
 	 */
-	scale: null,
+	current: {
+		id: null,
+		scale: null,
+		dpi: null
+	},
 	/**
-	 * @property {MapSize}
+	 *@property {EvenLike | null}
 	 */
-	mapSize: null
+	jobRequest: null,
+	/**
+	 *@property {EvenLike | null}
+	 */
+	jobSpec: null
 };
 
 export const mfpReducer = (state = initialState, action) => {
@@ -30,15 +41,35 @@ export const mfpReducer = (state = initialState, action) => {
 			};
 		}
 		case SCALE_CHANGED: {
+			const { current } = state;
 			return {
 				...state,
-				scale: payload
+				current: { ...current, scale: payload }
 			};
 		}
-		case MAP_SIZE_CHANGED: {
+		case ID_CHANGED: {
+			const { current } = state;
 			return {
 				...state,
-				mapSize: payload
+				current: { ...current, id: payload }
+			};
+		}
+		case CURRENT_CHANGED: {
+			return {
+				...state,
+				current: payload
+			};
+		}
+		case JOB_REQUEST_CHANGED: {
+			return {
+				...state,
+				jobRequest: payload
+			};
+		}
+		case JOB_SPEC_CHANGED: {
+			return {
+				...state,
+				jobSpec: payload
 			};
 		}
 	}

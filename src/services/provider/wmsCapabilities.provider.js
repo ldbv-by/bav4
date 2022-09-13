@@ -3,6 +3,28 @@ import { createUniqueId } from '../../utils/numberUtils';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../HttpService';
 
+/**
+ * Supported (content) and preferred (order) media types for getMap requests.
+ */
+export const supportedGetMapMediaTypes = [
+	'image/webp',
+	'image/png',
+	'image/gif',
+	'image/jpeg', // no transparency
+	'image/svg+xml' // supports transparency, but is more kind of experimental
+];
+
+export const _determinePreferredFormat = (arr) => {
+	const values = Array.isArray(arr) ? arr : [];
+	const sorted = [...values]
+		.filter(f => supportedGetMapMediaTypes.includes(f))
+		.sort((a, b) => supportedGetMapMediaTypes.indexOf(a) - supportedGetMapMediaTypes.indexOf(b));
+	if (sorted.length < 1) {
+		console.warn(`No supported media type found. Valid media types are: ${supportedGetMapMediaTypes}`);
+	}
+	return sorted;
+};
+
 
 export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -17,24 +39,28 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 	};
 
 	const toWmsGeoResource = (layer, capabilities, isAuthenticated = false) => {
-		return new WmsGeoResource(
-			createUniqueId().toString(),
-			layer.title,
-			`${capabilities.onlineResourceGetMap}`,
-			`${layer.name}`,
-			capabilities.formatsGetMap[0])
-			.setAuthenticationType(getAuthenticationType(isAuthenticated))
-			.setQueryable(layer.queryable)
-			.setExtraParams(getExtraParams(capabilities));
+		const format = _determinePreferredFormat(capabilities.formatsGetMap);
+		return format.length > 0
+			? new WmsGeoResource(
+				createUniqueId().toString(),
+				layer.title,
+				`${capabilities.onlineResourceGetMap}`,
+				`${layer.name}`,
+				format[0])
+				.setAuthenticationType(getAuthenticationType(isAuthenticated))
+				.setQueryable(layer.queryable)
+				.setExtraParams(getExtraParams(capabilities))
+			: null;
 	};
 
 	const readCapabilities = (capabilities) => {
 		const {	MapService: mapService } = $injector.inject('MapService');
 		const defaultGeodeticSRID = mapService.getDefaultGeodeticSrid();
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
-		return capabilities.layers?.filter((l) => containsSRID(l, defaultGeodeticSRID)).map(
-			(layer) => toWmsGeoResource(layer, capabilities, isAuthenticated)
-		);
+		return capabilities.layers
+			?.filter((l) => containsSRID(l, defaultGeodeticSRID))
+			.map((layer) => toWmsGeoResource(layer, capabilities, isAuthenticated))
+			.filter(l => !!l); // toWmsGeoResource may return null
 	};
 
 	const getCredentialOrFail = (url) => {
