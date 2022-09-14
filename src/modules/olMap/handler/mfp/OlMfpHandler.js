@@ -146,7 +146,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 		const { id, scale } = mfpSettings;
 		const layout = translate(`olMap_handler_mfp_id_${id}`);
-		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 }) ;
+		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 		return `${layout}\n1:${formattedScale}`;
 	}
 
@@ -169,7 +169,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getCapabilitiesById(id).scales].reverse();
 
-		// todo: move to utils
+		// todo: replace with array.findLast()
 		const findLast = (array, matcher) => {
 			let last = null;
 			array.forEach(e => {
@@ -180,8 +180,9 @@ export class OlMfpHandler extends OlLayerHandler {
 			return last;
 		};
 
-		// array.findLast() is {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findLast#browser_compatibility|experimental}
-		// in Firefox, the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
+		// todo: replace with array.findLast()
+		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
+		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
 		return bestScale ? bestScale : fallbackScale;
 	}
