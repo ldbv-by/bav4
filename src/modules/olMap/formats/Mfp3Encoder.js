@@ -102,9 +102,11 @@ export class Mfp3Encoder {
 				if (attribution || thirdPartyAttribution) {
 					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright.map(c => c.label) : [attribution?.copyright.label];
 
-					return { specs: [...layerSpecs.specs, restSpec],
+					return {
+						specs: [...layerSpecs.specs, restSpec],
 						dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
-						thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners] };
+						thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
+					};
 				}
 				return { specs: [], dataOwners: [], thirdPartyDataOwners: [] };
 
@@ -246,24 +248,9 @@ export class Mfp3Encoder {
 			} : encoded;
 		}, { features: [], styles: [] });
 
-		const styleObjectFrom = (styles, version = 1) => {
-			const styleObjectV1 = {
-				version: '1',
-				styleProperty: '_gx_style'
-			};
+		const styleObjectFrom = (styles) => {
 			const styleObjectV2 = {
 				version: '2'
-			};
-
-			const asV1 = (styles) => {
-				styles.forEach(style => {
-					// type-property is not needed for version 1
-					// removing this property by object destructuring
-					// eslint-disable-next-line no-unused-vars
-					const { id, type, ...pureStyleProperties } = style;
-					styleObjectV1[id] = pureStyleProperties;
-				});
-				return styleObjectV1;
 			};
 
 			const asV2 = (styles) => {
@@ -275,7 +262,7 @@ export class Mfp3Encoder {
 				});
 				return styleObjectV2;
 			};
-			return version === 1 ? asV1(styles) : asV2(styles);
+			return asV2(styles);
 		};
 		const styleVersion = this._mfpProperties.styleVersion ? this._mfpProperties.styleVersion : 1;
 		return {

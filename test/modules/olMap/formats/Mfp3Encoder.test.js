@@ -523,21 +523,23 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							graphicWidth: 56.25,
-							graphicHeight: 56.25,
-							pointRadius: 5,
-							fillColor: '#ffffff',
-							fillOpacity: 0.4,
-							strokeWidth: 2.6785714285714284,
-							strokeColor: '#3399cc',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
 						}
 					}
 				});
@@ -552,57 +554,6 @@ describe('Mfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
-				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
-
-				expect(actualSpec).toEqual({
-					opacity: 1,
-					type: 'geojson',
-					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
-					thirdPartyAttribution: null,
-					geoJson: {
-						features: [{
-							type: 'Feature',
-							geometry: {
-								type: 'Point',
-								coordinates: jasmine.any(Array)
-							},
-							properties: {
-								_gx_style: 0
-							}
-						}],
-						type: 'FeatureCollection'
-					},
-					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							graphicWidth: 56.25,
-							graphicHeight: 56.25,
-							pointRadius: 5,
-							fillColor: '#ffffff',
-							fillOpacity: 0.4,
-							strokeWidth: 2.6785714285714284,
-							strokeColor: '#3399cc',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round'
-						}
-					}
-				});
-			});
-
-			it('writes a point feature with feature style version 2', () => {
-				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
-				featureWithStyle.setStyle(getStyle());
-				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
-				const geoResourceMock = getGeoResourceMock();
-				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
-				const encoder = setup({ styleVersion: 2 });
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -678,14 +629,16 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							externalGraphic: 'https://some.url/to/image/foo.png'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								fillOpacity: 1,
+								strokeOpacity: 0,
+								externalGraphic: 'https://some.url/to/image/foo.png'
+							}]
 						}
 					}
 				});
@@ -722,24 +675,26 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							fillOpacity: 0,
-							strokeOpacity: 0,
-							graphicWidth: 56.25,
-							graphicHeight: 56.25,
-							pointRadius: 5,
-							label: 'FooBarBaz',
-							labelXOffset: 0,
-							labelYOffset: 0,
-							labelAlign: 'cm',
-							fontColor: '#000000',
-							fontFamily: 'SANS-SERIF',
-							fontSize: 10,
-							fontWeight: 'normal'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								fillOpacity: 0,
+								strokeOpacity: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								label: 'FooBarBaz',
+								labelXOffset: 0,
+								labelYOffset: 0,
+								labelAlign: 'cm',
+								fontColor: '#000000',
+								fontFamily: 'SANS-SERIF',
+								fontSize: 10,
+								fontWeight: 'normal'
+							}]
 						}
 					}
 				});
@@ -776,24 +731,26 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							fillOpacity: 0,
-							strokeOpacity: 0,
-							graphicWidth: 56.25,
-							graphicHeight: 56.25,
-							pointRadius: 5,
-							label: 'FooBarBaz',
-							labelXOffset: 0,
-							labelYOffset: 0,
-							labelAlign: 'lt',
-							fontColor: '#000000',
-							fontFamily: 'SANS-SERIF',
-							fontSize: 10,
-							fontWeight: 'normal'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								fillOpacity: 0,
+								strokeOpacity: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								label: 'FooBarBaz',
+								labelXOffset: 0,
+								labelYOffset: 0,
+								labelAlign: 'lt',
+								fontColor: '#000000',
+								fontFamily: 'SANS-SERIF',
+								fontSize: 10,
+								fontWeight: 'normal'
+							}]
 						}
 					}
 				});
@@ -830,21 +787,23 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							rotation: 0,
-							graphicWidth: 56.25,
-							graphicHeight: 56.25,
-							pointRadius: 5,
-							fillColor: '#ffffff',
-							fillOpacity: 0.4,
-							strokeWidth: 2.6785714285714284,
-							strokeColor: '#3399cc',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
 						}
 					}
 				});
@@ -871,8 +830,7 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style'
+						version: '2'
 					}
 				});
 			});
@@ -908,16 +866,18 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							fillOpacity: 0,
-							strokeWidth: 2.6785714285714284,
-							strokeColor: '#3399cc',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'linestring',
+								zIndex: 0,
+								fillOpacity: 0,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
 						}
 					}
 				});
@@ -954,13 +914,15 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							fillColor: '#ffffff',
-							fillOpacity: 0.4,
-							strokeOpacity: 0
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'polygon',
+								zIndex: 0,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeOpacity: 0
+							}]
 						}
 					}
 				});
@@ -1000,29 +962,34 @@ describe('Mfp3Encoder', () => {
 						type: 'FeatureCollection'
 					},
 					style: {
-						version: '1',
-						styleProperty: '_gx_style',
-						0: {
-							zIndex: 0,
-							fillOpacity: 0,
-							strokeWidth: 6.428571428571429,
-							strokeColor: '#ff0000',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round'
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'linestring',
+								zIndex: 0,
+								fillOpacity: 0,
+								strokeWidth: 6.428571428571429,
+								strokeColor: '#ff0000',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
 						},
-						1: {
-							zIndex: 0,
-							strokeWidth: 6.428571428571429,
-							strokeColor: '#ff0000',
-							strokeOpacity: 1,
-							strokeLinecap: 'round',
-							strokeLineJoin: 'round',
-							fillOpacity: 0
+						'[_gx_style = 1]': {
+							symbolizers: [{
+								type: 'polygon',
+								zIndex: 0,
+								strokeWidth: 6.428571428571429,
+								strokeColor: '#ff0000',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round',
+								fillOpacity: 0
+							}]
 						},
-						2: jasmine.any(Object), // the style of baseLine
-						3: jasmine.any(Object), // the style of mainTicks
-						4: jasmine.any(Object) // the style of subTicks
+						'[_gx_style = 2]': jasmine.any(Object), // the style of baseLine
+						'[_gx_style = 3]': jasmine.any(Object), // the style of mainTicks
+						'[_gx_style = 4]': jasmine.any(Object) // the style of subTicks
 					}
 				});
 			});
