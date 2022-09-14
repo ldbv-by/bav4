@@ -221,4 +221,16 @@ describe('OlMfpHandler', () => {
 			expect(classUnderTest._getAzimuth(squaredQuadrangle)).toBeCloseTo(0.0, 5);
 		});
 	});
+
+
+	describe('_getPageLabel', () => {
+
+		it('creates a pageLabel from mfpSettings', () => {
+			setup();
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo\n1:42');
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo\n1:42');
+		});
+	});
 });
