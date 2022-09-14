@@ -131,7 +131,6 @@ describe('OlMap', () => {
 			return 'featureInfoHandlerMockId';
 		}
 	};
-
 	const mfpHandlerMock = {
 		activate() { },
 		deactivate() { },
@@ -1248,7 +1247,6 @@ describe('OlMap', () => {
 			expect(element._layerHandler.get('geolocationLayerHandlerMockId')).toEqual(geolocationLayerHandlerMock);
 		});
 
-
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
 			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
@@ -1263,6 +1261,32 @@ describe('OlMap', () => {
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(geolocationLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('mfpHandler handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('mfpLayerHandlerMockId')).toEqual(mfpHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(mfpHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(mfpHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(mfpHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(mfpHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});
