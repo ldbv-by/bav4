@@ -11,7 +11,7 @@ export const loadBvvMfpCapabilities = async () => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'print/info';
 	const result = await httpService.get(`${url}`);
 
-	const readCapabilities = capabilities => capabilities.map(c => ({ id: c.name, urlId: c.urlId, scales: [...c.scales], dpis: [...c.dpis], mapSize: { ...c.map } }));
+	const readCapabilities = capabilities => capabilities.map(c => ({ id: c.id, urlId: c.urlId, scales: [...c.scales], dpis: [...c.dpis], mapSize: { ...c.mapSize } }));
 
 	switch (result.status) {
 		case 200:
