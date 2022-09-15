@@ -70,7 +70,7 @@ describe('OlMfpHandler', () => {
 		return target;
 	};
 
-	const setupMap = () => {
+	const setupMap = (size = [100, 100]) => {
 		const map = new Map({
 			layers: [
 				new TileLayer({
@@ -85,7 +85,7 @@ describe('OlMfpHandler', () => {
 				zoom: 1
 			})
 		});
-		spyOn(map, 'getSize').and.callFake(() => [100, 100]);
+		spyOn(map, 'getSize').and.callFake(() => size);
 		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => initialCenter);
 		return map;
 	};
@@ -205,8 +205,6 @@ describe('OlMfpHandler', () => {
 			expect(handler._mfpLayer).toBeNull();
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
-
-
 	});
 
 	describe('_getAzimuth', () => {
@@ -222,7 +220,6 @@ describe('OlMfpHandler', () => {
 		});
 	});
 
-
 	describe('_getPageLabel', () => {
 
 		it('creates a pageLabel from mfpSettings', () => {
@@ -231,6 +228,40 @@ describe('OlMfpHandler', () => {
 
 			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo\n1:42');
 			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo\n1:42');
+		});
+	});
+
+	describe('_getOptimalScale', () => {
+		const mapSize = [200, 200];
+
+		it('finds the largest as optimal scale', () => {
+			const map = setupMap(mapSize);
+			const view = map.getView();
+			spyOn(view, 'getResolution').and.callFake(() => 0.0001);
+			setup();
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getOptimalScale(map)).toBe(1);
+		});
+
+		it('finds the medium as optimal scale', () => {
+			const map = setupMap(mapSize);
+			const view = map.getView();
+			spyOn(view, 'getResolution').and.callFake(() => 0.005);
+			setup();
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getOptimalScale(map)).toBe(21);
+		});
+
+		it('finds the smallest as optimal scale', () => {
+			const map = setupMap(mapSize);
+			const view = map.getView();
+			spyOn(view, 'getResolution').and.callFake(() => 0.01);
+			setup();
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getOptimalScale(map)).toBe(42);
 		});
 	});
 });
