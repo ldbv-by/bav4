@@ -30,7 +30,7 @@ export const getLineString = (geometry) => {
 };
 
 /**
- *
+ * Creates a polygon from an extent
  * @param {Extent} extent the extent, which should be converted to a Polygon
  * @return {Geometry|null} the polygon representing the extent or null
  */

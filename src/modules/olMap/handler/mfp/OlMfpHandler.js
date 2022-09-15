@@ -206,7 +206,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
 			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
 			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
-			geodeticCenterCoordinate[1] + (pageSize.height / 2) //maxY
+			geodeticCenterCoordinate[1] + (pageSize.height / 2) // maxY
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
