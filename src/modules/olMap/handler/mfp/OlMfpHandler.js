@@ -1,7 +1,7 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
 import { setScale } from '../../../../store/mfp/mfp.action';
-import { Point, Polygon } from 'ol/geom';
+import { Point } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
@@ -9,6 +9,7 @@ import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
+import { getPolygonFrom } from '../../utils/olGeometryUtils';
 
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
@@ -195,23 +196,21 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
-		const geodeticCenter = center.clone().transform('EPSG:' + this._mapService.getSrid(), 'EPSG:' + this._mapService.getDefaultGeodeticSrid());
+		const mapProjection = 'EPSG:' + this._mapService.getSrid();
+		const geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
+
+		const geodeticCenter = center.clone().transform(mapProjection, geodeticProjection);
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
-		const geodeticBoundingBox = {
-			minX: geodeticCenterCoordinate[0] - (pageSize.width / 2),
-			minY: geodeticCenterCoordinate[1] - (pageSize.height / 2),
-			maxX: geodeticCenterCoordinate[0] + (pageSize.width / 2),
-			maxY: geodeticCenterCoordinate[1] + (pageSize.height / 2)
-		};
-		const geodeticBoundary = new Polygon([[
-			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY],
-			[geodeticBoundingBox.maxX, geodeticBoundingBox.maxY],
-			[geodeticBoundingBox.maxX, geodeticBoundingBox.minY],
-			[geodeticBoundingBox.minX, geodeticBoundingBox.minY],
-			[geodeticBoundingBox.minX, geodeticBoundingBox.maxY]
-		]]);
-		return geodeticBoundary.clone().transform('EPSG:' + this._mapService.getDefaultGeodeticSrid(), 'EPSG:' + this._mapService.getSrid());
+		const geodeticBoundingBox = [
+			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
+			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
+			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
+			geodeticCenterCoordinate[1] + (pageSize.height / 2) //maxY
+		];
+
+		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
+		return geodeticBoundary.clone().transform(geodeticProjection, mapProjection);
 	}
 
 	_getAzimuth(polygon) {

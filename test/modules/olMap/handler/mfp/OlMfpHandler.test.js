@@ -70,7 +70,10 @@ describe('OlMfpHandler', () => {
 		return target;
 	};
 
-	const setupMap = (size = [100, 100]) => {
+	const setupMap = (size = null, center = null, coordinateFromPixel = null) => {
+		const mapSize = size ?? [100, 100];
+		const viewCenter = center ?? initialCenter;
+		const requestedCoordinate = coordinateFromPixel ?? initialCenter;
 		const map = new Map({
 			layers: [
 				new TileLayer({
@@ -81,12 +84,12 @@ describe('OlMfpHandler', () => {
 				})],
 			target: getTarget(),
 			view: new View({
-				center: initialCenter,
+				center: viewCenter,
 				zoom: 1
 			})
 		});
-		spyOn(map, 'getSize').and.callFake(() => size);
-		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => initialCenter);
+		spyOn(map, 'getSize').and.callFake(() => mapSize);
+		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => requestedCoordinate);
 		return map;
 	};
 
@@ -262,6 +265,23 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 
 			expect(classUnderTest._getOptimalScale(map)).toBe(42);
+		});
+	});
+
+	describe('_createMfpBoundary', () => {
+		it('creates a polygon', () => {
+			const pageSize = { width: 20, height: 20 };
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			classUnderTest._map = setupMap();
+			const visibleViewPortSpy = spyOn(mapServiceMock, 'getVisibleViewport').and.callThrough();
+			const sridSpy = spyOn(mapServiceMock, 'getSrid').and.callThrough();
+			const geodeticSridSpy = spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.callThrough();
+
+			expect(classUnderTest._createMpfBoundary(pageSize)).toEqual(jasmine.any(Polygon));
+			expect(visibleViewPortSpy).toHaveBeenCalledTimes(1);
+			expect(sridSpy).toHaveBeenCalledTimes(1);
+			expect(geodeticSridSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 });
