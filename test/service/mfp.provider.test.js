@@ -19,8 +19,8 @@ describe('bvvMfpCapabilitiesProvider', () => {
 
 	it('loads an array of MfpCapabilities', async () => {
 		const backendUrl = 'https://backend.url';
-		const mockResponse = [{ 'id': 'A4 landscape', 'urlId': 0, 'mapSize': { 'width': 785, 'height': 475 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { 'id': 'A3 portrait', 'urlId': 0, 'mapSize': { 'width': 786, 'height': 1041 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }];
-		const expectedResult = [{ id: 'A4 landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { id: 'A3 portrait', urlId: 0, mapSize: { width: 786, height: 1041 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }];
+		const mockResponse = [{ 'id': 'a4_landscape', 'urlId': 0, 'mapSize': { 'width': 785, 'height': 475 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { 'id': 'a3_portrait', 'urlId': 0, 'mapSize': { 'width': 786, 'height': 1041 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }];
+		const expectedResult = [{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { id: 'a3_portrait', urlId: 0, mapSize: { width: 786, height: 1041 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }];
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 		const httpServiceSpy = spyOn(httpService, 'get').withArgs(`${backendUrl}/print/info`).and.resolveTo(new Response(
 			JSON.stringify(mockResponse))
