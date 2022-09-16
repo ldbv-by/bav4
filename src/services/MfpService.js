@@ -1,3 +1,4 @@
+import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
 import { loadBvvMfpCapabilities } from './provider/mfp.provider';
 /**
@@ -24,17 +25,45 @@ import { loadBvvMfpCapabilities } from './provider/mfp.provider';
 export class MfpService {
 
 	constructor(mfpCapabilitiesProvider = loadBvvMfpCapabilities) {
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
 	}
 
 	/**
+	 * Initializes this service, which means all MfpCapabilities are loaded and can be served in the future from the internal cache.
+	 * If initialsation fails, a fallback is delivered.
+	 * @public
+	 * @async
+	 * @returns {Promise<Array.<MfpCapabilities>>}
+	 */
+	async init() {
+		if (!this._mfpCapabilities) {
+			try {
+				this._mfpCapabilities = await this._mfpCapabilitiesProvider();
+			}
+			catch (e) {
+				this._mfpCapabilities = [];
+				if (this._environmentService.isStandalone()) {
+					this._mfpCapabilities.push(...this._newFallbackCapabilities());
+					console.warn('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
+				}
+				else {
+					console.error('MfpCapabilities could not be fetched from backend.', e);
+				}
+			}
+		}
+		return this._mfpCapabilities;
+	}
+
+	/**
 	 * @returns {Array<MfpCapabilities>} all available capbilities
 	 */
-	async getCapabilities() {
+	getCapabilities() {
 		if (!this._mfpCapabilities) {
-			this._mfpCapabilities = await this._mfpCapabilitiesProvider();
+			return [];
 		}
 		return this._mfpCapabilities;
 	}
@@ -66,5 +95,12 @@ export class MfpService {
 	 */
 	cancelJob() {
 		this._abortController?.abort();
+	}
+
+	_newFallbackCapabilities() {
+		return [
+			{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
+			{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
+		];
 	}
 }
