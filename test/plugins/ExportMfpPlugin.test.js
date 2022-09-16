@@ -12,7 +12,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 describe('ExportMfpPlugin', () => {
 
 	const mfpService = {
-		async getCapabilities() { },
+		async init() { },
 		async createJob() { },
 		cancelJob() { }
 	};
@@ -47,7 +47,7 @@ describe('ExportMfpPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
 			await instanceUnderTest.register(store);
-			spyOn(mfpService, 'getCapabilities').and.resolveTo(getMockCapabilities());
+			spyOn(mfpService, 'init').and.resolveTo(getMockCapabilities());
 
 			setCurrentTool(ToolId.EXPORT);
 
