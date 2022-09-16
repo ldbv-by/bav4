@@ -6,7 +6,6 @@ import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../st
 const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
-const Update_Capabilities = 'update_capabilities';
 const Update_Job_Started = 'update_job_started';
 
 /**
@@ -18,7 +17,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		super({
 			id: null,
 			scale: null,
-			capabilities: [],
 			isJobStarted: false
 		});
 
@@ -30,7 +28,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	onInitialize() {
 		this.observe(state => state.mfp.current, data => this.signal(Update, data));
 		this.observe(state => state.mfp.jobSpec, data => this.signal(Update_Job_Started, data));
-		this._loadCapabilities();
 	}
 
 	update(type, data, model) {
@@ -41,23 +38,15 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, scale: data };
 			case Update_Id:
 				return { ...model, id: data };
-			case Update_Capabilities:
-				return { ...model, capabilities: [...data] };
 			case Update_Job_Started:
 				return { ...model, isJobStarted: data ? data.payload !== null : false };
 		}
 	}
 
-	async _loadCapabilities() {
-		const capabilities = await this._mfpService.getCapabilities();
-		if (capabilities.length > 0) {
-			this.signal(Update_Capabilities, capabilities);
-		}
-	}
-
 	createView(model) {
-		const { id, scale, capabilities, isJobStarted } = model;
+		const { id, scale, isJobStarted } = model;
 		const translate = (key) => this._translationService.translate(key);
+		const capabilities = this._mfpService.getCapabilities();
 		const capabilitiesAvailable = capabilities.length > 0;
 
 		const onClickAction = isJobStarted ? () => cancelJob() : () => {

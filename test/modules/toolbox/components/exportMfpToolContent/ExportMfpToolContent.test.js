@@ -17,7 +17,7 @@ describe('ExportMfpToolContent', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return Promise.resolve([]);
+			return [];
 		},
 		getCapabilitiesById() {
 			return { scales: [42, 21, 1] };
@@ -70,7 +70,6 @@ describe('ExportMfpToolContent', () => {
 			expect(model).toEqual({
 				id: null,
 				scale: null,
-				capabilities: [],
 				isJobStarted: false
 			});
 		});
@@ -91,7 +90,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('renders the view with loaded capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(element.shadowRoot.querySelector('#select_layout')).toBeTruthy();
@@ -103,16 +102,15 @@ describe('ExportMfpToolContent', () => {
 
 		it('requests once the capabilities from mfpService', async () => {
 
-			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
-			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(capabilitiesSpy).toHaveBeenCalledTimes(1);
-			expect(element.getModel().capabilities).toEqual(capabilities);
 		});
 
 		it('creates select options from the capabilities', async () => {
 
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2);
@@ -140,7 +138,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('labels the layout options with a name from the capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
@@ -148,7 +146,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('labels the scale options with a formatted scale from the capabilities', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
@@ -160,7 +158,7 @@ describe('ExportMfpToolContent', () => {
 	describe('when the user selects a layout(id)', () => {
 
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
@@ -175,7 +173,7 @@ describe('ExportMfpToolContent', () => {
 		describe('and scale already specified', () => {
 
 			it('changes store', async () => {
-				spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 				element.signal('update_scale', 99);
@@ -196,7 +194,7 @@ describe('ExportMfpToolContent', () => {
 	describe('when the user selects a scale', () => {
 
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
@@ -211,7 +209,7 @@ describe('ExportMfpToolContent', () => {
 		describe('and layout(id) already specified', () => {
 
 			it('changes store, when a scale is selected and layout(id) already specified', async () => {
-				spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 				element.signal('update_map_size', { width: 420, height: 210 });
@@ -230,11 +228,13 @@ describe('ExportMfpToolContent', () => {
 	describe('when the user clicks the submit-button', () => {
 
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
+			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
+			cancelButton.click();
 
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
