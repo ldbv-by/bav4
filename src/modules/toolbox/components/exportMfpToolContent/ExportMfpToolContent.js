@@ -7,7 +7,6 @@ import { setId, setScale } from '../../../../store/mfp/mfp.action';
 const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
-const Update_Capabilities = 'update_capabilities';
 
 /**
  * @class
@@ -17,8 +16,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	constructor() {
 		super({
 			id: null,
-			scale: null,
-			capabilities: []
+			scale: null
 		});
 
 		const { TranslationService: translationService, MfpService: mfpService } = $injector.inject('TranslationService', 'MfpService');
@@ -28,7 +26,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.mfp.current, data => this.signal(Update, data));
-		this._loadCapabilities();
 	}
 
 	update(type, data, model) {
@@ -39,21 +36,13 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, scale: data };
 			case Update_Id:
 				return { ...model, id: data };
-			case Update_Capabilities:
-				return { ...model, capabilities: [...data] };
-		}
-	}
-
-	async _loadCapabilities() {
-		const capabilities = await this._mfpService.getCapabilities();
-		if (capabilities.length > 0) {
-			this.signal(Update_Capabilities, capabilities);
 		}
 	}
 
 	createView(model) {
-		const { id, scale, capabilities } = model;
+		const { id, scale } = model;
 		const translate = (key) => this._translationService.translate(key);
+		const capabilities = this._mfpService.getCapabilities();
 		const capabilitiesAvailable = capabilities.length > 0;
 
 		const onClick = () => emitNotification(`Export to MapFishPrint with '${id}' and scale 1:${scale}`, LevelTypes.INFO);
