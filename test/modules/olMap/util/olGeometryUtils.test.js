@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats } from '../../../../src/modules/olMap/utils/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -446,6 +446,13 @@ describe('getStats', () => {
 		expect(statsForPolygon.azimuth).toBeNull();
 		expect(statsForPolygon.length).toBeTruthy();
 		expect(statsForPolygon.area).toBeTruthy();
+	});
+});
+
+describe('getPolygonFrom', () => {
+
+	it('creates a polygon from an extent', () => {
+		expect(getPolygonFrom([0, 0, 1, 1]).getCoordinates()).toEqual([[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]);
 	});
 });
 
