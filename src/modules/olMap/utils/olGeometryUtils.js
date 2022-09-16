@@ -30,6 +30,26 @@ export const getLineString = (geometry) => {
 };
 
 /**
+ * Creates a polygon from an extent
+ * @param {Extent} extent the extent, which should be converted to a Polygon
+ * @return {Geometry|null} the polygon representing the extent or null
+ */
+export const getPolygonFrom = (extent) => {
+	if (!Array.isArray(extent) || extent.length !== 4) {
+		return null;
+	}
+
+	const [minx, miny, maxx, maxy] = extent;
+	return new Polygon([[
+		[minx, maxy],
+		[maxx, maxy],
+		[maxx, miny],
+		[minx, miny],
+		[minx, maxy]
+	]]);
+};
+
+/**
  * Contains informations for transformation-methods
  * @typedef {Object} CalculationHints
  * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'

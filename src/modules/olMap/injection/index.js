@@ -8,6 +8,7 @@ import { OverlayService } from '../services/OverlayService';
 import { OlDrawHandler } from '../handler/draw/OlDrawHandler';
 import { InteractionStorageService } from '../services/InteractionStorageService';
 import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
+import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -20,5 +21,6 @@ export const mapModule = ($injector) => {
 		.register('LayerService', LayerService)
 		.register('InteractionStorageService', InteractionStorageService)
 		.register('OverlayService', OverlayService)
-		.register('OlFeatureInfoHandler', OlFeatureInfoHandler);
+		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)
+		.register('OlMfpHandler', OlMfpHandler);
 };
