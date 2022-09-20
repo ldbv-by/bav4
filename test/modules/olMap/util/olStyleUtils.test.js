@@ -144,8 +144,8 @@ describe('measureStyleFunction', () => {
 		const rulerStyle = styles.find(style => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
-		const cunstomRenderer = rulerStyle.getRenderer();
-		cunstomRenderer(pixelCoordinates, stateMock);
+		const customRenderer = rulerStyle.getRenderer();
+		customRenderer(pixelCoordinates, stateMock);
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});
