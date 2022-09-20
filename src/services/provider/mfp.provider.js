@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
  * @function
  * @returns {Array<MfpCapabilities>}
  */
-export const loadBvvMfpCapabilities = async () => {
+export const loadMfpCapabilities = async () => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + 'print/info';

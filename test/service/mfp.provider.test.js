@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { loadBvvMfpCapabilities } from '../../src/services/provider/mfp.provider';
+import { loadMfpCapabilities } from '../../src/services/provider/mfp.provider';
 
 describe('bvvMfpCapabilitiesProvider', () => {
 	const configService = {
@@ -26,7 +26,7 @@ describe('bvvMfpCapabilitiesProvider', () => {
 			JSON.stringify(mockResponse))
 		);
 
-		const mfpCapabilities = await loadBvvMfpCapabilities();
+		const mfpCapabilities = await loadMfpCapabilities();
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
@@ -41,7 +41,7 @@ describe('bvvMfpCapabilitiesProvider', () => {
 			new Response(JSON.stringify({}), { status: 500 })
 		);
 
-		await expectAsync(loadBvvMfpCapabilities()).toBeRejectedWithError('MfpCapabilties could not be loaded: Http-Status 500');
+		await expectAsync(loadMfpCapabilities()).toBeRejectedWithError('MfpCapabilties could not be loaded: Http-Status 500');
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 	});

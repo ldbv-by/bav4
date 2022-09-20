@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { loadBvvMfpCapabilities } from './provider/mfp.provider';
+import { loadMfpCapabilities } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -24,7 +24,7 @@ import { loadBvvMfpCapabilities } from './provider/mfp.provider';
  */
 export class MfpService {
 
-	constructor(mfpCapabilitiesProvider = loadBvvMfpCapabilities) {
+	constructor(mfpCapabilitiesProvider = loadMfpCapabilities) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;

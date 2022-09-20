@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { MfpService } from '../../src/services/MfpService';
-import { loadBvvMfpCapabilities } from '../../src/services/provider/mfp.provider';
+import { loadMfpCapabilities } from '../../src/services/provider/mfp.provider';
 
 describe('MfpService', () => {
 
@@ -22,7 +22,7 @@ describe('MfpService', () => {
 		{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 	];
 
-	const setup = (provider = loadBvvMfpCapabilities) => {
+	const setup = (provider = loadMfpCapabilities) => {
 		return new MfpService(provider);
 	};
 
@@ -32,7 +32,7 @@ describe('MfpService', () => {
 			const instanceUnderTest = new MfpService();
 
 			expect(instanceUnderTest._abortController).toBeNull();
-			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadBvvMfpCapabilities);
+			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadMfpCapabilities);
 		});
 
 		it('instantiates the service with custom providers', async () => {
