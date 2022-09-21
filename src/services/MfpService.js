@@ -23,7 +23,6 @@ import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from './provider/mfp.pr
  * TODO: Should be renamed to BvvMfpService
  * @class
  * @author taulinger
- * @implements
  */
 export class MfpService {
 
