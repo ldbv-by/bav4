@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -27,13 +27,14 @@ import { loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  */
 export class MfpService {
 
-	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, postMpfSpecProvider = postMpfSpec) {
+	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, postMpfSpecProvider = postMpfSpec, cancelJobProvider = cancelMfpJob) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
 		this._postMpfSpecProvider = postMpfSpecProvider;
+		this._cancelJobProvider = cancelJobProvider;
 		this._urlId = '0';
 	}
 
@@ -110,10 +111,12 @@ export class MfpService {
 	}
 
 	/**
-	 * Cancels a running MFP job.
+	 * Cancels a running MFP job by its id.
+	 * @param {String} id job id
 	 */
-	cancelJob() {
+	cancelJob(id) {
 		this._abortController?.abort();
+		this._cancelJobProvider(id, this._urlId);
 	}
 
 	_newFallbackCapabilities() {

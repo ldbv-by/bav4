@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { MfpService } from '../../src/services/MfpService';
-import { loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 
 describe('MfpService', () => {
 
@@ -24,8 +24,8 @@ describe('MfpService', () => {
 			{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 		] };
 
-	const setup = (capabilitiesProvider = loadMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
-		return new MfpService(capabilitiesProvider, postMfpSpecProvider);
+	const setup = (capabilitiesProvider = loadMfpCapabilities, postMfpSpecProvider = postMpfSpec, cancelJobProvider = cancelMfpJob) => {
+		return new MfpService(capabilitiesProvider, postMfpSpecProvider, cancelJobProvider);
 	};
 
 	describe('constructor', () => {
@@ -36,15 +36,20 @@ describe('MfpService', () => {
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadMfpCapabilities);
 			expect(instanceUnderTest._postMpfSpecProvider).toEqual(postMpfSpec);
+			expect(instanceUnderTest._cancelJobProvider).toEqual(cancelMfpJob);
 			expect(instanceUnderTest._urlId).toBe('0');
 		});
 
 		it('instantiates the service with custom providers', async () => {
 			const customCapabilitiesProvider = async () => { };
 			const customPostMfpSpecProvider = async () => { };
-			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
+			const customCancelMfpProvider = async () => { };
+
+			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider, customCancelMfpProvider);
+
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customCapabilitiesProvider);
 			expect(instanceUnderTest._postMpfSpecProvider).toEqual(customPostMfpSpecProvider);
+			expect(instanceUnderTest._cancelJobProvider).toEqual(customCancelMfpProvider);
 			expect(instanceUnderTest._urlId).toBe('0');
 		});
 	});
@@ -144,7 +149,7 @@ describe('MfpService', () => {
 
 	describe('createJob', () => {
 
-		it('creates a new Mfp job and returns a URL pointing to the generated resource', async () => {
+		it('creates a new MFP job and returns a URL pointing to the generated resource', async () => {
 			const downloadUrl = 'http://foo.bar';
 			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(downloadUrl);
 			const instanceUnderTest = setup(null, postMfpSpecProvider);
@@ -164,7 +169,7 @@ describe('MfpService', () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(null, async () => {
-					throw new Error('Mfp spec could not be posted');
+					throw new Error('MFP spec could not be posted');
 				});
 				const warnSpy = spyOn(console, 'warn');
 
@@ -179,12 +184,12 @@ describe('MfpService', () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(null, async () => {
-					throw new Error('Mfp spec could not be posted');
+					throw new Error('MFP spec could not be posted');
 				});
 
 				const promise = instanceUnderTest.createJob(mfpSpec);
 
-				await expectAsync(promise).toBeRejectedWithError('Pdf request was not successful: Error: Mfp spec could not be posted');
+				await expectAsync(promise).toBeRejectedWithError('Pdf request was not successful: Error: MFP spec could not be posted');
 				expect(instanceUnderTest._abortController).toBeNull();
 			});
 		});
@@ -192,23 +197,20 @@ describe('MfpService', () => {
 
 	describe('cancelJob', () => {
 
-		it('cancels a running Mfp job', async () => {
-			const downloadUrl = 'http://foo.bar';
-			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(downloadUrl);
-			const instanceUnderTest = setup(null, postMfpSpecProvider);
-			const mfpSpec = { foo: 'bar' };
-			instanceUnderTest.createJob(mfpSpec);
-			const spy = spyOn(instanceUnderTest._abortController, 'abort');
+		it('cancel a running MFP job by its id', async () => {
+			const id = 'id';
+			const cancelJobProvider = jasmine.createSpy().and.resolveTo();
+			const instanceUnderTest = setup(null, null, cancelJobProvider);
 
-			instanceUnderTest.cancelJob();
+			instanceUnderTest.cancelJob(id);
 
-			expect(spy).toHaveBeenCalled();
+			expect(cancelJobProvider).toHaveBeenCalledWith(id, instanceUnderTest._urlId);
 		});
 	});
 
 	describe('_newFallbackCapabilities', () => {
 
-		it('cancels a running Mfp job', async () => {
+		it('cancels a running MFP job', async () => {
 			const expected = [
 				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
