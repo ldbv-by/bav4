@@ -132,8 +132,10 @@ describe('ExportMfpPlugin', () => {
 
 				startJob(spec);
 
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
+				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 		});
 
