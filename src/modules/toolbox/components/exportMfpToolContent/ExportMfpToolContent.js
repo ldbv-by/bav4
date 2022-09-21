@@ -39,7 +39,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			case Update_Id:
 				return { ...model, id: data };
 			case Update_Job_Started:
-				return { ...model, isJobStarted: data ? data.payload !== null : false };
+				return { ...model, isJobStarted: !!data?.payload };
 		}
 	}
 
