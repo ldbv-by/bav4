@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { MfpService } from '../../src/services/MfpService';
-import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 
 describe('MfpService', () => {
 
@@ -24,7 +24,7 @@ describe('MfpService', () => {
 			{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 		] };
 
-	const setup = (capabilitiesProvider = loadMfpCapabilities, postMfpSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) => {
+	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) => {
 		return new MfpService(capabilitiesProvider, postMfpSpecProvider, cancelJobProvider);
 	};
 
@@ -34,7 +34,7 @@ describe('MfpService', () => {
 			const instanceUnderTest = new MfpService();
 
 			expect(instanceUnderTest._abortController).toBeNull();
-			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadMfpCapabilities);
+			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(getMfpCapabilities);
 			expect(instanceUnderTest._createMpfSpecProvider).toEqual(postMpfSpec);
 			expect(instanceUnderTest._cancelJobProvider).toEqual(deleteMfpJob);
 			expect(instanceUnderTest._urlId).toBe('0');

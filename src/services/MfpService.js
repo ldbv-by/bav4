@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -27,7 +27,7 @@ import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.p
  */
 export class MfpService {
 
-	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, createMpfSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) {
+	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;

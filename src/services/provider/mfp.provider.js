@@ -12,7 +12,7 @@ import { HttpService, MediaType } from '../HttpService';
  * @function
  * @returns {Array<BvvMfpCapabilities>}
  */
-export const loadMfpCapabilities = async () => {
+export const getMfpCapabilities = async () => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + 'print/info';

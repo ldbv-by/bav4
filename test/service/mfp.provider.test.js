@@ -1,9 +1,9 @@
 import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
-import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 
-	describe('loadMfpCapabilities', () => {
+	describe('getMfpCapabilities', () => {
 		const configService = {
 			getValueAsPath() { }
 		};
@@ -21,7 +21,6 @@ describe('mfp provider', () => {
 			$injector.reset();
 		});
 
-
 		it('loads an array of MfpCapabilities', async () => {
 			const backendUrl = 'https://backend.url';
 			const mockResponse = { 'urlId': 0, layouts: [{ 'id': 'a4_landscape', 'mapSize': { 'width': 785, 'height': 475 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { 'id': 'a3_portrait', 'mapSize': { 'width': 786, 'height': 1041 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }] };
@@ -30,7 +29,7 @@ describe('mfp provider', () => {
 				JSON.stringify(mockResponse))
 			);
 
-			const mfpCapabilities = await loadMfpCapabilities();
+			const mfpCapabilities = await getMfpCapabilities();
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
@@ -45,7 +44,7 @@ describe('mfp provider', () => {
 				new Response(JSON.stringify({}), { status: 500 })
 			);
 
-			await expectAsync(loadMfpCapabilities()).toBeRejectedWithError('MfpCapabilties could not be loaded: Http-Status 500');
+			await expectAsync(getMfpCapabilities()).toBeRejectedWithError('MfpCapabilties could not be loaded: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
@@ -68,7 +67,6 @@ describe('mfp provider', () => {
 		afterEach(() => {
 			$injector.reset();
 		});
-
 
 		it('posts the mfp spec and returns a download URL', async () => {
 			const abortController = new AbortController();
@@ -131,7 +129,6 @@ describe('mfp provider', () => {
 		afterEach(() => {
 			$injector.reset();
 		});
-
 
 		it('cancels a mfp job', async () => {
 			const id = 'id';
