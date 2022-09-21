@@ -2,6 +2,12 @@ import { $injector } from '../../injection';
 import { HttpService, MediaType } from '../HttpService';
 
 /**
+ * @typedef {Object} BvvMfpCapabilities
+ * @property {string} urlId
+ * @property {Array<MfpCapabilities>} layouts
+ */
+
+/**
  * Uses the BVV backend to load an array of MfpCapabilities.
  * @function
  * @returns {Array<BvvMfpCapabilities>}
