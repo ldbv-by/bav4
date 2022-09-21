@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
-import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 
 	describe('loadMfpCapabilities', () => {
@@ -114,7 +114,7 @@ describe('mfp provider', () => {
 		});
 	});
 
-	describe('cancelMfpJob', () => {
+	describe('deleteMfpJob', () => {
 		const configService = {
 			getValueAsPath() { }
 		};
@@ -140,7 +140,7 @@ describe('mfp provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'delete').withArgs(`${backendUrl}/print/cancel/${id}/${urlId}`).and.resolveTo(new Response());
 
-			await cancelMfpJob(id, urlId);
+			await deleteMfpJob(id, urlId);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();

@@ -57,7 +57,7 @@ export const postMpfSpec = async (spec, urlId, abortController) => {
  * Uses the BVV backend to cancel a job request.
  * @function
  */
-export const cancelMfpJob = async (id, urlId) => {
+export const deleteMfpJob = async (id, urlId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = `${configService.getValueAsPath('BACKEND_URL')}print/cancel/${id}/${urlId}`;
 	await httpService.delete(url); // no response status code evaluation needed

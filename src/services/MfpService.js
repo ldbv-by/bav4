@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { deleteMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -27,13 +27,13 @@ import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from './provider/mfp.p
  */
 export class MfpService {
 
-	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, postMpfSpecProvider = postMpfSpec, cancelJobProvider = cancelMfpJob) {
+	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, createMpfSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
-		this._postMpfSpecProvider = postMpfSpecProvider;
+		this._createMpfSpecProvider = createMpfSpecProvider;
 		this._cancelJobProvider = cancelJobProvider;
 		this._urlId = '0';
 	}
@@ -93,7 +93,7 @@ export class MfpService {
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		try {
-			return (await this._postMpfSpecProvider(spec, this._urlId, this._abortController));
+			return (await this._createMpfSpecProvider(spec, this._urlId, this._abortController));
 		}
 		catch (e) {
 			if (this._environmentService.isStandalone()) {
