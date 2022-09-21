@@ -4,7 +4,7 @@ import { HttpService, MediaType } from '../HttpService';
 /**
  * Uses the BVV backend to load an array of MfpCapabilities.
  * @function
- * @returns {Array<MfpCapabilities>}
+ * @returns {Array<BvvMfpCapabilities>}
  */
 export const loadMfpCapabilities = async () => {
 
@@ -12,11 +12,9 @@ export const loadMfpCapabilities = async () => {
 	const url = configService.getValueAsPath('BACKEND_URL') + 'print/info';
 	const result = await httpService.get(`${url}`);
 
-	const readCapabilities = capabilities => capabilities.map(c => ({ id: c.id, urlId: c.urlId, scales: [...c.scales], dpis: [...c.dpis], mapSize: { ...c.mapSize } }));
-
 	switch (result.status) {
 		case 200:
-			return readCapabilities(await result.json());
+			return (await result.json());
 		default:
 			throw new Error(`MfpCapabilties could not be loaded: Http-Status ${result.status}`);
 	}
