@@ -39,7 +39,7 @@
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.3.1",
-    "stylelint": "^14.12.0",
+    "stylelint": "^14.12.1",
     "stylelint-config-recommended": "^9.0.0",
     "to-string-loader": "^1.2.0",
     "webpack": "^5.74.0",
