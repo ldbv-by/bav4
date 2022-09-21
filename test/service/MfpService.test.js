@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { MfpService } from '../../src/services/MfpService';
-import { loadMfpCapabilities } from '../../src/services/provider/mfp.provider';
+import { loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 
 describe('MfpService', () => {
 
@@ -22,8 +22,8 @@ describe('MfpService', () => {
 		{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 	];
 
-	const setup = (provider = loadMfpCapabilities) => {
-		return new MfpService(provider);
+	const setup = (capabilitiesProvider = loadMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
+		return new MfpService(capabilitiesProvider, postMfpSpecProvider);
 	};
 
 	describe('constructor', () => {
@@ -33,12 +33,15 @@ describe('MfpService', () => {
 
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadMfpCapabilities);
+			expect(instanceUnderTest._postMpfSpecProvider).toEqual(postMpfSpec);
 		});
 
 		it('instantiates the service with custom providers', async () => {
-			const customProvider = async () => { };
-			const instanceUnderTest = setup(customProvider);
-			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customProvider);
+			const customCapabilitiesProvider = async () => { };
+			const customPostMfpSpecProvider = async () => { };
+			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
+			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customCapabilitiesProvider);
+			expect(instanceUnderTest._postMpfSpecProvider).toEqual(customPostMfpSpecProvider);
 		});
 	});
 
@@ -64,7 +67,7 @@ describe('MfpService', () => {
 
 		describe('provider cannot fulfill', () => {
 
-			it('loads two fallback topics when we are in standalone mode', async () => {
+			it('loads fallback capabilities when we are in standalone mode', async () => {
 
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(async () => {
@@ -137,22 +140,58 @@ describe('MfpService', () => {
 
 	describe('createJob', () => {
 
-		it('creates a new MFP job and returns a URL pointing to the generated resource', async () => {
-			const instanceUnderTest = new MfpService();
+		it('creates a new Mfp job and returns a URL pointing to the generated resource', async () => {
+			const downloadUrl = 'http://foo.bar';
+			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(downloadUrl);
+			const instanceUnderTest = setup(null, postMfpSpecProvider);
 			const mfpSpec = { foo: 'bar' };
 
 			const promise = instanceUnderTest.createJob(mfpSpec);
 
 			expect(instanceUnderTest._abortController).not.toBeNull();
-			await expectAsync(promise).toBeResolvedTo('http://www.africau.edu/images/default/sample.pdf');
+			expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
+			await expectAsync(promise).toBeResolvedTo(downloadUrl);
 			expect(instanceUnderTest._abortController).toBeNull();
+		});
+
+		describe('provider cannot fulfill', () => {
+
+			it('it simultates creating the Mfp job when we are in standalone mode', async () => {
+				const mfpSpec = { foo: 'bar' };
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const instanceUnderTest = setup(null, async () => {
+					throw new Error('Mfp spec could not be posted');
+				});
+				const warnSpy = spyOn(console, 'warn');
+
+				const result = await instanceUnderTest.createJob(mfpSpec);
+
+				expect(result).toBe('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+				expect(warnSpy).toHaveBeenCalledWith('No backend available, simulating Pdf request...');
+				expect(instanceUnderTest._abortController).toBeNull();
+			});
+
+			it('logs an error when we are NOT in standalone mode', async () => {
+				const mfpSpec = { foo: 'bar' };
+				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				const instanceUnderTest = setup(null, async () => {
+					throw new Error('Mfp spec could not be posted');
+				});
+
+				const promise = instanceUnderTest.createJob(mfpSpec);
+
+				await expectAsync(promise).toBeRejectedWithError('Pdf request was not successful: Error: Mfp spec could not be posted');
+				expect(instanceUnderTest._abortController).toBeNull();
+			});
 		});
 	});
 
 	describe('cancelJob', () => {
 
-		it('cancels an running MFP job', async () => {
-			const instanceUnderTest = new MfpService();
+		it('cancels a running Mfp job', async () => {
+			const downloadUrl = 'http://foo.bar';
+			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(downloadUrl);
+			const instanceUnderTest = setup(null, postMfpSpecProvider);
 			const mfpSpec = { foo: 'bar' };
 			instanceUnderTest.createJob(mfpSpec);
 			const spy = spyOn(instanceUnderTest._abortController, 'abort');
@@ -165,7 +204,7 @@ describe('MfpService', () => {
 
 	describe('_newFallbackCapabilities', () => {
 
-		it('cancels an running MFP job', async () => {
+		it('cancels a running Mfp job', async () => {
 			const expected = [
 				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }

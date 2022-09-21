@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { loadMfpCapabilities } from './provider/mfp.provider';
+import { loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -19,17 +19,22 @@ import { loadMfpCapabilities } from './provider/mfp.provider';
 
 
 /**
+ * BVV specific service which communicates with the BVV backend to create a Mapfish Print report.
+ * TODO: Should be renamed to BvvMfpService
  * @class
  * @author taulinger
+ * @implements
  */
 export class MfpService {
 
-	constructor(mfpCapabilitiesProvider = loadMfpCapabilities) {
+	constructor(mfpCapabilitiesProvider = loadMfpCapabilities, postMpfSpecProvider = postMpfSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
+		this._postMpfSpecProvider = postMpfSpecProvider;
+		this._urlId = '0';
 	}
 
 	/**
@@ -82,12 +87,24 @@ export class MfpService {
 	 * @param {object} mfp spec
 	 * @returns url as string
 	 */
-	// eslint-disable-next-line no-unused-vars
 	async createJob(spec) {
 		this._abortController = new AbortController();
-		await sleep(2500); // let's fake latency
-		this._abortController = null;
-		return 'http://www.africau.edu/images/default/sample.pdf';
+		try {
+			return (await this._postMpfSpecProvider(spec, this._urlId, this._abortController));
+		}
+		catch (e) {
+			if (this._environmentService.isStandalone()) {
+				console.warn('No backend available, simulating Pdf request...');
+				await sleep(2500); // let's fake latency
+				return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+			}
+			else {
+				throw new Error(`Pdf request was not successful: ${e}`);
+			}
+		}
+		finally {
+			this._abortController = null;
+		}
 	}
 
 	/**
