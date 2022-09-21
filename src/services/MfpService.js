@@ -19,7 +19,7 @@ import { loadMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 
 
 /**
- * BVV specific service which communicates with the BVV backend to create a Mapfish Print report.
+ * BVV specific service that communicates with the BVV backend to create a Mapfish Print report.
  * TODO: Should be renamed to BvvMfpService
  * @class
  * @author taulinger
@@ -47,7 +47,9 @@ export class MfpService {
 	async init() {
 		if (!this._mfpCapabilities) {
 			try {
-				this._mfpCapabilities = await this._mfpCapabilitiesProvider();
+				const { urlId, layouts } = await this._mfpCapabilitiesProvider();
+				this._mfpCapabilities = layouts;
+				this._urlId = urlId;
 			}
 			catch (e) {
 				this._mfpCapabilities = [];

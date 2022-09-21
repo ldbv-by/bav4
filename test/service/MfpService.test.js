@@ -15,12 +15,14 @@ describe('MfpService', () => {
 
 	const scales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
 	const dpis = [125, 200];
-	const mockCapabilities = [
-		{ id: 'a4_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
-		{ id: 'a4_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } },
-		{ id: 'a3_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 786, height: 1041 } },
-		{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
-	];
+	const bvvMockCapabilities = {
+		urlId: '0',
+		layouts: [
+			{ id: 'a4_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
+			{ id: 'a4_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } },
+			{ id: 'a3_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 786, height: 1041 } },
+			{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
+		] };
 
 	const setup = (capabilitiesProvider = loadMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
 		return new MfpService(capabilitiesProvider, postMfpSpecProvider);
@@ -34,6 +36,7 @@ describe('MfpService', () => {
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(loadMfpCapabilities);
 			expect(instanceUnderTest._postMpfSpecProvider).toEqual(postMpfSpec);
+			expect(instanceUnderTest._urlId).toBe('0');
 		});
 
 		it('instantiates the service with custom providers', async () => {
@@ -42,13 +45,14 @@ describe('MfpService', () => {
 			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customCapabilitiesProvider);
 			expect(instanceUnderTest._postMpfSpecProvider).toEqual(customPostMfpSpecProvider);
+			expect(instanceUnderTest._urlId).toBe('0');
 		});
 	});
 
 	describe('init', () => {
 
 		it('initializes the service', async () => {
-			const instanceUnderTest = setup(async () => mockCapabilities);
+			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 			expect(instanceUnderTest._mfpCapabilities).toBeNull();
 
 			const mfpCapabilities = await instanceUnderTest.init();
@@ -56,9 +60,9 @@ describe('MfpService', () => {
 			expect(mfpCapabilities.length).toBe(4);
 		});
 
-		it('just provides the topics when already initialized', async () => {
+		it('just provides the capabilities when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._mfpCapabilities = mockCapabilities;
+			instanceUnderTest._mfpCapabilities = bvvMockCapabilities.layouts;
 
 			const mfpCapabilities = await instanceUnderTest.init();
 
@@ -102,21 +106,21 @@ describe('MfpService', () => {
 	describe('getCapabilities', () => {
 
 		it('returns an empty array of MfpCapabilities when not initialized', async () => {
-			const provider = jasmine.createSpy().and.resolveTo(mockCapabilities);
+			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities.layouts);
 			const instanceUnderTest = setup(provider);
 
 			expect(instanceUnderTest.getCapabilities()).toHaveSize(0);
 		});
 
 		it('returns an array of MfpCapabilities', async () => {
-			const provider = jasmine.createSpy().and.resolveTo(mockCapabilities);
+			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities);
 			const instanceUnderTest = setup(provider);
 			await instanceUnderTest.init();
 
 			// first call served from provider
-			expect(instanceUnderTest.getCapabilities()).toEqual(mockCapabilities);
+			expect(instanceUnderTest.getCapabilities()).toEqual(bvvMockCapabilities.layouts);
 			// second from cache
-			expect(instanceUnderTest.getCapabilities()).toEqual(mockCapabilities);
+			expect(instanceUnderTest.getCapabilities()).toEqual(bvvMockCapabilities.layouts);
 			expect(provider).toHaveBeenCalledTimes(1);
 		});
 	});
@@ -124,13 +128,13 @@ describe('MfpService', () => {
 	describe('getCapabilitiesById', () => {
 
 		it('returns NULL when not initialized', async () => {
-			const instanceUnderTest = setup(async () => mockCapabilities);
+			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 
 			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).toBeNull();
 		});
 
 		it('returns a MfpCapabilities object by its id', async () => {
-			const instanceUnderTest = setup(async () => mockCapabilities);
+			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 			await instanceUnderTest.init();
 
 			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).not.toBeNull();
