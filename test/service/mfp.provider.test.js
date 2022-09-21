@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
-import { loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { cancelMfpJob, loadMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 
 	describe('loadMfpCapabilities', () => {
@@ -113,4 +113,38 @@ describe('mfp provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
+
+	describe('cancelMfpJob', () => {
+		const configService = {
+			getValueAsPath() { }
+		};
+
+		const httpService = {
+			async delete() { }
+		};
+
+		beforeEach(() => {
+			$injector
+				.registerSingleton('ConfigService', configService)
+				.registerSingleton('HttpService', httpService);
+		});
+		afterEach(() => {
+			$injector.reset();
+		});
+
+
+		it('cancels a mfp job', async () => {
+			const id = 'id';
+			const urlId = '0';
+			const backendUrl = 'https://backend.url';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const httpServiceSpy = spyOn(httpService, 'delete').withArgs(`${backendUrl}/print/cancel/${id}/${urlId}`).and.resolveTo(new Response());
+
+			await cancelMfpJob(id, urlId);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
+	});
+
 });
