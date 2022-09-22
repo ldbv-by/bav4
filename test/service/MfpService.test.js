@@ -38,6 +38,7 @@ describe('MfpService', () => {
 			expect(instanceUnderTest._createMpfSpecProvider).toEqual(postMpfSpec);
 			expect(instanceUnderTest._cancelJobProvider).toEqual(deleteMfpJob);
 			expect(instanceUnderTest._urlId).toBe('0');
+			expect(instanceUnderTest._jobId).toBeNull();
 		});
 
 		it('instantiates the service with custom providers', async () => {
@@ -51,6 +52,7 @@ describe('MfpService', () => {
 			expect(instanceUnderTest._createMpfSpecProvider).toEqual(customPostMfpSpecProvider);
 			expect(instanceUnderTest._cancelJobProvider).toEqual(customCancelMfpProvider);
 			expect(instanceUnderTest._urlId).toBe('0');
+			expect(instanceUnderTest._jobId).toBeNull();
 		});
 	});
 
@@ -150,17 +152,22 @@ describe('MfpService', () => {
 	describe('createJob', () => {
 
 		it('creates a new MFP job and returns a URL pointing to the generated resource', async () => {
-			const downloadUrl = 'http://foo.bar';
-			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(downloadUrl);
+			const bvvMfpJob = {
+				downloadURL: 'http://foo.bar',
+				id: 'id'
+			};
+			const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(bvvMfpJob);
 			const instanceUnderTest = setup(null, postMfpSpecProvider);
 			const mfpSpec = { foo: 'bar' };
 
 			const promise = instanceUnderTest.createJob(mfpSpec);
 
 			expect(instanceUnderTest._abortController).not.toBeNull();
+			expect(instanceUnderTest._jobId).toBeNull();
 			expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
-			await expectAsync(promise).toBeResolvedTo(downloadUrl);
+			await expectAsync(promise).toBeResolvedTo(bvvMfpJob.downloadURL);
 			expect(instanceUnderTest._abortController).toBeNull();
+			expect(instanceUnderTest._jobId).toBe(bvvMfpJob.id);
 		});
 
 		describe('provider cannot fulfill', () => {
@@ -201,10 +208,22 @@ describe('MfpService', () => {
 			const id = 'id';
 			const cancelJobProvider = jasmine.createSpy().and.resolveTo();
 			const instanceUnderTest = setup(null, null, cancelJobProvider);
+			instanceUnderTest._jobId = 'id';
 
-			instanceUnderTest.cancelJob(id);
+			instanceUnderTest.cancelJob();
 
 			expect(cancelJobProvider).toHaveBeenCalledWith(id, instanceUnderTest._urlId);
+			expect(instanceUnderTest._jobId).toBeNull();
+		});
+
+		it('does nothing when jobId is NULL', async () => {
+			const cancelJobProvider = jasmine.createSpy();
+			const instanceUnderTest = setup(null, null, cancelJobProvider);
+
+			instanceUnderTest.cancelJob();
+
+			expect(cancelJobProvider).not.toHaveBeenCalled();
+			expect(instanceUnderTest._jobId).toBeNull();
 		});
 	});
 

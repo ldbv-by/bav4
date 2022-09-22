@@ -35,6 +35,7 @@ export class MfpService {
 		this._createMpfSpecProvider = createMpfSpecProvider;
 		this._cancelJobProvider = cancelJobProvider;
 		this._urlId = '0';
+		this._jobId = null;
 	}
 
 	/**
@@ -87,12 +88,14 @@ export class MfpService {
 	/**
 	 * Creates a new MFP job and returns a URL pointing to the generated resource.
 	 * @param {object} mfp spec
-	 * @returns url as string
+	 * @returns download URL as string
 	 */
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		try {
-			return (await this._createMpfSpecProvider(spec, this._urlId, this._abortController));
+			const { id, downloadURL } = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
+			this._jobId = id;
+			return downloadURL;
 		}
 		catch (e) {
 			if (this._environmentService.isStandalone()) {
@@ -113,9 +116,12 @@ export class MfpService {
 	 * Cancels a running MFP job by its id.
 	 * @param {String} id job id
 	 */
-	cancelJob(id) {
-		this._abortController?.abort();
-		this._cancelJobProvider(id, this._urlId);
+	cancelJob() {
+		if (this._jobId) {
+			this._abortController?.abort();
+			this._cancelJobProvider(this._jobId, this._urlId);
+		}
+		this._jobId = null;
 	}
 
 	_newFallbackCapabilities() {
