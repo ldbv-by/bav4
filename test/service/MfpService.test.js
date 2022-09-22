@@ -1,8 +1,8 @@
 import { $injector } from '../../src/injection';
-import { MfpService } from '../../src/services/MfpService';
+import { BvvMfpService } from '../../src/services/MfpService';
 import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 
-describe('MfpService', () => {
+describe('BvvMfpService', () => {
 
 	const environmentService = {
 		isStandalone: () => { }
@@ -25,13 +25,13 @@ describe('MfpService', () => {
 		] };
 
 	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) => {
-		return new MfpService(capabilitiesProvider, postMfpSpecProvider, cancelJobProvider);
+		return new BvvMfpService(capabilitiesProvider, postMfpSpecProvider, cancelJobProvider);
 	};
 
 	describe('constructor', () => {
 
 		it('instantiates the service with default providers', async () => {
-			const instanceUnderTest = new MfpService();
+			const instanceUnderTest = new BvvMfpService();
 
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(getMfpCapabilities);
@@ -234,7 +234,7 @@ describe('MfpService', () => {
 				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
 			];
-			const instanceUnderTest = new MfpService();
+			const instanceUnderTest = new BvvMfpService();
 
 			expect(instanceUnderTest._newFallbackCapabilities()).toEqual(expected);
 		});

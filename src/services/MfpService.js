@@ -17,14 +17,55 @@ import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from './provider/mfp.pr
  * @property {number} height
  */
 
+/**
+ * Service for persisting and loading ASCII based geodata.
+ * @author taulinger
+ * @interface MfpService
+ */
+
+/**
+ * Initializes this service, which means all MfpCapabilities are loaded and can be served in the future from an internal cache.
+ * @function
+ * @async
+ * @name MfpService#init
+ * @returns {Promise<Array.<MfpCapabilities>>}
+ */
+
+/**
+ * @function
+ * @name MfpService#getCapabilities
+ * @returns {Array<MfpCapabilities>} available MfpCapabilities
+ */
+
+/**
+ * @function
+ * @name MfpService#getCapabilitiesById
+ * @param {string} id Id of the desired {@link MfpCapabilities}
+ * @returns {MfpCapabilities|null}
+ */
+
+/**
+ * Creates a new MFP job and returns a URL pointing to the generated resource.
+ * @function
+ * @async
+ * @name MfpService#createJob
+ * @param {object} spec MFP3 spec
+ * @returns {String} downloadURL
+ */
+
+/**
+ * Cancels a running MFP job.
+ * @function
+ * @name MfpService#cancelJob
+ */
 
 /**
  * BVV specific service that communicates with the BVV backend to create a Mapfish Print report.
- * TODO: Should be renamed to BvvMfpService
  * @class
  * @author taulinger
+ * @implements {MfpService}
  */
-export class MfpService {
+export class BvvMfpService {
 
 	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -86,8 +127,8 @@ export class MfpService {
 	}
 
 	/**
-	 * Creates a new MFP job and returns a URL pointing to the generated resource.
-	 * @param {object} mfp spec
+	 * Creates a new MFP3 job and returns a URL pointing to the generated resource.
+	 * @param {object} spec MFP3 spec
 	 * @returns download URL as string
 	 */
 	async createJob(spec) {
@@ -113,8 +154,7 @@ export class MfpService {
 	}
 
 	/**
-	 * Cancels a running MFP job by its id.
-	 * @param {String} id job id
+	 * Cancels a running MFP job.
 	 */
 	cancelJob() {
 		if (this._jobId) {
