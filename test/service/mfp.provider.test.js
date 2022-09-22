@@ -68,10 +68,11 @@ describe('mfp provider', () => {
 			$injector.reset();
 		});
 
-		it('posts the mfp spec and returns a download URL', async () => {
+		it('posts the mfp spec and returns a BvvMfJob object', async () => {
 			const abortController = new AbortController();
 			const spec = { foo: 'bar' };
 			const urlId = '0';
+			const id = 'id';
 			const downloadUrl = 'http://foo.bar';
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
@@ -86,15 +87,17 @@ describe('mfp provider', () => {
 			};
 			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(`${backendUrl}/print/create/${urlId}`, options, abortController).and.resolveTo(new Response(
 				JSON.stringify({
-					downloadURL: downloadUrl
+					downloadURL: downloadUrl,
+					id: id
 				}))
 			);
 
 			const result = await postMpfSpec(spec, urlId, abortController);
 
+			expect(result.downloadURL).toBe(downloadUrl);
+			expect(result.id).toBe(id);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(result).toBe(downloadUrl);
 		});
 
 		it('throws error on failed request', async () => {

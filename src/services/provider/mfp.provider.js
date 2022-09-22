@@ -8,6 +8,12 @@ import { HttpService, MediaType } from '../HttpService';
  */
 
 /**
+ * @typedef {Object} BvvMfpJob
+ * @property {string} downloadUrl
+ * @property {string} id jobId
+ */
+
+/**
  * Uses the BVV backend to load an array of BvvMfpCapabilities.
  * @function
  * @returns {Array<BvvMfpCapabilities>}
@@ -29,7 +35,7 @@ export const getMfpCapabilities = async () => {
 /**
  * Uses the BVV backend to create a job request.
  * @function
- * @returns {String} download URL
+ * @returns {BvvMfpJob} job
  */
 export const postMpfSpec = async (spec, urlId, abortController) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -46,7 +52,7 @@ export const postMpfSpec = async (spec, urlId, abortController) => {
 
 	switch (result.status) {
 		case 200: {
-			return (await result.json()).downloadURL;
+			return await result.json();
 		}
 		default:
 			throw new Error(`Mfp spec could not be posted: Http-Status ${result.status}`);
