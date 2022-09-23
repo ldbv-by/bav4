@@ -113,6 +113,20 @@ describe('mfp provider', () => {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
+
+		it('returns NULL on AbortError', async () => {
+
+			const abortController = new AbortController();
+			const spec = { foo: 'bar' };
+			const urlId = '0';
+			const backendUrl = 'https://backend.url';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
+			const httpServiceSpy = spyOn(httpService, 'fetch').and.throwError(new DOMException('AbortError'));
+
+			await expectAsync(postMpfSpec(spec, urlId, abortController)).toBeResolvedTo(null);
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+		});
 	});
 
 	describe('deleteMfpJob', () => {
