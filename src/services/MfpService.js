@@ -129,7 +129,7 @@ export class BvvMfpService {
 	/**
 	 * Creates a new MFP3 job and returns a URL pointing to the generated resource.
 	 * @param {object} spec MFP3 spec
-	 * @returns download URL as string
+	 * @returns download URL as string or `null`
 	 */
 	async createJob(spec) {
 		this._abortController = new AbortController();
