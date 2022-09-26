@@ -7,6 +7,9 @@ describe('BvvMfpService', () => {
 	const environmentService = {
 		isStandalone: () => { }
 	};
+	const abortControllerMock = {
+		abort: () => { }
+	};
 
 	beforeAll(() => {
 		$injector
@@ -170,6 +173,24 @@ describe('BvvMfpService', () => {
 			expect(instanceUnderTest._jobId).toBe(bvvMfpJob.id);
 		});
 
+		describe('provider returns NULL (fetch request was aborted)', () => {
+
+			it('returns NULL', async () => {
+				const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(null);
+				const instanceUnderTest = setup(null, postMfpSpecProvider);
+				const mfpSpec = { foo: 'bar' };
+
+				const promise = instanceUnderTest.createJob(mfpSpec);
+
+				expect(instanceUnderTest._abortController).not.toBeNull();
+				expect(instanceUnderTest._jobId).toBeNull();
+				expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
+				await expectAsync(promise).toBeResolvedTo(null);
+				expect(instanceUnderTest._abortController).toBeNull();
+				expect(instanceUnderTest._jobId).toBeNull();
+			});
+		});
+
 		describe('provider cannot fulfill', () => {
 
 			it('it simultates creating the Mfp job when we are in standalone mode', async () => {
@@ -204,15 +225,18 @@ describe('BvvMfpService', () => {
 
 	describe('cancelJob', () => {
 
-		it('cancel a running MFP job by its id', async () => {
+		it('cancels a running MFP job by its id', async () => {
 			const id = 'id';
 			const cancelJobProvider = jasmine.createSpy().and.resolveTo();
 			const instanceUnderTest = setup(null, null, cancelJobProvider);
 			instanceUnderTest._jobId = 'id';
+			instanceUnderTest._abortController = abortControllerMock;
+			const abortControllerSpy = spyOn(abortControllerMock, 'abort');
 
 			instanceUnderTest.cancelJob();
 
 			expect(cancelJobProvider).toHaveBeenCalledWith(id, instanceUnderTest._urlId);
+			expect(abortControllerSpy).toHaveBeenCalled();
 			expect(instanceUnderTest._jobId).toBeNull();
 		});
 

@@ -134,9 +134,13 @@ export class BvvMfpService {
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		try {
-			const { id, downloadURL } = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
-			this._jobId = id;
-			return downloadURL;
+			const result = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
+			if (result) {
+				const { id, downloadURL } = result;
+				this._jobId = id;
+				return downloadURL;
+			}
+			return null;
 		}
 		catch (e) {
 			if (this._environmentService.isStandalone()) {
@@ -157,11 +161,11 @@ export class BvvMfpService {
 	 * Cancels a running MFP job.
 	 */
 	cancelJob() {
-		if (this._jobId) {
-			this._abortController?.abort();
+		if (this._abortController) {
+			this._abortController.abort();
 			this._cancelJobProvider(this._jobId, this._urlId);
+			this._jobId = null;
 		}
-		this._jobId = null;
 	}
 
 	_newFallbackCapabilities() {
