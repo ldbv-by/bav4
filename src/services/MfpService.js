@@ -5,7 +5,6 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  *
  * @typedef {Object} MfpCapabilities
  * @property {string} id
- * @property {string} urlId
  * @property {Array<number>} scales
  * @property {Array<number>} dpis
  * @property {MfpMapSize} mapSize
