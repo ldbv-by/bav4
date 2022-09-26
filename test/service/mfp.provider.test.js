@@ -128,37 +128,4 @@ describe('mfp provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
-
-	describe('deleteMfpJob', () => {
-		const configService = {
-			getValueAsPath() { }
-		};
-
-		const httpService = {
-			async delete() { }
-		};
-
-		beforeEach(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('HttpService', httpService);
-		});
-		afterEach(() => {
-			$injector.reset();
-		});
-
-		it('cancels a mfp job', async () => {
-			const id = 'id';
-			const urlId = '0';
-			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'delete').withArgs(`${backendUrl}/print/cancel/${id}/${urlId}`).and.resolveTo(new Response());
-
-			await deleteMfpJob(id, urlId);
-
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-		});
-	});
-
 });
