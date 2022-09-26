@@ -39,14 +39,14 @@ export class Mfp3Encoder {
 	TODO:
 	- should have a strategy to receive or transform WmtsGeoResources (XYZSource) for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
-	- should support Mapfish JSON Style Version 2
-	- check whether filter for resolution is needed or not
 	*/
 
 	constructor(encodingProperties) {
-		const { MapService: mapService, GeoResourceService: geoResourceService } = $injector.inject('MapService', 'GeoResourceService');
+		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
+		this._urlService = urlService;
+		this._shareService = shareService;
 		this._mfpProperties = encodingProperties;
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
 		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
@@ -71,7 +71,7 @@ export class Mfp3Encoder {
 	 * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
 	 * @returns {Object} the encoded mfp specs
 	 */
-	encode(olMap) {
+	async encode(olMap) {
 
 		const getDefaultMapCenter = () => {
 			return new Point(olMap.getView().getCenter());
@@ -88,6 +88,8 @@ export class Mfp3Encoder {
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
+		const shortLinkUrl = await this._generateShortUrl();
+		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
 
 		const encodedLayers = olMap.getLayers().getArray()
 			.filter(layer => {
@@ -100,7 +102,7 @@ export class Mfp3Encoder {
 				// todo: extract to method
 				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
 				if (attribution || thirdPartyAttribution) {
-					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright.map(c => c.label) : [attribution?.copyright.label];
+					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright?.map(c => c.label) : [attribution?.copyright?.label];
 
 					return {
 						specs: [...layerSpecs.specs, restSpec],
@@ -117,15 +119,17 @@ export class Mfp3Encoder {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
 				map: {
-					center: mfpCenter,
+					center: mfpCenter.getCoordinates(),
 					scale: this._mfpProperties.scale,
 					projection: this._mfpProjection,
 					dpi: this._mfpProperties.dpi,
 					rotation: this._mfpProperties.rotation,
-					layers: [...encodedLayers.specs, ...encodedOverlays],
-					dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
-					thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : null
-				}
+					layers: [...encodedLayers.specs, ...encodedOverlays]
+				},
+				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
+				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : '',
+				shortLink: shortLinkUrl,
+				qrcodeurl: qrCodeUrl
 			}
 		};
 	}
@@ -577,5 +581,19 @@ export class Mfp3Encoder {
 
 	static adjustDistance(distance, dpi) {
 		return distance ? distance * 90 / dpi : null;
+	}
+
+	/**
+	 *@private
+	 */
+	async _generateShortUrl() {
+		const url = this._shareService.encodeState();
+		try {
+			return await this._urlService.shorten(url);
+		}
+		catch (e) {
+			console.warn('Could not shorten url: ' + e);
+			return url;
+		}
 	}
 }

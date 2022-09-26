@@ -40,6 +40,16 @@ describe('Mfp3Encoder', () => {
 		getSrid: () => 3857
 	};
 
+	const urlServiceMock = {
+		shorten: () => 'http://url.to/shorten',
+		qrCode: () => 'http://url.to/shorten.png'
+	};
+
+	const shareServiceMock = {
+		encodeState() { },
+		copyToClipboard() { }
+	};
+
 	const defaultProperties = {
 		layoutId: 'foo',
 		scale: 1,
@@ -48,7 +58,9 @@ describe('Mfp3Encoder', () => {
 	};
 
 	$injector.registerSingleton('MapService', mapServiceMock)
-		.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		.registerSingleton('GeoResourceService', geoResourceServiceMock)
+		.registerSingleton('UrlService', urlServiceMock)
+		.registerSingleton('ShareService', shareServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 
@@ -94,59 +106,59 @@ describe('Mfp3Encoder', () => {
 			}
 		}
 
-		it('requests the corresponding geoResource for a layer', () => {
+		it('requests the corresponding geoResource for a layer', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource('something'));
 			const encoder = setup();
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a aggregate layer', () => {
+		it('encodes a aggregate layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
 				return {};
 			});
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a vector layer', () => {
+		it('encodes a vector layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
 				return {};
 			});
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a WMTS layer', () => {
+		it('encodes a WMTS layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
 				return {};
 			});
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a WMS layer', () => {
+		it('encodes a WMS layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
 				return {};
 			});
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
@@ -161,7 +173,7 @@ describe('Mfp3Encoder', () => {
 			expect(actualEncoded).toEqual([]);
 		});
 
-		it('encodes two layers with attributions', () => {
+		it('encodes two layers with attributions', async () => {
 			const tileGrid = {
 				getTileSize: () => 42
 			};
@@ -184,26 +196,28 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
 				attributes: {
 					map: {
 						layers: jasmine.any(Array),
-						center: jasmine.any(Point),
+						center: jasmine.any(Array),
 						scale: jasmine.any(Number),
 						projection: 'EPSG:25832',
 						dpi: jasmine.any(Number),
-						rotation: null,
-						dataOwner: 'Foo CopyRight,Bar CopyRight',
-						thirdPartyDataOwner: null
-					}
+						rotation: null
+					},
+					dataOwner: 'Foo CopyRight,Bar CopyRight',
+					thirdPartyDataOwner: '',
+					shortLink: 'http://url.to/shorten',
+					qrcodeurl: 'http://url.to/shorten.png'
 				}
 			});
 		});
 
-		it('encodes layers with third party attributions', () => {
+		it('encodes layers with third party attributions', async () => {
 			const tileGrid = {
 				getTileSize: () => 42
 			};
@@ -226,26 +240,28 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
 				attributes: {
 					map: {
 						layers: jasmine.any(Array),
-						center: jasmine.any(Point),
+						center: jasmine.any(Array),
 						scale: jasmine.any(Number),
 						projection: 'EPSG:25832',
 						dpi: jasmine.any(Number),
-						rotation: null,
-						dataOwner: 'Bar CopyRight',
-						thirdPartyDataOwner: 'Foo CopyRight'
-					}
+						rotation: null
+					},
+					dataOwner: 'Bar CopyRight',
+					thirdPartyDataOwner: 'Foo CopyRight',
+					shortLink: 'http://url.to/shorten',
+					qrcodeurl: 'http://url.to/shorten.png'
 				}
 			});
 		});
 
-		it('encodes layers with multiple attributions', () => {
+		it('encodes layers with multiple attributions', async () => {
 			const tileGrid = {
 				getTileSize: () => 42
 			};
@@ -268,26 +284,28 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock);
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
 				attributes: {
 					map: {
 						layers: jasmine.any(Array),
-						center: jasmine.any(Point),
+						center: jasmine.any(Array),
 						scale: jasmine.any(Number),
 						projection: 'EPSG:25832',
 						dpi: jasmine.any(Number),
-						rotation: null,
-						dataOwner: 'Bar CopyRight,Baz CopyRight',
-						thirdPartyDataOwner: 'Foo CopyRight'
-					}
+						rotation: null
+					},
+					dataOwner: 'Bar CopyRight,Baz CopyRight',
+					thirdPartyDataOwner: 'Foo CopyRight',
+					shortLink: 'http://url.to/shorten',
+					qrcodeurl: 'http://url.to/shorten.png'
 				}
 			});
 		});
 
-		it('resolves sublayers of a aggregate layer', () => {
+		it('resolves sublayers of a aggregate layer', async () => {
 			const subLayersMock = { getArray: () => [{ get: () => 'foo1' }, { get: () => 'foo2' }, { get: () => 'foo3' }] };
 			const layersMock = { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getLayers: () => subLayersMock }] };
 			spyOn(geoResourceServiceMock, 'byId')
@@ -299,7 +317,7 @@ describe('Mfp3Encoder', () => {
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encode').and.callThrough();
 
-			encoder.encode(mapMock);
+			await encoder.encode(mapMock);
 
 			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
 		});

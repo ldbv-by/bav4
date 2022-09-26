@@ -1,6 +1,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
+import { Mfp3Encoder } from '../../../olMap/formats/Mfp3Encoder';
 import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../store/mfp/mfp.action';
 
 const Update = 'update';
@@ -17,6 +18,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		super({
 			id: null,
 			scale: null,
+			dpi: null,
 			isJobStarted: false
 		});
 
@@ -33,7 +35,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	update(type, data, model) {
 		switch (type) {
 			case Update:
-				return { ...model, id: data?.id, scale: data?.scale };
+				return { ...model, id: data?.id, scale: data?.scale, dpi: data?.dpi };
 			case Update_Scale:
 				return { ...model, scale: data };
 			case Update_Id:
@@ -44,17 +46,21 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted } = model;
+		const { id, scale, dpi, isJobStarted } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 		const capabilitiesAvailable = capabilities.length > 0;
 
-		const onClickAction = isJobStarted ? () => cancelJob() : () => {
+		const onClickAction = isJobStarted ? () => cancelJob() : async () => {
 			requestJob();
 
 			// FIXME: FOR DEMO ONLY
 			// REMOVE after implemented and connected actions in OlMfpHandler
-			startJob({});
+			const olMap = document.getElementsByTagName('ba-ol-map')[0];
+			const encoder = new Mfp3Encoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
+			const specs = await encoder.encode(olMap._map);
+			//console.log(specs);
+			startJob(specs);
 		};
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
