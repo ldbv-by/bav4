@@ -228,15 +228,29 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user clicks the submit-button', () => {
+		const encoderMock = {
+			async encode() {
+				return { foo: 'bar' };
+			}
+		};
+
+		const mapMock = { bar: 'baz' };
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			spyOn(document, 'getElementsByTagName').withArgs('ba-ol-map').and.callFake(() => [mapMock]);
+			spyOn(element, '_getEncoder').and.returnValue(encoderMock);
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
+
+			await TestUtils.timeout();
+
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
+
+			await TestUtils.timeout();
 
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
@@ -244,9 +258,13 @@ describe('ExportMfpToolContent', () => {
 		it('it displays the cancel-button', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			spyOn(document, 'getElementsByTagName').withArgs('ba-ol-map').and.callFake(() => [mapMock]);
+			spyOn(element, '_getEncoder').and.returnValue(encoderMock);
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
+
+			await TestUtils.timeout();
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
@@ -254,30 +272,51 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user clicks the cancel-button', () => {
+		const encoderMock = {
+			async encode() {
+				return { foo: 'bar' };
+			}
+		};
+
+		const mapMock = { bar: 'baz' };
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			spyOn(document, 'getElementsByTagName').withArgs('ba-ol-map').and.callFake(() => [mapMock]);
+			spyOn(element, '_getEncoder').and.returnValue(encoderMock);
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
+
+			await TestUtils.timeout();
 
 			expect(store.getState().mfp.jobSpec.payload).toEqual(jasmine.any(Object));
 
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
 
+			await TestUtils.timeout();
+
 			expect(store.getState().mfp.jobSpec.payload).toBeNull();
 		});
 
 		it('it displays the submit-button again', async () => {
+
 			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			spyOn(document, 'getElementsByTagName').withArgs('ba-ol-map').and.callFake(() => [mapMock]);
+			spyOn(element, '_getEncoder').and.returnValue(encoderMock);
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
+
+			await TestUtils.timeout();
+
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
+
+			await TestUtils.timeout();
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
