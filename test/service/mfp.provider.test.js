@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
-import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 
 	describe('getMfpCapabilities', () => {
