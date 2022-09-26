@@ -1,6 +1,6 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { setScale } from '../../../../store/mfp/mfp.action';
+import { setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { Point } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
@@ -10,6 +10,7 @@ import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
+import { Mfp3Encoder } from '../../formats/Mfp3Encoder';
 
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
@@ -89,6 +90,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	_register(store) {
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
+			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
 			observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
@@ -221,5 +223,17 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const angle = (topAngle + bottomAngle) / 2;
 		return angle;
+	}
+
+	async _encodeMap() {
+		const { id, scale, dpi } = this._storeService.getState().mfp.current;
+		const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
+		const specs = await encoder.encode(this._map);
+		// console.log(specs);
+		startJob(specs);
+	}
+
+	_getEncoder(encodingOptions) {
+		return new Mfp3Encoder(encodingOptions);
 	}
 }

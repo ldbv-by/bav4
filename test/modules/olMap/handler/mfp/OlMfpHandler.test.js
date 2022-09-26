@@ -125,7 +125,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(5);
+			expect(handler._registeredObservers).toHaveSize(6);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
