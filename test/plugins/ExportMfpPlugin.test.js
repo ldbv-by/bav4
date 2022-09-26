@@ -135,7 +135,6 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
-				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 
 			it('just updates the state when MfpService returns NULL', async () => {
@@ -149,7 +148,6 @@ describe('ExportMfpPlugin', () => {
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
-				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 		});
 
