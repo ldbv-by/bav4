@@ -54,13 +54,14 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const onClickAction = isJobStarted ? () => cancelJob() : async () => {
 			requestJob();
 
-			// FIXME: FOR DEMO ONLY
-			// REMOVE after implemented and connected actions in OlMfpHandler
 			const olMap = document.getElementsByTagName('ba-ol-map')[0];
 			const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
 			const specs = await encoder.encode(olMap._map);
-			//console.log(specs);
 			startJob(specs);
+
+			// FIXME: FOR DEMO ONLY
+			// REMOVE after implemented and connected actions in OlMfpHandler
+			//console.log(specs);
 		};
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
