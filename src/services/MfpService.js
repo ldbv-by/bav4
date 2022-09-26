@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
@@ -67,16 +67,14 @@ import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from './provider/mfp.pr
  */
 export class BvvMfpService {
 
-	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) {
+	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
 		this._createMpfSpecProvider = createMpfSpecProvider;
-		this._cancelJobProvider = cancelJobProvider;
 		this._urlId = '0';
-		this._jobId = null;
 	}
 
 	/**
@@ -136,8 +134,7 @@ export class BvvMfpService {
 		try {
 			const result = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
 			if (result) {
-				const { id, downloadURL } = result;
-				this._jobId = id;
+				const { downloadURL } = result;
 				return downloadURL;
 			}
 			return null;
@@ -161,11 +158,7 @@ export class BvvMfpService {
 	 * Cancels a running MFP job.
 	 */
 	cancelJob() {
-		if (this._abortController) {
-			this._abortController.abort();
-			this._cancelJobProvider(this._jobId, this._urlId);
-			this._jobId = null;
-		}
+		this._abortController?.abort();
 	}
 
 	_newFallbackCapabilities() {

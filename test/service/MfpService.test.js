@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { BvvMfpService } from '../../src/services/MfpService';
-import { deleteMfpJob, getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
 
 describe('BvvMfpService', () => {
 
@@ -27,8 +27,8 @@ describe('BvvMfpService', () => {
 			{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
 		] };
 
-	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec, cancelJobProvider = deleteMfpJob) => {
-		return new BvvMfpService(capabilitiesProvider, postMfpSpecProvider, cancelJobProvider);
+	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
+		return new BvvMfpService(capabilitiesProvider, postMfpSpecProvider);
 	};
 
 	describe('constructor', () => {
@@ -39,23 +39,18 @@ describe('BvvMfpService', () => {
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(getMfpCapabilities);
 			expect(instanceUnderTest._createMpfSpecProvider).toEqual(postMpfSpec);
-			expect(instanceUnderTest._cancelJobProvider).toEqual(deleteMfpJob);
 			expect(instanceUnderTest._urlId).toBe('0');
-			expect(instanceUnderTest._jobId).toBeNull();
 		});
 
 		it('instantiates the service with custom providers', async () => {
 			const customCapabilitiesProvider = async () => { };
 			const customPostMfpSpecProvider = async () => { };
-			const customCancelMfpProvider = async () => { };
 
-			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider, customCancelMfpProvider);
+			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
 
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customCapabilitiesProvider);
 			expect(instanceUnderTest._createMpfSpecProvider).toEqual(customPostMfpSpecProvider);
-			expect(instanceUnderTest._cancelJobProvider).toEqual(customCancelMfpProvider);
 			expect(instanceUnderTest._urlId).toBe('0');
-			expect(instanceUnderTest._jobId).toBeNull();
 		});
 	});
 
@@ -166,11 +161,9 @@ describe('BvvMfpService', () => {
 			const promise = instanceUnderTest.createJob(mfpSpec);
 
 			expect(instanceUnderTest._abortController).not.toBeNull();
-			expect(instanceUnderTest._jobId).toBeNull();
 			expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
 			await expectAsync(promise).toBeResolvedTo(bvvMfpJob.downloadURL);
 			expect(instanceUnderTest._abortController).toBeNull();
-			expect(instanceUnderTest._jobId).toBe(bvvMfpJob.id);
 		});
 
 		describe('provider returns NULL (fetch request was aborted)', () => {
@@ -183,11 +176,9 @@ describe('BvvMfpService', () => {
 				const promise = instanceUnderTest.createJob(mfpSpec);
 
 				expect(instanceUnderTest._abortController).not.toBeNull();
-				expect(instanceUnderTest._jobId).toBeNull();
 				expect(postMfpSpecProvider).toHaveBeenCalledWith(mfpSpec, instanceUnderTest._urlId, instanceUnderTest._abortController);
 				await expectAsync(promise).toBeResolvedTo(null);
 				expect(instanceUnderTest._abortController).toBeNull();
-				expect(instanceUnderTest._jobId).toBeNull();
 			});
 		});
 
@@ -226,18 +217,13 @@ describe('BvvMfpService', () => {
 	describe('cancelJob', () => {
 
 		it('cancels a running MFP job by its id', async () => {
-			const id = 'id';
-			const cancelJobProvider = jasmine.createSpy().and.resolveTo();
-			const instanceUnderTest = setup(null, null, cancelJobProvider);
-			instanceUnderTest._jobId = 'id';
+			const instanceUnderTest = setup();
 			instanceUnderTest._abortController = abortControllerMock;
 			const abortControllerSpy = spyOn(abortControllerMock, 'abort');
 
 			instanceUnderTest.cancelJob();
 
-			expect(cancelJobProvider).toHaveBeenCalledWith(id, instanceUnderTest._urlId);
 			expect(abortControllerSpy).toHaveBeenCalled();
-			expect(instanceUnderTest._jobId).toBeNull();
 		});
 
 		it('does nothing when jobId is NULL', async () => {
@@ -247,7 +233,6 @@ describe('BvvMfpService', () => {
 			instanceUnderTest.cancelJob();
 
 			expect(cancelJobProvider).not.toHaveBeenCalled();
-			expect(instanceUnderTest._jobId).toBeNull();
 		});
 	});
 
