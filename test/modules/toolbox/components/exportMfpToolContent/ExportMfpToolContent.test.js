@@ -71,6 +71,7 @@ describe('ExportMfpToolContent', () => {
 			expect(model).toEqual({
 				id: null,
 				scale: null,
+				dpi: null,
 				isJobStarted: false
 			});
 		});

@@ -56,11 +56,12 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 			// FIXME: FOR DEMO ONLY
 			// REMOVE after implemented and connected actions in OlMfpHandler
-			const olMap = document.getElementsByTagName('ba-ol-map')[0];
-			const encoder = new Mfp3Encoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
-			const specs = await encoder.encode(olMap._map);
+			// const olMap = document.getElementsByTagName('ba-ol-map')[0];
+			// const encoder = new Mfp3Encoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
+			// const specs = await encoder.encode(olMap._map);
 			//console.log(specs);
-			startJob(specs);
+			//startJob(specs);
+			startJob({});
 		};
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
