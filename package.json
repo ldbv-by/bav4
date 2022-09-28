@@ -6,7 +6,7 @@
     "ol": "^7.1.0",
     "proj4": "^2.8.0",
     "redux": "^4.2.0",
-    "vanilla-swipe": "^2.3.0"
+    "vanilla-swipe": "^2.4.1"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
