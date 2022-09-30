@@ -207,7 +207,7 @@ For example, they could be responsible for setting an initial state or reacting 
 - Redux query-param sync: https://github.com/Treora/redux-query-sync
 ### Webpack
 - Webpack Intro: https://ui.dev/webpack/ 
-### Common
+### Other
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 
 *USE THE PLATFORM*
