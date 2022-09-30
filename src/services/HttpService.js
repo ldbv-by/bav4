@@ -53,6 +53,23 @@ export class HttpService {
 	}
 
 	/**
+	 * Convenience method for a DELETE call.
+	 * Uses {@link HttpService#fetch}.
+	 * Mode 'cors' ist set by default.
+	 * @param {string} resource URL
+	 * @param {object} options fetch options
+	 * @returns Fetch API Response
+	 */
+	async delete(resource, options = {}) {
+		const fetchOptions = {
+			mode: HttpService.DEFAULT_REQUEST_MODE,
+			method: 'DELETE',
+			...options
+		};
+		return this.fetch(resource, fetchOptions);
+	}
+
+	/**
 	 * Convenience method for a POST call.
 	 * Uses {@link HttpService#fetch}.
 	 * Mode 'cors' ist set by default.
