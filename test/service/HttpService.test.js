@@ -84,7 +84,6 @@ describe('HttpService', () => {
 				}
 			}));
 
-
 			const result = await httpService.get('something');
 
 			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE });
@@ -99,10 +98,41 @@ describe('HttpService', () => {
 				}
 			}));
 
-
 			const result = await httpService.get('something', { timeout: 2000 });
 
 			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
+			expect(result.text()).toBe(42);
+		});
+
+	});
+
+	describe('delete', () => {
+
+		it('provides a result with default options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+			const result = await httpService.delete('something');
+
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, method: 'DELETE' });
+			expect(result.text()).toBe(42);
+		});
+
+		it('provides a result with custom options', async () => {
+			const httpService = new HttpService();
+			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
+				text: () => {
+					return 42;
+				}
+			}));
+
+			const result = await httpService.delete('something', { timeout: 2000 });
+
+			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, method: 'DELETE', timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
 

@@ -1,11 +1,10 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { loadBvvMfpCapabilities } from './provider/mfp.provider';
+import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
  * @property {string} id
- * @property {string} urlId
  * @property {Array<number>} scales
  * @property {Array<number>} dpis
  * @property {MfpMapSize} mapSize
@@ -17,19 +16,64 @@ import { loadBvvMfpCapabilities } from './provider/mfp.provider';
  * @property {number} height
  */
 
+/**
+ * Service for persisting and loading ASCII based geodata.
+ * @author taulinger
+ * @interface MfpService
+ */
 
 /**
+ * Initializes this service, which means all MfpCapabilities are loaded and can be served in the future from an internal cache.
+ * @function
+ * @async
+ * @name MfpService#init
+ * @returns {Promise<Array.<MfpCapabilities>>}
+ */
+
+/**
+ * @function
+ * @name MfpService#getCapabilities
+ * @returns {Array<MfpCapabilities>} available MfpCapabilities
+ */
+
+/**
+ * @function
+ * @name MfpService#getCapabilitiesById
+ * @param {string} id Id of the desired {@link MfpCapabilities}
+ * @returns {MfpCapabilities|null}
+ */
+
+/**
+ * Creates a new MFP job and returns a URL pointing to the generated resource.
+ * @function
+ * @async
+ * @name MfpService#createJob
+ * @param {object} spec MFP3 spec
+ * @returns {String} downloadURL
+ */
+
+/**
+ * Cancels a running MFP job.
+ * @function
+ * @name MfpService#cancelJob
+ */
+
+/**
+ * BVV specific service that communicates with the BVV backend to create a Mapfish Print report.
  * @class
  * @author taulinger
+ * @implements {MfpService}
  */
-export class MfpService {
+export class BvvMfpService {
 
-	constructor(mfpCapabilitiesProvider = loadBvvMfpCapabilities) {
+	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
+		this._createMpfSpecProvider = createMpfSpecProvider;
+		this._urlId = '0';
 	}
 
 	/**
@@ -42,7 +86,9 @@ export class MfpService {
 	async init() {
 		if (!this._mfpCapabilities) {
 			try {
-				this._mfpCapabilities = await this._mfpCapabilitiesProvider();
+				const { urlId, layouts } = await this._mfpCapabilitiesProvider();
+				this._mfpCapabilities = layouts;
+				this._urlId = urlId;
 			}
 			catch (e) {
 				this._mfpCapabilities = [];
@@ -78,16 +124,33 @@ export class MfpService {
 	}
 
 	/**
-	 * Creates a new MFP job and returns a URL pointing to the generated resource.
-	 * @param {object} mfp spec
-	 * @returns url as string
+	 * Creates a new MFP3 job and returns a URL pointing to the generated resource.
+	 * @param {object} spec MFP3 spec
+	 * @returns download URL as string or `null`
 	 */
-	// eslint-disable-next-line no-unused-vars
 	async createJob(spec) {
 		this._abortController = new AbortController();
-		await sleep(2500); // let's fake latency
-		this._abortController = null;
-		return 'http://www.africau.edu/images/default/sample.pdf';
+		try {
+			const result = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
+			if (result) {
+				const { downloadURL } = result;
+				return downloadURL;
+			}
+			return null;
+		}
+		catch (e) {
+			if (this._environmentService.isStandalone()) {
+				console.warn('No backend available, simulating Pdf request...');
+				await sleep(2500); // let's fake latency
+				return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+			}
+			else {
+				throw new Error(`Pdf request was not successful: ${e}`);
+			}
+		}
+		finally {
+			this._abortController = null;
+		}
 	}
 
 	/**
