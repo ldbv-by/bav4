@@ -226,9 +226,10 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	async _encodeMap() {
-		const { id, scale, dpi } = this._storeService.getState().mfp.current;
+		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
 		const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
 		const specs = await encoder.encode(this._map);
+
 		// console.log(specs);
 		startJob(specs);
 	}

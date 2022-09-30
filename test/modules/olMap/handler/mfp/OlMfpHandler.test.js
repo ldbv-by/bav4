@@ -14,13 +14,14 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { Polygon } from 'ol/geom';
 import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
-import { setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
+import { Mfp3Encoder } from '../../../../../src/modules/olMap/formats/Mfp3Encoder';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
-		current: { id: 'foo', scale: null }
+		current: { id: 'foo', scale: null, dpi: 125 }
 	};
 
 	const configService = {
@@ -56,7 +57,10 @@ describe('OlMfpHandler', () => {
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('MfpService', mfpServiceMock);
+			.registerSingleton('MfpService', mfpServiceMock)
+			.registerSingleton('ShareService', {})
+			.registerSingleton('UrlService', {})
+			.registerSingleton('GeoResourceService', {});
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	};
@@ -193,6 +197,25 @@ describe('OlMfpHandler', () => {
 			changeRotation(42);
 			expect(updateSpy).toHaveBeenCalled();
 		});
+
+		it('encodes map to mfp spec after sotre changes', () => {
+			const encoderMock = {
+				async encode() {
+					return {};
+				}
+			};
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_getEncoder').withArgs({ layoutId: 'foo', scale: 1, rotation: 0, dpi: 125 }).and.returnValue(encoderMock);
+			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
+
+			handler.activate(map);
+			requestJob();
+
+			expect(encodeSpy).toHaveBeenCalled();
+		});
 	});
 
 	describe('when deactivate', () => {
@@ -282,6 +305,17 @@ describe('OlMfpHandler', () => {
 			expect(visibleViewPortSpy).toHaveBeenCalledTimes(1);
 			expect(sridSpy).toHaveBeenCalledTimes(1);
 			expect(geodeticSridSpy).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	describe('_getEncoder', () => {
+		it('creates a mfpEncoder', () => {
+			setup();
+			const encodingOptions = { layoutId: 'foo', scale: 1, rotation: 0, dpi: 42 };
+
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getEncoder(encodingOptions)).toEqual(jasmine.any(Mfp3Encoder));
 		});
 	});
 });
