@@ -88,8 +88,7 @@ export class Mfp3Encoder {
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
-		const shortLinkUrl = await this._generateShortUrl();
-		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
+
 
 		const encodedLayers = olMap.getLayers().getArray()
 			.filter(layer => {
@@ -115,6 +114,9 @@ export class Mfp3Encoder {
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay));
+
+		const shortLinkUrl = await this._generateShortUrl();
+		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -134,21 +136,9 @@ export class Mfp3Encoder {
 		};
 	}
 
-	_geoResourceFrom(layer) {
-		const layerId = layer.get('id');
-		const geoResourceId = layer.get('geoResourceId');
-		const geoResource = geoResourceId ? this._geoResourceService.byId(geoResourceId) : this._geoResourceService.byId(layerId);
-		if (!geoResource) {
-			const idSegments = layerId.split('_');
-			const geoResourceIdCandidate = idSegments[0];
-			return this._geoResourceService.byId(geoResourceIdCandidate);
-		}
-
-		return geoResource;
-	}
-
 	_encode(layer) {
-		const geoResource = this._geoResourceFrom(layer);
+		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
+
 		if (!geoResource) {
 			console.warn('No geoResource found for Layer', layer);
 			return [];
