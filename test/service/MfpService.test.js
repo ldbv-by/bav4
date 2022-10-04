@@ -19,6 +19,7 @@ describe('BvvMfpService', () => {
 	const scales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
 	const dpis = [125, 200];
 	const bvvMockCapabilities = {
+		grSubstitutions: {},
 		urlId: '0',
 		layouts: [
 			{ id: 'a4_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
@@ -58,20 +59,21 @@ describe('BvvMfpService', () => {
 
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
+			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
 			expect(instanceUnderTest._mfpCapabilities).toBeNull();
 
 			const mfpCapabilities = await instanceUnderTest.init();
 
-			expect(mfpCapabilities.length).toBe(4);
+			expect(mfpCapabilities).toEqual(expectedCapabilities);
 		});
 
 		it('just provides the capabilities when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._mfpCapabilities = bvvMockCapabilities.layouts;
+			instanceUnderTest._mfpCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
 
 			const mfpCapabilities = await instanceUnderTest.init();
 
-			expect(mfpCapabilities.length).toBe(4);
+			expect(mfpCapabilities).toEqual(instanceUnderTest._mfpCapabilities);
 		});
 
 		describe('provider cannot fulfill', () => {
@@ -87,7 +89,7 @@ describe('BvvMfpService', () => {
 
 				const mfpCapabilities = await instanceUnderTest.init();
 
-				expect(mfpCapabilities.length).toBe(2);
+				expect(mfpCapabilities).toEqual(instanceUnderTest._newFallbackCapabilities());
 				expect(warnSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 			});
 
@@ -102,7 +104,7 @@ describe('BvvMfpService', () => {
 
 				const mfpCapabilities = await instanceUnderTest.init();
 
-				expect(mfpCapabilities).toEqual([]);
+				expect(mfpCapabilities).toBeNull();
 				expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend.', jasmine.anything());
 			});
 		});
@@ -110,40 +112,41 @@ describe('BvvMfpService', () => {
 
 	describe('getCapabilities', () => {
 
-		it('returns an empty array of MfpCapabilities when not initialized', async () => {
+		it('returns NULL when not initialized', async () => {
 			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities.layouts);
 			const instanceUnderTest = setup(provider);
 
-			expect(instanceUnderTest.getCapabilities()).toHaveSize(0);
+			expect(instanceUnderTest.getCapabilities()).toBeNull();
 		});
 
-		it('returns an array of MfpCapabilities', async () => {
+		it('returns a MfpCapabilities object', async () => {
 			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities);
+			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
 			const instanceUnderTest = setup(provider);
 			await instanceUnderTest.init();
 
 			// first call served from provider
-			expect(instanceUnderTest.getCapabilities()).toEqual(bvvMockCapabilities.layouts);
+			expect(instanceUnderTest.getCapabilities()).toEqual(expectedCapabilities);
 			// second from cache
-			expect(instanceUnderTest.getCapabilities()).toEqual(bvvMockCapabilities.layouts);
+			expect(instanceUnderTest.getCapabilities()).toEqual(expectedCapabilities);
 			expect(provider).toHaveBeenCalledTimes(1);
 		});
 	});
 
-	describe('getCapabilitiesById', () => {
+	describe('getLayoutById', () => {
 
 		it('returns NULL when not initialized', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 
-			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).toBeNull();
+			expect(instanceUnderTest.getLayoutById('a4_landscape')).toBeNull();
 		});
 
-		it('returns a MfpCapabilities object by its id', async () => {
+		it('returns a MfpLayout object by its id', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 			await instanceUnderTest.init();
 
-			expect(instanceUnderTest.getCapabilitiesById('a4_landscape')).not.toBeNull();
-			expect(instanceUnderTest.getCapabilitiesById('foo')).toBeNull();
+			expect(instanceUnderTest.getLayoutById('a4_landscape').id).toBe('a4_landscape');
+			expect(instanceUnderTest.getLayoutById('foo')).toBeNull();
 		});
 	});
 
@@ -239,10 +242,12 @@ describe('BvvMfpService', () => {
 	describe('_newFallbackCapabilities', () => {
 
 		it('cancels a running MFP job', async () => {
-			const expected = [
-				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
-				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
-			];
+			const expected = {
+				grSubstitutions: {},
+				layouts: [
+					{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
+					{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
+				] };
 			const instanceUnderTest = new BvvMfpService();
 
 			expect(instanceUnderTest._newFallbackCapabilities()).toEqual(expected);
