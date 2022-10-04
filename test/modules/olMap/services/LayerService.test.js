@@ -54,11 +54,13 @@ describe('LayerService', () => {
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmsGeoresource = new GeoResourceFuture('geoResourceId', () => { });
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoresource = new GeoResourceFuture(geoResourceId, () => { });
 
 				const placeholderOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
 				expect(placeholderOlLayer.get('id')).toBe(id);
+				expect(placeholderOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(placeholderOlLayer.get('placeholder')).toBeTrue();
 				expect(placeholderOlLayer.getSource()).toBeNull();
 				expect(placeholderOlLayer.render()).toBeUndefined();
