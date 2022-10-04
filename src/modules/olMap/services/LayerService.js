@@ -70,6 +70,7 @@ export class LayerService {
 
 				const layer = new ImageLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
@@ -88,6 +89,7 @@ export class LayerService {
 
 				return new TileLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					source: xyZsource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
