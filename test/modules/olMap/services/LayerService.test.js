@@ -92,7 +92,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png');
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
@@ -115,7 +115,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png')
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
@@ -187,7 +187,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
 
@@ -206,7 +206,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
