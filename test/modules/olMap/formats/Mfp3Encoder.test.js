@@ -86,6 +86,18 @@ describe('Mfp3Encoder', () => {
 			expect(classUnderTest._mfpProjection).toBe('EPSG:25832');
 		});
 
+		it('initialize with TargetSRID as mfpProjection', () => {
+			const encodingProperties = { ...defaultProperties, targetSRID: 'foo' };
+			const classUnderTest = new Mfp3Encoder(encodingProperties);
+
+			expect(classUnderTest).toBeInstanceOf(Mfp3Encoder);
+			expect(classUnderTest._mapService).toBeTruthy();
+			expect(classUnderTest._geoResourceService).toBeTruthy();
+			expect(classUnderTest._mfpProperties).toBe(encodingProperties);
+			expect(classUnderTest._mapProjection).toBe('EPSG:3857');
+			expect(classUnderTest._mfpProjection).toBe('EPSG:foo');
+		});
+
 		it('fails to initialize for invalid properties', () => {
 			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
 
