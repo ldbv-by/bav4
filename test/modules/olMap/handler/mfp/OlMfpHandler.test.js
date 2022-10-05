@@ -42,9 +42,9 @@ describe('OlMfpHandler', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return Promise.resolve([]);
+			return Promise.resolve({ grSubstitutions: {}, layouts: [] });
 		},
-		getCapabilitiesById() {
+		getLayoutById() {
 			return { scales: [42, 21, 1], mapSize: { width: 20, height: 20 } };
 		}
 	};
