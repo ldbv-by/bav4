@@ -4,6 +4,13 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 /**
  *
  * @typedef {Object} MfpCapabilities
+ * @property {Array<MfpLayout>} layouts
+ * @property {Object} grSubstitutions
+ */
+
+/**
+ *
+ * @typedef {Object} MfpLayout
  * @property {string} id
  * @property {Array<number>} scales
  * @property {Array<number>} dpis
@@ -86,14 +93,13 @@ export class BvvMfpService {
 	async init() {
 		if (!this._mfpCapabilities) {
 			try {
-				const { urlId, layouts } = await this._mfpCapabilitiesProvider();
-				this._mfpCapabilities = layouts;
+				const { urlId, layouts, grSubstitutions } = await this._mfpCapabilitiesProvider();
+				this._mfpCapabilities = { layouts: layouts, grSubstitutions: grSubstitutions };
 				this._urlId = urlId;
 			}
 			catch (e) {
-				this._mfpCapabilities = [];
 				if (this._environmentService.isStandalone()) {
-					this._mfpCapabilities.push(...this._newFallbackCapabilities());
+					this._mfpCapabilities = this._newFallbackCapabilities();
 					console.warn('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 				}
 				else {
@@ -105,22 +111,22 @@ export class BvvMfpService {
 	}
 
 	/**
-	 * @returns {Array<MfpCapabilities>} all available capbilities
+	 * @returns {MfpCapabilities|null} all available capbilities
 	 */
 	getCapabilities() {
 		if (!this._mfpCapabilities) {
-			return [];
+			return null;
 		}
 		return this._mfpCapabilities;
 	}
 
 	/**
-	* Returns the corresponding  {@link MfpCapabilities} for a specific id.
-	* @param {string} id Id of the desired {@link MfpCapabilities}
-	* @returns {MfpCapabilities|null}
+	* Returns the corresponding  {@link MfpLayout} for a specific id.
+	* @param {string} id Id of the desired {@link MfpLayout}
+	* @returns {MfpLayout|null}
 	*/
-	getCapabilitiesById(id) {
-		return this._mfpCapabilities?.find(cp => cp.id === id) ?? null;
+	getLayoutById(id) {
+		return this._mfpCapabilities?.layouts?.find(cp => cp.id === id) ?? null;
 	}
 
 	/**
@@ -161,9 +167,12 @@ export class BvvMfpService {
 	}
 
 	_newFallbackCapabilities() {
-		return [
-			{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
-			{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
-		];
+		return {
+			grSubstitutions: {},
+			layouts:	[
+				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
+				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
+			]
+		};
 	}
 }
