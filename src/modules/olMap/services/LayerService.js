@@ -42,7 +42,7 @@ export class LayerService {
 
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer({ id: id, render: () => { }, properties: { placeholder: true } });
+				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => { }, properties: { placeholder: true } });
 			}
 
 			case GeoResourceTypes.WMS: {
@@ -71,6 +71,7 @@ export class LayerService {
 
 				const layer = new ImageLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
@@ -89,6 +90,7 @@ export class LayerService {
 
 				return new TileLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					source: xyZsource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,

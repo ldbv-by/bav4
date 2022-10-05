@@ -12,7 +12,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 describe('ExportMfpPlugin', () => {
 
 	const mfpService = {
-		async getCapabilities() { },
+		async init() { },
 		async createJob() { },
 		cancelJob() { }
 	};
@@ -47,7 +47,7 @@ describe('ExportMfpPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
 			await instanceUnderTest.register(store);
-			spyOn(mfpService, 'getCapabilities').and.resolveTo(getMockCapabilities());
+			spyOn(mfpService, 'init').and.resolveTo(getMockCapabilities());
 
 			setCurrentTool(ToolId.EXPORT);
 
@@ -132,8 +132,22 @@ describe('ExportMfpPlugin', () => {
 
 				startJob(spec);
 
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
+			});
+
+			it('just updates the state when MfpService returns NULL', async () => {
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const spec = { foo: 'bar' };
+				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(null);
+
+				startJob(spec);
+
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+				await TestUtils.timeout();
 			});
 		});
 

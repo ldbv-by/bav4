@@ -56,11 +56,13 @@ describe('LayerService', () => {
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmsGeoresource = new GeoResourceFuture('geoResourceId', () => { });
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoresource = new GeoResourceFuture(geoResourceId, () => { });
 
 				const placeholderOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
 				expect(placeholderOlLayer.get('id')).toBe(id);
+				expect(placeholderOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(placeholderOlLayer.get('placeholder')).toBeTrue();
 				expect(placeholderOlLayer.getSource()).toBeNull();
 				expect(placeholderOlLayer.render()).toBeUndefined();
@@ -89,11 +91,13 @@ describe('LayerService', () => {
 			it('converts a WmsGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png');
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png');
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
 				expect(wmsOlLayer.get('id')).toBe(id);
+				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(wmsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmsOlLayer.getMaxZoom()).toBePositiveInfinity();
 				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
@@ -110,7 +114,8 @@ describe('LayerService', () => {
 			it('converts a WmsGeoresource containing optional properties to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', 'https://some.url', 'layer', 'image/png')
+				const geoResourceId = 'geoResourceId';
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
@@ -119,6 +124,7 @@ describe('LayerService', () => {
 				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
 				expect(wmsOlLayer.get('id')).toBe(id);
+				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(wmsOlLayer.getOpacity()).toBe(.5);
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
@@ -180,11 +186,13 @@ describe('LayerService', () => {
 			it('converts a WmtsGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const geoResourceId = 'geoResourceId';
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
 
 				expect(wmtsOlLayer.get('id')).toBe(id);
+				expect(wmtsOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(wmtsOlLayer.getPreload()).toBe(3);
 				expect(wmtsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmtsOlLayer.getMaxZoom()).toBePositiveInfinity();
@@ -197,7 +205,8 @@ describe('LayerService', () => {
 			it('converts a WmtsGeoresource containing optional properties to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+				const geoResourceId = 'geoResourceId';
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -205,6 +214,7 @@ describe('LayerService', () => {
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
 
 				expect(wmtsOlLayer.get('id')).toBe(id);
+				expect(wmtsOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(wmtsOlLayer.getPreload()).toBe(3);
 				expect(wmtsOlLayer.getOpacity()).toBe(.5);
 				expect(wmtsOlLayer.getMinZoom()).toBe(5);

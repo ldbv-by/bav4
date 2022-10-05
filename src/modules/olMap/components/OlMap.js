@@ -47,9 +47,10 @@ export class OlMap extends MvuElement {
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler,
-			OlFeatureInfoHandler: olFeatureInfoHandler
+			OlFeatureInfoHandler: olFeatureInfoHandler,
+			OlMfpHandler: olMfpHandler
 		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'TranslationService',
-			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler');
+			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler', 'OlMfpHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
@@ -57,7 +58,7 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
 		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 

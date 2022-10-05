@@ -1,6 +1,8 @@
 import { $injector } from '../../../../src/injection';
 import { InteractionStorageService } from '../../../../src/modules/olMap/services/InteractionStorageService';
 import { FileStorageServiceDataTypes } from '../../../../src/services/FileStorageService';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { setFileSaveResult } from '../../../../src/store/shared/shared.action';
 import { sharedReducer } from '../../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../../test-utils.js';
@@ -27,7 +29,11 @@ describe('InteractionStorageService', () => {
 	};
 
 	const setup = (state = initialState) => {
-		const store = TestUtils.setupStoreAndDi({ shared: state }, { shared: sharedReducer });
+		const store = TestUtils.setupStoreAndDi({
+			notifications: {
+				notification: null
+			}, shared: state
+		}, { notifications: notificationReducer, shared: sharedReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('FileStorageService', fileStorageServiceMock);
 		return store;
@@ -58,13 +64,18 @@ describe('InteractionStorageService', () => {
 	it('returns valid Id or temp_session_id', () => {
 		const store = setup();
 		const classUnderTest = new InteractionStorageService();
+		const warnSpy = spyOn(console, 'warn');
 
 		expect(classUnderTest.getStorageId()).toBe('init');
 		classUnderTest.setStorageId('a_someId');
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: null, adminId: 'a_someId' });
 		expect(classUnderTest.getStorageId()).toBe('temp_session_id');
+		expect(warnSpy).toHaveBeenCalledWith('Could not store layer-data. The data will get lost after this session.');
+
 		setFileSaveResult(null);
 		expect(classUnderTest.getStorageId()).toBe('temp_session_id');
+		expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_storage_offline');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 	});
 
 	it('recognize storageIds', () => {
