@@ -50,6 +50,15 @@ describe('Mfp3Encoder', () => {
 		copyToClipboard() { }
 	};
 
+	const mfpServiceMock = {
+		getCapabilities() {
+			return { grSubstitutions: {}, layouts: [] };
+		},
+		getLayoutById() {
+			return { scales: [42, 21, 1] };
+		}
+	};
+
 	const defaultProperties = {
 		layoutId: 'foo',
 		scale: 1,
@@ -60,7 +69,8 @@ describe('Mfp3Encoder', () => {
 	$injector.registerSingleton('MapService', mapServiceMock)
 		.registerSingleton('GeoResourceService', geoResourceServiceMock)
 		.registerSingleton('UrlService', urlServiceMock)
-		.registerSingleton('ShareService', shareServiceMock);
+		.registerSingleton('ShareService', shareServiceMock)
+		.registerSingleton('MfpService', mfpServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 
@@ -103,6 +113,10 @@ describe('Mfp3Encoder', () => {
 			*/
 			getType() {
 				return this._type;
+			}
+
+			get url() {
+				return '';
 			}
 		}
 
@@ -323,23 +337,40 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('resolves wmts layer to a mfp \'osm\' spec', () => {
-			const tileGrid = {
-				getTileSize: () => 42
-			};
-			const sourceMock = {
-				getTileGrid: () => tileGrid,
-				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}']
-			};
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1 };
 
 			const encoder = setup();
-			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, new TestGeoResource(GeoResourceTypes.WMTS));
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
+			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
 
 			expect(actualSpec).toEqual({
 				opacity: 1,
 				type: 'osm',
 				baseURL: 'https://some.url/to/foo/{z}/{x}/{y}',
-				tileSize: [42, 42],
+				attribution: null,
+				thirdPartyAttribution: null
+			});
+		});
+
+		it('resolves wmts layer with a geoResource substitution to a mfp \'osm\' spec', () => {
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1 };
+
+			const encoder = setup();
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
+			spyOnProperty(wmtsGeoResource, 'id', 'get').and.returnValue('foo');
+			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			const substitutionGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
+			spyOnProperty(substitutionGeoResource, 'url', 'get').and.returnValue('https://some.url/to/bar/{z}/{x}/{y}');
+
+			spyOn(geoResourceServiceMock, 'byId').and.returnValue(substitutionGeoResource);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({ grSubstitutions: { foo: 'bar' }, layouts: [] });
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
+
+			expect(actualSpec).toEqual({
+				opacity: 1,
+				type: 'osm',
+				baseURL: 'https://some.url/to/bar/{z}/{x}/{y}',
 				attribution: null,
 				thirdPartyAttribution: null
 			});

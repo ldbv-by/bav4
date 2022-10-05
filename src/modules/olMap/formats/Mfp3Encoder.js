@@ -37,16 +37,16 @@ const PointsPerInch = 72; // PostScript points 1/72"
 export class Mfp3Encoder {
 	/*
 	TODO:
-	- should have a strategy to receive or transform WmtsGeoResources (XYZSource) for target srid
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
 	*/
 
 	constructor(encodingProperties) {
-		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService');
+		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService, MfpService: mfpService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
 		this._shareService = shareService;
+		this._mfpService = mfpService;
 		this._mfpProperties = encodingProperties;
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
 		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
@@ -162,21 +162,16 @@ export class Mfp3Encoder {
 		return subLayers.map(l => this._encode(l));
 	}
 
-	_encodeWMTS(olLayer, geoResource) {
-		// all WMTS-Layers rely on {@see XYZSource}, this must be translated to spec type 'osm' in MapFishPrint V3
-		// the only required parameter is: baseURL
-		const source = olLayer.getSource();
-		const tileGrid = source.getTileGrid();
-		const url = source.getUrls()[0];
-		const baseUrl = url;
+	_encodeWMTS(olLayer, wmtsGeoResource) {
+		const { grSubstitutions } = this._mfpService.getCapabilities();
+		const baseUrl = Object.hasOwn(grSubstitutions, wmtsGeoResource.id) ? this._geoResourceService.byId(grSubstitutions[wmtsGeoResource.id]).url : wmtsGeoResource.url;
 
 		return {
 			opacity: olLayer.getOpacity(),
 			type: 'osm',
 			baseURL: baseUrl,
-			tileSize: [tileGrid.getTileSize(0), tileGrid.getTileSize(0)],
-			attribution: geoResource.importedByUser ? null : geoResource.attribution,
-			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
+			attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
+			thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
 		};
 	}
 
