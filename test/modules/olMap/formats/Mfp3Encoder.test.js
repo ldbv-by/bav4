@@ -16,6 +16,9 @@ import { Circle as CircleStyle } from 'ol/style';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
 import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { fromLonLat } from 'ol/proj';
+import { WMTS } from 'ol/source';
+import TileLayer from 'ol/layer/Tile';
+import WMTSTileGrid from 'ol/tilegrid/WMTS';
 
 describe('Mfp3Encoder', () => {
 
@@ -59,6 +62,12 @@ describe('Mfp3Encoder', () => {
 		}
 	};
 
+	const layerServiceMock = {
+		toOlLayer() {
+			return {};
+		}
+	};
+
 	const defaultProperties = {
 		layoutId: 'foo',
 		scale: 1,
@@ -70,7 +79,8 @@ describe('Mfp3Encoder', () => {
 		.registerSingleton('GeoResourceService', geoResourceServiceMock)
 		.registerSingleton('UrlService', urlServiceMock)
 		.registerSingleton('ShareService', shareServiceMock)
-		.registerSingleton('MfpService', mfpServiceMock);
+		.registerSingleton('MfpService', mfpServiceMock)
+		.registerSingleton('LayerService', layerServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
 
@@ -348,41 +358,29 @@ describe('Mfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
 		});
 
-		it('resolves wmts layer to a mfp \'osm\' spec', () => {
+		xit('resolves wmts layer to a mfp \'wmts\' spec', () => {
 			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1 };
 
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
 			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
-			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				const tileGrid = new WMTSTileGrid({ extent: [0, 0, 42, 42], resolutions: [10, 20, 30, 40], matrixIds: ['id10', 'id20', 'id30', 'id40'] });
 
-			expect(actualSpec).toEqual({
-				opacity: 1,
-				type: 'osm',
-				baseURL: 'https://some.url/to/foo/{z}/{x}/{y}',
-				attribution: null,
-				thirdPartyAttribution: null
+				const wmtsSource = new WMTS({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}' });
+				return new TileLayer({
+					id: 'foo',
+					geoResourceId: 'geoResource.id',
+					source: wmtsSource,
+					opacity: 0.42
+				});
 			});
-		});
-
-		it('resolves wmts layer with a geoResource substitution to a mfp \'osm\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1 };
-
-			const encoder = setup();
-			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
-			spyOnProperty(wmtsGeoResource, 'id', 'get').and.returnValue('foo');
-			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
-			const substitutionGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
-			spyOnProperty(substitutionGeoResource, 'url', 'get').and.returnValue('https://some.url/to/bar/{z}/{x}/{y}');
-
-			spyOn(geoResourceServiceMock, 'byId').and.returnValue(substitutionGeoResource);
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({ grSubstitutions: { foo: 'bar' }, layouts: [] });
 			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
 
 			expect(actualSpec).toEqual({
 				opacity: 1,
-				type: 'osm',
-				baseURL: 'https://some.url/to/bar/{z}/{x}/{y}',
+				type: 'wmts',
+				baseURL: 'https://some.url/to/foo/{z}/{x}/{y}',
 				attribution: null,
 				thirdPartyAttribution: null
 			});

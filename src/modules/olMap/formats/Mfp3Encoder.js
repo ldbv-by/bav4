@@ -163,16 +163,51 @@ export class Mfp3Encoder {
 	}
 
 	_encodeWMTS(olLayer, wmtsGeoResource) {
-		const { grSubstitutions } = this._mfpService.getCapabilities();
-		const baseUrl = Object.hasOwn(grSubstitutions, wmtsGeoResource.id) ? this._geoResourceService.byId(grSubstitutions[wmtsGeoResource.id]).url : wmtsGeoResource.url;
 
-		return {
-			opacity: olLayer.getOpacity(),
-			type: 'osm',
-			baseURL: baseUrl,
-			attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
-			thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
+		const getSubstitutionLayer = (layer, geoResource) => {
+			const { LayerService: layerService } = $injector.inject('LayerService');
+			const { grSubstitutions } = this._mfpService.getCapabilities();
+
+			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id) ? this._geoResourceService.byId(grSubstitutions[geoResource.id]) : null;
+			if (substitutionGeoResource) {
+				const substitutionLayer = layerService.toOlLayer(`${layer.id}_substitution`, substitutionGeoResource, null);
+				substitutionLayer?.setOpacity(layer.getOpacity());
+				return substitutionLayer;
+			}
+
+			return null;
 		};
+
+		const createWmtsSpecs = (wmtsLayer) => {
+			const wmtsSource = wmtsLayer.getSource();
+			const tileGrid = wmtsSource.getTileGrid();
+			const extent = wmtsLayer.getExtent();
+			const requestEncoding = wmtsSource.getRequestEncoding() || 'REST';
+			const baseUrl = wmtsSource.getUrls()[0];
+			const layer = wmtsSource.getLayer();
+			const tileMatrixSet = this._mfpProjection;
+
+			return {
+				opacity: wmtsLayer.getOpacity(),
+				type: 'wmts',
+				baseURL: baseUrl,
+				layer: layer,
+				requestEncoding: requestEncoding,
+				matrices: Mfp3Encoder.buildMatrixSets(tileGrid, extent),
+				matrixSet: tileMatrixSet,
+				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
+				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
+			};
+		};
+
+		const createEmptySpecsAndWarn = () => {
+			console.warn(`Missing substitution georesource for layer  ${olLayer.id} and georesource '${wmtsGeoResource.id}'.`);
+			return [];
+		};
+
+		const substitutionLayer = getSubstitutionLayer(olLayer, wmtsGeoResource);
+		return substitutionLayer ? createWmtsSpecs(substitutionLayer) : createEmptySpecsAndWarn();
+
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource) {
@@ -580,5 +615,35 @@ export class Mfp3Encoder {
 			console.warn('Could not shorten url: ' + e);
 			return url;
 		}
+	}
+
+	static buildMatrixSets(tileGrid, extent) {
+		const ids = tileGrid.getMatrixIds();
+		const resolutions = tileGrid.getResolutions();
+		// todo: need for a defaultExtent
+
+		resolutions.map((resolution, index) => {
+			const z = tileGrid.getZForResolution(resolution);
+			const tileSize = tileGrid.getTileSize(z);
+
+
+			const getMatrixSize = (tileGrid, extent) => {
+				const topLeftCorner = tileGrid.getOrigin(z);
+
+				const topLeftTile = tileGrid.getTileCoordForCoordAndZ([topLeftCorner[0], extent[1]], z);
+				const bottomRightTile = tileGrid.getTileCoordForCoordAndZ([extent[2], topLeftCorner[1]], z);
+
+				const tileWidth = 1 + bottomRightTile[1] - topLeftTile[1];
+				const tileHeight = 1 + topLeftTile[2] - bottomRightTile[2];
+				return [tileWidth, tileHeight];
+			};
+
+			return { identifier: ids[index],
+				scaleDenominator: resolution,
+				topLeftCorner: tileGrid.getOrigin(z),
+				tileSize: [tileSize, tileSize],
+				matrixSize: getMatrixSize(tileGrid, extent)
+			};
+		});
 	}
 }
