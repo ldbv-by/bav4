@@ -391,6 +391,23 @@ describe('Mfp3Encoder', () => {
 			});
 		});
 
+		it('does NOT resolve wmts layer to a mfp \'wmts\' spec due to missing substitution georesource', () => {
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const encoder = setup();
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'something');
+			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').and.callThrough();
+			const layerServiceSpy = spyOn(layerServiceMock, 'toOlLayer').and.callThrough();
+			const warnSpy = spyOn(console, 'warn');
+
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
+
+			expect(warnSpy).toHaveBeenCalledOnceWith('Missing substitution georesource for layer \'wmts\' and georesource \'test_something\'.');
+			expect(actualSpec).toEqual([]);
+			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
+			expect(layerServiceSpy).not.toHaveBeenCalled();
+		});
+
 		it('resolves wms layer to a mfp \'wms\' spec', () => {
 			const sourceMock = {
 				getUrls: () => ['https://some.url/to/wms'],
