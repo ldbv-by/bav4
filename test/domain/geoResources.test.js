@@ -281,6 +281,19 @@ describe('GeoResource', () => {
 			expect(wmtsGeoResource.label).toBe('label');
 			expect(wmtsGeoResource.url).toBe('url');
 		});
+
+		it('provides default properties', () => {
+			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+
+			expect(wmtsGeoResource.tileGridId).toBeNull();
+		});
+
+		it('provides set methods and getters', () => {
+			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url')
+				.setTileGridId('tileGridId');
+
+			expect(wmtsGeoResource.tileGridId).toBe('tileGridId');
+		});
 	});
 
 	it('provides an enum of all available vector source types', () => {

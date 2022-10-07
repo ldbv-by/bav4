@@ -323,10 +323,24 @@ export class WMTSGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
+		this._tileGridId = null;
 	}
 
 	get url() {
 		return this._url;
+	}
+
+	/**
+	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Default is `null`.
+	 */
+	get tileGridId() {
+		return this._tileGridId;
+	}
+
+	setTileGridId(tileGridId) {
+		this._tileGridId = tileGridId;
+		return this;
 	}
 
 	/**
