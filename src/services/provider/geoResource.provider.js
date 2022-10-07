@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -18,6 +18,9 @@ export const _definitionToGeoResource = definition => {
 					//set specific optional values
 					.setExtraParams(def.extraParams ?? {});
 			case 'wmts':
+				return new WMTSGeoResource(def.id, def.label, def.url);
+			case 'vt':
+				return new VTGeoResource(def.id, def.label, def.styleUrl);
 				return new WMTSGeoResource(def.id, def.label, def.url).setTileGridId(def.tileGridId);
 			case 'vector':
 				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType)).setUrl(def.url);
