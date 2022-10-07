@@ -181,7 +181,7 @@ export class Mfp3Encoder {
 		const createWmtsSpecs = (wmtsLayer) => {
 			const wmtsSource = wmtsLayer.getSource();
 			const tileGrid = wmtsSource.getTileGrid();
-			const requestEncoding = wmtsSource.getRequestEncoding() || 'REST';
+			const requestEncoding = wmtsSource.getRequestEncoding();
 			const baseUrl = wmtsSource.getUrls()[0];
 			const layer = wmtsSource.getLayer();
 			const tileMatrixSet = this._mfpProjection;

@@ -187,7 +187,20 @@ describe('Mfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
-		it('encodes a WMS layer', async () => {
+		it('encodes overlays', async () => {
+			const mapSpy = spyOn(mapMock, 'getOverlays').and.returnValue({ getArray: () => [{}, {}] });
+			const encoder = setup();
+			const encodingSpy = spyOn(encoder, '_encodeOverlay').and.callFake(() => {
+				return {};
+			});
+
+			await encoder.encode(mapMock);
+
+			expect(encodingSpy).toHaveBeenCalledTimes(2);
+			expect(mapSpy).toHaveBeenCalled();
+		});
+
+		it('encodes overlays', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS, 'wms'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
