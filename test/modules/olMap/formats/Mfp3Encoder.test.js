@@ -55,7 +55,7 @@ describe('Mfp3Encoder', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return { grSubstitutions: {}, layouts: [] };
+			return { grSubstitutions: { 'test_wmts': 'wmts_print' }, layouts: [] };
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1] };
@@ -125,8 +125,8 @@ describe('Mfp3Encoder', () => {
 		};
 
 		class TestGeoResource extends GeoResource {
-			constructor(type) {
-				super(`test_${type.toString()}`);
+			constructor(type, label) {
+				super(`test_${label}`);
 				this._type = type;
 			}
 
@@ -143,7 +143,7 @@ describe('Mfp3Encoder', () => {
 		}
 
 		it('requests the corresponding geoResource for a layer', async () => {
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource('something'));
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(null, 'something', 'something'));
 			const encoder = setup();
 
 			await encoder.encode(mapMock);
@@ -152,7 +152,7 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('encodes a aggregate layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE));
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE, 'aggregate'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
 				return {};
@@ -164,7 +164,7 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('encodes a vector layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR));
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR, 'vector'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
 				return {};
@@ -176,7 +176,7 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('encodes a WMTS layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS));
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS, 'wmts'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
 				return {};
@@ -188,7 +188,7 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('encodes a WMS layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS));
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS, 'wms'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
 				return {};
@@ -358,16 +358,17 @@ describe('Mfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
 		});
 
-		xit('resolves wmts layer to a mfp \'wmts\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1 };
+		it('resolves wmts layer to a mfp \'wmts\' spec', () => {
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
-			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS);
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'wmts');
 			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(wmtsGeoResource);
 			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
-				const tileGrid = new WMTSTileGrid({ extent: [0, 0, 42, 42], resolutions: [10, 20, 30, 40], matrixIds: ['id10', 'id20', 'id30', 'id40'] });
+				const tileGrid = new WMTSTileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10], matrixIds: ['id40', 'id30', 'id20', 'id10'] });
 
-				const wmtsSource = new WMTS({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}' });
+				const wmtsSource = new WMTS({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}', requestEncoding: 'REST' });
 				return new TileLayer({
 					id: 'foo',
 					geoResourceId: 'geoResource.id',
@@ -380,7 +381,11 @@ describe('Mfp3Encoder', () => {
 			expect(actualSpec).toEqual({
 				opacity: 1,
 				type: 'wmts',
-				baseURL: 'https://some.url/to/foo/{z}/{x}/{y}',
+				layer: 'bar',
+				requestEncoding: 'REST',
+				matrixSet: 'EPSG:25832',
+				matrices: jasmine.any(Object),
+				baseURL: 'https://some.url/to/wmts/bar/{z}/{x}/{y}',
 				attribution: null,
 				thirdPartyAttribution: null
 			});

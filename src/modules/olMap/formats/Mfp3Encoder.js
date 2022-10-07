@@ -181,7 +181,6 @@ export class Mfp3Encoder {
 		const createWmtsSpecs = (wmtsLayer) => {
 			const wmtsSource = wmtsLayer.getSource();
 			const tileGrid = wmtsSource.getTileGrid();
-			const extent = wmtsLayer.getExtent();
 			const requestEncoding = wmtsSource.getRequestEncoding() || 'REST';
 			const baseUrl = wmtsSource.getUrls()[0];
 			const layer = wmtsSource.getLayer();
@@ -193,7 +192,7 @@ export class Mfp3Encoder {
 				baseURL: baseUrl,
 				layer: layer,
 				requestEncoding: requestEncoding,
-				matrices: Mfp3Encoder.buildMatrixSets(tileGrid, extent),
+				matrices: Mfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
 				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
 				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
@@ -617,17 +616,17 @@ export class Mfp3Encoder {
 		}
 	}
 
-	static buildMatrixSets(tileGrid, extent) {
+	static buildMatrixSets(tileGrid) {
 		const ids = tileGrid.getMatrixIds();
 		const resolutions = tileGrid.getResolutions();
-		// todo: need for a defaultExtent
 
-		resolutions.map((resolution, index) => {
+		return resolutions.map((resolution, index) => {
 			const z = tileGrid.getZForResolution(resolution);
 			const tileSize = tileGrid.getTileSize(z);
 
 
-			const getMatrixSize = (tileGrid, extent) => {
+			const getMatrixSize = (tileGrid) => {
+				const extent = tileGrid.getExtent();
 				const topLeftCorner = tileGrid.getOrigin(z);
 
 				const topLeftTile = tileGrid.getTileCoordForCoordAndZ([topLeftCorner[0], extent[1]], z);
@@ -638,11 +637,12 @@ export class Mfp3Encoder {
 				return [tileWidth, tileHeight];
 			};
 
-			return { identifier: ids[index],
+			return {
+				identifier: ids[index],
 				scaleDenominator: resolution,
 				topLeftCorner: tileGrid.getOrigin(z),
 				tileSize: [tileSize, tileSize],
-				matrixSize: getMatrixSize(tileGrid, extent)
+				matrixSize: getMatrixSize(tileGrid)
 			};
 		});
 	}
