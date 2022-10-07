@@ -66,6 +66,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._importedByUser = false;
 		this._queryable = true;
+		this._exportable = true;
 	}
 
 	/**
@@ -117,6 +118,10 @@ export class GeoResource {
 
 	get queryable() {
 		return this._queryable;
+	}
+
+	get exportable() {
+		return this._exportable;
 	}
 
 	setLabel(label) {
@@ -176,6 +181,11 @@ export class GeoResource {
 
 	setQueryable(queryable) {
 		this._queryable = queryable;
+		return this;
+	}
+
+	setExportable(exportable) {
+		this._exportable = exportable;
 		return this;
 	}
 
