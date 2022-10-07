@@ -141,6 +141,7 @@ describe('GeoResource', () => {
 				expect(georesource.importedByUser).toBeFalse();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 				expect(georesource._queryable).toBeTrue();
+				expect(georesource._exportable).toBeTrue();
 			});
 
 			it('provides set methods and getters', () => {
@@ -155,7 +156,8 @@ describe('GeoResource', () => {
 					.setAttribution('some attribution')
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
 					.setImportedByUser(true)
-					.setQueryable(false);
+					.setQueryable(false)
+					.setExportable(false);
 
 
 				expect(georesource.hidden).toBeTrue();
@@ -167,6 +169,7 @@ describe('GeoResource', () => {
 				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
 				expect(georesource.importedByUser).toBeTrue();
 				expect(georesource.queryable).toBeFalse();
+				expect(georesource.exportable).toBeFalse();
 			});
 		});
 
@@ -281,6 +284,19 @@ describe('GeoResource', () => {
 			expect(wmtsGeoResource.id).toBe('id');
 			expect(wmtsGeoResource.label).toBe('label');
 			expect(wmtsGeoResource.url).toBe('url');
+		});
+
+		it('provides default properties', () => {
+			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+
+			expect(wmtsGeoResource.tileGridId).toBeNull();
+		});
+
+		it('provides set methods and getters', () => {
+			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url')
+				.setTileGridId('tileGridId');
+
+			expect(wmtsGeoResource.tileGridId).toBe('tileGridId');
 		});
 	});
 

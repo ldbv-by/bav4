@@ -66,6 +66,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._importedByUser = false;
 		this._queryable = true;
+		this._exportable = true;
 	}
 
 	/**
@@ -117,6 +118,10 @@ export class GeoResource {
 
 	get queryable() {
 		return this._queryable;
+	}
+
+	get exportable() {
+		return this._exportable;
 	}
 
 	setLabel(label) {
@@ -176,6 +181,11 @@ export class GeoResource {
 
 	setQueryable(queryable) {
 		this._queryable = queryable;
+		return this;
+	}
+
+	setExportable(exportable) {
+		this._exportable = exportable;
 		return this;
 	}
 
@@ -323,10 +333,24 @@ export class WMTSGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
+		this._tileGridId = null;
 	}
 
 	get url() {
 		return this._url;
+	}
+
+	/**
+	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Default is `null`.
+	 */
+	get tileGridId() {
+		return this._tileGridId;
+	}
+
+	setTileGridId(tileGridId) {
+		this._tileGridId = tileGridId;
+		return this;
 	}
 
 	/**
