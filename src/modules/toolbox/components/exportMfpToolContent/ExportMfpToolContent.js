@@ -46,8 +46,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	createView(model) {
 		const { id, scale, isJobStarted } = model;
 		const translate = (key) => this._translationService.translate(key);
-		const { layouts } = this._mfpService.getCapabilities();
-		const layoutsAvailable = layouts.length > 0;
+		const { layouts } = this._mfpService.getCapabilities() ?? { layouts: [] };
+		const layoutsAvailable = layouts?.length > 0;
 
 		const onClickAction = isJobStarted ? () => cancelJob() : async () => {
 			requestJob();
