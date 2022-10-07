@@ -5,6 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
 import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
+import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -83,14 +84,24 @@ export class LayerService {
 
 			case GeoResourceTypes.WMTS: {
 
-				const xyZsource = new XYZSource({
-					url: geoResource.url
-				});
+				const xyzSource = () => {
+					switch (geoResource.tileGridId) {
+
+						case 'adv_wmts': return new XYZSource({
+							url: geoResource.url,
+							tileGrid: new AdvWmtsTileGrid(),
+							projection: 'EPSG:25832'
+						});
+						default: return new XYZSource({
+							url: geoResource.url
+						});
+					}
+				};
 
 				return new TileLayer({
 					id: id,
 					geoResourceId: geoResource.id,
-					source: xyZsource,
+					source: xyzSource(),
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,

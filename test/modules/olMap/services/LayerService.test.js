@@ -5,6 +5,8 @@ import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import { createXYZ } from 'ol/tilegrid';
+import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
 
 describe('LayerService', () => {
@@ -221,6 +223,29 @@ describe('LayerService', () => {
 				expect(wmtsOlLayer.constructor.name).toBe('TileLayer');
 				expect(wmtsSource.constructor.name).toBe('XYZ');
 				expect(wmtsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+			});
+
+			it('sets the default TileGrid', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+
+				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
+
+				const wmtsSource = wmtsOlLayer.getSource();
+				expect(wmtsSource.getTileGrid()).toEqual(createXYZ());
+			});
+
+			it('sets the ADV WMTS TileGrid', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+					.setTileGridId('adv_wmts');
+
+				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
+
+				const wmtsSource = wmtsOlLayer.getSource();
+				expect(wmtsSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
 			});
 		});
 
