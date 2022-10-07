@@ -18,7 +18,7 @@ export const _definitionToGeoResource = definition => {
 					//set specific optional values
 					.setExtraParams(def.extraParams ?? {});
 			case 'wmts':
-				return new WMTSGeoResource(def.id, def.label, def.url);
+				return new WMTSGeoResource(def.id, def.label, def.url).setTileGridId(def.tileGridId);
 			case 'vector':
 				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType)).setUrl(def.url);
 			case 'aggregate':

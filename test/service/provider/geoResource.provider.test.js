@@ -25,7 +25,7 @@ describe('BVV GeoResource provider', () => {
 	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
 	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, extraParams: { 'foo': 'bar' }, queryable: false, ...wmsDefinition };
 	const wmtsDefinition = { id: 'wmtsId', label: 'wmtsLabel', url: 'wmtsUrl', type: 'wmts', attribution: basicAttribution };
-	const wmtsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, ...wmtsDefinition };
+	const wmtsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, tileGridId: 'tileGridId', ...wmtsDefinition };
 	const vectorDefinition = { id: 'wmtsId', label: 'vectorLabel', url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
 	const vectorDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, ...vectorDefinition };
 	const aggregateDefinition = { id: 'wmtsId', label: 'aggregateLabel', geoResourceIds: ['wmtsId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
@@ -86,6 +86,7 @@ describe('BVV GeoResource provider', () => {
 			expect(wmtsGeoResource.minZoom).toBe(5);
 			expect(wmtsGeoResource.maxZoom).toBe(19);
 			expect(wmtsGeoResource.queryable).toBeFalse();
+			expect(wmtsGeoResource.tileGridId).toBe('tileGridId');
 		});
 
 		it('maps a VectorFile BVV definition to a corresponding GeoResource instance', () => {
