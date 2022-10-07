@@ -5,6 +5,7 @@ import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
 import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
+import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -101,6 +102,18 @@ export class LayerService {
 			case GeoResourceTypes.VECTOR: {
 
 				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+			}
+
+			case GeoResourceTypes.VT: {
+				return new MapLibreLayer({
+					id: id,
+					opacity: opacity,
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined,
+					maplibreOptions: {
+						style: geoResource.styleUrl
+					}
+				});
 			}
 
 			case GeoResourceTypes.AGGREGATE: {

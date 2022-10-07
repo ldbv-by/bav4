@@ -24,7 +24,7 @@ export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
 	WMTS: Symbol.for('wmts'),
 	VECTOR: Symbol.for('vector'),
-	VECTOR_TILES: Symbol.for('vector_tiles'),
+	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
 });
@@ -429,6 +429,25 @@ export class AggregateGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.AGGREGATE;
+	}
+}
+
+
+export class VTGeoResource extends GeoResource {
+	constructor(id, label, styleUrl) {
+		super(id, label);
+		this._styleUrl = styleUrl;
+	}
+
+	get styleUrl() {
+		return this._styleUrl;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VT;
 	}
 }
 

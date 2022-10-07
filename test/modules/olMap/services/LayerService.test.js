@@ -1,10 +1,12 @@
 import { $injector } from '../../../../src/injection';
-import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../../../src/domain/geoResources';
+import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource, WMTSGeoResource } from '../../../../src/domain/geoResources';
 import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
+import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
+import maplibregl from 'maplibre-gl';
 
 
 describe('LayerService', () => {
@@ -75,7 +77,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const olMap = new Map();
 				const olLayer = new VectorLayer();
-				const vectorGeoresource = new VectorGeoResource('geoResourceId', 'Label', VectorSourceType.KML);
+				const vectorGeoresource = new VectorGeoResource('geoResourceId', 'label', VectorSourceType.KML);
 				const vectorSourceForUrlSpy = spyOn(vectorLayerService, 'createVectorLayer').and.returnValue(olLayer);
 
 				instanceUnderTest.toOlLayer(id, vectorGeoresource, olMap);
@@ -90,7 +92,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png');
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png');
 
 				const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
@@ -113,7 +115,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'Label', 'https://some.url', 'layer', 'image/png')
+				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
@@ -148,7 +150,7 @@ describe('LayerService', () => {
 
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', url, 'layer', 'image/png')
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png')
 						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 
 					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
@@ -166,7 +168,7 @@ describe('LayerService', () => {
 
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'Label', url, 'layer', 'image/png')
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png')
 						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 
 
@@ -185,7 +187,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 				const wmtsOlLayer = instanceUnderTest.toOlLayer(id, wmtsGeoresource);
 
@@ -204,7 +206,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -224,11 +226,57 @@ describe('LayerService', () => {
 			});
 		});
 
+		describe('VTGeoresource', () => {
+
+			it('converts a VTGeoresource to a olLayer', () => {
+
+				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
+				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
+				if (maplibregl.supported()) {
+
+					const instanceUnderTest = setup();
+					const id = 'id';
+					const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null);
+
+					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+
+					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
+					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
+					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
+					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+				}
+
+			});
+
+			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
+				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
+				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
+				if (maplibregl.supported()) {
+
+					const instanceUnderTest = setup();
+					const id = 'id';
+					const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null)
+						.setOpacity(.5)
+						.setMinZoom(5)
+						.setMaxZoom(19);
+
+					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.getOpacity()).toBe(.5);
+					expect(vtOlLayer.getMinZoom()).toBe(5);
+					expect(vtOlLayer.getMaxZoom()).toBe(19);
+					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
+					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
+				}
+			});
+		});
+
 		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
-			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'Label', 'https://some.url', 'layer', 'image/png');
+			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'label', 'https://some.url', 'layer', 'image/png');
 			spyOn(georesourceService, 'byId').and.callFake((id) => {
 				switch (id) {
 					case wmtsGeoresource.id:
@@ -253,8 +301,8 @@ describe('LayerService', () => {
 		it('converts a AggregateGeoresource containing optional properties to a olLayer(Group)', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
-			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'Label', 'https://some.url', 'layer', 'image/png');
+			const wmtsGeoresource = new WMTSGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const wmsGeoresource = new WmsGeoResource('geoResourceId2', 'label', 'https://some.url', 'layer', 'image/png');
 			spyOn(georesourceService, 'byId').and.callFake((id) => {
 				switch (id) {
 					case wmtsGeoresource.id:
