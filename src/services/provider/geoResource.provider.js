@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -18,9 +18,15 @@ export const _definitionToGeoResource = definition => {
 					//set specific optional values
 					.setExtraParams(def.extraParams ?? {});
 			case 'wmts':
-				return new WMTSGeoResource(def.id, def.label, def.url);
+				return new WMTSGeoResource(def.id, def.label, def.url)
+					//set specific optional values
+					.setTileGridId(def.tileGridId);
+			case 'vt':
+				return new VTGeoResource(def.id, def.label, def.styleUrl);
 			case 'vector':
-				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType)).setUrl(def.url);
+				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
+					//set specific optional values
+					.setUrl(def.url);
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
 			default:
@@ -37,6 +43,7 @@ export const _definitionToGeoResource = definition => {
 		geoResource.setMinZoom(definition.minZoom ?? null);
 		geoResource.setMaxZoom(definition.maxZoom ?? null);
 		geoResource.setQueryable(definition.queryable ?? true);
+		geoResource.setExportable(definition.exportable ?? true);
 		return geoResource;
 	}
 	return null;

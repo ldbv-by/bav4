@@ -248,6 +248,7 @@ describe('OlMap', () => {
 				const element = await setup();
 
 				expect(element._map.moveTolerance_).toBe(3);
+				expect(element._view.get('constrainResolution')).toBeFalse();
 			});
 		});
 
