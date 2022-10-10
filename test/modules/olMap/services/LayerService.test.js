@@ -227,7 +227,7 @@ describe('LayerService', () => {
 				expect(wmtsSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 			});
 
-			it('sets the default TileGrid', () => {
+			it('sets a XYZ source containing the default TileGrid', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}');
@@ -236,9 +236,10 @@ describe('LayerService', () => {
 
 				const wmtsSource = wmtsOlLayer.getSource();
 				expect(wmtsSource.getTileGrid()).toEqual(createXYZ());
+				expect(wmtsSource.getProjection().getCode()).toBe('EPSG:3857');
 			});
 
-			it('sets the ADV WMTS TileGrid', () => {
+			it('sets a XYZ source containing the ADV WMTS TileGrid', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const wmtsGeoresource = new WMTSGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
@@ -248,6 +249,7 @@ describe('LayerService', () => {
 
 				const wmtsSource = wmtsOlLayer.getSource();
 				expect(wmtsSource.getTileGrid()).toEqual(new AdvWmtsTileGrid());
+				expect(wmtsSource.getProjection().getCode()).toBe('EPSG:25832');
 			});
 		});
 

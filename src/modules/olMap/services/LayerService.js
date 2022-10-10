@@ -7,6 +7,7 @@ import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provid
 import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
+import { Projection } from 'ol/proj';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -91,7 +92,7 @@ export class LayerService {
 						case 'adv_wmts': return new XYZSource({
 							url: geoResource.url,
 							tileGrid: new AdvWmtsTileGrid(),
-							projection: 'EPSG:25832'
+							projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
 						});
 						default: return new XYZSource({
 							url: geoResource.url
