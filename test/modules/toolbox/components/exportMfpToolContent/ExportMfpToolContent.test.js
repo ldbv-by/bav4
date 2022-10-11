@@ -18,7 +18,7 @@ describe('ExportMfpToolContent', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return { grSubstitutions: {}, layouts: [] };
+			return null;
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1] };

@@ -45,9 +45,9 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
 
 /**
  * @function
- * @name MfpService#getCapabilitiesById
- * @param {string} id Id of the desired {@link MfpCapabilities}
- * @returns {MfpCapabilities|null}
+ * @name MfpService#getLayoutById
+ * @param {string} id Id of the desired {@link MfpLayout}
+ * @returns {MfpLayout|null}
  */
 
 /**
