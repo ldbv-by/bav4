@@ -22,7 +22,7 @@ export const _definitionToGeoResource = definition => {
 					//set specific optional values
 					.setTileGridId(def.tileGridId);
 			case 'vt':
-				return new VTGeoResource(def.id, def.label, def.styleUrl);
+				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector':
 				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 					//set specific optional values
