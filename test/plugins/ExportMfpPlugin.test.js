@@ -37,10 +37,10 @@ describe('ExportMfpPlugin', () => {
 		const getMockCapabilities = () => {
 			const scales = [1000, 5000];
 			const dpis = [125, 200];
-			return [
+			return { grSubstitutions: {}, layouts: [
 				{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
 				{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
-			];
+			] };
 		};
 
 		it('initializes the mfp-slice-of state and updates the active property', async () => {

@@ -17,9 +17,9 @@ describe('ExportMfpToolContent', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return [];
+			return null;
 		},
-		getCapabilitiesById() {
+		getLayoutById() {
 			return { scales: [42, 21, 1] };
 		}
 	};
@@ -78,7 +78,7 @@ describe('ExportMfpToolContent', () => {
 
 	const scales = [42, 21, 1];
 	const dpis = [125, 200];
-	const capabilities = [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }];
+	const capabilities = { grSubstitutions: {}, layouts: [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }] };
 
 	describe('when initialized', () => {
 
@@ -241,7 +241,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('it displays the cancel-button', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
@@ -255,7 +255,7 @@ describe('ExportMfpToolContent', () => {
 	describe('when the user clicks the cancel-button', () => {
 
 		it('changes store', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
@@ -270,7 +270,7 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('it displays the submit-button again', async () => {
-			spyOn(mfpServiceMock, 'getCapabilities').and.resolveTo(capabilities);
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');

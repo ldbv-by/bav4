@@ -36,8 +36,8 @@ export class ExportMfpPlugin extends BaPlugin {
 
 			if (!this._initialized) {
 				// let's set the initial mfp properties
-				const capabilities = await mfpService.init();
-				const { id, scales, dpis } = capabilities[0];
+				const { layouts } = await mfpService.init();
+				const { id, scales, dpis } = layouts[0];
 				setCurrent({ id: id, dpi: dpis[0], scale: scales[0] });
 				this._initialized = true;
 			}
