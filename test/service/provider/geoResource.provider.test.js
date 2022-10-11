@@ -76,7 +76,7 @@ describe('BVV GeoResource provider', () => {
 			const wmtsGeoResource = _definitionToGeoResource(wmtsDefinition);
 
 			vadlidateGeoResourceProperties(wmtsGeoResource, wmtsDefinition);
-			expect(wmtsGeoResource.url).toBe(wmtsGeoResource.url);
+			expect(wmtsGeoResource.url).toBe(wmtsDefinition.url);
 			expect(wmtsGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(wmtsGeoResource._attribution).not.toBeNull();
 		});
@@ -97,7 +97,7 @@ describe('BVV GeoResource provider', () => {
 			const vtGeoResource = _definitionToGeoResource(vtDefinition);
 
 			vadlidateGeoResourceProperties(vtGeoResource, vtDefinition);
-			expect(vtGeoResource.styleUrl).toBe(vtGeoResource.styleUrl);
+			expect(vtGeoResource.styleUrl).toBe(vtDefinition.url);
 			expect(vtGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(vtGeoResource._attribution).not.toBeNull();
 		});
