@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, XyzGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 
 
@@ -10,7 +10,7 @@ describe('GeoResource', () => {
 		it('provides an enum of all available types', () => {
 
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
-			expect(GeoResourceTypes.WMTS.description).toBe('wmts');
+			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
 			expect(GeoResourceTypes.VT.description).toBe('vt');
 			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
@@ -274,29 +274,29 @@ describe('GeoResource', () => {
 		});
 	});
 
-	describe('WmtsGeoResource', () => {
+	describe('XyzGeoResource', () => {
 
-		it('instantiates a WmtsGeoResource', () => {
+		it('instantiates a XyzGeoResource', () => {
 
-			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url');
 
-			expect(wmtsGeoResource.getType()).toEqual(GeoResourceTypes.WMTS);
-			expect(wmtsGeoResource.id).toBe('id');
-			expect(wmtsGeoResource.label).toBe('label');
-			expect(wmtsGeoResource.url).toBe('url');
+			expect(xyzGeoResource.getType()).toEqual(GeoResourceTypes.XYZ);
+			expect(xyzGeoResource.id).toBe('id');
+			expect(xyzGeoResource.label).toBe('label');
+			expect(xyzGeoResource.url).toBe('url');
 		});
 
 		it('provides default properties', () => {
-			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url');
 
-			expect(wmtsGeoResource.tileGridId).toBeNull();
+			expect(xyzGeoResource.tileGridId).toBeNull();
 		});
 
 		it('provides set methods and getters', () => {
-			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url')
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url')
 				.setTileGridId('tileGridId');
 
-			expect(wmtsGeoResource.tileGridId).toBe('tileGridId');
+			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 		});
 	});
 
@@ -348,14 +348,14 @@ describe('GeoResource', () => {
 		it('instantiates a AggregateResource', () => {
 
 			const wmsGeoResource = new WmsGeoResource('wmsId', 'label', 'url', 'layers', 'format');
-			const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'label', 'url');
+			const xyzGeoResource = new XyzGeoResource('xyzId', 'label', 'url');
 
-			const aggregateGeoResource = new AggregateGeoResource('id', 'label', [wmsGeoResource, wmtsGeoResource]);
+			const aggregateGeoResource = new AggregateGeoResource('id', 'label', [wmsGeoResource, xyzGeoResource]);
 
 			expect(aggregateGeoResource.getType()).toEqual(GeoResourceTypes.AGGREGATE);
 			expect(aggregateGeoResource.geoResourceIds.length).toBe(2);
 			expect(aggregateGeoResource.geoResourceIds[0].id).toBe('wmsId');
-			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
+			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('xyzId');
 		});
 
 	});
@@ -380,14 +380,14 @@ describe('GeoResource', () => {
 
 			const modifiedLabel = 'modified';
 			const callback = jasmine.createSpy();
-			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
+			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback);
 
-			wmtsGeoResource.setLabel(modifiedLabel);
-			wmtsGeoResource.setLabel(modifiedLabel);
-			wmtsGeoResource.unknown = modifiedLabel;
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.unknown = modifiedLabel;
 
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
-			expect(wmtsGeoResource.label).toBe(modifiedLabel);
+			expect(xyzGeoResource.label).toBe(modifiedLabel);
 		});
 	});
 });
