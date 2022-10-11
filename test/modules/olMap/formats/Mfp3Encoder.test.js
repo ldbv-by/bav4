@@ -16,9 +16,11 @@ import { Circle as CircleStyle } from 'ol/style';
 import { Icon as IconStyle, Text as TextStyle } from 'ol/style';
 import { measureStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { fromLonLat } from 'ol/proj';
-import { WMTS } from 'ol/source';
+import { WMTS, XYZ } from 'ol/source';
 import TileLayer from 'ol/layer/Tile';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
+import LayerGroup from 'ol/layer/Group';
+import TileGrid from 'ol/tilegrid/TileGrid';
 
 describe('Mfp3Encoder', () => {
 
@@ -154,6 +156,9 @@ describe('Mfp3Encoder', () => {
 		it('encodes a aggregate layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE, 'aggregate'));
 			const encoder = setup();
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [new LayerGroup('foo')] };
+			});
 			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
 				return {};
 			});
@@ -354,24 +359,7 @@ describe('Mfp3Encoder', () => {
 			});
 		});
 
-		it('resolves sublayers of a aggregate layer', async () => {
-			const subLayersMock = { getArray: () => [{ get: () => 'foo1' }, { get: () => 'foo2' }, { get: () => 'foo3' }] };
-			const layersMock = { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getLayers: () => subLayersMock }] };
-			spyOn(geoResourceServiceMock, 'byId')
-				.withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE))
-				.withArgs('foo1').and.callFake(() => new TestGeoResource('something'))
-				.withArgs('foo2').and.callFake(() => new TestGeoResource('something'))
-				.withArgs('foo3').and.callFake(() => new TestGeoResource('something'));
-			spyOn(mapMock, 'getLayers').and.callFake(() => layersMock);
-			const encoder = setup();
-			const encodingSpy = spyOn(encoder, '_encode').and.callThrough();
-
-			await encoder.encode(mapMock);
-
-			expect(encodingSpy).toHaveBeenCalledTimes(4); //called for layer 'foo' + 'foo1' + 'foo2' + 'foo3'
-		});
-
-		it('resolves wmts layer to a mfp \'wmts\' spec', () => {
+		it('resolves wmts layer with wmts-source to a mfp \'wmts\' spec', () => {
 			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
@@ -381,7 +369,7 @@ describe('Mfp3Encoder', () => {
 			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
 				const tileGrid = new WMTSTileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10], matrixIds: ['id40', 'id30', 'id20', 'id10'] });
 
-				const wmtsSource = new WMTS({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}', requestEncoding: 'REST' });
+				const wmtsSource = new WMTS({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}', requestEncoding: 'REST' });
 				return new TileLayer({
 					id: 'foo',
 					geoResourceId: 'geoResource.id',
@@ -398,7 +386,40 @@ describe('Mfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{z}/{x}/{y}',
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				attribution: null,
+				thirdPartyAttribution: null
+			});
+		});
+
+		it('resolves wmts layer with xyz-source to a mfp \'wmts\' spec', () => {
+			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+
+			const encoder = setup();
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'wmts');
+			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(wmtsGeoResource);
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				const tileGrid = new TileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10] });
+
+				const xyzSource = new XYZ({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}', requestEncoding: 'REST' });
+				return new TileLayer({
+					id: 'foo',
+					geoResourceId: 'geoResourceId',
+					source: xyzSource,
+					opacity: 0.42
+				});
+			});
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
+
+			expect(actualSpec).toEqual({
+				opacity: 1,
+				type: 'wmts',
+				layer: 'geoResourceId',
+				requestEncoding: 'REST',
+				matrixSet: 'EPSG:25832',
+				matrices: jasmine.any(Object),
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileRow}/{TileCol}',
 				attribution: null,
 				thirdPartyAttribution: null
 			});
@@ -1134,7 +1155,6 @@ describe('Mfp3Encoder', () => {
 			});
 		});
 
-
 		it('does NOT resolve overlay with invalid element to a mfp \'geojson\' spec', () => {
 			const overlayMock = {
 				getElement: () => {
@@ -1146,5 +1166,37 @@ describe('Mfp3Encoder', () => {
 			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
 		});
 
+	});
+
+	describe('_generateShortUrl', () => {
+		it('shortenens the url', async () => {
+			const encodedState = 'foo';
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(encodedState).and.resolveTo('bar');
+
+			const classUnderTest = new Mfp3Encoder(defaultProperties);
+
+			const shortUrl = await classUnderTest._generateShortUrl();
+
+			expect(shareServiceSpy).toHaveBeenCalled();
+			expect(urlServiceSpy).toHaveBeenCalled();
+			expect(shortUrl).toBe('bar');
+		});
+
+		it('warns in console, if shortening fails', async () => {
+			const encodedState = 'foo';
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
+			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').and.throwError('bar');
+			const warnSpy = spyOn(console, 'warn');
+
+			const classUnderTest = new Mfp3Encoder(defaultProperties);
+
+			const shortUrl = await classUnderTest._generateShortUrl();
+
+			expect(shareServiceSpy).toHaveBeenCalled();
+			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
+			expect(urlServiceSpy).toThrowError('bar');
+			expect(shortUrl).toBe('foo');
+		});
 	});
 });

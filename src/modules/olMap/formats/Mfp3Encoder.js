@@ -12,6 +12,8 @@ import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
 import { Circle, LineString, Polygon } from 'ol/geom';
+import LayerGroup from 'ol/layer/Group';
+import { WMTS } from 'ol/source';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -137,15 +139,17 @@ export class Mfp3Encoder {
 	}
 
 	_encode(layer) {
-		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 
+		if (layer instanceof LayerGroup) {
+			return this._encodeGroup(layer);
+		}
+
+		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
 			console.warn('No geoResource found for Layer', layer);
 			return [];
 		}
 		switch (geoResource.getType()) {
-			case GeoResourceTypes.AGGREGATE:
-				return this._encodeGroup(layer);
 			case GeoResourceTypes.VECTOR:
 				return this._encodeVector(layer, geoResource);
 			case GeoResourceTypes.WMTS:
@@ -169,8 +173,10 @@ export class Mfp3Encoder {
 			const { grSubstitutions } = this._mfpService.getCapabilities();
 
 			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id) ? this._geoResourceService.byId(grSubstitutions[geoResource.id]) : null;
+
 			if (substitutionGeoResource) {
-				const substitutionLayer = layerService.toOlLayer(`${layer.id}_substitution`, substitutionGeoResource, null);
+				const substitutionLayerId = layer.id ?? substitutionGeoResource.id;
+				const substitutionLayer = layerService.toOlLayer(`${substitutionLayerId}_substitution`, substitutionGeoResource, null);
 				substitutionLayer?.setOpacity(layer.getOpacity());
 				return substitutionLayer;
 			}
@@ -178,18 +184,36 @@ export class Mfp3Encoder {
 			return null;
 		};
 
+		const fromWmtsSource = (wmtsSource) => {
+			return {
+				tileGrid: wmtsSource.getTileGrid(),
+				layer: wmtsSource.getLayer(),
+				baseURL: wmtsSource.getUrls()[0],
+				requestEncoding: wmtsSource.getRequestEncoding()
+			};
+		};
+
+		const fromXyzSource = (xyzSource, layer) => {
+			const xyzToWmtsVariables = (url) => {
+				return url.replace('{z}', '{TileMatrix}').replace('{x}', '{TileRow}').replace('{y}', '{TileCol}');
+			};
+			return {
+				tileGrid: xyzSource.getTileGrid(),
+				layer: layer.get('geoResourceId'),
+				baseURL: xyzToWmtsVariables(xyzSource.getUrls()[0]),
+				requestEncoding: 'REST'
+			};
+		};
+
 		const createWmtsSpecs = (wmtsLayer) => {
-			const wmtsSource = wmtsLayer.getSource();
-			const tileGrid = wmtsSource.getTileGrid();
-			const requestEncoding = wmtsSource.getRequestEncoding();
-			const baseUrl = wmtsSource.getUrls()[0];
-			const layer = wmtsSource.getLayer();
 			const tileMatrixSet = this._mfpProjection;
+			const source = wmtsLayer.getSource();
+			const { tileGrid, layer, baseURL, requestEncoding } = source instanceof WMTS ? fromWmtsSource(source) : fromXyzSource(source, wmtsLayer);
 
 			return {
 				opacity: wmtsLayer.getOpacity(),
 				type: 'wmts',
-				baseURL: baseUrl,
+				baseURL: baseURL,
 				layer: layer,
 				requestEncoding: requestEncoding,
 				matrices: Mfp3Encoder.buildMatrixSets(tileGrid),
@@ -617,7 +641,6 @@ export class Mfp3Encoder {
 	}
 
 	static buildMatrixSets(tileGrid) {
-		const ids = tileGrid.getMatrixIds();
 		const resolutions = tileGrid.getResolutions();
 
 		return resolutions.map((resolution, index) => {
@@ -638,7 +661,7 @@ export class Mfp3Encoder {
 			};
 
 			return {
-				identifier: ids[index],
+				identifier: index.toString(),
 				scaleDenominator: resolution,
 				topLeftCorner: tileGrid.getOrigin(z),
 				tileSize: [tileSize, tileSize],
