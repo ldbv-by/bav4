@@ -154,6 +154,7 @@ export class Mfp3Encoder {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.VECTOR:
 				return this._encodeVector(layer, geoResource);
+			case GeoResourceTypes.XYZ:
 			case GeoResourceTypes.WMTS:
 				return this._encodeWMTS(layer, geoResource);
 			case GeoResourceTypes.WMS:
