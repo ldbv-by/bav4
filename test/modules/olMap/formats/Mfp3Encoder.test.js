@@ -182,7 +182,7 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('encodes a WMTS layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMTS, 'wmts'));
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
 				return {};
@@ -397,7 +397,7 @@ describe('Mfp3Encoder', () => {
 			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
-			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'wmts');
+			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
 			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
 			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(wmtsGeoResource);
 			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
