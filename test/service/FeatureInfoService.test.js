@@ -1,5 +1,5 @@
 import { $injector } from '../../src/injection';
-import { WmsGeoResource, WMTSGeoResource } from '../../src/domain/geoResources';
+import { WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import { FeatureInfoResult, FeatureInfoService } from '../../src/services/FeatureInfoService';
 import { loadBvvFeatureInfo } from '../../src/services/provider/featureInfo.provider';
 
@@ -106,7 +106,7 @@ describe('FeatureInfoService', () => {
 
 				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
 
-				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new WMTSGeoResource(geoResourceId));
+				geoResourceServiceSpy.withArgs(geoResourceId).and.returnValue(new XyzGeoResource(geoResourceId));
 
 				expect(instanceUnderTest.isQueryable(geoResourceId)).toBeFalse();
 			});

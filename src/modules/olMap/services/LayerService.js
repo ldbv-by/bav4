@@ -84,7 +84,7 @@ export class LayerService {
 				return layer;
 			}
 
-			case GeoResourceTypes.WMTS: {
+			case GeoResourceTypes.XYZ: {
 
 				const xyzSource = () => {
 					switch (geoResource.tileGridId) {

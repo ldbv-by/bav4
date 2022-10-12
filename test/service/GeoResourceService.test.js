@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, FALLBACK_GEORESOURCE_LABEL_2, FALLBACK_GEORESOURCE_LABEL_3, GeoResourceService } from '../../src/services/GeoResourceService';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
@@ -19,7 +19,7 @@ describe('GeoResourceService', () => {
 	const setup = (provider = loadExampleGeoResources, byIdProviders) => {
 		return new GeoResourceService(provider, byIdProviders);
 	};
-	const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'wmtsLabel', 'wmtsUrl');
+	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
 
 	it('exports constant values', async () => {
 
@@ -66,7 +66,7 @@ describe('GeoResourceService', () => {
 		it('just provides GeoResources when already initialized', async () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const georesources = await instanceUnderTest.init();
 
@@ -125,7 +125,7 @@ describe('GeoResourceService', () => {
 		it('provides all GeoResources', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const geoResources = instanceUnderTest.all();
 
@@ -147,10 +147,10 @@ describe('GeoResourceService', () => {
 		it('provides a GeoResource by id', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 
-			const geoResource = instanceUnderTest.byId('wmtsId');
+			const geoResource = instanceUnderTest.byId('xyzId');
 
 			expect(geoResource).toBeTruthy();
 		});
@@ -158,7 +158,7 @@ describe('GeoResourceService', () => {
 		it('provides null if for an unknown id', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const geoResource = instanceUnderTest.byId('something');
 
