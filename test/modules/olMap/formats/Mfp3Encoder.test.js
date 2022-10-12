@@ -58,7 +58,7 @@ describe('Mfp3Encoder', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return { grSubstitutions: { 'test_wmts': 'wmts_print' }, layouts: [] };
+			return { grSubstitutions: { 'test_xyz': 'wmts_print', 'test_wmts': 'wmts_print' }, layouts: [] };
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1] };
@@ -397,9 +397,9 @@ describe('Mfp3Encoder', () => {
 			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
-			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
-			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
-			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(wmtsGeoResource);
+			const xyzGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
+			spyOnProperty(xyzGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(xyzGeoResource);
 			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
 				const tileGrid = new TileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10] });
 
@@ -411,7 +411,7 @@ describe('Mfp3Encoder', () => {
 					opacity: 0.42
 				});
 			});
-			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, xyzGeoResource);
 
 			expect(actualSpec).toEqual({
 				opacity: 1,
