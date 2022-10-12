@@ -4,7 +4,7 @@ import { layersReducer, createDefaultLayerProperties } from '../../../../../src/
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { modifyLayer } from '../../../../../src/store/layers/layers.action';
 import { changeZoom } from '../../../../../src/store/position/position.action';
-import { WMTSGeoResource } from '../../../../../src/domain/geoResources';
+import { XyzGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';
 
@@ -42,17 +42,17 @@ describe('AttributionInfo', () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
 				switch (geoResourceId) {
 					case '0':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
 					case '1':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
 					case '2':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`)]);
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`)]);
 					case '3':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
 					case '4':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
 					case '5':
-						return new WMTSGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
 				}
 			});
 			const layer = [
@@ -120,8 +120,8 @@ describe('AttributionInfo', () => {
 					zoom: zoom
 				}
 			};
-			const geoResource0 = new WMTSGeoResource(geoResourceId0, '', '').setAttribution(attribution0);
-			const geoResource1 = new WMTSGeoResource(geoResourceId1, '', '').setAttribution(attribution1);
+			const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(attribution0);
+			const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(attribution1);
 			spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
 				switch (geoResourceId) {
 					case geoResourceId0:
@@ -180,7 +180,7 @@ describe('AttributionInfo', () => {
 					}
 				};
 				const attributionProvider = (geoResources, zoomLevel) => getMinimalAttribution(`${geoResources.id}_${zoomLevel}`);
-				const geoResource0 = new WMTSGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
+				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
 				spyOn(geoResourceServiceMock, 'byId').and.returnValue(geoResource0);
 
 				const element = await setup(state);
@@ -216,8 +216,8 @@ describe('AttributionInfo', () => {
 						zoom: zoom
 					}
 				};
-				const geoResource0 = new WMTSGeoResource(geoResourceId0, '', '').setAttribution(getMinimalAttribution(layerId0));
-				const geoResource1 = new WMTSGeoResource(geoResourceId1, '', '').setAttribution(getMinimalAttribution(layerId1));
+				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(getMinimalAttribution(layerId0));
+				const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(getMinimalAttribution(layerId1));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
 					switch (geoResourceId) {
 						case geoResourceId0:
@@ -256,7 +256,7 @@ describe('AttributionInfo', () => {
 					}
 				};
 				const attributionProvider = (geoResources, zoomLevel) => getMinimalAttribution(`${geoResources.id}_${zoomLevel}`);
-				const geoResource0 = new WMTSGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
+				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttributionProvider(attributionProvider);
 				spyOn(geoResourceServiceMock, 'byId').and.returnValue(geoResource0);
 
 				const element = await setup(state);

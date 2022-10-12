@@ -22,7 +22,7 @@ import { getDefaultAttribution } from '../services/provider/attribution.provider
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
-	WMTS: Symbol.for('wmts'),
+	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
 	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
@@ -329,7 +329,7 @@ export class WmsGeoResource extends GeoResource {
 /**
  * @class
  */
-export class WMTSGeoResource extends GeoResource {
+export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
@@ -357,7 +357,7 @@ export class WMTSGeoResource extends GeoResource {
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.WMTS;
+		return GeoResourceTypes.XYZ;
 	}
 }
 
