@@ -314,12 +314,12 @@ export class Mfp3Encoder {
 			};
 			return asV2(styles);
 		};
-		const styleVersion = this._mfpProperties.styleVersion ? this._mfpProperties.styleVersion : 1;
+
 		return {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
-			style: styleObjectFrom(encodingResults.styles, styleVersion),
+			style: styleObjectFrom(encodingResults.styles),
 			opacity: olVectorLayer.getOpacity(),
 			attribution: geoResource.importedByUser ? null : geoResource.attribution,
 			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
