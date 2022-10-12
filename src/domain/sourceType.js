@@ -33,7 +33,8 @@ export const SourceTypeName = Object.freeze({
 	KML: 'kml',
 	GPX: 'gpx',
 	GEOJSON: 'geojson',
-	WMS: 'wms'
+	WMS: 'wms',
+	EWKT: 'ewkt'
 });
 
 

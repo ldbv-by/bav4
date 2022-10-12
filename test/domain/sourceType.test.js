@@ -43,10 +43,11 @@ describe('SourceTypeName', () => {
 
 	it('provides an enum of all available types', () => {
 
-		expect(Object.keys(SourceTypeName).length).toBe(4);
+		expect(Object.keys(SourceTypeName).length).toBe(5);
 		expect(SourceTypeName.KML).toBe('kml');
 		expect(SourceTypeName.GPX).toBe('gpx');
 		expect(SourceTypeName.GEOJSON).toBe('geojson');
+		expect(SourceTypeName.EWKT).toBe('ewkt');
 		expect(SourceTypeName.WMS).toBe('wms');
 	});
 
