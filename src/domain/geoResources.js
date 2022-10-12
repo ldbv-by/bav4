@@ -22,9 +22,9 @@ import { getDefaultAttribution } from '../services/provider/attribution.provider
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
-	WMTS: Symbol.for('wmts'),
+	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
-	VECTOR_TILES: Symbol.for('vector_tiles'),
+	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
 });
@@ -66,6 +66,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._importedByUser = false;
 		this._queryable = true;
+		this._exportable = true;
 	}
 
 	/**
@@ -117,6 +118,10 @@ export class GeoResource {
 
 	get queryable() {
 		return this._queryable;
+	}
+
+	get exportable() {
+		return this._exportable;
 	}
 
 	setLabel(label) {
@@ -176,6 +181,11 @@ export class GeoResource {
 
 	setQueryable(queryable) {
 		this._queryable = queryable;
+		return this;
+	}
+
+	setExportable(exportable) {
+		this._exportable = exportable;
 		return this;
 	}
 
@@ -319,10 +329,11 @@ export class WmsGeoResource extends GeoResource {
 /**
  * @class
  */
-export class WMTSGeoResource extends GeoResource {
+export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
+		this._tileGridId = null;
 	}
 
 	get url() {
@@ -330,10 +341,23 @@ export class WMTSGeoResource extends GeoResource {
 	}
 
 	/**
+	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Default is `null`.
+	 */
+	get tileGridId() {
+		return this._tileGridId;
+	}
+
+	setTileGridId(tileGridId) {
+		this._tileGridId = tileGridId;
+		return this;
+	}
+
+	/**
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.WMTS;
+		return GeoResourceTypes.XYZ;
 	}
 }
 
@@ -429,6 +453,25 @@ export class AggregateGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.AGGREGATE;
+	}
+}
+
+
+export class VTGeoResource extends GeoResource {
+	constructor(id, label, styleUrl) {
+		super(id, label);
+		this._styleUrl = styleUrl;
+	}
+
+	get styleUrl() {
+		return this._styleUrl;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VT;
 	}
 }
 

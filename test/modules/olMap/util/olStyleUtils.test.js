@@ -128,14 +128,14 @@ describe('measureStyleFunction', () => {
 
 	it('should draw to context with ruler-style', () => {
 		const pixelCoordinates = [[0, 0], [1, 1]];
-		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { } };
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { }, setLineDash: () => { } };
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
 		const styles = measureStyleFunction(feature, resolution);
 		const rulerStyle = styles.find(style => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
-		const cunstomRenderer = rulerStyle.getRenderer();
-		cunstomRenderer(pixelCoordinates, stateMock);
+		const customRenderer = rulerStyle.getRenderer();
+		customRenderer(pixelCoordinates, stateMock);
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});

@@ -88,12 +88,16 @@ export class TopicsService {
 			new Topic(fallbackId0, 'Topic 1', 'This is a fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'tpo',
-				'tpo_mono'
+				'tpo_mono',
+				'bmde_vector',
+				'bmde_vector_relief'
 			]),
 			new Topic(fallbackId1, 'Topic 2', 'This is another fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'tpo',
-				'tpo_mono'
+				'tpo_mono',
+				'bmde_vector',
+				'bmde_vector_relief'
 			])
 		];
 	}

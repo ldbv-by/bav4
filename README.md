@@ -30,6 +30,7 @@ Next-generation web-map viewer based on web standards.
 - Map state decoupled from map implementation
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
+  - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/): Vector Tiles rendering
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
@@ -134,7 +135,7 @@ Modules meet the following conventions:
 Contains all plugins (see [Plugins](#plugins)).
 
 ### `src/services`
-All global services like the `HttpService`, providers and domain classes are located here.
+All global services like the `HttpService` and their providers are located here.
 
 ### `src/store`
 All redux related files like reducers and actions.
@@ -207,7 +208,7 @@ For example, they could be responsible for setting an initial state or reacting 
 - Redux query-param sync: https://github.com/Treora/redux-query-sync
 ### Webpack
 - Webpack Intro: https://ui.dev/webpack/ 
-### Common
+### Other
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 
 *USE THE PLATFORM*

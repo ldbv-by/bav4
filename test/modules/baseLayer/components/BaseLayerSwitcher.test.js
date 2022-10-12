@@ -5,7 +5,7 @@ import { topicsReducer } from '../../../../src/store/topics/topics.reducer';
 import { setCurrent } from '../../../../src/store/topics/topics.action';
 import { TestUtils } from '../../../test-utils.js';
 import { Topic } from '../../../../src/domain/topic';
-import { WMTSGeoResource } from '../../../../src/domain/geoResources';
+import { XyzGeoResource } from '../../../../src/domain/geoResources';
 
 window.customElements.define(BaseLayerSwitcher.tag, BaseLayerSwitcher);
 
@@ -75,9 +75,9 @@ describe('BaseLayerSwitcher', () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 				switch (id) {
 					case 'geoRsId0':
-						return new WMTSGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
+						return new XyzGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
 					case activeGeoResourceId:
-						return new WMTSGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
+						return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 				}
 			});
 
@@ -113,9 +113,9 @@ describe('BaseLayerSwitcher', () => {
 			spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 				switch (id) {
 					case 'geoRsId0':
-						return new WMTSGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
+						return new XyzGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
 					case activeGeoResourceId:
-						return new WMTSGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
+						return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
 				}
 			});
 			const element = await setup(state);
@@ -158,7 +158,7 @@ describe('BaseLayerSwitcher', () => {
 					};
 					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId2]));
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-						return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
+						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
@@ -195,7 +195,7 @@ describe('BaseLayerSwitcher', () => {
 					};
 					spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId2]));
 					spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-						return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
+						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
@@ -229,7 +229,7 @@ describe('BaseLayerSwitcher', () => {
 				};
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0, geoResourceId1]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					return new WMTSGeoResource(id, 'someLabel', 'someUrl');
+					return new XyzGeoResource(id, 'someLabel', 'someUrl');
 				});
 				const element = await setup(state);
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
@@ -261,7 +261,7 @@ describe('BaseLayerSwitcher', () => {
 				};
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', [geoResourceId0]));
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					return new WMTSGeoResource(id, `${id}Label`, 'someUrl');
+					return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
