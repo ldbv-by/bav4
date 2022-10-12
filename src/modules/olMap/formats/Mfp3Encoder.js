@@ -195,7 +195,7 @@ export class Mfp3Encoder {
 
 		const fromXyzSource = (xyzSource, layer) => {
 			const xyzToWmtsVariables = (url) => {
-				return url.replace('{z}', '{TileMatrix}').replace('{x}', '{TileRow}').replace('{y}', '{TileCol}');
+				return url.replace('{z}', '{TileMatrix}').replace('{x}', '{TileCol}').replace('{y}', '{TileRow}');
 			};
 			return {
 				tileGrid: xyzSource.getTileGrid(),

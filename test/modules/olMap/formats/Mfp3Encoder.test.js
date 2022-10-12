@@ -420,7 +420,7 @@ describe('Mfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileRow}/{TileCol}',
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
 				attribution: null,
 				thirdPartyAttribution: null
 			});
