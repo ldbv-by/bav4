@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../store/mfp/mfp.action';
+import css from './exportMfpToolContent.css';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
@@ -60,6 +61,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const areSettingsComplete = (capabilities && scale && id);
 		return html`
+		<style>${css}</style>
         <div class="ba-tool-container">
 			<div class="ba-tool-container__title">
 				${translate('toolbox_exportMfp_header')}
@@ -68,7 +70,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-				<ba-button id='${btnId}' class="tool-container__button" .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
+				<ba-button id='${btnId}' class="tool-container__button preview_button" .type=${'primary'} .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
 			</div>			
 		</div>`;
 	}
@@ -96,9 +98,23 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const onChangeScale = (e) => {
 			const parsedScale = parseInt(e.target.value);
 
+			const selectScale = this.shadowRoot.getElementById('input_range_scale');
+			selectScale.value = e.target.selectedIndex;
+
 			setScale(parsedScale);
 			this.signal(Update_Scale, parsedScale);
 		};
+
+		const onChangeScaleSlider = (e) => {
+			const selectScale = this.shadowRoot.getElementById('select_scale');
+			selectScale.selectedIndex = e.target.value;
+			const which = selectScale.options[e.target.value].value;
+			const parsedScale = parseInt(which);
+			setScale(parsedScale);
+			this.signal(Update_Scale, parsedScale);
+
+		};
+
 
 		const getScaleOptions = (scales, selectedScale) => {
 			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
@@ -107,18 +123,46 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const getLayoutOptions = (layoutItems, selectedId) => {
 			return layoutItems.map((item) => html`<option value=${item.id} ?selected=${item.id === selectedId}>${item.name}</option>)}`);
 		};
-		return html`<div class="fieldset">
+
+		const getActiveClass = (value, selectedId) => value === selectedId ? 'active' : '';
+
+		return html`
 						<select id='select_layout' @change=${onChangeId}>							
 							${getLayoutOptions(layoutItems, id)}
-						</select>
-						<label for="select_layout" class="control-label">${translate('toolbox_exportMfp_layout')}</label><i class="bar"></i>
+						</select>											
+					<div class='tool-section'>
+					<div class='tool-sub-header'>			
+						${translate('toolbox_exportMfp_layout')}				
 					</div>
-					<div class="fieldset">
+						<div class='button-container'>
+							<button class='a4-h ${getActiveClass('a4_portrait', id)}'  value="a4_portrait" @click=${onChangeId}> 
+								A4
+							</button> 
+							<button class='a3-h  ${getActiveClass('a3_portrait', id)}' value="a3_portrait" @click=${onChangeId}> 
+							A3
+							</button> 
+							<button class='a4-q  ${getActiveClass('a4_landscape', id)}' value="a4_landscape" @click=${onChangeId}> 
+								A4
+							</button> 
+							<button class='a3-q  ${getActiveClass('a3_landscape', id)}' value="a3_landscape" @click=${onChangeId}> 
+								A3
+							</button> 
+						</div>
+					</div>
+					<div class='tool-section' style='margin-top:1em'>
+					<div class='tool-sub-header'>	
+						${translate('toolbox_exportMfp_scale')}	
+					</div>
+					<div style='display: flex; justify-content: center'>		
 						<select id='select_scale' @change=${onChangeScale}>							
-							${getScaleOptions(scales, scale)}
+						${getScaleOptions(scales, scale)}
 						</select>
-						<label for="select_scale" class="control-label">${translate('toolbox_exportMfp_scale')}</label><i class="bar"></i>
-					</div>`;
+						<div>
+							<input id='input_range_scale' type='range'  min="0" max="12" @input=${onChangeScaleSlider}>							
+							</input>	
+						</div>
+					</div>
+				</div>`;
 	}
 
 	static get tag() {
