@@ -17,6 +17,8 @@ import { WMTS } from 'ol/source';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
+const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
+
 /**
  * A Container-Object for properties related to a mfp encoding
  * @typedef {Object} EncodingProperties
@@ -644,11 +646,7 @@ export class Mfp3Encoder {
 		const resolutions = tileGrid.getResolutions();
 
 		const resolutionToScaleDenominator = (resolution) => {
-			// based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111
-			// and the calculations of a specific scaleDenominator (p.22)
-
-			const standardized_rendering_pixel_size_in_meter = 0.00028;
-			return resolution / standardized_rendering_pixel_size_in_meter;
+			return resolution / PixelSizeInMeter;
 		};
 
 		const getMatrixSize = (tileGrid, z) => {
