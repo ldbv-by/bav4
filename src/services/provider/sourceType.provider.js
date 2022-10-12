@@ -7,6 +7,7 @@ import { isString } from '../../utils/checks';
 import { observe } from '../../utils/storeUtils';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
 import { MediaType } from '../HttpService';
+import { parse } from '../../utils/ewkt';
 
 /**
  * A function that tries to detect the source type for a url
@@ -74,6 +75,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 							return SourceTypeName.GEOJSON;
 						case 'WMS':
 							return SourceTypeName.WMS;
+						case 'EWKT':
+							return SourceTypeName.EWKT;
 					}
 				};
 
@@ -154,6 +157,9 @@ export const defaultDataSourceTypeProvider = (data) => {
 		if (data.includes('<gpx') && data.includes('</gpx>')) {
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX));
 		}
+		if (parse(data)) {
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT));
+		}
 		try {
 			if (JSON.parse(data).type) {
 				return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
@@ -180,6 +186,8 @@ export const defaultMediaSourceTypeProvider = (mediaType) => {
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX));
 		case MediaType.GeoJSON:
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
+		case MediaType.TEXT_PLAIN:
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT));
 	}
 	return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 };

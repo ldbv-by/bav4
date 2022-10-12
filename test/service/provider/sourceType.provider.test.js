@@ -137,6 +137,34 @@ describe('sourceType provider', () => {
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
+		it('returns a SourceTypeServiceResult for EWKT', async () => {
+
+			const backendUrl = 'https://backend.url/';
+			const url = 'http://foo.bar';
+			const version = 'version';
+			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+			const payload = JSON.stringify({ url: url });
+			const sourceTypeResultPayload = { name: 'EWKT', version: 'version' };
+			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
+			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
+				new Response(
+					JSON.stringify(
+						sourceTypeResultPayload
+					)
+				)
+			));
+
+			const { status, sourceType } = await bvvUrlSourceTypeProvider(url);
+
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(sourceType).toBeInstanceOf(SourceType);
+			expect(sourceType.name).toBe(SourceTypeName.EWKT);
+			expect(sourceType.version).toBe(version);
+			expect(status).toEqual(SourceTypeResultStatus.OK);
+			expect(baaCredentialServiceSpy).toHaveBeenCalled();
+		});
+
 		it('returns a SourceTypeServiceResult for WMS', async () => {
 
 			const backendUrl = 'https://backend.url/';
@@ -356,6 +384,11 @@ describe('sourceType provider', () => {
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
 		});
 
+		it('tries to detect the source type for EWKT sources', () => {
+			expect(defaultDataSourceTypeProvider('SRID=4326;POINT(21, 42)'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT)));
+		});
+
 		it('returns UNSUPPORTED_TYPE when type can not be detected', () => {
 			expect(defaultDataSourceTypeProvider(JSON.stringify({ some: 'foo' })))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
@@ -389,6 +422,11 @@ describe('sourceType provider', () => {
 		it('tries to detect the source type for GeoJSON sources', () => {
 			expect(defaultMediaSourceTypeProvider(MediaType.GeoJSON))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
+		});
+
+		it('tries to detect the source type for EWKT sources', () => {
+			expect(defaultMediaSourceTypeProvider(MediaType.TEXT_PLAIN))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT)));
 		});
 
 		it('returns null when type can not be detected', () => {
