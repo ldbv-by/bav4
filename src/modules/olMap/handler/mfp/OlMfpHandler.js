@@ -126,7 +126,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale } = mfpSettings;
 		const label = this._getPageLabel(mfpSettings);
 		this._mfpBoundaryFeature.set('name', label);
-		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
+		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -162,13 +162,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
 		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
-		const layoutSize = this._mfpService.getCapabilitiesById(id).mapSize;
+		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
 
 		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
 		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
-		const scaleCandidates = [...this._mfpService.getCapabilitiesById(id).scales].reverse();
+		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
 
 		// todo: replace with array.findLast()
 		const findLast = (array, matcher) => {

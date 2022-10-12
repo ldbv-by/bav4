@@ -79,7 +79,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop_target).toBe('in die Karte');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Daten konnten erfolgreich geladen werden');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
-		expect(map.toolbox_import_url_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Bitte geben Sie die URL in das ');
 		expect(map.toolbox_import_url_search).toBe('Suchfeld');
 		expect(map.toolbox_import_url_search_after).toBe('ein. Die Daten werden automatisch geladen.');
@@ -93,6 +93,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
+		expect(map.toolbox_exportMfp_cancel).toBe('Abbrechen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 Querformat');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
@@ -176,7 +177,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_import_data_draganddrop_target).toBe('into the Map');
 		expect(map.toolbox_import_data_sucess_notification).toBe('Data transferred succeeded');
 		expect(map.toolbox_import_url_header).toBe('URL Import');
-		expect(map.toolbox_import_url_subheader).toBe('KML, GPX, GeoJSON');
+		expect(map.toolbox_import_url_subheader).toBe('WMS, KML, GPX, GeoJSON');
 		expect(map.toolbox_import_url_search_before).toBe('Please enter the Url into the ');
 		expect(map.toolbox_import_url_search).toBe('Search Bar');
 		expect(map.toolbox_import_url_search_after).toBe('the data will automatically transferred');
@@ -190,6 +191,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_layout).toBe('Page layout');
 		expect(map.toolbox_exportMfp_scale).toBe('Scale');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
+		expect(map.toolbox_exportMfp_cancel).toBe('Cancel');
 		expect(map.toolbox_exportMfp_select_option).toBe('select...');
 		expect(map.toolbox_exportMfp_id_a4_landscape).toBe('A4 landscape');
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
@@ -198,7 +200,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 93;
+		const expectedSize = 94;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

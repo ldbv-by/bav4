@@ -37,10 +37,10 @@ describe('ExportMfpPlugin', () => {
 		const getMockCapabilities = () => {
 			const scales = [1000, 5000];
 			const dpis = [125, 200];
-			return [
+			return { grSubstitutions: {}, layouts: [
 				{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
 				{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
-			];
+			] };
 		};
 
 		it('initializes the mfp-slice-of state and updates the active property', async () => {
@@ -132,8 +132,22 @@ describe('ExportMfpPlugin', () => {
 
 				startJob(spec);
 
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
+			});
+
+			it('just updates the state when MfpService returns NULL', async () => {
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const spec = { foo: 'bar' };
+				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(null);
+
+				startJob(spec);
+
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+				await TestUtils.timeout();
 			});
 		});
 

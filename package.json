@@ -1,12 +1,13 @@
 {
   "name": "bav4-nomigration",
   "dependencies": {
+    "@geoblocks/ol-maplibre-layer": "^0.0.4",
     "dompurify": "^2.4.0",
-    "lit-html": "^2.3.1",
+    "lit-html": "^2.4.0",
     "ol": "^7.1.0",
     "proj4": "^2.8.0",
     "redux": "^4.2.0",
-    "vanilla-swipe": "^2.3.0"
+    "vanilla-swipe": "^2.4.1"
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
@@ -15,7 +16,7 @@
     "css-loader": "^6.7.1",
     "dotenv-webpack": "^8.0.1",
     "es-check": "^7.0.1",
-    "eslint": "^8.23.1",
+    "eslint": "^8.25.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
@@ -39,7 +40,7 @@
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "^1.0.2",
     "style-loader": "^3.3.1",
-    "stylelint": "^14.12.0",
+    "stylelint": "^14.13.0",
     "stylelint-config-recommended": "^9.0.0",
     "to-string-loader": "^1.2.0",
     "webpack": "^5.74.0",
