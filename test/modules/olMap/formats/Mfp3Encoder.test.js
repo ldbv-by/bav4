@@ -21,6 +21,7 @@ import TileLayer from 'ol/layer/Tile';
 import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LayerGroup from 'ol/layer/Group';
 import TileGrid from 'ol/tilegrid/TileGrid';
+import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
 describe('Mfp3Encoder', () => {
 
@@ -1197,6 +1198,29 @@ describe('Mfp3Encoder', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
 			expect(shortUrl).toBe('foo');
+		});
+	});
+
+	describe('buildMatrixSets', () => {
+		fit('builds a tileMatrixSet', () => {
+			const tileGrid = new AdvWmtsTileGrid();
+
+			const tileMatrixSet = Mfp3Encoder.buildMatrixSets(tileGrid);
+
+			expect(tileMatrixSet.length).toBe(16);
+
+			expect(tileMatrixSet[0].identifier).toBe('0');
+			expect(tileMatrixSet[0].scaleDenominator).toBeCloseTo(17471320.7508974, 5);
+			expect(tileMatrixSet[0].topLeftCorner).toEqual([-46133.17, 6301219.54]);
+			expect(tileMatrixSet[0].tileSize).toEqual([256, 256]);
+			expect(tileMatrixSet[0].matrixSize).toEqual([1, 1]);
+
+
+			expect(tileMatrixSet[15].identifier).toBe('15');
+			expect(tileMatrixSet[15].scaleDenominator).toBeCloseTo(533.182395962446, 5);
+			expect(tileMatrixSet[15].topLeftCorner).toEqual([-46133.17, 6301219.54]);
+			expect(tileMatrixSet[15].tileSize).toEqual([256, 256]);
+			expect(tileMatrixSet[15].matrixSize).toEqual([32768, 32768]);
 		});
 	});
 });

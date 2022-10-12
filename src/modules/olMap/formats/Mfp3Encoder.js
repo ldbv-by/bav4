@@ -1,6 +1,6 @@
 
 import Point from 'ol/geom/Point';
-import { intersects as extentIntersects } from 'ol/extent';
+import { getBottomRight, getTopLeft, intersects as extentIntersects } from 'ol/extent';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
 import { $injector } from '../../../injection';
 import { rgbToHex } from '../../../utils/colors';
@@ -643,29 +643,33 @@ export class Mfp3Encoder {
 	static buildMatrixSets(tileGrid) {
 		const resolutions = tileGrid.getResolutions();
 
+		const resolutionToScaleDenominator = (resolution) => {
+			// based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111
+			// and the calculations of a specific scaleDenominator (p.22)
+
+			const standardized_rendering_pixel_size_in_meter = 0.00028;
+			return resolution / standardized_rendering_pixel_size_in_meter;
+		};
+
+		const getMatrixSize = (tileGrid, z) => {
+			const topLeftTile = tileGrid.getTileCoordForCoordAndZ(getTopLeft(tileGrid.getExtent()), z);
+			const bottomRightTile = tileGrid.getTileCoordForCoordAndZ(getBottomRight(tileGrid.getExtent()), z);
+
+			const tileWidth = Math.abs(bottomRightTile[1] - topLeftTile[1]);
+			const tileHeight = Math.abs(topLeftTile[2] - bottomRightTile[2]);
+			return [tileWidth, tileHeight];
+		};
+
 		return resolutions.map((resolution, index) => {
 			const z = tileGrid.getZForResolution(resolution);
 			const tileSize = tileGrid.getTileSize(z);
 
-
-			const getMatrixSize = (tileGrid) => {
-				const extent = tileGrid.getExtent();
-				const topLeftCorner = tileGrid.getOrigin(z);
-
-				const topLeftTile = tileGrid.getTileCoordForCoordAndZ([topLeftCorner[0], extent[1]], z);
-				const bottomRightTile = tileGrid.getTileCoordForCoordAndZ([extent[2], topLeftCorner[1]], z);
-
-				const tileWidth = 1 + bottomRightTile[1] - topLeftTile[1];
-				const tileHeight = 1 + topLeftTile[2] - bottomRightTile[2];
-				return [tileWidth, tileHeight];
-			};
-
 			return {
 				identifier: index.toString(),
-				scaleDenominator: resolution,
+				scaleDenominator: resolutionToScaleDenominator(resolution),
 				topLeftCorner: tileGrid.getOrigin(z),
 				tileSize: [tileSize, tileSize],
-				matrixSize: getMatrixSize(tileGrid)
+				matrixSize: getMatrixSize(tileGrid, z)
 			};
 		});
 	}
