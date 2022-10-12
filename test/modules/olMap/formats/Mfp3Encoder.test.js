@@ -1202,7 +1202,7 @@ describe('Mfp3Encoder', () => {
 	});
 
 	describe('buildMatrixSets', () => {
-		fit('builds a tileMatrixSet', () => {
+		it('builds a tileMatrixSet', () => {
 			const tileGrid = new AdvWmtsTileGrid();
 
 			const tileMatrixSet = Mfp3Encoder.buildMatrixSets(tileGrid);
