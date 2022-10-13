@@ -227,7 +227,7 @@ describe('Mfp3Encoder', () => {
 			expect(mapSpy).toHaveBeenCalled();
 		});
 
-		it('encodes overlays', async () => {
+		it('encodes wms', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS, 'wms'));
 			const encoder = setup();
 			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
