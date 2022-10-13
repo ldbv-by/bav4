@@ -4,10 +4,11 @@ describe('SourceType', () => {
 
 	it('provides getter for properties', () => {
 
-		const sourceType = new SourceType('name', 'version');
+		const sourceType = new SourceType('name', 'version', [42]);
 
 		expect(sourceType.name).toBe('name');
 		expect(sourceType.version).toBe('version');
+		expect(sourceType.srids).toEqual([42]);
 	});
 
 	it('provides default properties', () => {
@@ -16,6 +17,7 @@ describe('SourceType', () => {
 
 		expect(sourceType.name).toBe('name');
 		expect(sourceType.version).toBeNull();
+		expect(sourceType.srids).toBeNull();
 	});
 });
 

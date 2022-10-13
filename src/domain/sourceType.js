@@ -10,11 +10,13 @@ export class SourceType {
 
 	/**
 	 * @param {SourceTypeName} name
-	 * @param {string} version
+	 * @param {string} [version] version of type of source
+	 * @param {number[]} [srids] supported SRIDs of this source
 	 */
-	constructor(name, version = null) {
+	constructor(name, version = null, srids = null) {
 		this._name = name;
 		this._version = version;
+		this._srids = srids;
 	}
 
 	get name() {
@@ -23,6 +25,10 @@ export class SourceType {
 
 	get version() {
 		return this._version;
+	}
+
+	get srids() {
+		return this._srids;
 	}
 }
 
