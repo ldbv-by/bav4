@@ -151,7 +151,7 @@ describe('bvvCapabilitiesProvider', () => {
 	};
 
 	const mapService = {
-		getDefaultGeodeticSrid: () => 3857
+		getSrid: () => 3857
 	};
 
 	const baaCredentialService = {
@@ -348,7 +348,7 @@ describe('bvvCapabilitiesProvider', () => {
 				return { ...Default_Capabilities_Result, layers: null };
 			}
 		};
-		spyOn(mapService, 'getDefaultGeodeticSrid').and.returnValue(42);
+		spyOn(mapService, 'getSrid').and.returnValue(42);
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
 		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
 
