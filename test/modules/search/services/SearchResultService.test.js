@@ -150,16 +150,24 @@ describe('SearchResultService', () => {
 			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.GEOJSON);
 		});
 
+		it('returns search results for EWKT source type', async () => {
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.EWKT);
+		});
+
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GPX source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GeoJson source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
+		});
+
+		it('returns an empty array as result for a EWKT source type when georesource cannot be created', async () => {
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.EWKT);
 		});
 
 		it('returns search results for Wms source type', async () => {
