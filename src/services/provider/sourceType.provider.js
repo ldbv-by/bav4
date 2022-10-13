@@ -152,17 +152,18 @@ export const defaultDataSourceTypeProvider = (data) => {
 	if (isString(data)) {
 		// we check the content in a naive manner
 		if (data.includes('<kml') && data.includes('</kml>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326]));
 		}
 		if (data.includes('<gpx') && data.includes('</gpx>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX));
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326]));
 		}
-		if (parse(data)) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT));
+		const ewkt = parse(data);
+		if (ewkt) {
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [ewkt.srid]));
 		}
 		try {
 			if (JSON.parse(data).type) {
-				return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
+				return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326]));
 			}
 		}
 		catch {
@@ -186,8 +187,6 @@ export const defaultMediaSourceTypeProvider = (mediaType) => {
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX));
 		case MediaType.GeoJSON:
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
-		case MediaType.TEXT_PLAIN:
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT));
 	}
 	return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 };

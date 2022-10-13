@@ -371,22 +371,22 @@ describe('sourceType provider', () => {
 
 		it('tries to detect the source type for KML sources', () => {
 			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML)));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326])));
 		});
 
 		it('tries to detect the source type for GPX sources', () => {
 			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX)));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326])));
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
 			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' })))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326])));
 		});
 
 		it('tries to detect the source type for EWKT sources', () => {
-			expect(defaultDataSourceTypeProvider('SRID=4326;POINT(21, 42)'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT)));
+			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [55])));
 		});
 
 		it('returns UNSUPPORTED_TYPE when type can not be detected', () => {
@@ -422,11 +422,6 @@ describe('sourceType provider', () => {
 		it('tries to detect the source type for GeoJSON sources', () => {
 			expect(defaultMediaSourceTypeProvider(MediaType.GeoJSON))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON)));
-		});
-
-		it('tries to detect the source type for EWKT sources', () => {
-			expect(defaultMediaSourceTypeProvider(MediaType.TEXT_PLAIN))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT)));
 		});
 
 		it('returns null when type can not be detected', () => {
