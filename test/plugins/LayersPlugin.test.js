@@ -2,7 +2,7 @@ import { LayersPlugin } from '../../src/plugins/LayersPlugin';
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { $injector } from '../../src/injection';
-import { GeoResourceFuture, WMTSGeoResource } from '../../src/domain/geoResources';
+import { GeoResourceFuture, XyzGeoResource } from '../../src/domain/geoResources';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
@@ -119,8 +119,8 @@ describe('LayersPlugin', () => {
 				const instanceUnderTest = new LayersPlugin();
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
-					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
-					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
+					new XyzGeoResource('some1', 'someLabel1', 'someUrl1'),
+					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
 
@@ -138,8 +138,8 @@ describe('LayersPlugin', () => {
 				const instanceUnderTest = new LayersPlugin();
 
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
-					new WMTSGeoResource('some1', 'someLabel1', 'someUrl1'),
-					new WMTSGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
+					new XyzGeoResource('some1', 'someLabel1', 'someUrl1'),
+					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
 				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
@@ -154,8 +154,8 @@ describe('LayersPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
 				spyOn(geoResourceServiceMock, 'all').and.returnValue([
-					new WMTSGeoResource('someId0', 'someLabel0', 'someUrl0'),
-					new WMTSGeoResource('someId1', 'someLabel1', 'someUrl1')
+					new XyzGeoResource('someId0', 'someLabel0', 'someUrl0'),
+					new XyzGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', ['somethingDifferent']));
 
@@ -176,9 +176,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
 						case 'some2':
-							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
 					}
 				});
 				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
@@ -204,9 +204,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
 					}
 				});
 
@@ -227,9 +227,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
 					}
 				});
 
@@ -250,9 +250,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
 					}
 				});
 
@@ -273,9 +273,9 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
-							return new WMTSGeoResource('some0', 'someLabel0', 'someUrl0');
+							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
 						case 'some1':
-							return new WMTSGeoResource('some1', 'someLabel1', 'someUrl1');
+							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
 					}
 				});
 
@@ -318,7 +318,7 @@ describe('LayersPlugin', () => {
 				const id = 'id';
 				const labelBefore = 'labelBefore';
 				const labelAfter = 'labelAfter';
-				const geoResource0 = new WMTSGeoResource(id, labelAfter, 'someUrl0');
+				const geoResource0 = new XyzGeoResource(id, labelAfter, 'someUrl0');
 				const future0 = new GeoResourceFuture('some0', async () => geoResource0);
 				future0.setLabel(labelBefore);
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
