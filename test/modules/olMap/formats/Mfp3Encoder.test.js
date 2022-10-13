@@ -178,16 +178,21 @@ describe('Mfp3Encoder', () => {
 		it('encodes a aggregate layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE, 'aggregate'));
 			const encoder = setup();
+			const groupLayer = new LayerGroup('foo');
+			const layerMock = { get: () => 'foo' };
+			spyOn(groupLayer, 'getLayers').and.callFake(() => {
+				return { getArray: () => [layerMock, layerMock, layerMock] };
+			});
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
-				return { getArray: () => [new LayerGroup('foo')] };
+				return { getArray: () => [groupLayer] };
 			});
-			const encodingSpy = spyOn(encoder, '_encodeGroup').and.callFake(() => {
-				return {};
-			});
+			const encodingGroupSpy = spyOn(encoder, '_encodeGroup').and.callThrough();
+			const encodingSpy = spyOn(encoder, '_encode').and.callThrough();
 
 			await encoder.encode(mapMock);
 
-			expect(encodingSpy).toHaveBeenCalled();
+			expect(encodingGroupSpy).toHaveBeenCalled();
+			expect(encodingSpy).toHaveBeenCalledTimes(4); // 1 initial call for the grouplayer and 3 calls for the sublayers
 		});
 
 		it('encodes a vector layer', async () => {
