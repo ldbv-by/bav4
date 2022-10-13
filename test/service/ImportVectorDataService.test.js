@@ -272,9 +272,11 @@ describe('ImportVectorDataService', () => {
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.KML))).toBe(VectorSourceType.KML);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GPX))).toBe(VectorSourceType.GPX);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.GEOJSON))).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType(SourceTypeName.EWKT))).toBe(VectorSourceType.EWKT);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.KML)).toBe(VectorSourceType.KML);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.GPX)).toBe(VectorSourceType.GPX);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.GEOJSON)).toBe(VectorSourceType.GEOJSON);
+			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(VectorSourceType.EWKT)).toBe(VectorSourceType.EWKT);
 			expect(instanceUnderTest._mapSourceTypeToVectorSourceType(new SourceType('foo'))).toBeNull();
 		});
 	});

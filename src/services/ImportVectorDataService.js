@@ -136,6 +136,9 @@ export class ImportVectorDataService {
 
 					case SourceTypeName.GEOJSON:
 						return VectorSourceType.GEOJSON;
+
+					case SourceTypeName.EWKT:
+						return VectorSourceType.EWKT;
 				}
 			}
 			// is it a VectorSourceType enum value?
