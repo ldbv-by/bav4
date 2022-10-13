@@ -302,10 +302,11 @@ describe('GeoResource', () => {
 
 	it('provides an enum of all available vector source types', () => {
 
-		expect(Object.keys(VectorSourceType).length).toBe(3);
+		expect(Object.keys(VectorSourceType).length).toBe(4);
 		expect(VectorSourceType.KML).toBeTruthy();
 		expect(VectorSourceType.GPX).toBeTruthy();
 		expect(VectorSourceType.GEOJSON).toBeTruthy();
+		expect(VectorSourceType.EWKT).toBeTruthy();
 	});
 
 
