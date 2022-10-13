@@ -146,7 +146,8 @@ describe('ImportVectorDataService', () => {
 				const instanceUnderTest = setup();
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-
+				spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
+					.and.callFake(sourceType => sourceType ? VectorSourceType.GEOJSON : null);
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -165,6 +166,36 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
+			});
+
+			it('loads the data and returns a VectorGeoresource automatically setting id, label and sourceType', async () => {
+				const url = 'http://my.url';
+				const data = 'data';
+				const dataSrid = 25832;
+				const mediaType = MediaType.TEXT_PLAIN;
+				const instanceUnderTest = setup();
+				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [dataSrid]));
+				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
+				spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
+					.and.callFake(sourceType => sourceType ? VectorSourceType.EWKT : null);
+				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
+				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
+					new Response(data, {
+						status: 200, headers: new Headers({
+							'Content-Type': mediaType
+						})
+					})
+				));
+				const geoResourceFuture = instanceUnderTest.forUrl(url);
+
+				const vgr = await geoResourceFuture.get();
+
+				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+				expect(vgr.sourceType).toEqual(VectorSourceType.EWKT);
+				expect(vgr.id).toBe(geoResourceFuture.id);
+				expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
+				expect(vgr.data).toBe(data);
+				expect(vgr.srid).toBe(dataSrid);
 			});
 
 			it('throws an error when response is not ok', async () => {
@@ -288,7 +319,7 @@ describe('ImportVectorDataService', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 		});
 
-		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
+		it('returns a VectorGeoResource automatically setting id, label and sourceType and default SRID', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
@@ -305,6 +336,29 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
+			expect(sourceTypeServiceSpy).toHaveBeenCalled();
+			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
+		});
+
+		it('returns a VectorGeoResource automatically setting id, label and sourceType and SRID', () => {
+			const data = 'data';
+			const dataSrid = 25832;
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const instanceUnderTest = setup();
+			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [dataSrid]));
+			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
+			const _mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
+				.and.callFake(sourceType => sourceType ? VectorSourceType.EWKT : null);
+
+			const vgr = instanceUnderTest.forData(data);
+
+			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
+			expect(vgr.sourceType).toEqual(VectorSourceType.EWKT);
+			expect(vgr.id).toEqual(jasmine.any(String));
+			expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
+			expect(vgr.data).toBe(data);
+			expect(vgr.srid).toBe(dataSrid);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();

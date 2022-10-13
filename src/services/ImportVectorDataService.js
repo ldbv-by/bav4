@@ -79,7 +79,7 @@ export class ImportVectorDataService {
 								modifyLayer(id, { label: value });
 							}
 						});
-					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+					vgr.setSource(data, resultingSourceType.srids?.[0] ?? 4326 /**valid for kml, gpx an geoJson**/);
 					return vgr;
 				}
 				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
@@ -110,7 +110,7 @@ export class ImportVectorDataService {
 					modifyLayer(id, { label: value });
 				}
 			});
-			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+			vgr.setSource(data, resultingSourceType.srids?.[0] ?? 4326 /**valid for kml, gpx an geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}
