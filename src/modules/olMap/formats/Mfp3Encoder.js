@@ -84,8 +84,8 @@ export class Mfp3Encoder {
 			return olMap.getView().calculateExtent(olMap.getSize());
 		};
 
-		const mfpCenter = this._mfpProperties.mapCenter && typeof this._mfpProperties.mapCenter === Point
-			? this._mfpProperties.mapCenter.clone().transform(this._mapProjection, this._mfpProjection)
+		const mfpCenter = this._mfpProperties.pageCenter && this._mfpProperties.pageCenter instanceof Point
+			? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
 			: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
 		this._pageExtent = this._mfpProperties.pageExtent
@@ -486,7 +486,6 @@ export class Mfp3Encoder {
 			};
 
 			const styleProperties = imageStyle instanceof IconStyle ? getPropertiesFromIconStyle(imageStyle) : getPropertiesFromShapeStyle(imageStyle);
-
 			if (styleProperties.size) {
 				encoded.graphicWidth = Mfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
 				encoded.graphicHeight = Mfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);

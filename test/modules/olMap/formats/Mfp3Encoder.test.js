@@ -25,7 +25,7 @@ import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWm
 
 describe('Mfp3Encoder', () => {
 
-	const viewMock = { getCenter: () => new Point([50, 50]), calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
+	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
 	const mapMock = {
 		getSize: () => [100, 100],
 		getCoordinateFromPixel: (p) => p,
@@ -144,6 +144,27 @@ describe('Mfp3Encoder', () => {
 				return '';
 			}
 		}
+
+		it('uses the provided pageCenter for the specs', async () => {
+			const pageCenter = new Point(fromLonLat([11.57245, 48.14021]));
+			const mapCenterSpy = spyOn(viewMock, 'getCenter').and.callThrough();
+			const encoder = setup({ pageCenter: pageCenter });
+
+			const actualSpec = await encoder.encode(mapMock);
+
+			expect(mapCenterSpy).not.toHaveBeenCalled();
+			expect(actualSpec.attributes.map.center[0]).toBeCloseTo(691365.6, -1);
+			expect(actualSpec.attributes.map.center[1]).toBeCloseTo(5335084.7, -1);
+		});
+
+		it('uses the provided pageExtent for the specs', async () => {
+			const mapExtentSpy = spyOn(viewMock, 'calculateExtent').and.callThrough();
+			const encoder = setup({ pageExtent: [0, 0, 42, 21] });
+
+			await encoder.encode(mapMock);
+
+			expect(mapExtentSpy).not.toHaveBeenCalled();
+		});
 
 		it('requests the corresponding geoResource for a layer', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(null, 'something', 'something'));
@@ -528,9 +549,9 @@ describe('Mfp3Encoder', () => {
 				const styles = [
 					new Style({
 						image: new IconStyle({
-							anchor: [0.5, 1],
-							anchorXUnits: 'fraction',
-							anchorYUnits: 'fraction',
+							anchor: [42, 42],
+							anchorXUnits: 'pixels',
+							anchorYUnits: 'pixels',
 							src: 'https://some.url/to/image/foo.png'
 						})
 					})
@@ -753,6 +774,8 @@ describe('Mfp3Encoder', () => {
 								rotation: 0,
 								fillOpacity: 1,
 								strokeOpacity: 0,
+								graphicXOffset: jasmine.any(Number),
+								graphicHeight: jasmine.any(Number),
 								externalGraphic: 'https://some.url/to/image/foo.png'
 							}]
 						}
