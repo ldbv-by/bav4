@@ -3,6 +3,8 @@ import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../store/mfp/mfp.action';
 import css from './exportMfpToolContent.css';
+import plusSvg from './assets/plusSvg.svg';
+import minusSvg from './assets/minusSvg.svg';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
@@ -97,10 +99,24 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const onChangeScale = (e) => {
 			const parsedScale = parseInt(e.target.value);
+			setScale(parsedScale);
+			this.signal(Update_Scale, parsedScale);
+		};
 
-			const selectScale = this.shadowRoot.getElementById('input_range_scale');
-			selectScale.value = e.target.selectedIndex;
+		const increaseScale = () => {
+			const selectScale = this.shadowRoot.getElementById('select_scale');
+			selectScale.selectedIndex = selectScale.selectedIndex + 1;
 
+			const parsedScale = parseInt(selectScale.value);
+			setScale(parsedScale);
+			this.signal(Update_Scale, parsedScale);
+		};
+
+		const decreaseScale = () => {
+			const selectScale = this.shadowRoot.getElementById('select_scale');
+			selectScale.selectedIndex = selectScale.selectedIndex - 1;
+
+			const parsedScale = parseInt(selectScale.value);
 			setScale(parsedScale);
 			this.signal(Update_Scale, parsedScale);
 		};
@@ -112,7 +128,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			const parsedScale = parseInt(which);
 			setScale(parsedScale);
 			this.signal(Update_Scale, parsedScale);
-
 		};
 
 
@@ -153,12 +168,14 @@ export class ExportMfpToolContent extends AbstractToolContent {
 					<div class='tool-sub-header'>	
 						${translate('toolbox_exportMfp_scale')}	
 					</div>
-					<div style='display: flex; justify-content: center'>		
+					<div style='display: flex; justify-content: center'>	
+						<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'}  .size=${2.2} .title=${translate('layerManager_move_up')} @click=${decreaseScale}></ba-icon>                    				
 						<select id='select_scale' @change=${onChangeScale}>							
 						${getScaleOptions(scales, scale)}
 						</select>
-						<div>
-							<input id='input_range_scale' type='range'  min="0" max="12" @input=${onChangeScaleSlider}>							
+						<ba-icon id='increase' .icon='${plusSvg}' .color=${'var(--primary-color)'}  .size=${2.2} .title=${translate('layerManager_move_up')} @click=${increaseScale}></ba-icon>                    									
+					<div>
+					<input id='input_range_scale' type='range'  min="0" max="12" @input=${onChangeScaleSlider}>							
 							</input>	
 						</div>
 					</div>

@@ -1,13 +1,17 @@
 
 #select_scale{
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     width: auto;
     display: block;
+	margin: 0 1em;
+	position: relative;
+	top:-.2em;
 }
 #input_range_scale{
 	transform: rotate(180deg);
 	margin: 1em 0 0 1em;
 	min-width: 10em;
+	display:none;
 }
 .ba-tool-container__sub-title{
     color: var(--text2);	
