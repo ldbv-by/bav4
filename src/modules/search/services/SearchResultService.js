@@ -62,7 +62,8 @@ export class SearchResultService {
 			switch (sourceType.name) {
 				case SourceTypeName.GEOJSON:
 				case SourceTypeName.GPX:
-				case SourceTypeName.KML: {
+				case SourceTypeName.KML:
+				case SourceTypeName.EWKT: {
 					const geoResource = this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 					// in this case the geoResourceId is a random number provided by the importVectorDataService.
 					return geoResource ? [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))] : [];
