@@ -70,7 +70,7 @@ export class ImportVectorDataService {
 				 * Although we think we already know the source type, we let the SourceTypeService analyze the data
 				 * and derive the final source type. They might not be what they pretend to be ...
 				 **/
-				const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
+				const resultingSourceType = this._sourceTypeService.forData(data).sourceType;
 				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 				if (vectorSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), vectorSourceType),
