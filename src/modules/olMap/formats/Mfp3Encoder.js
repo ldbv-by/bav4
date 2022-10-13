@@ -130,7 +130,7 @@ export class Mfp3Encoder {
 					projection: this._mfpProjection,
 					dpi: this._mfpProperties.dpi,
 					rotation: this._mfpProperties.rotation,
-					layers: [...encodedLayers.specs, ...encodedOverlays]
+					layers: [...encodedOverlays, ...encodedLayers.specs.reverse()]
 				},
 				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
 				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : '',
