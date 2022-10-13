@@ -49,6 +49,8 @@ export class SearchResultService {
 					return 'GPX Import';
 				case SourceTypeName.KML:
 					return 'KML Import';
+				case SourceTypeName.EWKT:
+					return 'EWKT Import';
 			}
 		}
 		return null;

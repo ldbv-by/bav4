@@ -429,6 +429,7 @@ describe('SearchResultService', () => {
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GPX))).toBe('GPX Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GEOJSON))).toBe('GeoJSON Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.EWKT))).toBe('EWKT Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypeToLabel('foo')).toBeNull();
 		});
