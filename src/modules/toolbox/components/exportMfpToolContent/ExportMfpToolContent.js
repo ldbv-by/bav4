@@ -105,20 +105,22 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const increaseScale = () => {
 			const selectScale = this.shadowRoot.getElementById('select_scale');
-			selectScale.selectedIndex = selectScale.selectedIndex + 1;
-
-			const parsedScale = parseInt(selectScale.value);
-			setScale(parsedScale);
-			this.signal(Update_Scale, parsedScale);
+			if (selectScale.selectedIndex < selectScale.length - 1) {
+				selectScale.selectedIndex = selectScale.selectedIndex + 1;
+				const parsedScale = parseInt(selectScale.value);
+				setScale(parsedScale);
+				this.signal(Update_Scale, parsedScale);
+			}
 		};
 
 		const decreaseScale = () => {
 			const selectScale = this.shadowRoot.getElementById('select_scale');
-			selectScale.selectedIndex = selectScale.selectedIndex - 1;
-
-			const parsedScale = parseInt(selectScale.value);
-			setScale(parsedScale);
-			this.signal(Update_Scale, parsedScale);
+			if (selectScale.selectedIndex > 0) {
+				selectScale.selectedIndex = selectScale.selectedIndex - 1;
+				const parsedScale = parseInt(selectScale.value);
+				setScale(parsedScale);
+				this.signal(Update_Scale, parsedScale);
+			}
 		};
 
 		const onChangeScaleSlider = (e) => {
@@ -129,7 +131,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			setScale(parsedScale);
 			this.signal(Update_Scale, parsedScale);
 		};
-
 
 		const getScaleOptions = (scales, selectedScale) => {
 			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
@@ -169,11 +170,11 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						${translate('toolbox_exportMfp_scale')}	
 					</div>
 					<div style='display: flex; justify-content: center'>	
-						<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'}  .size=${2.2} .title=${translate('layerManager_move_up')} @click=${decreaseScale}></ba-icon>                    				
+						<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${decreaseScale}></ba-icon>                    				
 						<select id='select_scale' @change=${onChangeScale}>							
 						${getScaleOptions(scales, scale)}
 						</select>
-						<ba-icon id='increase' .icon='${plusSvg}' .color=${'var(--primary-color)'}  .size=${2.2} .title=${translate('layerManager_move_up')} @click=${increaseScale}></ba-icon>                    									
+						<ba-icon id='increase' .icon='${plusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${increaseScale}></ba-icon>                    									
 					<div>
 					<input id='input_range_scale' type='range'  min="0" max="12" @input=${onChangeScaleSlider}>							
 							</input>	
