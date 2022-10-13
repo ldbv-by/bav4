@@ -245,8 +245,7 @@ export class Mfp3Encoder {
 			params.STYLES.split(',') :
 			new Array(layers.length).join(',').split(',');
 
-		const url = (source.getUrls && source.getUrls()[0]) ||
-			(source.getUrl && source.getUrl());
+		const url = source.getUrl && source.getUrl();
 
 		return {
 			type: 'wms',

@@ -466,7 +466,7 @@ describe('Mfp3Encoder', () => {
 
 		it('resolves wms layer to a mfp \'wms\' spec', () => {
 			const sourceMock = {
-				getUrls: () => ['https://some.url/to/wms'],
+				getUrl: () => 'https://some.url/to/wms',
 				getParams: () => {
 					return { LAYERS: 'foo,bar', STYLES: 'baz' };
 				}
