@@ -1137,6 +1137,24 @@ describe('Mfp3Encoder', () => {
 					}
 				});
 			});
+
+			it('logs a warning on missing render context', () => {
+				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new LineString([[30, 30], [40, 40]]) })] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				const geoResourceMock = getGeoResourceMock();
+
+				const styleRenderFunction = () => [new Style(), new Style({
+					renderer: () => {
+						throw Error('foo');
+					} })];
+				vectorLayer.setStyle(styleRenderFunction);
+				const warnSpy = spyOn(console, 'warn');
+				const encoder = setup();
+
+				encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(warnSpy).toHaveBeenCalledOnceWith('Style renderFunction needs full canvas context');
+			});
 		});
 
 		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
