@@ -307,7 +307,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
+			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
 		});
 
 		it('updates the label property of a layer', async () => {
@@ -329,10 +329,10 @@ describe('ImportVectorDataService', () => {
 			expect(store.getState().layers.active[0].label).toBe(changedLabel);
 		});
 
-		it('logs a warning and returns Null when sourceType is not supported', async () => {
+		it('logs a warning and returns Null when sourceType is not supported (I)', async () => {
 			const instanceUnderTest = setup();
 			const data = 'data';
-			const sourceType = 'foo';
+			const sourceType = null;
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
@@ -348,6 +348,24 @@ describe('ImportVectorDataService', () => {
 			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
+		});
+
+		it('logs a warning and returns Null when sourceType is not supported (II)', async () => {
+			const instanceUnderTest = setup();
+			const data = 'data';
+			const sourceType = 'foo';
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const warnSpy = spyOn(console, 'warn');
+			const options = {
+				id: 'id',
+				sourceType: sourceType
+			};
+
+			const vgr = instanceUnderTest.forData(data, options);
+
+			expect(vgr).toBeNull();
+			expect(warnSpy).toHaveBeenCalledWith(`SourceType for '${options.id}' could not be detected`);
+			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 		});
 	});
 
