@@ -47,7 +47,7 @@ $injector
 	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)
-	.register('CoordinateService', OlCoordinateService)
+	.registerSingleton('CoordinateService', new OlCoordinateService())
 	.register('EnvironmentService', EnvironmentService)
 	.register('MapService', MapService)
 	.registerSingleton('StoreService', new StoreService())
