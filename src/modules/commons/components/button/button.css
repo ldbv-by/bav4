@@ -35,13 +35,6 @@
 	cursor: not-allowed;
 	color: var(--text1);
 }
-.primary.button:hover:enabled {
-	opacity: 1;
-}
-.secondary.button:hover:enabled {
-	background: var(--primary-color);
-	color: var(--text3);
-}
 .loading {
 	border: none;
 	outline: none;
@@ -51,8 +44,7 @@
 	font-size: 1rem;
 	font-family: 'Poppins', sans-serif;
 	overflow: hidden;
-  }
-  
+}
 .loading::before {
 	content: '';
 	position: absolute;
@@ -61,14 +53,21 @@
 	width: 150%;
 	height: 100%;
 	background: repeating-linear-gradient(60deg, 
-				transparent, 
-				transparent 0.75rem, 
-				rgba(255,255,255,.15) 0.75rem, 
-				rgba(255,255,255,.15) 1.5rem);
+	transparent, 
+	transparent 0.75rem, 
+	rgba(255,255,255,.15) 0.75rem, 
+	rgba(255,255,255,.15) 1.5rem);
 	animation: load .8s infinite linear;
 }
-.secondary.button:focus, .primary.button:focus , .loading.button:focus  {
+.secondary.button:focus, .primary.button:focus , .loading.button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+.primary.button:hover:enabled {
+	opacity: 1;
+}
+.secondary.button:hover:enabled {
+	background: var(--primary-color);
+	color: var(--text3);
 }
 @keyframes load {
 	0% {
