@@ -83,11 +83,19 @@ describe('Button', () => {
 
 			expect(button.classList.contains('secondary')).toBeTrue();
 			expect(button.classList.contains('primary')).toBeFalse();
+			expect(button.classList.contains('loading')).toBeFalse();
 
 			element.type = 'primary';
 
 			expect(button.classList.contains('secondary')).toBeFalse();
 			expect(button.classList.contains('primary')).toBeTrue();
+			expect(button.classList.contains('loading')).toBeFalse();
+
+			element.type = 'loading';
+
+			expect(button.classList.contains('secondary')).toBeFalse();
+			expect(button.classList.contains('primary')).toBeFalse();
+			expect(button.classList.contains('loading')).toBeTrue();
 		});
 	});
 
