@@ -894,6 +894,21 @@ describe('OlMap', () => {
 			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
+		it('does nothing when layer return NULL as source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new Layer({ id: id, render: () => { } }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
 		it('does nothing when layers source is not a vector source', async () => {
 			const element = await setup();
 			const map = element._map;
