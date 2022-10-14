@@ -61,7 +61,8 @@ export class Button extends MvuElement {
 
 		const classes = {
 			primary: type === 'primary',
-			secondary: type !== 'primary',
+			loading: type === 'loading',
+			secondary: type === 'secondary',
 			disabled: disabled
 		};
 
