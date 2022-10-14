@@ -59,6 +59,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			startJob({});
 		};
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
+		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 
 		const areSettingsComplete = (capabilities && scale && id);
@@ -72,7 +73,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-				<ba-button id='${btnId}' class="tool-container__button preview_button" .type=${'primary'} .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
+				<ba-button id='${btnId}' class="tool-container__button preview_button" .type=${btnType} .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
 			</div>			
 		</div>`;
 	}
