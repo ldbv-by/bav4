@@ -251,7 +251,7 @@ describe('Mfp3Encoder', () => {
 
 			const actualEncoded = encoder._encode(layerMock);
 
-			expect(actualEncoded).toEqual([]);
+			expect(actualEncoded).toBeFalse();
 		});
 
 		it('encodes two layers with attributions', async () => {
@@ -1013,7 +1013,7 @@ describe('Mfp3Encoder', () => {
 						version: '2',
 						'[_gx_style = 0]': {
 							symbolizers: [{
-								type: 'linestring',
+								type: 'line',
 								zIndex: 0,
 								fillOpacity: 0,
 								strokeWidth: 2.6785714285714284,
@@ -1109,7 +1109,7 @@ describe('Mfp3Encoder', () => {
 						version: '2',
 						'[_gx_style = 0]': {
 							symbolizers: [{
-								type: 'linestring',
+								type: 'line',
 								zIndex: 0,
 								fillOpacity: 0,
 								strokeWidth: 6.428571428571429,
@@ -1146,7 +1146,8 @@ describe('Mfp3Encoder', () => {
 				const styleRenderFunction = () => [new Style(), new Style({
 					renderer: () => {
 						throw Error('foo');
-					} })];
+					}
+				})];
 				vectorLayer.setStyle(styleRenderFunction);
 				const warnSpy = spyOn(console, 'warn');
 				const encoder = setup();

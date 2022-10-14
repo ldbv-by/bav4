@@ -92,8 +92,6 @@ export class Mfp3Encoder {
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
 
-
-
 		const encodedLayers = olMap.getLayers().getArray()
 			.filter(layer => {
 				const layerExtent = layer.getExtent();
@@ -104,23 +102,20 @@ export class Mfp3Encoder {
 			.reduce((layerSpecs, encodedLayer) => {
 				// todo: extract to method
 				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
-				if (attribution || thirdPartyAttribution) {
-					const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright?.map(c => c.label) : [attribution?.copyright?.label];
+				const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright?.map(c => c.label) : [attribution?.copyright?.label];
 
-					return {
-						specs: [...layerSpecs.specs, restSpec],
-						dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
-						thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
-					};
-				}
-				return { specs: [], dataOwners: [], thirdPartyDataOwners: [] };
-
+				return {
+					specs: [...layerSpecs.specs, restSpec],
+					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
+					thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
+				};
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay));
 
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
+		const layers = [...encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -130,7 +125,7 @@ export class Mfp3Encoder {
 					projection: this._mfpProjection,
 					dpi: this._mfpProperties.dpi,
 					rotation: this._mfpProperties.rotation,
-					layers: [...encodedOverlays, ...encodedLayers.specs.reverse()]
+					layers: layers
 				},
 				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
 				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : '',
@@ -149,7 +144,7 @@ export class Mfp3Encoder {
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
 			console.warn('No geoResource found for Layer', layer);
-			return [];
+			return false;
 		}
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.VECTOR:
@@ -160,7 +155,7 @@ export class Mfp3Encoder {
 			case GeoResourceTypes.WMS:
 				return this._encodeWMS(layer, geoResource);
 			default:
-				return [];
+				return false;
 		}
 	}
 
@@ -378,8 +373,6 @@ export class Mfp3Encoder {
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
 
-
-
 		const initEncodedStyle = () => {
 			return { id: this._encodingStyleId++ };
 		};
@@ -443,7 +436,6 @@ export class Mfp3Encoder {
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyle.id };
 
-
 		return {
 			features: [encodedFeature, ...advancedStyleFeatures.features],
 			styles: [encodedStyle, ...advancedStyleFeatures.styles]
@@ -456,7 +448,7 @@ export class Mfp3Encoder {
 		const textStyle = olStyle.getText();
 		const imageStyle = olStyle.getImage();
 		const geometryType = olGeometry.getType().toLowerCase();
-		const encoded = { type: geometryType, zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
+		const encoded = { type: geometryType === 'linestring' ? 'line' : geometryType, zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 
 
 		// Encode imageStyle only for Point-geometries;
