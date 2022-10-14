@@ -203,7 +203,9 @@ describe('olMapUtils', () => {
 			map.addLayer(olLayer);
 
 			expect(getLayerById(map, 'foo')).toEqual(olLayer);
-			expect(getLayerById(map, 'bar')).toBeUndefined();
+			expect(getLayerById(map, 'bar')).toBeNull();
+			expect(getLayerById(map, undefined)).toBeNull();
+			expect(getLayerById(undefined, 'bar')).toBeNull();
 		});
 	});
 });
