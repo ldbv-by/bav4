@@ -10,13 +10,14 @@ import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils';
 
-import proj4 from 'proj4';
+
 import { register } from 'ol/proj/proj4';
-import { Polygon } from 'ol/geom';
+import { Polygon, Point } from 'ol/geom';
 import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import { Mfp3Encoder } from '../../../../../src/modules/olMap/formats/Mfp3Encoder';
+import proj4 from 'proj4';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -198,7 +199,7 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it('encodes map to mfp spec after sotre changes', () => {
+		it('encodes map to mfp spec after store changes', async () => {
 			const encoderMock = {
 				async encode() {
 					return {};
@@ -208,13 +209,36 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_getEncoder').withArgs({ layoutId: 'foo', scale: 1, rotation: 0, dpi: 125 }).and.returnValue(encoderMock);
+			spyOn(handler, '_getEncoder').withArgs({ layoutId: 'foo', scale: 1, rotation: 0, dpi: 125, pageCenter: jasmine.any(Point) }).and.returnValue(encoderMock);
+			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
 
 			handler.activate(map);
 			requestJob();
 
+			await TestUtils.timeout();
 			expect(encodeSpy).toHaveBeenCalled();
+			expect(centerPointSpy).toHaveBeenCalled();
+		});
+
+		it('requests the visible center point of the map, after store changes', async () => {
+			const encoderMock = {
+				async encode() {
+					return {};
+				}
+			};
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_getEncoder').and.returnValue(encoderMock);
+			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
+
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(centerPointSpy).toHaveBeenCalled();
 		});
 	});
 

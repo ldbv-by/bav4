@@ -190,14 +190,18 @@ export class OlMfpHandler extends OlLayerHandler {
 		return bestScale ? bestScale : fallbackScale;
 	}
 
-	_createMpfBoundary(pageSize) {
+	_getVisibleCenterPoint() {
 		const getVisibleCenter = () => {
 			const size = this._map.getSize();
 			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
 
-		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+	}
+
+	_createMpfBoundary(pageSize) {
+		const center = this._getVisibleCenterPoint();
 		const mapProjection = 'EPSG:' + this._mapService.getSrid();
 		const geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
 
@@ -227,7 +231,8 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
-		const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi });
+		const pageCenter = this._getVisibleCenterPoint();
+		const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter });
 		const specs = await encoder.encode(this._map);
 
 		// console.log(specs);
