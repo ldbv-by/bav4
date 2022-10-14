@@ -17,7 +17,7 @@ export class OlCoordinateService {
 	 * @param {stringifyCoordProvider} [stringifyFunction=bvvStringifyFunction]
 	 */
 	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = bvvStringifyFunction) {
-		proj4Provider();
+		this._suppertedSrids = [4326, 3857, ...(proj4Provider())];
 		this._stringifyFunction = stringifyFunction;
 	}
 
@@ -127,5 +127,13 @@ export class OlCoordinateService {
 	 */
 	buffer(extend, value) {
 		return [...buffer(extend, value)];
+	}
+
+	/**
+	 *
+	 * @returns an array of all supported SRIDs
+	 */
+	getSupportedSrids() {
+		return this._suppertedSrids;
 	}
 }

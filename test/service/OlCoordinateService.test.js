@@ -10,13 +10,14 @@ describe('OlCoordinateService', () => {
 	describe('constructor', () => {
 
 		it('initializes the service', async () => {
-			const proj4Provider = jasmine.createSpy();
+			const proj4Provider = jasmine.createSpy().and.returnValue([]);
 			const stringifyCoordsProvider = jasmine.createSpy();
 
 			const instanceUnderTest = new OlCoordinateService(proj4Provider, stringifyCoordsProvider);
 
 			expect(proj4Provider).toHaveBeenCalled();
 			expect(instanceUnderTest._stringifyFunction).toEqual(stringifyCoordsProvider);
+			expect(instanceUnderTest._suppertedSrids).toEqual([4326, 3857]);
 		});
 
 		it('initializes the service with default provider', async () => {
@@ -34,6 +35,7 @@ describe('OlCoordinateService', () => {
 				proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 				proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 				register(proj4);
+				return [25832, 25833];
 			};
 
 			const stringifyCoordsProvider = () => {
@@ -157,6 +159,16 @@ describe('OlCoordinateService', () => {
 				const buffededExtent = instanceUnderTest.buffer(extent, 10);
 
 				expect(buffededExtent).toEqual([0, 0, 30, 30]);
+			});
+		});
+
+		describe('getSupportedSrids', () => {
+
+			it('returns an array containing all supported SRIDs', () => {
+
+				const srids = instanceUnderTest.getSupportedSrids();
+
+				expect(srids).toEqual([4326, 3857, 25832, 25833]);
 			});
 		});
 	});
