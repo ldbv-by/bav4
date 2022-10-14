@@ -12,7 +12,7 @@ export class Proj4JsService {
      * @param {proj4Provider} [proj4Provider=loadBvvDefinitions]
      */
 	constructor(proj4Provider = loadBvvDefinitions) {
-		this._suppertedSrids = [4326, 3857, ...(proj4Provider())];
+		this._supportedSrids = [4326, 3857, ...(proj4Provider())];
 	}
 
 	/**
@@ -20,6 +20,6 @@ export class Proj4JsService {
      * @returns supported projections
      */
 	getProjections() {
-		return this._suppertedSrids;
+		return this._supportedSrids;
 	}
 }
