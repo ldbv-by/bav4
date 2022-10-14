@@ -29,7 +29,6 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  * @param {Point} [pageCenter] the center of the map to export; Defaults to the center of map.getView()
  * @param {Extent} [pageExtent] the extent of the map to export; Defaults to the calculated extent of map.getView()
  * @param {Number} [targetSRID] the srid of the map to export; Defaults to the default geodetic srid
- * @param {Number} [styleVersion]
 */
 
 /***
@@ -442,13 +441,18 @@ export class Mfp3Encoder {
 		};
 	}
 
+	_encodeGeometryType(olGeometryType) {
+		const geometryType = olGeometryType.toLowerCase();
+		return olGeometryType === 'LineString' ? 'line' : geometryType.toLowerCase();
+	}
+
 	_encodeStyle(olStyle, olGeometry, dpi) {
 		const fillStyle = olStyle.getFill();
 		const strokeStyle = olStyle.getStroke();
 		const textStyle = olStyle.getText();
 		const imageStyle = olStyle.getImage();
-		const geometryType = olGeometry.getType().toLowerCase();
-		const encoded = { type: geometryType === 'linestring' ? 'line' : geometryType, zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
+		const geometryType = olGeometry.getType();
+		const encoded = { type: this._encodeGeometryType(geometryType), zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 
 
 		// Encode imageStyle only for Point-geometries;

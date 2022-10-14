@@ -2,6 +2,7 @@
 import { LineString, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
+
 import { $injector } from '../../../../src/injection';
 import { Mfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
 
@@ -1214,6 +1215,16 @@ describe('Mfp3Encoder', () => {
 			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
 		});
 
+		it('encodes openlayers geometryType to mfp symbolizer type', () => {
+			const encoder = setup();
+
+			expect(encoder._encodeGeometryType('Point')).toBe('point');
+			expect(encoder._encodeGeometryType('LineString')).toBe('line');
+			expect(encoder._encodeGeometryType('Polygon')).toBe('polygon');
+			expect(encoder._encodeGeometryType('ABC')).toBe('abc');
+			expect(encoder._encodeGeometryType('123')).toBe('123');
+			expect(encoder._encodeGeometryType('AbC')).toBe('abc');
+		});
 	});
 
 	describe('_generateShortUrl', () => {
