@@ -1,5 +1,3 @@
-import { OlMap } from '../components/OlMap';
-
 export const updateOlLayer = (olLayer, layer) => {
 
 	olLayer.setVisible(layer.visible);
