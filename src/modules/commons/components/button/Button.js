@@ -88,7 +88,7 @@ export class Button extends MvuElement {
 	}
 
 	/**
-	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary'
+	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary', 'loading'
 	 */
 	set type(value) {
 		this.signal(Update_Type, value);
