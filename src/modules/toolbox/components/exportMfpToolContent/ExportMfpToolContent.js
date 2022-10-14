@@ -123,15 +123,6 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			}
 		};
 
-		const onChangeScaleSlider = (e) => {
-			const selectScale = this.shadowRoot.getElementById('select_scale');
-			selectScale.selectedIndex = e.target.value;
-			const which = selectScale.options[e.target.value].value;
-			const parsedScale = parseInt(which);
-			setScale(parsedScale);
-			this.signal(Update_Scale, parsedScale);
-		};
-
 		const getScaleOptions = (scales, selectedScale) => {
 			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
 		};
@@ -166,19 +157,16 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						</div>
 					</div>
 					<div class='tool-section' style='margin-top:1em'>
-					<div class='tool-sub-header'>	
-						${translate('toolbox_exportMfp_scale')}	
-					</div>
-					<div style='display: flex; justify-content: center'>	
-						<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${decreaseScale}></ba-icon>                    				
-						<select id='select_scale' @change=${onChangeScale}>							
-						${getScaleOptions(scales, scale)}
-						</select>
-						<ba-icon id='increase' .icon='${plusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${increaseScale}></ba-icon>                    									
-					<div>
-					<input id='input_range_scale' type='range'  min="0" max="12" @input=${onChangeScaleSlider}>							
-							</input>	
+						<div class='tool-sub-header'>	
+							${translate('toolbox_exportMfp_scale')}	
 						</div>
+						<div style='display: flex; justify-content: center'>	
+							<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${decreaseScale}></ba-icon>                    				
+							<select id='select_scale' @change=${onChangeScale}>							
+							${getScaleOptions(scales, scale)}
+							</select>
+							<ba-icon id='increase' .icon='${plusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('layerManager_move_up')} @click=${increaseScale}></ba-icon>                    									
+						<div>
 					</div>
 				</div>`;
 	}

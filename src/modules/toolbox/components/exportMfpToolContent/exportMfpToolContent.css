@@ -7,12 +7,6 @@
 	position: relative;
 	top:-.2em;
 }
-#input_range_scale{
-	transform: rotate(180deg);
-	margin: 1em 0 0 1em;
-	min-width: 10em;
-	display:none;
-}
 .ba-tool-container__sub-title{
     color: var(--text2);	
 	padding: .8em 1.5em .8em 0;
@@ -40,7 +34,6 @@
 .button-container button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
-
 .button-container button:hover{
 	margin: .5em .8em;
 	background: var(--secondary-color);
@@ -49,7 +42,6 @@
 	color: var(--text3);
 	transform:scale(1.2);
 }
-
 .button-container button.active{
 	margin: .5em .8em;
 	background: var(--primary-color);
@@ -58,7 +50,6 @@
 	color: var(--text3);
 	transform:scale(1.2);
 }
-
 .a4-h{
 	width:2.1em;
 	height:2.97em;	
@@ -78,13 +69,9 @@
 .tool-sub-header{
 	margin: 0 0em 1em;
 }
-
-
-
 #select_layout{
 	display: none;
 }
-
 .separator {
 	border-top: 1px dotted var(--header-background-color);
 }
