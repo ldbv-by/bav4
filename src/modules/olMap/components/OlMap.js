@@ -335,7 +335,7 @@ export class OlMap extends MvuElement {
 			this._viewSyncBlocked = false;
 			this._syncStore();
 		};
-		const extent = eventLike.payload.id ? getLayerById(this._map, eventLike.payload.id)?.getSource?.().getExtent?.() : eventLike.payload.extent;
+		const extent = eventLike.payload.id ? getLayerById(this._map, eventLike.payload.id)?.getSource?.()?.getExtent?.() : eventLike.payload.extent;
 
 		if (extent) {
 			this._viewSyncBlocked = true;
