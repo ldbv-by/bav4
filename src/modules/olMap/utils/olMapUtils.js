@@ -1,3 +1,5 @@
+import { OlMap } from '../components/OlMap';
+
 export const updateOlLayer = (olLayer, layer) => {
 
 	olLayer.setVisible(layer.visible);
@@ -57,7 +59,7 @@ export const registerLongPressListener = (map, longPressCallback, shortPressCall
 
 /**
  *
- * @param {*} map olMap
+ * @param {OlMap} map olMap
  * @param {string} id id of the desired layer
  * @returns olLayer or `null`
  */
