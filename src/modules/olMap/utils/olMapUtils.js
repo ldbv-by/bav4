@@ -59,8 +59,11 @@ export const registerLongPressListener = (map, longPressCallback, shortPressCall
  *
  * @param {*} map olMap
  * @param {string} id id of the desired layer
- * @returns olLayer or `undefined`
+ * @returns olLayer or `null`
  */
 export const getLayerById = (map, id) => {
-	return map.getLayers().getArray().find(olLayer => olLayer.get('id') === id);
+	if (map && id) {
+		return map.getLayers().getArray().find(olLayer => olLayer.get('id') === id) ?? null;
+	}
+	return null;
 };
