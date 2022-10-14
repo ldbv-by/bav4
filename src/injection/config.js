@@ -41,9 +41,11 @@ import { SearchPlugin } from '../plugins/SearchPlugin';
 import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
+import { Proj4JsService } from '../services/Proj4JsService';
 
 
 $injector
+	.registerSingleton('Proj4JsService', new Proj4JsService())
 	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)
