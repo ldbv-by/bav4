@@ -5,7 +5,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
 /**
- * A function that registers proj4 definitions and return an array of SRIDs
+ * A function that registers proj4 definitions and returns an array of SRIDs
  *
  * @typedef {function(coordinate) : (array<number>)} proj4Provider
  */
