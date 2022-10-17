@@ -67,19 +67,6 @@ describe('SourceTypeService', () => {
 
 	describe('forData', () => {
 
-		it('provides a SourceType result given <data> and <mediaType>', () => {
-
-			const data = 'data';
-			const mediaType = 'mediatype';
-			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const mediaProviderSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(result);
-			const instanceUnderTest = setup(null, null, mediaProviderSpy);
-
-			const sourceTypeResult = instanceUnderTest.forData(data, mediaType);
-
-			expect(sourceTypeResult).toEqual(result);
-		});
-
 		it('provides a SourceType result given <data> only', () => {
 
 			const data = 'data';

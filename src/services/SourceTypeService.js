@@ -38,20 +38,16 @@ export class SourceTypeService {
 	}
 
 	/**
-	 * Detects the SourceType for given data.
-	 * If the MediaType is available, it is used for SourceTpe detection,
-	 * otherwise, the data are analyzed
+	 * Detects the SourceType for the given data.
 	 * @param {string} data
-	 * @param {string} [mediaType]
 	 * @returns {SourceTypeResult} the result of this request
 	 */
-	forData(data, mediaType = null) {
+	forData(data) {
 		const dataSize = new Blob([data]).size;
 		if (dataSize >= SourceTypeMaxFileSize) {
 			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 		}
-		const result = mediaType ? this._mediaSourceTypeProvider(mediaType) : null;
-		return result ?? this._dataSourceTypeProvider(data);
+		return this._dataSourceTypeProvider(data);
 	}
 
 	/**
