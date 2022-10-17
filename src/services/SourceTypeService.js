@@ -1,4 +1,4 @@
-import { isHttpUrl } from '../utils/checks';
+import { isHttpUrl, isString } from '../utils/checks';
 import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
@@ -43,6 +43,9 @@ export class SourceTypeService {
 	 * @returns {SourceTypeResult} the result of this request
 	 */
 	forData(data) {
+		if (!isString(data)) {
+			throw new TypeError('Parameter <data> must be a String');
+		}
 		const dataSize = new Blob([data]).size;
 		if (dataSize >= SourceTypeMaxFileSize) {
 			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);

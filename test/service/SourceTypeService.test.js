@@ -54,14 +54,8 @@ describe('SourceTypeService', () => {
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(providerSpy);
 
-			try {
-				await instanceUnderTest.forUrl(url);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (e) {
-				expect(e.message).toBe('Parameter <url> must represent an Http URL');
-				expect(providerSpy).not.toHaveBeenCalled();
-			}
+			await expectAsync(instanceUnderTest.forUrl(url)).toBeRejectedWithError(TypeError, 'Parameter <url> must represent an Http URL');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -87,6 +81,16 @@ describe('SourceTypeService', () => {
 
 			expect(result)
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+		});
+
+		it('throws an exception when data is not a String', async () => {
+
+			const providerSpy = jasmine.createSpy();
+			const instanceUnderTest = setup(undefined, providerSpy);
+			const data = 0;
+
+			expect(() => instanceUnderTest.forData(data)).toThrowError(TypeError, 'Parameter <data> must be a String');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -114,14 +118,8 @@ describe('SourceTypeService', () => {
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
 
-			try {
-				await instanceUnderTest.forBlob(blobFake);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (e) {
-				expect(e.message).toBe('Parameter <blob> must be an instance of Blob');
-				expect(providerSpy).not.toHaveBeenCalled();
-			}
+			await expectAsync(instanceUnderTest.forBlob(blobFake)).toBeRejectedWithError(TypeError, 'Parameter <blob> must be an instance of Blob');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 
 		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', async () => {
