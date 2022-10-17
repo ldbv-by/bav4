@@ -4,8 +4,21 @@ import { fromLonLat, toLonLat, transformExtent } from 'ol/proj';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
+import { $injector } from '../../src/injection';
 
 describe('OlCoordinateService', () => {
+
+	const projectionServiceMock = {
+		getProjections() { }
+	};
+
+	beforeAll(() => {
+		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+		register(proj4);
+		$injector
+			.registerSingleton('ProjectionService', projectionServiceMock);
+	});
 
 	describe('constructor', () => {
 
@@ -27,14 +40,9 @@ describe('OlCoordinateService', () => {
 	describe('methods', () => {
 		let instanceUnderTest;
 
-		beforeAll(() => {
-			proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
-			proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
-			register(proj4);
-		});
-
 		beforeEach(() => {
 
+			spyOn(projectionServiceMock, 'getProjections').and.returnValue([4326, 3857, 25832, 25833]);
 			const stringifyCoordsProvider = () => {
 				return coordinate => coordinate[0] + ', ' + coordinate[1];
 			};
