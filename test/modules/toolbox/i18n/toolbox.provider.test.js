@@ -92,6 +92,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_header).toBe('Export nach PDF');
 		expect(map.toolbox_exportMfp_layout).toBe('Seitenformat');
 		expect(map.toolbox_exportMfp_scale).toBe('Maßstab');
+		expect(map.toolbox_exportMfp_scale_decrease).toBe('Maßstab verkleinern');
+		expect(map.toolbox_exportMfp_scale_increase).toBe('Maßstab vergrößern');
 		expect(map.toolbox_exportMfp_submit).toBe('PDF erzeugen');
 		expect(map.toolbox_exportMfp_cancel).toBe('Abbrechen');
 		expect(map.toolbox_exportMfp_select_option).toBe('auswählen...');
@@ -190,6 +192,8 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_header).toBe('Export to PDF');
 		expect(map.toolbox_exportMfp_layout).toBe('Page layout');
 		expect(map.toolbox_exportMfp_scale).toBe('Scale');
+		expect(map.toolbox_exportMfp_scale_decrease).toBe('Scale decrease');
+		expect(map.toolbox_exportMfp_scale_increase).toBe('Scale increase');
 		expect(map.toolbox_exportMfp_submit).toBe('Create PDF');
 		expect(map.toolbox_exportMfp_cancel).toBe('Cancel');
 		expect(map.toolbox_exportMfp_select_option).toBe('select...');
@@ -200,7 +204,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 94;
+		const expectedSize = 96;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
