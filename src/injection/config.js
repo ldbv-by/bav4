@@ -35,9 +35,17 @@ import { ImportVectorDataService } from '../services/ImportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
+import { ImportWmsService } from '../services/ImportWmsService';
+import { BaaCredentialService } from '../services/BaaCredentialService';
+import { SearchPlugin } from '../plugins/SearchPlugin';
+import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
+import { BvvMfpService } from '../services/MfpService';
+import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
+import { Proj4JsService } from '../services/Proj4JsService';
 
 
 $injector
+	.registerSingleton('Proj4JsService', new Proj4JsService())
 	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)
@@ -58,8 +66,11 @@ $injector
 	.register('FeatureInfoService', FeatureInfoService)
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
+	.register('ImportWmsService', ImportWmsService)
 	.register('SourceTypeService', SourceTypeService)
 	.registerSingleton('SecurityService', new SecurityService())
+	.registerSingleton('BaaCredentialService', new BaaCredentialService())
+	.registerSingleton('MfpService', new BvvMfpService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
@@ -73,6 +84,9 @@ $injector
 	.registerSingleton('FeatureInfoPlugin', new FeatureInfoPlugin())
 	.registerSingleton('MainMenuPlugin', new MainMenuPlugin())
 	.registerSingleton('ImportPlugin', new ImportPlugin())
+	.registerSingleton('SearchPlugin', new SearchPlugin())
+	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
+	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();

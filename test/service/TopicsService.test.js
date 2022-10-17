@@ -1,5 +1,5 @@
 import { FALLBACK_TOPICS_IDS, TopicsService } from '../../src/services/TopicsService';
-import { Topic } from '../../src/services/domain/topic';
+import { Topic } from '../../src/domain/topic';
 import { loadBvvTopics } from '../../src/services/provider/topics.provider';
 import { $injector } from '../../src/injection';
 
@@ -85,13 +85,17 @@ describe('TopicService', () => {
 
 				expect(topics.length).toBe(2);
 				expect(topics[0].id).toBe(fallbackId0);
-				expect(topics[0].baseGeoRs.length).toBe(2);
-				expect(topics[0].baseGeoRs[0]).toBe('atkis');
-				expect(topics[0].baseGeoRs[1]).toBe('atkis_sw');
+				expect(topics[0].baseGeoRs.length).toBe(4);
+				expect(topics[0].baseGeoRs[0]).toBe('tpo');
+				expect(topics[0].baseGeoRs[1]).toBe('tpo_mono');
+				expect(topics[0].baseGeoRs[2]).toBe('bmde_vector');
+				expect(topics[0].baseGeoRs[3]).toBe('bmde_vector_relief');
 				expect(topics[1].id).toBe(fallbackId1);
-				expect(topics[1].baseGeoRs.length).toBe(2);
-				expect(topics[1].baseGeoRs[0]).toBe('atkis');
-				expect(topics[1].baseGeoRs[1]).toBe('atkis_sw');
+				expect(topics[1].baseGeoRs.length).toBe(4);
+				expect(topics[1].baseGeoRs[0]).toBe('tpo');
+				expect(topics[1].baseGeoRs[1]).toBe('tpo_mono');
+				expect(topics[1].baseGeoRs[2]).toBe('bmde_vector');
+				expect(topics[1].baseGeoRs[3]).toBe('bmde_vector_relief');
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 

@@ -1,8 +1,7 @@
 import { $injector } from '../../../injection';
-import { SourceTypeName, SourceTypeResultStatus } from '../../../services/domain/sourceType';
+import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { SearchResult, SearchResultTypes } from './domain/searchResult';
+import { GeoResourceSearchResult, LocationSearchResult } from './domain/searchResult';
 import { loadBvvGeoResourceSearchResults, loadBvvLocationSearchResults, loadBvvCadastralParcelSearchResults } from './provider/searchResult.provider';
 
 /**
@@ -32,11 +31,13 @@ export class SearchResultService {
 		this._georesourceResultProvider = georesourceResultProvider;
 		this._cadastralParcelResultProvider = cadastralParcelResultProvider;
 
-		const { EnvironmentService: environmentService, SourceTypeService: sourceTypeService, ImportVectorDataService: importVectorDataService }
-			= $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService');
+		const { EnvironmentService: environmentService, SourceTypeService: sourceTypeService,
+			ImportVectorDataService: importVectorDataService, ImportWmsService: importWmsService }
+			= $injector.inject('EnvironmentService', 'SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
 		this._environmentService = environmentService;
 		this._sourceTypeService = sourceTypeService;
 		this._importVectorDataService = importVectorDataService;
+		this._importWmsService = importWmsService;
 	}
 
 	_mapSourceTypeToLabel(sourceType) {
@@ -53,6 +54,29 @@ export class SearchResultService {
 		return null;
 	}
 
+	async _getGeoResourcesForUrl(url) {
+		const { status, sourceType } = await this._sourceTypeService.forUrl(url);
+		if (status === SourceTypeResultStatus.OK || status === SourceTypeResultStatus.BAA_AUTHENTICATED) {
+			switch (sourceType.name) {
+				case SourceTypeName.GEOJSON:
+				case SourceTypeName.GPX:
+				case SourceTypeName.KML: {
+					const geoResource = this._importVectorDataService.forUrl(url, { sourceType: sourceType });
+					// in this case the geoResourceId is a random number provided by the importVectorDataService.
+					return geoResource ? [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))] : [];
+				}
+				case SourceTypeName.WMS: {
+					const geoResources = await this._importWmsService.forUrl(url, { sourceType: sourceType, isAuthenticated: status === SourceTypeResultStatus.BAA_AUTHENTICATED });
+					// in this case the geoResourceId is a random number provided by the importWmsService.
+					return geoResources.length
+						? geoResources.map(gr => new GeoResourceSearchResult(gr.id, gr.label))
+						: [];
+				}
+			}
+		}
+		return [];
+	}
+
 	/**
 	 * Provides search results for geoResources.
 	 * Possible errors of the configured provider will be passed.
@@ -66,24 +90,15 @@ export class SearchResultService {
 			return this._newFallbackGeoResourceSearchResults();
 		}
 		else if (isHttpUrl(term)) {
-			const { status, sourceType } = await this._sourceTypeService.forUrl(term);
-			if (status === SourceTypeResultStatus.OK) {
-				const geoResource = this._importVectorDataService.forUrl(term, { sourceType: sourceType });
-				if (geoResource) {
-					// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
-					return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
-						SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
-				}
-			}
+			return this._getGeoResourcesForUrl(term);
 		}
 		else {
 			const { status, sourceType } = this._sourceTypeService.forData(term);
 			if (status === SourceTypeResultStatus.OK) {
 				const geoResource = this._importVectorDataService.forData(term, { sourceType: sourceType }); {
 					if (geoResource) {
-						// in this case the geoResourceId is a random number provided by the importVectorDataService. So we use it also as layerId
-						return [new SearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType), this._mapSourceTypeToLabel(sourceType),
-							SearchResultTypes.GEORESOURCE, null, null, geoResource.id)];
+						// in this case the geoResourceId is a random number provided by the importVectorDataService.
+						return [new GeoResourceSearchResult(geoResource.id, this._mapSourceTypeToLabel(sourceType))];
 					}
 				}
 			}
@@ -130,15 +145,15 @@ export class SearchResultService {
 
 	_newFallbackGeoResourceSearchResults() {
 		return [
-			new SearchResult('atkis', 'Base Map 1', 'Base Map 1', SearchResultTypes.GEORESOURCE, null, null, `${'atkis'}_${createUniqueId()}`),
-			new SearchResult('atkis_sw', 'Base Map 2', 'Base Map 2', SearchResultTypes.GEORESOURCE, null, null, `${'atkis_sw'}_${createUniqueId()}`)
+			new GeoResourceSearchResult('atkis', 'Base Map 1'),
+			new GeoResourceSearchResult('atkis_sw', 'Base Map 2')
 		];
 	}
 
 	_newFallbackLocationSearchResults() {
 		return [
-			new SearchResult(undefined, 'Landeshauptstadt München', 'Landeshauptstadt <b>München</b>', SearchResultTypes.LOCATION, [1284841.153957037, 6132811.135477452], [1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]),
-			new SearchResult(undefined, 'Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', SearchResultTypes.LOCATION, [1290240.0895689954, 6130449.47786758])
+			new LocationSearchResult('Landeshauptstadt München', 'Landeshauptstadt <b>München</b>', [1284841.153957037, 6132811.135477452], [1265550.466246523, 6117691.209423095, 1304131.841667551, 6147931.061531809]),
+			new LocationSearchResult('Alexandrastraße 4 80538 München, Altstadt-Lehel', '<b>Alexandrastraße</b> <b>4</b> 80538 München , Altstadt-Lehel', [1290240.0895689954, 6130449.47786758])
 		];
 	}
 

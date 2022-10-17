@@ -1,11 +1,11 @@
-import { getDefaultAttribution } from '../provider/attribution.provider';
+import { getDefaultAttribution } from '../services/provider/attribution.provider';
 
 
 /**
  * Attribution data of a GeoResource.
  * It contains at least a copyright label.
  * @typedef Attribution
- * @property {Copyright} copyright
+ * @property {Copyright|Array<Copyright>} copyright
  * @property {string} [description] description
  */
 
@@ -22,12 +22,22 @@ import { getDefaultAttribution } from '../provider/attribution.provider';
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
-	WMTS: Symbol.for('wmts'),
+	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
-	VECTOR_TILES: Symbol.for('vector_tiles'),
+	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
 });
+
+/**
+ * Enum of all supported authentication types.
+ * @enum
+ */
+export const GeoResourceAuthenticationType = Object.freeze({
+	BAA: 'baa',
+	PLUS: 'plus'
+});
+
 
 /**
 * Parent class of all GeoResource types.
@@ -53,6 +63,10 @@ export class GeoResource {
 		this._maxZoom = null;
 		this._attribution = null;
 		this._attributionProvider = getDefaultAttribution;
+		this._authenticationType = null;
+		this._importedByUser = false;
+		this._queryable = true;
+		this._exportable = true;
 	}
 
 	/**
@@ -92,6 +106,22 @@ export class GeoResource {
 
 	get attribution() {
 		return this._attribution;
+	}
+
+	get authenticationType() {
+		return this._authenticationType;
+	}
+
+	get importedByUser() {
+		return this._importedByUser;
+	}
+
+	get queryable() {
+		return this._queryable;
+	}
+
+	get exportable() {
+		return this._exportable;
 	}
 
 	setLabel(label) {
@@ -136,6 +166,26 @@ export class GeoResource {
 	 */
 	setAttributionProvider(provider) {
 		this._attributionProvider = provider;
+		return this;
+	}
+
+	setAuthenticationType(type) {
+		this._authenticationType = type;
+		return this;
+	}
+
+	setImportedByUser(userImported) {
+		this._importedByUser = userImported;
+		return this;
+	}
+
+	setQueryable(queryable) {
+		this._queryable = queryable;
+		return this;
+	}
+
+	setExportable(exportable) {
+		this._exportable = exportable;
 		return this;
 	}
 
@@ -279,10 +329,11 @@ export class WmsGeoResource extends GeoResource {
 /**
  * @class
  */
-export class WMTSGeoResource extends GeoResource {
+export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
+		this._tileGridId = null;
 	}
 
 	get url() {
@@ -290,10 +341,23 @@ export class WMTSGeoResource extends GeoResource {
 	}
 
 	/**
+	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Default is `null`.
+	 */
+	get tileGridId() {
+		return this._tileGridId;
+	}
+
+	setTileGridId(tileGridId) {
+		this._tileGridId = tileGridId;
+		return this;
+	}
+
+	/**
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.WMTS;
+		return GeoResourceTypes.XYZ;
 	}
 }
 
@@ -389,6 +453,25 @@ export class AggregateGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.AGGREGATE;
+	}
+}
+
+
+export class VTGeoResource extends GeoResource {
+	constructor(id, label, styleUrl) {
+		super(id, label);
+		this._styleUrl = styleUrl;
+	}
+
+	get styleUrl() {
+		return this._styleUrl;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VT;
 	}
 }
 

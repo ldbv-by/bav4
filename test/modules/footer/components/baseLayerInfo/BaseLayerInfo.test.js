@@ -3,7 +3,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { WMTSGeoResource } from '../../../../../src/services/domain/geoResources';
+import { XyzGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 
 
@@ -40,8 +40,8 @@ describe('BaseLayerInfo', () => {
 				}
 			};
 
-			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
+			const xyz = new XyzGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
 
 			const element = await setup(state);
 
@@ -61,11 +61,11 @@ describe('BaseLayerInfo', () => {
 				}
 			};
 
-			const wmts = new WMTSGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
+			const xyz = new XyzGeoResource('someId', 'LDBV42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
 
 			const attribution = [{ description: 'foo' }, { description: null }, { description: 'bar' }];
-			const getAttrMock = spyOn(wmts, 'getAttribution');
+			const getAttrMock = spyOn(xyz, 'getAttribution');
 			getAttrMock.withArgs(12).and.returnValue(attribution);
 
 			const element = await setup(state);
@@ -121,8 +121,8 @@ describe('BaseLayerInfo', () => {
 				}
 			};
 
-			const wmts = new WMTSGeoResource('someId', null, 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(wmts);
+			const xyz = new XyzGeoResource('someId', null, 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(xyz);
 
 			const element = await setup(state);
 
@@ -139,12 +139,12 @@ describe('BaseLayerInfo', () => {
 				}
 			};
 
-			const wmts = new WMTSGeoResource('someId', 'LDBV', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const wmts2 = new WMTSGeoResource('someId2', 'Ref42', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyz = new XyzGeoResource('someId', 'LDBV', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyz2 = new XyzGeoResource('someId2', 'Ref42', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 			const geoServiceMock = spyOn(geoResourceServiceMock, 'byId');
-			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(wmts);
-			geoServiceMock.withArgs(layer2.geoResourceId).and.returnValue(wmts2);
+			geoServiceMock.withArgs(layer.geoResourceId).and.returnValue(xyz);
+			geoServiceMock.withArgs(layer2.geoResourceId).and.returnValue(xyz2);
 
 			const element = await setup(state);
 

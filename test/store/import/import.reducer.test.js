@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeName } from '../../../src/services/domain/sourceType';
+import { SourceType, SourceTypeName } from '../../../src/domain/sourceType';
 import { setData, setUrl } from '../../../src/store/import/import.action';
 import { importReducer } from '../../../src/store/import/import.reducer';
 import { TestUtils } from '../../test-utils';

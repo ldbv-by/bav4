@@ -6,14 +6,14 @@ import { Map as MapOl, View } from 'ol';
 import { defaults as defaultControls, ScaleLine } from 'ol/control';
 import { defaults as defaultInteractions, PinchRotate } from 'ol/interaction';
 import { removeLayer } from '../../../store/layers/layers.action';
-import { changeLiveRotation, changeZoomCenterAndRotation } from '../../../store/position/position.action';
+import { changeLiveCenter, changeLiveRotation, changeLiveZoom, changeZoomCenterAndRotation } from '../../../store/position/position.action';
 import { $injector } from '../../../injection';
 import { updateOlLayer, toOlLayerFromHandler, registerLongPressListener, getLayerById } from '../utils/olMapUtils';
 import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../../../store/pointer/pointer.action';
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
-import { GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceTypes } from '../../../domain/geoResources';
 import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
@@ -34,6 +34,7 @@ export class OlMap extends MvuElement {
 			center: null,
 			rotation: null,
 			fitRequest: null,
+			fitLayerRequest: null,
 			layers: []
 		});
 		const {
@@ -46,9 +47,10 @@ export class OlMap extends MvuElement {
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler,
-			OlFeatureInfoHandler: olFeatureInfoHandler
+			OlFeatureInfoHandler: olFeatureInfoHandler,
+			OlMfpHandler: olMfpHandler
 		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'TranslationService',
-			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler');
+			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler', 'OlMfpHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
@@ -56,7 +58,7 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
 		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 
@@ -98,11 +100,19 @@ export class OlMap extends MvuElement {
 			zoom: zoom,
 			rotation: rotation,
 			minZoom: this._mapService.getMinZoomLevel(),
-			maxZoom: this._mapService.getMaxZoomLevel()
+			maxZoom: this._mapService.getMaxZoomLevel(),
+			constrainRotation: false,
+			constrainResolution: !this._environmentService.isTouch()
 		});
 
 		this._view.on('change:rotation', (evt) => {
 			changeLiveRotation(evt.target.getRotation());
+		});
+		this._view.on('change:center', (evt) => {
+			changeLiveCenter(evt.target.getCenter());
+		});
+		this._view.on('change:resolution', (evt) => {
+			changeLiveZoom(evt.target.getZoom());
 		});
 
 		this._map = new MapOl({
@@ -187,19 +197,11 @@ export class OlMap extends MvuElement {
 
 		//register particular obeservers on our Model
 		//handle fitRequest
-		this.observeModel('fitRequest', (fitRequest) => {
-			this._viewSyncBlocked = true;
-			const onAfterFit = () => {
-				this._viewSyncBlocked = false;
-				this._syncStore();
-			};
-			const maxZoom = fitRequest.payload.options.maxZoom || this._view.getMaxZoom();
-			this._view.fit(fitRequest.payload.extent, { maxZoom: maxZoom, callback: onAfterFit });
-		});
+		this.observeModel(['fitRequest', 'fitLayerRequest'], eventLike => this._fitToExtent(eventLike));
 		//sync layers
 		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
-		this.observeModel(['zoom', 'center', 'rotation', 'fitRequest'], () => this._syncView());
+		this.observeModel(['zoom', 'center', 'rotation'], () => this._syncView());
 	}
 
 	/**
@@ -328,6 +330,25 @@ export class OlMap extends MvuElement {
 		});
 	}
 
+	_fitToExtent(eventLike) {
+		const onAfterFit = () => {
+			this._viewSyncBlocked = false;
+			this._syncStore();
+		};
+		const extent = getLayerById(this._map, eventLike.payload.id)?.getSource?.()?.getExtent?.() ?? eventLike.payload.extent;
+
+		if (extent) {
+			this._viewSyncBlocked = true;
+			const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
+			const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
+			const padding = eventLike.payload.options.useVisibleViewport
+				? [viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0], viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
+					viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
+				: OlMap.DEFAULT_PADDING_PX;
+			this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
+		}
+	}
+
 	/**
 	 * @override
 	 */
@@ -340,5 +361,9 @@ export class OlMap extends MvuElement {
 	 */
 	static get tag() {
 		return 'ba-ol-map';
+	}
+
+	static get DEFAULT_PADDING_PX() {
+		return Array.of(10, 10, 10, 10);
 	}
 }

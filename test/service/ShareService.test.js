@@ -5,7 +5,7 @@ import { changeRotation, changeZoomAndCenter } from '../../src/store/position/po
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { QueryParameters } from '../../src/services/domain/queryParameters';
+import { QueryParameters } from '../../src/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
 import { round } from '../../src/utils/numberUtils';
@@ -153,7 +153,7 @@ describe('ShareService', () => {
 			describe('and rotation = 0', () => {
 
 				it('extracts the position state', () => {
-					const zoomLevel = 5.353673;
+					const zoomLevel = 5.35;
 					const viewSrid = 25832;
 					const mapSrid = 3857;
 					setup();
@@ -175,7 +175,7 @@ describe('ShareService', () => {
 			describe('and rotation != 0', () => {
 
 				it('extracts the current position state', () => {
-					const zoomLevel = 5.353673;
+					const zoomLevel = 5.35;
 					const rotationValue = .5347485;
 					const viewSrid = 25832;
 					const mapSrid = 3857;

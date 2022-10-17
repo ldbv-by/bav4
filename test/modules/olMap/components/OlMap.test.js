@@ -7,9 +7,9 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import MapEventType from 'ol/MapEventType';
 import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/services/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, fit } from '../../../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter, fit, fitLayer } from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -25,6 +25,8 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import ImageLayer from 'ol/layer/Image';
+import { ImageWMS } from 'ol/source';
 
 window.customElements.define(OlMap.tag, OlMap);
 
@@ -52,7 +54,8 @@ describe('OlMap', () => {
 		getMaxZoomLevel() {
 			return maxZoomLevel;
 		},
-		getScaleLineContainer() { }
+		getScaleLineContainer() { },
+		getVisibleViewport() { }
 	};
 
 	const geoResourceServiceStub = {
@@ -128,6 +131,16 @@ describe('OlMap', () => {
 			return 'featureInfoHandlerMockId';
 		}
 	};
+	const mfpHandlerMock = {
+		activate() { },
+		deactivate() { },
+		get id() {
+			return 'mfpLayerHandlerMockId';
+		},
+		get options() {
+			return getDefaultLayerOptions();
+		}
+	};
 
 	const vectorLayerServiceMock = {};
 
@@ -139,7 +152,8 @@ describe('OlMap', () => {
 				zoom: initialZoomLevel,
 				center: initialCenter,
 				rotation: initialRotationValue,
-				fitRequest: null
+				fitRequest: null,
+				fitLayerRequest: null
 			}, media: {
 				portrait: false,
 				observeResponsiveParameter: true
@@ -172,11 +186,36 @@ describe('OlMap', () => {
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
+			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
 		return TestUtils.render(OlMap.tag);
 	};
+
+	describe('class', () => {
+
+		it('exposes static constants', async () => {
+			expect(OlMap.DEFAULT_PADDING_PX).toEqual([10, 10, 10, 10]);
+		});
+	});
+
+	describe('when instantiated', () => {
+
+		it('contains a model with default values', async () => {
+			await setup();
+			const model = new OlMap().getModel();
+
+			expect(model).toEqual({
+				zoom: null,
+				center: null,
+				rotation: null,
+				fitRequest: null,
+				fitLayerRequest: null,
+				layers: []
+			});
+		});
+	});
 
 	describe('when initialized', () => {
 
@@ -190,6 +229,8 @@ describe('OlMap', () => {
 			expect(element._view.getRotation()).toBe(initialRotationValue);
 			expect(element._view.getMinZoom()).toBe(minZoomLevel);
 			expect(element._view.getMaxZoom()).toBe(maxZoomLevel);
+			expect(element._view.get('constrainRotation')).toBeFalse();
+			expect(element._view.get('constrainResolution')).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('#ol-map')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#ol-map').getAttribute('tabindex')).toBe('0');
 			//all default controls are removed, ScaleLine control added
@@ -207,6 +248,7 @@ describe('OlMap', () => {
 				const element = await setup();
 
 				expect(element._map.moveTolerance_).toBe(3);
+				expect(element._view.get('constrainResolution')).toBeFalse();
 			});
 		});
 
@@ -236,15 +278,45 @@ describe('OlMap', () => {
 		describe('rotation:change', () => {
 
 			it('updates the liveRotation property of the position state', async () => {
-				const rotationValue = .56786786;
+				const rotationValue = .5678;
 				const element = await setup();
 				const view = element._view;
-				const changeRotationEvent = new Event('change:rotation');
-				changeRotationEvent.target = { getRotation: () => rotationValue };
+				const event = new Event('change:rotation');
+				event.target = { getRotation: () => rotationValue };
 
-				view.dispatchEvent(changeRotationEvent);
+				view.dispatchEvent(event);
 
 				expect(store.getState().position.liveRotation).toBe(rotationValue);
+			});
+		});
+
+		describe('change:center', () => {
+
+			it('updates the liveCenter property of the position state', async () => {
+				const center = [21, 42];
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:center');
+				event.target = { getCenter: () => center };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveCenter).toEqual(center);
+			});
+		});
+
+		describe('change:resolution', () => {
+
+			it('updates the liveZoom property of the position state', async () => {
+				const zoom = 5.55;
+				const element = await setup();
+				const view = element._view;
+				const event = new Event('change:resolution');
+				event.target = { getZoom: () => zoom };
+
+				view.dispatchEvent(event);
+
+				expect(store.getState().position.liveZoom).toBe(zoom);
 			});
 		});
 	});
@@ -301,15 +373,15 @@ describe('OlMap', () => {
 			it('updates the position state properties', async () => {
 				const element = await setup();
 				const view = element._view;
-				spyOn(view, 'getZoom');
-				spyOn(view, 'getCenter');
-				spyOn(view, 'getRotation');
+				spyOn(view, 'getZoom').and.returnValue(5);
+				spyOn(view, 'getCenter').and.returnValue([21, 42]);
+				spyOn(view, 'getRotation').and.returnValue(.5);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
-				expect(view.getZoom).toHaveBeenCalledTimes(1);
-				expect(view.getCenter).toHaveBeenCalledTimes(1);
-				expect(view.getRotation).toHaveBeenCalledTimes(1);
+				expect(store.getState().position.zoom).toBe(5);
+				expect(store.getState().position.center).toEqual([21, 42]);
+				expect(store.getState().position.rotation).toBe(.5);
 			});
 		});
 	});
@@ -629,11 +701,11 @@ describe('OlMap', () => {
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'animate');
 
-			changeZoomAndCenter({ zoom: 5, center: fromLonLat([11, 48]) });
+			changeZoomAndCenter({ zoom: 5, center: [21, 42] });
 
 			expect(viewSpy).toHaveBeenCalledWith({
 				zoom: 5,
-				center: fromLonLat([11, 48]),
+				center: [21, 42],
 				rotation: initialRotationValue,
 				duration: 200
 			});
@@ -656,17 +728,19 @@ describe('OlMap', () => {
 
 		it('fits to an extent', async () => {
 			const element = await setup();
+			const map = element._map;
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const extent = [38, 57, 39, 58];
+			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
 			fit(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything() });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
 
 			await TestUtils.timeout();
@@ -678,24 +752,195 @@ describe('OlMap', () => {
 
 		it('fits to an extent with custom maxZoom option', async () => {
 			const element = await setup();
+			const map = element._map;
 			const view = element._map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const extent = [38, 57, 39, 58];
 			const maxZoom = 10;
+			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
 			fit(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything() });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
 			await TestUtils.timeout();
 			//check if flag is reset
 			expect(element._viewSyncBlocked).toBeFalse();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to an extent with custom useVisibleViewport option', async () => {
+			const element = await setup();
+			const view = element._map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fit(extent, { useVisibleViewport: false });
+
+			expect(store.getState().position.fitRequest).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
+			expect(element._viewSyncBlocked).toBeTrue();
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to a vector layers extent', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to a vector layers extent with custom maxZoom option', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const olVectorSource = new VectorSource();
+			const maxZoom = 10;
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0, { maxZoom: maxZoom });
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('fits to  vector layers extent with custom useVisibleViewport option', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const extent = [38, 57, 39, 58];
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0, { useVisibleViewport: false });
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('does nothing when layer has no source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new LayerGroup({ id }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
+		it('does nothing when layer return NULL as source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new Layer({ id: id, render: () => { } }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
+		it('does nothing when layers source is not a vector source', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new ImageLayer({ id, source: new ImageWMS() }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
+		it('does nothing when source can\'t provide an extent', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const olVectorSource = new VectorSource();
+			spyOn(olVectorSource, 'getExtent').and.returnValue(undefined);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			fitLayer(id0);
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).not.toHaveBeenCalled();
+			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 	});
 
@@ -1018,7 +1263,6 @@ describe('OlMap', () => {
 			expect(element._layerHandler.get('geolocationLayerHandlerMockId')).toEqual(geolocationLayerHandlerMock);
 		});
 
-
 		it('activates and deactivates the handler', async () => {
 			const olLayer = new VectorLayer({});
 			const activateSpy = spyOn(geolocationLayerHandlerMock, 'activate').and.returnValue(olLayer);
@@ -1033,6 +1277,32 @@ describe('OlMap', () => {
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(geolocationLayerHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('mfpHandler handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('mfpLayerHandlerMockId')).toEqual(mfpHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(mfpHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(mfpHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(mfpHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(mfpHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});

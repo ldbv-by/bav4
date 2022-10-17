@@ -6,9 +6,11 @@ import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
 import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import { closeModal } from '../../../../store/modal/modal.action';
+import { closeModal, openModal } from '../../../../store/modal/modal.action';
+import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -55,6 +57,62 @@ export class ShowCase extends BaElement {
 				zoom: 11,
 				center: this._coordinateService.fromLonLat([11.081, 49.449])
 			});
+		};
+
+		const onClickAuthenticate = async () => {
+			closeModal();
+
+			await sleep(1000);
+			const restrictedUrl = 'https://my.restricted.url/for/wms';
+			const receivedCredential = {};
+
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, url) => {
+				await sleep(3000);
+				if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
+
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
+
+			const unsubscribe = observe(this._storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
+
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+
+				unsubscribe();
+
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
+
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
+
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
+
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel .url=${restrictedUrl} .authenticate=${authenticate} .onClose=${onClose}>`;
+			};
+
+			// using the panel as content for the modal
+			openModal('Connect to restricted WMS...', getCredentialPanel());
 		};
 		const onToggle = (event) => {
 			// eslint-disable-next-line no-console
@@ -116,7 +174,7 @@ export class ShowCase extends BaElement {
 					case 1:
 						return html`<div>
 							<h3>Feature-Info</h3>
-							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
+							<div style="color: var(--text1);background-color: var(--secondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
 							<div style="color: var(--text2);background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
 							<div style="display:flex"><ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
 						</div>`;
@@ -134,6 +192,7 @@ export class ShowCase extends BaElement {
 			emitFixedNotification(getContent(version));
 			version = nextVersion(version, 1, 3);
 		};
+		const menuitems = [{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) }, { label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) }, { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) }, { label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }];
 
 		return html`
 		<style>
@@ -199,6 +258,7 @@ export class ShowCase extends BaElement {
 			<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
 			<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
 			<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
+			<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
 			</div>
 
 			<h3>ba-icons</h3>
@@ -207,6 +267,13 @@ export class ShowCase extends BaElement {
 				<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
 				<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>		
+			</div>
+
+			<h3>Overflow-Menu</h3>
+			<div class='example menu'>		
+				<div><ba-overflow-menu .items=${menuitems} ></ba-overflow-menu>Type:(Default)</div>
+				<div><ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
+				<div><ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
 			</div>
 
 			<h3>Checkbox</h3>
@@ -262,19 +329,23 @@ export class ShowCase extends BaElement {
 				<input type='range'></input>
 			</div>
 
-
-
-
 			<h3>Toggle-Button</h3>
 			<div class='example row'>		
 				<div>Toggle me!</div><ba-toggle id='toggle' .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 			</div>
 			
 			<h3>Loading hint</h3>
-			<div class='example'>									
-			<ba-spinner></ba-spinner>				
+			<div class='example row'>									
+			<ba-spinner></ba-spinner>
+			<ba-spinner .label=${'Waiting'}></ba-spinner>				
 			</div>
 
+			<h3>Credentials</h3>
+			<div class='example row'>
+			<ba-button id='button0' .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
+			<div>Hint: Demo Credentials are foo/bar</div>
+			</div>
+				
 			</div>	
 		</div > `;
 	}

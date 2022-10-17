@@ -78,7 +78,8 @@ export class HighlightPlugin extends BaPlugin {
 			else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
-				if (state.featureInfo.current.length > 0) {
+				// we show a highlight feature if we have at least one FeatureInfo object containing no geometry
+				if (state.featureInfo.current.some(fi => !fi.geometry)) {
 					addHighlightFeatures({ id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
 				}
 			}

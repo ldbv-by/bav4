@@ -60,6 +60,7 @@
 	opacity: 1;
 	background: var(--header-background-color);
 }
+
 .is-active.tool-bar__button:hover {
 	background-color: var(--primary-color);
 }
@@ -86,6 +87,11 @@
 .import {
 	mask-image: url('assets/upload.svg');
 	-webkit-mask-image: url('assets/upload.svg');
+}
+
+.export {
+	mask-image: url('assets/download.svg');
+	-webkit-mask-image: url('assets/download.svg');
 }
 
 .pencil {
@@ -115,7 +121,7 @@
 	text-align: center;
 }
 
-.is-active  .tool-bar__button-text {
+.is-active .tool-bar__button-text {
 	color: var(--primary-bg-color);
 }
 
@@ -148,7 +154,7 @@
 .is-desktop .tool-bar {
 	font-size: .9rem;
 	max-width: none;
-	right: -25.5em;
+	right: -35.3em;
 	bottom: .8em;
 	padding: 0em;
 }
@@ -164,7 +170,7 @@
 }
 
 .is-desktop .is-open {
-	transform: translate(-27em, 0);
+	transform: translate(-37em, 0);
 }
 
 .is-portrait .is-open,

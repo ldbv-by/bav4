@@ -1,4 +1,4 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, getColorFrom, lineStyleFunction, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction, DEFAULT_TEXT } from '../../../../src/modules/olMap/utils/olStyleUtils';
+import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, getColorFrom, lineStyleFunction, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction, DEFAULT_TEXT, getSizeFrom, textScaleToKeyword } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -50,6 +50,19 @@ describe('getMarkerSrc', () => {
 		expect(getMarkerSrc(markerSrc)).toBe('http://foo.bar/42/baz');
 	});
 
+});
+
+describe('textScaleToKeyword', () => {
+	it('should map to keyword', () => {
+
+		expect(textScaleToKeyword(2)).toBe('large');
+		expect(textScaleToKeyword(1.5)).toBe('medium');
+		expect(textScaleToKeyword(1)).toBe('small');
+		expect(textScaleToKeyword(null)).toBe('small');
+		expect(textScaleToKeyword('something')).toBe('small');
+		expect(textScaleToKeyword(true)).toBe('small');
+		expect(textScaleToKeyword(false)).toBe('small');
+	});
 });
 
 describe('markerScaleToKeyword', () => {
@@ -115,14 +128,14 @@ describe('measureStyleFunction', () => {
 
 	it('should draw to context with ruler-style', () => {
 		const pixelCoordinates = [[0, 0], [1, 1]];
-		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { } };
+		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { }, setLineDash: () => { } };
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
 		const styles = measureStyleFunction(feature, resolution);
 		const rulerStyle = styles.find(style => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
-		const cunstomRenderer = rulerStyle.getRenderer();
-		cunstomRenderer(pixelCoordinates, stateMock);
+		const customRenderer = rulerStyle.getRenderer();
+		customRenderer(pixelCoordinates, stateMock);
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});
@@ -908,6 +921,74 @@ describe('getTextFrom', () => {
 		expect(getTextFrom(featureWithoutStyle)).toBeNull();
 		expect(getTextFrom(null)).toBeNull();
 		expect(getTextFrom(undefined)).toBeNull();
+	});
+
+});
+
+describe('getSizeFrom', () => {
+	const imageStyle = new Style({
+		image: new Icon({
+			src: markerIcon,
+			color: [255, 0, 0],
+			scale: .75
+		})
+	});
+
+
+	const getTextStyle = (size) => {
+		const strokeWidth = 1;
+		return new Style({
+			text: new Text({
+				text: 'Foo',
+				font: 'normal 16px sans-serif',
+				stroke: new Stroke({
+					color: [0, 0, 0],
+					width: strokeWidth
+				}),
+				fill: new Fill({
+					color: [255, 255, 255]
+				}),
+				scale: size
+			})
+		});
+	};
+
+	const strokeStyle = new Style({
+		fill: new Fill({
+			color: [255, 255, 255, 0.4]
+		}),
+		stroke: new Stroke({
+			color: [255, 255, 0],
+			width: 0
+		})
+	});
+
+
+	it('should extract a size from feature with text style', () => {
+		expect(getSizeFrom({ getStyle: () => [getTextStyle(2)] })).toBe('large');
+		expect(getSizeFrom({ getStyle: () => [getTextStyle(1.5)] })).toBe('medium');
+		expect(getSizeFrom({ getStyle: () => [getTextStyle(1)] })).toBe('small');
+	});
+
+	it('should extract a size from feature with marker style', () => {
+		const featureMock = { getStyle: () => [imageStyle] };
+		const expectedSize = 'medium';
+
+		expect(getSizeFrom(featureMock)).toBe(expectedSize);
+	});
+
+	it('should NOT extract a size from feature style', () => {
+		const featureMock = { getStyle: () => [strokeStyle] };
+
+		expect(getSizeFrom(featureMock)).toBeNull();
+	});
+
+	it('should return null for empty feature', () => {
+		const featureWithoutStyle = { getStyle: () => null };
+
+		expect(getSizeFrom(featureWithoutStyle)).toBeNull();
+		expect(getSizeFrom(null)).toBeNull();
+		expect(getSizeFrom(undefined)).toBeNull();
 	});
 
 });

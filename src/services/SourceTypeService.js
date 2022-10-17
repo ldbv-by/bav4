@@ -1,11 +1,11 @@
 import { isHttpUrl } from '../utils/checks';
-import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from './domain/sourceType';
+import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 
 
 /**
- * Determines the source type of an Url or given data.
+ * Determines the source type of a Url or given data.
  * @class
  * @author taulinger
  * @author thiloSchlemmer

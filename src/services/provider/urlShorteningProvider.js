@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes an url and returns a promise with a short url.
+ * A function that takes a url and returns a promise with a short url.
  *
  * @typedef {function(string) : (Promise<string>)} shortUrlProvider
  */

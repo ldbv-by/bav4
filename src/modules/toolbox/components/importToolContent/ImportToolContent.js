@@ -4,7 +4,7 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { setData } from '../../../../store/import/import.action';
-import { SourceTypeResultStatus } from '../../../../services/domain/sourceType';
+import { SourceTypeResultStatus } from '../../../../domain/sourceType';
 
 /**
  * @class

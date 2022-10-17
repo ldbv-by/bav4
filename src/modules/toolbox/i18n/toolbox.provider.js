@@ -65,7 +65,7 @@ export const provide = (lang) => {
 				toolbox_import_data_draganddrop_target: 'into the Map',
 				toolbox_import_data_sucess_notification: 'Data transferred succeeded',
 				toolbox_import_url_header: 'URL Import',
-				toolbox_import_url_subheader: 'KML, GPX, GeoJSON',
+				toolbox_import_url_subheader: 'WMS, KML, GPX, GeoJSON',
 				toolbox_import_url_search_before: 'Please enter the Url into the ',
 				toolbox_import_url_search: 'Search Bar',
 				toolbox_import_url_search_after: 'the data will automatically transferred',
@@ -79,6 +79,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_share_button: 'Share',
 				toolbox_toolbar_measure_button: 'Measure',
 				toolbox_toolbar_import_button: 'Import',
+				toolbox_toolbar_export_button: 'Export',
 				toolbox_clipboard_link_notification_text: 'The link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'The area',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'The distance',
@@ -86,7 +87,17 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'was copied to clipboard',
 				toolbox_copy_icon: 'Copy to clipboard',
 				toolbox_measureTool_share_link: 'Anyone, who has this link, can edit this drawing',
-				toolbox_toolbar_logo_badge: '4.0'
+				toolbox_toolbar_logo_badge: '4.0',
+				toolbox_exportMfp_header: 'Export to PDF',
+				toolbox_exportMfp_layout: 'Page layout',
+				toolbox_exportMfp_scale: 'Scale',
+				toolbox_exportMfp_submit: 'Create PDF',
+				toolbox_exportMfp_cancel: 'Cancel',
+				toolbox_exportMfp_select_option: 'select...',
+				toolbox_exportMfp_id_a4_landscape: 'A4 landscape',
+				toolbox_exportMfp_id_a4_portrait: 'A4 portrait',
+				toolbox_exportMfp_id_a3_landscape: 'A3 landscape',
+				toolbox_exportMfp_id_a3_portrait: 'A3 portrait'
 			};
 
 		case 'de':
@@ -153,7 +164,7 @@ export const provide = (lang) => {
 				toolbox_import_data_draganddrop_target: 'in die Karte',
 				toolbox_import_data_sucess_notification: 'Daten konnten erfolgreich geladen werden',
 				toolbox_import_url_header: 'URL Import',
-				toolbox_import_url_subheader: 'KML, GPX, GeoJSON',
+				toolbox_import_url_subheader: 'WMS, KML, GPX, GeoJSON',
 				toolbox_import_url_search_before: 'Bitte geben Sie die URL in das ',
 				toolbox_import_url_search: 'Suchfeld',
 				toolbox_import_url_search_after: 'ein. Die Daten werden automatisch geladen.',
@@ -167,6 +178,7 @@ export const provide = (lang) => {
 				toolbox_toolbar_share_button: 'Teilen',
 				toolbox_toolbar_measure_button: 'Messen',
 				toolbox_toolbar_import_button: 'Import',
+				toolbox_toolbar_export_button: 'Export',
 				toolbox_clipboard_link_notification_text: 'Der Link',
 				toolbox_measureTool_clipboard_measure_area_notification_text: 'Die Fläche',
 				toolbox_measureTool_clipboard_measure_distance_notification_text: 'Die Länge',
@@ -174,7 +186,17 @@ export const provide = (lang) => {
 				toolbox_clipboard_success: 'wurde in die Zwischenablage kopiert',
 				toolbox_copy_icon: 'In die Zwischenablage kopieren',
 				toolbox_measureTool_share_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
-				toolbox_toolbar_logo_badge: '4.0'
+				toolbox_toolbar_logo_badge: '4.0',
+				toolbox_exportMfp_header: 'Export nach PDF',
+				toolbox_exportMfp_layout: 'Seitenformat',
+				toolbox_exportMfp_scale: 'Maßstab',
+				toolbox_exportMfp_submit: 'PDF erzeugen',
+				toolbox_exportMfp_cancel: 'Abbrechen',
+				toolbox_exportMfp_select_option: 'auswählen...',
+				toolbox_exportMfp_id_a4_landscape: 'A4 Querformat',
+				toolbox_exportMfp_id_a4_portrait: 'A4 Hochformat',
+				toolbox_exportMfp_id_a3_landscape: 'A3 Querformat',
+				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat'
 			};
 
 		default:

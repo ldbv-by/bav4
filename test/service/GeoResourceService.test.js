@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, GeoResourceService } from '../../src/services/GeoResourceService';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, WMTSGeoResource } from '../../src/services/domain/geoResources';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, FALLBACK_GEORESOURCE_LABEL_2, FALLBACK_GEORESOURCE_LABEL_3, GeoResourceService } from '../../src/services/GeoResourceService';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
@@ -19,14 +19,18 @@ describe('GeoResourceService', () => {
 	const setup = (provider = loadExampleGeoResources, byIdProviders) => {
 		return new GeoResourceService(provider, byIdProviders);
 	};
-	const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'wmtsLabel', 'wmtsUrl');
+	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
 
 	it('exports constant values', async () => {
 
-		expect(FALLBACK_GEORESOURCE_ID_0).toBe('atkis');
-		expect(FALLBACK_GEORESOURCE_ID_1).toBe('atkis_sw');
-		expect(FALLBACK_GEORESOURCE_LABEL_0).toBe('Base Map 1');
-		expect(FALLBACK_GEORESOURCE_LABEL_1).toBe('Base Map 2');
+		expect(FALLBACK_GEORESOURCE_ID_0).toBe('tpo');
+		expect(FALLBACK_GEORESOURCE_ID_1).toBe('tpo_mono');
+		expect(FALLBACK_GEORESOURCE_ID_2).toBe('bmde_vector');
+		expect(FALLBACK_GEORESOURCE_ID_3).toBe('bmde_vector_relief');
+		expect(FALLBACK_GEORESOURCE_LABEL_0).toBe('TopPlusOpen');
+		expect(FALLBACK_GEORESOURCE_LABEL_1).toBe('TopPlusOpen monochrome');
+		expect(FALLBACK_GEORESOURCE_LABEL_2).toBe('Web Vektor');
+		expect(FALLBACK_GEORESOURCE_LABEL_3).toBe('Web Vektor Relief');
 	});
 
 	describe('init', () => {
@@ -38,7 +42,7 @@ describe('GeoResourceService', () => {
 
 			const georesources = await instanceUnderTest.init();
 
-			//six gepresources from provider
+			//georesources from provider
 			expect(georesources.length).toBe(6);
 		});
 
@@ -62,7 +66,7 @@ describe('GeoResourceService', () => {
 		it('just provides GeoResources when already initialized', async () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const georesources = await instanceUnderTest.init();
 
@@ -83,12 +87,19 @@ describe('GeoResourceService', () => {
 
 				const georesources = await instanceUnderTest.init();
 
-				expect(georesources.length).toBe(2);
+				expect(georesources.length).toBe(4);
 				expect(georesources[0].id).toBe(FALLBACK_GEORESOURCE_ID_0);
-				expect(georesources[0].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
+				expect(georesources[0].label).toBe(FALLBACK_GEORESOURCE_LABEL_0);
+				expect(georesources[0].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2021)');
+				expect(georesources[0].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[0].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
+				expect(georesources[0].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(georesources[1].id).toBe(FALLBACK_GEORESOURCE_ID_1);
 				expect(georesources[1].label).toBe(FALLBACK_GEORESOURCE_LABEL_1);
-				expect(georesources[1].getAttribution()[0].copyright.label).toBe('Bayerische Vermessungsverwaltung');
+				expect(georesources[1].getAttribution()[0].copyright[0].label).toBe('Bundesamt für Kartographie und Geodäsie (2021)');
+				expect(georesources[1].getAttribution()[0].copyright[0].url).toBe('http://www.bkg.bund.de/');
+				expect(georesources[1].getAttribution()[0].copyright[1].label).toBe('Datenquellen');
+				expect(georesources[1].getAttribution()[0].copyright[1].url).toBe('https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf');
 				expect(warnSpy).toHaveBeenCalledWith('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 			});
 
@@ -114,7 +125,7 @@ describe('GeoResourceService', () => {
 		it('provides all GeoResources', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const geoResources = instanceUnderTest.all();
 
@@ -136,10 +147,10 @@ describe('GeoResourceService', () => {
 		it('provides a GeoResource by id', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 
-			const geoResource = instanceUnderTest.byId('wmtsId');
+			const geoResource = instanceUnderTest.byId('xyzId');
 
 			expect(geoResource).toBeTruthy();
 		});
@@ -147,7 +158,7 @@ describe('GeoResourceService', () => {
 		it('provides null if for an unknown id', () => {
 
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [wmtsGeoResource];
+			instanceUnderTest._georesources = [xyzGeoResource];
 
 			const geoResource = instanceUnderTest.byId('something');
 

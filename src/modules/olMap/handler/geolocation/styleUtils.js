@@ -69,3 +69,4 @@ export const createAnimateFunction = (map, feature, endCallback) => {
 	};
 	return animate;
 };
+

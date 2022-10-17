@@ -38,7 +38,7 @@ export class InteractionStorageService {
 			const { TranslationService } = $injector.inject('TranslationService');
 			const translate = (key) => TranslationService.translate(key);
 			console.warn('Could not store layer-data. The data will get lost after this session.');
-			emitNotification(translate('map_olMap_handler_storage_offline'), LevelTypes.WARN);
+			emitNotification(translate('olMap_handler_storage_offline'), LevelTypes.WARN);
 			return Temp_Session_Id;
 		};
 

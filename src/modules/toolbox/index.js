@@ -5,5 +5,6 @@ import './components/measureToolContent';
 import './components/shareButton';
 import './components/shareToolContent';
 import './components/importToolContent';
+import './components/exportMfpToolContent';
 import './components/toolBar';
 

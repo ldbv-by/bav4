@@ -6,7 +6,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { render } from 'lit-html';
-import { QueryParameters } from '../../../../src/services/domain/queryParameters';
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 
 

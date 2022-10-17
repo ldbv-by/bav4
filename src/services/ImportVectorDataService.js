@@ -1,8 +1,8 @@
 import { $injector } from '../injection';
 import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from './domain/geoResources';
-import { SourceType, SourceTypeName } from './domain/sourceType';
+import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { SourceType, SourceTypeName } from './../domain/sourceType';
 
 /**
  *
@@ -44,7 +44,7 @@ export class ImportVectorDataService {
 	}
 
 	/**
-	* Imports vector data from an URL and returns a {@link GeoResourceFuture}.
+	* Imports vector data from a URL and returns a {@link GeoResourceFuture}.
 	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
 	* @param {string} url
 	* @param {ImportVectorDataOptions} [options]
@@ -101,7 +101,7 @@ export class ImportVectorDataService {
 	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data));
+		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 		if (resultingSourceType) {
 			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
 				if (prop === '_label') {

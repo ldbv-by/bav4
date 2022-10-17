@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, WMTSGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable } from '../../../src/services/domain/geoResources';
-import { getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
+import { GeoResourceTypes, GeoResource, WmsGeoResource, XyzGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
+import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 
 
 describe('GeoResource', () => {
@@ -9,11 +9,21 @@ describe('GeoResource', () => {
 
 		it('provides an enum of all available types', () => {
 
-			expect(GeoResourceTypes.WMS).toBeTruthy();
-			expect(GeoResourceTypes.WMTS).toBeTruthy();
-			expect(GeoResourceTypes.VECTOR).toBeTruthy();
-			expect(GeoResourceTypes.VECTOR_TILES).toBeTruthy();
-			expect(GeoResourceTypes.AGGREGATE).toBeTruthy();
+			expect(GeoResourceTypes.WMS.description).toBe('wms');
+			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
+			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
+			expect(GeoResourceTypes.VT.description).toBe('vt');
+			expect(GeoResourceTypes.AGGREGATE.description).toBe('aggregate');
+			expect(GeoResourceTypes.FUTURE.description).toBe('future');
+		});
+	});
+
+	describe('GeoResourceAuthenticationType', () => {
+
+		it('provides an enum of all available types', () => {
+
+			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
+			expect(GeoResourceAuthenticationType.PLUS).toBe('plus');
 		});
 	});
 
@@ -127,7 +137,11 @@ describe('GeoResource', () => {
 				expect(georesource.maxZoom).toBeNull();
 				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
+				expect(georesource.authenticationType).toBeNull();
+				expect(georesource.importedByUser).toBeFalse();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
+				expect(georesource._queryable).toBeTrue();
+				expect(georesource._exportable).toBeTrue();
 			});
 
 			it('provides set methods and getters', () => {
@@ -139,7 +153,11 @@ describe('GeoResource', () => {
 					.setMaxZoom(19)
 					.setHidden(true)
 					.setLabel('some label')
-					.setAttribution('some attribution');
+					.setAttribution('some attribution')
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
+					.setImportedByUser(true)
+					.setQueryable(false)
+					.setExportable(false);
 
 
 				expect(georesource.hidden).toBeTrue();
@@ -148,6 +166,10 @@ describe('GeoResource', () => {
 				expect(georesource.maxZoom).toBe(19);
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
+				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
+				expect(georesource.importedByUser).toBeTrue();
+				expect(georesource.queryable).toBeFalse();
+				expect(georesource.exportable).toBeFalse();
 			});
 		});
 
@@ -252,16 +274,29 @@ describe('GeoResource', () => {
 		});
 	});
 
-	describe('WmtsGeoResource', () => {
+	describe('XyzGeoResource', () => {
 
-		it('instantiates a WmtsGeoResource', () => {
+		it('instantiates a XyzGeoResource', () => {
 
-			const wmtsGeoResource = new WMTSGeoResource('id', 'label', 'url');
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url');
 
-			expect(wmtsGeoResource.getType()).toEqual(GeoResourceTypes.WMTS);
-			expect(wmtsGeoResource.id).toBe('id');
-			expect(wmtsGeoResource.label).toBe('label');
-			expect(wmtsGeoResource.url).toBe('url');
+			expect(xyzGeoResource.getType()).toEqual(GeoResourceTypes.XYZ);
+			expect(xyzGeoResource.id).toBe('id');
+			expect(xyzGeoResource.label).toBe('label');
+			expect(xyzGeoResource.url).toBe('url');
+		});
+
+		it('provides default properties', () => {
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url');
+
+			expect(xyzGeoResource.tileGridId).toBeNull();
+		});
+
+		it('provides set methods and getters', () => {
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url')
+				.setTileGridId('tileGridId');
+
+			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 		});
 	});
 
@@ -308,19 +343,33 @@ describe('GeoResource', () => {
 		});
 	});
 
-	describe('AggregateResource', () => {
+	describe('AggregateGeoResource', () => {
 
 		it('instantiates a AggregateResource', () => {
 
 			const wmsGeoResource = new WmsGeoResource('wmsId', 'label', 'url', 'layers', 'format');
-			const wmtsGeoResource = new WMTSGeoResource('wmtsId', 'label', 'url');
+			const xyzGeoResource = new XyzGeoResource('xyzId', 'label', 'url');
 
-			const aggregateGeoResource = new AggregateGeoResource('id', 'label', [wmsGeoResource, wmtsGeoResource]);
+			const aggregateGeoResource = new AggregateGeoResource('id', 'label', [wmsGeoResource, xyzGeoResource]);
 
 			expect(aggregateGeoResource.getType()).toEqual(GeoResourceTypes.AGGREGATE);
 			expect(aggregateGeoResource.geoResourceIds.length).toBe(2);
 			expect(aggregateGeoResource.geoResourceIds[0].id).toBe('wmsId');
-			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('wmtsId');
+			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('xyzId');
+		});
+
+	});
+
+	describe('VTGeoResource', () => {
+
+		it('instantiates a VTGeoResource', () => {
+
+			const vectorGeoResource = new VTGeoResource('id', 'label', 'styleUrl');
+
+			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VT);
+			expect(vectorGeoResource.id).toBe('id');
+			expect(vectorGeoResource.label).toBe('label');
+			expect(vectorGeoResource.styleUrl).toBe('styleUrl');
 		});
 
 	});
@@ -331,14 +380,14 @@ describe('GeoResource', () => {
 
 			const modifiedLabel = 'modified';
 			const callback = jasmine.createSpy();
-			const wmtsGeoResource = observable(new WMTSGeoResource('wmtsId', 'label', 'url'), callback);
+			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback);
 
-			wmtsGeoResource.setLabel(modifiedLabel);
-			wmtsGeoResource.setLabel(modifiedLabel);
-			wmtsGeoResource.unknown = modifiedLabel;
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.unknown = modifiedLabel;
 
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
-			expect(wmtsGeoResource.label).toBe(modifiedLabel);
+			expect(xyzGeoResource.label).toBe(modifiedLabel);
 		});
 	});
 });

@@ -4,7 +4,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import css from './drawToolContent.css';
-import { StyleSizeTypes } from '../../../../services/domain/styles';
+import { StyleSizeTypes } from '../../../../domain/styles';
 import { clearDescription, clearText, finish, remove, reset, setDescription, setStyle, setType } from '../../../../store/draw/draw.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { hexToRgb } from '../../../../utils/colors';

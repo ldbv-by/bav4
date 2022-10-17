@@ -5,6 +5,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { fromLonLat } from 'ol/proj';
 import { ZoomToExtentButton } from '../../../../../src/modules/map/components/zoomButtons/ZoomToExtentButton';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 window.customElements.define(ZoomToExtentButton.tag, ZoomToExtentButton);
 
@@ -19,7 +20,7 @@ describe('ExtentButton', () => {
 			position: {
 				zoom: 14,
 				center: fromLonLat([9.604, 50.015]),
-				fitRequest: null
+				fitRequest: new EventLike(null)
 			}
 		};
 
@@ -47,6 +48,7 @@ describe('ExtentButton', () => {
 		it('zooms to extent', () => {
 			element.shadowRoot.querySelector('button').click();
 			expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
+			expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: false });
 		});
 	});
 });

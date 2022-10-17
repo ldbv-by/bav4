@@ -4,6 +4,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { debounced } from '../../../../utils/timer';
 import css from './autocompleteSearch.css';
 import { MvuElement } from '../../../MvuElement';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Candidates = 'update_candidates';
 /**
@@ -30,6 +31,10 @@ export class AutocompleteSearch extends MvuElement {
 		this._provider = null;
 
 		this._onSelect = () => { };
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	update(type, data, model) {
@@ -159,8 +164,8 @@ export class AutocompleteSearch extends MvuElement {
 		 <style>${css}</style>
 		 <div class="autocomplete">
 			<input id='autoComplete'  @input=${onInput} @keydown=${onKeyDown}/>
-			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(candidates, (candidate) => candidate.id, (candidate, index) => html`
-			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormated)}</div>
+			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(candidates, (candidate) => candidate.label, (candidate, index) => html`
+			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormatted)}</div>
 		  `)}</div>`} 
 		 </div>
 		`;

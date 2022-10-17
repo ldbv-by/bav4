@@ -4,9 +4,9 @@ import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { $injector } from '../../../../injection';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
-import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
+import { createSketchStyleFunction, getColorFrom, getDrawingTypeFrom, getSizeFrom, getSymbolFrom, getTextFrom, selectStyleFunction } from '../../utils/olStyleUtils';
 import { StyleTypes } from '../../services/StyleService';
-import { StyleSizeTypes } from '../../../../services/domain/styles';
+import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
@@ -16,7 +16,7 @@ import { getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { FileStorageServiceDataTypes } from '../../../../services/FileStorageService';
-import { VectorGeoResource, VectorSourceType } from '../../../../services/domain/geoResources';
+import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { debounced } from '../../../../utils/timer';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
@@ -30,6 +30,7 @@ import { setSelection as setMeasurementSelection } from '../../../../store/measu
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
 import { hexToRgb } from '../../../../utils/colors';
+import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 
 
 
@@ -76,7 +77,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
-		this._keyUpListener = (e) => this._removeLast(e);
+		this._keyActionMapper = new KeyActionMapper(document)
+			.addForKeyUp('Delete', () => this._remove())
+			.addForKeyUp('Escape', () => this._reset());
 
 		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
 		this._lastPointerMoveEvent = null;
@@ -246,11 +249,10 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._mapListeners.push(olMap.on(MapBrowserEventType.CLICK, clickHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.POINTERMOVE, pointerMoveHandler));
 			this._mapListeners.push(olMap.on(MapBrowserEventType.DBLCLICK, () => false));
-
-
-			document.addEventListener('keyup', this._keyUpListener);
 		}
 		this._registeredObservers = this._register(this._storeService.getStore());
+		this._keyActionMapper.activate();
+
 		this._map.addInteraction(this._select);
 		this._map.addInteraction(this._modify);
 		this._map.addInteraction(this._snap);
@@ -291,7 +293,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._unreg(this._drawStateChangedListeners);
 		this._unsubscribe(this._registeredObservers);
-		document.removeEventListener('keyup', this._keyUpListener);
+		this._keyActionMapper.deactivate();
 
 		setSelection([]);
 		this._convertToPermanentLayer();
@@ -388,12 +390,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			this._updateDrawState();
 		}
 
-	}
-
-	_removeLast(event) {
-		if ((event.which === 46 || event.keyCode === 46) && !/^(input|textarea)$/i.test(event.target.nodeName)) {
-			this._remove();
-		}
 	}
 
 	_remove() {
@@ -704,10 +700,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		const featureColor = getColorFrom(feature);
 		const featureSymbol = getSymbolFrom(feature);
 		const featureText = getTextFrom(feature);
+		const featureScale = getSizeFrom(feature);
 		const color = featureColor ? featureColor : currentStyleOption.color;
 		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
 		const text = featureText ? featureText : currentStyleOption.text;
-		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text };
+		const scale = featureScale ? featureScale : currentStyleOption.scale;
+		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
 		setSelectedStyle(selectedStyle);
 	}

@@ -41,19 +41,20 @@ describe('StoreService', () => {
 		const importPluginMock = {
 			register: () => { }
 		};
+		const searchPluginMock = {
+			register: () => { }
+		};
+		const exportMfpPluginMock = {
+			register: () => { }
+		};
+		const historyStatePluginMock = {
+			register: () => { }
+		};
 		const mainMenuPluginMock = {
 			register() { }
 		};
 		const mediaPluginMock = {
 			register() { }
-		};
-		const windowMock = {
-			history: {
-				replaceState() { }
-			}
-		};
-		const configService = {
-			getValue: () => { }
 		};
 
 		const setupInjector = () => {
@@ -73,8 +74,9 @@ describe('StoreService', () => {
 				.registerSingleton('MainMenuPlugin', mainMenuPluginMock)
 				.registerSingleton('MediaPlugin', mediaPluginMock)
 				.registerSingleton('ImportPlugin', importPluginMock)
-				.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-				.registerSingleton('ConfigService', configService)
+				.registerSingleton('SearchPlugin', searchPluginMock)
+				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
+				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 
 				.ready();
 		};
@@ -87,7 +89,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(21);
+			expect(reducerKeys.length).toBe(22);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -109,6 +111,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('featureInfo')).toBeTrue();
 			expect(reducerKeys.includes('media')).toBeTrue();
 			expect(reducerKeys.includes('import')).toBeTrue();
+			expect(reducerKeys.includes('mfp')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -125,6 +128,9 @@ describe('StoreService', () => {
 			const mainMenuPluginSpy = spyOn(mainMenuPluginMock, 'register');
 			const mediaPluginSpy = spyOn(mediaPluginMock, 'register');
 			const importPluginSpy = spyOn(importPluginMock, 'register');
+			const searchPluginSpy = spyOn(searchPluginMock, 'register');
+			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
+			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -146,35 +152,9 @@ describe('StoreService', () => {
 			expect(mainMenuPluginSpy).toHaveBeenCalledWith(store);
 			expect(mediaPluginSpy).toHaveBeenCalledWith(store);
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
-		});
-
-		describe('query parameter', () => {
-
-			it('removes all query params by calling #replaceState on history', async () => {
-				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
-				new StoreService();
-
-				setupInjector();
-
-				//we need two timeout calls: async plugins registration is done within a timeout function
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-
-				expect(replaceStateMock).toHaveBeenCalled();
-			});
-
-			it('does NOT remove query params in deployment mode', async () => {
-				const replaceStateMock = spyOn(windowMock.history, 'replaceState');
-				spyOn(configService, 'getValue').and.returnValue('development');
-				new StoreService();
-
-				setupInjector();
-
-				//we need two timeout calls: async plugins registration is done within a timeout function
-				await TestUtils.timeout();
-				await TestUtils.timeout();
-				expect(replaceStateMock).not.toHaveBeenCalled();
-			});
+			expect(searchPluginSpy).toHaveBeenCalledWith(store);
+			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
+			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

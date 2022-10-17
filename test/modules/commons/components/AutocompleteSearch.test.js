@@ -1,7 +1,8 @@
 /* eslint-disable no-undef */
 
 import { AutocompleteSearch } from '../../../../src/modules/commons/components/autocomplete/AutocompleteSearch';
-import { SearchResult } from '../../../../src/modules/search/services/domain/searchResult';
+import { LocationSearchResult } from '../../../../src/modules/search/services/domain/searchResult';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
@@ -12,9 +13,9 @@ describe('Button', () => {
 	const provider = async (term) => {
 		if (term === 'some') {
 			return [
-				new SearchResult('id0', 'something0', '<b>something0</>', 'type', [0, 0]),
-				new SearchResult('id1', 'something1', '<b>something1</>', 'type', [1, 1]),
-				new SearchResult('id2', 'something2', '<b>something2</>', 'type', [2, 2])
+				new LocationSearchResult('something0', '<b>something0</>', [0, 0]),
+				new LocationSearchResult('something1', '<b>something1</>', [1, 1]),
+				new LocationSearchResult('something2', '<b>something2</>', [2, 2])
 			];
 		}
 		return [];
@@ -40,6 +41,10 @@ describe('Button', () => {
 			expect(input).toBeTruthy();
 			expect(input.getAttribute('id')).toBe('autoComplete');
 			expect(element.shadowRoot.querySelector('#autoCompleteautocomplete-list')).toBeNull();
+		});
+
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(AutocompleteSearch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
 		});
 	});
 

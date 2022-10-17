@@ -2,7 +2,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
 import { $injector } from '../injection';
-import { QueryParameters } from '../services/domain/queryParameters';
+import { QueryParameters } from '../domain/queryParameters';
 
 
 /**
@@ -67,6 +67,14 @@ export class MainMenuPlugin extends BaPlugin {
 			setTab(this._previousTab);
 		};
 
+		const onQueryChanged = ({ payload }) => {
+
+			if (payload) {
+				setTab(TabId.SEARCH);
+				open();
+			}
+		};
+
 		const onTabChanged = (tab, state) => {
 			if (tab === TabId.FEATUREINFO) {
 				this._open = state.mainMenu.open;
@@ -78,6 +86,7 @@ export class MainMenuPlugin extends BaPlugin {
 
 		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChanged);
 		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
+		observe(store, state => state.search.query, onQueryChanged, false);
 		observe(store, store => store.mainMenu.tab, onTabChanged, false);
 	}
 }

@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import css from './toggle.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
@@ -44,6 +45,10 @@ export class Toggle extends MvuElement {
 			case Update_Title:
 				return { ...model, title: data };
 		}
+	}
+
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	/**

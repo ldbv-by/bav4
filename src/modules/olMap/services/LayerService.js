@@ -1,9 +1,13 @@
 import { $injector } from '../../../injection';
-import { GeoResourceTypes } from '../../../services/domain/geoResources';
+import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
-import ImageWMS from 'ol/source/ImageWMS';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
+import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
+import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
+import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
+import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
+import { Projection } from 'ol/proj';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -11,6 +15,13 @@ import { XYZ as XYZSource } from 'ol/source';
  * @author taulinger
  */
 export class LayerService {
+
+	/**
+	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
+	 */
+	constructor(baaImageLoadFunctionProvider = getBvvBaaImageLoadFunction) {
+		this._baaImageLoadFunctionProvider = baaImageLoadFunctionProvider;
+	}
 
 	/**
 	 *
@@ -23,8 +34,9 @@ export class LayerService {
 
 		const {
 			GeoResourceService: georesourceService,
-			VectorLayerService: vectorLayerService
-		} = $injector.inject('GeoResourceService', 'VectorLayerService');
+			VectorLayerService: vectorLayerService,
+			BaaCredentialService: baaCredentialService
+		} = $injector.inject('GeoResourceService', 'VectorLayerService', 'BaaCredentialService');
 
 		const { minZoom, maxZoom, opacity } = geoResource;
 
@@ -32,12 +44,12 @@ export class LayerService {
 
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer({ id: id, render: () => { }, properties: { placeholder: true } });
+				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => { }, properties: { placeholder: true } });
 			}
 
 			case GeoResourceTypes.WMS: {
 
-				const imageWmsSource = new ImageWMS({
+				const imageWmsSource = new LimitedImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
 					ratio: 1,
@@ -49,24 +61,49 @@ export class LayerService {
 					}
 				});
 
-				return new ImageLayer({
+				switch (geoResource.authenticationType) {
+					case GeoResourceAuthenticationType.BAA: {
+						const credential = baaCredentialService.get(geoResource.url);
+						if (!credential) {
+							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
+						}
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
+					}
+				}
+
+				const layer = new ImageLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					source: imageWmsSource,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
+				const onPrerenderFunctionKey = layer.on('prerender', getPrerenderFunctionForImageLayer());
+				layer.set('onPrerenderFunctionKey', onPrerenderFunctionKey);
+				return layer;
 			}
 
-			case GeoResourceTypes.WMTS: {
+			case GeoResourceTypes.XYZ: {
 
-				const xyZsource = new XYZSource({
-					url: geoResource.url
-				});
+				const xyzSource = () => {
+					switch (geoResource.tileGridId) {
+
+						case 'adv_wmts': return new XYZSource({
+							url: geoResource.url,
+							tileGrid: new AdvWmtsTileGrid(),
+							projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
+						});
+						default: return new XYZSource({
+							url: geoResource.url
+						});
+					}
+				};
 
 				return new TileLayer({
 					id: id,
-					source: xyZsource,
+					geoResourceId: geoResource.id,
+					source: xyzSource(),
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,
@@ -77,6 +114,18 @@ export class LayerService {
 			case GeoResourceTypes.VECTOR: {
 
 				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
+			}
+
+			case GeoResourceTypes.VT: {
+				return new MapLibreLayer({
+					id: id,
+					opacity: opacity,
+					minZoom: minZoom ?? undefined,
+					maxZoom: maxZoom ?? undefined,
+					maplibreOptions: {
+						style: geoResource.styleUrl
+					}
+				});
 			}
 
 			case GeoResourceTypes.AGGREGATE: {

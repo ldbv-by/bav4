@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { WmsGeoResource } from './domain/geoResources';
+import { WmsGeoResource } from '../domain/geoResources';
 import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
 
 /**
@@ -47,7 +47,7 @@ export class FeatureInfoService {
 	 */
 	isQueryable(geoResourceId) {
 		const geoResource = this._geoResourceService.byId(geoResourceId);
-		return geoResource instanceof WmsGeoResource;
+		return geoResource.queryable && geoResource instanceof WmsGeoResource;
 	}
 }
 

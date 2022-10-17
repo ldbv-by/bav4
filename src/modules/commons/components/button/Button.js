@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 
 const Update_Disabled = 'update_disabled';
@@ -33,6 +34,10 @@ export class Button extends MvuElement {
 		this._onClick = () => { };
 	}
 
+	onInitialize() {
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
+	}
+
 	update(type, data, model) {
 
 		switch (type) {
@@ -56,7 +61,8 @@ export class Button extends MvuElement {
 
 		const classes = {
 			primary: type === 'primary',
-			secondary: type !== 'primary',
+			loading: type === 'loading',
+			secondary: type === 'secondary',
 			disabled: disabled
 		};
 
@@ -82,7 +88,7 @@ export class Button extends MvuElement {
 	}
 
 	/**
-	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary'
+	 * @property {string} type=secondary - Type of the button. One of 'primary', 'secondary', 'loading'
 	 */
 	set type(value) {
 		this.signal(Update_Type, value);

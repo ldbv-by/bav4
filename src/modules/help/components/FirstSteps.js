@@ -2,9 +2,9 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './firststeps.css';
 import { MvuElement } from '../../MvuElement';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { emitFixedNotification } from '../../../store/notifications/notifications.action';
 import { clearFixedNotification } from '../../../store/notifications/notifications.action';
-import { QueryParameters } from '../../../services/domain/queryParameters';
+import { QueryParameters } from '../../../domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
 import { isHttpUrl } from '../../../utils/checks';
 
@@ -125,7 +125,7 @@ export class FirstSteps extends MvuElement {
 							</div>
 						</div>`;
 			};
-			emitNotification(getContent(), LevelTypes.CUSTOM);
+			emitFixedNotification(getContent());
 		};
 
 		const contentAvailable = firstStepsContentSource != null && isHttpUrl(firstStepsContentSource);

@@ -12,7 +12,9 @@ import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { setQuery } from '../../../../src/store/search/search.action';
+import { setIsPortrait } from '../../../../src/store/media/media.action';
 
 window.customElements.define(Header.tag, Header);
 
@@ -76,7 +78,7 @@ describe('Header', () => {
 				layers: [],
 				isPortrait: false,
 				hasMinWidth: false,
-				hasSearchTerm: false
+				searchTerm: null
 			});
 		});
 
@@ -97,10 +99,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 		});
@@ -115,10 +117,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -133,10 +135,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -151,10 +153,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -166,18 +168,17 @@ describe('Header', () => {
 		it('removes a preload css class', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.preload')).toHaveSize(0);
 		});
 
 		it('adds header bar', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header__modal-button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header__button-container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
@@ -216,6 +217,19 @@ describe('Header', () => {
 			const element = await setup(state);
 
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].children[1].innerText).toBe('2');
+		});
+
+		it('adopts the states query term', async () => {
+			const term = 'foo';
+			const state = {
+				search: {
+					query: new EventLike(term)
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe(term);
 		});
 
 		it('contains test-id attributes', async () => {
@@ -297,7 +311,7 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
-			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
 		});
 
 		it('focused menue-button loses the focus after swipe', async () => {
@@ -673,4 +687,44 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
 		});
 	});
+
+	describe('when search query state changes', () => {
+
+		it('adopts the states query term', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('');
+
+			setQuery('foo');
+
+			expect(element.shadowRoot.querySelector('#input').getAttribute('value')).toBe('foo');
+		});
+	});
+
+	describe('when orientation changes', () => {
+
+		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+			const state = {
+				media: {
+					portrait: false,
+					observeResponsiveParameter: true
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+
+			setIsPortrait(true);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+
+			setIsPortrait(false);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+		});
+	});
+
 });

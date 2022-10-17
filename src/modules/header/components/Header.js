@@ -12,7 +12,7 @@ const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
 const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
-const Update_HasSearchTerm = 'update_hasSearchTerm';
+const Update_SearchTerm = 'update_searchTerm';
 
 /**
  * Container element for header stuff.
@@ -30,7 +30,7 @@ export class Header extends MvuElement {
 			layers: [],
 			isPortrait: false,
 			hasMinWidth: false,
-			hasSearchTerm: false
+			searchTerm: null
 		});
 
 		const {
@@ -55,8 +55,8 @@ export class Header extends MvuElement {
 				return { ...model, layers: data };
 			case Update_IsPortrait_HasMinWidth:
 				return { ...model, ...data };
-			case Update_HasSearchTerm:
-				return { ...model, hasSearchTerm: data };
+			case Update_SearchTerm:
+				return { ...model, searchTerm: data };
 		}
 	}
 
@@ -65,6 +65,7 @@ export class Header extends MvuElement {
 		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
 		this.observe(state => state.layers.active, active => this.signal(Update_Layers, active.filter(l => l.constraints.hidden === false)));
 		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
+		this.observe(state => state.search.query, query => this.signal(Update_SearchTerm, query.payload));
 	}
 
 	onAfterRender(firsttime) {
@@ -90,9 +91,8 @@ export class Header extends MvuElement {
 	}
 
 	onWindowLoad() {
-		if (!this.isRenderingSkipped()) {
-			this._root.querySelector('.preload').classList.remove('preload');
-		}
+		// we use optional chaining here because preload class may not be available
+		this._root.querySelector('.preload')?.classList.remove('preload');
 	}
 
 	isRenderingSkipped() {
@@ -101,7 +101,7 @@ export class Header extends MvuElement {
 
 	createView(model) {
 
-		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, hasSearchTerm } = model;
+		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase>`);
@@ -128,7 +128,7 @@ export class Header extends MvuElement {
 		};
 
 		const getIsClearClass = () => {
-			return hasSearchTerm ? 'is-clear-visible' : '';
+			return searchTerm ? 'is-clear-visible' : '';
 		};
 
 		const layerCount = layers.length;
@@ -141,6 +141,7 @@ export class Header extends MvuElement {
 				popup.style.display = 'none';
 				popup.style.opacity = 0;
 			}
+
 			//in portrait mode we open the main menu to display existing results
 			if (isPortrait) {
 				const value = this.shadowRoot.querySelector('#input').value;
@@ -154,7 +155,6 @@ export class Header extends MvuElement {
 			const term = evt.target.value;
 			openMainMenu();
 			setQuery(term);
-			this.signal(Update_HasSearchTerm, !!term);
 		};
 
 		const onInputBlur = () => {
@@ -212,14 +212,14 @@ export class Header extends MvuElement {
 					</div>
 					<div class='header__emblem'>
 					</div>
-					<div  class="header ${getOverlayClass()}">  
+					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
 						</button> 
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
-							<input id='input' data-test-id placeholder='${translate('header_search_placeholder')}' @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
+							<input id='input' data-test-id placeholder='${translate('header_search_placeholder')}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
 							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
