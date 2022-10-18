@@ -73,16 +73,6 @@ describe('SourceTypeService', () => {
 			expect(sourceTypeResult).toEqual(result);
 		});
 
-		it('returns MAX_SIZE_EXCEEDED when data-size is too large', () => {
-			const tooLargeData = 'x'.repeat(SourceTypeMaxFileSize);
-			const instanceUnderTest = setup();
-
-			const result = instanceUnderTest.forData(tooLargeData);
-
-			expect(result)
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
-		});
-
 		it('throws an exception when data is not a String', async () => {
 
 			const providerSpy = jasmine.createSpy();

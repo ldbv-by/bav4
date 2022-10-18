@@ -46,10 +46,6 @@ export class SourceTypeService {
 		if (!isString(data)) {
 			throw new TypeError('Parameter <data> must be a String');
 		}
-		const dataSize = new Blob([data]).size;
-		if (dataSize >= SourceTypeMaxFileSize) {
-			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
-		}
 		return this._dataSourceTypeProvider(data);
 	}
 
