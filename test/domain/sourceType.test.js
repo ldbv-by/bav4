@@ -59,13 +59,14 @@ describe('SourceTypeResultStatus', () => {
 
 	it('provides an enum of all available types', () => {
 
-		expect(Object.keys(SourceTypeResultStatus).length).toBe(6);
+		expect(Object.keys(SourceTypeResultStatus).length).toBe(7);
 		expect(SourceTypeResultStatus.OK).toBe(0);
 		expect(SourceTypeResultStatus.UNSUPPORTED_TYPE).toBe(1);
 		expect(SourceTypeResultStatus.MAX_SIZE_EXCEEDED).toBe(2);
 		expect(SourceTypeResultStatus.OTHER).toBe(3);
 		expect(SourceTypeResultStatus.BAA_AUTHENTICATED).toBe(4);
 		expect(SourceTypeResultStatus.RESTRICTED).toBe(5);
+		expect(SourceTypeResultStatus.UNSUPPORTED_SRID).toBe(6);
 	});
 });
 
