@@ -411,7 +411,7 @@ export class Mfp3Encoder {
 				const renderResult = defaultResult;
 				const state = {
 					geometry: olFeature.getGeometry(),
-					resolution: resolution,
+					resolution: this._mfpProperties.scale / (UnitsRatio * PointsPerInch),
 					pixelRatio: 1,
 					customContextRenderFunction: (geometry, fill, stroke) => {
 						const style = new Style({ fill: fill, stroke: stroke });
@@ -517,7 +517,8 @@ export class Mfp3Encoder {
 			encoded.strokeLineJoin = strokeStyle.getLineJoin() ?? 'round';
 
 			if (strokeStyle.getLineDash()) {
-				encoded.strokeDashstyle = 'dash';
+				encoded.strokeDashstyle = strokeStyle.getLineDash().join(' ');
+				encoded.strokeDashoffset = strokeStyle.getLineDashOffset();
 			}
 		}
 
