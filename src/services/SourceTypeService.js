@@ -1,5 +1,4 @@
 import { isHttpUrl, isString } from '../utils/checks';
-import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 
@@ -58,9 +57,6 @@ export class SourceTypeService {
 	async forBlob(blob) {
 		if (!(blob instanceof Blob)) {
 			throw new TypeError('Parameter <blob> must be an instance of Blob');
-		}
-		if (blob.size >= SourceTypeMaxFileSize) {
-			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 		}
 		const dataSourceContent = await blob.text();
 		return this._dataSourceTypeProvider(dataSourceContent);

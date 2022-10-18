@@ -111,16 +111,6 @@ describe('SourceTypeService', () => {
 			await expectAsync(instanceUnderTest.forBlob(blobFake)).toBeRejectedWithError(TypeError, 'Parameter <blob> must be an instance of Blob');
 			expect(providerSpy).not.toHaveBeenCalled();
 		});
-
-		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', async () => {
-
-			const blobMock = getBlob('some', SourceTypeMaxFileSize + 1);
-			const instanceUnderTest = setup();
-
-			const result = await instanceUnderTest.forBlob(blobMock);
-
-			expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
-		});
 	});
 
 	describe('SourceTypeServiceResult', () => {
