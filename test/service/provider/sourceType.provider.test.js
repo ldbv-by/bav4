@@ -44,8 +44,6 @@ describe('sourceType provider', () => {
 			};
 			store = TestUtils.setupStoreAndDi(initialState, { modal: modalReducer });
 
-			$injector;
-
 			$injector
 				.registerSingleton('ConfigService', configService)
 				.registerSingleton('HttpService', httpService)
@@ -369,6 +367,15 @@ describe('sourceType provider', () => {
 
 	describe('defaultDataSourceTypeProvider', () => {
 
+		const projectionService = {
+			getProjections: () => { }
+		};
+
+		beforeAll(() => {
+			$injector
+				.registerSingleton('ProjectionService', projectionService);
+		});
+
 		it('tries to detect the source type for KML sources', () => {
 			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>'))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326])));
@@ -385,10 +392,16 @@ describe('sourceType provider', () => {
 		});
 
 		it('tries to detect the source type for EWKT sources', () => {
+			spyOn(projectionService, 'getProjections').and.returnValue([55]);
 			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)'))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [55])));
 		});
 
+		it('returns UNSUPPORTED_SRID when data have an unknown SRID', () => {
+			spyOn(projectionService, 'getProjections').and.returnValue([]);
+			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)'))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID));
+		});
 		it('returns UNSUPPORTED_TYPE when data are not parseable', () => {
 			const errornousJsonString = '({ some: [] )';
 			expect(defaultDataSourceTypeProvider(errornousJsonString))

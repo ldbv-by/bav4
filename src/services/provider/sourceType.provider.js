@@ -149,6 +149,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
  */
 export const defaultDataSourceTypeProvider = (data) => {
 
+	const { ProjectionService: projectionService } = $injector.inject('ProjectionService');
+
 	if (new Blob([data]).size >= SourceTypeMaxFileSize) {
 		return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 	}
@@ -161,6 +163,9 @@ export const defaultDataSourceTypeProvider = (data) => {
 	}
 	const ewkt = parse(data);
 	if (ewkt) {
+		if (!projectionService.getProjections().includes(ewkt.srid)) {
+			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
+		}
 		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [ewkt.srid]));
 	}
 	try {
