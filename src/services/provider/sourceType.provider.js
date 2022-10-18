@@ -3,9 +3,8 @@
 import { html } from 'lit-html';
 import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
-import { isString } from '../../utils/checks';
 import { observe } from '../../utils/storeUtils';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
 import { MediaType } from '../HttpService';
 import { parse } from '../../utils/ewkt';
 
@@ -48,7 +47,7 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
 	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService }
-	= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
+		= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
 
 	const post = async (url, credential = null) => {
@@ -149,28 +148,30 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
  * @returns {SourceTypeResult}
  */
 export const defaultDataSourceTypeProvider = (data) => {
-	if (isString(data)) {
-		// we check the content in a naive manner
-		if (data.includes('<kml') && data.includes('</kml>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326]));
-		}
-		if (data.includes('<gpx') && data.includes('</gpx>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326]));
-		}
-		const ewkt = parse(data);
-		if (ewkt) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [ewkt.srid]));
-		}
-		try {
-			if (JSON.parse(data).type) {
-				return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326]));
-			}
-		}
-		catch {
-			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
-		}
+
+	if (new Blob([data]).size >= SourceTypeMaxFileSize) {
+		return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
+	}
+	// we check the content in a naive manner
+	if (data.includes('<kml') && data.includes('</kml>')) {
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326]));
+	}
+	if (data.includes('<gpx') && data.includes('</gpx>')) {
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326]));
+	}
+	const ewkt = parse(data);
+	if (ewkt) {
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [ewkt.srid]));
+	}
+	try {
+		JSON.parse(data);
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326]));
+	}
+	catch {
+		// Nothing todo here
 	}
 	return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
+
 };
 
 /**

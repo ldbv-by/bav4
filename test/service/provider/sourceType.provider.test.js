@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { MediaType } from '../../../src/services/HttpService';
 import { bvvUrlSourceTypeProvider, _createCredentialPanel, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../../src/services/provider/sourceType.provider';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
@@ -30,8 +30,8 @@ describe('sourceType provider', () => {
 		};
 
 		const baaCredentialService = {
-			addOrReplace: () => {},
-			get: () => {}
+			addOrReplace: () => { },
+			get: () => { }
 		};
 
 		let store;
@@ -389,20 +389,16 @@ describe('sourceType provider', () => {
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [55])));
 		});
 
-		it('returns UNSUPPORTED_TYPE when type can not be detected', () => {
-			expect(defaultDataSourceTypeProvider(JSON.stringify({ some: 'foo' })))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
-		});
-
 		it('returns UNSUPPORTED_TYPE when data are not parseable', () => {
 			const errornousJsonString = '({ some: [] )';
 			expect(defaultDataSourceTypeProvider(errornousJsonString))
 				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 		});
 
-		it('returns UNSUPPORTED_TYPE when data is NOT a string', () => {
-			expect(defaultDataSourceTypeProvider({}))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+		it('returns MAX_SIZE_EXCEEDED when data-size is too large', () => {
+			const tooLargeData = 'x'.repeat(SourceTypeMaxFileSize);
+			expect(defaultDataSourceTypeProvider(tooLargeData))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
 		});
 	});
 
