@@ -46,8 +46,8 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
  */
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
-	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService }
-		= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
+	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService, ProjectionService: projectionService }
+		= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService', 'ProjectionService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
 
 	const post = async (url, credential = null) => {
@@ -62,7 +62,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 	const mapResponseToSourceType = async (result, authenticated) => {
 		switch (result.status) {
 			case 200: {
-				const { name, version } = await result.json();
+				const { name, version, srids } = await result.json();
 
 				const sourceTypeNameFor = name => {
 					switch (name) {
@@ -78,9 +78,15 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 							return SourceTypeName.EWKT;
 					}
 				};
-
-				return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
-					new SourceType(sourceTypeNameFor(name), version));
+				const sourceTypeName = sourceTypeNameFor(name);
+				if (sourceTypeName) {
+					if (srids.some(srid => projectionService.getProjections().includes(srid))) { // check if SRID is supported
+						return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+							new SourceType(sourceTypeName, version, srids));
+					}
+					return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
+				}
+				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 			}
 			case 204: {
 				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
