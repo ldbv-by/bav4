@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
+import { SourceType, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
 import { TestUtils } from '../test-utils';
