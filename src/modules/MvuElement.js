@@ -7,7 +7,7 @@ import css from './baElement.css';
 
 
 /**
- * Base class for components. Improved version of {@link BaElement} and based on
+ * Base class for components. Improved version of {@link BaElement} and based
  * on the Model-View-Update pattern.
  *
  *

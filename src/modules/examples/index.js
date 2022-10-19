@@ -1,8 +1,12 @@
 import { MvuList } from './components/MvuList';
+import { MvuLinkList } from './components/MvuLinkList';
 import { MvuCounter } from './components/MvuCounter';
 import { MvuListItem } from './components/MvuListItem';
 if (!window.customElements.get(MvuCounter.tag)) {
 	window.customElements.define(MvuCounter.tag, MvuCounter);
+}
+if (!window.customElements.get(MvuLinkList.tag)) {
+	window.customElements.define(MvuLinkList.tag, MvuLinkList);
 }
 if (!window.customElements.get(MvuListItem.tag)) {
 	window.customElements.define(MvuListItem.tag, MvuListItem);

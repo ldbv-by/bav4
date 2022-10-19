@@ -22,6 +22,7 @@ import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
+import { exampleReducer } from '../store/example/example.reducer';
 
 
 
@@ -53,6 +54,7 @@ export class StoreService {
 			geolocation: geolocationReducer,
 			topics: topicsReducer,
 			network: networkReducer,
+			example: exampleReducer,
 			search: searchReducer,
 			topicsContentPanel: topicsContentPanelReducer,
 			highlight: highlightReducer,
