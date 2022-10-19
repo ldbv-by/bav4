@@ -174,7 +174,7 @@ describe('ImportVectorDataService', () => {
 				const dataSrid = 25832;
 				const mediaType = MediaType.TEXT_PLAIN;
 				const instanceUnderTest = setup();
-				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [dataSrid]));
+				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 				spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
 					.and.callFake(sourceType => sourceType ? VectorSourceType.EWKT : null);
@@ -348,7 +348,7 @@ describe('ImportVectorDataService', () => {
 			const dataSrid = 25832;
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
-			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [dataSrid]));
+			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
 			const _mapSourceTypeToVectorSourceTypeSpy = spyOn(instanceUnderTest, '_mapSourceTypeToVectorSourceType')
 				.and.callFake(sourceType => sourceType ? VectorSourceType.EWKT : null);
