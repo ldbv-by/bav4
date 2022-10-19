@@ -62,7 +62,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 	const mapResponseToSourceType = async (result, authenticated) => {
 		switch (result.status) {
 			case 200: {
-				const { name, version, srids } = await result.json();
+				const { name, version, srid } = await result.json();
 
 				const sourceTypeNameFor = name => {
 					switch (name) {
@@ -80,9 +80,9 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				};
 				const sourceTypeName = sourceTypeNameFor(name);
 				if (sourceTypeName) {
-					if (srids.some(srid => projectionService.getProjections().includes(srid))) { // check if SRID is supported
+					if (projectionService.getProjections().includes(srid)) { // check if SRID is supported
 						return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
-							new SourceType(sourceTypeName, version, srids));
+							new SourceType(sourceTypeName, version, srid));
 					}
 					return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
 				}
@@ -162,21 +162,21 @@ export const defaultDataSourceTypeProvider = (data) => {
 	}
 	// we check the content in a naive manner
 	if (data.includes('<kml') && data.includes('</kml>')) {
-		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326]));
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, 4326));
 	}
 	if (data.includes('<gpx') && data.includes('</gpx>')) {
-		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326]));
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, 4326));
 	}
 	const ewkt = parse(data);
 	if (ewkt) {
 		if (!projectionService.getProjections().includes(ewkt.srid)) {
 			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
 		}
-		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [ewkt.srid]));
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, ewkt.srid));
 	}
 	try {
 		JSON.parse(data);
-		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326]));
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326));
 	}
 	catch {
 		// Nothing todo here

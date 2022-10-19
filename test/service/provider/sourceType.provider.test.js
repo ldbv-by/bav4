@@ -61,14 +61,14 @@ describe('sourceType provider', () => {
 		});
 
 		it('returns a SourceTypeServiceResult for KML', async () => {
-			const srids = [4326];
-			spyOn(projectionService, 'getProjections').and.returnValue(srids);
+			const srid = 4326;
+			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'KML', version: 'version', srids: srids };
+			const sourceTypeResultPayload = { name: 'KML', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -85,20 +85,20 @@ describe('sourceType provider', () => {
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.KML);
 			expect(sourceType.version).toBe(version);
-			expect(sourceType.srids).toEqual(srids);
+			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for GPX', async () => {
-			const srids = [4326];
-			spyOn(projectionService, 'getProjections').and.returnValue(srids);
+			const srid = 4326;
+			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'GPX', version: 'version', srids: srids };
+			const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -115,20 +115,20 @@ describe('sourceType provider', () => {
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.GPX);
 			expect(sourceType.version).toBe(version);
-			expect(sourceType.srids).toEqual(srids);
+			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for GeoJSON', async () => {
-			const srids = [4326];
-			spyOn(projectionService, 'getProjections').and.returnValue(srids);
+			const srid = 4326;
+			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version', srids: srids };
+			const sourceTypeResultPayload = { name: 'GeoJSON', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -145,20 +145,20 @@ describe('sourceType provider', () => {
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.GEOJSON);
 			expect(sourceType.version).toBe(version);
-			expect(sourceType.srids).toEqual(srids);
+			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
 
 		it('returns a SourceTypeServiceResult for EWKT', async () => {
-			const srids = [4326];
-			spyOn(projectionService, 'getProjections').and.returnValue(srids);
+			const srid = 4326;
+			spyOn(projectionService, 'getProjections').and.returnValue([srid]);
 			const backendUrl = 'https://backend.url/';
 			const url = 'http://foo.bar';
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srids: srids };
+			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: srid };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -175,7 +175,7 @@ describe('sourceType provider', () => {
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.EWKT);
 			expect(sourceType.version).toBe(version);
-			expect(sourceType.srids).toEqual(srids);
+			expect(sourceType.srid).toBe(srid);
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});
@@ -186,7 +186,7 @@ describe('sourceType provider', () => {
 			const url = 'http://foo.bar';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srids: [5555] };
+			const sourceTypeResultPayload = { name: 'EWKT', version: 'version', srid: 5555 };
 			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -210,7 +210,7 @@ describe('sourceType provider', () => {
 			const url = 'http://foo.bar';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'OTHER', version: 'version', srids: [4326] };
+			const sourceTypeResultPayload = { name: 'OTHER', version: 'version', srid: 4326 };
 			spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -235,7 +235,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'WMS', version: 'version', srids: [3857] };
+			const sourceTypeResultPayload = { name: 'WMS', version: 'version', srid: 3857 };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -298,7 +298,7 @@ describe('sourceType provider', () => {
 
 				it('opens a credential UI and returns a SourceTypeServiceResult', async () => {
 					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
-					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srids: [4326] };
+					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: 4326 };
 					const mockCredential = { username: 'username', password: 'password' };
 					const response200 = new Response(
 						JSON.stringify(
@@ -346,7 +346,7 @@ describe('sourceType provider', () => {
 
 				it('fetches the credential from the BaaService', async () => {
 					spyOn(projectionService, 'getProjections').and.returnValue([4326]);
-					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srids: [4326] };
+					const sourceTypeResultPayload = { name: 'GPX', version: 'version', srid: 4326 };
 					const mockCredential = { username: 'username', password: 'password' };
 					const response200 = new Response(
 						JSON.stringify(
@@ -447,23 +447,23 @@ describe('sourceType provider', () => {
 
 		it('tries to detect the source type for KML sources', () => {
 			expect(defaultDataSourceTypeProvider('<kml some>foo</kml>'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, [4326])));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, 4326)));
 		});
 
 		it('tries to detect the source type for GPX sources', () => {
 			expect(defaultDataSourceTypeProvider('<gpx some>foo</gpx>'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, [4326])));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, 4326)));
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
 			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' })))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, [4326])));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326)));
 		});
 
 		it('tries to detect the source type for EWKT sources', () => {
 			spyOn(projectionService, 'getProjections').and.returnValue([55]);
 			expect(defaultDataSourceTypeProvider('SRID=55;POINT(21, 42)'))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, [55])));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, 55)));
 		});
 
 		it('returns UNSUPPORTED_SRID when data have an unsupported SRID', () => {
