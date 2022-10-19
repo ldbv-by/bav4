@@ -12,13 +12,16 @@ const getStore = () => {
 
 
 /**
-  * Updates the fetching property.
+  * Updates the link list.
   * @function
-  * @param {boolean} fetching
+  * @param {LinkList} linklist
   */
-export const setFetching = (fetching) => {
+export const setLinkList = (linklist) => {
 	getStore().dispatch({
 		type: LINKLIST_CHANGED,
-		payload: fetching
+		payload: linklist
 	});
 };
+
+
+
