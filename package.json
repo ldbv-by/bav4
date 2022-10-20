@@ -20,7 +20,7 @@
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^6.1.0",
+    "eslint-plugin-promise": "^6.1.1",
     "fucazu-minami": "^1.1.7",
     "html-webpack-plugin": "^5.5.0",
     "jasmine": "^4.4.0",
