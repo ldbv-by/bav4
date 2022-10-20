@@ -258,6 +258,7 @@ export class ShowCase extends BaElement {
 			<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
 			<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
 			<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
+			<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
 			</div>
 
 			<h3>ba-icons</h3>

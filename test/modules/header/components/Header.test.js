@@ -99,10 +99,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
 		});
@@ -117,10 +117,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -135,10 +135,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -153,10 +153,10 @@ describe('Header', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
@@ -168,18 +168,17 @@ describe('Header', () => {
 		it('removes a preload css class', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.preload')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.preload')).toHaveSize(0);
 		});
 
 		it('adds header bar', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('.header')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.header__modal-button')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.header__modal-button')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('none');
 
-			expect(element.shadowRoot.querySelector('.header__button-container')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header__button-container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].classList.contains('is-active')).toBeTrue();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].innerText).toBe('header_tab_topics_button');
@@ -312,7 +311,7 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchmove', closeButton, center.x, center.y + 55, 2);
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x, center.y + 200);
 
-			expect(element.shadowRoot.querySelector('.header.is-open')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
 		});
 
 		it('focused menue-button loses the focus after swipe', async () => {
