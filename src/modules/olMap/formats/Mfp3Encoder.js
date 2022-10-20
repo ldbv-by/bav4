@@ -10,7 +10,7 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
-import { MeasurementOverlay } from '../components/MeasurementOverlay';
+import { MeasurementOverlay, MeasurementOverlayTypes } from '../components/MeasurementOverlay';
 import { Circle, LineString, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
@@ -326,7 +326,8 @@ export class Mfp3Encoder {
 		const getOlStyles = (feature, layer, resolution) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof (featureStyles) === 'function') {
-				return featureStyles(feature, resolution);
+				const isMeasurementFeature = feature.get('partition_delta') != null;
+				return isMeasurementFeature ? featureStyles(feature, null) : featureStyles(feature, resolution);
 			}
 
 			if (featureStyles != null && featureStyles.length > 0) {
@@ -340,8 +341,17 @@ export class Mfp3Encoder {
 			return [];
 		};
 
-		const getEncodableOlStyle = (styles) => {
-			return styles && styles.length > 0 ? styles[0] : null;
+		const getEncodableOlStyle = (styles, isPreset = false) => {
+			if (isPreset) {
+				return styles && styles.length > 0 ? styles[0] : null;
+			}
+			if (styles && styles.length > 0) {
+				const allowedStyles = styles.filter(s => !(s.getGeometry && typeof (s.getGeometry()) === 'function'));
+				if (allowedStyles.length > 0) {
+					return allowedStyles[0];
+				}
+			}
+			return null;
 		};
 
 		const getEncodableOlFeature = (olFeature) => {
@@ -377,7 +387,7 @@ export class Mfp3Encoder {
 		};
 
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
-		const olStyleToEncode = getEncodableOlStyle(olStyles);
+		const olStyleToEncode = getEncodableOlStyle(olStyles, presetStyles.length > 0);
 
 		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
 			return null;
@@ -413,6 +423,7 @@ export class Mfp3Encoder {
 					geometry: olFeature.getGeometry(),
 					resolution: this._mfpProperties.scale / (UnitsRatio * PointsPerInch),
 					pixelRatio: 1,
+					renderHint: 'printer',
 					customContextRenderFunction: (geometry, fill, stroke) => {
 						const style = new Style({ fill: fill, stroke: stroke });
 						const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
@@ -517,9 +528,18 @@ export class Mfp3Encoder {
 			encoded.strokeLineJoin = strokeStyle.getLineJoin() ?? 'round';
 
 			if (strokeStyle.getLineDash()) {
-				encoded.strokeDashstyle = strokeStyle.getLineDash().join(' ');
-				encoded.strokeDashoffset = strokeStyle.getLineDashOffset();
+				encoded.strokeDashstyle = 'dash';
 			}
+			/*
+			// TODO: search for the reasons of misfitted dash values relative to the scale-denominator, the adjustments with a
+			// magic-number (distance * dpi / 99) is not reliable
+
+			const adjustDistanceForPrint = (distance, dpi) => Math.round((distance * dpi / 99 + Number.EPSILON) * 100) / 100;
+			if (strokeStyle.getLineDash()) {
+				encoded.strokeDashstyle = strokeStyle.getLineDash().map(value => adjustDistanceForPrint(value, 72)).join(' ');
+				encoded.strokeDashoffset = adjustDistanceForPrint(strokeStyle.getLineDashOffset(), 72);
+			}
+			*/
 		}
 
 		encoded.fillOpacity = encoded.fillOpacity ?? 0;
@@ -530,6 +550,7 @@ export class Mfp3Encoder {
 			encoded.label = encodeURIComponent(textStyle.getText());
 			encoded.labelXOffset = textStyle.getOffsetX();
 			encoded.labelYOffset = textStyle.getOffsetY();
+			encoded.type = 'text';
 
 			const fromOlTextAlign = (olTextAlign) => {
 				switch (olTextAlign) {
@@ -602,18 +623,30 @@ export class Mfp3Encoder {
 			style: {
 				version: 2,
 				'*': {
-					symbolizers: [{
-						type: 'text',
-						label: element.innerText,
-						labelXOffset: element.placement.offset[0],
-						labelYOffset: element.placement.offset[1],
-						labelAlign: fromPositioning(element.placement.positioning),
-						fontColor: '#ffffff',
-						fontSize: 10,
-						fontWeight: 'normal',
-						fillColor: '#ff0000',
-						strokeColor: '#ff0000'
-					}]
+					symbolizers: [
+						{
+							type: 'point',
+							fillColor: '#ff0000',
+							fillOpacity: 1,
+							strokeOpacity: 0,
+							graphicName: 'circle',
+							graphicOpacity: 0.4,
+							pointRadius: 3
+						}, {
+							type: 'text',
+							label: element.innerText,
+							labelXOffset: Mfp3Encoder.adjustDistance(element.placement.offset[0], PointsPerInch),
+							labelYOffset: Mfp3Encoder.adjustDistance(-element.placement.offset[1], PointsPerInch),
+							labelAlign: fromPositioning(element.placement.positioning),
+							fontColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#000000' : '#ffffff',
+							fontSize: 10,
+							fontFamily: 'san-serif',
+							fontWeight: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? 'normal' : 'bold',
+							haloColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#ffffff' : '#ff0000',
+							haloOpacity: 1,
+							haloRadius: 2,
+							strokeColor: '#ff0000'
+						}]
 				}
 			}
 		};
@@ -621,7 +654,7 @@ export class Mfp3Encoder {
 	}
 
 	static adjustDistance(distance, dpi) {
-		return distance ? distance * 90 / dpi : null;
+		return distance != null ? distance * 90 / dpi : null;
 	}
 
 	/**

@@ -23,6 +23,7 @@ import WMTSTileGrid from 'ol/tilegrid/WMTS';
 import LayerGroup from 'ol/layer/Group';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import { MeasurementOverlayTypes } from '../../../../src/modules/olMap/components/MeasurementOverlay';
 
 describe('Mfp3Encoder', () => {
 
@@ -823,7 +824,7 @@ describe('Mfp3Encoder', () => {
 						version: '2',
 						'[_gx_style = 0]': {
 							symbolizers: [{
-								type: 'point',
+								type: 'text',
 								zIndex: 0,
 								rotation: 0,
 								fillOpacity: 0,
@@ -879,7 +880,7 @@ describe('Mfp3Encoder', () => {
 						version: '2',
 						'[_gx_style = 0]': {
 							symbolizers: [{
-								type: 'point',
+								type: 'text',
 								zIndex: 0,
 								rotation: 0,
 								fillOpacity: 0,
@@ -1113,11 +1114,7 @@ describe('Mfp3Encoder', () => {
 								type: 'line',
 								zIndex: 0,
 								fillOpacity: 0,
-								strokeWidth: 6.428571428571429,
-								strokeColor: '#ff0000',
-								strokeOpacity: 1,
-								strokeLinecap: 'round',
-								strokeLineJoin: 'round'
+								strokeOpacity: 0
 							}]
 						},
 						'[_gx_style = 1]': {
@@ -1160,16 +1157,22 @@ describe('Mfp3Encoder', () => {
 		});
 
 		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
-			const overlayMock = {
+			const distanceOverlayMock = {
 				getElement: () => {
 					return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', placement: { offset: [0.4, 2], positioning: 'top-center' } };
 				},
 				getPosition: () => [42, 21]
 			};
+			const partitionDistanceOverlayMock = {
+				getElement: () => {
+					return { tagName: 'ba-measure-overlay', innerText: 'foo bar baz', type: MeasurementOverlayTypes.DISTANCE_PARTITION, placement: { offset: [0.4, 2], positioning: 'top-center' } };
+				},
+				getPosition: () => [42, 21]
+			};
 			const encoder = setup();
-			const actualSpec = encoder._encodeOverlay(overlayMock);
-
-			expect(actualSpec).toEqual({
+			const distanceSpec = encoder._encodeOverlay(distanceOverlayMock);
+			const partitionSpec = encoder._encodeOverlay(partitionDistanceOverlayMock);
+			expect(distanceSpec).toEqual({
 				type: 'geojson',
 				name: 'overlay',
 				opacity: 1,
@@ -1188,16 +1191,71 @@ describe('Mfp3Encoder', () => {
 					version: 2,
 					'*': {
 						symbolizers: [{
+							type: 'point',
+							fillColor: '#ff0000',
+							fillOpacity: 1,
+							strokeOpacity: 0,
+							graphicName: 'circle',
+							graphicOpacity: 0.4,
+							pointRadius: 3
+						}, {
 							type: 'text',
 							label: 'foo bar baz',
-							labelXOffset: 0.4,
-							labelYOffset: 2,
+							labelXOffset: 0.5,
+							labelYOffset: -2.5,
 							labelAlign: 'ct',
+							fontFamily: 'san-serif',
 							fontColor: '#ffffff',
 							fontSize: 10,
-							fontWeight: 'normal',
+							fontWeight: 'bold',
+							strokeColor: '#ff0000',
+							haloColor: '#ff0000',
+							haloOpacity: 1,
+							haloRadius: 2
+						}]
+					}
+				}
+			});
+			expect(partitionSpec).toEqual({
+				type: 'geojson',
+				name: 'overlay',
+				opacity: 1,
+				geoJson: {
+					type: 'FeatureCollection',
+					features: [{
+						type: 'Feature',
+						properties: {},
+						geometry: {
+							type: 'Point',
+							coordinates: jasmine.any(Array)
+						}
+					}]
+				},
+				style: {
+					version: 2,
+					'*': {
+						symbolizers: [{
+							type: 'point',
 							fillColor: '#ff0000',
-							strokeColor: '#ff0000'
+							fillOpacity: 1,
+							strokeOpacity: 0,
+							graphicName: 'circle',
+							graphicOpacity: 0.4,
+							pointRadius: 3
+						}, {
+							type: 'text',
+							label: 'foo bar baz',
+							labelXOffset: 0.5,
+							labelYOffset: -2.5,
+							labelAlign: 'ct',
+							fontFamily: 'san-serif',
+							fontColor: '#000000',
+							fontSize: 10,
+							fontWeight: 'normal',
+							strokeColor: '#ff0000',
+							haloColor: '#ffffff',
+							haloOpacity: 1,
+							haloRadius: 2
 						}]
 					}
 				}
