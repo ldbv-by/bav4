@@ -364,6 +364,24 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	};
 
 	const drawTicks = (contextRenderer, segment, residual, tickDistance) => {
+		// todo: for printing purpose the moving parallel offset must be adjusted due to the fact,
+		// that segments will be geographic coordinates and not pixel coordinates.
+		/* const adjustOffset = (offset) => {
+			if (state.renderHint ?? state.renderHint === 'printer') {
+				return -1 * offset * resolution;
+			}
+			return offset;
+		};
+
+		const draw = () => {
+			const mainTickSegment = moveParallel(segment[0], segment[1], adjustOffset(-4 * pixelRatio));
+			const subTickSegment = moveParallel(segment[0], segment[1], adjustOffset(-2 * pixelRatio));
+			contextRenderer(mainTickSegment, fill, getMainTickStroke(residual, tickDistance));
+			contextRenderer(subTickSegment, fill, getSubTickStroke(residual, tickDistance));
+
+			return true;
+		};
+		*/
 		const draw = () => {
 			const mainTickSegment = moveParallel(segment[0], segment[1], -4 * pixelRatio);
 			const subTickSegment = moveParallel(segment[0], segment[1], -2 * pixelRatio);
@@ -372,6 +390,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 			return true;
 		};
+
 		const cancel = () => false;
 		return segment[1] ? draw() : cancel();
 	};
@@ -412,6 +431,7 @@ export const measureStyleFunction = (feature, resolution) => {
 				fill: new Fill({
 					color: Red_Color.concat([0.4])
 				}),
+				lineDash: [8],
 				width: 2
 			})
 		});
