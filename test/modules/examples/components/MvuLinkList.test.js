@@ -55,20 +55,19 @@ describe('MvuLinkList', () => {
 		const newName = 'maps';
 		const newLink = 'https://maps.google.com';
 
-		const element = await setup();
 
-		const nameElement = element.shadowRoot.querySelector('#newname');
+		const nameElement = mvuLinkList.shadowRoot.querySelector('#newname');
 		nameElement.value = newName;
 		nameElement.dispatchEvent(new Event('input'));
 
-		const linkElement = element.shadowRoot.querySelector('#newlink');
+		const linkElement = mvuLinkList.shadowRoot.querySelector('#newlink');
 		linkElement.value = newLink;
 		linkElement.dispatchEvent(new Event('input'));
 
 		expect(nameElement.value).toBe(newName);
 		expect(linkElement.value).toBe(newLink);
 
-		const addLinkToListButton = element.shadowRoot.querySelector('#addLinkToListBtn');
+		const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
 		addLinkToListButton.click();
 
 		expect(nameElement.value).toBe('');
