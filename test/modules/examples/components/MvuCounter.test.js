@@ -52,7 +52,7 @@ describe('MvuCounter', () => {
 		expect(element.shadowRoot.querySelector('#currentTopic').textContent).toBe('ba');
 		expect(element.shadowRoot.querySelector('#counterValue').textContent).toBe('6');
 	});
-
+	linkList
 	it('should render topic6 when incrementing intial counter', async () => {
 
 		const element = await setup(state);
