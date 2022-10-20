@@ -164,4 +164,35 @@ describe('MeasurementOverlay', () => {
 			expect(element.static).toBeFalse();
 		});
 	});
+
+	describe('when placement changed', () => {
+		it('renders the changed view', async () => {
+
+			const element = await setup();
+			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('init')).toBeTrue();
+
+			element.placement = { sector: 'top', positioning: 'top-center', offset: [0, -25] };
+
+			expect(renderSpy).toHaveBeenCalled();
+			expect(div.classList.contains('top')).toBeTrue();
+		});
+
+		it('does NOT renders the view, while value is not changed', async () => {
+
+			const element = await setup();
+			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const div = element.shadowRoot.querySelector('div');
+			const initialPlacement = element.placement;
+
+			expect(div.classList.contains('init')).toBeTrue();
+
+			element.placement = initialPlacement;
+
+			expect(renderSpy).not.toHaveBeenCalled();
+			expect(div.classList.contains('init')).toBeTrue();
+		});
+	});
 });
