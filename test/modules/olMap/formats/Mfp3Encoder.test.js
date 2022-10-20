@@ -1075,7 +1075,9 @@ describe('Mfp3Encoder', () => {
 			});
 
 			it('writes a feature with a advanced feature style function (geometryFunction)', () => {
-				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new LineString([[30, 30], [40, 40]]) })] });
+				const feature = new Feature({ geometry: new LineString([[30, 30], [40, 40]]), partition_delta: 0.4 });
+				feature.setStyle(getGeometryStyleFunction());
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				vectorLayer.setStyle(getGeometryStyleFunction());
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
@@ -1101,10 +1103,7 @@ describe('Mfp3Encoder', () => {
 								_gx_style: 0
 							}
 						},
-						jasmine.any(Object), // the circle geometry as polygon
-						jasmine.any(Object), // the baseLine as LineString
-						jasmine.any(Object), // the mainTicks as LineString
-						jasmine.any(Object)], // the subTicks as LineString
+						jasmine.any(Object)], // the circle geometry as polygon
 						type: 'FeatureCollection'
 					},
 					style: {
@@ -1114,7 +1113,12 @@ describe('Mfp3Encoder', () => {
 								type: 'line',
 								zIndex: 0,
 								fillOpacity: 0,
-								strokeOpacity: 0
+								strokeOpacity: 1,
+								strokeWidth: jasmine.any(Number),
+								strokeColor: '#ff0000',
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round',
+								strokeDashstyle: 'dash'
 							}]
 						},
 						'[_gx_style = 1]': {
@@ -1128,31 +1132,9 @@ describe('Mfp3Encoder', () => {
 								strokeLineJoin: 'round',
 								fillOpacity: 0
 							}]
-						},
-						'[_gx_style = 2]': jasmine.any(Object), // the style of baseLine
-						'[_gx_style = 3]': jasmine.any(Object), // the style of mainTicks
-						'[_gx_style = 4]': jasmine.any(Object) // the style of subTicks
+						}
 					}
 				});
-			});
-
-			it('logs a warning on missing render context', () => {
-				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new LineString([[30, 30], [40, 40]]) })] });
-				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
-				const geoResourceMock = getGeoResourceMock();
-
-				const styleRenderFunction = () => [new Style(), new Style({
-					renderer: () => {
-						throw Error('foo');
-					}
-				})];
-				vectorLayer.setStyle(styleRenderFunction);
-				const warnSpy = spyOn(console, 'warn');
-				const encoder = setup();
-
-				encoder._encodeVector(vectorLayer, geoResourceMock);
-
-				expect(warnSpy).toHaveBeenCalledOnceWith('Style renderFunction needs full canvas context');
 			});
 		});
 

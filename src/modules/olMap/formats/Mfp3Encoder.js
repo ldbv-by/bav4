@@ -341,15 +341,13 @@ export class Mfp3Encoder {
 			return [];
 		};
 
-		const getEncodableOlStyle = (styles, isPreset = false) => {
-			if (isPreset) {
-				return styles && styles.length > 0 ? styles[0] : null;
-			}
+		const getEncodableOlStyle = (styles, isPreset) => {
+			const getFirstNonAdvancedStyle = (allStyles) => {
+				return allStyles.find(s => !(s.getGeometry && typeof (s.getGeometry()) === 'function')) ?? null;
+			};
+
 			if (styles && styles.length > 0) {
-				const allowedStyles = styles.filter(s => !(s.getGeometry && typeof (s.getGeometry()) === 'function'));
-				if (allowedStyles.length > 0) {
-					return allowedStyles[0];
-				}
+				return isPreset ? styles[0] : getFirstNonAdvancedStyle(styles);
 			}
 			return null;
 		};
@@ -408,7 +406,7 @@ export class Mfp3Encoder {
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
 			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
-			const isRenderFunction = style.getRenderer && typeof (style.getRenderer()) === 'function';
+
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeatureToEncode);
 				if (geometry) {
@@ -416,29 +414,6 @@ export class Mfp3Encoder {
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
 				return styleFeatures;
-			}
-			if (isRenderFunction) {
-				const renderResult = defaultResult;
-				const state = {
-					geometry: olFeature.getGeometry(),
-					resolution: this._mfpProperties.scale / (UnitsRatio * PointsPerInch),
-					pixelRatio: 1,
-					renderHint: 'printer',
-					customContextRenderFunction: (geometry, fill, stroke) => {
-						const style = new Style({ fill: fill, stroke: stroke });
-						const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
-						renderResult.features = [...renderResult.features, ...result.features];
-						renderResult.styles = [...renderResult.styles, ...result.styles];
-					}
-				};
-				const renderFunction = style.getRenderer();
-				try {
-					renderFunction(olFeature.getGeometry().getCoordinates(), state);
-				}
-				catch (error) {
-					console.warn('Style renderFunction needs full canvas context');
-				}
-				return { features: [...styleFeatures.features, ...renderResult.features], styles: [...styleFeatures.styles, ...renderResult.styles] };
 			}
 			return styleFeatures;
 		}, defaultResult);
@@ -530,16 +505,6 @@ export class Mfp3Encoder {
 			if (strokeStyle.getLineDash()) {
 				encoded.strokeDashstyle = 'dash';
 			}
-			/*
-			// TODO: search for the reasons of misfitted dash values relative to the scale-denominator, the adjustments with a
-			// magic-number (distance * dpi / 99) is not reliable
-
-			const adjustDistanceForPrint = (distance, dpi) => Math.round((distance * dpi / 99 + Number.EPSILON) * 100) / 100;
-			if (strokeStyle.getLineDash()) {
-				encoded.strokeDashstyle = strokeStyle.getLineDash().map(value => adjustDistanceForPrint(value, 72)).join(' ');
-				encoded.strokeDashoffset = adjustDistanceForPrint(strokeStyle.getLineDashOffset(), 72);
-			}
-			*/
 		}
 
 		encoded.fillOpacity = encoded.fillOpacity ?? 0;
