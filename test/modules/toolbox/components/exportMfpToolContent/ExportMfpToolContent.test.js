@@ -236,8 +236,6 @@ describe('ExportMfpToolContent', () => {
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
 
-			await TestUtils.timeout();
-
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
 

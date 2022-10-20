@@ -48,9 +48,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
-		const onClickAction = isJobStarted ? () => cancelJob() : async () => {
-			requestJob();
-		};
+		const onClickAction = isJobStarted ? () => cancelJob() : () => 	requestJob();
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 
