@@ -10,7 +10,6 @@ import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
-import { Mfp3Encoder } from '../../formats/Mfp3Encoder';
 
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
@@ -30,13 +29,14 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	constructor() {
 		super(MFP_LAYER_ID);
-		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService }
-			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService');
+		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService, Mfp3Encoder: mfp3Encoder }
+			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
 
 		this._storeService = storeService;
 		this._translationService = translationService;
 		this._mapService = mapService;
 		this._mfpService = mfpService;
+		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
@@ -232,14 +232,10 @@ export class OlMfpHandler extends OlLayerHandler {
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
 		const pageCenter = this._getVisibleCenterPoint();
-		const encoder = this._getEncoder({ layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter });
-		const specs = await encoder.encode(this._map);
+		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
+		const specs = await this._encoder.encode(this._map, encodingProperties);
 
 		// console.log(specs);
 		startJob(specs);
-	}
-
-	_getEncoder(encodingOptions) {
-		return new Mfp3Encoder(encodingOptions);
 	}
 }

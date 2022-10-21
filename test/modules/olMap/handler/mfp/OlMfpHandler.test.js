@@ -16,8 +16,8 @@ import { Polygon, Point } from 'ol/geom';
 import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
-import { Mfp3Encoder } from '../../../../../src/modules/olMap/formats/Mfp3Encoder';
 import proj4 from 'proj4';
+
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -50,6 +50,10 @@ describe('OlMfpHandler', () => {
 		}
 	};
 
+	const mfpEncoderMock = {
+		encode: async () => { }
+	};
+
 	const setup = (state = initialState) => {
 		const mfpState = {
 			mfp: state
@@ -61,7 +65,8 @@ describe('OlMfpHandler', () => {
 			.registerSingleton('MfpService', mfpServiceMock)
 			.registerSingleton('ShareService', {})
 			.registerSingleton('UrlService', {})
-			.registerSingleton('GeoResourceService', {});
+			.registerSingleton('GeoResourceService', {})
+			.registerSingleton('Mfp3Encoder', mfpEncoderMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	};
@@ -200,16 +205,11 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('encodes map to mfp spec after store changes', async () => {
-			const encoderMock = {
-				async encode() {
-					return {};
-				}
-			};
 			const map = setupMap();
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_getEncoder').withArgs({ layoutId: 'foo', scale: 1, rotation: 0, dpi: 125, pageCenter: jasmine.any(Point) }).and.returnValue(encoderMock);
+			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: 0, dpi: 125, pageCenter: jasmine.any(Point) }).and.callFake(() => { });
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
 
@@ -222,16 +222,11 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('requests the visible center point of the map, after store changes', async () => {
-			const encoderMock = {
-				async encode() {
-					return {};
-				}
-			};
 			const map = setupMap();
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_getEncoder').and.returnValue(encoderMock);
+
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 
 			handler.activate(map);
@@ -329,17 +324,6 @@ describe('OlMfpHandler', () => {
 			expect(visibleViewPortSpy).toHaveBeenCalledTimes(1);
 			expect(sridSpy).toHaveBeenCalledTimes(1);
 			expect(geodeticSridSpy).toHaveBeenCalledTimes(1);
-		});
-	});
-
-	describe('_getEncoder', () => {
-		it('creates a mfpEncoder', () => {
-			setup();
-			const encodingOptions = { layoutId: 'foo', scale: 1, rotation: 0, dpi: 42 };
-
-			const classUnderTest = new OlMfpHandler();
-
-			expect(classUnderTest._getEncoder(encodingOptions)).toEqual(jasmine.any(Mfp3Encoder));
 		});
 	});
 });

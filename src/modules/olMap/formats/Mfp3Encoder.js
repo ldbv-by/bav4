@@ -20,6 +20,22 @@ const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
 /**
+ * Encoder to create a MapFishPrint request-object from a OpenLayers map-instance
+ * @author thiloSchlemmer
+ * @interface Mfp3Encoder
+ */
+
+/**
+ * Encodes the content of a OpenLayers {@see Map} to a MapFishPrint3 job request.
+ * @function
+ * @async
+ * @name Mfp3Encoder#encode
+ * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
+ * @param {EncodingProperties} encodingProperties the map with the content to encode for MapFishPrint3
+ * @returns {Object} the encoded mfp specs
+ * /
+
+/**
  * A Container-Object for properties related to a mfp encoding
  * @typedef {Object} EncodingProperties
  * @param {string} layoutId the id of a configured mfp template
@@ -31,31 +47,40 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  * @param {Number} [targetSRID] the srid of the map to export; Defaults to the default geodetic srid
 */
 
-/***
- * Encoder to create a MapFishPrint request-object from a OpenLayers map-instance
- *
+/**
+ * BVV-encoder to create a MapFishPrint request-object from a OpenLayers map-instance
  * @class
  * @author thiloSchlemmer
+ * @implements {Mfp3Encoder}
  */
-export class Mfp3Encoder {
+export class BvvMfp3Encoder {
 	/*
 	TODO:
 	- should unproxify URL to external Resources (e.g. a image in a icon style)
 	*/
 
-	constructor(encodingProperties) {
+	constructor() {
 		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService, MfpService: mfpService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
 		this._shareService = shareService;
 		this._mfpService = mfpService;
-		this._mfpProperties = encodingProperties;
-		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
-		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 		this._pageExtent = null;
 		this._geometryEncodingFormat = new GeoJSONFormat();
 		this._encodingStyleId = 0;
+		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
+	}
+
+	/**
+	 * Encodes the content of a OpenLayers {@see Map} to a MapFishPrint3 job request.
+	 * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
+	 * @param {EncodingProperties} encodingProperties the properties for this specific mfp-spec request
+	 * @returns {Object} the encoded mfp specs
+	 */
+	async encode(olMap, encodingProperties) {
+		this._mfpProperties = encodingProperties;
+		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null &&
@@ -66,15 +91,6 @@ export class Mfp3Encoder {
 		if (!validEncodingProperties(this._mfpProperties)) {
 			throw Error('Invalid or missing EncodingProperties');
 		}
-
-	}
-
-	/**
-	 * Encodes the content of a OpenLayers {@see Map} to a MapFishPrint3 job request.
-	 * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
-	 * @returns {Object} the encoded mfp specs
-	 */
-	async encode(olMap) {
 
 		const getDefaultMapCenter = () => {
 			return new Point(olMap.getView().getCenter());
@@ -213,7 +229,7 @@ export class Mfp3Encoder {
 				baseURL: baseURL,
 				layer: layer,
 				requestEncoding: requestEncoding,
-				matrices: Mfp3Encoder.buildMatrixSets(tileGrid),
+				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
 				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
 				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
@@ -457,7 +473,7 @@ export class Mfp3Encoder {
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
 				const stroke = shapeStyle.getStroke();
 				const radius = shapeStyle.getRadius();
-				const width = stroke ? Mfp3Encoder.adjustDistance(2 * radius, dpi) + Mfp3Encoder.adjustDistance(stroke.getWidth() + 1, dpi) : Mfp3Encoder.adjustDistance(2 * radius, dpi);
+				const width = stroke ? BvvMfp3Encoder.adjustDistance(2 * radius, dpi) + BvvMfp3Encoder.adjustDistance(stroke.getWidth() + 1, dpi) : BvvMfp3Encoder.adjustDistance(2 * radius, dpi);
 				return {
 					fill: shapeStyle.getFill(),
 					stroke: stroke,
@@ -468,13 +484,13 @@ export class Mfp3Encoder {
 
 			const styleProperties = imageStyle instanceof IconStyle ? getPropertiesFromIconStyle(imageStyle) : getPropertiesFromShapeStyle(imageStyle);
 			if (styleProperties.size) {
-				encoded.graphicWidth = Mfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
-				encoded.graphicHeight = Mfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
+				encoded.graphicWidth = BvvMfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
+				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
 			}
 
 			if (styleProperties.anchor) {
-				encoded.graphicXOffset = Mfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
-				encoded.graphicHeight = Mfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+				encoded.graphicXOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
+				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
 			}
 
 			if (styleProperties.imageSrc) {
@@ -496,7 +512,7 @@ export class Mfp3Encoder {
 
 		if (strokeStyle) {
 			const color = ColorAsArray(strokeStyle.getColor());
-			encoded.strokeWidth = Mfp3Encoder.adjustDistance(strokeStyle.getWidth(), dpi);
+			encoded.strokeWidth = BvvMfp3Encoder.adjustDistance(strokeStyle.getWidth(), dpi);
 			encoded.strokeColor = rgbToHex(color.slice(0, 3));
 			encoded.strokeOpacity = color[3];
 			encoded.strokeLinecap = strokeStyle.getLineCap() ?? 'round';
@@ -600,8 +616,8 @@ export class Mfp3Encoder {
 						}, {
 							type: 'text',
 							label: element.innerText,
-							labelXOffset: Mfp3Encoder.adjustDistance(element.placement.offset[0], PointsPerInch),
-							labelYOffset: Mfp3Encoder.adjustDistance(-element.placement.offset[1], PointsPerInch),
+							labelXOffset: BvvMfp3Encoder.adjustDistance(element.placement.offset[0], PointsPerInch),
+							labelYOffset: BvvMfp3Encoder.adjustDistance(-element.placement.offset[1], PointsPerInch),
 							labelAlign: fromPositioning(element.placement.positioning),
 							fontColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#000000' : '#ffffff',
 							fontSize: 10,

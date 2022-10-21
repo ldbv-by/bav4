@@ -4,7 +4,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
 import { $injector } from '../../../../src/injection';
-import { Mfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
+import { BvvMfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -39,6 +39,8 @@ describe('Mfp3Encoder', () => {
 			return { getArray: () => [] };
 		}
 	};
+
+	const layerSpecMock = { specs: [], dataOwners: [], thirdPartyDataOwners: [] };
 
 	const geoResourceServiceMock = { byId: () => { } };
 
@@ -88,46 +90,30 @@ describe('Mfp3Encoder', () => {
 		.registerSingleton('LayerService', layerServiceMock);
 	proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 	register(proj4);
-
+	const setup = (initProperties) => {
+		const encoder = new BvvMfp3Encoder();
+		encoder._mfpProperties = { ...defaultProperties, ...initProperties };
+		encoder._mfpProjection = 'EPSG:25832';
+		return encoder;
+	};
 	describe('constructor', () => {
 		it('initialize with default properties', () => {
-			const classUnderTest = new Mfp3Encoder(defaultProperties);
+			const classUnderTest = new BvvMfp3Encoder();
 
-			expect(classUnderTest).toBeInstanceOf(Mfp3Encoder);
+			expect(classUnderTest).toBeInstanceOf(BvvMfp3Encoder);
 			expect(classUnderTest._mapService).toBeTruthy();
 			expect(classUnderTest._geoResourceService).toBeTruthy();
-			expect(classUnderTest._mfpProperties).toBe(defaultProperties);
 			expect(classUnderTest._mapProjection).toBe('EPSG:3857');
-			expect(classUnderTest._mfpProjection).toBe('EPSG:25832');
 		});
 
-		it('initialize with TargetSRID as mfpProjection', () => {
-			const encodingProperties = { ...defaultProperties, targetSRID: 'foo' };
-			const classUnderTest = new Mfp3Encoder(encodingProperties);
-
-			expect(classUnderTest).toBeInstanceOf(Mfp3Encoder);
-			expect(classUnderTest._mapService).toBeTruthy();
-			expect(classUnderTest._geoResourceService).toBeTruthy();
-			expect(classUnderTest._mfpProperties).toBe(encodingProperties);
-			expect(classUnderTest._mapProjection).toBe('EPSG:3857');
-			expect(classUnderTest._mfpProjection).toBe('EPSG:foo');
-		});
-
-		it('fails to initialize for invalid properties', () => {
-			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
-
-			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: null, scale: 1 })).toThrowError();
-			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: null })).toThrowError();
-			expect(() => new Mfp3Encoder({ ...baseProps, layoutId: 'bar', scale: 0 })).toThrowError();
-		});
 	});
 
 	describe('when encoding a map', () => {
-		const setup = (initProperties) => {
-
-			const properties = { ...defaultProperties, ...initProperties };
-			return new Mfp3Encoder(properties);
+		const getProperties = (initProperties = {}) => {
+			return { ...defaultProperties, ...initProperties };
 		};
+
+
 
 		class TestGeoResource extends GeoResource {
 			constructor(type, label) {
@@ -147,12 +133,34 @@ describe('Mfp3Encoder', () => {
 			}
 		}
 
+		it('encodes with TargetSRID as mfpProjection', async () => {
+			const encodingProperties = getProperties({ ...defaultProperties, targetSRID: '25832' });
+
+			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, encodingProperties);
+
+			expect(encoder._mfpProperties).toBe(encodingProperties);
+			expect(encoder._mfpProjection).toBe('EPSG:25832');
+		});
+
+		it('fails to encode for invalid properties', async () => {
+			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
+
+			const encoder = new BvvMfp3Encoder();
+
+			await expectAsync(encoder.encode(mapMock, { ...baseProps, layoutId: null, scale: 1 })).toBeRejectedWithError();
+			await expectAsync(encoder.encode(mapMock, { ...baseProps, layoutId: 'bar', scale: null })).toBeRejectedWithError();
+			await expectAsync(encoder.encode(mapMock, { ...baseProps, layoutId: 'bar', scale: 0 })).toBeRejectedWithError();
+		});
+
 		it('uses the provided pageCenter for the specs', async () => {
 			const pageCenter = new Point(fromLonLat([11.57245, 48.14021]));
 			const mapCenterSpy = spyOn(viewMock, 'getCenter').and.callThrough();
-			const encoder = setup({ pageCenter: pageCenter });
+			const encoder = new BvvMfp3Encoder();
 
-			const actualSpec = await encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock, getProperties({ pageCenter: pageCenter }));
 
 			expect(mapCenterSpy).not.toHaveBeenCalled();
 			expect(actualSpec.attributes.map.center[0]).toBeCloseTo(691365.6, -1);
@@ -161,25 +169,25 @@ describe('Mfp3Encoder', () => {
 
 		it('uses the provided pageExtent for the specs', async () => {
 			const mapExtentSpy = spyOn(viewMock, 'calculateExtent').and.callThrough();
-			const encoder = setup({ pageExtent: [0, 0, 42, 21] });
+			const encoder = new BvvMfp3Encoder();
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties({ pageExtent: [0, 0, 42, 21] }));
 
 			expect(mapExtentSpy).not.toHaveBeenCalled();
 		});
 
 		it('requests the corresponding geoResource for a layer', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(null, 'something', 'something'));
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
 		});
 
 		it('encodes a aggregate layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.AGGREGATE, 'aggregate'));
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const groupLayer = new LayerGroup('foo');
 			const layerMock = { get: () => 'foo' };
 			spyOn(groupLayer, 'getLayers').and.callFake(() => {
@@ -191,7 +199,7 @@ describe('Mfp3Encoder', () => {
 			const encodingGroupSpy = spyOn(encoder, '_encodeGroup').and.callThrough();
 			const encodingSpy = spyOn(encoder, '_encode').and.callThrough();
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingGroupSpy).toHaveBeenCalled();
 			expect(encodingSpy).toHaveBeenCalledTimes(4); // 1 initial call for the grouplayer and 3 calls for the sublayers
@@ -199,36 +207,36 @@ describe('Mfp3Encoder', () => {
 
 		it('encodes a vector layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.VECTOR, 'vector'));
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeVector').and.callFake(() => {
 				return {};
 			});
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
 		it('encodes a WMTS layer', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
 				return {};
 			});
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
 		it('encodes overlays', async () => {
 			const mapSpy = spyOn(mapMock, 'getOverlays').and.returnValue({ getArray: () => [{}, {}] });
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeOverlay').and.callFake(() => {
 				return {};
 			});
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingSpy).toHaveBeenCalledTimes(2);
 			expect(mapSpy).toHaveBeenCalled();
@@ -236,22 +244,22 @@ describe('Mfp3Encoder', () => {
 
 		it('encodes wms', async () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.WMS, 'wms'));
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeWMS').and.callFake(() => {
 				return {};
 			});
 
-			await encoder.encode(mapMock);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
 		it('does NOT encode a layer, if a geoResource is not defined', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => null);
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 			const layerMock = { get: () => 'foo' };
 
-			const actualEncoded = encoder._encode(layerMock);
+			const actualEncoded = encoder._encode(layerMock, getProperties());
 
 			expect(actualEncoded).toBeFalse();
 		});
@@ -270,7 +278,7 @@ describe('Mfp3Encoder', () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo').and.callFake(() => geoResourceFoo)
 				.withArgs('bar').and.callFake(() => geoResourceBar);
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
@@ -279,7 +287,7 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = await encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock, getProperties());
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -314,7 +322,7 @@ describe('Mfp3Encoder', () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo').and.callFake(() => geoResourceFoo)
 				.withArgs('bar').and.callFake(() => geoResourceBar);
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
@@ -323,7 +331,7 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = await encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock, getProperties());
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -358,7 +366,7 @@ describe('Mfp3Encoder', () => {
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo').and.callFake(() => geoResourceFoo)
 				.withArgs('bar').and.callFake(() => geoResourceBar);
-			const encoder = setup();
+			const encoder = new BvvMfp3Encoder();
 
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
@@ -367,7 +375,7 @@ describe('Mfp3Encoder', () => {
 						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
 				};
 			});
-			const actualSpec = await encoder.encode(mapMock);
+			const actualSpec = await encoder.encode(mapMock, getProperties());
 
 			expect(actualSpec).toEqual({
 				layout: 'foo',
@@ -1273,7 +1281,7 @@ describe('Mfp3Encoder', () => {
 			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
 			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').withArgs(encodedState).and.resolveTo('bar');
 
-			const classUnderTest = new Mfp3Encoder(defaultProperties);
+			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
@@ -1288,7 +1296,7 @@ describe('Mfp3Encoder', () => {
 			const urlServiceSpy = spyOn(urlServiceMock, 'shorten').and.throwError('bar');
 			const warnSpy = spyOn(console, 'warn');
 
-			const classUnderTest = new Mfp3Encoder(defaultProperties);
+			const classUnderTest = setup();
 
 			const shortUrl = await classUnderTest._generateShortUrl();
 
@@ -1303,7 +1311,7 @@ describe('Mfp3Encoder', () => {
 		it('builds a tileMatrixSet', () => {
 			const tileGrid = new AdvWmtsTileGrid();
 
-			const tileMatrixSet = Mfp3Encoder.buildMatrixSets(tileGrid);
+			const tileMatrixSet = BvvMfp3Encoder.buildMatrixSets(tileGrid);
 
 			expect(tileMatrixSet.length).toBe(16);
 
