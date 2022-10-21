@@ -345,6 +345,11 @@ export class ShowCase extends BaElement {
 			<ba-button id='button0' .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
 			<div>Hint: Demo Credentials are foo/bar</div>
 			</div>
+
+			<h3>Profile</h3>
+			<div class='example row'>
+			<ba-profile></ba-profile>
+			</div>
 				
 			</div>	
 		</div > `;
