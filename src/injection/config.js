@@ -42,7 +42,7 @@ import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 import { Proj4JsService } from '../services/Proj4JsService';
-import { BvvMfp3Encoder } from '../modules/olMap/formats/Mfp3Encoder';
+import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
 
 
 $injector

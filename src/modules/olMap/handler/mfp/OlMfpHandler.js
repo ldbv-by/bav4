@@ -235,7 +235,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
 		const specs = await this._encoder.encode(this._map, encodingProperties);
 
-		// console.log(specs);
 		startJob(specs);
 	}
 }

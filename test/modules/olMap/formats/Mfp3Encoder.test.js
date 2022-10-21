@@ -4,7 +4,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
 import { $injector } from '../../../../src/injection';
-import { BvvMfp3Encoder } from '../../../../src/modules/olMap/formats/Mfp3Encoder';
+import { BvvMfp3Encoder } from '../../../../src/modules/olMap/services/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -25,7 +25,7 @@ import TileGrid from 'ol/tilegrid/TileGrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 import { MeasurementOverlayTypes } from '../../../../src/modules/olMap/components/MeasurementOverlay';
 
-describe('Mfp3Encoder', () => {
+describe('BvvMfp3Encoder', () => {
 
 	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
 	const mapMock = {

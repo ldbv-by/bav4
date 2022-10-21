@@ -26,12 +26,12 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  */
 
 /**
- * Encodes the content of a OpenLayers {@see Map} to a MapFishPrint3 job request.
+ * Encodes the content of a ol {@see Map} to a MapFishPrint3 job request.
  * @function
  * @async
  * @name Mfp3Encoder#encode
- * @param {ol.Map} olMap the map with the content to encode for MapFishPrint3
- * @param {EncodingProperties} encodingProperties the map with the content to encode for MapFishPrint3
+ * @param {ol.Map} olMap the ol map
+ * @param {EncodingProperties} encodingProperties
  * @returns {Object} the encoded mfp specs
  * /
 
