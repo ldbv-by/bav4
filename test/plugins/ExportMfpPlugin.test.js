@@ -37,10 +37,12 @@ describe('ExportMfpPlugin', () => {
 		const getMockCapabilities = () => {
 			const scales = [1000, 5000];
 			const dpis = [125, 200];
-			return { grSubstitutions: {}, layouts: [
-				{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
-				{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
-			] };
+			return {
+				grSubstitutions: {}, layouts: [
+					{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
+					{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
+				]
+			};
 		};
 
 		it('initializes the mfp-slice-of state and updates the active property', async () => {
@@ -126,7 +128,7 @@ describe('ExportMfpPlugin', () => {
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
 				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
-				const mockWindow = { open: () => {} };
+				const mockWindow = { open: () => { } };
 				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 				const windowSpy = spyOn(mockWindow, 'open');
 

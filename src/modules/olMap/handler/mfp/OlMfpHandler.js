@@ -1,6 +1,6 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { setScale } from '../../../../store/mfp/mfp.action';
+import { setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { Point } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
@@ -29,13 +29,14 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	constructor() {
 		super(MFP_LAYER_ID);
-		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService }
-			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService');
+		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService, Mfp3Encoder: mfp3Encoder }
+			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
 
 		this._storeService = storeService;
 		this._translationService = translationService;
 		this._mapService = mapService;
 		this._mfpService = mfpService;
+		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
@@ -89,6 +90,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	_register(store) {
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
+			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
 			observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
@@ -188,14 +190,18 @@ export class OlMfpHandler extends OlLayerHandler {
 		return bestScale ? bestScale : fallbackScale;
 	}
 
-	_createMpfBoundary(pageSize) {
+	_getVisibleCenterPoint() {
 		const getVisibleCenter = () => {
 			const size = this._map.getSize();
 			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
 
-		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+	}
+
+	_createMpfBoundary(pageSize) {
+		const center = this._getVisibleCenterPoint();
 		const mapProjection = 'EPSG:' + this._mapService.getSrid();
 		const geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
 
@@ -221,5 +227,14 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const angle = (topAngle + bottomAngle) / 2;
 		return angle;
+	}
+
+	async _encodeMap() {
+		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
+		const pageCenter = this._getVisibleCenterPoint();
+		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
+		const specs = await this._encoder.encode(this._map, encodingProperties);
+
+		startJob(specs);
 	}
 }

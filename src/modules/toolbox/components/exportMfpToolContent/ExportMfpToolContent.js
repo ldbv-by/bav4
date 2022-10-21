@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { cancelJob, requestJob, setId, setScale, startJob } from '../../../../store/mfp/mfp.action';
+import { cancelJob, requestJob, setId, setScale } from '../../../../store/mfp/mfp.action';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
@@ -48,13 +48,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
-		const onClickAction = isJobStarted ? () => cancelJob() : () => {
-			requestJob();
-
-			// FIXME: FOR DEMO ONLY
-			// REMOVE after implemented and connected actions in OlMfpHandler
-			startJob({});
-		};
+		const onClickAction = isJobStarted ? () => cancelJob() : () => 	requestJob();
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 

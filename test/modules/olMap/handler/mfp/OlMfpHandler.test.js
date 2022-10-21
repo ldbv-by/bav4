@@ -10,17 +10,19 @@ import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { TestUtils } from '../../../../test-utils';
 
-import proj4 from 'proj4';
+
 import { register } from 'ol/proj/proj4';
-import { Polygon } from 'ol/geom';
+import { Polygon, Point } from 'ol/geom';
 import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
-import { setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
+import proj4 from 'proj4';
+
 
 describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
-		current: { id: 'foo', scale: null }
+		current: { id: 'foo', scale: null, dpi: 125 }
 	};
 
 	const configService = {
@@ -48,6 +50,10 @@ describe('OlMfpHandler', () => {
 		}
 	};
 
+	const mfpEncoderMock = {
+		encode: async () => { }
+	};
+
 	const setup = (state = initialState) => {
 		const mfpState = {
 			mfp: state
@@ -56,7 +62,11 @@ describe('OlMfpHandler', () => {
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('MfpService', mfpServiceMock);
+			.registerSingleton('MfpService', mfpServiceMock)
+			.registerSingleton('ShareService', {})
+			.registerSingleton('UrlService', {})
+			.registerSingleton('GeoResourceService', {})
+			.registerSingleton('Mfp3Encoder', mfpEncoderMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	};
@@ -125,7 +135,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(5);
+			expect(handler._registeredObservers).toHaveSize(6);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -192,6 +202,38 @@ describe('OlMfpHandler', () => {
 
 			changeRotation(42);
 			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('encodes map to mfp spec after store changes', async () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: 0, dpi: 125, pageCenter: jasmine.any(Point) }).and.callFake(() => { });
+			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
+			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
+
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalled();
+			expect(centerPointSpy).toHaveBeenCalled();
+		});
+
+		it('requests the visible center point of the map, after store changes', async () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+
+			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
+
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(centerPointSpy).toHaveBeenCalled();
 		});
 	});
 

@@ -1163,7 +1163,7 @@ describe('OlMap', () => {
 			expect(vectorSourceSpy).toHaveBeenCalled();
 		});
 
-		it('modifys the visibility of an olLayer', async () => {
+		it('modifies the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
@@ -1185,7 +1185,7 @@ describe('OlMap', () => {
 			expect(layer1.getOpacity()).toBe(1);
 		});
 
-		it('modifys the z-index of an olLayer', async () => {
+		it('modifies the z-index of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
