@@ -426,26 +426,6 @@ describe('MvuElement', () => {
 			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
 		});
 
-		it('calls the observers with a copied value', async () => {
-			const element = await TestUtils.render(MvuElementImpl.tag);
-			let transferedObject = null;
-			const elementStateIndexCallback = v => {
-				transferedObject = v;
-			};
-			//let's register an observer of model.index three times
-			element.observeModel('index', elementStateIndexCallback);
-			const changed = { foo: 'bar' };
-
-			//change state after registration
-			store.dispatch({
-				type: INDEX_CHANGED,
-				payload: changed
-			});
-
-			expect(transferedObject).toEqual(changed);
-			expect(changed === transferedObject).toBeFalse();
-		});
-
 		it('registers observers and calls the callbacks immediately', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
@@ -463,25 +443,6 @@ describe('MvuElement', () => {
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
-		});
-
-		it('calls the callbacks immediately with a value', async () => {
-			const element = await TestUtils.render(MvuElementImpl.tag);
-			let transferedObject = null;
-			const elementStateIndexCallback = v => {
-				transferedObject = v;
-			};
-			const changed = { foo: 'bar' };
-
-			//change state before registration
-			store.dispatch({
-				type: INDEX_CHANGED,
-				payload: changed
-			});
-			element.observeModel('index', elementStateIndexCallback, true);
-
-			expect(transferedObject).toEqual(changed);
-			expect(changed === transferedObject).toBeFalse();
 		});
 	});
 });

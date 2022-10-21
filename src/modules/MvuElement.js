@@ -1,6 +1,5 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { $injector } from '../injection';
-import { copy } from '../utils/copy';
 import { generateTestIds } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
@@ -322,7 +321,7 @@ export class MvuElement extends HTMLElement {
 				const nextState = this._model[key];
 				if (!equals(nextState, currentState)) {
 					currentState = nextState;
-					onChange(copy(currentState));
+					onChange(currentState);
 				}
 			};
 		};
@@ -335,7 +334,7 @@ export class MvuElement extends HTMLElement {
 				this._observer.push(createObserver(key, onChange));
 
 				if (immediately) {
-					onChange(copy(this._model[key]));
+					onChange(this._model[key]);
 				}
 			}
 			else {
