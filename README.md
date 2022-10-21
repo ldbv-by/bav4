@@ -33,6 +33,7 @@ Next-generation web-map viewer based on web standards.
   - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/): Vector Tiles rendering
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
+  - [Chart.js](https://www.chartjs.org/): JavaScript charting
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
   - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
   - [webpack](https://webpack.js.org): Bundler
