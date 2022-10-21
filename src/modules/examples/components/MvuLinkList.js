@@ -19,6 +19,9 @@ export class MvuLinkList extends MvuElement {
 	}
 
 	update(type, data, model) {
+		console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ type', type);
+		console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ data', data);
+		console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ model', model);
 
 		switch (type) {
 

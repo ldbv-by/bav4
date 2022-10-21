@@ -46,14 +46,11 @@ describe('MvuLinkList', () => {
 
 	fit('xxxxx', async () => {
 		const mvuLinkList = await setup();
-		let model = mvuLinkList.getModel();
-		console.log('🚀🚀 ~ file: MvuLinkList.test.js ~ line 51 ~ it ~ model');
-		console.log('🚀🚀 ~ ', model);
+		const initialModel = mvuLinkList.getModel();
+		expect(initialModel.linkList.length).toBe(1);
 
-		expect(model.linkList.length).toBe(1);
-
-		const newName = 'maps';
-		const newLink = 'https://maps.google.com';
+		const newName = 'BayernAtlas v4';
+		const newLink = 'https://atlas.bayern.de';
 
 
 		const nameElement = mvuLinkList.shadowRoot.querySelector('#newname');
@@ -73,10 +70,9 @@ describe('MvuLinkList', () => {
 		expect(nameElement.value).toBe('');
 		expect(linkElement.value).toBe('');
 
-		model = mvuLinkList.getModel();
-		console.log('🚀🚀🚀 ~ file: MvuLinkList.test.js ~ line 78 ~ fit ~ model');
-		console.log('🚀🚀🚀 ~ ', model);
-		expect(model.linkList.length).toBe(2);
+		const modelAfterAdd = new MvuLinkList().getModel();
+		console.log('🚀🚀🚀 ~ file: MvuLinkList.test.js ~ line 78 ~ fit ~ modelAfterAdd', modelAfterAdd);
+		expect(modelAfterAdd.linkList.length).toBe(2);
 
 		// expect(model.linkList.length).toEqual({
 
