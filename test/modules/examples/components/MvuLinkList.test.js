@@ -71,7 +71,7 @@ describe('MvuLinkList', () => {
 		expect(linkElement.value).toBe('');
 
 		const modelAfterAdd = new MvuLinkList().getModel();
-		console.log('🚀🚀🚀 ~ file: MvuLinkList.test.js ~ line 78 ~ fit ~ modelAfterAdd', modelAfterAdd);
+		// console.log('🚀🚀🚀 ~ file: MvuLinkList.test.js ~ line 78 ~ fit ~ modelAfterAdd', modelAfterAdd);
 		expect(modelAfterAdd.linkList.length).toBe(2);
 
 		// expect(model.linkList.length).toEqual({
