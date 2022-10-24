@@ -59,7 +59,6 @@ export class MvuLinkList extends MvuElement {
 				<ul>
 					${linkList.map((item) => html`<li><a href="${item.link}" target=”_blank”>${item.name}</a></li>`)}
 				</ul>
-				<input id="newitem" aria-label="New item">
 				<ba-button id='addLinkToListBtn' @click=${() => addLinkToList()}       .label=${'Add'}></ba-button>
 				<ba-button id='updateStoreBtn'   @click=${() => updateStore(linkList)} .label=${'Update Store'}></ba-button>
 			</div>
