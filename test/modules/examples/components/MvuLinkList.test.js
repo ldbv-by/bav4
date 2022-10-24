@@ -44,11 +44,12 @@ describe('MvuLinkList', () => {
 		return TestUtils.render(MvuLinkList.tag);
 	};
 
-	describe('when initializing the component directly', () => {
-		it('expects initial values of the model to be empty', async () => {
+	describe('when instantiating the component', () => {
+		it('expects the initial values of the model to be empty', async () => {
 			await setup();
 			const mvuLinkList = new MvuLinkList();
 			const initialModel = mvuLinkList.getModel();
+
 			expect(initialModel.linkList.length).toBe(0);
 		});
 	});
@@ -56,7 +57,9 @@ describe('MvuLinkList', () => {
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
 			const mvuLinkList = await setup();
+
 			const initialModel = mvuLinkList.getModel();
+
 			expect(initialModel.linkList.length).toBe(1);
 			expect(initialModel.linkList[0].name).toBe(initialName);
 			expect(initialModel.linkList[0].link).toBe(initialLink);
@@ -65,6 +68,7 @@ describe('MvuLinkList', () => {
 		it('should render the title of the component', async () => {
 			const expectedTitle = 'Training Link - List';
 			const element = await setup();
+
 			expect(element.shadowRoot.querySelector('#llTitle').textContent).toBe(expectedTitle);
 		});
 
@@ -75,48 +79,55 @@ describe('MvuLinkList', () => {
 		});
 	});
 
-	describe('when pressing the add button with valid input fields set', () => {
-		it('should add the input to the model and clear the input fields - the store should be unaffected', async () => {
+	describe('when pressing the add and update buttons', () => {
+		it('should use the input fields', async () => {
 			const mvuLinkList = await setup();
-			const initialModel = mvuLinkList.getModel();
-			expect(initialModel.linkList.length).toBe(1);
 
 			const { nameElement, linkElement } = fillInputFields(mvuLinkList, newName, newLink);
 
 			expect(nameElement.value).toBe(newName);
 			expect(linkElement.value).toBe(newLink);
+		});
+
+		it('should add the input to the model and clear the input fields', async () => {
+			const mvuLinkList = await setup();
+			const { nameElement, linkElement } = fillInputFields(mvuLinkList, newName, newLink);
 
 			const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
 			addLinkToListButton.click();
 
 			expect(nameElement.value).toBe(emptyString);
 			expect(linkElement.value).toBe(emptyString);
-
 			const modelAfterAdd = mvuLinkList.getModel();
 			expect(modelAfterAdd.linkList.length).toBe(2);
 			expect(modelAfterAdd.linkList[1].name).toBe(newName);
 			expect(modelAfterAdd.linkList[1].link).toBe(newLink);
+		});
+
+		it('should not change the store', async () => {
+			const mvuLinkList = await setup();
+			fillInputFields(mvuLinkList, newName, newLink);
+
+			const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
+			addLinkToListButton.click();
 
 			const storeAfterUpdateStore = store.getState().example;
 			expect(storeAfterUpdateStore.linkList.length).toBe(1);
 		});
-	});
 
-	it('check that UpdateStore button writes the store ', async () => {
-		const mvuLinkList = await setup();
+		it('should write the store ', async () => {
+			const mvuLinkList = await setup();
+			fillInputFields(mvuLinkList, newName, newLink);
+			const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
+			addLinkToListButton.click();
 
-		fillInputFields(mvuLinkList, newName, newLink);
+			const updateStoreButton = mvuLinkList.shadowRoot.querySelector('#updateStoreBtn');
+			updateStoreButton.click();
 
-		const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
-		addLinkToListButton.click();
-		const updateStoreButton = mvuLinkList.shadowRoot.querySelector('#updateStoreBtn');
-		updateStoreButton.click();
-
-		const storeAfterUpdateStore = store.getState().example;
-		expect(storeAfterUpdateStore.linkList.length).toBe(2);
-		expect(storeAfterUpdateStore.linkList[1].name).toBe(newName);
-		expect(storeAfterUpdateStore.linkList[1].link).toBe(newLink);
+			const storeAfterUpdateStore = store.getState().example;
+			expect(storeAfterUpdateStore.linkList.length).toBe(2);
+			expect(storeAfterUpdateStore.linkList[1].name).toBe(newName);
+			expect(storeAfterUpdateStore.linkList[1].link).toBe(newLink);
+		});
 	});
 });
-
-
