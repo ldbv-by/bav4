@@ -9,13 +9,29 @@ window.customElements.define(MvuLinkList.tag, MvuLinkList);
 // eslint-disable-next-line no-unused-vars
 let store;
 
+const initialName = 'Google Maps';
+const initialLink = 'https://maps.google.com';
+
 describe('MvuLinkList', () => {
+	const newName = 'BayernAtlas v4';
+	const newLink = 'https://atlas.bayern.de';
+
+	const fillInputFields = (mvuLinkList, newName, newLink) => {
+		const nameElement = mvuLinkList.shadowRoot.querySelector('#newname');
+		nameElement.value = newName;
+		nameElement.dispatchEvent(new Event('input'));
+
+		const linkElement = mvuLinkList.shadowRoot.querySelector('#newlink');
+		linkElement.value = newLink;
+		linkElement.dispatchEvent(new Event('input'));
+		return { nameElement, linkElement };
+	};
 
 	const setup = (state = {}) => {
 		const initialState = {
 			example: {
 				linkList: [
-					{ name: 'Google Maps', link: 'https://maps.google.com', initial: true }
+					{ name: initialName, link: initialLink, initial: true }
 				]
 			},
 			...state
@@ -27,6 +43,13 @@ describe('MvuLinkList', () => {
 		return TestUtils.render(MvuLinkList.tag);
 	};
 
+	it('expect initial values to be set as expected', async () => {
+		const mvuLinkList = await setup();
+		const initialModel = mvuLinkList.getModel();
+		expect(initialModel.linkList.length).toBe(1);
+		expect(initialModel.linkList[0].name).toBe(initialName);
+		expect(initialModel.linkList[0].link).toBe(initialLink);
+	});
 
 	it('should render Title of the component', async () => {
 		const expectedTitle = 'Training Link - List';
@@ -39,27 +62,16 @@ describe('MvuLinkList', () => {
 		const expectedLink = '';
 
 		const element = await setup();
-
 		expect(element.shadowRoot.querySelector('#newname').textContent).toBe(expectedName);
 		expect(element.shadowRoot.querySelector('#newlink').textContent).toBe(expectedLink);
 	});
 
-	fit('xxxxx', async () => {
+	it('check that add button works as expected', async () => {
 		const mvuLinkList = await setup();
 		const initialModel = mvuLinkList.getModel();
 		expect(initialModel.linkList.length).toBe(1);
 
-		const newName = 'BayernAtlas v4';
-		const newLink = 'https://atlas.bayern.de';
-
-
-		const nameElement = mvuLinkList.shadowRoot.querySelector('#newname');
-		nameElement.value = newName;
-		nameElement.dispatchEvent(new Event('input'));
-
-		const linkElement = mvuLinkList.shadowRoot.querySelector('#newlink');
-		linkElement.value = newLink;
-		linkElement.dispatchEvent(new Event('input'));
+		const { nameElement, linkElement } = fillInputFields(mvuLinkList, newName, newLink);
 
 		expect(nameElement.value).toBe(newName);
 		expect(linkElement.value).toBe(newLink);
@@ -70,68 +82,27 @@ describe('MvuLinkList', () => {
 		expect(nameElement.value).toBe('');
 		expect(linkElement.value).toBe('');
 
-		const modelAfterAdd = new MvuLinkList().getModel();
-		// console.log('🚀🚀🚀 ~ file: MvuLinkList.test.js ~ line 78 ~ fit ~ modelAfterAdd', modelAfterAdd);
+		const modelAfterAdd = mvuLinkList.getModel();
 		expect(modelAfterAdd.linkList.length).toBe(2);
-
-		// expect(model.linkList.length).toEqual({
-
-		// });
+		expect(modelAfterAdd.linkList[1].name).toBe(newName);
+		expect(modelAfterAdd.linkList[1].link).toBe(newLink);
 	});
 
-	// it('should render counter = 6 by clicking the increment button', async () => {
+	it('check that UpdateStore button writes the store ', async () => {
+		const mvuLinkList = await setup();
 
-	// 	const element = await setup(state);
+		fillInputFields(mvuLinkList, newName, newLink);
 
-	// 	const incrementBtn = element.shadowRoot.querySelector('#incrementBtn');
-	// 	incrementBtn.dispatchEvent(new MouseEvent('click'));
+		const addLinkToListButton = mvuLinkList.shadowRoot.querySelector('#addLinkToListBtn');
+		addLinkToListButton.click();
+		const updateStoreButton = mvuLinkList.shadowRoot.querySelector('#updateStoreBtn');
+		updateStoreButton.click();
 
-	// 	expect(element.shadowRoot.querySelector('#currentTopic').textContent).toBe('ba');
-	// 	expect(element.shadowRoot.querySelector('#counterValue').textContent).toBe('6');
-	// });
-
-	// it('should render topic6 when incrementing intial counter', async () => {
-
-	// 	const element = await setup(state);
-
-	// 	const incrementBtn = element.shadowRoot.querySelector('#incrementBtn');
-	// 	incrementBtn.dispatchEvent(new MouseEvent('click'));
-
-	// 	const updateTopicBtn = element.shadowRoot.querySelector('#updateTopicBtn');
-	// 	updateTopicBtn.click();
-
-	// 	expect(store.getState().topics.current).toBe('topic6');
-	// 	expect(element.shadowRoot.querySelector('#currentTopic').textContent).toBe('topic6');
-	// 	expect(element.shadowRoot.querySelector('#counterValue').textContent).toBe('6');
-	// });
-
-	// it('should render error message when counter < 0', async () => {
-
-	// 	const element = await setup(state);
-
-	// 	const decrementBtn = element.shadowRoot.querySelector('#decrementBtn');
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-	// 	decrementBtn.dispatchEvent(new MouseEvent('click'));
-
-	// 	const updateTopicBtn = element.shadowRoot.querySelector('#updateTopicBtn');
-	// 	updateTopicBtn.click();
-
-	// 	expect(element.shadowRoot.querySelector('#currentTopic').textContent).toBe('topic0');
-	// 	expect(element.shadowRoot.querySelector('#errorMessageId').textContent).toEqual('-> Counter must not be less than zero');
-	// });
-
-	// it('should reset the counter to 0', async () => {
-
-	// 	const element = await setup(state);
-
-	// 	const resetBtn = element.shadowRoot.querySelector('#resetBtn');
-	// 	resetBtn.dispatchEvent(new MouseEvent('click'));
-
-	// 	expect(element.shadowRoot.querySelector('#currentTopic').textContent).toBe('ba');
-	// 	expect(element.shadowRoot.querySelector('#counterValue').textContent).toBe('0');
-	// });
+		const storeAfterUpdateStore = store.getState().example;
+		expect(storeAfterUpdateStore.linkList.length).toBe(2);
+		expect(storeAfterUpdateStore.linkList[1].name).toBe(newName);
+		expect(storeAfterUpdateStore.linkList[1].link).toBe(newLink);
+	});
 });
+
+

@@ -10,7 +10,7 @@ export class MvuLinkList extends MvuElement {
 
 	constructor() {
 		super({
-			linkList: null
+			linkList: []
 		});
 	}
 
@@ -19,10 +19,6 @@ export class MvuLinkList extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ type', type);
-		// console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ data', data);
-		// console.log('🚀🚀 ~ file: MvuLinkList.js ~ line 22 ~ MvuLinkList ~ update ~ model', model);
-
 		switch (type) {
 
 			case Update_LinkList:
@@ -35,7 +31,6 @@ export class MvuLinkList extends MvuElement {
 
 	createView(model) {
 		const { linkList } = model;
-		// console.log('🚀 ~ file: MvuLinkList.js ~ line 35 ~ MvuLinkList ~ createView ~ linkList', linkList);
 
 		const addLinkToList = () => {
 			const getInputNameElement = () => {
