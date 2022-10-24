@@ -212,6 +212,14 @@ export class ShowCase extends BaElement {
 			<div class='section' >
 			<h3> Theme-Toggle</h3>		
 			<div class='example'>
+				<ba-mvu-linkList></ba-mvu-linkList>
+				<ba-mvu-linkList></ba-mvu-linkList>
+			</div>	
+						
+
+			<div class='section' >
+			<h3> Theme-Toggle</h3>		
+			<div class='example'>
 				<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 			</div>	
 						
