@@ -3,6 +3,7 @@ import { html } from 'lit-html';
 import css from './profile.css';
 import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
+import { setCoordinates } from '../../../store/example/example.action';
 
 const Update_Chart_Data = 'update_chart_data';
 
@@ -1621,48 +1622,13 @@ const myData = {
 	'sumDown': 1954.7
 };
 
-// https://stackoverflow.com/questions/36961835/how-to-render-a-vertical-line-on-hover-in-chartjs
-
-const parentEventHandler = Chart.prototype._eventHandler;
-Chart.prototype._eventHandler = function () {
-	const ret = parentEventHandler.apply(this, arguments);
-
-	const x = arguments[0].x;
-	const y = arguments[0].y;
-	this.clear();
-	this.draw();
-	const yScale = this.scales.y;
-	this.ctx.beginPath();
-	this.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-	this.ctx.strokeStyle = '#ff0000';
-	this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-	this.ctx.stroke();
-
-	return ret;
-};
-
-// const parentEventHandler = Chart.prototype._eventHandler;
-// Chart.prototype._eventHandler = function () {
-// 	const ret = parentEventHandler.apply(this, arguments);
-// 	this.clear();
-// 	this.draw();
-// 	// Draw the vertical line here
-// 	const eventPosition = Chart.helpers.getRelativePosition(arguments[0], this.chart);
-// 	this.ctx.beginPath();
-// 	this.ctx.moveTo(eventPosition.x, 0);
-// 	this.ctx.strokeStyle = '#ff0000';
-// 	this.ctx.lineTo(eventPosition.x, this.chart.height);
-// 	this.ctx.stroke();
-
-// 	return ret;
-// };
-
 const labels = myData.heights.map((height) => height.dist);
 const data = myData.heights.map((height) => height.alts.COMB);
 const chartData = {
 	labels,
 	datasets: [{
 		data,
+		label: 'Profil',
 		fill: true,
 		borderColor: '#66ccff',
 		backgroundColor: '#66ccff66',
@@ -1672,10 +1638,50 @@ const chartData = {
 	}]
 };
 
+const parentEventHandler = Chart.prototype._eventHandler;
+Chart.prototype._eventHandler = function () { // chart
+	// console.log('🚀 ~ file: ProfileN.js ~ line 1629 ~ chart', chart);
+	// const {ctx}=chart;
+
+	const ret = parentEventHandler.apply(this, arguments);
+
+	const x = arguments[0].x;
+	const y = arguments[0].y;
+
+	this.clear();
+	this.draw();
+
+	const angle = Math.PI / 180;
+	this.ctx.beginPath();
+	this.ctx.fillStyle = 'rgba(255, 26, 104, 0.5)';
+	this.ctx.arc(x, y, 5, 0, angle * 360, false);
+	this.ctx.fill();
+	this.ctx.closePath();
+
+	const yScale = this.scales.y;
+	this.ctx.beginPath();
+	this.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+	this.ctx.strokeStyle = '#ff0000';
+	this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+	this.ctx.stroke();
+
+	setCoordinates([x, y]);
+
+	return ret;
+};
+
+const lollipopGrid = {
+	id: 'lollipopGridxx',
+	beforeDatasetsDraw(chart) {
+		console.log('🚀 ~ chart', chart);
+
+	}
+};
+
 const config = {
 	type: 'line',
 	data: chartData,
-	plugins: [parentEventHandler,
+	plugins: [parentEventHandler, // lollipopGrid,
 		{
 		// eslint-disable-next-line no-unused-vars
 			beforeInit: (chart, args, options) => {
@@ -1689,20 +1695,23 @@ const config = {
 	options: {
 		// events: ['hover'],
 		// hover: true,
+		label: false,
 		responsive: true,
 		animation: false,
 		maintainAspectRatio: false,
 		interaction: { mode: 'x' },
-		tooltip: { position: 'nearest' },
+		tooltip: { position: 'x' },
 		scales: {
-			x: { type: 'linear' },
+			x: { type: 'linear', grid: {} }, // , grid: { display: false, borderWidth: 0 }
 			y: { type: 'linear', beginAtZero: true },
 			y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
 		},
 		// onHover: (e) => {
 		// 	console.log('🚀 ~ file: ProfileN.js ~ line 1663 ~ e', e);
 		// },
-		plugins: {
+		plugins:
+		{
+			footer: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
 			title: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
 			legend: { display: true },
 			tooltip: {
@@ -1804,8 +1813,14 @@ export class ProfileN extends MvuElement {
 		// 	this._chart.update();
 		// }
 
+		// return html`
+		// 	<style>${css}</style>
+		// 	<div class="chart-container" style="position: relative; style="width:100%;" >
+		// 		<canvas class="profilen" id="route-elevation-chart" ></canvas>
+		// 	</div>
+		// 	` ;
 		return html`
-			<style>${css}</style>	
+			<style>${css}</style>
 			<div class="chart-container" style="position: relative; height:20vh; width:80vh">
 				<canvas class="profilen" id="route-elevation-chart" ></canvas>
 			</div>

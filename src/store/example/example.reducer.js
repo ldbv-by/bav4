@@ -1,4 +1,5 @@
 export const LINKLIST_CHANGED = 'example/linklist';
+export const EXAMPLE_COORDINATES_CHANGED = 'example/coordinates';
 
 export const initialState = {
 	linkList: [
@@ -7,7 +8,8 @@ export const initialState = {
 		{ name: 'BayernAtlas', link: 'https://geoportal.bayern.de/bayernatlas', initial: true },
 		{ name: 'lit-html', link: 'https://lit.dev/docs/libraries/standalone-templates/', initial: true },
 		{ name: 'taskmarks', link: 'https://github.com/norbertK/taskmarks', initial: true }
-	]
+	],
+	currentCoordinates: []
 };
 
 export const exampleReducer = (state = initialState, action) => {
@@ -18,6 +20,14 @@ export const exampleReducer = (state = initialState, action) => {
 				...state,
 				linkList: [...payload]
 			};
+		}
+
+		case EXAMPLE_COORDINATES_CHANGED: {
+			return {
+				...state,
+				currentCoordinates: [...payload]
+			};
+
 		}
 	}
 	return state;
