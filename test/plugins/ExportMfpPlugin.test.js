@@ -83,9 +83,52 @@ describe('ExportMfpPlugin', () => {
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeTrue();
 		});
+
+		it('emits a notification when MfpService#init throws an error', async () => {
+			const message = 'something got wrong';
+			const store = setup();
+			const instanceUnderTest = new ExportMfpPlugin();
+			await instanceUnderTest.register(store);
+			spyOn(mfpService, 'init').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+
+			setCurrentTool(ToolId.EXPORT);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(store.getState().mfp.current.id).toBeNull();
+			expect(store.getState().mfp.current.dpi).toBeNull();
+			expect(store.getState().mfp.current.scale).toBeNull();
+			await TestUtils.timeout();
+			expect(store.getState().mfp.active).toBeFalse();
+			expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_init_exception');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
+
+
+
+
+
+
+			// const store = setup();
+			// const instanceUnderTest = new ExportMfpPlugin();
+			// await instanceUnderTest.register(store);
+			// const spec = { foo: 'bar' };
+			// spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
+			// const errorSpy = spyOn(console, 'error');
+
+			// startJob(spec);
+
+			// expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+			// await TestUtils.timeout();
+			// expect(store.getState().mfp.jobSpec.payload).toBeNull();
+			// expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
+			// expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+			// expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
+		});
 	});
 
-	describe('when initilized and toolId changes', () => {
+	describe('when initialized and toolId changes', () => {
 
 		it('updates the active property (I)', async () => {
 			const store = setup();
