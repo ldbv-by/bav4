@@ -43,7 +43,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
-		this._lastCenter = [-1, -1];
+		this._visibleViewport = null;
+		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
+		this._geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
+
 	}
 
 	/**
@@ -85,6 +88,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._listeners = [];
 		this._mfpLayer = null;
 		this._map = null;
+		this._visibleViewport = null;
 	}
 
 	_register(store) {
@@ -106,8 +110,9 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
-		const geometry = this._createMpfBoundary(this._pageSize);
-		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize);
+		const center = this._getVisibleCenterPoint();
+		const geometry = this._createMpfBoundary(this._pageSize, center);
+		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize, center);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
@@ -137,6 +142,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		this._pageSize = toGeographicSize(layoutSize);
 		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
+		this._visibleViewport = this._mapService.getVisibleViewport(this._map.getTarget());
 		this._updateMfpPreview();
 	}
 
@@ -191,21 +197,23 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_getVisibleCenterPoint() {
+		const getOrRequestVisibleViewport = () => {
+			if (!this._visibleViewport) {
+				this._visibleViewport = this._mapService.getVisibleViewport(this._map.getTarget());
+			}
+			return this._visibleViewport;
+		};
 		const getVisibleCenter = () => {
 			const size = this._map.getSize();
-			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
+			const padding = getOrRequestVisibleViewport();
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
 
 		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
 	}
 
-	_createMpfBoundary(pageSize) {
-		const center = this._getVisibleCenterPoint();
-		const mapProjection = 'EPSG:' + this._mapService.getSrid();
-		const geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
-
-		const geodeticCenter = center.clone().transform(mapProjection, geodeticProjection);
+	_createMpfBoundary(pageSize, center) {
+		const geodeticCenter = center.clone().transform(this._mapProjection, this._geodeticProjection);
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
 		const geodeticBoundingBox = [
@@ -216,7 +224,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		return geodeticBoundary.clone().transform(geodeticProjection, mapProjection);
+		return geodeticBoundary.clone().transform(this._geodeticProjection, this._mapProjection);
 	}
 
 	_getAzimuth(polygon) {

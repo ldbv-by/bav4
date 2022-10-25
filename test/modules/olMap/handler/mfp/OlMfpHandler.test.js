@@ -313,17 +313,13 @@ describe('OlMfpHandler', () => {
 	describe('_createMfpBoundary', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
+			const center = new Point([0, 0]);
 			setup();
+
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
-			const visibleViewPortSpy = spyOn(mapServiceMock, 'getVisibleViewport').and.callThrough();
-			const sridSpy = spyOn(mapServiceMock, 'getSrid').and.callThrough();
-			const geodeticSridSpy = spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.callThrough();
 
-			expect(classUnderTest._createMpfBoundary(pageSize)).toEqual(jasmine.any(Polygon));
-			expect(visibleViewPortSpy).toHaveBeenCalledTimes(1);
-			expect(sridSpy).toHaveBeenCalledTimes(1);
-			expect(geodeticSridSpy).toHaveBeenCalledTimes(1);
+			expect(classUnderTest._createMpfBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
 		});
 	});
 });
