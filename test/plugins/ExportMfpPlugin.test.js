@@ -104,27 +104,6 @@ describe('ExportMfpPlugin', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_init_exception');
 			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
-
-
-
-
-
-
-			// const store = setup();
-			// const instanceUnderTest = new ExportMfpPlugin();
-			// await instanceUnderTest.register(store);
-			// const spec = { foo: 'bar' };
-			// spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
-			// const errorSpy = spyOn(console, 'error');
-
-			// startJob(spec);
-
-			// expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
-			// await TestUtils.timeout();
-			// expect(store.getState().mfp.jobSpec.payload).toBeNull();
-			// expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
-			// expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
-			// expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
 		});
 	});
 
