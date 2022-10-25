@@ -26,7 +26,8 @@ describe('BvvMfpService', () => {
 			{ id: 'a4_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } },
 			{ id: 'a3_portrait', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 786, height: 1041 } },
 			{ id: 'a3_landscape', urlId: 0, scales: scales, dpis: dpis, mapSize: { width: 1132, height: 692 } }
-		] };
+		]
+	};
 
 	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
 		return new BvvMfpService(capabilitiesProvider, postMfpSpecProvider);
@@ -93,19 +94,14 @@ describe('BvvMfpService', () => {
 				expect(warnSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 			});
 
-			it('logs an error when we are NOT in standalone mode', async () => {
-
+			it('throwns an error when we are NOT in standalone mode', async () => {
+				const message = 'something got wrong';
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(async () => {
-					throw new Error('something got wrong');
+					throw new Error(message);
 				});
-				const errorSpy = spyOn(console, 'error');
 
-
-				const mfpCapabilities = await instanceUnderTest.init();
-
-				expect(mfpCapabilities).toBeNull();
-				expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend.', jasmine.anything());
+				await expectAsync(instanceUnderTest.init()).toBeRejectedWithError(message);
 			});
 		});
 	});
@@ -247,7 +243,8 @@ describe('BvvMfpService', () => {
 				layouts: [
 					{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 					{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
-				] };
+				]
+			};
 			const instanceUnderTest = new BvvMfpService();
 
 			expect(instanceUnderTest._newFallbackCapabilities()).toEqual(expected);
