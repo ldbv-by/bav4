@@ -89,6 +89,7 @@ export class BvvMfpService {
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<MfpCapabilities>>}
+	 * @throws Error when capabilities could not be provided
 	 */
 	async init() {
 		if (!this._mfpCapabilities) {
@@ -103,7 +104,7 @@ export class BvvMfpService {
 					console.warn('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 				}
 				else {
-					console.error('MfpCapabilities could not be fetched from backend.', e);
+					throw e;
 				}
 			}
 		}
@@ -133,6 +134,7 @@ export class BvvMfpService {
 	 * Creates a new MFP3 job and returns a URL pointing to the generated resource.
 	 * @param {object} spec MFP3 spec
 	 * @returns download URL as string or `null`
+	 * @throws Error when PDF generation was not successful
 	 */
 	async createJob(spec) {
 		this._abortController = new AbortController();
