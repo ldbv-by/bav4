@@ -77,7 +77,7 @@ export class MvuElement extends HTMLElement {
 		 * @private
 		 *
 		 */
-		this._model = model;
+		this._model = { ...model };
 
 		this._rendered = false;
 
@@ -92,11 +92,11 @@ export class MvuElement extends HTMLElement {
 	 * @param {Object|string|number} [data=null] data of this update request
 	 */
 	signal(type, data = null) {
-		const newModel = this.update(type, data, this._model);
+		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
 			this._observer.forEach(o => o());
-			this.onModelChanged(this._model);
+			this.onModelChanged(this.getModel());
 		}
 	}
 
@@ -201,7 +201,7 @@ export class MvuElement extends HTMLElement {
 
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
-			const template = this.createView(this._model);
+			const template = this.createView(this.getModel());
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
 			}
@@ -262,7 +262,7 @@ export class MvuElement extends HTMLElement {
 	 * by calling {@link MvuElement#render}.
 	 *
 	 * Can be overridden.
-	 * @param {object} model the updated Model of this component
+	 * @param {object} model a copy of the updated Model of this component
 	 * @protected
 	 */
 	onModelChanged(/*eslint-disable no-unused-vars */model) {
