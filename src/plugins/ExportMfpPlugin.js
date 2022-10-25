@@ -1,7 +1,7 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { ToolId } from '../store/tools/tools.action';
-import { activate, deactivate, setCurrent } from '../store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 
@@ -70,6 +70,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				if (url) {
 					environmentService.getWindow().open(url, '_blank');
 				}
+				cancelJob();
 			}
 			else {
 				mfpService.cancelJob();
