@@ -39,7 +39,8 @@ export class Profile extends MvuElement {
 		};
 
 		setInterval(() => {
-			const data = this.getModel().data.map(() => getRandomInt(10));
+			const modelData = this.getModel().data;
+			const data = modelData.map(() => getRandomInt(10));
 			this.signal(Update_Data, data);
 
 		}, 2000);

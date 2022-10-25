@@ -93,6 +93,7 @@ export class Header extends MvuElement {
 	onWindowLoad() {
 		// we use optional chaining here because preload class may not be available
 		this._root.querySelector('.preload')?.classList.remove('preload');
+		openModal('Showcase', html`<ba-showcase>`);
 	}
 
 	isRenderingSkipped() {

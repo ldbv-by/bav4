@@ -208,9 +208,15 @@ export class ShowCase extends BaElement {
 			</div>			
 			
 			<h2> Specific components</h2>
+		
 
+			<h3>ProfileN</h3>
+			<div class='example row'>
+			<ba-profile-n></ba-profile-n>
+			</div>
+		
 			<div class='section' >
-			<h3> Theme-Toggle</h3>		
+			<h3>Linked Link-List</h3>		
 			<div class='example'>
 				<ba-mvu-linkList></ba-mvu-linkList>
 				<ba-mvu-linkList></ba-mvu-linkList>
