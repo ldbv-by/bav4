@@ -7,6 +7,7 @@ describe('i18n for ExportMfpPlugin', () => {
 
 		const map = provide('en');
 
+		expect(map.exportMfpPlugin_mfpService_init_exception).toBe('PDF export currently not available.');
 		expect(map.exportMfpPlugin_mfpService_createJob_exception).toBe('PDF generation was not successful.');
 	});
 
@@ -14,12 +15,13 @@ describe('i18n for ExportMfpPlugin', () => {
 
 		const map = provide('de');
 
+		expect(map.exportMfpPlugin_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich.');
 		expect(map.exportMfpPlugin_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden.');
 	});
 
 	it('have the expected amount of translations', () => {
 
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
