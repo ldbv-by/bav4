@@ -4,6 +4,8 @@ import { ToolId } from '../store/tools/tools.action';
 import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { provide as provider } from './i18n/exportMfpPlugin.provider';
+import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 
 /**
  * Id of the layer used for mfp export visualization.
@@ -23,6 +25,9 @@ export class ExportMfpPlugin extends BaPlugin {
 	constructor() {
 		super();
 		this._initialized = false;
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+		translationService.register('exportMfpPluginProvider', provider);
 	}
 
 	/**
@@ -66,11 +71,20 @@ export class ExportMfpPlugin extends BaPlugin {
 
 		const onJobSpecChanged = async ({ payload: spec }) => {
 			if (spec) {
-				const url = await mfpService.createJob(spec);
-				if (url) {
-					environmentService.getWindow().open(url, '_blank');
+				try {
+					const url = await mfpService.createJob(spec);
+					if (url) {
+						environmentService.getWindow().open(url, '_blank');
+					}
 				}
-				cancelJob();
+				catch (ex) {
+					console.error('PDF generation was not successful.', ex);
+					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_createJob_exception')}`, LevelTypes.ERROR);
+				}
+				finally {
+					cancelJob();
+				}
+
 			}
 			else {
 				mfpService.cancelJob();

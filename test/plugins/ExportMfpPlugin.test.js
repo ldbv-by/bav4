@@ -6,6 +6,9 @@ import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin
 import { $injector } from '../../src/injection/index.js';
 import { activate, cancelJob, deactivate, startJob } from '../../src/store/mfp/mfp.action.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
+import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { provide } from '../../src/plugins/i18n/exportMfpPlugin.provider.js';
 
 
 
@@ -20,17 +23,36 @@ describe('ExportMfpPlugin', () => {
 		getWindow: () => { }
 	};
 
+	const translationService = {
+		register() { },
+		translate: (key) => key
+	};
+
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			mfp: mfpReducer,
 			layers: layersReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			notifications: notificationReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('MfpService', mfpService);
+			.registerSingleton('MfpService', mfpService)
+			.registerSingleton('TranslationService', translationService);
 		return store;
 	};
+
+	describe('constructor', () => {
+
+		it('registers an i18n provider', async () => {
+			const translationServiceSpy = spyOn(translationService, 'register');
+			setup();
+
+			new ExportMfpPlugin();
+
+			expect(translationServiceSpy).toHaveBeenCalledWith('exportMfpPluginProvider', provide);
+		});
+	});
 
 	describe('when not yet initialized and toolId changes', () => {
 
@@ -152,6 +174,25 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+			});
+
+			it('emits a notification when #createJob throws an error', async () => {
+				const message = 'something got wrong';
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const spec = { foo: 'bar' };
+				spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
+				const errorSpy = spyOn(console, 'error');
+
+				startJob(spec);
+
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+				await TestUtils.timeout();
+				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
+				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
 			});
 		});
 
