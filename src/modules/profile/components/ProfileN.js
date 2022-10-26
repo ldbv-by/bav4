@@ -30,6 +30,7 @@ const myData = {
 			'alts': {
 				'COMB': 341.8
 			},
+			incline: 20,
 			'easting': 4380026.0,
 			'northing': 5488762.0
 		},
@@ -38,6 +39,7 @@ const myData = {
 			'alts': {
 				'COMB': 370.4
 			},
+			incline: 20,
 			'easting': 4380983.5,
 			'northing': 5488183.5
 		},
@@ -46,6 +48,7 @@ const myData = {
 			'alts': {
 				'COMB': 372.3
 			},
+			incline: 20,
 			'easting': 4381940.5,
 			'northing': 5487604.5
 		},
@@ -54,6 +57,7 @@ const myData = {
 			'alts': {
 				'COMB': 341.0
 			},
+			incline: 20,
 			'easting': 4382897.5,
 			'northing': 5487025.5
 		},
@@ -62,6 +66,7 @@ const myData = {
 			'alts': {
 				'COMB': 319.9
 			},
+			incline: 20,
 			'easting': 4383854.5,
 			'northing': 5486446.5
 		},
@@ -1621,6 +1626,7 @@ const myData = {
 	'sumUp': 1971.6,
 	'sumDown': 1954.7
 };
+let firstTime = true;
 
 const labels = myData.heights.map((height) => height.dist);
 const data = myData.heights.map((height) => height.alts.COMB);
@@ -1631,14 +1637,35 @@ const chartData = {
 		label: 'Profil',
 		fill: true,
 		borderColor: '#66ccff',
-		backgroundColor: '#66ccff66',
+		backgroundColor: ((context) => {
+			const chart = context.chart;
+			if (firstTime) {
+				firstTime = false;
+				console.log('🚀 ~ file: ProfileN.js ~ line 1640 ~ context', chart);
+			}
+
+			const { ctx, chartArea, scales } = chart;
+
+			if (!chartArea) {
+				return null;
+			}
+			// return '#66ccff';
+			return getGradient(ctx, chartArea, scales);
+		}),
 		tension: 0.1,
 		pointRadius: 0,
 		spanGaps: true
 	}]
 };
 
-const angle = Math.PI / 180;
+const getGradient = (ctx, chartArea, scales) => {
+	const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+	gradientBg.addColorStop(0, '#66ccff');
+	gradientBg.addColorStop(1, '#000000');
+	return gradientBg;
+};
+
+// const angle = Math.PI / 180;
 
 const parentEventHandler = Chart.prototype._eventHandler;
 Chart.prototype._eventHandler = function () { // chart
@@ -1648,7 +1675,7 @@ Chart.prototype._eventHandler = function () { // chart
 	const ret = parentEventHandler.apply(this, arguments);
 
 	const x = arguments[0].x;
-	const y = arguments[0].y;
+	// const y = arguments[0].y;
 
 	this.clear();
 	this.draw();
@@ -1671,16 +1698,16 @@ Chart.prototype._eventHandler = function () { // chart
 	return ret;
 };
 
-const lollipopGrid = {
-	id: 'lollipopGridxx',
-	beforeDatasetsDraw(chart) {
-		// console.log('🚀 ~ chart', chart);
-		const { ctx, scales: { x, y }, chartArea: { top } } = chart;
-		ctx.save();
+// const lollipopGrid = {
+// 	id: 'lollipopGridxx',
+// 	beforeDatasetsDraw(chart) {
+// 		// console.log('🚀 ~ chart', chart);
+// 		const { ctx, scales: { x, y }, chartArea: { top } } = chart;
+// 		ctx.save();
 
-		// x._gridLineItems.forEach((circle))
-	}
-};
+// 		// x._gridLineItems.forEach((circle))
+// 	}
+// };
 
 const config = {
 	type: 'line',
@@ -1697,8 +1724,6 @@ const config = {
 			}
 		}],
 	options: {
-		// events: ['hover'],
-		// hover: true,
 		label: false,
 		responsive: true,
 		animation: false,
@@ -1710,9 +1735,7 @@ const config = {
 			y: { type: 'linear', beginAtZero: true },
 			y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
 		},
-		// onHover: (e) => {
-		// 	console.log('🚀 ~ file: ProfileN.js ~ line 1663 ~ e', e);
-		// },
+
 		plugins:
 		{
 			footer: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
