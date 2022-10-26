@@ -11,6 +11,7 @@ const myData = {
 	'heights': [
 		{
 			'dist': 0.0,
+			incline: 5,
 			'alts': {
 				'COMB': 366.8
 			},
@@ -19,6 +20,7 @@ const myData = {
 		},
 		{
 			'dist': 1118.5552,
+			incline: 5,
 			'alts': {
 				'COMB': 354.3
 			},
@@ -27,10 +29,10 @@ const myData = {
 		},
 		{
 			'dist': 2237.1104,
+			incline: 5,
 			'alts': {
 				'COMB': 341.8
 			},
-			incline: 20,
 			'easting': 4380026.0,
 			'northing': 5488762.0
 		},
@@ -91,6 +93,7 @@ const myData = {
 			'alts': {
 				'COMB': 317.8
 			},
+			incline: 20,
 			'easting': 4386726.0,
 			'northing': 5484710.0
 		},
@@ -208,6 +211,7 @@ const myData = {
 		},
 		{
 			'dist': 26845.352,
+			incline: 20,
 			'alts': {
 				'COMB': 365.5
 			},
@@ -256,6 +260,7 @@ const myData = {
 		},
 		{
 			'dist': 33556.715,
+			incline: 20,
 			'alts': {
 				'COMB': 343.8
 			},
@@ -264,6 +269,7 @@ const myData = {
 		},
 		{
 			'dist': 34675.27,
+			incline: 20,
 			'alts': {
 				'COMB': 398.1
 			},
@@ -272,6 +278,7 @@ const myData = {
 		},
 		{
 			'dist': 35793.824,
+			incline: 20,
 			'alts': {
 				'COMB': 368.0
 			},
@@ -280,6 +287,7 @@ const myData = {
 		},
 		{
 			'dist': 36912.38,
+			incline: 20,
 			'alts': {
 				'COMB': 387.3
 			},
@@ -288,6 +296,7 @@ const myData = {
 		},
 		{
 			'dist': 38030.934,
+			incline: 20,
 			'alts': {
 				'COMB': 382.0
 			},
@@ -1520,6 +1529,7 @@ const myData = {
 		},
 		{
 			'dist': 210289.12,
+			incline: 20,
 			'alts': {
 				'COMB': 412.2
 			},
@@ -1528,6 +1538,7 @@ const myData = {
 		},
 		{
 			'dist': 211407.69,
+			incline: 20,
 			'alts': {
 				'COMB': 410.4
 			},
@@ -1536,6 +1547,7 @@ const myData = {
 		},
 		{
 			'dist': 212526.19,
+			incline: 20,
 			'alts': {
 				'COMB': 385.4
 			},
@@ -1544,6 +1556,7 @@ const myData = {
 		},
 		{
 			'dist': 213644.83,
+			incline: 20,
 			'alts': {
 				'COMB': 408.5
 			},
@@ -1552,6 +1565,7 @@ const myData = {
 		},
 		{
 			'dist': 214763.39,
+			incline: 20,
 			'alts': {
 				'COMB': 446.2
 			},
@@ -1640,16 +1654,17 @@ const chartData = {
 		borderColor: '#66ccff',
 		backgroundColor: ((context) => {
 			const chart = context.chart;
-			if (firstTime) {
-				firstTime = false;
-				console.log('🚀 ~ file: ProfileN.js ~ line 1640 ~ context', chart);
-			}
-
 			const { ctx, chartArea } = chart;
 
 			if (!chartArea) {
 				return null;
 			}
+
+			if (firstTime) {
+				firstTime = false;
+				console.log('🚀 ~ file: ProfileN.js ~ line 1640 ~ context', chart);
+			}
+
 			return getGradient(ctx, chartArea);
 		}),
 		tension: 0.1,
@@ -1658,18 +1673,73 @@ const chartData = {
 	}]
 };
 
+const hereStartsSteep = 10;
+const flatColor = '#66eeff';
+const steepColor = '#ee4444';
+const InclineType = {
+	Flat: 'Flat',
+	Steep: 'Steep'
+};
+
 const getGradient = (ctx, chartArea) => {
 	const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 
-	const xPointWidth = chartArea.width / myData.heights.length;
-	const xPoint = xPointWidth / chartArea.width * 10;
+	const numberOfPoints = myData.heights.length;
+	const xPointWidth = chartArea.width / numberOfPoints;
 
-	gradientBg.addColorStop(0, '#66ccff');
-	gradientBg.addColorStop(xPoint, '#000000');
-	gradientBg.addColorStop(xPoint, '#66ccff');
-	gradientBg.addColorStop(1, '#000000');
+	// start with 'flat' color
+	gradientBg.addColorStop(0, flatColor);
+	let currentInclineType = InclineType.Flat;
+	// currentInclineType = startFlat(gradientBg, 0, currentInclineType);
+	myData.heights.forEach((element, index) => {
+		if (currentInclineType === InclineType.Steep) {
+			// steep
+			// look for first element with incline greater X
+			if (!element.incline || element.incline <= hereStartsSteep) {
+				const xPoint = xPointWidth / chartArea.width * index ;
+				currentInclineType = startFlat(gradientBg, xPoint, currentInclineType);
+			}
+		}
+		else {
+			// flat
+			// look for first element with incline less than X
+			if (element.incline && element.incline > hereStartsSteep) {
+				const xPoint = xPointWidth / chartArea.width * index ;
+				currentInclineType = startSteep(gradientBg, xPoint, currentInclineType);
+			}
+		}
+	});
+
+	// end with currentInclineType - color
+	if (currentInclineType === InclineType.Steep) {
+		// steep
+		gradientBg.addColorStop(1, steepColor);
+	}
+	else {
+		// flat
+		gradientBg.addColorStop(1, flatColor);
+	}
+
 	return gradientBg;
 };
+
+function startSteep(gradientBg, xPoint) {
+	// stop flat color
+	gradientBg.addColorStop(xPoint, flatColor);
+	// start steep color
+	gradientBg.addColorStop(xPoint + 0.00001, steepColor);
+
+	return InclineType.Steep;
+}
+
+function startFlat(gradientBg, xPoint) {
+	// stop steep color
+	gradientBg.addColorStop(xPoint, steepColor);
+	// start flat color
+	gradientBg.addColorStop(xPoint + 0.00001, flatColor);
+
+	return InclineType.Flat;
+}
 
 // const angle = Math.PI / 180;
 
@@ -1766,7 +1836,7 @@ const config = {
 						return 'Distance: ' + tooltipItems[0].label + 'm';
 					},
 					label: (tooltipItem) => {
-						return 'Elevation: ' + tooltipItem.raw + 'm test test';
+						return 'Elevation: ' + tooltipItem.raw + 'm  test test';
 					}
 					// ,
 					// labelPointStyle: function () {
@@ -1811,14 +1881,9 @@ export class ProfileN extends MvuElement {
  * @override
  */
 	onInitialize() {
-		const modelData = myData.heights.map((height) => height.alts.COMB);
-		// console.log('🚀 ~ file: ProfileN.js ~ line 92 ~ ProfileN ~ onInitialize ~ modelData', modelData);
-		this.signal(Update_Chart_Data, modelData);
+		// const modelData = myData.heights.map((height) => height.alts.COMB);
+		// console.log('🚀 ~ file: ProfileN.js ~ line 92 ~ ProfileN ~ onInitialize ~ modelData', modelData);				// stop flat color
 
-		// //simulate model update
-		// const getRandomInt = max => {
-		// 	return Math.floor(Math.random() * max);
-		// };
 
 		// setInterval(() => {
 		// 	const { labels, data } = this.getModel();
