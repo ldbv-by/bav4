@@ -1638,6 +1638,8 @@ const chartData = {
 	}]
 };
 
+const angle = Math.PI / 180;
+
 const parentEventHandler = Chart.prototype._eventHandler;
 Chart.prototype._eventHandler = function () { // chart
 	// console.log('🚀 ~ file: ProfileN.js ~ line 1629 ~ chart', chart);
@@ -1651,12 +1653,11 @@ Chart.prototype._eventHandler = function () { // chart
 	this.clear();
 	this.draw();
 
-	const angle = Math.PI / 180;
-	this.ctx.beginPath();
-	this.ctx.fillStyle = 'rgba(255, 26, 104, 0.5)';
-	this.ctx.arc(x, y, 5, 0, angle * 360, false);
-	this.ctx.fill();
-	this.ctx.closePath();
+	// this.ctx.beginPath();
+	// this.ctx.fillStyle = 'rgba(255, 26, 104, 0.5)';
+	// this.ctx.arc(x, y, 5, 0, angle * 360, false);
+	// this.ctx.fill();
+	// this.ctx.closePath();
 
 	const yScale = this.scales.y;
 	this.ctx.beginPath();
@@ -1665,7 +1666,7 @@ Chart.prototype._eventHandler = function () { // chart
 	this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 	this.ctx.stroke();
 
-	setCoordinates([x, y]);
+	// setCoordinates([x, y]);
 
 	return ret;
 };
@@ -1673,8 +1674,11 @@ Chart.prototype._eventHandler = function () { // chart
 const lollipopGrid = {
 	id: 'lollipopGridxx',
 	beforeDatasetsDraw(chart) {
-		console.log('🚀 ~ chart', chart);
+		// console.log('🚀 ~ chart', chart);
+		const { ctx, scales: { x, y }, chartArea: { top } } = chart;
+		ctx.save();
 
+		// x._gridLineItems.forEach((circle))
 	}
 };
 
@@ -1700,7 +1704,7 @@ const config = {
 		animation: false,
 		maintainAspectRatio: false,
 		interaction: { mode: 'x' },
-		tooltip: { position: 'x' },
+
 		scales: {
 			x: { type: 'linear', grid: {} }, // , grid: { display: false, borderWidth: 0 }
 			y: { type: 'linear', beginAtZero: true },
@@ -1716,13 +1720,32 @@ const config = {
 			legend: { display: true },
 			tooltip: {
 				displayColors: false,
+				mode: 'index',
+				intersect: false,
 				callbacks: {
 					title: (tooltipItems) => {
+						// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
+						const { parsed } = tooltipItems[0];
+						// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
+
+						const found = myData.heights.find(element => element.dist === parsed.x);
+						if (found) {
+							// console.log('🚀 ~ file: ProfileN.js ~ line 1733 ~ found', found.easting);
+							setCoordinates([found.easting, found.northing]);
+						}
+
 						return 'Distance: ' + tooltipItems[0].label + 'm';
 					},
 					label: (tooltipItem) => {
 						return 'Elevation: ' + tooltipItem.raw + 'm test test';
 					}
+					// ,
+					// labelPointStyle: function () {
+					// 	return {
+					// 		pointStyle: 'triangle',
+					// 		rotation: 0
+					// 	};
+					// }
 				}
 			}
 		}
@@ -1823,6 +1846,7 @@ export class ProfileN extends MvuElement {
 			<style>${css}</style>
 			<div class="chart-container" style="position: relative; height:20vh; width:80vh">
 				<canvas class="profilen" id="route-elevation-chart" ></canvas>
+				sumUp: ${myData.sumUp} sumDown: ${myData.sumDown}
 			</div>
 			` ;
 	}
@@ -1831,4 +1855,3 @@ export class ProfileN extends MvuElement {
 		return 'ba-profile-n';
 	}
 }
-
