@@ -84,7 +84,7 @@
 
 .header__button-container {
 	position: absolute;
-	display: flex
+	display: flex;
 }
 .header__button-container button {
 	margin: 0.8em 0 0 0;
@@ -174,7 +174,7 @@
 	display: none;
 }
 .is-tablet .close-menu {
-	top: 5em
+	top: 5em;
 }
 .badges {
 	border-radius: 2em;
@@ -204,7 +204,7 @@
 	width: 6em;
 	border-radius: 3.5em;
 	background-color: var(--primary-bg-color);
-	border: none
+	border: none;
 }
 .action-button__border {
 	position: absolute;
