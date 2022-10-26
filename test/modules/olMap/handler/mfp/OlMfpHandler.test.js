@@ -13,7 +13,6 @@ import { TestUtils } from '../../../../test-utils';
 
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point } from 'ol/geom';
-import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
@@ -149,7 +148,7 @@ describe('OlMfpHandler', () => {
 			const mfpLayerSpy = spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function)).and.callThrough();
 			handler.activate(map);
 
-			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(thumbnailStyleFunction);
+			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(jasmine.any(Array));
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
 		});
 
@@ -271,8 +270,8 @@ describe('OlMfpHandler', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo\n1:42');
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo\n1:42');
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo 1:42');
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo 1:42');
 		});
 	});
 

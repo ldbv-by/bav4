@@ -64,7 +64,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			// init mfpBoundaryFeature
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
+			this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction(this._getPageLabel(mfpSettings)));
 			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
@@ -156,7 +156,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale } = mfpSettings;
 		const layout = translate(`olMap_handler_mfp_id_${id}`);
 		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-		return `${layout}\n1:${formattedScale}`;
+		return `${layout} 1:${formattedScale}`;
 	}
 
 	_getOptimalScale(map) {

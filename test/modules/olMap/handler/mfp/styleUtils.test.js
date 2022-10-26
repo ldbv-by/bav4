@@ -49,18 +49,31 @@ describe('mfp style utility functions', () => {
 
 		it('should create a style ', () => {
 
-			const styles = thumbnailStyleFunction();
-			expect(styles).toHaveSize(1);
-			expect(styles).toEqual([jasmine.any(Style)]);
+			const styles = thumbnailStyleFunction('foo');
+			expect(styles).toHaveSize(2);
+			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style)]);
 		});
 
 		it('should create a style with a stroke style ', () => {
-			const styles = thumbnailStyleFunction();
+			const styles = thumbnailStyleFunction('foo');
 
-			expect(styles).toHaveSize(1);
+			expect(styles).toHaveSize(2);
 			const style = styles[0];
 			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
 			expect(style.getStroke().getWidth()).toBe(3);
+		});
+
+
+		it('should create a style with a text style ', () => {
+			const styles = thumbnailStyleFunction('foo');
+
+			expect(styles).toHaveSize(2);
+			const style = styles[1];
+			expect(style.getText().getText()).toEqual('  foo');
+			expect(style.getText().getTextAlign()).toBe('left');
+			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
+			expect(style.getText().getStroke().getWidth()).toBe(2);
+			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
 		});
 	});
 
@@ -181,59 +194,5 @@ describe('mfp style utility functions', () => {
 			expect(featurePropertySpy).toHaveBeenCalledWith('page_buffer');
 		});
 
-		it('draws text with mfpTextStyle', () => {
-			const expectedFillColor = 'rgba(255,255,255,0.4)';
-			const feature = createFeature('foo');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(fillTextSpy).toHaveBeenCalledWith('foo', 0.5, -34.5);
-			expect(featurePropertySpy).toHaveBeenCalledWith('name');
-		});
-
-		it('draws text with mfpTextStyle', () => {
-			const feature = createFeature('foo\nbar\nbaz');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillTextSpy).toHaveBeenCalledTimes(3);
-		});
-
-		it('does NOT draw overflowing text', () => {
-			const feature = createFeature('overflow text');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => {
-				return { width: 10 };
-			});
-
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillTextSpy).toHaveBeenCalledTimes(0);
-		});
 	});
 });
