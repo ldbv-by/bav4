@@ -1636,6 +1636,7 @@ const chartData = {
 		data,
 		label: 'Profil',
 		fill: true,
+		borderWidth: 1,
 		borderColor: '#66ccff',
 		backgroundColor: ((context) => {
 			const chart = context.chart;
@@ -1644,13 +1645,12 @@ const chartData = {
 				console.log('🚀 ~ file: ProfileN.js ~ line 1640 ~ context', chart);
 			}
 
-			const { ctx, chartArea, scales } = chart;
+			const { ctx, chartArea } = chart;
 
 			if (!chartArea) {
 				return null;
 			}
-			// return '#66ccff';
-			return getGradient(ctx, chartArea, scales);
+			return getGradient(ctx, chartArea);
 		}),
 		tension: 0.1,
 		pointRadius: 0,
@@ -1658,9 +1658,15 @@ const chartData = {
 	}]
 };
 
-const getGradient = (ctx, chartArea, scales) => {
+const getGradient = (ctx, chartArea) => {
 	const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+
+	const xPointWidth = chartArea.width / myData.heights.length;
+	const xPoint = xPointWidth / chartArea.width * 10;
+
 	gradientBg.addColorStop(0, '#66ccff');
+	gradientBg.addColorStop(xPoint, '#000000');
+	gradientBg.addColorStop(xPoint, '#66ccff');
 	gradientBg.addColorStop(1, '#000000');
 	return gradientBg;
 };
