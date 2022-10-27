@@ -210,9 +210,9 @@ export class ShowCase extends BaElement {
 			<h2> Specific components</h2>
 		
 
-			<h3>ProfileN</h3>
+			<h3>ElevationProfile</h3>
 			<div class='example row'>
-			<ba-profile-n></ba-profile-n>
+			<ba-elevationprofile-n></ba-elevationprofile-n>
 			</div>
 		
 			<div class='section' >

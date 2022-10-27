@@ -11,7 +11,6 @@ const myData = {
 	'heights': [
 		{
 			'dist': 0.0,
-			incline: 5,
 			'alts': {
 				'COMB': 366.8
 			},
@@ -20,7 +19,6 @@ const myData = {
 		},
 		{
 			'dist': 1118.5552,
-			incline: 5,
 			'alts': {
 				'COMB': 354.3
 			},
@@ -29,7 +27,7 @@ const myData = {
 		},
 		{
 			'dist': 2237.1104,
-			incline: 5,
+			incline: 20,
 			'alts': {
 				'COMB': 341.8
 			},
@@ -50,7 +48,6 @@ const myData = {
 			'alts': {
 				'COMB': 372.3
 			},
-			incline: 20,
 			'easting': 4381940.5,
 			'northing': 5487604.5
 		},
@@ -59,7 +56,6 @@ const myData = {
 			'alts': {
 				'COMB': 341.0
 			},
-			incline: 20,
 			'easting': 4382897.5,
 			'northing': 5487025.5
 		},
@@ -68,7 +64,6 @@ const myData = {
 			'alts': {
 				'COMB': 319.9
 			},
-			incline: 20,
 			'easting': 4383854.5,
 			'northing': 5486446.5
 		},
@@ -99,6 +94,7 @@ const myData = {
 		},
 		{
 			'dist': 11185.585,
+			incline: 20,
 			'alts': {
 				'COMB': 325.9
 			},
@@ -107,6 +103,7 @@ const myData = {
 		},
 		{
 			'dist': 12304.14,
+			incline: 20,
 			'alts': {
 				'COMB': 375.9
 			},
@@ -1640,7 +1637,7 @@ const myData = {
 	'sumUp': 1971.6,
 	'sumDown': 1954.7
 };
-let firstTime = true;
+// let firstTime = true;
 
 const labels = myData.heights.map((height) => height.dist);
 const data = myData.heights.map((height) => height.alts.COMB);
@@ -1648,11 +1645,11 @@ const chartData = {
 	labels,
 	datasets: [{
 		data,
-		label: 'Profil',
+		label: 'Höhenprofil',
 		fill: true,
-		borderWidth: 1,
-		borderColor: '#66ccff',
-		backgroundColor: ((context) => {
+		borderWidth: 4,
+		backgroundColor: '#eeeeff',
+		borderColor: ((context) => {
 			const chart = context.chart;
 			const { ctx, chartArea } = chart;
 
@@ -1660,10 +1657,10 @@ const chartData = {
 				return null;
 			}
 
-			if (firstTime) {
-				firstTime = false;
-				console.log('🚀 ~ file: ProfileN.js ~ line 1640 ~ context', chart);
-			}
+			// if (firstTime) {
+			// 	firstTime = false;
+			// 	console.log('🚀 ~ file: ElevationProfile.js ~ line 1640 ~ context', chart);
+			// }
 
 			return getGradient(ctx, chartArea);
 		}),
@@ -1745,7 +1742,7 @@ function startFlat(gradientBg, xPoint) {
 
 const parentEventHandler = Chart.prototype._eventHandler;
 Chart.prototype._eventHandler = function () { // chart
-	// console.log('🚀 ~ file: ProfileN.js ~ line 1629 ~ chart', chart);
+	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1629 ~ chart', chart);
 	// const {ctx}=chart;
 
 	const ret = parentEventHandler.apply(this, arguments);
@@ -1761,13 +1758,17 @@ Chart.prototype._eventHandler = function () { // chart
 	// this.ctx.arc(x, y, 5, 0, angle * 360, false);
 	// this.ctx.fill();
 	// this.ctx.closePath();
+	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1761 ~ this.scales', this.scales);
+	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1761 ~ this.scales', this.chartArea);
 
-	const yScale = this.scales.y;
-	this.ctx.beginPath();
-	this.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-	this.ctx.strokeStyle = '#ff0000';
-	this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-	this.ctx.stroke();
+	if (x > this.chartArea.left && x < this.chartArea.right) {
+		const yScale = this.scales.y;
+		this.ctx.beginPath();
+		this.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+		this.ctx.strokeStyle = '#ff0000';
+		this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+		this.ctx.stroke();
+	}
 
 	// setCoordinates([x, y]);
 
@@ -1800,7 +1801,6 @@ const config = {
 			}
 		}],
 	options: {
-		label: false,
 		responsive: true,
 		animation: false,
 		maintainAspectRatio: false,
@@ -1822,21 +1822,31 @@ const config = {
 				mode: 'index',
 				intersect: false,
 				callbacks: {
-					title: (tooltipItems) => {
-						// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
-						const { parsed } = tooltipItems[0];
-						// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
-
-						const found = myData.heights.find(element => element.dist === parsed.x);
-						if (found) {
-							// console.log('🚀 ~ file: ProfileN.js ~ line 1733 ~ found', found.easting);
-							setCoordinates([found.easting, found.northing]);
-						}
-
-						return 'Distance: ' + tooltipItems[0].label + 'm';
+					title: () => {
+						return 'Header';
 					},
 					label: (tooltipItem) => {
-						return 'Elevation: ' + tooltipItem.raw + 'm  test test';
+						// console.log('🚀 ~ file: ElevationProfile.js ~ line 1830 ~ tooltipItem', tooltipItem);
+						let incline = '';
+						const { parsed } = tooltipItem;
+						const found = myData.heights.find(element => element.dist === parsed.x);
+						if (found) {
+							setCoordinates([found.easting, found.northing]);
+							if (found.incline) {
+								incline = found.incline + '%';
+							}
+							else {
+								incline = 'unbekannt';
+							}
+						}
+
+						const content = ['Distance: ' + tooltipItem.label + 'm',
+							'Elevation: ' + tooltipItem.raw + 'm',
+							'Steigung: ' + incline];
+						return content;
+					},
+					footer: () => {
+						return 'Footer';
 					}
 					// ,
 					// labelPointStyle: function () {
@@ -1856,7 +1866,7 @@ const config = {
 /**
  * @author taulinger
  */
-export class ProfileN extends MvuElement {
+export class ElevationProfile extends MvuElement {
 
 	constructor() {
 		super({
@@ -1869,8 +1879,8 @@ export class ProfileN extends MvuElement {
  * @override
  */
 	update(type, data, model) {
-		// console.log('🚀 ~ file: ProfileN.js ~ line 79 ~ ProfileN ~ update ~ model', model);
-		// console.log('🚀 ~ file: ProfileN.js ~ line 79 ~ ProfileN ~ update ~ data', data);
+		// console.log('🚀 ~ file: ElevationProfile.js ~ line 79 ~ ElevationProfile ~ update ~ model', model);
+		// console.log('🚀 ~ file: ElevationProfile.js ~ line 79 ~ ElevationProfile ~ update ~ data', data);
 		switch (type) {
 			case Update_Chart_Data:
 				return { ...model, data: data };
@@ -1881,17 +1891,21 @@ export class ProfileN extends MvuElement {
  * @override
  */
 	onInitialize() {
+
+		this.style.width = '100%';
+		this.style.height = '14em';
+
 		// const modelData = myData.heights.map((height) => height.alts.COMB);
-		// console.log('🚀 ~ file: ProfileN.js ~ line 92 ~ ProfileN ~ onInitialize ~ modelData', modelData);				// stop flat color
+		// console.log('🚀 ~ file: ElevationProfile.js ~ line 92 ~ ElevationProfile ~ onInitialize ~ modelData', modelData);				// stop flat color
 
 
 		// setInterval(() => {
 		// 	const { labels, data } = this.getModel();
-		// 	console.log('🚀🚀 ~ file: ProfileN.js ~ line 99 ~ ProfileN ~ setInterval ~ data', data);
+		// 	console.log('🚀🚀 ~ file: ElevationProfile.js ~ line 99 ~ ElevationProfile ~ setInterval ~ data', data);
 		// 	// const modelDataData = modelData.data;
-		// 	// console.log('🚀 ~ file: ProfileN.js ~ line 97 ~ ProfileN ~ setInterval ~ modelDataData', modelDataData);
+		// 	// console.log('🚀 ~ file: ElevationProfile.js ~ line 97 ~ ElevationProfile ~ setInterval ~ modelDataData', modelDataData);
 		// 	// const datasets = modelDataData[0].datasets[0];
-		// 	// console.log('🚀 ~ file: ProfileN.js ~ line 99 ~ ProfileN ~ setInterval ~ datasets', datasets);
+		// 	// console.log('🚀 ~ file: ElevationProfile.js ~ line 99 ~ ElevationProfile ~ setInterval ~ datasets', datasets);
 		// 	const modelData = data.map(() => getRandomInt(1000));
 		// 	this.signal(Update_Chart_Data, modelData);
 
@@ -1899,7 +1913,7 @@ export class ProfileN extends MvuElement {
 	}
 
 	_createChart() {
-		const ctx = this.shadowRoot.querySelector('.profilen').getContext('2d');
+		const ctx = this.shadowRoot.querySelector('.elevationprofile').getContext('2d');
 		this._chart = new Chart(ctx, config);
 	}
 
@@ -1909,6 +1923,7 @@ export class ProfileN extends MvuElement {
 	onAfterRender(firsttime) {
 		if (firsttime) {
 			this._createChart();
+
 		}
 	}
 
@@ -1918,7 +1933,7 @@ export class ProfileN extends MvuElement {
 	// eslint-disable-next-line no-unused-vars
 	createView(model) {
 		// const data = model.data;
-		// console.log('🚀🚀🚀 ~ file: ProfileN.js ~ line 125 ~ ProfileN ~ createView ~ data', data);
+		// console.log('🚀🚀🚀 ~ file: ElevationProfile.js ~ line 125 ~ ElevationProfile ~ createView ~ data', data);
 
 		// if (this._chart) {
 		// 	console.log('🚀🚀🚀🚀🚀🚀🚀 ~ datasets', this._chart.data.datasets);
@@ -1938,14 +1953,15 @@ export class ProfileN extends MvuElement {
 		// 	` ;
 		return html`
 			<style>${css}</style>
-			<div class="chart-container" style="position: relative; height:20vh; width:80vh">
-				<canvas class="profilen" id="route-elevation-chart" ></canvas>
+
+			<div class="chart-container" style= "position: relative; height:100%; ">
+				<canvas class="elevationprofile" id="route-elevation-chart" ></canvas>
 				sumUp: ${myData.sumUp} sumDown: ${myData.sumDown}
 			</div>
 			` ;
 	}
 
 	static get tag() {
-		return 'ba-profile-n';
+		return 'ba-elevationprofile-n';
 	}
 }

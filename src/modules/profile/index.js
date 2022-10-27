@@ -1,8 +1,8 @@
 import { Profile } from './components/Profile';
-import { ProfileN } from './components/ProfileN';
+import { ElevationProfile } from './components/ElevationProfile';
 
-if (!window.customElements.get(ProfileN.tag)) {
-	window.customElements.define(ProfileN.tag, ProfileN);
+if (!window.customElements.get(ElevationProfile.tag)) {
+	window.customElements.define(ElevationProfile.tag, ElevationProfile);
 }
 if (!window.customElements.get(Profile.tag)) {
 	window.customElements.define(Profile.tag, Profile);
