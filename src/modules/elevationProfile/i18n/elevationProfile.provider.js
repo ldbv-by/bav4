@@ -4,21 +4,25 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				elevationProfile_header: 'this is a header',
 				elevationProfile_distance: 'Distance',
 				elevationProfile_incline: 'Incline',
 				elevationProfile_sumUp: 'SumUp',
 				elevationProfile_sumDown: 'SumDown',
-				elevationProfile_elevation: 'Elevation'
+				elevationProfile_elevation: 'Elevation',
+				elevationProfile_unknown: 'unknown'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
+				elevationProfile_header: 'this is a header',
 				elevationProfile_distance: 'Entfernung',
 				elevationProfile_incline: 'Steigung',
 				elevationProfile_sumUp: 'SumUp de',
 				elevationProfile_sumDown: 'SumDown de',
-				elevationProfile_elevation: 'Höhe'
+				elevationProfile_elevation: 'Höhe',
+				elevationProfile_unknown: 'unbekannt'
 			};
 
 		default:

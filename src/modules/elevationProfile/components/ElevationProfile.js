@@ -1814,7 +1814,7 @@ export class ElevationProfile extends MvuElement {
 								incline = heightsElement.incline + '%';
 							}
 							else {
-								incline = 'unbekannt';
+								incline = translate('elevationProfile_unknown');
 							}
 						}
 
