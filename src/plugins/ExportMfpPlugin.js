@@ -83,7 +83,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				try {
 					const url = await mfpService.createJob(spec);
 					if (url) {
-						environmentService.getWindow().open(url, '_blank');
+						environmentService.getWindow().location = url;
 					}
 				}
 				catch (ex) {
