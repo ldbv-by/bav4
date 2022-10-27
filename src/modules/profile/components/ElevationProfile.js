@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { html } from 'lit-html';
 import css from './profile.css';
 import { MvuElement } from '../../MvuElement';
@@ -1637,7 +1636,6 @@ const myData = {
 	'sumUp': 1971.6,
 	'sumDown': 1954.7
 };
-// let firstTime = true;
 
 const labels = myData.heights.map((height) => height.dist);
 const data = myData.heights.map((height) => height.alts.COMB);
@@ -1652,16 +1650,9 @@ const chartData = {
 		borderColor: ((context) => {
 			const chart = context.chart;
 			const { ctx, chartArea } = chart;
-
 			if (!chartArea) {
 				return null;
 			}
-
-			// if (firstTime) {
-			// 	firstTime = false;
-			// 	console.log('🚀 ~ file: ElevationProfile.js ~ line 1640 ~ context', chart);
-			// }
-
 			return getGradient(ctx, chartArea);
 		}),
 		tension: 0.1,
@@ -1687,19 +1678,16 @@ const getGradient = (ctx, chartArea) => {
 	// start with 'flat' color
 	gradientBg.addColorStop(0, flatColor);
 	let currentInclineType = InclineType.Flat;
-	// currentInclineType = startFlat(gradientBg, 0, currentInclineType);
 	myData.heights.forEach((element, index) => {
 		if (currentInclineType === InclineType.Steep) {
-			// steep
-			// look for first element with incline greater X
+			// look for first element with incline less than X
 			if (!element.incline || element.incline <= hereStartsSteep) {
 				const xPoint = xPointWidth / chartArea.width * index ;
 				currentInclineType = startFlat(gradientBg, xPoint, currentInclineType);
 			}
 		}
 		else {
-			// flat
-			// look for first element with incline less than X
+			// look for first element with incline greater X
 			if (element.incline && element.incline > hereStartsSteep) {
 				const xPoint = xPointWidth / chartArea.width * index ;
 				currentInclineType = startSteep(gradientBg, xPoint, currentInclineType);
@@ -1709,11 +1697,9 @@ const getGradient = (ctx, chartArea) => {
 
 	// end with currentInclineType - color
 	if (currentInclineType === InclineType.Steep) {
-		// steep
 		gradientBg.addColorStop(1, steepColor);
 	}
 	else {
-		// flat
 		gradientBg.addColorStop(1, flatColor);
 	}
 
@@ -1724,7 +1710,7 @@ function startSteep(gradientBg, xPoint) {
 	// stop flat color
 	gradientBg.addColorStop(xPoint, flatColor);
 	// start steep color
-	gradientBg.addColorStop(xPoint + 0.00001, steepColor);
+	gradientBg.addColorStop(xPoint, steepColor);
 
 	return InclineType.Steep;
 }
@@ -1733,88 +1719,55 @@ function startFlat(gradientBg, xPoint) {
 	// stop steep color
 	gradientBg.addColorStop(xPoint, steepColor);
 	// start flat color
-	gradientBg.addColorStop(xPoint + 0.00001, flatColor);
+	gradientBg.addColorStop(xPoint, flatColor);
 
 	return InclineType.Flat;
 }
 
-// const angle = Math.PI / 180;
-
-const parentEventHandler = Chart.prototype._eventHandler;
-Chart.prototype._eventHandler = function () { // chart
-	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1629 ~ chart', chart);
-	// const {ctx}=chart;
-
-	const ret = parentEventHandler.apply(this, arguments);
-
-	const x = arguments[0].x;
-	// const y = arguments[0].y;
-
-	this.clear();
-	this.draw();
-
-	// this.ctx.beginPath();
-	// this.ctx.fillStyle = 'rgba(255, 26, 104, 0.5)';
-	// this.ctx.arc(x, y, 5, 0, angle * 360, false);
-	// this.ctx.fill();
-	// this.ctx.closePath();
-	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1761 ~ this.scales', this.scales);
-	// console.log('🚀 ~ file: ElevationProfile.js ~ line 1761 ~ this.scales', this.chartArea);
-
-	if (x > this.chartArea.left && x < this.chartArea.right) {
-		const yScale = this.scales.y;
-		this.ctx.beginPath();
-		this.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-		this.ctx.strokeStyle = '#ff0000';
-		this.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-		this.ctx.stroke();
-	}
-
-	// setCoordinates([x, y]);
-
-	return ret;
-};
-
-// const lollipopGrid = {
-// 	id: 'lollipopGridxx',
-// 	beforeDatasetsDraw(chart) {
-// 		// console.log('🚀 ~ chart', chart);
-// 		const { ctx, scales: { x, y }, chartArea: { top } } = chart;
-// 		ctx.save();
-
-// 		// x._gridLineItems.forEach((circle))
-// 	}
-// };
-
 const config = {
 	type: 'line',
 	data: chartData,
-	plugins: [parentEventHandler, // lollipopGrid,
+	plugins: [
 		{
-		// eslint-disable-next-line no-unused-vars
-			beforeInit: (chart, args, options) => {
-				const maxHeight = Math.max(...chart.data.datasets[0].data);
+			id: 'shortenLeftEndOfScale',
+			beforeInit: (chart) => { // , args, options
 				chart.options.scales.x.min = Math.min(...chart.data.labels);
 				chart.options.scales.x.max = Math.max(...chart.data.labels);
-				chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
-				chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
+
+				// const maxHeight = Math.max(...chart.data.datasets[0].data);
+				// chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
+				// chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
 			}
-		}],
+		},
+		{
+			id: 'drawVerticalLineAtMousePosition',
+			afterTooltipDraw(chart, args) { // pluginOptions
+				const tooltip = args.tooltip;
+				const x = tooltip.caretX;
+				const { scales, ctx } = chart;
+
+				const yScale = scales.y;
+				ctx.beginPath();
+				chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+				chart.ctx.strokeStyle = '#ff0000';
+				chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+				chart.ctx.stroke();
+			}
+		}
+	],
 	options: {
 		responsive: true,
-		animation: false,
+		animation: false, // HINT: UX decision
 		maintainAspectRatio: false,
-		interaction: { mode: 'x' },
 
 		scales: {
-			x: { type: 'linear', grid: {} }, // , grid: { display: false, borderWidth: 0 }
-			y: { type: 'linear', beginAtZero: true },
-			y1: { type: 'linear', display: true, position: 'right', beginAtZero: true, grid: { drawOnChartArea: false } }
+			x: { type: 'linear' },
+			y: { type: 'linear', beginAtZero: false }, // HINT: UX decision
+			y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } }
 		},
 
 		plugins:
 		{
-			footer: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
 			title: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
 			legend: { display: true },
 			tooltip: {
@@ -1826,14 +1779,13 @@ const config = {
 						return 'Header';
 					},
 					label: (tooltipItem) => {
-						// console.log('🚀 ~ file: ElevationProfile.js ~ line 1830 ~ tooltipItem', tooltipItem);
 						let incline = '';
 						const { parsed } = tooltipItem;
-						const found = myData.heights.find(element => element.dist === parsed.x);
-						if (found) {
-							setCoordinates([found.easting, found.northing]);
-							if (found.incline) {
-								incline = found.incline + '%';
+						const heightsElement = myData.heights.find(element => element.dist === parsed.x);
+						if (heightsElement) {
+							setCoordinates([heightsElement.easting, heightsElement.northing]);
+							if (heightsElement.incline) {
+								incline = heightsElement.incline + '%';
 							}
 							else {
 								incline = 'unbekannt';
@@ -1841,24 +1793,19 @@ const config = {
 						}
 
 						const content = ['Distance: ' + tooltipItem.label + 'm',
-							'Elevation: ' + tooltipItem.raw + 'm',
-							'Steigung: ' + incline];
+							'Elevation: ' + tooltipItem.raw + 'm'
+							,
+							'Steigung: ' + incline
+						];
 						return content;
 					},
 					footer: () => {
 						return 'Footer';
 					}
-					// ,
-					// labelPointStyle: function () {
-					// 	return {
-					// 		pointStyle: 'triangle',
-					// 		rotation: 0
-					// 	};
-					// }
 				}
 			}
-		}
 
+		}
 	}
 };
 
@@ -1879,8 +1826,6 @@ export class ElevationProfile extends MvuElement {
  * @override
  */
 	update(type, data, model) {
-		// console.log('🚀 ~ file: ElevationProfile.js ~ line 79 ~ ElevationProfile ~ update ~ model', model);
-		// console.log('🚀 ~ file: ElevationProfile.js ~ line 79 ~ ElevationProfile ~ update ~ data', data);
 		switch (type) {
 			case Update_Chart_Data:
 				return { ...model, data: data };
@@ -1891,25 +1836,8 @@ export class ElevationProfile extends MvuElement {
  * @override
  */
 	onInitialize() {
-
 		this.style.width = '100%';
 		this.style.height = '14em';
-
-		// const modelData = myData.heights.map((height) => height.alts.COMB);
-		// console.log('🚀 ~ file: ElevationProfile.js ~ line 92 ~ ElevationProfile ~ onInitialize ~ modelData', modelData);				// stop flat color
-
-
-		// setInterval(() => {
-		// 	const { labels, data } = this.getModel();
-		// 	console.log('🚀🚀 ~ file: ElevationProfile.js ~ line 99 ~ ElevationProfile ~ setInterval ~ data', data);
-		// 	// const modelDataData = modelData.data;
-		// 	// console.log('🚀 ~ file: ElevationProfile.js ~ line 97 ~ ElevationProfile ~ setInterval ~ modelDataData', modelDataData);
-		// 	// const datasets = modelDataData[0].datasets[0];
-		// 	// console.log('🚀 ~ file: ElevationProfile.js ~ line 99 ~ ElevationProfile ~ setInterval ~ datasets', datasets);
-		// 	const modelData = data.map(() => getRandomInt(1000));
-		// 	this.signal(Update_Chart_Data, modelData);
-
-		// }, 1000);
 	}
 
 	_createChart() {
@@ -1923,7 +1851,6 @@ export class ElevationProfile extends MvuElement {
 	onAfterRender(firsttime) {
 		if (firsttime) {
 			this._createChart();
-
 		}
 	}
 
@@ -1944,13 +1871,6 @@ export class ElevationProfile extends MvuElement {
 		// 	this._chart.data.datasets[0].data = data;
 		// 	this._chart.update();
 		// }
-
-		// return html`
-		// 	<style>${css}</style>
-		// 	<div class="chart-container" style="position: relative; style="width:100%;" >
-		// 		<canvas class="profilen" id="route-elevation-chart" ></canvas>
-		// 	</div>
-		// 	` ;
 		return html`
 			<style>${css}</style>
 

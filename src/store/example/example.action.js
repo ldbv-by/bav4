@@ -30,7 +30,6 @@ export const setLinkList = (linklist) => {
   * @param {Coordinates} coordinates
   */
 export const setCoordinates = (coordinates) => {
-	// console.log('🚀 ~ file: example.action.js ~ line 33 ~ setCoordinates ~ coordinates', coordinates);
 	getStore().dispatch({
 		type: EXAMPLE_COORDINATES_CHANGED,
 		payload: coordinates
