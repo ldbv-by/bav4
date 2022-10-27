@@ -1,5 +1,5 @@
 :host {
-	display: inline-block
+	display: inline-block;
 }
 
 .menu__button {
@@ -62,5 +62,5 @@
 }
 
 .collapsed {
-	display: none
+	display: none;
 }

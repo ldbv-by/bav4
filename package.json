@@ -55,7 +55,7 @@
     "build:dev": "webpack --mode=development --devtool=inline-source-map",
     "build:prod": "webpack --mode=production",
     "doc": "jsdoc -c jsdoc.conf.json",
-    "lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\"; npx stylelint --fix \"src/**/*.css\"",
+    "lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\"; npx stylelint --fix \"src/**/*.css\"; npx stylelint \"src/**/*.css\"",
     "test": "npx playwright install; KARMA_BROWSERS=$npm_config_browsers karma start --single-run",
     "test:single": "npx playwright install; env KARMA_SPEC=$npm_config_spec env KARMA_BROWSER=$npm_config_browser karma start karma.conf.single.js --single-run",
     "test:debug": "karma start --single-run --browsers ChromeDebugging",

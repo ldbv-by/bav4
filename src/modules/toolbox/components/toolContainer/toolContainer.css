@@ -11,7 +11,7 @@
 	position: absolute;
 	top: 0;   
 	right: 0;
-	padding: 0
+	padding: 0;
 }
 .tool-container__close-button {
 	margin: 0;
@@ -27,7 +27,7 @@
 	padding: .7em;
 }
 .tool-container__close-button:hover {
-	background: var(--header-background-color)
+	background: var(--header-background-color);
 }
 .tool-container__content {
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);  

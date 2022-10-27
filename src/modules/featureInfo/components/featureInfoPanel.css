@@ -102,7 +102,7 @@ caption {
 }
 
 .table-striped>tbody>tr:nth-of-type(odd) {
-	background: var(--header-background-color)
+	background: var(--header-background-color);
 }
 
 img {

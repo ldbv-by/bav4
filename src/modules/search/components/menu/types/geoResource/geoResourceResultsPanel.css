@@ -40,7 +40,7 @@
 	-moz-transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	transform: rotate(90deg);
-	transition: all var(--animation-duration-large-open) var(--animation-easing-open)
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
 }
 .chevron {
 	position: relative;
