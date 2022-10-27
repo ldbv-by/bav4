@@ -32,26 +32,12 @@ describe('ElevationProfile', () => {
 
 			expect(element.shadowRoot.querySelectorAll('canvas')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('canvas')[0].classList.contains('elevationprofile')).toBeTrue();
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ file: ElevationProfile.test.js ~ line 35 ~ it ~ element.shadowRoot.querySelectorAll(\'canvas\')[0].classList', element.shadowRoot.querySelectorAll('canvas')[0].classList);
 			// expect(chart.data.labels).toEqual(['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']);
 			// expect(chart.data.datasets[0].data).toEqual([0, 0, 0, 0, 0, 0]);
-			expect(chart.data.datasets[0].backgroundColor).toEqual([
-				'rgba(255, 99, 132, 0.2)',
-				'rgba(54, 162, 235, 0.2)',
-				'rgba(255, 206, 86, 0.2)',
-				'rgba(75, 192, 192, 0.2)',
-				'rgba(153, 102, 255, 0.2)',
-				'rgba(255, 159, 64, 0.2)'
-			]);
-			expect(chart.data.datasets[0].borderColor).toEqual([
-				'rgba(255, 99, 132, 1)',
-				'rgba(54, 162, 235, 1)',
-				'rgba(255, 206, 86, 1)',
-				'rgba(75, 192, 192, 1)',
-				'rgba(153, 102, 255, 1)',
-				'rgba(255, 159, 64, 1)'
-			]);
-			expect(chart.data.datasets[0].borderWidth).toBe(1);
+			expect(chart.data.datasets[0].backgroundColor).toBe('#eeeeff');
+			expect(chart.data.datasets[0].borderWidth).toBe(4);
 			expect(chart.options.responsive).toBeTrue();
 		});
 	});

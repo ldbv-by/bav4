@@ -1,8 +1,9 @@
 import { html } from 'lit-html';
-import css from './profile.css';
+import css from './elevationProfile.css';
 import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { setCoordinates } from '../../../store/example/example.action';
+import { $injector } from '../../../injection';
 
 const Update_Chart_Data = 'update_chart_data';
 
@@ -1637,8 +1638,17 @@ const myData = {
 	'sumDown': 1954.7
 };
 
+const hereStartsSteep = 10;
+const flatColor = '#66eeff';
+const steepColor = '#ee4444';
+const InclineType = {
+	Flat: 'Flat',
+	Steep: 'Steep'
+};
+
 const labels = myData.heights.map((height) => height.dist);
 const data = myData.heights.map((height) => height.alts.COMB);
+
 const chartData = {
 	labels,
 	datasets: [{
@@ -1659,14 +1669,6 @@ const chartData = {
 		pointRadius: 0,
 		spanGaps: true
 	}]
-};
-
-const hereStartsSteep = 10;
-const flatColor = '#66eeff';
-const steepColor = '#ee4444';
-const InclineType = {
-	Flat: 'Flat',
-	Steep: 'Steep'
 };
 
 const getGradient = (ctx, chartArea) => {
@@ -1724,52 +1726,76 @@ function startFlat(gradientBg, xPoint) {
 	return InclineType.Flat;
 }
 
-const config = {
-	type: 'line',
-	data: chartData,
-	plugins: [
+
+/**
+ * @author nklein
+ */
+export class ElevationProfile extends MvuElement {
+
+	constructor() {
+		super({
+			data: [labels, data]
+		});
+		this._chart = null;
+
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+	}
+
+
+	_getConfig() {
+		const translate = (key) => this._translationService.translate(key);
+
+		const config = {
+			type: 'line',
+			data: chartData,
+			plugins: [
+				{
+					id: 'shortenLeftEndOfScale',
+					beforeInit: (chart) => { // , args, options
+						chart.options.scales.x.min = Math.min(...chart.data.labels);
+						chart.options.scales.x.max = Math.max(...chart.data.labels);
+
+						// const maxHeight = Math.max(...chart.data.datasets[0].data);
+						// chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
+						// chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
+					}
+				},
+				{
+					id: 'drawVerticalLineAtMousePosition',
+					afterTooltipDraw(chart, args) { // pluginOptions
+						const tooltip = args.tooltip;
+						const x = tooltip.caretX;
+						const { scales, ctx } = chart;
+
+						const yScale = scales.y;
+						ctx.beginPath();
+						chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+						chart.ctx.strokeStyle = '#ff0000';
+						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+						chart.ctx.stroke();
+					}
+				}
+			],
+			options: {
+				responsive: true,
+				animation: false, // HINT: UX decision
+				maintainAspectRatio: false,
+
+				scales: {
+					x: { type: 'linear' },
+					y: { type: 'linear', beginAtZero: false }, // HINT: UX decision
+					y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } }
+				},
+
+				plugins:
 		{
-			id: 'shortenLeftEndOfScale',
-			beforeInit: (chart) => { // , args, options
-				chart.options.scales.x.min = Math.min(...chart.data.labels);
-				chart.options.scales.x.max = Math.max(...chart.data.labels);
-
-				// const maxHeight = Math.max(...chart.data.datasets[0].data);
-				// chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
-				// chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
-			}
-		},
-		{
-			id: 'drawVerticalLineAtMousePosition',
-			afterTooltipDraw(chart, args) { // pluginOptions
-				const tooltip = args.tooltip;
-				const x = tooltip.caretX;
-				const { scales, ctx } = chart;
-
-				const yScale = scales.y;
-				ctx.beginPath();
-				chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-				chart.ctx.strokeStyle = '#ff0000';
-				chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-				chart.ctx.stroke();
-			}
-		}
-	],
-	options: {
-		responsive: true,
-		animation: false, // HINT: UX decision
-		maintainAspectRatio: false,
-
-		scales: {
-			x: { type: 'linear' },
-			y: { type: 'linear', beginAtZero: false }, // HINT: UX decision
-			y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false } }
-		},
-
-		plugins:
-		{
-			title: { align: 'end', display: true, text: 'hier geht was Distance, m / Elevation, m' },
-			legend: { display: true },
+			title: { align: 'end', display: true, text: 'hier geht was ' +
+				translate('elevationProfile_distance') +
+				', m / ' +
+				translate('elevationProfile_elevation') +
+				', m' },
+			legend: { display: false },
 			tooltip: {
 				displayColors: false,
 				mode: 'index',
@@ -1792,10 +1818,13 @@ const config = {
 							}
 						}
 
-						const content = ['Distance: ' + tooltipItem.label + 'm',
-							'Elevation: ' + tooltipItem.raw + 'm'
-							,
-							'Steigung: ' + incline
+						const content = [
+							// 'Distance: ' + tooltipItem.label + 'm',
+							// 'Elevation: ' + tooltipItem.raw + 'm',
+							// 'Incline: ' + incline
+							translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm',
+							translate('elevationProfile_elevation') + ': ' + tooltipItem.raw + 'm',
+							translate('elevationProfile_incline') + ': ' + incline
 						];
 						return content;
 					},
@@ -1806,21 +1835,12 @@ const config = {
 			}
 
 		}
+			}
+		};
+
+		return config;
 	}
-};
 
-
-/**
- * @author taulinger
- */
-export class ElevationProfile extends MvuElement {
-
-	constructor() {
-		super({
-			data: [labels, data]
-		});
-		this._chart = null;
-	}
 
 	/**
  * @override
@@ -1842,7 +1862,7 @@ export class ElevationProfile extends MvuElement {
 
 	_createChart() {
 		const ctx = this.shadowRoot.querySelector('.elevationprofile').getContext('2d');
-		this._chart = new Chart(ctx, config);
+		this._chart = new Chart(ctx, this._getConfig());
 	}
 
 	/**
@@ -1859,6 +1879,7 @@ export class ElevationProfile extends MvuElement {
 */
 	// eslint-disable-next-line no-unused-vars
 	createView(model) {
+		const translate = (key) => this._translationService.translate(key);
 		// const data = model.data;
 		// console.log('🚀🚀🚀 ~ file: ElevationProfile.js ~ line 125 ~ ElevationProfile ~ createView ~ data', data);
 
@@ -1876,7 +1897,7 @@ export class ElevationProfile extends MvuElement {
 
 			<div class="chart-container" style= "position: relative; height:100%; ">
 				<canvas class="elevationprofile" id="route-elevation-chart" ></canvas>
-				sumUp: ${myData.sumUp} sumDown: ${myData.sumDown}
+				${translate('elevationProfile_sumUp')}: ${myData.sumUp} ${translate('elevationProfile_sumDown')}: ${myData.sumDown}
 			</div>
 			` ;
 	}
