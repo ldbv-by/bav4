@@ -62,7 +62,7 @@ describe('BvvMfpService', () => {
 
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
-			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
+			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
 			expect(instanceUnderTest._mfpCapabilities).toBeNull();
 
 			const mfpCapabilities = await instanceUnderTest.init();
@@ -72,7 +72,7 @@ describe('BvvMfpService', () => {
 
 		it('just provides the capabilities when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._mfpCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
+			instanceUnderTest._mfpCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
 
 			const mfpCapabilities = await instanceUnderTest.init();
 
@@ -119,7 +119,7 @@ describe('BvvMfpService', () => {
 
 		it('returns a MfpCapabilities object', async () => {
 			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities);
-			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts };
+			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
 			const instanceUnderTest = setup(provider);
 			await instanceUnderTest.init();
 

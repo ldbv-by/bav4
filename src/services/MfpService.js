@@ -96,8 +96,8 @@ export class BvvMfpService {
 	async init() {
 		if (!this._mfpCapabilities) {
 			try {
-				const { urlId, layouts, grSubstitutions } = await this._mfpCapabilitiesProvider();
-				this._mfpCapabilities = { layouts: layouts, grSubstitutions: grSubstitutions };
+				const { urlId, layouts, grSubstitutions, srid, extent } = await this._mfpCapabilitiesProvider();
+				this._mfpCapabilities = { layouts, grSubstitutions, srid, extent };
 				this._urlId = urlId;
 			}
 			catch (e) {

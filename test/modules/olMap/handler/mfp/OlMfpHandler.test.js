@@ -13,7 +13,6 @@ import { TestUtils } from '../../../../test-utils';
 
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point } from 'ol/geom';
-import { thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
@@ -43,7 +42,7 @@ describe('OlMfpHandler', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return null;
+			return { srid: '25832', extent: [] };
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1], mapSize: { width: 20, height: 20 } };
@@ -145,13 +144,16 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			const mfpBoundaryFeatureSpy = spyOn(handler._mfpBoundaryFeature, 'setStyle').and.callThrough();
 
+
 			handler.activate(map); // --> mfpLayer is now initialized
 			const mfpLayerSpy = spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function)).and.callThrough();
 			handler.activate(map);
 
-			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(thumbnailStyleFunction);
+			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(jasmine.any(Array));
+
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
 		});
+
 
 		it('updates mfpPage after store changes', () => {
 			const current = { id: 'bar', scale: 42 };
@@ -271,8 +273,8 @@ describe('OlMfpHandler', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo\n1:42');
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo\n1:42');
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo 1:42');
+			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo 1:42');
 		});
 	});
 
@@ -313,17 +315,13 @@ describe('OlMfpHandler', () => {
 	describe('_createMfpBoundary', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
+			const center = new Point([0, 0]);
 			setup();
+
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
-			const visibleViewPortSpy = spyOn(mapServiceMock, 'getVisibleViewport').and.callThrough();
-			const sridSpy = spyOn(mapServiceMock, 'getSrid').and.callThrough();
-			const geodeticSridSpy = spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.callThrough();
 
-			expect(classUnderTest._createMpfBoundary(pageSize)).toEqual(jasmine.any(Polygon));
-			expect(visibleViewPortSpy).toHaveBeenCalledTimes(1);
-			expect(sridSpy).toHaveBeenCalledTimes(1);
-			expect(geodeticSridSpy).toHaveBeenCalledTimes(1);
+			expect(classUnderTest._createMfpBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
 		});
 	});
 });
