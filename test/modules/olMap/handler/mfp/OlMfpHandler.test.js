@@ -114,6 +114,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._mfpLayer).toBeNull();
 		expect(handler._map).toBeNull();
 		expect(handler._pageSize).toBeNull();
+		expect(handler._geodeticProjection).toBe('EPSG:25832');
 	});
 
 	describe('when activated over olMap', () => {
@@ -143,44 +144,17 @@ describe('OlMfpHandler', () => {
 
 			const handler = new OlMfpHandler();
 			const mfpBoundaryFeatureSpy = spyOn(handler._mfpBoundaryFeature, 'setStyle').and.callThrough();
+			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.callThrough();
 
 			handler.activate(map); // --> mfpLayer is now initialized
 			const mfpLayerSpy = spyOn(handler._mfpLayer, 'on').withArgs('postrender', jasmine.any(Function)).and.callThrough();
 			handler.activate(map);
 
 			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(jasmine.any(Array));
+			expect(capabilitiesSpy).toHaveBeenCalledTimes(1);
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
 		});
 
-
-		it('initializing geodetic projection with default capabilities', () => {
-			const map = setupMap();
-			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({});
-			setup();
-
-			const handler = new OlMfpHandler();
-
-			expect(handler._geodeticProjection).toBe('EPSG:25832');
-			handler._geodeticProjection = 'EPSG:3857';
-
-			handler.activate(map);
-
-			expect(handler._geodeticProjection).toBe('EPSG:3857');
-		});
-
-		it('initializing geodetic projection with mfp capabilities', () => {
-			const map = setupMap();
-			setup();
-
-			const handler = new OlMfpHandler();
-
-			expect(handler._geodeticProjection).toBe('EPSG:25832');
-			handler._geodeticProjection = null;
-
-			handler.activate(map);
-
-			expect(handler._geodeticProjection).toBe('EPSG:25832');
-		});
 
 		it('updates mfpPage after store changes', () => {
 			const current = { id: 'bar', scale: 42 };
