@@ -19,6 +19,8 @@ describe('BvvMfpService', () => {
 	const scales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
 	const dpis = [125, 200];
 	const bvvMockCapabilities = {
+		srid: 3857,
+		extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 		grSubstitutions: {},
 		urlId: '0',
 		layouts: [
@@ -237,8 +239,10 @@ describe('BvvMfpService', () => {
 
 	describe('_newFallbackCapabilities', () => {
 
-		it('cancels a running MFP job', async () => {
+		it('returns fallback capabilities', async () => {
 			const expected = {
+				srid: 3857,
+				extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 				grSubstitutions: {},
 				layouts: [
 					{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
