@@ -143,7 +143,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		this._pageSize = toGeographicSize(layoutSize);
 		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
-		this._visibleViewport = this._mapService.getVisibleViewport(this._map.getTarget());
 		this._updateMfpPreview();
 	}
 
