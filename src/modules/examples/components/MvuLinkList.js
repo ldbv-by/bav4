@@ -59,7 +59,8 @@ export class MvuLinkList extends MvuElement {
 			${css}
 			</style>
 			<div class='ba_mvu_linklist'>					
-				<h2 id='llTitle'>Training Link - List -- ${currentCoordinates[0]} / ${currentCoordinates[1]}</h2>
+				<h2 id='llTitle'>Training Link - List</h2>
+				<h2> -- ${currentCoordinates[0]} / ${currentCoordinates[1]}</h2>
 				<input id="newname" placeholder="Enter new name">
 				<input id="newlink" placeholder="Enter new URL">
 				<ul>

@@ -19,6 +19,7 @@ describe('MvuLinkList', () => {
 
 	const fillInputFields = (mvuLinkList, newName, newLink) => {
 		const nameElement = mvuLinkList.shadowRoot.querySelector('#newname');
+		console.log('🚀 ~ file: MvuLinkList.test.js ~ line 22 ~ fillInputFields ~ nameElement', nameElement);
 		nameElement.value = newName;
 		nameElement.dispatchEvent(new Event('input'));
 
@@ -33,7 +34,8 @@ describe('MvuLinkList', () => {
 			example: {
 				linkList: [
 					{ name: initialName, link: initialLink, initial: true }
-				]
+				],
+				currentCoordinates: []
 			},
 			...state
 		};
@@ -82,6 +84,7 @@ describe('MvuLinkList', () => {
 	describe('when pressing the add and update buttons', () => {
 		it('should use the input fields', async () => {
 			const mvuLinkList = await setup();
+			console.log('🚀 ~ file: MvuLinkList.test.js ~ line 85 ~ it ~ mvuLinkList', mvuLinkList);
 
 			const { nameElement, linkElement } = fillInputFields(mvuLinkList, newName, newLink);
 

@@ -1,31 +1,42 @@
 import { TestUtils } from '../../../test-utils';
-import { ElevationProfile } from '../../../../src/modules/profile/components/ElevationProfile';
+import { ElevationProfile } from '../../../../src/modules/elevationProfile/components/ElevationProfile';
+import { $injector } from '../../../../src/injection';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
 
-	const setup = () => {
+	// const translationService = {
+	// 	register() { },
+	// 	translate: (key) => key
+	// };
 
+	const setup = () => {
 		TestUtils.setupStoreAndDi({});
+		$injector
+			// .registerSingleton('TranslationService', translationService);
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ElevationProfile.tag);
 	};
 
-	describe('constructor', () => {
+	// afterEach(() => {
+	// 	$injector.reset();
+	// });
 
-		it('sets a default model', async () => {
-			setup();
-			const element = new ElevationProfile();
+	// describe('constructor', () => {
 
-			expect(element.getModel()).toEqual({
-				data: [0, 0, 0, 0, 0, 0]
-			});
-			expect(element._chart).toBeNull();
-		});
-	});
+	// 	it('sets a default model', async () => {
+	// 		setup();
+	// 		const element = new ElevationProfile();
 
-	fdescribe('when initialized', () => {
+	// 		expect(element.getModel()).toEqual({
+	// 			data: [0, 0, 0, 0, 0, 0]
+	// 		});
+	// 		expect(element._chart).toBeNull();
+	// 	});
+	// });
 
+	describe('when initialized', () => {
 		it('renders a canvas element and initializes the chart', async () => {
 			const element = await setup();
 			const { _chart: chart } = element;
@@ -42,23 +53,23 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-	describe('when model changes', () => {
+	// describe('when model changes', () => {
 
-		beforeEach(function () {
-			jasmine.clock().install();
-		});
+	// 	beforeEach(function () {
+	// 		jasmine.clock().install();
+	// 	});
 
-		afterEach(function () {
-			jasmine.clock().uninstall();
-		});
+	// 	afterEach(function () {
+	// 		jasmine.clock().uninstall();
+	// 	});
 
-		it('updates the chart', async () => {
-			const { _chart: chart } = await setup();
+	// 	it('updates the chart', async () => {
+	// 		const { _chart: chart } = await setup();
 
-			jasmine.clock().tick(2000 + 100); // let's 'wait' for the first update of out model
+	// 		jasmine.clock().tick(2000 + 100); // let's 'wait' for the first update of out model
 
-			expect(chart.data.datasets[0].data.length).toBe(6);
-			expect(chart.data.datasets[0].data).not.toEqual([0, 0, 0, 0, 0, 0]);
-		});
-	});
+	// 		expect(chart.data.datasets[0].data.length).toBe(6);
+	// 		expect(chart.data.datasets[0].data).not.toEqual([0, 0, 0, 0, 0, 0]);
+	// 	});
+	// });
 });

@@ -1677,9 +1677,10 @@ const getGradient = (ctx, chartArea) => {
 	const numberOfPoints = myData.heights.length;
 	const xPointWidth = chartArea.width / numberOfPoints;
 
-	// start with 'flat' color
+	// start gradient with 'flat' color
 	gradientBg.addColorStop(0, flatColor);
 	let currentInclineType = InclineType.Flat;
+
 	myData.heights.forEach((element, index) => {
 		if (currentInclineType === InclineType.Steep) {
 			// look for first element with incline less than X
@@ -1708,23 +1709,17 @@ const getGradient = (ctx, chartArea) => {
 	return gradientBg;
 };
 
-function startSteep(gradientBg, xPoint) {
-	// stop flat color
+const startSteep = (gradientBg, xPoint) => {
 	gradientBg.addColorStop(xPoint, flatColor);
-	// start steep color
 	gradientBg.addColorStop(xPoint, steepColor);
-
 	return InclineType.Steep;
-}
+};
 
-function startFlat(gradientBg, xPoint) {
-	// stop steep color
+const startFlat = (gradientBg, xPoint) => {
 	gradientBg.addColorStop(xPoint, steepColor);
-	// start flat color
 	gradientBg.addColorStop(xPoint, flatColor);
-
 	return InclineType.Flat;
-}
+};
 
 
 /**
@@ -1755,7 +1750,7 @@ export class ElevationProfile extends MvuElement {
 					beforeInit: (chart) => { // , args, options
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
-
+						// if height must be changed, use following code
 						// const maxHeight = Math.max(...chart.data.datasets[0].data);
 						// chart.options.scales.y.max = maxHeight + Math.round(maxHeight * 0.2);
 						// chart.options.scales.y1.max = maxHeight + Math.round(maxHeight * 0.2);
@@ -1819,9 +1814,6 @@ export class ElevationProfile extends MvuElement {
 						}
 
 						const content = [
-							// 'Distance: ' + tooltipItem.label + 'm',
-							// 'Elevation: ' + tooltipItem.raw + 'm',
-							// 'Incline: ' + incline
 							translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm',
 							translate('elevationProfile_elevation') + ': ' + tooltipItem.raw + 'm',
 							translate('elevationProfile_incline') + ': ' + incline
