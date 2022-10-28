@@ -121,5 +121,5 @@
 	padding: .3em;
 }
 .close-icon:hover {
-	background: var(--header-background-color)
+	background: var(--header-background-color);
 }
