@@ -45,7 +45,7 @@ describe('mfp style utility functions', () => {
 		});
 	});
 
-	describe('thumbnailStyleFunction', () => {
+	describe('createThumbnailStyleFunction', () => {
 
 		it('should create a style ', () => {
 
@@ -74,6 +74,99 @@ describe('mfp style utility functions', () => {
 			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
 			expect(style.getText().getStroke().getWidth()).toBe(2);
 			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
+		});
+
+		describe('with a warnstyle', () => {
+
+			it('should have a stroke style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+
+				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 1]);
+				expect(style.getStroke().getWidth()).toBe(4);
+			});
+			it('should have a text style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', []);
+
+				const style = styles[1];
+
+				expect(style.getText().getText()).toEqual('bar');
+				expect(style.getText().getTextAlign()).toBe('center');
+				expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
+				expect(style.getText().getStroke().getWidth()).toBe(2);
+				expect(style.getText().getFill().getColor()).toEqual([250, 90, 90, 1]);
+			});
+
+			it('should have a geometry function ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+
+				expect(style.getGeometry()).toEqual(jasmine.any(Function));
+			});
+
+			it('should have a geometry function validating the extent ', () => {
+				const featureWithinOrEqualsStyleExtent = new Feature();
+				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
+
+				const featureIntersectingStyleExtent = new Feature();
+				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
+
+				const featureDisjoiningStyleExtent = new Feature();
+				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
+
+				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
+				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
+				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
+
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+				const geometryFunction = style.getGeometry();
+
+				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
+				expect(geometryFunction(featureIntersectingStyleExtent)).toBe(geometryIntersectingMock);
+				expect(geometryFunction(featureDisjoiningStyleExtent)).toBe(geometryDisjoiningMock);
+			});
+		});
+
+		describe('with a areaOfDistortionStyle', () => {
+
+			it('should have a pattern as fill style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[2];
+
+				expect(style.getFill().getColor()).toEqual(jasmine.any(CanvasPattern));
+			});
+
+			it('should have a geometry function validating the extent and creating a overlapping polygon', () => {
+				const featureWithinOrEqualsStyleExtent = new Feature();
+				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
+
+				const featureIntersectingStyleExtent = new Feature();
+				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
+
+				const featureDisjoiningStyleExtent = new Feature();
+				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
+
+				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
+				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
+				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
+
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[2];
+				const geometryFunction = style.getGeometry();
+
+
+				// we test only the creation of a polygon, not the specific coordinates due to usage of
+				// openlayers internal geometry functions for building intersections
+				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
+				expect(geometryFunction(featureIntersectingStyleExtent)).toEqual(jasmine.any(Polygon));
+				expect(geometryFunction(featureDisjoiningStyleExtent)).toEqual(jasmine.any(Polygon));
+			});
 		});
 
 
