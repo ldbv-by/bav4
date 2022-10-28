@@ -1,11 +1,13 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
 import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+
 /**
- *
  * @typedef {Object} MfpCapabilities
- * @property {Array<MfpLayout>} layouts
- * @property {Object} grSubstitutions
+ * @property {Array<MfpLayout>} layouts available layouts
+ * @property {Object} grSubstitutions map containing non-printable GeoResource ids that must be replaced
+ * @property {number} srid SRID of the MFP service
+ * @property {Extent} extent printable extent (in 3857)
  */
 
 /**
@@ -24,7 +26,7 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  */
 
 /**
- * Service for persisting and loading ASCII based geodata.
+ * Service for creating a MapFishPrint report.
  * @author taulinger
  * @interface MfpService
  */
@@ -170,8 +172,10 @@ export class BvvMfpService {
 
 	_newFallbackCapabilities() {
 		return {
+			srid: 3857,
+			extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 			grSubstitutions: {},
-			layouts:	[
+			layouts: [
 				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
 			]

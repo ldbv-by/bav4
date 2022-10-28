@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="./logo.svg" height="128">
+   <img src="https://raw.githubusercontent.com/ldbv-by/bav4-nomigration/master/logo.svg" height="128">
 </p>
 <h1 align="center">
    BayernAtlas v4 <br><br>
