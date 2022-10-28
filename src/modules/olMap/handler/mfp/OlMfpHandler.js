@@ -43,10 +43,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._registeredObservers = [];
 		this._pageSize = null;
 		this._visibleViewport = null;
-
-		const { srid: mfpSrid } = this._mfpService.getCapabilities();
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
-		this._geodeticProjection = 'EPSG:' + mfpSrid;
 	}
 
 	/**
@@ -221,7 +218,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_createMpfBoundary(pageSize, center) {
-		const geodeticCenter = center.clone().transform(this._mapProjection, this._geodeticProjection);
+		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
 		const geodeticBoundingBox = [
@@ -232,7 +229,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		return geodeticBoundary.clone().transform(this._geodeticProjection, this._mapProjection);
+		return geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+	}
+
+	_getMfpProjection() {
+		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
 	_getAzimuth(polygon) {
