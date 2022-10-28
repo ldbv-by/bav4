@@ -55,6 +55,9 @@ export class OlMfpHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._map = olMap;
 		if (this._mfpLayer === null) {
+			const translate = (key) => this._translationService.translate(key);
+
+			const warnLabel = translate('olMap_handler_mfp_distortion_warning');
 			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
 			this._mfpLayer = new VectorLayer({
 				source: source
@@ -65,7 +68,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			const geodeticSRIDExtent = [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782];
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), 'Achtung! In den markierten Bereichen sind die Karten-Verzerrungen für Längenmessungen zu groß.', geodeticSRIDExtent));
+			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), warnLabel, geodeticSRIDExtent));
 			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
