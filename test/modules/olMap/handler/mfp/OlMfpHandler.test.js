@@ -42,7 +42,7 @@ describe('OlMfpHandler', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return null;
+			return { srid: '25832', extent: [] };
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1], mapSize: { width: 20, height: 20 } };
@@ -150,6 +150,36 @@ describe('OlMfpHandler', () => {
 
 			expect(mfpBoundaryFeatureSpy).toHaveBeenCalledOnceWith(jasmine.any(Array));
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
+		});
+
+
+		it('initializing geodetic projection with default capabilities', () => {
+			const map = setupMap();
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue({});
+			setup();
+
+			const handler = new OlMfpHandler();
+
+			expect(handler._geodeticProjection).toBe('EPSG:25832');
+			handler._geodeticProjection = 'EPSG:3857';
+
+			handler.activate(map);
+
+			expect(handler._geodeticProjection).toBe('EPSG:3857');
+		});
+
+		it('initializing geodetic projection with mfp capabilities', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+
+			expect(handler._geodeticProjection).toBe('EPSG:25832');
+			handler._geodeticProjection = null;
+
+			handler.activate(map);
+
+			expect(handler._geodeticProjection).toBe('EPSG:25832');
 		});
 
 		it('updates mfpPage after store changes', () => {

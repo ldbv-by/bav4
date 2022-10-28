@@ -44,7 +44,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = null;
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
-		this._geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
+		this._geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid(); // default srid
 
 	}
 
@@ -65,8 +65,9 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(this._getOptimalScale(olMap));
 
 			// init mfpBoundaryFeature
-			const geodeticSRIDExtent = [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782];
-
+			const { srid: mfpSrid, extent: mfpExtent } = this._mfpService.getCapabilities();
+			this._geodeticProjection = mfpSrid ? 'EPSG:' + mfpSrid : this._geodeticProjection;
+			const geodeticSRIDExtent = mfpExtent ?? [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782];
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), warnLabel, geodeticSRIDExtent));
 			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
