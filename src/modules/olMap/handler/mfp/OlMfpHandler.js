@@ -6,11 +6,10 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
-import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
+import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
-
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
@@ -63,8 +62,10 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(this._getOptimalScale(olMap));
 
 			// init mfpBoundaryFeature
+			const geodeticSRIDExtent = [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782];
+
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction(this._getPageLabel(mfpSettings)));
+			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), 'Achtung! In den markierten Bereichen sind die Karten-Verzerrungen für Längenmessungen zu groß.', geodeticSRIDExtent));
 			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));

@@ -5,7 +5,7 @@ import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
 import { Style, Text as TextStyle } from 'ol/style';
-import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, createThumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 
@@ -49,32 +49,34 @@ describe('mfp style utility functions', () => {
 
 		it('should create a style ', () => {
 
-			const styles = thumbnailStyleFunction('foo');
-			expect(styles).toHaveSize(2);
-			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style)]);
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
+			expect(styles).toHaveSize(3);
+			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style), jasmine.any(Style)]);
 		});
 
-		it('should create a style with a stroke style ', () => {
-			const styles = thumbnailStyleFunction('foo');
+		it('should create a base style with a stroke style ', () => {
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
 
-			expect(styles).toHaveSize(2);
+			expect(styles).toHaveSize(3);
 			const style = styles[0];
 			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
 			expect(style.getStroke().getWidth()).toBe(3);
 		});
 
 
-		it('should create a style with a text style ', () => {
-			const styles = thumbnailStyleFunction('foo');
+		it('should create a base style with a text style ', () => {
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
 
-			expect(styles).toHaveSize(2);
-			const style = styles[1];
+			expect(styles).toHaveSize(3);
+			const style = styles[0];
 			expect(style.getText().getText()).toEqual('  foo');
 			expect(style.getText().getTextAlign()).toBe('left');
 			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
 			expect(style.getText().getStroke().getWidth()).toBe(2);
 			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
 		});
+
+
 	});
 
 	describe('nullStyleFunction', () => {
