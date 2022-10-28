@@ -321,7 +321,7 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 
-			expect(classUnderTest._createMpfBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
+			expect(classUnderTest._createMfpBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
 		});
 	});
 });

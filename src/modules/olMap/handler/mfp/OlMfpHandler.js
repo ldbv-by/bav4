@@ -117,8 +117,8 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
-		const geometry = this._createMpfBoundary(this._pageSize, center);
-		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize, center);
+		const geometry = this._createMfpBoundary(this._pageSize, center);
+		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
@@ -217,7 +217,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
 	}
 
-	_createMpfBoundary(pageSize, center) {
+	_createMfpBoundary(pageSize, center) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
