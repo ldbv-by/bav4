@@ -128,10 +128,10 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 				font: `bold ${fontSizePX / 4}px sans-serif`,
 				stroke: new Stroke({
 					color: [255, 255, 255, 0.8],
-					width: 2
+					width: 3
 				}),
 				fill: new Fill({
-					color: [250, 90, 90, 1]
+					color: [250, 50, 50, 1]
 				}),
 				scale: 1,
 				offsetY: 15,

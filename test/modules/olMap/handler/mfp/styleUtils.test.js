@@ -94,8 +94,8 @@ describe('mfp style utility functions', () => {
 				expect(style.getText().getText()).toEqual('bar');
 				expect(style.getText().getTextAlign()).toBe('center');
 				expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
-				expect(style.getText().getStroke().getWidth()).toBe(2);
-				expect(style.getText().getFill().getColor()).toEqual([250, 90, 90, 1]);
+				expect(style.getText().getStroke().getWidth()).toBe(3);
+				expect(style.getText().getFill().getColor()).toEqual([250, 50, 50, 1]);
 			});
 
 			it('should have a geometry function ', () => {
