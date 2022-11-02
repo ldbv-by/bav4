@@ -29,10 +29,11 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_storage_offline).toBe('Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.');
 		expect(map.olMap_handler_featureInfo_not_available).toBe('Objekt-Info nicht verfügbar');
 		expect(map.olMap_handler_termsOfUse).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.');
-		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4\nQuerformat');
-		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4\nHochformat');
-		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3\nQuerformat');
-		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3\nHochformat');
+		expect(map.olMap_handler_mfp_distortion_warning).toBe('Achtung! Die für den Export verwendete Projektion besitzt in den markierten Bereichen\nVerzerrungen die nicht für Längenmessungen geeignet sind.');
+		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4 Querformat');
+		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 Hochformat');
+		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 Querformat');
+		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
 	});
 
 	it('provides translation for en', () => {
@@ -61,14 +62,15 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_storage_offline).toBe('Offline: Could not store layer-data. The data will get lost after this session.');
 		expect(map.olMap_handler_featureInfo_not_available).toBe('Object Information not available');
 		expect(map.olMap_handler_termsOfUse).toBe(''); // no termsOfUse in default/standalone-version
-		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4\nlandscape');
-		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4\nportrait');
-		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3\nlandscape');
-		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3\nportrait');
+		expect(map.olMap_handler_mfp_distortion_warning).toBe('Attention! The projection used for export has distortions in the marked areas which are not suitable for length measurements.');
+		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4 landscape');
+		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 portrait');
+		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
+		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 26;
+		const expectedSize = 27;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

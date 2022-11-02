@@ -5,7 +5,7 @@ import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
 import { Style, Text as TextStyle } from 'ol/style';
-import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, thumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, createThumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 
@@ -45,23 +45,131 @@ describe('mfp style utility functions', () => {
 		});
 	});
 
-	describe('thumbnailStyleFunction', () => {
+	describe('createThumbnailStyleFunction', () => {
 
 		it('should create a style ', () => {
 
-			const styles = thumbnailStyleFunction();
-			expect(styles).toHaveSize(1);
-			expect(styles).toEqual([jasmine.any(Style)]);
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
+			expect(styles).toHaveSize(3);
+			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style), jasmine.any(Style)]);
 		});
 
-		it('should create a style with a stroke style ', () => {
-			const styles = thumbnailStyleFunction();
+		it('should create a base style with a stroke style ', () => {
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
 
-			expect(styles).toHaveSize(1);
+			expect(styles).toHaveSize(3);
 			const style = styles[0];
 			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
 			expect(style.getStroke().getWidth()).toBe(3);
 		});
+
+
+		it('should create a base style with a text style ', () => {
+			const styles = createThumbnailStyleFunction('foo', 'bar', []);
+
+			expect(styles).toHaveSize(3);
+			const style = styles[0];
+			expect(style.getText().getText()).toEqual('  foo');
+			expect(style.getText().getTextAlign()).toBe('left');
+			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
+			expect(style.getText().getStroke().getWidth()).toBe(2);
+			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
+		});
+
+		describe('with a warnstyle', () => {
+
+			it('should have a stroke style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+
+				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 1]);
+				expect(style.getStroke().getWidth()).toBe(4);
+			});
+			it('should have a text style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', []);
+
+				const style = styles[1];
+
+				expect(style.getText().getText()).toEqual('bar');
+				expect(style.getText().getTextAlign()).toBe('center');
+				expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
+				expect(style.getText().getStroke().getWidth()).toBe(3);
+				expect(style.getText().getFill().getColor()).toEqual([250, 50, 50, 1]);
+			});
+
+			it('should have a geometry function ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+
+				expect(style.getGeometry()).toEqual(jasmine.any(Function));
+			});
+
+			it('should have a geometry function validating the extent ', () => {
+				const featureWithinOrEqualsStyleExtent = new Feature();
+				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
+
+				const featureIntersectingStyleExtent = new Feature();
+				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
+
+				const featureDisjoiningStyleExtent = new Feature();
+				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
+
+				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
+				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
+				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
+
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[1];
+				const geometryFunction = style.getGeometry();
+
+				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
+				expect(geometryFunction(featureIntersectingStyleExtent)).toBe(geometryIntersectingMock);
+				expect(geometryFunction(featureDisjoiningStyleExtent)).toBe(geometryDisjoiningMock);
+			});
+		});
+
+		describe('with a areaOfDistortionStyle', () => {
+
+			it('should have a pattern as fill style ', () => {
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[2];
+
+				expect(style.getFill().getColor()).toEqual(jasmine.any(CanvasPattern));
+			});
+
+			it('should have a geometry function validating the extent and creating a overlapping polygon', () => {
+				const featureWithinOrEqualsStyleExtent = new Feature();
+				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
+
+				const featureIntersectingStyleExtent = new Feature();
+				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
+
+				const featureDisjoiningStyleExtent = new Feature();
+				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
+
+				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
+				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
+				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
+
+				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+
+				const style = styles[2];
+				const geometryFunction = style.getGeometry();
+
+
+				// we test only the creation of a polygon, not the specific coordinates due to usage of
+				// openlayers internal geometry functions for building intersections
+				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
+				expect(geometryFunction(featureIntersectingStyleExtent)).toEqual(jasmine.any(Polygon));
+				expect(geometryFunction(featureDisjoiningStyleExtent)).toEqual(jasmine.any(Polygon));
+			});
+		});
+
+
 	});
 
 	describe('nullStyleFunction', () => {
@@ -181,59 +289,5 @@ describe('mfp style utility functions', () => {
 			expect(featurePropertySpy).toHaveBeenCalledWith('page_buffer');
 		});
 
-		it('draws text with mfpTextStyle', () => {
-			const expectedFillColor = 'rgba(255,255,255,0.4)';
-			const feature = createFeature('foo');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(fillTextSpy).toHaveBeenCalledWith('foo', 0.5, -34.5);
-			expect(featurePropertySpy).toHaveBeenCalledWith('name');
-		});
-
-		it('draws text with mfpTextStyle', () => {
-			const feature = createFeature('foo\nbar\nbaz');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillTextSpy).toHaveBeenCalledTimes(3);
-		});
-
-		it('does NOT draw overflowing text', () => {
-			const feature = createFeature('overflow text');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => {
-				return { width: 10 };
-			});
-
-			const fillTextSpy = spyOn(context, 'fillText').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillTextSpy).toHaveBeenCalledTimes(0);
-		});
 	});
 });

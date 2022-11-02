@@ -352,8 +352,10 @@ export class OlMap extends MvuElement {
 	/**
 	 * @override
 	 */
-	onAfterRender() {
-		this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
+		}
 	}
 
 	/**

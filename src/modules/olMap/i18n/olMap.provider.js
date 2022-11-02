@@ -26,10 +26,11 @@ export const provide = (lang) => {
 				olMap_handler_storage_offline: 'Offline: Could not store layer-data. The data will get lost after this session.',
 				olMap_handler_featureInfo_not_available: 'Object Information not available',
 				olMap_handler_termsOfUse: '', // no termsOfUse in default/standalone-version
-				olMap_handler_mfp_id_a4_landscape: 'DIN A4\nlandscape',
-				olMap_handler_mfp_id_a4_portrait: 'DIN A4\nportrait',
-				olMap_handler_mfp_id_a3_landscape: 'DIN A3\nlandscape',
-				olMap_handler_mfp_id_a3_portrait: 'DIN A3\nportrait'
+				olMap_handler_mfp_distortion_warning: 'Attention! The projection used for export has distortions in the marked areas which are not suitable for length measurements.',
+				olMap_handler_mfp_id_a4_landscape: 'DIN A4 landscape',
+				olMap_handler_mfp_id_a4_portrait: 'DIN A4 portrait',
+				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
+				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait'
 			};
 
 		case 'de':
@@ -57,10 +58,11 @@ export const provide = (lang) => {
 				olMap_handler_storage_offline: 'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.',
 				olMap_handler_featureInfo_not_available: 'Objekt-Info nicht verfügbar',
 				olMap_handler_termsOfUse: 'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.',
-				olMap_handler_mfp_id_a4_landscape: 'DIN A4\nQuerformat',
-				olMap_handler_mfp_id_a4_portrait: 'DIN A4\nHochformat',
-				olMap_handler_mfp_id_a3_landscape: 'DIN A3\nQuerformat',
-				olMap_handler_mfp_id_a3_portrait: 'DIN A3\nHochformat'
+				olMap_handler_mfp_distortion_warning: 'Achtung! Die für den Export verwendete Projektion besitzt in den markierten Bereichen\nVerzerrungen die nicht für Längenmessungen geeignet sind.',
+				olMap_handler_mfp_id_a4_landscape: 'DIN A4 Querformat',
+				olMap_handler_mfp_id_a4_portrait: 'DIN A4 Hochformat',
+				olMap_handler_mfp_id_a3_landscape: 'DIN A3 Querformat',
+				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat'
 			};
 
 		default:

@@ -133,7 +133,7 @@
 	font-size: .9rem; 
 	opacity: .9; 
 	margin-left: .5em;
-	font-weight: normal
+	font-weight: normal;
 }
 .tool-container__button:focus {
 	box-shadow: none;

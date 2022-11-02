@@ -2,6 +2,7 @@ import { $injector } from '../../../../../src/injection';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
@@ -234,8 +235,6 @@ describe('ExportMfpToolContent', () => {
 
 			const submitButton = element.shadowRoot.querySelector('#btn_submit');
 			submitButton.click();
-			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
-			cancelButton.click();
 
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
@@ -244,8 +243,7 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const submitButton = element.shadowRoot.querySelector('#btn_submit');
-			submitButton.click();
+			startJob({});
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
@@ -258,11 +256,7 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const submitButton = element.shadowRoot.querySelector('#btn_submit');
-			submitButton.click();
-
-			expect(store.getState().mfp.jobSpec.payload).toEqual(jasmine.any(Object));
-
+			startJob({});
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
 
@@ -273,8 +267,8 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const submitButton = element.shadowRoot.querySelector('#btn_submit');
-			submitButton.click();
+			startJob({});
+
 			const cancelButton = element.shadowRoot.querySelector('#btn_cancel');
 			cancelButton.click();
 

@@ -6,6 +6,9 @@ import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin
 import { $injector } from '../../src/injection/index.js';
 import { activate, cancelJob, deactivate, startJob } from '../../src/store/mfp/mfp.action.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
+import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { provide } from '../../src/plugins/i18n/exportMfpPlugin.provider.js';
 
 
 
@@ -20,27 +23,48 @@ describe('ExportMfpPlugin', () => {
 		getWindow: () => { }
 	};
 
+	const translationService = {
+		register() { },
+		translate: (key) => key
+	};
+
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			mfp: mfpReducer,
 			layers: layersReducer,
-			tools: toolsReducer
+			tools: toolsReducer,
+			notifications: notificationReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('MfpService', mfpService);
+			.registerSingleton('MfpService', mfpService)
+			.registerSingleton('TranslationService', translationService);
 		return store;
 	};
+
+	describe('constructor', () => {
+
+		it('registers an i18n provider', async () => {
+			const translationServiceSpy = spyOn(translationService, 'register');
+			setup();
+
+			new ExportMfpPlugin();
+
+			expect(translationServiceSpy).toHaveBeenCalledWith('exportMfpPluginProvider', provide);
+		});
+	});
 
 	describe('when not yet initialized and toolId changes', () => {
 
 		const getMockCapabilities = () => {
 			const scales = [1000, 5000];
 			const dpis = [125, 200];
-			return { grSubstitutions: {}, layouts: [
-				{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
-				{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
-			] };
+			return {
+				grSubstitutions: {}, layouts: [
+					{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
+					{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
+				]
+			};
 		};
 
 		it('initializes the mfp-slice-of state and updates the active property', async () => {
@@ -59,9 +83,31 @@ describe('ExportMfpPlugin', () => {
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeTrue();
 		});
+
+		it('emits a notification when MfpService#init throws an error', async () => {
+			const message = 'something got wrong';
+			const store = setup();
+			const instanceUnderTest = new ExportMfpPlugin();
+			await instanceUnderTest.register(store);
+			spyOn(mfpService, 'init').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+
+			setCurrentTool(ToolId.EXPORT);
+
+			// we have to wait for two async operations
+			await TestUtils.timeout();
+			expect(store.getState().mfp.current.id).toBeNull();
+			expect(store.getState().mfp.current.dpi).toBeNull();
+			expect(store.getState().mfp.current.scale).toBeNull();
+			await TestUtils.timeout();
+			expect(store.getState().mfp.active).toBeFalse();
+			expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_init_exception');
+			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
+		});
 	});
 
-	describe('when initilized and toolId changes', () => {
+	describe('when initialized and toolId changes', () => {
 
 		it('updates the active property (I)', async () => {
 			const store = setup();
@@ -126,15 +172,15 @@ describe('ExportMfpPlugin', () => {
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
 				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
-				const mockWindow = { open: () => {} };
+				const mockWindow = { location: null };
 				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const windowSpy = spyOn(mockWindow, 'open');
 
 				startJob(spec);
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
-				expect(windowSpy).toHaveBeenCalledWith(url, '_blank');
+				expect(mockWindow.location).toBe(url);
+				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 
 			it('just updates the state when MfpService returns NULL', async () => {
@@ -148,6 +194,26 @@ describe('ExportMfpPlugin', () => {
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
+				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+			});
+
+			it('emits a notification when #createJob throws an error', async () => {
+				const message = 'something got wrong';
+				const store = setup();
+				const instanceUnderTest = new ExportMfpPlugin();
+				await instanceUnderTest.register(store);
+				const spec = { foo: 'bar' };
+				spyOn(mfpService, 'createJob').withArgs(spec).and.rejectWith(new Error(message));
+				const errorSpy = spyOn(console, 'error');
+
+				startJob(spec);
+
+				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
+				await TestUtils.timeout();
+				expect(store.getState().mfp.jobSpec.payload).toBeNull();
+				expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
+				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
 			});
 		});
 
