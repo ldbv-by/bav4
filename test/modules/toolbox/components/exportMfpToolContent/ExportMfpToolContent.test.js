@@ -200,7 +200,7 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(1); //21
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
@@ -217,13 +217,95 @@ describe('ExportMfpToolContent', () => {
 				element.signal('update_map_size', { width: 420, height: 210 });
 
 				const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-				const layoutOption = scaleSelectElement.item(2); //21
+				const layoutOption = scaleSelectElement.item(2); //selected scale: 21
 				layoutOption.selected = true;
 				scaleSelectElement.dispatchEvent(new Event('change'));
 
 				expect(element.getModel().scale).toBe(1);
 				expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
 			});
+		});
+	});
+
+	describe('when the user press the minus button', () => {
+
+		it('changes store, decrease the scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const decreaseButtonElement = element.shadowRoot.querySelector('#decrease');
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(21);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
+
+			decreaseButtonElement.click();
+
+			expect(element.getModel().scale).toBe(42);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 42, dpi: 125 });
+		});
+
+		it('does NOT change the store on minimum scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const decreaseButtonElement = element.shadowRoot.querySelector('#decrease');
+			const layoutOption = scaleSelectElement.item(0); //selected scale: 42
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(42);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 42, dpi: 125 });
+
+			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			decreaseButtonElement.click();
+
+			expect(updateSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when the user press the plus button', () => {
+
+		it('changes store, increase the scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const increaseButtonElement = element.shadowRoot.querySelector('#increase');
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(21);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
+
+			increaseButtonElement.click();
+
+			expect(element.getModel().scale).toBe(1);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+		});
+
+		it('does NOT change the store on maximum scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const increaseButtonElement = element.shadowRoot.querySelector('#increase');
+			const layoutOption = scaleSelectElement.item(2); //selected scale: 1
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(1);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+
+			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			increaseButtonElement.click();
+
+			expect(updateSpy).not.toHaveBeenCalled();
 		});
 	});
 

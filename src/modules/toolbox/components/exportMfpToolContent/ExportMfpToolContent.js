@@ -156,7 +156,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 							${translate('toolbox_exportMfp_scale')}	
 						</div>
 						<div style='display: flex; justify-content: center'>	
-							<ba-icon id='increase' .icon='${minusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
+							<ba-icon id='decrease' .icon='${minusSvg}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
 							<select id='select_scale' @change=${onChangeScale}>							
 							${getScaleOptions(scales, scale)}
 							</select>
