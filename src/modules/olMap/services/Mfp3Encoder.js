@@ -237,7 +237,7 @@ export class BvvMfp3Encoder {
 		};
 
 		const createEmptySpecsAndWarn = () => {
-			console.warn(`Missing substitution georesource for layer '${olLayer.id}' and georesource '${wmtsGeoResource.id}'.`);
+			console.warn(`Missing substitution for GeoResource '${wmtsGeoResource.id}'.`);
 			return [];
 		};
 
