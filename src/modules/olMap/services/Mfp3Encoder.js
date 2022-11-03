@@ -111,7 +111,7 @@ export class BvvMfp3Encoder {
 			.filter(layer => {
 				const layerExtent = layer.getExtent();
 
-				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) : true;
+				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : true;
 			})
 			.flatMap(l => this._encode(l))
 			.reduce((layerSpecs, encodedLayer) => {
