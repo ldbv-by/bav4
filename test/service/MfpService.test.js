@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { BvvMfpService } from '../../src/services/MfpService';
-import { getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
 
 describe('BvvMfpService', () => {
 
@@ -31,7 +31,7 @@ describe('BvvMfpService', () => {
 		]
 	};
 
-	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMpfSpec) => {
+	const setup = (capabilitiesProvider = getMfpCapabilities, postMfpSpecProvider = postMfpSpec) => {
 		return new BvvMfpService(capabilitiesProvider, postMfpSpecProvider);
 	};
 
@@ -42,7 +42,7 @@ describe('BvvMfpService', () => {
 
 			expect(instanceUnderTest._abortController).toBeNull();
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(getMfpCapabilities);
-			expect(instanceUnderTest._createMpfSpecProvider).toEqual(postMpfSpec);
+			expect(instanceUnderTest._createMfpSpecProvider).toEqual(postMfpSpec);
 			expect(instanceUnderTest._urlId).toBe('0');
 		});
 
@@ -53,7 +53,7 @@ describe('BvvMfpService', () => {
 			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
 
 			expect(instanceUnderTest._mfpCapabilitiesProvider).toEqual(customCapabilitiesProvider);
-			expect(instanceUnderTest._createMpfSpecProvider).toEqual(customPostMfpSpecProvider);
+			expect(instanceUnderTest._createMfpSpecProvider).toEqual(customPostMfpSpecProvider);
 			expect(instanceUnderTest._urlId).toBe('0');
 		});
 	});
