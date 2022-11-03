@@ -247,6 +247,7 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_cancel')[0].type).toBe('loading');
 		});
 	});
 
@@ -274,6 +275,7 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
 	});
 });
