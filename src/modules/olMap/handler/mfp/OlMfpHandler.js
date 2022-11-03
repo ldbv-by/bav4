@@ -174,9 +174,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const width = resolution * (availableSize.width - Map_View_Margin * 2);
 		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
-		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
+		const { id } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
-
+		const mapScale = Math.round(resolution * Units_Ratio * Points_Per_Inch);
 		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
 		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
@@ -197,6 +197,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: replace with array.findLast()
 		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
 		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
+		const fallbackScale = findLast(scaleCandidates, (scale) => mapScale > scale);
 		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
 		return bestScale ? bestScale : fallbackScale;
 	}
