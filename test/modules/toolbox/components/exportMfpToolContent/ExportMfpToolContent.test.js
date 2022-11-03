@@ -239,7 +239,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
 
-		it('it displays the cancel-button', async () => {
+		it('displays the cancel-button', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -264,7 +264,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.jobSpec.payload).toBeNull();
 		});
 
-		it('it displays the submit-button again', async () => {
+		it('displays the submit-button again', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
