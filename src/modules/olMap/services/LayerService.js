@@ -119,6 +119,7 @@ export class LayerService {
 			case GeoResourceTypes.VT: {
 				return new MapLibreLayer({
 					id: id,
+					geoResourceId: geoResource.id,
 					opacity: opacity,
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined,
