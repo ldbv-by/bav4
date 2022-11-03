@@ -473,7 +473,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
 
-			expect(warnSpy).toHaveBeenCalledOnceWith('Missing substitution georesource for layer \'wmts\' and georesource \'test_something\'.');
+			expect(warnSpy).toHaveBeenCalledOnceWith('Missing substitution for GeoResource \'test_something\'.');
 			expect(actualSpec).toEqual([]);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(layerServiceSpy).not.toHaveBeenCalled();
