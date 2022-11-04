@@ -328,7 +328,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Foo CopyRight,Bar CopyRight',
+					dataOwner: 'Foo CopyRight, Bar CopyRight',
 					thirdPartyDataOwner: '',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
@@ -417,7 +417,7 @@ describe('BvvMfp3Encoder', () => {
 						rotation: null
 					},
 					dataOwner: '',
-					thirdPartyDataOwner: 'Foo CopyRight',
+					thirdPartyDataOwner: 'Foo CopyRight, Bar CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
@@ -460,7 +460,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Bar CopyRight,Baz CopyRight',
+					dataOwner: 'Bar CopyRight, Baz CopyRight',
 					thirdPartyDataOwner: 'Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
