@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { getMfpCapabilities, postMfpSpec } from './provider/mfp.provider';
 
 /**
  * @typedef {Object} MfpCapabilities
@@ -75,13 +75,13 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  */
 export class BvvMfpService {
 
-	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec) {
+	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMfpSpecProvider = postMfpSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
-		this._createMpfSpecProvider = createMpfSpecProvider;
+		this._createMfpSpecProvider = createMfpSpecProvider;
 		this._urlId = '0';
 	}
 
@@ -141,7 +141,7 @@ export class BvvMfpService {
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		try {
-			const result = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
+			const result = await this._createMfpSpecProvider(spec, this._urlId, this._abortController);
 			if (result) {
 				const { downloadURL } = result;
 				return downloadURL;
