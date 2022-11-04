@@ -141,8 +141,8 @@ export class BvvMfp3Encoder {
 					rotation: this._mfpProperties.rotation,
 					layers: layers
 				},
-				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(',') : null,
-				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(',') : '',
+				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(', ') : '',
+				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(', ') : '',
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
