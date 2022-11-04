@@ -33,7 +33,7 @@ describe('BvvMfp3Encoder', () => {
 		getCoordinateFromPixel: (p) => p,
 		getView: () => viewMock,
 		getLayers: () => {
-			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50] }] };
+			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true }] };
 		},
 		getOverlays: () => {
 			return { getArray: () => [] };
@@ -254,6 +254,34 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
+		it('does NOT encode a invisible layer', async () => {
+			const encoder = new BvvMfp3Encoder();
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => false };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true };
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
+			});
+			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does NOT encode a invisible layer without extent', async () => {
+			const encoder = new BvvMfp3Encoder();
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => false };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => true };
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
+			});
+			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalledTimes(1);
+		});
+
 		it('does NOT encode a layer, if a geoResource is not defined', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => null);
 			const encoder = new BvvMfp3Encoder();
@@ -283,8 +311,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -327,8 +355,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -371,8 +399,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -397,7 +425,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('resolves wmts layer with wmts-source to a mfp \'wmts\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'wmts');
@@ -430,7 +458,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('resolves wmts layer with xyz-source to a mfp \'wmts\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
 			const xyzGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
@@ -463,7 +491,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('does NOT resolve wmts layer to a mfp \'wmts\' spec due to missing substitution georesource', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'something');
 			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
@@ -486,7 +514,7 @@ describe('BvvMfp3Encoder', () => {
 					return { LAYERS: 'foo,bar', STYLES: 'baz' };
 				}
 			};
-			const wmsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
+			const wmsLayerMock = { get: () => 'foo', getSource: () => sourceMock, getOpacity: () => 1 };
 
 			const wmsGeoResourceMock = {
 				id: 'foo', format: 'image/png', get attribution() {
