@@ -185,7 +185,24 @@ export class OlMfpHandler extends OlLayerHandler {
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
 
-		const bestScale = scaleCandidates.findLast(scale => testScale > scale);
+		// todo: replace with array.findLast()
+		const findLast = (array, matcher) => {
+			// mocking the browser implementation of array.findLast() and
+			// return last or undefined (instead of null), to get identical results
+			let last = undefined;
+
+			array.forEach(e => {
+				if (matcher(e)) {
+					last = e;
+				}
+			});
+			return last;
+		};
+
+		// todo: replace with array.findLast()
+		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
+		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
+		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
 		return bestScale ? bestScale : scaleCandidates[0];
 	}
 
