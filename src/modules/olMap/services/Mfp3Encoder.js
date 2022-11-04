@@ -157,7 +157,6 @@ export class BvvMfp3Encoder {
 
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
-			console.warn('No geoResource found for Layer', layer);
 			return false;
 		}
 		switch (geoResource.getType()) {
