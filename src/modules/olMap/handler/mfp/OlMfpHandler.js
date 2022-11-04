@@ -53,26 +53,17 @@ export class OlMfpHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._map = olMap;
 		if (this._mfpLayer === null) {
-			const translate = (key) => this._translationService.translate(key);
-
-			const warnLabel = translate('olMap_handler_mfp_distortion_warning');
 			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
 			this._mfpLayer = new VectorLayer({
 				source: source
 			});
 			setScale(this._getOptimalScale(olMap));
 
-			// init mfpBoundaryFeature
-			const { extent: mfpExtent } = this._mfpService.getCapabilities();
-
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), warnLabel, mfpExtent));
-			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
-			this._updateMfpPreview();
 			this._updateRotation();
 		}
 
@@ -137,9 +128,15 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+		const translate = (key) => this._translationService.translate(key);
+
 		const label = this._getPageLabel(mfpSettings);
-		this._mfpBoundaryFeature.set('name', label);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
+
+		// init/update mfpBoundaryFeature
+		this._mfpBoundaryFeature.set('name', label);
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(label, translate('olMap_handler_mfp_distortion_warning'), mfpExtent));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;

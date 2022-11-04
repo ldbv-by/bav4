@@ -237,7 +237,7 @@ export class BvvMfp3Encoder {
 		};
 
 		const createEmptySpecsAndWarn = () => {
-			console.warn(`Missing substitution georesource for layer '${olLayer.id}' and georesource '${wmtsGeoResource.id}'.`);
+			console.warn(`Missing substitution for GeoResource '${wmtsGeoResource.id}'.`);
 			return [];
 		};
 
@@ -528,7 +528,7 @@ export class BvvMfp3Encoder {
 
 
 		if (textStyle && textStyle.getText()) {
-			encoded.label = encodeURIComponent(textStyle.getText());
+			encoded.label = textStyle.getText();
 			encoded.labelXOffset = textStyle.getOffsetX();
 			encoded.labelYOffset = textStyle.getOffsetY();
 			encoded.type = 'text';
