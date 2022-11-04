@@ -284,7 +284,7 @@ describe('OlMfpHandler', () => {
 		it('finds the largest as optimal scale', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
-			spyOn(view, 'getResolution').and.callFake(() => 0.0001);
+			spyOn(view, 'getResolution').and.callFake(() => 0.001);
 			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
@@ -312,6 +312,17 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 
 			expect(classUnderTest._getOptimalScale(map)).toBe(42);
+		});
+
+		it('finds the largest as fallback for a optimal scale', () => {
+			const map = setupMap(mapSize);
+			const view = map.getView();
+			spyOn(view, 'getResolution').and.callFake(() => 0.0001);
+			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
+			setup();
+			const classUnderTest = new OlMfpHandler();
+
+			expect(classUnderTest._getOptimalScale(map)).toBe(1);
 		});
 	});
 
