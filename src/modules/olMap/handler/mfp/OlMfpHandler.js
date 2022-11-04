@@ -10,6 +10,7 @@ import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction 
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
+import { toLonLat } from 'ol/proj';
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
@@ -167,36 +168,25 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
+		const center = toLonLat(map.getView().getCenter());
+		const averageDeviation = Math.abs(Math.cos(center[1] * Math.PI / 180));
 		const resolution = map.getView().getResolution();
-		const width = resolution * (availableSize.width - Map_View_Margin * 2);
-		const height = resolution * (availableSize.height - Map_View_Margin * 2);
+
+		// due to standard map projection of (EPSG:3857) we have to add a average deviation
+		// from equator (center of view) to get reliable values
+		const widthInMeter = resolution * averageDeviation * (availableSize.width - Map_View_Margin * 2);
+		const heightInMeter = resolution * averageDeviation * (availableSize.height - Map_View_Margin * 2);
 
 		const { id } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
-		const mapScale = Math.round(resolution * Units_Ratio * Points_Per_Inch);
-		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
-		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
+		const scaleWidth = widthInMeter * Units_Ratio * Points_Per_Inch / layoutSize.width;
+		const scaleHeight = heightInMeter * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
 
-		// todo: replace with array.findLast()
-		const findLast = (array, matcher) => {
-			let last = null;
-			array.forEach(e => {
-				if (!last || matcher(e)) {
-					last = e;
-				}
-			});
-			return last;
-		};
-
-		// todo: replace with array.findLast()
-		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
-		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
-		const fallbackScale = findLast(scaleCandidates, (scale) => mapScale > scale);
-		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
-		return bestScale ? bestScale : fallbackScale;
+		const bestScale = scaleCandidates.findLast(scale => testScale > scale);
+		return bestScale ? bestScale : scaleCandidates[0];
 	}
 
 	_getVisibleCenterPoint() {

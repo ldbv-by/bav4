@@ -285,6 +285,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
 			spyOn(view, 'getResolution').and.callFake(() => 0.0001);
+			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -295,6 +296,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
 			spyOn(view, 'getResolution').and.callFake(() => 0.005);
+			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
@@ -305,6 +307,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap(mapSize);
 			const view = map.getView();
 			spyOn(view, 'getResolution').and.callFake(() => 0.01);
+			spyOn(view, 'getCenter').and.callFake(() => [42, 42]);
 			setup();
 			const classUnderTest = new OlMfpHandler();
 
