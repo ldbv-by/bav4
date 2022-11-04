@@ -268,6 +268,20 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalledTimes(1);
 		});
 
+		it('does NOT encode a invisible layer without extent', async () => {
+			const encoder = new BvvMfp3Encoder();
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => false };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => true };
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
+			});
+			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalledTimes(1);
+		});
+
 		it('does NOT encode a layer, if a geoResource is not defined', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => null);
 			const encoder = new BvvMfp3Encoder();
