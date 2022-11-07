@@ -22,7 +22,7 @@ jobs:
 
     - name: Run checks
       run: |
-        npm audit --audit-level=moderate
+        npm audit --only=prod --audit-level=moderate
         npm run lint
         npm run es-check
         npm run doc
