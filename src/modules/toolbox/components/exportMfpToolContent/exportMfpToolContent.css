@@ -64,29 +64,28 @@
 }
 .a4_portrait::after {
 	content: "A4";
-  }
+}
 .a4_landscape {
 	height: 2.1em;
 	width: 2.97em;	
 }
 .a4_landscape::after {
 	content: "A4";
-  }
+}
 .a3_portrait {
 	height: 4.2em;
 	width: 2.97em;		
 }
 .a3_portrait::after {
 	content: "A3";
-  }
+}
 .a3_landscape {
 	height: 2.97em;		
 	width: 4.2em;
 }
 .a3_landscape::after {
 	content: "A3";
-	color: red
-  }
+}
 .tool-sub-header {
 	margin: 0 0em 1em;
 }
