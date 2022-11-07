@@ -36,7 +36,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				olMap_layer_not_available: 'Ebene konnt nicht geladen werden:',
+				olMap_layer_not_available: 'Ebene konnte nicht geladen werden:',
 				olMap_handler_measure_start: 'Klicken, um die Messung zu beginnen',
 				olMap_handler_measure_continue_line: 'Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)',
 				olMap_handler_measure_continue_polygon: 'Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)',

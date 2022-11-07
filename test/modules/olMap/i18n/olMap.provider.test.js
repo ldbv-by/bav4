@@ -7,7 +7,7 @@ describe('i18n for map module', () => {
 
 		const map = provide('de');
 
-		expect(map.olMap_layer_not_available).toBe('Ebene konnt nicht geladen werden:');
+		expect(map.olMap_layer_not_available).toBe('Ebene konnte nicht geladen werden:');
 		expect(map.olMap_handler_measure_start).toBe('Klicken, um die Messung zu beginnen');
 		expect(map.olMap_handler_measure_continue_line).toBe('Klicken, um die Messlinie zu zeichnen (Doppelklick zum Beenden)');
 		expect(map.olMap_handler_measure_continue_polygon).toBe('Klicken, um die Fläche zu zeichnen (Doppelklick zum Beenden)');
