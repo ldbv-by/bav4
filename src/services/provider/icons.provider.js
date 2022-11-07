@@ -25,7 +25,7 @@ export const loadBvvIcons = async () => {
 		};
 
 		const urlFactoryFunction = (id) => {
-			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}`;
+			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}.png`;
 		};
 
 		payload.forEach(bvvIcon => {
