@@ -112,13 +112,13 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.srid).toBe(4326);
 			});
 
-			it('updates the label property of a layer', async () => {
+			it('registers the updateLayerCallback function', async () => {
 				const instanceUnderTest = setup();
 				const url = 'http://my.url';
-				const changedLabel = 'now';
+				const geoResourceId = 'id';
 				const data = 'data';
 				const options = {
-					id: 'id',
+					id: geoResourceId,
 					label: 'label',
 					sourceType: VectorSourceType.KML
 				};
@@ -128,15 +128,12 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
-				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
-				const vgr = await geoResourceFuture.get();
-				const layer = { label: options.label };
-				addLayer(options.id, layer);
+				const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
 
-				vgr.setOpacity(.5);
-				expect(store.getState().layers.active[0].label).toBe(options.label);
-				vgr.setLabel(changedLabel);
-				expect(store.getState().layers.active[0].label).toBe(changedLabel);
+				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
+				await geoResourceFuture.get();
+
+				expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
 			it('loads the data and returns a VectorGeoresource automatically setting id, label and sourceType', async () => {
@@ -310,23 +307,22 @@ describe('ImportVectorDataService', () => {
 			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
 		});
 
-		it('updates the label property of a layer', async () => {
+		it('registers the updateLayerCallback function', async () => {
 			const instanceUnderTest = setup();
+			const geoResourceId = 'id';
 			const data = 'data';
 			const options = {
-				id: 'id',
+				id: geoResourceId,
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const changedLabel = 'now';
+			const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
 			const layer = { label: options.label };
 			addLayer(options.id, layer);
-			const vgr = instanceUnderTest.forData(data, options);
 
-			vgr.setOpacity(.5);
-			expect(store.getState().layers.active[0].label).toBe(options.label);
-			vgr.setLabel(changedLabel);
-			expect(store.getState().layers.active[0].label).toBe(changedLabel);
+			instanceUnderTest.forData(data, options);
+
+			expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('logs a warning and returns Null when sourceType is not supported', async () => {
@@ -359,6 +355,29 @@ describe('ImportVectorDataService', () => {
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().label).toBeNull();
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
+		});
+	});
+
+	describe('_newUpdateLayerCallbackFn', () => {
+
+		it('synchronizes changes of the GeoResource label properties to all relevant layers', async () => {
+			const instanceUnderTest = setup();
+			const geoResourceId = 'grId0';
+			const initialLabel = 'label';
+			const updatedLabel = 'update';
+			const layer0 = { geoResourceId: geoResourceId, label: initialLabel };
+			const layer1 = { geoResourceId: geoResourceId, label: initialLabel };
+			const layer2 = { geoResourceId: 'grId2', label: initialLabel };
+			addLayer('id0', layer0);
+			addLayer('id1', layer1);
+			addLayer('id2', layer2);
+			const layerCallbackFn = instanceUnderTest._newUpdateLayerCallbackFn(geoResourceId);
+
+			layerCallbackFn('_label', updatedLabel);
+
+			expect(store.getState().layers.active[0].label).toBe(updatedLabel);
+			expect(store.getState().layers.active[1].label).toBe(updatedLabel);
+			expect(store.getState().layers.active[2].label).toBe(initialLabel);
 		});
 	});
 });
