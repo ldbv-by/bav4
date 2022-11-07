@@ -10,6 +10,7 @@ import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction 
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
+import { toLonLat } from 'ol/proj';
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
@@ -53,26 +54,17 @@ export class OlMfpHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._map = olMap;
 		if (this._mfpLayer === null) {
-			const translate = (key) => this._translationService.translate(key);
-
-			const warnLabel = translate('olMap_handler_mfp_distortion_warning');
 			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
 			this._mfpLayer = new VectorLayer({
 				source: source
 			});
 			setScale(this._getOptimalScale(olMap));
 
-			// init mfpBoundaryFeature
-			const { extent: mfpExtent } = this._mfpService.getCapabilities();
-
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(this._getPageLabel(mfpSettings), warnLabel, mfpExtent));
-			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
-			this._updateMfpPreview();
 			this._updateRotation();
 		}
 
@@ -137,9 +129,15 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+		const translate = (key) => this._translationService.translate(key);
+
 		const label = this._getPageLabel(mfpSettings);
-		this._mfpBoundaryFeature.set('name', label);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
+
+		// init/update mfpBoundaryFeature
+		this._mfpBoundaryFeature.set('name', label);
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(label, translate('olMap_handler_mfp_distortion_warning'), mfpExtent));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -170,24 +168,31 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
+		const center = toLonLat(map.getView().getCenter());
+		const averageDeviation = Math.abs(Math.cos(center[1] * Math.PI / 180));
 		const resolution = map.getView().getResolution();
-		const width = resolution * (availableSize.width - Map_View_Margin * 2);
-		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
-		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
+		// due to standard map projection of (EPSG:3857) we have to add a average deviation
+		// from equator (center of view) to get reliable values
+		const widthInMeter = resolution * averageDeviation * (availableSize.width - Map_View_Margin * 2);
+		const heightInMeter = resolution * averageDeviation * (availableSize.height - Map_View_Margin * 2);
+
+		const { id } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
-
-		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
-		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
+		const scaleWidth = widthInMeter * Units_Ratio * Points_Per_Inch / layoutSize.width;
+		const scaleHeight = heightInMeter * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
 
 		// todo: replace with array.findLast()
 		const findLast = (array, matcher) => {
-			let last = null;
+			// mocking the browser implementation of array.findLast() and
+			// return last or undefined (instead of null), to get identical results
+			let last = undefined;
+
 			array.forEach(e => {
-				if (!last || matcher(e)) {
+				if (matcher(e)) {
 					last = e;
 				}
 			});
@@ -198,7 +203,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
 		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
-		return bestScale ? bestScale : fallbackScale;
+		return bestScale ? bestScale : scaleCandidates[0];
 	}
 
 	_getVisibleCenterPoint() {

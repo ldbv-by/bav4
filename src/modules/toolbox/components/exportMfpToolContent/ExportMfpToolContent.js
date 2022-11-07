@@ -67,8 +67,8 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-			<ba-button id='${btnId}' class="tool-container__button preview_button" .type=${btnType} .label=${btnLabel} @click=${onClickAction} .disabled=${!areSettingsComplete}></ba-button>
-			</div>					
+				<ba-button id='${btnId}' class="tool-container__button preview_button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
+			</div>			
 		</div>`;
 	}
 

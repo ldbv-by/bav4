@@ -9,6 +9,8 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { provide } from '../../src/plugins/i18n/exportMfpPlugin.provider.js';
+import { positionReducer } from '../../src/store/position/position.reducer.js';
+import { changeRotation } from '../../src/store/position/position.action.js';
 
 
 
@@ -33,7 +35,7 @@ describe('ExportMfpPlugin', () => {
 			mfp: mfpReducer,
 			layers: layersReducer,
 			tools: toolsReducer,
-			notifications: notificationReducer
+			notifications: notificationReducer, position: positionReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -138,6 +140,25 @@ describe('ExportMfpPlugin', () => {
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeFalse();
 		});
+
+		it('restores the map rotation', async () => {
+			const initialRotation = .5;
+			const store = setup({
+				position: {
+					rotation: initialRotation
+				}
+			});
+			const instanceUnderTest = new ExportMfpPlugin();
+			instanceUnderTest._initialized = true;
+			await instanceUnderTest.register(store);
+
+			setCurrentTool(ToolId.EXPORT);
+			await TestUtils.timeout();
+			changeRotation(1);
+			setCurrentTool('foo');
+
+			expect(store.getState().position.rotation).toBe(initialRotation);
+		});
 	});
 
 	describe('when active property changes', () => {
@@ -165,7 +186,7 @@ describe('ExportMfpPlugin', () => {
 
 		describe('and jobSpec is available', () => {
 
-			it('it creates a new job by calling the MpfService', async () => {
+			it('it creates a new job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
@@ -219,7 +240,7 @@ describe('ExportMfpPlugin', () => {
 
 		describe('and jobSpec is NOT available', () => {
 
-			it('it cancels the current job by calling the MpfService', async () => {
+			it('it cancels the current job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);

@@ -170,7 +170,7 @@ describe('IconsService', () => {
 
 			expect(defaultIcon).toBeInstanceOf(IconResult);
 			expect(defaultIcon.id).toBe('marker');
-			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/marker');
+			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/marker.png');
 
 		});
 

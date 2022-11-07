@@ -323,7 +323,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.jobRequest).toEqual(jasmine.any(EventLike));
 		});
 
-		it('it displays the cancel-button', async () => {
+		it('displays the cancel-button', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -331,6 +331,7 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('#btn_cancel')[0].type).toBe('loading');
 		});
 	});
 
@@ -347,7 +348,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.jobSpec.payload).toBeNull();
 		});
 
-		it('it displays the submit-button again', async () => {
+		it('displays the submit-button again', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -358,6 +359,7 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('#btn_cancel')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
 	});
 });

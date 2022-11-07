@@ -33,7 +33,7 @@ describe('BvvMfp3Encoder', () => {
 		getCoordinateFromPixel: (p) => p,
 		getView: () => viewMock,
 		getLayers: () => {
-			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50] }] };
+			return { getArray: () => [{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true }] };
 		},
 		getOverlays: () => {
 			return { getArray: () => [] };
@@ -254,6 +254,34 @@ describe('BvvMfp3Encoder', () => {
 			expect(encodingSpy).toHaveBeenCalled();
 		});
 
+		it('does NOT encode a invisible layer', async () => {
+			const encoder = new BvvMfp3Encoder();
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => false };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true };
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
+			});
+			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('does NOT encode a invisible layer without extent', async () => {
+			const encoder = new BvvMfp3Encoder();
+			const invisibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => false };
+			const visibleLayerMock = { get: () => 'foo', getExtent: () => undefined, getVisible: () => true };
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
+			});
+			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(encodingSpy).toHaveBeenCalledTimes(1);
+		});
+
 		it('does NOT encode a layer, if a geoResource is not defined', () => {
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => null);
 			const encoder = new BvvMfp3Encoder();
@@ -283,8 +311,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -300,7 +328,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Foo CopyRight,Bar CopyRight',
+					dataOwner: 'Foo CopyRight, Bar CopyRight',
 					thirdPartyDataOwner: '',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
@@ -327,8 +355,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -346,6 +374,50 @@ describe('BvvMfp3Encoder', () => {
 					},
 					dataOwner: 'Bar CopyRight',
 					thirdPartyDataOwner: 'Foo CopyRight',
+					shortLink: 'http://url.to/shorten',
+					qrcodeurl: 'http://url.to/shorten.png'
+				}
+			});
+		});
+
+		it('encodes layers with third party attributions only', async () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } }).setImportedByUser(true);
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Bar CopyRight' } }).setImportedByUser(true);
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => geoResourceFoo)
+				.withArgs('bar').and.callFake(() => geoResourceBar);
+			const encoder = new BvvMfp3Encoder();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
+				};
+			});
+			const actualSpec = await encoder.encode(mapMock, getProperties());
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Array),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null
+					},
+					dataOwner: '',
+					thirdPartyDataOwner: 'Foo CopyRight, Bar CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
@@ -371,8 +443,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return {
 					getArray: () => [
-						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 },
-						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 }]
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
 				};
 			});
 			const actualSpec = await encoder.encode(mapMock, getProperties());
@@ -388,7 +460,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Bar CopyRight,Baz CopyRight',
+					dataOwner: 'Bar CopyRight, Baz CopyRight',
 					thirdPartyDataOwner: 'Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
@@ -397,7 +469,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('resolves wmts layer with wmts-source to a mfp \'wmts\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'wmts');
@@ -430,7 +502,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('resolves wmts layer with xyz-source to a mfp \'wmts\' spec', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 
 			const encoder = setup();
 			const xyzGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
@@ -463,7 +535,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('does NOT resolve wmts layer to a mfp \'wmts\' spec due to missing substitution georesource', () => {
-			const wmtsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getOpacity: () => 1, id: 'wmts' };
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'something');
 			spyOnProperty(wmtsGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
@@ -473,7 +545,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, wmtsGeoResource);
 
-			expect(warnSpy).toHaveBeenCalledOnceWith('Missing substitution georesource for layer \'wmts\' and georesource \'test_something\'.');
+			expect(warnSpy).toHaveBeenCalledOnceWith('Missing substitution for GeoResource \'test_something\'.');
 			expect(actualSpec).toEqual([]);
 			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(layerServiceSpy).not.toHaveBeenCalled();
@@ -486,7 +558,7 @@ describe('BvvMfp3Encoder', () => {
 					return { LAYERS: 'foo,bar', STYLES: 'baz' };
 				}
 			};
-			const wmsLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1 };
+			const wmsLayerMock = { get: () => 'foo', getSource: () => sourceMock, getOpacity: () => 1 };
 
 			const wmsGeoResourceMock = {
 				id: 'foo', format: 'image/png', get attribution() {

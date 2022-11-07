@@ -33,7 +33,7 @@ export class IconService {
 			return (color) => {
 				try {
 					const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
-					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}`;
+					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}.png`;
 				}
 				catch (e) {
 					console.warn('No backend-information available.');
@@ -83,13 +83,13 @@ export class IconService {
 		const findLocal = (base64) => this._icons.find(iconResult => iconResult.base64 === base64) ?? null;
 		const findRemote = (idOrUrl) => this._icons.find(iconResult => iconResult.matches(idOrUrl)) ?? null;
 
-		return this.isLocal(idOrUrlOrBase64) ? findLocal(idOrUrlOrBase64) :	findRemote(idOrUrlOrBase64);
+		return this.isLocal(idOrUrlOrBase64) ? findLocal(idOrUrlOrBase64) : findRemote(idOrUrlOrBase64);
 	}
 
 	/**
- 	 *
-     * @param {string} url
-    */
+	   *
+	 * @param {string} url
+	*/
 	decodeColor(url) {
 		return this._iconColorProvider(url);
 	}

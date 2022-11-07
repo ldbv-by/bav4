@@ -42,7 +42,7 @@ describe('Icons provider', () => {
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
 		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
 		expect(fooIconResult1.matches(null)).toBeFalse();
-		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1');
+		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1.png');
 	});
 
 	it('finds by ID in loaded icons', async () => {
