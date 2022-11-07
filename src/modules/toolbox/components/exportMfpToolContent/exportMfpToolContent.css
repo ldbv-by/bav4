@@ -6,12 +6,6 @@
 	position: relative;
 	top: -.2em;
 }
-.ba-tool-container__sub-title {
-	color: var(--text2);	
-	padding: .8em 1.5em .8em 0;
-	font-weight: bold;
-	display: none;
-}
 .preview_button {
 	width: 100%;
 	padding: .8em 1.5em;
