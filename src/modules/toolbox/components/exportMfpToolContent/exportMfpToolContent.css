@@ -30,6 +30,15 @@
 	transform: scale(1.2);
 	transition: all var(--animation-duration-small-open) var(--animation-easing-close);      
 }
+.button-container button::after {
+	color: var(--primary-color);
+}
+.button-container button.active::after {
+	color: var(--text3);
+}
+.button-container button:hover::after {
+	color: var(--text3);
+}
 .button-container button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
@@ -49,27 +58,37 @@
 	color: var(--text3);
 	transform: scale(1.2);
 }
-.a4-h {
+.a4_portrait {
 	width: 2.1em;
 	height: 2.97em;	
 }
-.a4-q {
+.a4_portrait::after {
+	content: "A4";
+  }
+.a4_landscape {
 	height: 2.1em;
 	width: 2.97em;	
 }
-.a3-h {
+.a4_landscape::after {
+	content: "A4";
+  }
+.a3_portrait {
 	height: 4.2em;
 	width: 2.97em;		
 }
-.a3-q {
+.a3_portrait::after {
+	content: "A3";
+  }
+.a3_landscape {
 	height: 2.97em;		
 	width: 4.2em;
 }
+.a3_landscape::after {
+	content: "A3";
+	color: red
+  }
 .tool-sub-header {
 	margin: 0 0em 1em;
-}
-#select_layout {
-	display: none;
 }
 .separator {
 	border-top: 1px dotted var(--header-background-color);
