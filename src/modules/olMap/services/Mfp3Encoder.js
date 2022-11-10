@@ -296,6 +296,9 @@ export class BvvMfp3Encoder {
 			mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
 			return mfpFeature;
 		};
+
+		// we provide a cache for styles which are applied to multiple features, to reduce the
+		// amount of created style-specs
 		const styleCache = new Map();
 		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).reduce((encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
@@ -322,13 +325,11 @@ export class BvvMfp3Encoder {
 			return asV2(styles);
 		};
 
-		const getUniqueBy = (array, key) => [...new Map(array.map(item => [item[key], item])).values()];
-
 		return {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
-			style: styleObjectFrom(getUniqueBy(encodingResults.styles, 'id')),
+			style: styleObjectFrom(encodingResults.styles),
 			opacity: olVectorLayer.getOpacity(),
 			attribution: geoResource.importedByUser ? null : geoResource.attribution,
 			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
@@ -411,23 +412,22 @@ export class BvvMfp3Encoder {
 		const getEncodedStyle = (olStyle) => {
 			const getNewEncodedStyle = () => {
 				const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
+				if (encodedStyle.fillOpacity) {
+					encodedStyle.fillOpacity *= olLayer.getOpacity();
+				}
+
+				if (encodedStyle.strokeOpacity) {
+					encodedStyle.strokeOpacity *= olLayer.getOpacity();
+				}
+
 				styleCache.set(olStyle, encodedStyle);
 				return encodedStyle;
 			};
 
-			return styleCache.has(olStyle) ? styleCache.get(olStyle) : getNewEncodedStyle();
+			return styleCache.has(olStyle) ? { style: styleCache.get(olStyle), isDuplicate: true } : { style: getNewEncodedStyle(), isDuplicate: false };
 		};
 
-		const encodedStyle = getEncodedStyle(olStyleToEncode);
-
-		if (encodedStyle.fillOpacity) {
-			encodedStyle.fillOpacity *= olLayer.getOpacity();
-		}
-
-		if (encodedStyle.strokeOpacity) {
-			encodedStyle.strokeOpacity *= olLayer.getOpacity();
-		}
-
+		const { style: encodedStyle, isDuplicate } = getEncodedStyle(olStyleToEncode);
 
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
@@ -446,10 +446,9 @@ export class BvvMfp3Encoder {
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyle.id };
-
 		return {
 			features: [encodedFeature, ...advancedStyleFeatures.features],
-			styles: [encodedStyle, ...advancedStyleFeatures.styles]
+			styles: isDuplicate ? [...advancedStyleFeatures.styles] : [encodedStyle, ...advancedStyleFeatures.styles]
 		};
 	}
 
