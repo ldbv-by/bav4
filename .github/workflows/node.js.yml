@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout
+    - uses: actions/checkout@v2
     
     - name: Use Node.js
-      uses: actions/setup-node
+      uses: actions/setup-node@v1
       with:
         node-version: '16.x'
     
@@ -37,6 +37,6 @@ jobs:
         npm run e2e
 
     - name: Publish Coveralls report
-      uses: coverallsapp/github-action
+      uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
