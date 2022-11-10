@@ -296,9 +296,9 @@ export class BvvMfp3Encoder {
 			mfpFeature.getGeometry().transform(this._mapProjection, this._mfpProjection);
 			return mfpFeature;
 		};
-
+		const styleCache = new Map();
 		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).reduce((encoded, feature) => {
-			const result = this._encodeFeature(feature, olVectorLayer);
+			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
 			return result ? {
 				features: [...encoded.features, ...result.features],
 				styles: [...encoded.styles, ...result.styles]
@@ -322,18 +322,20 @@ export class BvvMfp3Encoder {
 			return asV2(styles);
 		};
 
+		const getUniqueBy = (array, key) => [...new Map(array.map(item => [item[key], item])).values()];
+
 		return {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
-			style: styleObjectFrom(encodingResults.styles),
+			style: styleObjectFrom(getUniqueBy(encodingResults.styles, 'id')),
 			opacity: olVectorLayer.getOpacity(),
 			attribution: geoResource.importedByUser ? null : geoResource.attribution,
 			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
 		};
 	}
 
-	_encodeFeature(olFeature, olLayer, presetStyles = []) {
+	_encodeFeature(olFeature, olLayer, styleCache = new Map(), presetStyles = []) {
 		const defaultResult = { features: [], styles: [] };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
@@ -406,8 +408,18 @@ export class BvvMfp3Encoder {
 		}
 
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
+		const getEncodedStyle = (olStyle) => {
+			const getNewEncodedStyle = () => {
+				const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
+				styleCache.set(olStyle, encodedStyle);
+				return encodedStyle;
+			};
 
-		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
+			return styleCache.has(olStyle) ? styleCache.get(olStyle) : getNewEncodedStyle();
+		};
+
+		const encodedStyle = getEncodedStyle(olStyleToEncode);
+
 		if (encodedStyle.fillOpacity) {
 			encodedStyle.fillOpacity *= olLayer.getOpacity();
 		}
@@ -424,7 +436,7 @@ export class BvvMfp3Encoder {
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeatureToEncode);
 				if (geometry) {
-					const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
+					const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, [style]);
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
 				return styleFeatures;
