@@ -86,7 +86,7 @@ describe('ExportMfpToolContent', () => {
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('ba-spinner')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
 		});
@@ -95,8 +95,8 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelector('.layout-button')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#select_scale')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 
