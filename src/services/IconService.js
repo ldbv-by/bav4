@@ -45,6 +45,15 @@ export class IconService {
 		return new IconResult(Svg_Marker_Name, Svg_Marker_Content, matcher, urlFactoryFunction());
 	}
 
+	/**
+	  *	load icons in a three-stage process:
+	  *
+	  *  1. load the icons from a provider
+	  *  2. if provided, move the marker-icon to the first position, otherwise start
+	  * 	with a default marker-icon
+	  *  3. if all fails: load default marker-icon and some fallbackIcons
+	  *  @returns {Array<IconResult>}
+	  */
 	async _load() {
 		try {
 			const isMarkerIcon = (iconResult) => iconResult.id === Svg_Marker_Name;
