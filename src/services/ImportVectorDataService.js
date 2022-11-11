@@ -62,7 +62,7 @@ export class ImportVectorDataService {
 		const loader = async id => {
 
 			const proxyfiedUrl = this._urlService.proxifyInstant(url);
-			const result = await this._httpService.get(proxyfiedUrl);
+			const result = await this._httpService.get(proxyfiedUrl, { timeout: 5000 });
 
 			if (result.ok) {
 				const data = await result.text();
@@ -73,11 +73,7 @@ export class ImportVectorDataService {
 				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 				if (resultingSourceType) {
 					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
-						(prop, value) => {
-							if (prop === '_label') {
-								modifyLayer(id, { label: value });
-							}
-						});
+						this._newUpdateLayerCallbackFn(id));
 					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 					return vgr;
 				}
@@ -103,11 +99,8 @@ export class ImportVectorDataService {
 
 		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 		if (resultingSourceType) {
-			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType), (prop, value) => {
-				if (prop === '_label') {
-					modifyLayer(id, { label: value });
-				}
-			});
+			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
+				this._newUpdateLayerCallbackFn(id));
 			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
@@ -142,6 +135,30 @@ export class ImportVectorDataService {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Returns a callback fn for a GeoResource observer which synchronizes
+	 * changes of the GeoResource properties to all relevant layers.
+	 * @param {String} geoResourceId
+	 * @returns callback fn for observer
+	 */
+	_newUpdateLayerCallbackFn(geoResourceId) {
+		const {
+			StoreService: storeService
+		} = $injector.inject('StoreService');
+
+		return (prop, value) => {
+			if (prop === '_label') {
+				const { layers: { active: activeLayers } } = storeService.getStore().getState();
+
+				activeLayers.forEach(l => {
+					if (l.geoResourceId === geoResourceId) {
+						modifyLayer(l.id, { label: value });
+					}
+				});
+			}
+		};
 	}
 }
 
