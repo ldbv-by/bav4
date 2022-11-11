@@ -298,19 +298,24 @@ export class BvvMfp3Encoder {
 			return mfpFeature;
 		};
 
-		// we provide a cache for ol styles which are applied to multiple features, to reduce the
-		// amount of created style-specs
-
-		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
-
-		const styleCache = new Map();
-		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).filter(f => f.getGeometry().intersectsExtent(mfpPageExtent)).reduce((encoded, feature) => {
+		const startResult = { features: [], styles: [] };
+		const aggregateResults = (encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
 			return result ? {
 				features: [...encoded.features, ...result.features],
 				styles: [...encoded.styles, ...result.styles]
 			} : encoded;
-		}, { features: [], styles: [] });
+		};
+
+		// we provide a cache for ol styles which are applied to multiple features, to reduce the
+		// amount of created style-specs
+		const styleCache = new Map();
+		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
+		const encodingResults = featuresSortedByGeometryType
+			.map(f => transformForMfp(f))
+			.filter(f => f.getGeometry().intersectsExtent(mfpPageExtent))
+			.reduce(aggregateResults, startResult);
 
 		const styleObjectFrom = (styles) => {
 			const styleObjectV2 = {
