@@ -39,7 +39,7 @@ describe('Icons provider', () => {
 		const fooIconResult1 = icons[0];
 		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
 		expect(fooIconResult1.matches('foo1')).toBeTrue();
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBeTrue();
 		expect(fooIconResult1.matches('somethingWrong')).toBeFalse();
 		expect(fooIconResult1.matches(null)).toBeFalse();
 		expect(fooIconResult1.getUrl([0, 0, 0])).toBe('https://backend.url/icons/0,0,0/foo1.png');
@@ -79,7 +79,7 @@ describe('Icons provider', () => {
 
 		const fooIconResult1 = icons[0];
 		expect(fooIconResult1).toEqual(jasmine.any(IconResult));
-		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1')).toBeTrue();
+		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/foo1.png')).toBeTrue();
 		expect(fooIconResult1.matches('https://backend.url/icons/0,0,0/some-foo1')).toBeFalse();
 	});
 

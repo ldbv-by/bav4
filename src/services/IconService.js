@@ -26,7 +26,7 @@ export class IconService {
 
 	_createDefault() {
 		const matcher = (idOrUrl) => {
-			return idOrUrl === Svg_Marker_Name || !!(idOrUrl?.endsWith(`/${Svg_Marker_Name}`));
+			return idOrUrl === Svg_Marker_Name || !!(idOrUrl?.endsWith(`/${Svg_Marker_Name}.png`));
 		};
 		const urlFactoryFunction = () => {
 			const { ConfigService: configService } = $injector.inject('ConfigService');
