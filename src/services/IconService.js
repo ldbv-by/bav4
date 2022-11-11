@@ -26,14 +26,14 @@ export class IconService {
 
 	_createDefault() {
 		const matcher = (idOrUrl) => {
-			return idOrUrl === Svg_Marker_Name || !!(idOrUrl?.endsWith(`/${Svg_Marker_Name}.png`));
+			return idOrUrl === Svg_Marker_Name || !!(idOrUrl?.endsWith(`/${Svg_Marker_Name}`));
 		};
 		const urlFactoryFunction = () => {
 			const { ConfigService: configService } = $injector.inject('ConfigService');
 			return (color) => {
 				try {
 					const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
-					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}.png`;
+					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}`;
 				}
 				catch (e) {
 					console.warn('No backend-information available.');
