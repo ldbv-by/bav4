@@ -117,6 +117,11 @@ describe('ExportMfpToolContent', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3);
+
+			const buttons = element.shadowRoot.querySelectorAll('.layout-button');
+			expect(buttons[0].classList.contains('active')).toBeTrue();
+			expect(buttons[1].classList.contains('active')).toBeFalse();
+
 		});
 
 		it('does NOT create select options, when capabilities are empty', async () => {
