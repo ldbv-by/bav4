@@ -14,6 +14,7 @@ import { MeasurementOverlay, MeasurementOverlayTypes } from '../components/Measu
 import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
+import { getPolygonFrom } from '../utils/olGeometryUtils';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -297,10 +298,13 @@ export class BvvMfp3Encoder {
 			return mfpFeature;
 		};
 
-		// we provide a cache for styles which are applied to multiple features, to reduce the
+		// we provide a cache for ol styles which are applied to multiple features, to reduce the
 		// amount of created style-specs
+
+		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
 		const styleCache = new Map();
-		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).reduce((encoded, feature) => {
+		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).filter(f => f.getGeometry().intersectsExtent(mfpPageExtent)).reduce((encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
 			return result ? {
 				features: [...encoded.features, ...result.features],
@@ -405,6 +409,7 @@ export class BvvMfp3Encoder {
 		const olStyleToEncode = getEncodableOlStyle(olStyles, presetStyles.length > 0);
 
 		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
+			console.warn('cannot style feature', olFeature);
 			return null;
 		}
 

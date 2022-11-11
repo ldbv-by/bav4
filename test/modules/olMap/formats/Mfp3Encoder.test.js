@@ -687,6 +687,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [1200000, 6000000, 1300000, 6500000];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 				const expectedCoordinate = [692692, 5335289];
 				const actualCoordinate = actualSpec.geoJson.features[0].geometry.coordinates;
@@ -725,6 +726,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -778,6 +780,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -831,6 +834,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -879,6 +883,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -935,6 +940,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -991,6 +997,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1043,6 +1050,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1070,6 +1078,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1118,6 +1127,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1155,14 +1165,16 @@ describe('BvvMfp3Encoder', () => {
 			});
 
 			it('writes a multiPolygon feature with fill style', () => {
-				const featureWithStyle = new Feature({ geometry: new MultiPolygon([[[30, 30], [40, 40], [40, 30], [30, 30]], [[50, 50], [60, 60], [50, 60], [50, 50]]]) });
+				const multiPolygon = new MultiPolygon([new Polygon([[[3, 3], [4, 4], [4, 3], [3, 3]]]), new Polygon([[[5, 5], [6, 6], [5, 6], [5, 5]]])]);
+				const featureWithStyle = new Feature({ geometry: multiPolygon });
 				featureWithStyle.setStyle(getFillStyle());
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
-				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [2, 2, 6, 6]);
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [1, 1, 7, 7];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1209,6 +1221,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1274,6 +1287,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1340,6 +1354,7 @@ describe('BvvMfp3Encoder', () => {
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
 				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
 				expect(actualSpec).toEqual({
@@ -1418,6 +1433,31 @@ describe('BvvMfp3Encoder', () => {
 						}
 					}
 				});
+			});
+
+			it('filters features disjoint to mfpPageExtent', () => {
+				const featureInside1 = new Feature({ geometry: new LineString([[30, 30], [40, 40]]) });
+				const featureInside2 = new Feature({ geometry: new Point([35, 35]) });
+				const featureInside3 = new Feature({ geometry: new Polygon([[[30, 30], [40, 40], [40, 30], [30, 30]]]) });
+				const featureOutside1 = new Feature({ geometry: new LineString([[3, 3], [4, 4]]) });
+				const featureOutside2 = new Feature({ geometry: new Point([3, 3]) });
+				const featureOutside3 = new Feature({ geometry: new Polygon([[[3, 3], [4, 4], [4, 3], [3, 3]]]) });
+				featureInside1.setStyle(getImageStyle());
+				featureInside2.setStyle(getStrokeStyle());
+				featureInside3.setStyle(getFillStyle());
+				featureOutside1.setStyle(getImageStyle());
+				featureOutside2.setStyle(getStrokeStyle());
+				featureOutside3.setStyle(getFillStyle());
+
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureInside1, featureInside2, featureInside3, featureOutside1, featureOutside2, featureOutside3] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+				expect(actualSpec.geoJson.features).toHaveSize(3);
 			});
 		});
 
