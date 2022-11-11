@@ -1,5 +1,5 @@
 
-import { LineString, Point, Polygon } from 'ol/geom';
+import { LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
@@ -1131,6 +1131,51 @@ describe('BvvMfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'Polygon',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'polygon',
+								zIndex: 0,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeOpacity: 0
+							}]
+						}
+					}
+				});
+			});
+
+			it('writes a multiPolygon feature with fill style', () => {
+				const featureWithStyle = new Feature({ geometry: new MultiPolygon([[[30, 30], [40, 40], [40, 30], [30, 30]], [[50, 50], [60, 60], [50, 60], [50, 50]]]) });
+				featureWithStyle.setStyle(getFillStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'MultiPolygon',
 								coordinates: jasmine.any(Array)
 							},
 							properties: {
