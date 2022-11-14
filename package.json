@@ -14,7 +14,7 @@
     "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
     "@playwright/test": "^1.27.1 ",
     "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.1",
+    "css-loader": "^6.7.2",
     "dotenv-webpack": "^8.0.1",
     "es-check": "^7.0.1",
     "eslint": "^8.27.0",
