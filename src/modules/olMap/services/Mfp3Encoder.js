@@ -449,7 +449,6 @@ export class BvvMfp3Encoder {
 					const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, [style]);
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
-				return styleFeatures;
 			}
 			return styleFeatures;
 		}, defaultResult);
