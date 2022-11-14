@@ -2,6 +2,9 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { cancelJob, requestJob, setId, setScale } from '../../../../store/mfp/mfp.action';
+import css from './exportMfpToolContent.css';
+import plus from './assets/plus.svg';
+import minus from './assets/minus.svg';
 
 const Update = 'update';
 const Update_Scale = 'update_scale';
@@ -50,11 +53,12 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const onClickAction = isJobStarted ? () => cancelJob() : () => requestJob();
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
-		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 		const btnType = isJobStarted ? 'loading' : 'primary';
+		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
 
 		const areSettingsComplete = (capabilities && scale && id);
 		return html`
+		<style>${css}</style>
         <div class="ba-tool-container">
 			<div class="ba-tool-container__title">
 				${translate('toolbox_exportMfp_header')}
@@ -63,7 +67,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
-				<ba-button id='${btnId}' class="tool-container__button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
+				<ba-button id='${btnId}' class="tool-container__button preview_button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
 			</div>			
 		</div>`;
 	}
@@ -90,9 +94,28 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const onChangeScale = (e) => {
 			const parsedScale = parseInt(e.target.value);
-
 			setScale(parsedScale);
 			this.signal(Update_Scale, parsedScale);
+		};
+
+		const increaseScale = () => {
+			const selectScale = this.shadowRoot.getElementById('select_scale');
+			if (selectScale.selectedIndex < selectScale.length - 1) {
+				selectScale.selectedIndex = selectScale.selectedIndex + 1;
+				const parsedScale = parseInt(selectScale.value);
+				setScale(parsedScale);
+				this.signal(Update_Scale, parsedScale);
+			}
+		};
+
+		const decreaseScale = () => {
+			const selectScale = this.shadowRoot.getElementById('select_scale');
+			if (selectScale.selectedIndex > 0) {
+				selectScale.selectedIndex = selectScale.selectedIndex - 1;
+				const parsedScale = parseInt(selectScale.value);
+				setScale(parsedScale);
+				this.signal(Update_Scale, parsedScale);
+			}
 		};
 
 		const getScaleOptions = (scales, selectedScale) => {
@@ -100,20 +123,36 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		};
 
 		const getLayoutOptions = (layoutItems, selectedId) => {
-			return layoutItems.map((item) => html`<option value=${item.id} ?selected=${item.id === selectedId}>${item.name}</option>)}`);
+			return layoutItems.map((item) => html`
+			<button class='layout-button ${item.id} ${getActiveClass(item.id, selectedId)}'  value="${item.id}" title="${item.name}" @click=${onChangeId}> 				
+			</button> 
+			`);
 		};
-		return html`<div class="fieldset">
-						<select id='select_layout' @change=${onChangeId}>							
-							${getLayoutOptions(layoutItems, id)}
-						</select>
-						<label for="select_layout" class="control-label">${translate('toolbox_exportMfp_layout')}</label><i class="bar"></i>
+
+		const getActiveClass = (value, selectedId) => value === selectedId ? 'active' : '';
+
+		return html`
+				<div class='tool-section'>
+					<div class='tool-sub-header'>			
+						${translate('toolbox_exportMfp_layout')}				
 					</div>
-					<div class="fieldset">
-						<select id='select_scale' @change=${onChangeScale}>							
+						<div class='button-container'>
+							${getLayoutOptions(layoutItems, id)}
+						</div>
+					</div>
+					<div class='tool-section' style='margin-top:1em'>
+						<div class='tool-sub-header'>	
+							${translate('toolbox_exportMfp_scale')}	
+						</div>
+						<div style='display: flex; justify-content: center'>	
+							<ba-icon id='decrease' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
+							<select id='select_scale' @change=${onChangeScale}>							
 							${getScaleOptions(scales, scale)}
-						</select>
-						<label for="select_scale" class="control-label">${translate('toolbox_exportMfp_scale')}</label><i class="bar"></i>
-					</div>`;
+							</select>
+							<ba-icon id='increase' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
+						<div>
+					</div>
+				</div>`;
 	}
 
 	static get tag() {

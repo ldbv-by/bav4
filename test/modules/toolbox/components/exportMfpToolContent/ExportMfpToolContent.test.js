@@ -86,7 +86,7 @@ describe('ExportMfpToolContent', () => {
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('ba-spinner')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeTrue();
 		});
@@ -95,8 +95,8 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelector('#select_layout')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('#select_scale')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 
@@ -115,27 +115,32 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			expect(element.shadowRoot.querySelectorAll('#select_layout option')).toHaveSize(2);
+			expect(element.shadowRoot.querySelectorAll('.layout-button')).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll('#select_scale option')).toHaveSize(3);
+
+			const buttons = element.shadowRoot.querySelectorAll('.layout-button');
+			expect(buttons[0].classList.contains('active')).toBeTrue();
+			expect(buttons[1].classList.contains('active')).toBeFalse();
+
 		});
 
 		it('does NOT create select options, when capabilities are empty', async () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
+			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
 			const scaleOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
-			expect(layoutOptions).toHaveSize(0);
+			expect(layoutButtons).toHaveSize(0);
 			expect(scaleOptions).toHaveSize(0);
 		});
 
 		it('does NOT create select options, when current in store is empty', async () => {
 			const element = await setup();
 
-			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
+			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
 			const scaleOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
-			expect(layoutOptions).toHaveSize(0);
+			expect(layoutButtons).toHaveSize(0);
 			expect(scaleOptions).toHaveSize(0);
 		});
 
@@ -143,8 +148,8 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const layoutOptions = element.shadowRoot.querySelectorAll('#select_layout option');
-			expect(layoutOptions[0].textContent).toBe('toolbox_exportMfp_id_foo');
+			const layoutButtons = element.shadowRoot.querySelectorAll('.layout-button');
+			expect(layoutButtons[0].title).toBe('toolbox_exportMfp_id_foo');
 		});
 
 		it('labels the scale options with a formatted scale from the capabilities', async () => {
@@ -163,10 +168,11 @@ describe('ExportMfpToolContent', () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
-			const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-			const layoutOption = layoutSelectElement.item(1);
-			layoutOption.selected = true;
-			layoutSelectElement.dispatchEvent(new Event('change'));
+			const layoutButtonElements = element.shadowRoot.querySelectorAll('.layout-button');
+			const layoutButton = layoutButtonElements[1];
+			expect(layoutButton.classList.contains('active')).toBeFalse();
+			layoutButton.dispatchEvent(new Event('click'));
+			expect(layoutButton.classList.contains('active')).toBeTrue();
 
 			expect(element.getModel().id).toEqual('bar');
 			expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
@@ -180,10 +186,11 @@ describe('ExportMfpToolContent', () => {
 
 				element.signal('update_scale', 99);
 
-				const layoutSelectElement = element.shadowRoot.querySelector('#select_layout');
-				const layoutOption = layoutSelectElement.item(1);
-				layoutOption.selected = true;
-				layoutSelectElement.dispatchEvent(new Event('change'));
+				const layoutButtonElements = element.shadowRoot.querySelectorAll('.layout-button');
+				const layoutButton = layoutButtonElements[1];
+				expect(layoutButton.classList.contains('active')).toBeFalse();
+				layoutButton.dispatchEvent(new Event('click'));
+				expect(layoutButton.classList.contains('active')).toBeTrue();
 
 				expect(element.getModel().id).toEqual('bar');
 				expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
@@ -200,7 +207,7 @@ describe('ExportMfpToolContent', () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-			const layoutOption = scaleSelectElement.item(1); //21
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
 			layoutOption.selected = true;
 			scaleSelectElement.dispatchEvent(new Event('change'));
 
@@ -217,13 +224,95 @@ describe('ExportMfpToolContent', () => {
 				element.signal('update_map_size', { width: 420, height: 210 });
 
 				const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
-				const layoutOption = scaleSelectElement.item(2); //21
+				const layoutOption = scaleSelectElement.item(2); //selected scale: 21
 				layoutOption.selected = true;
 				scaleSelectElement.dispatchEvent(new Event('change'));
 
 				expect(element.getModel().scale).toBe(1);
 				expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
 			});
+		});
+	});
+
+	describe('when the user press the minus button', () => {
+
+		it('changes store, decrease the scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const decreaseButtonElement = element.shadowRoot.querySelector('#decrease');
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(21);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
+
+			decreaseButtonElement.click();
+
+			expect(element.getModel().scale).toBe(42);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 42, dpi: 125 });
+		});
+
+		it('does NOT change the store on minimum scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const decreaseButtonElement = element.shadowRoot.querySelector('#decrease');
+			const layoutOption = scaleSelectElement.item(0); //selected scale: 42
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(42);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 42, dpi: 125 });
+
+			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			decreaseButtonElement.click();
+
+			expect(updateSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('when the user press the plus button', () => {
+
+		it('changes store, increase the scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const increaseButtonElement = element.shadowRoot.querySelector('#increase');
+			const layoutOption = scaleSelectElement.item(1); //selected scale: 21
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(21);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 21, dpi: 125 });
+
+			increaseButtonElement.click();
+
+			expect(element.getModel().scale).toBe(1);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+		});
+
+		it('does NOT change the store on maximum scale', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const scaleSelectElement = element.shadowRoot.querySelector('#select_scale');
+			const increaseButtonElement = element.shadowRoot.querySelector('#increase');
+			const layoutOption = scaleSelectElement.item(2); //selected scale: 1
+			layoutOption.selected = true;
+			scaleSelectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().scale).toBe(1);
+			expect(store.getState().mfp.current).toEqual({ id: 'foo', scale: 1, dpi: 125 });
+
+			const updateSpy = spyOn(element, 'signal').and.callThrough();
+			increaseButtonElement.click();
+
+			expect(updateSpy).not.toHaveBeenCalled();
 		});
 	});
 
