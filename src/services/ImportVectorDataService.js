@@ -21,13 +21,12 @@ import { SourceType, SourceTypeName } from './../domain/sourceType';
 export class ImportVectorDataService {
 
 	constructor() {
-		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService, TranslationService: translationService,
+		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService,
 			SourceTypeService: sourceTypeService }
-			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'TranslationService', 'SourceTypeService');
+			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'SourceTypeService');
 		this._httpService = httpService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
-		this._translationService = translationService;
 		this._sourceTypeService = sourceTypeService;
 	}
 
@@ -72,7 +71,7 @@ export class ImportVectorDataService {
 				 **/
 				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 				if (resultingSourceType) {
-					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
+					const vgr = observable(new VectorGeoResource(id, label, resultingSourceType),
 						this._newUpdateLayerCallbackFn(id));
 					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 					return vgr;
@@ -82,7 +81,7 @@ export class ImportVectorDataService {
 			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 		};
 
-		const geoResource = new GeoResourceFuture(id, loader, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+		const geoResource = new GeoResourceFuture(id, loader, label);
 		this._geoResourceService.addOrReplace(geoResource);
 		return geoResource;
 	}
@@ -99,7 +98,7 @@ export class ImportVectorDataService {
 
 		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 		if (resultingSourceType) {
-			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
+			const vgr = observable(new VectorGeoResource(id, label, resultingSourceType),
 				this._newUpdateLayerCallbackFn(id));
 			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);

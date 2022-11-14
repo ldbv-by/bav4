@@ -31,7 +31,6 @@ describe('ImportVectorDataService', () => {
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('UrlService', urlService)
-			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SourceTypeService', sourceTypeService);
 		return new ImportVectorDataService();
 	};
@@ -72,7 +71,7 @@ describe('ImportVectorDataService', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
-		it('returns a GeoResourceFuture automatically setting id and label', () => {
+		it('returns a GeoResourceFuture automatically setting id', () => {
 			const instanceUnderTest = setup();
 			const url = 'http://my.url';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
@@ -80,7 +79,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
-			expect(geoResourceFuture.label).toBe('layersPlugin_store_layer_default_layer_name_future');
+			expect(geoResourceFuture.label).toBeNull();
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -136,7 +135,7 @@ describe('ImportVectorDataService', () => {
 				expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
 			});
 
-			it('loads the data and returns a VectorGeoresource automatically setting id, label and sourceType', async () => {
+			it('loads the data and returns a VectorGeoresource automatically setting id and sourceType', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
@@ -159,7 +158,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 				expect(vgr.id).toBe(geoResourceFuture.id);
-				expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
+				expect(vgr.label).toBeNull();
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 			});
@@ -285,7 +284,7 @@ describe('ImportVectorDataService', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 		});
 
-		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
+		it('returns a VectorGeoResource automatically setting id and sourceType', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
@@ -299,7 +298,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 			expect(vgr.id).toEqual(jasmine.any(String));
-			expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
+			expect(vgr.label).toBeNull();
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
