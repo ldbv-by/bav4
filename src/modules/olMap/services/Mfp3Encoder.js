@@ -14,6 +14,7 @@ import { MeasurementOverlay, MeasurementOverlayTypes } from '../components/Measu
 import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
+import { getPolygonFrom } from '../utils/olGeometryUtils';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -297,13 +298,24 @@ export class BvvMfp3Encoder {
 			return mfpFeature;
 		};
 
-		const encodingResults = featuresSortedByGeometryType.map(f => transformForMfp(f)).reduce((encoded, feature) => {
-			const result = this._encodeFeature(feature, olVectorLayer);
+		const startResult = { features: [], styles: [] };
+		const aggregateResults = (encoded, feature) => {
+			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
 			return result ? {
 				features: [...encoded.features, ...result.features],
 				styles: [...encoded.styles, ...result.styles]
 			} : encoded;
-		}, { features: [], styles: [] });
+		};
+
+		// we provide a cache for ol styles which are applied to multiple features, to reduce the
+		// amount of created style-specs
+		const styleCache = new Map();
+		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
+
+		const encodingResults = featuresSortedByGeometryType
+			.map(f => transformForMfp(f))
+			.filter(f => f.getGeometry().intersectsExtent(mfpPageExtent))
+			.reduce(aggregateResults, startResult);
 
 		const styleObjectFrom = (styles) => {
 			const styleObjectV2 = {
@@ -333,7 +345,7 @@ export class BvvMfp3Encoder {
 		};
 	}
 
-	_encodeFeature(olFeature, olLayer, presetStyles = []) {
+	_encodeFeature(olFeature, olLayer, styleCache = new Map(), presetStyles = []) {
 		const defaultResult = { features: [], styles: [] };
 		const resolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
@@ -402,20 +414,30 @@ export class BvvMfp3Encoder {
 		const olStyleToEncode = getEncodableOlStyle(olStyles, presetStyles.length > 0);
 
 		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
+			console.warn('cannot style feature', olFeature);
 			return null;
 		}
 
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
+		const getEncodedStyle = (olStyle) => {
+			const getNewEncodedStyle = () => {
+				const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
+				if (encodedStyle.fillOpacity) {
+					encodedStyle.fillOpacity *= olLayer.getOpacity();
+				}
 
-		const encodedStyle = { ...initEncodedStyle(), ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
-		if (encodedStyle.fillOpacity) {
-			encodedStyle.fillOpacity *= olLayer.getOpacity();
-		}
+				if (encodedStyle.strokeOpacity) {
+					encodedStyle.strokeOpacity *= olLayer.getOpacity();
+				}
 
-		if (encodedStyle.strokeOpacity) {
-			encodedStyle.strokeOpacity *= olLayer.getOpacity();
-		}
+				styleCache.set(olStyle, encodedStyle);
+				return encodedStyle;
+			};
 
+			return styleCache.has(olStyle) ? { style: styleCache.get(olStyle), isDuplicate: true } : { style: getNewEncodedStyle(), isDuplicate: false };
+		};
+
+		const { style: encodedStyle, isDuplicate } = getEncodedStyle(olStyleToEncode);
 
 		// handle advanced styles
 		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
@@ -424,20 +446,18 @@ export class BvvMfp3Encoder {
 			if (isGeometryFunction) {
 				const geometry = style.getGeometry()(olFeatureToEncode);
 				if (geometry) {
-					const result = this._encodeFeature(new Feature(geometry), olLayer, [style]);
+					const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, [style]);
 					return result ? { features: [...styleFeatures.features, ...result.features], styles: [...styleFeatures.styles, ...result.styles] } : defaultResult;
 				}
-				return styleFeatures;
 			}
 			return styleFeatures;
 		}, defaultResult);
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyle.id };
-
 		return {
 			features: [encodedFeature, ...advancedStyleFeatures.features],
-			styles: [encodedStyle, ...advancedStyleFeatures.styles]
+			styles: isDuplicate ? [...advancedStyleFeatures.styles] : [encodedStyle, ...advancedStyleFeatures.styles]
 		};
 	}
 
