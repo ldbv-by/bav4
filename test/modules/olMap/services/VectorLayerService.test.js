@@ -31,7 +31,8 @@ describe('VectorLayerService', () => {
 		$injector
 			.registerSingleton('UrlService', urlService)
 			.registerSingleton('MapService', mapService)
-			.registerSingleton('StyleService', styleService);
+			.registerSingleton('StyleService', styleService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
 	describe('utils', () => {
@@ -175,7 +176,7 @@ describe('VectorLayerService', () => {
 
 		describe('_vectorSourceForData', () => {
 
-			it('builds an olVectorSource for an internal VectorGeoresource', () => {
+			it('builds an olVectorSource for an internal VectorGeoresource', async () => {
 				const srid = 3857;
 				const kmlName = '';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -188,6 +189,9 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
 				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
+
+				await TestUtils.timeout();
+				expect(vectorGeoresource.label).toBe(geoResourceLabel);
 			});
 
 			it('filters out features without a geometry', () => {
@@ -205,18 +209,47 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
 			});
 
-			it('updates the label of an internal VectorGeoresource if possible', async () => {
-				const srid = 3857;
-				const kmlName = 'kmlName';
-				const geoResourceLabel = 'geoResourceLabel';
-				spyOn(mapService, 'getSrid').and.returnValue(srid);
-				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+			describe('KML VectorGeoresource has no label', () => {
 
-				instanceUnderTest._vectorSourceForData(vectorGeoresource);
+				it('updates the label of an internal VectorGeoresource by calling the ol format', async () => {
+					const srid = 3857;
+					const kmlName = 'kmlName';
+					spyOn(mapService, 'getSrid').and.returnValue(srid);
+					const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+					const vectorGeoresource = new VectorGeoResource('someId', null, VectorSourceType.KML).setSource(sourceAsString, 4326);
 
-				await TestUtils.timeout();
-				expect(vectorGeoresource.label).toBe(kmlName);
+					instanceUnderTest._vectorSourceForData(vectorGeoresource);
+
+					await TestUtils.timeout();
+					expect(vectorGeoresource.label).toBe(kmlName);
+				});
+
+				it('updates the label of an internal VectorGeoresource by using a fallback', async () => {
+					const srid = 3857;
+					spyOn(mapService, 'getSrid').and.returnValue(srid);
+					const sourceAsString = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>';
+					const vectorGeoresource = new VectorGeoResource('someId', null, VectorSourceType.KML).setSource(sourceAsString, 4326);
+
+					instanceUnderTest._vectorSourceForData(vectorGeoresource);
+
+					await TestUtils.timeout();
+					expect(vectorGeoresource.label).toBe('olMap_vectorLayerService_default_layer_name_vector');
+				});
+			});
+
+			describe('Non-KML VectorGeoresource has no label', () => {
+
+				it('updates the label of an internal VectorGeoresource by using a fallback', async () => {
+					const srid = 3857;
+					spyOn(mapService, 'getSrid').and.returnValue(srid);
+					const sourceAsString = '<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><wpt lat="49.11012342157893" lon="11.13552777569367"><name></name><type>marker</type></wpt></gpx>';
+					const vectorGeoresource = new VectorGeoResource('someId', null, VectorSourceType.GPX).setSource(sourceAsString, 4326);
+
+					instanceUnderTest._vectorSourceForData(vectorGeoresource);
+
+					await TestUtils.timeout();
+					expect(vectorGeoresource.label).toBe('olMap_vectorLayerService_default_layer_name_vector');
+				});
 			});
 		});
 

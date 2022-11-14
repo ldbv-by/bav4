@@ -142,9 +142,10 @@ export class VectorLayerService {
 	_vectorSourceForData(geoResource) {
 
 		const {
-			MapService: mapService
-		} = $injector.inject('MapService');
+			MapService: mapService, TranslationService: translationService
+		} = $injector.inject('MapService', 'TranslationService');
 
+		const translate = (key) => translationService.translate(key);
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
 
@@ -160,14 +161,18 @@ export class VectorLayerService {
 		vectorSource.addFeatures(features);
 
 		/**
-		 * If we know a better name for the geoResource now, we update the geoResource's label.
+		 * If we know a name for the GeoResource now, we update the geoResource's label.
 		 * At this moment an olLayer and its source are about to be added to the map.
-		 * To avoid conflicts, we have to delay the update of the geoResouece (and subsequent possible modifications of the connected layer).
+		 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
 		 */
-		switch (geoResource.sourceType) {
-			case VectorSourceType.KML:
-				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
-				break;
+		if (!geoResource.label) {
+			switch (geoResource.sourceType) {
+				case VectorSourceType.KML:
+					setTimeout(() => geoResource.setLabel(format.readName(data) ?? translate('olMap_vectorLayerService_default_layer_name_vector')));
+					break;
+				default:
+					setTimeout(() => geoResource.setLabel(translate('olMap_vectorLayerService_default_layer_name_vector')));
+			}
 		}
 		return vectorSource;
 	}
