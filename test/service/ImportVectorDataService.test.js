@@ -29,6 +29,10 @@ describe('ImportVectorDataService', () => {
 		return new ImportVectorDataService();
 	};
 
+	afterEach(() => {
+		$injector.reset();
+	});
+
 	describe('forUrl', () => {
 
 		it('returns a GeoResourceFuture for given VectorSourceType', () => {
