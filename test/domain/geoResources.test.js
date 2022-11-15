@@ -180,12 +180,12 @@ describe('GeoResource', () => {
 		it('instantiates a GeoResourceFuture', () => {
 			const loader = async () => { };
 
-			const future = new GeoResourceFuture('id', loader, 'label');
+			const future = new GeoResourceFuture('id', loader);
 			const futureWithoutLabel = new GeoResourceFuture('id', loader);
 
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
-			expect(future.label).toBe('label');
+			expect(future.label).toBe('');
 			expect(futureWithoutLabel.label).toHaveSize(0);
 		});
 
