@@ -170,7 +170,7 @@ export class VectorLayerService {
 				case VectorSourceType.KML:
 					setTimeout(() => {
 						geoResource.setLabel(format.readName(data));
-						propertyChanged(geoResource.id);
+						propertyChanged(geoResource);
 					});
 					break;
 			}
