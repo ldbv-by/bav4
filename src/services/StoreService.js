@@ -70,6 +70,7 @@ export class StoreService {
 			const {
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
+				ChipsPlugin: chipsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
 				DrawPlugin: drawPlugin,
@@ -86,6 +87,7 @@ export class StoreService {
 			}
 				= $injector.inject(
 					'TopicsPlugin',
+					'ChipsPlugin',
 					'LayersPlugin',
 					'GeolocationPlugin',
 					'MeasurementPlugin',
@@ -106,6 +108,7 @@ export class StoreService {
 				//register plugins
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
+				await chipsPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
