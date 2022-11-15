@@ -50,7 +50,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
-			expect(geoResourceFuture.label).toBe(options.label);
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -67,7 +67,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
-			expect(geoResourceFuture.label).toBe(options.label);
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -79,7 +79,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
-			expect(geoResourceFuture.label).toBeNull();
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 

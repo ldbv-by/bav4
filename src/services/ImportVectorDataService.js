@@ -81,7 +81,7 @@ export class ImportVectorDataService {
 			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 		};
 
-		const geoResource = new GeoResourceFuture(id, loader, label);
+		const geoResource = new GeoResourceFuture(id, loader);
 		this._geoResourceService.addOrReplace(geoResource);
 		return geoResource;
 	}
