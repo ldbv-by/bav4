@@ -33,12 +33,12 @@ export const _newLoader = id => {
  */
 export const loadBvvFileStorageResourceById = id => {
 
-	const { FileStorageService: fileStorageService, TranslationService: translationService }
-		= $injector.inject('FileStorageService', 'TranslationService');
+	const { FileStorageService: fileStorageService }
+		= $injector.inject('FileStorageService');
 
 	if (fileStorageService.isAdminId(id) || fileStorageService.isFileId(id)) {
 
-		return new GeoResourceFuture(id, _newLoader(id), translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+		return new GeoResourceFuture(id, _newLoader(id));
 	}
 	return null;
 };
