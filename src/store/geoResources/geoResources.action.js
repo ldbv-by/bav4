@@ -5,6 +5,7 @@
 import { GEORESOURCE_CHANGED } from './geoResources.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
+import { GeoResource } from '../../domain/geoResources';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -13,13 +14,13 @@ const getStore = () => {
 
 
 /**
-  * Announces the change of one or more properties of a GeoResource
+  * Announces that one or more properties of a GeoResource were changed.
   * @function
-  * @param {string} id id of the changed GeoResource
+  * @param {GeoResource|string} grOrId GeoResource or its id
   */
-export const propertyChanged = (id) => {
+export const propertyChanged = (grOrId) => {
 	getStore().dispatch({
 		type: GEORESOURCE_CHANGED,
-		payload: new EventLike(id)
+		payload: new EventLike(grOrId instanceof GeoResource ? grOrId.id : grOrId)
 	});
 };

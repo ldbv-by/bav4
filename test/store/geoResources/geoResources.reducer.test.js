@@ -1,3 +1,4 @@
+import { GeoResourceFuture } from '../../../src/domain/geoResources.js';
 import { propertyChanged } from '../../../src/store/geoResources/geoResources.action.js';
 import { geoResourcesReducer } from '../../../src/store/geoResources/geoResources.reducer.js';
 import { TestUtils } from '../../test-utils.js';
@@ -23,5 +24,9 @@ describe('geoResourcesReducer', () => {
 		propertyChanged('foo');
 
 		expect(store.getState().geoResources.changed.payload).toBe('foo');
+
+		propertyChanged(new GeoResourceFuture('bar', () => { }));
+
+		expect(store.getState().geoResources.changed.payload).toBe('bar');
 	});
 });

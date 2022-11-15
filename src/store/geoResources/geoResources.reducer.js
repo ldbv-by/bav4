@@ -1,6 +1,6 @@
 import { EventLike } from '../../utils/storeUtils';
 
-export const GEORESOURCE_CHANGED = 'georesources/changed';
+export const GEORESOURCE_CHANGED = 'geoResources/changed';
 
 export const initialState = {
 	changed: new EventLike(null)
