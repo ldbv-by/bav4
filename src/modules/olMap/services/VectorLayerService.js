@@ -142,10 +142,9 @@ export class VectorLayerService {
 	_vectorSourceForData(geoResource) {
 
 		const {
-			MapService: mapService, TranslationService: translationService
-		} = $injector.inject('MapService', 'TranslationService');
+			MapService: mapService
+		} = $injector.inject('MapService');
 
-		const translate = (key) => translationService.translate(key);
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
 
@@ -168,10 +167,8 @@ export class VectorLayerService {
 		if (!geoResource.label) {
 			switch (geoResource.sourceType) {
 				case VectorSourceType.KML:
-					setTimeout(() => geoResource.setLabel(format.readName(data) ?? translate('olMap_vectorLayerService_default_layer_name_vector')));
+					setTimeout(() => geoResource.setLabel(format.readName(data)));
 					break;
-				default:
-					setTimeout(() => geoResource.setLabel(translate('olMap_vectorLayerService_default_layer_name_vector')));
 			}
 		}
 		return vectorSource;
