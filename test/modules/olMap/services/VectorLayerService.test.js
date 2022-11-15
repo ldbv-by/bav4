@@ -7,6 +7,7 @@ import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
+import { geoResourcesReducer } from '../../../../src/store/geoResources/geoResources.reducer';
 
 
 describe('VectorLayerService', () => {
@@ -25,7 +26,6 @@ describe('VectorLayerService', () => {
 		updateStyle: () => { },
 		isStyleRequired: () => { }
 	};
-	let instanceUnderTest;
 
 	beforeAll(() => {
 		$injector
@@ -65,7 +65,16 @@ describe('VectorLayerService', () => {
 
 	describe('service methods', () => {
 
+		let instanceUnderTest;
+		let store;
 		beforeEach(() => {
+			store = TestUtils.setupStoreAndDi({}, {
+				geoResources: geoResourcesReducer
+			});
+			$injector
+				.registerSingleton('UrlService', urlService)
+				.registerSingleton('MapService', mapService)
+				.registerSingleton('StyleService', styleService);
 			instanceUnderTest = new VectorLayerService();
 		});
 
@@ -210,17 +219,19 @@ describe('VectorLayerService', () => {
 
 			describe('KML VectorGeoresource has no label', () => {
 
-				it('updates the label of an internal VectorGeoresource by calling the ol format', async () => {
+				it('updates the label of an internal VectorGeoresource and calls the propertyChanged action', async () => {
+					const id = 'someId';
 					const srid = 3857;
 					const kmlName = 'kmlName';
 					spyOn(mapService, 'getSrid').and.returnValue(srid);
 					const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-					const vectorGeoresource = new VectorGeoResource('someId', null, VectorSourceType.KML).setSource(sourceAsString, 4326);
+					const vectorGeoresource = new VectorGeoResource(id, null, VectorSourceType.KML).setSource(sourceAsString, 4326);
 
 					instanceUnderTest._vectorSourceForData(vectorGeoresource);
 
 					await TestUtils.timeout();
 					expect(vectorGeoresource.label).toBe(kmlName);
+					expect(store.getState().geoResources.changed.payload).toBe(id);
 				});
 			});
 		});
