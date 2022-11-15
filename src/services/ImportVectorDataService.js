@@ -1,7 +1,6 @@
 import { $injector } from '../injection';
-import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
 
 /**
@@ -71,8 +70,7 @@ export class ImportVectorDataService {
 				 **/
 				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 				if (resultingSourceType) {
-					const vgr = observable(new VectorGeoResource(id, label, resultingSourceType),
-						this._newUpdateLayerCallbackFn(id));
+					const vgr = new VectorGeoResource(id, label, resultingSourceType);
 					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 					return vgr;
 				}
@@ -98,8 +96,7 @@ export class ImportVectorDataService {
 
 		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 		if (resultingSourceType) {
-			const vgr = observable(new VectorGeoResource(id, label, resultingSourceType),
-				this._newUpdateLayerCallbackFn(id));
+			const vgr = new VectorGeoResource(id, label, resultingSourceType);
 			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
@@ -134,30 +131,6 @@ export class ImportVectorDataService {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Returns a callback fn for a GeoResource observer which synchronizes
-	 * changes of the GeoResource properties to all relevant layers.
-	 * @param {String} geoResourceId
-	 * @returns callback fn for observer
-	 */
-	_newUpdateLayerCallbackFn(geoResourceId) {
-		const {
-			StoreService: storeService
-		} = $injector.inject('StoreService');
-
-		return (prop, value) => {
-			if (prop === '_label') {
-				const { layers: { active: activeLayers } } = storeService.getStore().getState();
-
-				activeLayers.forEach(l => {
-					if (l.geoResourceId === geoResourceId) {
-						modifyLayer(l.id, { label: value });
-					}
-				});
-			}
-		};
 	}
 }
 

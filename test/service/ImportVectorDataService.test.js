@@ -111,30 +111,6 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.srid).toBe(4326);
 			});
 
-			it('registers the updateLayerCallback function', async () => {
-				const instanceUnderTest = setup();
-				const url = 'http://my.url';
-				const geoResourceId = 'id';
-				const data = 'data';
-				const options = {
-					id: geoResourceId,
-					label: 'label',
-					sourceType: VectorSourceType.KML
-				};
-				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
-					new Response(data, { status: 200 })
-				));
-				const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
-
-				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
-				await geoResourceFuture.get();
-
-				expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
-			});
-
 			it('loads the data and returns a VectorGeoresource automatically setting id and sourceType', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
@@ -158,7 +134,6 @@ describe('ImportVectorDataService', () => {
 				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 				expect(vgr.id).toBe(geoResourceFuture.id);
-				expect(vgr.label).toBeNull();
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 			});
@@ -298,30 +273,11 @@ describe('ImportVectorDataService', () => {
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 			expect(vgr.id).toEqual(jasmine.any(String));
-			expect(vgr.label).toBeNull();
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
-		});
-
-		it('registers the updateLayerCallback function', async () => {
-			const instanceUnderTest = setup();
-			const geoResourceId = 'id';
-			const data = 'data';
-			const options = {
-				id: geoResourceId,
-				label: 'label',
-				sourceType: VectorSourceType.KML
-			};
-			const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
-			const layer = { label: options.label };
-			addLayer(options.id, layer);
-
-			instanceUnderTest.forData(data, options);
-
-			expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('logs a warning and returns Null when sourceType is not supported', async () => {
@@ -354,29 +310,6 @@ describe('ImportVectorDataService', () => {
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().label).toBeNull();
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
-		});
-	});
-
-	describe('_newUpdateLayerCallbackFn', () => {
-
-		it('synchronizes changes of the GeoResource label properties to all relevant layers', async () => {
-			const instanceUnderTest = setup();
-			const geoResourceId = 'grId0';
-			const initialLabel = 'label';
-			const updatedLabel = 'update';
-			const layer0 = { geoResourceId: geoResourceId, label: initialLabel };
-			const layer1 = { geoResourceId: geoResourceId, label: initialLabel };
-			const layer2 = { geoResourceId: 'grId2', label: initialLabel };
-			addLayer('id0', layer0);
-			addLayer('id1', layer1);
-			addLayer('id2', layer2);
-			const layerCallbackFn = instanceUnderTest._newUpdateLayerCallbackFn(geoResourceId);
-
-			layerCallbackFn('_label', updatedLabel);
-
-			expect(store.getState().layers.active[0].label).toBe(updatedLabel);
-			expect(store.getState().layers.active[1].label).toBe(updatedLabel);
-			expect(store.getState().layers.active[2].label).toBe(initialLabel);
 		});
 	});
 });
