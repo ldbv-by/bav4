@@ -1,11 +1,9 @@
 import { $injector } from '../injection';
-import { GeoResourceTypes } from '../domain/geoResources';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, modifyLayer, setReady } from '../store/layers/layers.action';
+import { addLayer, setReady } from '../store/layers/layers.action';
 import { provide as provider } from './i18n/layersPlugin.provider';
 import { createUniqueId } from '../utils/numberUtils';
-import { propertyChanged } from '../store/geoResources/geoResources.action';
 
 /**
  * @class
