@@ -3,9 +3,6 @@ import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResourc
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { addLayer } from '../../src/store/layers/layers.action';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { TestUtils } from '../test-utils';
 
 describe('ImportVectorDataService', () => {
 
@@ -21,12 +18,9 @@ describe('ImportVectorDataService', () => {
 	const sourceTypeService = {
 		forData() { }
 	};
-	let store;
 
 	const setup = () => {
-		store = TestUtils.setupStoreAndDi({}, {
-			layers: layersReducer
-		});
+
 		$injector
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
