@@ -146,10 +146,9 @@ export const loadBvvGeoResourceById = id => {
 
 	const {
 		HttpService: httpService,
-		ConfigService: configService,
-		TranslationService: translationService
+		ConfigService: configService
 	}
-		= $injector.inject('HttpService', 'ConfigService', 'TranslationService');
+		= $injector.inject('HttpService', 'ConfigService');
 
 	const loader = async id => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
@@ -166,5 +165,5 @@ export const loadBvvGeoResourceById = id => {
 		throw new Error(`GeoResource for id '${id}' could not be loaded`);
 	};
 
-	return new GeoResourceFuture(id, loader, translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+	return new GeoResourceFuture(id, loader);
 };
