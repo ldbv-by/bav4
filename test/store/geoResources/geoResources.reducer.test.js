@@ -1,7 +1,5 @@
 import { propertyChanged } from '../../../src/store/geoResources/geoResources.action.js';
 import { geoResourcesReducer } from '../../../src/store/geoResources/geoResources.reducer.js';
-import { closeModal, openModal } from '../../../src/store/modal/modal.action.js';
-import { modalReducer } from '../../../src/store/modal/modal.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
 
