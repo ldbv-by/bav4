@@ -671,6 +671,23 @@ describe('BvvMfp3Encoder', () => {
 				return styles;
 			};
 
+			const getStrokeAndFillStyle = () => {
+				const fill = new Fill({
+					color: 'rgba(255,255,255,0.4)'
+				});
+				const stroke = new Stroke({
+					color: '#3399CC',
+					width: 1.25
+				});
+				const styles = [
+					new Style({
+						stroke: stroke,
+						fill: fill
+					})
+				];
+				return styles;
+			};
+
 			const getGeoResourceMock = () => {
 				return {
 					id: 'foo', get attribution() {
@@ -1117,6 +1134,65 @@ describe('BvvMfp3Encoder', () => {
 					}
 				});
 			});
+
+			it('writes polygons and a line feature with same style', () => {
+				const uniqueStyle = getStrokeAndFillStyle();
+				const lineFeatureWithStyle = new Feature({ geometry: new LineString([[30, 30], [40, 40]]) });
+				lineFeatureWithStyle.setStyle(uniqueStyle);
+				const polygonFeatureWithStyle = new Feature({ geometry: new Polygon([[[30, 30], [40, 40], [40, 30], [30, 30]]]) });
+				polygonFeatureWithStyle.setStyle(uniqueStyle);
+				const anotherPolygonFeatureWithStyle = new Feature({ geometry: new Polygon([[[30, 30], [40, 40], [40, 30], [30, 30]]]) });
+				anotherPolygonFeatureWithStyle.setStyle(uniqueStyle);
+				const vectorSource = new VectorSource({ wrapX: false, features: [lineFeatureWithStyle, polygonFeatureWithStyle, anotherPolygonFeatureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [jasmine.any(Object), jasmine.any(Object), jasmine.any(Object)],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'polygon',
+								zIndex: 0,
+								fillOpacity: 0.4,
+								fillColor: '#ffffff',
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							},
+							{
+								type: 'line',
+								zIndex: 0,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
+
 
 			it('writes a polygon feature with fill style', () => {
 				const featureWithStyle = new Feature({ geometry: new Polygon([[[30, 30], [40, 40], [40, 30], [30, 30]]]) });
