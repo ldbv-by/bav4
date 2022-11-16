@@ -299,6 +299,7 @@ export class BvvMfp3Encoder {
 		};
 
 		const startResult = { features: [] };
+		// todo: find a better implementation then this mix of feature aggregation (reducer) and style aggregation (cache)
 		const aggregateResults = (encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
 			return result ? {
@@ -419,14 +420,16 @@ export class BvvMfp3Encoder {
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
 		const addOrUpdateEncodedStyle = (olStyle) => {
 			const addEncodedStyle = () => {
-				const encodedStyle = { ...initEncodedStyle(), symbolizers: [this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)] };
-				if (encodedStyle.fillOpacity) {
-					encodedStyle.fillOpacity *= olLayer.getOpacity();
-				}
+				const encodedStyle = { ...initEncodedStyle(), symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
+				encodedStyle.symbolizers.forEach(symbolizer => {
+					if (symbolizer.fillOpacity) {
+						symbolizer.fillOpacity *= olLayer.getOpacity();
+					}
 
-				if (encodedStyle.strokeOpacity) {
-					encodedStyle.strokeOpacity *= olLayer.getOpacity();
-				}
+					if (symbolizer.strokeOpacity) {
+						symbolizer.strokeOpacity *= olLayer.getOpacity();
+					}
+				});
 
 				styleCache.set(olStyle, encodedStyle);
 				return encodedStyle.id;
@@ -435,7 +438,7 @@ export class BvvMfp3Encoder {
 				const { id, symbolizers } = styleCache.get(olStyle);
 				const encodedGeometryType = this._encodeGeometryType(olFeatureToEncode.getGeometry().getType());
 				if (symbolizers.every(s => s.type !== encodedGeometryType)) {
-					const encodedStyle = { id: id, symbolizers: [...symbolizers, this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)] };
+					const encodedStyle = { id: id, symbolizers: [...symbolizers, ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)] };
 					styleCache.set(olStyle, encodedStyle);
 				}
 
@@ -513,6 +516,12 @@ export class BvvMfp3Encoder {
 			if (styleProperties.size) {
 				encoded.graphicWidth = BvvMfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
 				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
+				const hexColor = styleProperties.fill?.getColor();
+				if (hexColor) {
+					const color = ColorAsArray(hexColor);
+					encoded.fillColor = rgbToHex(color.slice(0, 3));
+					encoded.fillOpacity = color[3] ?? 1;
+				}
 			}
 
 			if (styleProperties.anchor) {
@@ -521,7 +530,6 @@ export class BvvMfp3Encoder {
 			}
 
 			if (styleProperties.imageSrc) {
-				// todo: unproxify URL of imageSrc
 				encoded.externalGraphic = styleProperties.imageSrc;
 				encoded.fillOpacity = 1;
 			}
@@ -534,14 +542,14 @@ export class BvvMfp3Encoder {
 		if (fillStyle) {
 			const color = ColorAsArray(fillStyle.getColor());
 			encoded.fillColor = rgbToHex(color.slice(0, 3));
-			encoded.fillOpacity = color[3];
+			encoded.fillOpacity = color[3] ?? 1;
 		}
 
 		if (strokeStyle) {
 			const color = ColorAsArray(strokeStyle.getColor());
 			encoded.strokeWidth = BvvMfp3Encoder.adjustDistance(strokeStyle.getWidth(), dpi);
 			encoded.strokeColor = rgbToHex(color.slice(0, 3));
-			encoded.strokeOpacity = color[3];
+			encoded.strokeOpacity = color[3] ?? 1;
 			encoded.strokeLinecap = strokeStyle.getLineCap() ?? 'round';
 			encoded.strokeLineJoin = strokeStyle.getLineJoin() ?? 'round';
 
@@ -593,7 +601,16 @@ export class BvvMfp3Encoder {
 				encoded.fontWeight = fontValues[0];
 			}
 		}
-		return encoded;
+
+		const addPointSymbolizer = (labelSymbolizer) => {
+			// eslint-disable-next-line no-unused-vars
+			const { label, labelXOffset, labelYOffset, labelAlign, fontFamily, fontSize, fontWeight, ...rest } = labelSymbolizer;
+			const pointSymbolizer = { ...rest, type: 'point' };
+
+			return [pointSymbolizer, labelSymbolizer];
+		};
+
+		return encoded.type === 'text' && encoded.externalGraphic ? addPointSymbolizer(encoded) : [encoded];
 	}
 
 	_encodeOverlay(overlay) {
