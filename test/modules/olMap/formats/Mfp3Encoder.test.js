@@ -646,6 +646,24 @@ describe('BvvMfp3Encoder', () => {
 				return styles;
 			};
 
+			const getTextAndImageStyle = (textAlign = 'center', textBaseline = 'middle') => {
+				const textFill = new Fill({
+					color: 'rgb(0,0,0)'
+				});
+				const styles = [
+					new Style({
+						image: new IconStyle({
+							anchor: [42, 42],
+							anchorXUnits: 'pixels',
+							anchorYUnits: 'pixels',
+							src: 'https://some.url/to/image/foo.png'
+						}),
+						text: new TextStyle({ text: 'FooBarBaz', font: 'normal 10px sans-serif', fill: textFill, textAlign: textAlign, textBaseline: textBaseline })
+					})
+				];
+				return styles;
+			};
+
 			const getStrokeStyle = () => {
 				const stroke = new Stroke({
 					color: '#3399CC',
@@ -1002,6 +1020,46 @@ describe('BvvMfp3Encoder', () => {
 								fontSize: 10,
 								fontWeight: 'normal'
 							}]
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with feature style (text & symbol) with two symbolizers', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getTextAndImageStyle('left', 'top'));
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [jasmine.objectContaining({ type: 'point' }), jasmine.objectContaining({ type: 'text' })]
 						}
 					}
 				});
