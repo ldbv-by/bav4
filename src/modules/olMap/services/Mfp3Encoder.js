@@ -334,7 +334,7 @@ export class BvvMfp3Encoder {
 			return asV2(styles);
 		};
 
-		return {
+		return encodingResults.features.length === 0 ? false : {
 			type: 'geojson',
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),

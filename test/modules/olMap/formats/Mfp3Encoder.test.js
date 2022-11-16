@@ -1043,7 +1043,11 @@ describe('BvvMfp3Encoder', () => {
 			});
 
 			it('does NOT writes a point feature without any style', () => {
-				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getImageStyle());
+				const featureWithoutStyle = new Feature({ geometry: new Point([30, 30]) });
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle, featureWithoutStyle] });
+
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
 
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
@@ -1053,21 +1057,25 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
-				expect(actualSpec).toEqual({
-					opacity: 1,
-					type: 'geojson',
-					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
-					thirdPartyAttribution: null,
-					geoJson: {
-						features: [],
-						type: 'FeatureCollection'
-					},
-					style: {
-						version: '2'
-					}
-				});
+				expect(actualSpec.geoJson.features).toHaveSize(1);
 			});
+
+			it('does NOT writes any spec when features not in mfp extent', () => {
+				const outerFeature = new Feature({ geometry: new Point([10, 10]) });
+				outerFeature.setStyle(getImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [outerFeature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [10, 10, 60, 60]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toBeFalse();
+			});
+
 
 			it('writes a line feature with stroke style', () => {
 				const featureWithStyle = new Feature({ geometry: new LineString([[30, 30], [40, 40]]) });
