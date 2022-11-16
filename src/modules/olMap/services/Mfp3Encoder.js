@@ -55,10 +55,6 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  * @implements {Mfp3Encoder}
  */
 export class BvvMfp3Encoder {
-	/*
-	TODO:
-	- should unproxify URL to external Resources (e.g. a image in a icon style)
-	*/
 
 	constructor() {
 		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService, MfpService: mfpService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
@@ -69,8 +65,8 @@ export class BvvMfp3Encoder {
 		this._mfpService = mfpService;
 		this._pageExtent = null;
 		this._geometryEncodingFormat = new GeoJSONFormat();
-		this._encodingStyleId = 0;
 		this._mapProjection = `EPSG:${this._mapService.getSrid()}`;
+		this._encodingStyleId = 0;
 	}
 
 	/**
@@ -80,6 +76,7 @@ export class BvvMfp3Encoder {
 	 * @returns {Object} the encoded mfp specs
 	 */
 	async encode(olMap, encodingProperties) {
+		this._initStyleId();
 		this._mfpProperties = encodingProperties;
 		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 
@@ -148,6 +145,10 @@ export class BvvMfp3Encoder {
 				qrcodeurl: qrCodeUrl
 			}
 		};
+	}
+
+	_initStyleId() {
+		this._encodingStyleId = 0;
 	}
 
 	_encode(layer) {
