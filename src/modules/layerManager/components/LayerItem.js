@@ -124,7 +124,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 			return nothing;
 		}
 		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
-		// const currentLabel = (geoResource instanceof GeoResourceFuture) ? 'Loading Toddo i18n' : geoResource.label;
 		const currentLabel = layer.label;
 		const getCollapseTitle = () => {
 			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
