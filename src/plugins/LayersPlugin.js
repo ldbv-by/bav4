@@ -37,7 +37,6 @@ export class LayersPlugin extends BaPlugin {
 						if (geoResource) {
 
 							const layerProperties = { geoResourceId: geoResource.id };
-							layerProperties.label = geoResource.label;
 
 							if (layerVisibility[index] === 'false') {
 								layerProperties.visible = false;
@@ -80,7 +79,7 @@ export class LayersPlugin extends BaPlugin {
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
 		}
-		addLayer(bgGeoresources[0].id, { label: bgGeoresources[0].label });
+		addLayer(bgGeoresources[0].id);
 	}
 
 	/**

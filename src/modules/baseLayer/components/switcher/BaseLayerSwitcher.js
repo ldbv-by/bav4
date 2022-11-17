@@ -75,7 +75,7 @@ export class BaseLayerSwitcher extends MvuElement {
 
 				const add = () => {
 					// we create always a unique layer id
-					addLayer(`${geoR.id}_${createUniqueId()}`, { label: geoR.label, zIndex: 0, geoResourceId: geoR.id });
+					addLayer(`${geoR.id}_${createUniqueId()}`, { zIndex: 0, geoResourceId: geoR.id });
 				};
 
 				if (activeLayers.length > 0) {

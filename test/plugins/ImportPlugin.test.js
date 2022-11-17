@@ -101,7 +101,6 @@ describe('ImportPlugin', () => {
 			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
 			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 		});
@@ -182,7 +181,6 @@ describe('ImportPlugin', () => {
 			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().layers.active[0].label).toBe('labelBar');
 			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
 		});
 
