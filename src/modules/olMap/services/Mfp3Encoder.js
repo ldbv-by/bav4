@@ -114,7 +114,7 @@ export class BvvMfp3Encoder {
 			.reduce((layerSpecs, encodedLayer) => {
 				// todo: extract to method
 				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
-				const getLabels = (attribution) => Array.isArray(attribution?.copyright) ? attribution?.copyright?.map(c => c.label) : [attribution?.copyright?.label];
+				const getLabels = (attribution) => Array.isArray(attribution) ? attribution?.map(a => a.copyright.label) : [attribution?.copyright?.label];
 
 				return {
 					specs: [...layerSpecs.specs, restSpec],
@@ -139,8 +139,8 @@ export class BvvMfp3Encoder {
 					rotation: this._mfpProperties.rotation,
 					layers: layers
 				},
-				dataOwner: encodedLayers.dataOwners.length !== 0 ? encodedLayers.dataOwners.join(', ') : '',
-				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? encodedLayers.thirdPartyDataOwners.join(', ') : '',
+				dataOwner: encodedLayers.dataOwners.length !== 0 ? Array.from(new Set(encodedLayers.dataOwners)).join(',') : '',
+				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? Array.from(new Set(encodedLayers.thirdPartyDataOwners)).join(',') : '',
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -222,7 +222,6 @@ export class BvvMfp3Encoder {
 			const tileMatrixSet = this._mfpProjection;
 			const source = wmtsLayer.getSource();
 			const { tileGrid, layer, baseURL, requestEncoding } = source instanceof WMTS ? fromWmtsSource(source) : fromXyzSource(source, wmtsLayer);
-
 			return {
 				opacity: wmtsLayer.getOpacity(),
 				type: 'wmts',
@@ -256,7 +255,6 @@ export class BvvMfp3Encoder {
 			new Array(layers.length).join(',').split(',');
 
 		const url = source.getUrl && source.getUrl();
-
 		return {
 			type: 'wms',
 			baseURL: url,
