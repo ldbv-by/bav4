@@ -9,9 +9,10 @@ import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
-import { VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { geoResourcesReducer } from '../../../../src/store/geoResources/geoResources.reducer';
-
+import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { propertyChanged } from '../../../../src/store/geoResources/geoResources.action';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -264,7 +265,67 @@ describe('LayerItem', () => {
 			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
 		});
 
+		it('not show a loading hint for Non-GeoResourceFutures', async () => {
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+		});
+
+		it('shows and hides a loading hint for GeoResourceFutures', async () => {
+			const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResFuture);
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('layerManager_loading_hint');
+
+			await geoResFuture.get(); // resolve future
+
+			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
+		});
 	});
+
+	describe('when observed slice of state \'geoResources\' changes', () => {
+
+		const geoResourceService = { byId: () => { } };
+
+		const setup = async (layer) => {
+			TestUtils.setupStoreAndDi({}, {
+				geoResources: geoResourcesReducer
+			}
+			);
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key })
+				.registerSingleton('GeoResourceService', geoResourceService);
+			const element = await TestUtils.render(LayerItem.tag);
+			element.layer = layer;
+			return element;
+		};
+
+		it('it updates the label', async () => {
+			const gr = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(gr);
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+			const element = await setup(layer);
+
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
+
+			gr.setLabel('foo');
+			propertyChanged(gr);
+
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('foo');
+
+			propertyChanged('someOtherGeoResourceId');
+
+			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('foo');
+		});
+	});
+
+
 
 	describe('when user interacts with layer item', () => {
 		const geoResourceService = { byId: () => { } };
