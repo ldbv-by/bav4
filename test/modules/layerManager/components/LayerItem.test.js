@@ -582,7 +582,7 @@ describe('LayerItem', () => {
 	describe('event handling', () => {
 		const layer = {
 			...createDefaultLayerProperties(),
-			id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1
+			id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true
 		};
 		const geoResourceService = { byId: () => { } };
 

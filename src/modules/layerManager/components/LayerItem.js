@@ -19,6 +19,11 @@ import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 
 const Update_Layer = 'update_layer';
 const Update_Layer_Collapsed = 'update_layer_collapsed';
+const Default_Extra_Property_Values = {
+	collapsed: true,
+	opacity: 1,
+	loading: false
+};
 
 /**
  * Child element of the LayerManager. Represents one layer and its state.
@@ -60,10 +65,10 @@ export class LayerItem extends AbstractMvuContentPanel {
 					...model,
 					layer: {
 						...data,
-						visible: data?.visible ?? true,
-						collapsed: data?.collapsed ?? true,
-						opacity: data?.opacity ?? 1,
-						loading: data?.loading ?? false
+						visible: data.visible,
+						collapsed: data.collapsed,
+						opacity: data.opacity,
+						loading: data.loading
 					}
 				};
 			case Update_Layer_Collapsed:
@@ -252,12 +257,14 @@ export class LayerItem extends AbstractMvuContentPanel {
 		if (geoResource instanceof GeoResourceFuture) {
 			geoResource.onResolve(resolvedGeoR => this.signal(Update_Layer,
 				{
+					...Default_Extra_Property_Values,
 					...value,
 					label: resolvedGeoR.label,
 					loading: false
 				}));
 		}
 		this.signal(Update_Layer, {
+			Default_Extra_Property_Values,
 			...value,
 			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
 			loading: geoResource instanceof GeoResourceFuture
