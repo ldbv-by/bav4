@@ -24,6 +24,7 @@ export const _definitionToGeoResource = definition => {
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector':
+				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
 				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 					//set specific optional values
 					.setUrl(def.url);
