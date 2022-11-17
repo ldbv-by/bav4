@@ -328,7 +328,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Foo CopyRight, Bar CopyRight',
+					dataOwner: 'Foo CopyRight,Bar CopyRight',
 					thirdPartyDataOwner: '',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
@@ -417,7 +417,7 @@ describe('BvvMfp3Encoder', () => {
 						rotation: null
 					},
 					dataOwner: '',
-					thirdPartyDataOwner: 'Foo CopyRight, Bar CopyRight',
+					thirdPartyDataOwner: 'Foo CopyRight,Bar CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
@@ -434,7 +434,7 @@ describe('BvvMfp3Encoder', () => {
 				getParams: () => []
 			};
 			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } }).setImportedByUser(true);
-			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: [{ label: 'Bar CopyRight' }, { label: 'Baz CopyRight' }] });
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution([{ copyright: { label: 'Bar CopyRight' } }, { copyright: { label: 'Baz CopyRight' } }]);
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo').and.callFake(() => geoResourceFoo)
 				.withArgs('bar').and.callFake(() => geoResourceBar);
@@ -460,8 +460,52 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Bar CopyRight, Baz CopyRight',
+					dataOwner: 'Bar CopyRight,Baz CopyRight',
 					thirdPartyDataOwner: 'Foo CopyRight',
+					shortLink: 'http://url.to/shorten',
+					qrcodeurl: 'http://url.to/shorten.png'
+				}
+			});
+		});
+
+		it('encodes layers with same attribution only once', async () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const geoResourceFoo = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } });
+			const geoResourceBar = new TestGeoResource(GeoResourceTypes.WMS).setAttribution({ copyright: { label: 'Foo CopyRight' } });
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo').and.callFake(() => geoResourceFoo)
+				.withArgs('bar').and.callFake(() => geoResourceBar);
+			const encoder = new BvvMfp3Encoder();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }]
+				};
+			});
+			const actualSpec = await encoder.encode(mapMock, getProperties());
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Array),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null
+					},
+					dataOwner: 'Foo CopyRight',
+					thirdPartyDataOwner: '',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
