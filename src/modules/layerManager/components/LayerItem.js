@@ -13,7 +13,7 @@ import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/
 import { openModal } from '../../../../src/store/modal/modal.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { fitLayer } from '../../../store/position/position.action';
-import { VectorGeoResource } from '../../../domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource } from '../../../domain/geoResources';
 import { MenuTypes } from '../../commons/components/overflowMenu/OverflowMenu';
 
 
@@ -60,14 +60,24 @@ export class LayerItem extends AbstractMvuContentPanel {
 					...model,
 					layer: {
 						...data,
-						visible: data && data.visible != null ? data.visible : true,
-						collapsed: data && data.collapsed != null ? data.collapsed : true,
-						opacity: data && data.opacity != null ? data.opacity : 1
+						visible: data?.visible ?? true,
+						collapsed: data?.collapsed ?? true,
+						opacity: data?.opacity ?? 1,
+						loading: data?.loading ?? false
 					}
 				};
 			case Update_Layer_Collapsed:
 				return { ...model, layer: { ...model.layer, collapsed: data } };
 		}
+	}
+
+	onInitialize() {
+		this.observe(state => state.geoResources.changed, (changed) => {
+			if (this.getModel().layer.geoResourceId === changed.payload) {
+				const geoResource = this._geoResourceService.byId(changed.payload);
+				this.signal(Update_Layer, { ...this.getModel().layer, label: geoResource.label });
+			}
+		}, false);
 	}
 
 
@@ -108,7 +118,9 @@ export class LayerItem extends AbstractMvuContentPanel {
 		if (!layer) {
 			return nothing;
 		}
-		const currentLabel = layer.label === '' ? layer.id : layer.label;
+		const geoResource = this._geoResourceService.byId(layer.geoResourceId);
+		// const currentLabel = (geoResource instanceof GeoResourceFuture) ? 'Loading Toddo i18n' : geoResource.label;
+		const currentLabel = layer.label;
 		const getCollapseTitle = () => {
 			return layer.collapsed ? translate('layerManager_expand') : translate('layerManager_collapse');
 		};
@@ -197,7 +209,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const getMenuItems = () => {
 			return [
 				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints?.cloneable },
-				{ id: 'zoomToExtent', label: translate('layerManager_zoom_to_extent'), icon: zoomToExtentSvg, action: zoomToExtent, disabled: !(this._geoResourceService.byId(layer.geoResourceId) instanceof VectorGeoResource) },
+				{ id: 'zoomToExtent', label: translate('layerManager_zoom_to_extent'), icon: zoomToExtentSvg, action: zoomToExtent, disabled: !(geoResource instanceof VectorGeoResource) },
 				{ id: 'info', label: 'Info', icon: infoSvg, action: openGeoResourceInfoPanel, disabled: !layer.constraints?.metaData }
 			];
 		};
@@ -207,7 +219,7 @@ export class LayerItem extends AbstractMvuContentPanel {
         <div class='ba-section divider'>
             <div class='ba-list-item'>          
 
-                    <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${layer.visible} @toggle=${toggleVisibility}>${currentLabel}</ba-checkbox>                                                   
+                    <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${layer.visible} @toggle=${toggleVisibility}>${currentLabel}${layer.loading ? html`<ba-spinner .label=${' '}></ba-spinner>` : nothing}</ba-checkbox>                                                   
                                        
                 <button id='button-detail' data-test-id class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>
@@ -234,7 +246,22 @@ export class LayerItem extends AbstractMvuContentPanel {
 	}
 
 	set layer(value) {
-		this.signal(Update_Layer, value);
+		const translate = (key) => this._translationService.translate(key);
+		const geoResource = this._geoResourceService.byId(value.geoResourceId);
+
+		if (geoResource instanceof GeoResourceFuture) {
+			geoResource.onResolve(resolvedGeoR => this.signal(Update_Layer,
+				{
+					...value,
+					label: resolvedGeoR.label,
+					loading: false
+				}));
+		}
+		this.signal(Update_Layer, {
+			...value,
+			label: geoResource instanceof GeoResourceFuture ? translate('layerManager_loading_hint') : geoResource.label,
+			loading: geoResource instanceof GeoResourceFuture
+		});
 	}
 
 	/**
