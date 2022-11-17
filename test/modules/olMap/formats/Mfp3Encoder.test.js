@@ -620,6 +620,7 @@ describe('BvvMfp3Encoder', () => {
 				baseURL: 'https://some.url/to/wms',
 				layers: ['foo', 'bar'],
 				styles: ['baz'],
+				customParams: { transparent: true },
 				attribution: { copyright: { label: 'Foo CopyRight' } },
 				thirdPartyAttribution: null
 			});
