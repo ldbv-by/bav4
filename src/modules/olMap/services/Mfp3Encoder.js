@@ -256,7 +256,7 @@ export class BvvMfp3Encoder {
 			new Array(layers.length).join(',').split(',');
 
 		const url = source.getUrl && source.getUrl();
-
+		const defaultCustomParams = { transparent: true }; // similar to OpenLayers TRANSPARENT-Parameter is set by default
 		return {
 			type: 'wms',
 			baseURL: url,
@@ -265,6 +265,7 @@ export class BvvMfp3Encoder {
 			name: wmsGeoResource.id,
 			opacity: olLayer.getOpacity(),
 			styles: styles,
+			customParams: defaultCustomParams,
 			attribution: wmsGeoResource.importedByUser ? null : wmsGeoResource.attribution,
 			thirdPartyAttribution: wmsGeoResource.importedByUser ? wmsGeoResource.attribution : null
 		};
