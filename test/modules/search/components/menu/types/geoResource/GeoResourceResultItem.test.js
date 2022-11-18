@@ -104,6 +104,7 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
 			});
 
 			it('shows and hides a loading hint for a GeoResourceFuture', async () => {
