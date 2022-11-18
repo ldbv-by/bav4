@@ -97,7 +97,7 @@ export class ImportVectorDataService {
 		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
 		if (resultingSourceType) {
 			const vgr = new VectorGeoResource(id, label, resultingSourceType);
-			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+			vgr.setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}
