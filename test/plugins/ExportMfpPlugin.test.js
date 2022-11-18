@@ -137,7 +137,6 @@ describe('ExportMfpPlugin', () => {
 
 			setCurrentTool('foo');
 
-			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeFalse();
 		});
 

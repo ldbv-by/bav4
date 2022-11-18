@@ -111,15 +111,15 @@ describe('VectorLayerService', () => {
 				const sourceAsString = 'kml';
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const vectorGeoresource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
+				const vectorGeoResource = new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326)
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
-				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoresource).and.returnValue(olSource);
+				spyOn(instanceUnderTest, '_vectorSourceForData').withArgs(vectorGeoResource).and.returnValue(olSource);
 				spyOn(instanceUnderTest, '_applyStyles').withArgs(jasmine.anything(), olMap).and.callFake(layer => layer);
 				const vectorSourceForUrlSpy = spyOn(instanceUnderTest, '_vectorSourceForUrl');
 
-				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoresource, olMap);
+				const olVectorLayer = instanceUnderTest.createVectorLayer(id, vectorGeoResource, olMap);
 
 				expect(olVectorLayer.get('id')).toBe(id);
 				expect(olVectorLayer.get('geoResourceId')).toBe(geoResourceId);
@@ -184,22 +184,22 @@ describe('VectorLayerService', () => {
 
 		describe('_vectorSourceForData', () => {
 
-			it('builds an olVectorSource for an internal VectorGeoresource', async () => {
+			it('builds an olVectorSource for an internal VectorGeoResource', async () => {
 				const srid = 3857;
 				const kmlName = '';
 				const geoResourceLabel = 'geoResourceLabel';
 				spyOn(mapService, 'getSrid').and.returnValue(srid);
 				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
-				const vectorGeoresource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
+				const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML).setSource(sourceAsString, 4326);
 
-				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoresource);
+				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
 
 				expect(olVectorSource.constructor.name).toBe('VectorSource');
 				expect(olVectorSource.getFeatures().length).toBe(1);
 				expect(olVectorSource.getFeatures()[0].get('srid')).toBe(srid);
 
 				await TestUtils.timeout();
-				expect(vectorGeoresource.label).toBe(geoResourceLabel);
+				expect(vectorGeoResource.label).toBe(geoResourceLabel);
 			});
 
 			it('filters out features without a geometry', () => {
