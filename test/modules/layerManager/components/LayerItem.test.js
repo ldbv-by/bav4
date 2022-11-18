@@ -306,7 +306,7 @@ describe('LayerItem', () => {
 			return element;
 		};
 
-		it('it updates the label', async () => {
+		it('updates the label', async () => {
 			const gr = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(gr);
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
