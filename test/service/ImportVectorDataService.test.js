@@ -3,9 +3,6 @@ import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResourc
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { addLayer } from '../../src/store/layers/layers.action';
-import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { TestUtils } from '../test-utils';
 
 describe('ImportVectorDataService', () => {
 
@@ -21,20 +18,20 @@ describe('ImportVectorDataService', () => {
 	const sourceTypeService = {
 		forData() { }
 	};
-	let store;
 
 	const setup = () => {
-		store = TestUtils.setupStoreAndDi({}, {
-			layers: layersReducer
-		});
+
 		$injector
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('UrlService', urlService)
-			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('SourceTypeService', sourceTypeService);
 		return new ImportVectorDataService();
 	};
+
+	afterEach(() => {
+		$injector.reset();
+	});
 
 	describe('forUrl', () => {
 
@@ -51,7 +48,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
-			expect(geoResourceFuture.label).toBe(options.label);
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -68,11 +65,11 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 			expect(geoResourceFuture.id).toBe(options.id);
-			expect(geoResourceFuture.label).toBe(options.label);
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
-		it('returns a GeoResourceFuture automatically setting id and label', () => {
+		it('returns a GeoResourceFuture automatically setting id', () => {
 			const instanceUnderTest = setup();
 			const url = 'http://my.url';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
@@ -80,7 +77,7 @@ describe('ImportVectorDataService', () => {
 			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
-			expect(geoResourceFuture.label).toBe('layersPlugin_store_layer_default_layer_name_future');
+			expect(geoResourceFuture.label).toBe('');
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 		});
 
@@ -112,31 +109,7 @@ describe('ImportVectorDataService', () => {
 				expect(vgr.srid).toBe(4326);
 			});
 
-			it('registers the updateLayerCallback function', async () => {
-				const instanceUnderTest = setup();
-				const url = 'http://my.url';
-				const geoResourceId = 'id';
-				const data = 'data';
-				const options = {
-					id: geoResourceId,
-					label: 'label',
-					sourceType: VectorSourceType.KML
-				};
-				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
-				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
-				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
-					new Response(data, { status: 200 })
-				));
-				const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
-
-				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
-				await geoResourceFuture.get();
-
-				expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
-			});
-
-			it('loads the data and returns a VectorGeoresource automatically setting id, label and sourceType', async () => {
+			it('loads the data and returns a VectorGeoresource automatically setting id and sourceType', async () => {
 				const url = 'http://my.url';
 				const data = 'data';
 				const mediaType = MediaType.GeoJSON;
@@ -159,7 +132,6 @@ describe('ImportVectorDataService', () => {
 				expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 				expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 				expect(vgr.id).toBe(geoResourceFuture.id);
-				expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
 				expect(vgr.data).toBe(data);
 				expect(vgr.srid).toBe(4326);
 			});
@@ -285,7 +257,7 @@ describe('ImportVectorDataService', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 		});
 
-		it('returns a VectorGeoResource automatically setting id, label and sourceType', () => {
+		it('returns a VectorGeoResource automatically setting id and sourceType', () => {
 			const data = 'data';
 			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
 			const instanceUnderTest = setup();
@@ -299,30 +271,11 @@ describe('ImportVectorDataService', () => {
 			expect(vgr).toEqual(jasmine.any(VectorGeoResource));
 			expect(vgr.sourceType).toEqual(VectorSourceType.GEOJSON);
 			expect(vgr.id).toEqual(jasmine.any(String));
-			expect(vgr.label).toBe('layersPlugin_store_layer_default_layer_name_vector');
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(_mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalledTimes(2);
-		});
-
-		it('registers the updateLayerCallback function', async () => {
-			const instanceUnderTest = setup();
-			const geoResourceId = 'id';
-			const data = 'data';
-			const options = {
-				id: geoResourceId,
-				label: 'label',
-				sourceType: VectorSourceType.KML
-			};
-			const updateLayerCallbackFnSpy = spyOn(instanceUnderTest, '_newUpdateLayerCallbackFn').and.callThrough();
-			const layer = { label: options.label };
-			addLayer(options.id, layer);
-
-			instanceUnderTest.forData(data, options);
-
-			expect(updateLayerCallbackFnSpy).toHaveBeenCalledWith(geoResourceId);
 		});
 
 		it('logs a warning and returns Null when sourceType is not supported', async () => {
@@ -355,29 +308,6 @@ describe('ImportVectorDataService', () => {
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().id).toEqual(jasmine.any(String));
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().label).toBeNull();
 			expect(instanceUnderTest._newDefaultImportVectorDataOptions().sourceType).toBeNull();
-		});
-	});
-
-	describe('_newUpdateLayerCallbackFn', () => {
-
-		it('synchronizes changes of the GeoResource label properties to all relevant layers', async () => {
-			const instanceUnderTest = setup();
-			const geoResourceId = 'grId0';
-			const initialLabel = 'label';
-			const updatedLabel = 'update';
-			const layer0 = { geoResourceId: geoResourceId, label: initialLabel };
-			const layer1 = { geoResourceId: geoResourceId, label: initialLabel };
-			const layer2 = { geoResourceId: 'grId2', label: initialLabel };
-			addLayer('id0', layer0);
-			addLayer('id1', layer1);
-			addLayer('id2', layer2);
-			const layerCallbackFn = instanceUnderTest._newUpdateLayerCallbackFn(geoResourceId);
-
-			layerCallbackFn('_label', updatedLabel);
-
-			expect(store.getState().layers.active[0].label).toBe(updatedLabel);
-			expect(store.getState().layers.active[1].label).toBe(updatedLabel);
-			expect(store.getState().layers.active[2].label).toBe(initialLabel);
 		});
 	});
 });

@@ -107,7 +107,7 @@ describe('SearchResultService', () => {
 
 		const checkGeoResourceSearchResultForVectorSource = async (sourceTypeName) => {
 			const geoResourceId = 'id';
-			const geoResource = new GeoResourceFuture(geoResourceId, () => { }, 'label');
+			const geoResource = new GeoResourceFuture(geoResourceId, () => { });
 			const sourceType = new SourceType(sourceTypeName);
 			const url = 'http://foo.bar';
 			const label = 'label';
@@ -231,8 +231,8 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 			const provider = jasmine.createSpy().and.resolveTo([
-				new GeoResourceSearchResult('geoResouceId0', 'foo'),
-				new GeoResourceSearchResult('geoResouceId1', 'bar')
+				new GeoResourceSearchResult('geoResourceId0', 'foo'),
+				new GeoResourceSearchResult('geoResourceId1', 'bar')
 			]);
 			const instanceUnderTest = setup(null, provider);
 
@@ -247,8 +247,8 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, '_getGeoResourcesForUrl').withArgs(term).and.resolveTo([
-				new GeoResourceSearchResult('geoResouceId0', 'foo'),
-				new GeoResourceSearchResult('geoResouceId1', 'bar')
+				new GeoResourceSearchResult('geoResourceId0', 'foo'),
+				new GeoResourceSearchResult('geoResourceId1', 'bar')
 			]);
 
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
@@ -264,7 +264,7 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
 			spyOn(importVectorDataService, 'forData').withArgs(term, { sourceType: SourceTypeName.GPX })
-				.and.returnValue(new GeoResourceFuture(geoResourceId, () => { }, 'label'));
+				.and.returnValue(new GeoResourceFuture(geoResourceId, () => { }));
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, '_mapSourceTypeToLabel').withArgs(SourceTypeName.GPX).and.returnValue(label);
 

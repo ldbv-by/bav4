@@ -1,12 +1,15 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { GeoResourceResultItem, LAYER_ADDING_DELAY_MS } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
+import { GeoResourceResultItem, LOADING_PREVIEW_DELAY_MS } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
 import { TabId } from '../../../../../../../src/store/mainMenu/mainMenu.action';
 import { $injector } from '../../../../../../../src/injection';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
+import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
+import { GeoResourceFuture } from '../../../../../../../src/domain/geoResources';
+
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
 
@@ -14,7 +17,7 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 
 	it('exports a const defining amount of time waiting before adding a layer', async () => {
 
-		expect(LAYER_ADDING_DELAY_MS).toBe(500);
+		expect(LOADING_PREVIEW_DELAY_MS).toBe(500);
 	});
 });
 
@@ -75,6 +78,14 @@ describe('GeoResourceResultItem', () => {
 
 	describe('events', () => {
 
+		beforeEach(() => {
+			jasmine.clock().install();
+		});
+
+		afterEach(() => {
+			jasmine.clock().uninstall();
+		});
+
 		describe('on mouse enter', () => {
 
 			it('adds a preview layer', async () => {
@@ -85,10 +96,36 @@ describe('GeoResourceResultItem', () => {
 
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseenter'));
+				expect(element._timeoutId).not.toBeNull();
+				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
+
+				expect(element._timeoutId).toBeNull();
+				expect(store.getState().layers.active.length).toBe(1);
+				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
+				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+			});
+
+			it('shows and hides a loading hint for a GeoResourceFuture', async () => {
+				const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				element.data = data;
+
+				const target = element.shadowRoot.querySelector('li');
+				target.dispatchEvent(new Event('mouseenter'));
+				jasmine.clock().tick(LOADING_PREVIEW_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
+
+				await geoResFuture.get();
+
+				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 			});
 		});
 
@@ -110,17 +147,26 @@ describe('GeoResourceResultItem', () => {
 
 				expect(store.getState().layers.active.length).toBe(0);
 			});
+
+			it('clears a GeoResourceFuture timeout function', async () => {
+				const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => ({ label: 'updatedLabel' }));
+				const geoResourceId = 'geoResourceId';
+				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
+				const element = await setup();
+				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(geoResFuture);
+				element.data = data;
+				const target = element.shadowRoot.querySelector('li');
+
+				target.dispatchEvent(new Event('mouseenter'));
+				expect(element.__timeoutId).not.toBeNull();
+
+				target.dispatchEvent(new Event('mouseleave'));
+
+				expect(element._timeoutId).toBeNull();
+			});
 		});
 
 		describe('on click', () => {
-
-			beforeEach(() => {
-				jasmine.clock().install();
-			});
-
-			afterEach(() => {
-				jasmine.clock().uninstall();
-			});
 
 			const geoResourceId = 'geoResourceId';
 			// const layerId = 'layerId';
@@ -151,12 +197,10 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 
 				target.click();
-				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
 				expect(store.getState().layers.active[0].label).toBe('label');
-				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			});
 
 			it('optionally updates the real layers label', async () => {
@@ -165,7 +209,6 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 
 				target.click();
-				jasmine.clock().tick(LAYER_ADDING_DELAY_MS + 100);
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);

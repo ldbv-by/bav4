@@ -37,7 +37,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('layersPlugin_store_layer_default_layer_name_future');
+				expect(future.label).toBe('');
 				expect(future._loader).toBeDefined();
 			});
 		});
@@ -52,7 +52,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('layersPlugin_store_layer_default_layer_name_future');
+				expect(future.label).toBe('');
 				expect(future._loader).toBeDefined();
 			});
 		});
