@@ -222,8 +222,7 @@ export class LayerItem extends AbstractMvuContentPanel {
         <style>${css}</style>
         <div class='ba-section divider'>
             <div class='ba-list-item'>          
-
-                    <ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${layer.visible} @toggle=${toggleVisibility}>${currentLabel}${layer.loading ? html`<ba-spinner .label=${' '}></ba-spinner>` : nothing}</ba-checkbox>                                                   
+				<ba-checkbox .title='${getVisibilityTitle()}'  class='ba-list-item__text' tabindex='0' .checked=${layer.visible} @toggle=${toggleVisibility}>${layer.loading ? html`<ba-spinner .label=${currentLabel}></ba-spinner>` : html`${currentLabel}`}</ba-checkbox>    
                                        
                 <button id='button-detail' data-test-id class='ba-list-item__after' title="${getCollapseTitle()}" @click="${toggleCollapse}">
                     <i class='icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}'></i>

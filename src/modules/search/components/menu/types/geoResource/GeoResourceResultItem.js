@@ -130,7 +130,7 @@ export class GeoResourceResultItem extends MvuElement {
 							</span>
 						</span>
 						<span class="ba-list-item__text ">
-						${unsafeHTML(geoResourceSearchResult.labelFormatted)} ${loadingPreview ? html`<ba-spinner .label=${' '}></ba-spinner>` : nothing}
+							${loadingPreview ? html`<ba-spinner .label=${geoResourceSearchResult.labelFormatted}></ba-spinner>` : html`${unsafeHTML(geoResourceSearchResult.labelFormatted)}`}   
 						</span>
 				</li>				
             `;
