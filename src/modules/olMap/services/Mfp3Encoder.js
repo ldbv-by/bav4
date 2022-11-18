@@ -353,7 +353,7 @@ export class BvvMfp3Encoder {
 		const getOlStyles = (feature, layer, resolution) => {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof (featureStyles) === 'function') {
-				const isMeasurementFeature = feature.get('partition_delta') != null;
+				const isMeasurementFeature = feature.get('measurement') != null;
 				return isMeasurementFeature ? featureStyles(feature, null) : featureStyles(feature, resolution);
 			}
 
