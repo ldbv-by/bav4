@@ -80,27 +80,27 @@ describe('layersReducer', () => {
 	});
 
 	it('sorts an array based on the the \'zIndex\' property', () => {
-		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'label0', zIndex: 2 };
-		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'label1', zIndex: 0 };
-		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'label2', zIndex: 1 };
+		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', zIndex: 2 };
+		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', zIndex: 0 };
+		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'id2', zIndex: 1 };
 
 		const array = sort([layerProperties0, layerProperties1, layerProperties2]);
 
-		expect(array[0].id).toBe('label1');
-		expect(array[1].id).toBe('label2');
-		expect(array[2].id).toBe('label0');
+		expect(array[0].id).toBe('id1');
+		expect(array[1].id).toBe('id2');
+		expect(array[2].id).toBe('id0');
 	});
 
 	it('sorts an array based on the the \'zIndex\' property and the \'alwaysTop\' constraint', () => {
-		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'label0', zIndex: 2 };
-		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'label1', zIndex: 0, constraints: { alwaysTop: true } };
-		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'label2', zIndex: 1 };
+		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', zIndex: 2 };
+		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', zIndex: 0, constraints: { alwaysTop: true } };
+		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'id2', zIndex: 1 };
 
 		const array = sort([layerProperties0, layerProperties1, layerProperties2]);
 
-		expect(array[0].id).toBe('label2');
-		expect(array[1].id).toBe('label0');
-		expect(array[2].id).toBe('label1');
+		expect(array[0].id).toBe('id2');
+		expect(array[1].id).toBe('id0');
+		expect(array[2].id).toBe('id1');
 	});
 
 	it('sorts an array based on the \'alwaysTop\' constraint', () => {
