@@ -68,7 +68,6 @@ export const createDefaultLayersConstraints = () => {
  * except for `id` and `geoResourceId`.
  */
 export const createDefaultLayerProperties = () => ({
-	label: '',
 	visible: true,
 	zIndex: -1,
 	opacity: 1,

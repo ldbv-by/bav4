@@ -200,19 +200,6 @@ describe('GeoResourceResultItem', () => {
 
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
-				expect(store.getState().layers.active[0].label).toBe('label');
-			});
-
-			it('optionally updates the real layers label', async () => {
-				spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'updatedLabel' });
-				const element = await setupOnClickTests();
-				const target = element.shadowRoot.querySelector('li');
-
-				target.click();
-
-				expect(store.getState().layers.active.length).toBe(1);
-				expect(store.getState().layers.active[0].id).toContain(geoResourceId);
-				expect(store.getState().layers.active[0].label).toBe('updatedLabel');
 			});
 
 			it('opens the "maps" tab of the main menu in landscape orientation', async () => {

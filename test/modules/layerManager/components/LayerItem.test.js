@@ -602,7 +602,6 @@ describe('LayerItem', () => {
 			expect(store.getState().layers.active[0].id).toBe(layer0.id);
 			expect(store.getState().layers.active[1].id.startsWith('geoResourceId0_')).toBeTrue();
 			expect(store.getState().layers.active[1].geoResourceId).toBe(layer0.geoResourceId);
-			expect(store.getState().layers.active[1].label).toBe('label0 (layerManager_layer_copy)');
 		});
 
 		it('click on remove-button change state in store', async () => {

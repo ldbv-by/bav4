@@ -160,7 +160,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const cloneLayer = () => {
 			//state store change -> implicit call of #render()
-			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, geoResourceId: layer.geoResourceId, label: `${layer.label} (${translate('layerManager_layer_copy')})`, zIndex: layer.zIndex + 1 });
+			addLayer(`${layer.geoResourceId}_${createUniqueId()}`, { ...layer, geoResourceId: layer.geoResourceId, zIndex: layer.zIndex + 1 });
 		};
 
 		const zoomToExtent = () => {
