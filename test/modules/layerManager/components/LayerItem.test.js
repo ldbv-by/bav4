@@ -280,7 +280,7 @@ describe('LayerItem', () => {
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('layerManager_loading_hint');
+			expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('layerManager_loading_hint');
 
 			await geoResFuture.get(); // resolve future
 

@@ -122,10 +122,12 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].id).toBe(GeoResourceResultItem._tmpLayerId(geoResourceId));
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
+				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
 
 				await geoResFuture.get();
 
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+				expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 			});
 		});
 
