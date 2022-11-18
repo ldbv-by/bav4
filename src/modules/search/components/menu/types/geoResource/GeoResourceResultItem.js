@@ -78,7 +78,7 @@ export class GeoResourceResultItem extends MvuElement {
 
 
 				addLayer(id,
-					{ geoResourceId: result.geoResourceId, constraints: { hidden: true, alwaysTop: true } });
+					{ geoResourceId: result.geoResourceId, constraints: { hidden: true } });
 
 				const geoRes = this._geoResourceService.byId(result.geoResourceId);
 
