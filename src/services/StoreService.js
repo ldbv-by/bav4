@@ -22,6 +22,7 @@ import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
+import { geoResourcesReducer } from '../store/geoResources/geoResources.reducer';
 
 
 
@@ -60,7 +61,8 @@ export class StoreService {
 			featureInfo: featureInfoReducer,
 			media: createMediaReducer(),
 			import: importReducer,
-			mfp: mfpReducer
+			mfp: mfpReducer,
+			geoResources: geoResourcesReducer
 		});
 
 		this._store = createStore(rootReducer);

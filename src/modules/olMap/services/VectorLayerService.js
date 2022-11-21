@@ -4,6 +4,7 @@ import { $injector } from '../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
+import { propertyChanged } from '../../../store/geoResources/geoResources.action';
 import { parse } from '../../../utils/ewkt';
 
 
@@ -164,14 +165,19 @@ export class VectorLayerService {
 		vectorSource.addFeatures(features);
 
 		/**
-		 * If we know a better name for the geoResource now, we update the geoResource's label.
+		 * If we know a name for the GeoResource now, we update the geoResource's label.
 		 * At this moment an olLayer and its source are about to be added to the map.
-		 * To avoid conflicts, we have to delay the update of the geoResouece (and subsequent possible modifications of the connected layer).
+		 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
 		 */
-		switch (geoResource.sourceType) {
-			case VectorSourceType.KML:
-				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
-				break;
+		if (!geoResource.hasLabel()) {
+			switch (geoResource.sourceType) {
+				case VectorSourceType.KML:
+					setTimeout(() => {
+						geoResource.setLabel(format.readName(data));
+						propertyChanged(geoResource);
+					});
+					break;
+			}
 		}
 		return vectorSource;
 	}

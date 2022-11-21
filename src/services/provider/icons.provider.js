@@ -21,11 +21,11 @@ export const loadBvvIcons = async () => {
 		const payload = await result.json();
 
 		const matcher = (id) => {
-			return (idOrUrl) => idOrUrl === id || !!(idOrUrl?.endsWith(`/${id}`));
+			return (idOrUrl) => idOrUrl === id || !!(idOrUrl?.endsWith(`/${id}.png`));
 		};
 
 		const urlFactoryFunction = (id) => {
-			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}`;
+			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}.png`;
 		};
 
 		payload.forEach(bvvIcon => {

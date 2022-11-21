@@ -1,9 +1,12 @@
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { ToolId } from '../store/tools/tools.action';
-import { activate, deactivate, setCurrent } from '../store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
+import { provide as provider } from './i18n/exportMfpPlugin.provider';
+import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { changeRotation } from '../store/position/position.action';
 
 /**
  * Id of the layer used for mfp export visualization.
@@ -23,6 +26,9 @@ export class ExportMfpPlugin extends BaPlugin {
 	constructor() {
 		super();
 		this._initialized = false;
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+		translationService.register('exportMfpPluginProvider', provider);
 	}
 
 	/**
@@ -31,27 +37,41 @@ export class ExportMfpPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const { MfpService: mfpService, EnvironmentService: environmentService } = $injector.inject('MfpService', 'EnvironmentService');
+		let mapRotation = store.getState().position.rotation;
 
 		const lazyInitialize = async () => {
 
 			if (!this._initialized) {
 				// let's set the initial mfp properties
-				const { layouts } = await mfpService.init();
-				const { id, scales, dpis } = layouts[0];
-				setCurrent({ id: id, dpi: dpis[0], scale: scales[0] });
-				this._initialized = true;
+				try {
+					const { layouts } = await mfpService.init();
+					const { id, scales, dpis } = layouts[0];
+					setCurrent({ id: id, dpi: dpis[0], scale: scales[0] });
+					return this._initialized = true;
+				}
+				catch (ex) {
+					console.error('MfpCapabilities could not be fetched from backend', ex);
+					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_init_exception')}`, LevelTypes.ERROR);
+				}
+				return false;
 			}
+			return true;
 		};
 
-		const onToolChanged = async toolId => {
+		const onToolChanged = async (toolId, state) => {
 
 			if (toolId !== ToolId.EXPORT) {
+				changeRotation(mapRotation);
 				deactivate();
 			}
 			else {
-				await lazyInitialize();
-				// we activate the tool after another possible active tool was deactivated
-				setTimeout(() => activate());
+				if (await lazyInitialize()) {
+					// we activate the tool after another possible active tool was deactivated
+					setTimeout(() => {
+						mapRotation = state.position.rotation;
+						activate();
+					});
+				}
 			}
 		};
 
@@ -66,10 +86,20 @@ export class ExportMfpPlugin extends BaPlugin {
 
 		const onJobSpecChanged = async ({ payload: spec }) => {
 			if (spec) {
-				const url = await mfpService.createJob(spec);
-				if (url) {
-					environmentService.getWindow().open(url, '_blank');
+				try {
+					const url = await mfpService.createJob(spec);
+					if (url) {
+						environmentService.getWindow().location = url;
+					}
 				}
+				catch (ex) {
+					console.error('PDF generation was not successful.', ex);
+					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_createJob_exception')}`, LevelTypes.ERROR);
+				}
+				finally {
+					cancelJob();
+				}
+
 			}
 			else {
 				mfpService.cancelJob();

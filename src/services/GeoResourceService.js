@@ -94,12 +94,15 @@ export class GeoResourceService {
 	/**
 	 * Returns the corresponding  {@link GeoResource} for an id.
 	 * @public
-	 * @param {string} id Id of the desired {@link GeoResource}
+	 * @param {string|null|undefined} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResource | null}
 	 */
 	byId(id) {
 		if (!this._georesources) {
 			console.warn('GeoResourceService not yet initialized');
+			return null;
+		}
+		if (!id) {
 			return null;
 		}
 		const geoResource = this._georesources.find(georesource => georesource.id === id);

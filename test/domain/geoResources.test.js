@@ -36,8 +36,8 @@ describe('GeoResource', () => {
 		}
 
 		class GeoResourceImpl extends GeoResource {
-			constructor(id) {
-				super(id);
+			constructor(id, label) {
+				super(id, label);
 			}
 		}
 
@@ -55,6 +55,15 @@ describe('GeoResource', () => {
 
 			it('throws exception when abstract #getType is called without overriding', () => {
 				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+			});
+
+
+			it('provides a check for containing a non-default value as label', () => {
+
+				expect(new GeoResourceImpl('id').hasLabel()).toBeFalse();
+				expect(new GeoResourceImpl('id', null).hasLabel()).toBeFalse();
+				expect(new GeoResourceImpl('id', '').hasLabel()).toBeFalse();
+				expect(new GeoResourceImpl('id', 'foo').hasLabel()).toBeTrue();
 			});
 
 			it('sets the attribution provider', () => {
@@ -180,12 +189,12 @@ describe('GeoResource', () => {
 		it('instantiates a GeoResourceFuture', () => {
 			const loader = async () => { };
 
-			const future = new GeoResourceFuture('id', loader, 'label');
+			const future = new GeoResourceFuture('id', loader);
 			const futureWithoutLabel = new GeoResourceFuture('id', loader);
 
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
-			expect(future.label).toBe('label');
+			expect(future.label).toBe('');
 			expect(futureWithoutLabel.label).toHaveSize(0);
 		});
 
@@ -323,6 +332,22 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
+		});
+
+		it('provides the source type as fallback label', () => {
+
+			expect(new VectorGeoResource('id', null, VectorSourceType.KML).label).toBe('KML');
+			expect(new VectorGeoResource('id', null, VectorSourceType.GPX).label).toBe('GPX');
+			expect(new VectorGeoResource('id', null, VectorSourceType.GEOJSON).label).toBe('GeoJSON');
+			expect(new VectorGeoResource('id', null, 'unknown').label).toBe('');
+		});
+
+
+		it('provides a check for containing a non-default value as label', () => {
+
+			expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
+			expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
+			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
 		});
 
 		it('sets the url of an external VectorGeoResource', () => {

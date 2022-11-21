@@ -28,7 +28,7 @@
 	opacity: 0.7;
 	cursor: not-allowed;
 	color: var(--text1);
-	background: var(--secondary-bg-color)
+	background: var(--secondary-bg-color);
 }
 .secondary.disabled {
 	opacity: 0.7;

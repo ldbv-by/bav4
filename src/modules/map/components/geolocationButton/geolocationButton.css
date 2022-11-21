@@ -46,7 +46,7 @@
 }
 
 .denied {
-	background: var(--secondary-bg-color)
+	background: var(--secondary-bg-color);
 }
 .geolocation-button {
 	background-color: var(--primary-color);

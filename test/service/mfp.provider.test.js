@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
-import { getMfpCapabilities, postMpfSpec } from '../../src/services/provider/mfp.provider';
+import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
 
 	describe('getMfpCapabilities', () => {
@@ -50,7 +50,7 @@ describe('mfp provider', () => {
 		});
 	});
 
-	describe('postMpfSpec', () => {
+	describe('postMfpSpec', () => {
 		const configService = {
 			getValueAsPath() { }
 		};
@@ -92,7 +92,7 @@ describe('mfp provider', () => {
 				}))
 			);
 
-			const result = await postMpfSpec(spec, urlId, abortController);
+			const result = await postMfpSpec(spec, urlId, abortController);
 
 			expect(result.downloadURL).toBe(downloadUrl);
 			expect(result.id).toBe(id);
@@ -109,7 +109,7 @@ describe('mfp provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
 
-			await expectAsync(postMpfSpec(spec, urlId, abortController)).toBeRejectedWithError('Mfp spec could not be posted: Http-Status 500');
+			await expectAsync(postMfpSpec(spec, urlId, abortController)).toBeRejectedWithError('Mfp spec could not be posted: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
@@ -123,7 +123,7 @@ describe('mfp provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'fetch').and.throwError(new DOMException('AbortError'));
 
-			await expectAsync(postMpfSpec(spec, urlId, abortController)).toBeResolvedTo(null);
+			await expectAsync(postMfpSpec(spec, urlId, abortController)).toBeResolvedTo(null);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});

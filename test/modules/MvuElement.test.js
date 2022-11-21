@@ -118,12 +118,18 @@ class MvuElementNoDefaultCss extends MvuElement {
 	}
 }
 
+class MvuElementModelTest extends MvuElement {
+	constructor(model) {
+		super(model);
+	}
+}
+
 window.customElements.define(MvuElementImpl.tag, MvuElementImpl);
 window.customElements.define('ba-element', MvuElement);
 window.customElements.define('ba-element-noimpl', MvuElementNoImpl);
-window.customElements.define('ba-element-default-css', MvuElementDefaultCss);
-window.customElements.define('ba-element-no-default-css', MvuElementNoDefaultCss);
-
+window.customElements.define(MvuElementDefaultCss.tag, MvuElementDefaultCss);
+window.customElements.define(MvuElementNoDefaultCss.tag, MvuElementNoDefaultCss);
+window.customElements.define('ba-element-model-test', MvuElementModelTest);
 
 let store;
 
@@ -162,6 +168,14 @@ describe('MvuElement', () => {
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new MvuElement()).toThrowError(Error, 'Can not construct abstract class.');
 			});
+
+			it('copies the model', () => {
+				const model = { foo: 'bar' };
+
+				const instance = new MvuElementModelTest(model);
+
+				expect(instance._model === model).toBeFalse();
+			});
 		});
 
 		describe('methods', () => {
@@ -179,6 +193,22 @@ describe('MvuElement', () => {
 
 			it('throws exception when abstract static method #tag is called without overriding', () => {
 				expect(() => MvuElementNoImpl.tag).toThrowError(Error, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+			});
+
+			it('calls #createView with a copied model', () => {
+				const model = { foo: 'bar' };
+				let transferedModel = null;
+				const instance = new MvuElementModelTest(model);
+				spyOn(instance, 'createView').and.callFake(model => {
+					transferedModel = model;
+					return model;
+				});
+				instance._initialized = true;
+
+				instance.onModelChanged();
+
+				expect(transferedModel).toEqual(instance._model);
+				expect(instance._model === transferedModel).toBeFalse();
 			});
 		});
 
@@ -249,7 +279,7 @@ describe('MvuElement', () => {
 
 	describe('getModel', () => {
 
-		it('return a copy of thee current model', async () => {
+		it('returns a copy of the current model', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const copiedModel = element.getModel();
 
@@ -278,6 +308,35 @@ describe('MvuElement', () => {
 				expect(element.shadowRoot.querySelector('.ba-element-impl-local').innerHTML.includes('other')).toBeTrue();
 				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(21)).toBeTrue();
 			});
+
+			it('calls #update with a copied model', async () => {
+				const element = await TestUtils.render(MvuElementImpl.tag);
+				let transferedModel = null;
+				spyOn(element, 'update').and.callFake((type, data, model) => {
+					transferedModel = model;
+					return model;
+				});
+
+				element.signal(Update_Foo, 'other');
+
+				expect(transferedModel).toEqual(element._model);
+				expect(element._model === transferedModel).toBeFalse();
+			});
+
+			it('calls callbacks with a copied model', async () => {
+				const element = await TestUtils.render(MvuElementImpl.tag);
+				let transferedModel = null;
+				spyOn(element, 'onModelChanged').and.callFake(model => {
+					transferedModel = model;
+					return model;
+				});
+
+				element.signal(Update_Foo, 'other');
+
+				expect(transferedModel).toEqual(element._model);
+				expect(element._model === transferedModel).toBeFalse();
+			});
+
 		});
 
 		describe('when #signal is called with an unknown action type', () => {

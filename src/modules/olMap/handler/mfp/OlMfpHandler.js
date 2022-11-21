@@ -1,16 +1,16 @@
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
-import { setScale } from '../../../../store/mfp/mfp.action';
+import { setScale, startJob } from '../../../../store/mfp/mfp.action';
 import { Point } from 'ol/geom';
 import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
-import { createMapMaskFunction, nullStyleFunction, thumbnailStyleFunction } from './styleUtils';
+import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
-
+import { toLonLat } from 'ol/proj';
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
@@ -29,20 +29,22 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	constructor() {
 		super(MFP_LAYER_ID);
-		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService }
-			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService');
+		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService, Mfp3Encoder: mfp3Encoder }
+			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
 
 		this._storeService = storeService;
 		this._translationService = translationService;
 		this._mapService = mapService;
 		this._mfpService = mfpService;
+		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
-		this._lastCenter = [-1, -1];
+		this._visibleViewport = null;
+		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
 	}
 
 	/**
@@ -58,15 +60,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			});
 			setScale(this._getOptimalScale(olMap));
 
-			// init mfpBoundaryFeature
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-			this._mfpBoundaryFeature.setStyle(thumbnailStyleFunction);
-			this._mfpBoundaryFeature.set('name', this._getPageLabel(mfpSettings));
 
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
-			this._updateMfpPreview();
 			this._updateRotation();
 		}
 
@@ -84,11 +82,17 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._listeners = [];
 		this._mfpLayer = null;
 		this._map = null;
+		this._visibleViewport = null;
 	}
 
 	_register(store) {
+		// HINT: To observe the store for map changes (especially livecenter) results in a more intensivied call traffic with the store.
+		// A shortcut and allowed alternative is the direct binding to the ol map events.
+		// The current design is choosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
+		// the performance and time consumptions (< 1 ms), but makes it simpler to follow only one source of events.
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
+			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
 			observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
@@ -104,8 +108,9 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateMfpPreview() {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
-		const geometry = this._createMpfBoundary(this._pageSize);
-		const pageBufferGeometry = this._createMpfBoundary(this._bufferSize);
+		const center = this._getVisibleCenterPoint();
+		const geometry = this._createMfpBoundary(this._pageSize, center);
+		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
@@ -124,9 +129,15 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+		const translate = (key) => this._translationService.translate(key);
+
 		const label = this._getPageLabel(mfpSettings);
-		this._mfpBoundaryFeature.set('name', label);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
+
+		// init/update mfpBoundaryFeature
+		this._mfpBoundaryFeature.set('name', label);
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(label, translate('olMap_handler_mfp_distortion_warning'), mfpExtent));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -148,7 +159,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const { id, scale } = mfpSettings;
 		const layout = translate(`olMap_handler_mfp_id_${id}`);
 		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-		return `${layout}\n1:${formattedScale}`;
+		return `${layout} 1:${formattedScale}`;
 	}
 
 	_getOptimalScale(map) {
@@ -157,24 +168,31 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
+		const center = toLonLat(map.getView().getCenter());
+		const averageDeviation = Math.abs(Math.cos(center[1] * Math.PI / 180));
 		const resolution = map.getView().getResolution();
-		const width = resolution * (availableSize.width - Map_View_Margin * 2);
-		const height = resolution * (availableSize.height - Map_View_Margin * 2);
 
-		const { id, scale: fallbackScale } = this._storeService.getStore().getState().mfp.current;
+		// due to standard map projection of (EPSG:3857) we have to add a average deviation
+		// from equator (center of view) to get reliable values
+		const widthInMeter = resolution * averageDeviation * (availableSize.width - Map_View_Margin * 2);
+		const heightInMeter = resolution * averageDeviation * (availableSize.height - Map_View_Margin * 2);
+
+		const { id } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
-
-		const scaleWidth = width * Units_Ratio * Points_Per_Inch / layoutSize.width;
-		const scaleHeight = height * Units_Ratio * Points_Per_Inch / layoutSize.height;
+		const scaleWidth = widthInMeter * Units_Ratio * Points_Per_Inch / layoutSize.width;
+		const scaleHeight = heightInMeter * Units_Ratio * Points_Per_Inch / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
 
 		// todo: replace with array.findLast()
 		const findLast = (array, matcher) => {
-			let last = null;
+			// mocking the browser implementation of array.findLast() and
+			// return last or undefined (instead of null), to get identical results
+			let last = undefined;
+
 			array.forEach(e => {
-				if (!last || matcher(e)) {
+				if (matcher(e)) {
 					last = e;
 				}
 			});
@@ -185,21 +203,27 @@ export class OlMfpHandler extends OlLayerHandler {
 		// array.findLast() is implemented in Firefox (at Version 104), we wait a couple of months before replace
 		// the standard usage should be: const bestScale = scaleCandidates.findLast(scale => testScale > scale);
 		const bestScale = findLast(scaleCandidates, (scale) => testScale > scale);
-		return bestScale ? bestScale : fallbackScale;
+		return bestScale ? bestScale : scaleCandidates[0];
 	}
 
-	_createMpfBoundary(pageSize) {
+	_getVisibleCenterPoint() {
+		const getOrRequestVisibleViewport = () => {
+			if (!this._visibleViewport) {
+				this._visibleViewport = this._mapService.getVisibleViewport(this._map.getTarget());
+			}
+			return this._visibleViewport;
+		};
 		const getVisibleCenter = () => {
 			const size = this._map.getSize();
-			const padding = this._mapService.getVisibleViewport(this._map.getTarget());
+			const padding = getOrRequestVisibleViewport();
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
 
-		const center = new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
-		const mapProjection = 'EPSG:' + this._mapService.getSrid();
-		const geodeticProjection = 'EPSG:' + this._mapService.getDefaultGeodeticSrid();
+		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
+	}
 
-		const geodeticCenter = center.clone().transform(mapProjection, geodeticProjection);
+	_createMfpBoundary(pageSize, center) {
+		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
 		const geodeticBoundingBox = [
@@ -210,7 +234,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		return geodeticBoundary.clone().transform(geodeticProjection, mapProjection);
+		return geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+	}
+
+	_getMfpProjection() {
+		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
 	_getAzimuth(polygon) {
@@ -221,5 +249,14 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const angle = (topAngle + bottomAngle) / 2;
 		return angle;
+	}
+
+	async _encodeMap() {
+		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
+		const pageCenter = this._getVisibleCenterPoint();
+		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
+		const specs = await this._encoder.encode(this._map, encodingProperties);
+
+		startJob(specs);
 	}
 }

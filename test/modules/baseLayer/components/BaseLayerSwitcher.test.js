@@ -169,7 +169,6 @@ describe('BaseLayerSwitcher', () => {
 					expect(store.getState().layers.active.length).toBe(2);
 					expect(store.getState().layers.active[0].id).toContain(geoResourceId2);
 					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId2);
-					expect(store.getState().layers.active[0].label).toBe(geoResourceId2 + 'Label');
 					expect(store.getState().layers.active[0].zIndex).toBe(0);
 				});
 			});
@@ -206,7 +205,6 @@ describe('BaseLayerSwitcher', () => {
 					expect(store.getState().layers.active.length).toBe(3);
 					expect(store.getState().layers.active[0].id).toContain(geoResourceId2);
 					expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId2);
-					expect(store.getState().layers.active[0].label).toBe(geoResourceId2 + 'Label');
 					expect(store.getState().layers.active[0].zIndex).toBe(0);
 				});
 			});
@@ -272,7 +270,6 @@ describe('BaseLayerSwitcher', () => {
 				expect(store.getState().layers.active.length).toBe(1);
 				expect(store.getState().layers.active[0].id).toContain(geoResourceId0);
 				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId0);
-				expect(store.getState().layers.active[0].label).toBe(geoResourceId0 + 'Label');
 				expect(store.getState().layers.active[0].zIndex).toBe(0);
 			});
 		});

@@ -37,7 +37,7 @@ export const getMfpCapabilities = async () => {
  * @function
  * @returns {BvvMfpJob|null} job
  */
-export const postMpfSpec = async (spec, urlId, abortController) => {
+export const postMfpSpec = async (spec, urlId, abortController) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = `${configService.getValueAsPath('BACKEND_URL')}print/create/${urlId}`;
 

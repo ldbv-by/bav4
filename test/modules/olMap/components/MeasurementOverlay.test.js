@@ -46,6 +46,7 @@ describe('MeasurementOverlay', () => {
 			expect(element.type).toBe(MeasurementOverlayTypes.TEXT);
 			expect(element.static).toBeFalse();
 			expect(element.value).toBe(null);
+			expect(element.innerText).toBe(null);
 		});
 
 		it('renders the help view', async () => {
@@ -59,6 +60,7 @@ describe('MeasurementOverlay', () => {
 			expect(element.type).toBe(MeasurementOverlayTypes.HELP);
 			expect(element.static).toBeFalse();
 			expect(element.value).toBe('foo');
+			expect(element.innerText).toBe('foo');
 		});
 
 		it('renders the distance view', async () => {
@@ -71,7 +73,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders the area view', async () => {
@@ -88,7 +90,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('THE AREA IN m²');
+			expect(element.innerText).toBe('THE AREA IN m²');
 		});
 
 		it('renders the distance-partition view', async () => {
@@ -106,7 +108,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE_PARTITION);
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('THE DISTANCE IN m');
+			expect(element.innerText).toBe('THE DISTANCE IN m');
 		});
 
 		it('renders the static distance view', async () => {
@@ -119,16 +121,15 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('static')).toBeTrue();
 			expect(div.classList.contains('floating')).toBeFalse();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders formatted distance', async () => {
 			const geodeticGeometry = new LineString([[0, 0], [1, 0]]);
 			const properties = { type: MeasurementOverlayTypes.DISTANCE, geometry: geodeticGeometry, projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' } };
 			const element = await setup(properties);
-			const div = element.shadowRoot.querySelector('div');
 
-			expect(div.innerText).toBe('90.00°/THE DISTANCE IN m');
+			expect(element.innerText).toBe('90.00°/THE DISTANCE IN m');
 		});
 
 		it('renders formatted area', async () => {
@@ -141,7 +142,7 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.AREA);
 			expect(element.static).toBeFalse();
-			expect(div.innerText).toBe('THE AREA IN m²');
+			expect(element.innerText).toBe('THE AREA IN m²');
 		});
 	});
 
@@ -161,6 +162,37 @@ describe('MeasurementOverlay', () => {
 			expect(div.classList.contains('floating')).toBeTrue();
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE);
 			expect(element.static).toBeFalse();
+		});
+	});
+
+	describe('when placement changed', () => {
+		it('renders the changed view', async () => {
+
+			const element = await setup();
+			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const div = element.shadowRoot.querySelector('div');
+
+			expect(div.classList.contains('init')).toBeTrue();
+
+			element.placement = { sector: 'top', positioning: 'top-center', offset: [0, -25] };
+
+			expect(renderSpy).toHaveBeenCalled();
+			expect(div.classList.contains('top')).toBeTrue();
+		});
+
+		it('does NOT renders the view, while value is not changed', async () => {
+
+			const element = await setup();
+			const renderSpy = spyOn(element, 'render').and.callThrough();
+			const div = element.shadowRoot.querySelector('div');
+			const initialPlacement = element.placement;
+
+			expect(div.classList.contains('init')).toBeTrue();
+
+			element.placement = initialPlacement;
+
+			expect(renderSpy).not.toHaveBeenCalled();
+			expect(div.classList.contains('init')).toBeTrue();
 		});
 	});
 });

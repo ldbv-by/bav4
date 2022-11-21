@@ -189,7 +189,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
 
@@ -208,7 +208,7 @@ describe('LayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
+				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
 					.setOpacity(.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
@@ -263,11 +263,13 @@ describe('LayerService', () => {
 
 					const instanceUnderTest = setup();
 					const id = 'id';
-					const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null);
+					const geoResourceId = 'geoResourceId';
+					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null);
 
 					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 
 					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
 					expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
 					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
@@ -283,13 +285,15 @@ describe('LayerService', () => {
 
 					const instanceUnderTest = setup();
 					const id = 'id';
-					const vtGeoresource = new VTGeoResource('geoResourceId', 'label', null)
+					const geoResourceId = 'geoResourceId';
+					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null)
 						.setOpacity(.5)
 						.setMinZoom(5)
 						.setMaxZoom(19);
 
 					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 					expect(vtOlLayer.get('id')).toBe(id);
+					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
 					expect(vtOlLayer.getOpacity()).toBe(.5);
 					expect(vtOlLayer.getMinZoom()).toBe(5);
 					expect(vtOlLayer.getMaxZoom()).toBe(19);

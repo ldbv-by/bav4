@@ -1,7 +1,6 @@
 import { $injector } from '../injection';
-import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
 
 /**
@@ -21,13 +20,12 @@ import { SourceType, SourceTypeName } from './../domain/sourceType';
 export class ImportVectorDataService {
 
 	constructor() {
-		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService, TranslationService: translationService,
+		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService,
 			SourceTypeService: sourceTypeService }
-			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'TranslationService', 'SourceTypeService');
+			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'SourceTypeService');
 		this._httpService = httpService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
-		this._translationService = translationService;
 		this._sourceTypeService = sourceTypeService;
 	}
 
@@ -62,7 +60,7 @@ export class ImportVectorDataService {
 		const loader = async id => {
 
 			const proxyfiedUrl = this._urlService.proxifyInstant(url);
-			const result = await this._httpService.get(proxyfiedUrl);
+			const result = await this._httpService.get(proxyfiedUrl, { timeout: 5000 });
 
 			if (result.ok) {
 				const data = await result.text();
@@ -72,13 +70,8 @@ export class ImportVectorDataService {
 				 **/
 				const resultingSourceType = this._sourceTypeService.forData(data).sourceType;
 				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
-				if (vectorSourceType) {
-					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), vectorSourceType),
-						(prop, value) => {
-							if (prop === '_label') {
-								modifyLayer(id, { label: value });
-							}
-						});
+				if (resultingSourceType) {
+					const vgr = new VectorGeoResource(id, label, vectorSourceType);
 					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx an geoJson**/);
 					return vgr;
 				}
@@ -87,7 +80,7 @@ export class ImportVectorDataService {
 			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 		};
 
-		const geoResource = new GeoResourceFuture(id, loader, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+		const geoResource = new GeoResourceFuture(id, loader);
 		this._geoResourceService.addOrReplace(geoResource);
 		return geoResource;
 	}
@@ -104,13 +97,9 @@ export class ImportVectorDataService {
 
 		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
 		const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
-		if (vectorSourceType) {
-			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), vectorSourceType), (prop, value) => {
-				if (prop === '_label') {
-					modifyLayer(id, { label: value });
-				}
-			});
-			vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx an geoJson**/);
+		if (resultingSourceType) {
+			const vgr = new VectorGeoResource(id, label, vectorSourceType);
+			vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}

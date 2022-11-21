@@ -1,11 +1,13 @@
 import { $injector } from '../injection';
 import { sleep } from '../utils/sleep';
-import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
+import { getMfpCapabilities, postMfpSpec } from './provider/mfp.provider';
+
 /**
- *
  * @typedef {Object} MfpCapabilities
- * @property {Array<MfpLayout>} layouts
- * @property {Object} grSubstitutions
+ * @property {Array<MfpLayout>} layouts available layouts
+ * @property {Object} grSubstitutions map containing non-printable GeoResource ids that must be replaced
+ * @property {number} srid SRID of the MFP service
+ * @property {Extent} extent printable extent (in 3857)
  */
 
 /**
@@ -24,7 +26,7 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  */
 
 /**
- * Service for persisting and loading ASCII based geodata.
+ * Service for creating a MapFishPrint report.
  * @author taulinger
  * @interface MfpService
  */
@@ -73,13 +75,13 @@ import { getMfpCapabilities, postMpfSpec } from './provider/mfp.provider';
  */
 export class BvvMfpService {
 
-	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMpfSpecProvider = postMpfSpec) {
+	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMfpSpecProvider = postMfpSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 		this._abortController = null;
 		this._mfpCapabilities = null;
 		this._mfpCapabilitiesProvider = mfpCapabilitiesProvider;
-		this._createMpfSpecProvider = createMpfSpecProvider;
+		this._createMfpSpecProvider = createMfpSpecProvider;
 		this._urlId = '0';
 	}
 
@@ -89,12 +91,13 @@ export class BvvMfpService {
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<MfpCapabilities>>}
+	 * @throws Error when capabilities could not be provided
 	 */
 	async init() {
 		if (!this._mfpCapabilities) {
 			try {
-				const { urlId, layouts, grSubstitutions } = await this._mfpCapabilitiesProvider();
-				this._mfpCapabilities = { layouts: layouts, grSubstitutions: grSubstitutions };
+				const { urlId, layouts, grSubstitutions, srid, extent } = await this._mfpCapabilitiesProvider();
+				this._mfpCapabilities = { layouts, grSubstitutions, srid, extent };
 				this._urlId = urlId;
 			}
 			catch (e) {
@@ -103,7 +106,7 @@ export class BvvMfpService {
 					console.warn('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 				}
 				else {
-					console.error('MfpCapabilities could not be fetched from backend.', e);
+					throw e;
 				}
 			}
 		}
@@ -133,11 +136,12 @@ export class BvvMfpService {
 	 * Creates a new MFP3 job and returns a URL pointing to the generated resource.
 	 * @param {object} spec MFP3 spec
 	 * @returns download URL as string or `null`
+	 * @throws Error when PDF generation was not successful
 	 */
 	async createJob(spec) {
 		this._abortController = new AbortController();
 		try {
-			const result = await this._createMpfSpecProvider(spec, this._urlId, this._abortController);
+			const result = await this._createMfpSpecProvider(spec, this._urlId, this._abortController);
 			if (result) {
 				const { downloadURL } = result;
 				return downloadURL;
@@ -168,8 +172,10 @@ export class BvvMfpService {
 
 	_newFallbackCapabilities() {
 		return {
+			srid: 3857,
+			extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 			grSubstitutions: {},
-			layouts:	[
+			layouts: [
 				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
 				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
 			]

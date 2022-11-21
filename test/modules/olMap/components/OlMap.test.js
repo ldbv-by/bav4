@@ -9,7 +9,7 @@ import { $injector } from '../../../../src/injection';
 import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { addLayer, modifyLayer, removeLayer } from '../../../../src/store/layers/layers.action';
-import { changeRotation, changeZoomAndCenter, fit, fitLayer } from '../../../../src/store/position/position.action';
+import { changeRotation, changeZoomAndCenter, fit as fitMap, fitLayer } from '../../../../src/store/position/position.action';
 import { simulateMapEvent, simulateMapBrowserEvent } from '../mapTestUtils';
 import VectorLayer from 'ol/layer/Vector';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
@@ -737,7 +737,7 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			fit(extent);
+			fitMap(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
@@ -762,7 +762,7 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			fit(extent, { maxZoom: maxZoom });
+			fitMap(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
@@ -783,7 +783,7 @@ describe('OlMap', () => {
 
 			expect(element._viewSyncBlocked).toBeUndefined();
 
-			fit(extent, { useVisibleViewport: false });
+			fitMap(extent, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
@@ -941,6 +941,48 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
 			expect(element._viewSyncBlocked).toBeUndefined();
+		});
+
+		it('adds an olLayer resolving a GeoResourceFuture', async () => {
+			const element = await setup();
+			const map = element._map;
+			const view = map.getView();
+			const extent = [38, 57, 39, 58];
+			const viewSpy = spyOn(view, 'fit').and.callThrough();
+			const spy = spyOn(element, '_syncStore').and.callThrough();
+			const olVectorSource = new VectorSource();
+			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
+			const olPlaceHolderLayer = new Layer({ id: id0, render: () => { } });
+			const olRealLayer = new VectorLayer({ id: id0, source: olVectorSource });
+			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
+			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id, geoResource) => {
+				if (geoResource instanceof GeoResourceFuture) {
+					return olPlaceHolderLayer;
+				}
+				return olRealLayer;
+			});
+			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
+			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
+
+			expect(element._viewSyncBlocked).toBeUndefined();
+
+			addLayer(id0, { geoResourceId: geoResourceId0 });
+			fitLayer(id0);
+
+			// we have to wait for two timeout calls!
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+
+			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(element._viewSyncBlocked).toBeTrue();
+
+			await TestUtils.timeout();
+			//check if flag is reset
+			expect(element._viewSyncBlocked).toBeFalse();
+			//and store is in sync with view
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 
@@ -1163,7 +1205,7 @@ describe('OlMap', () => {
 			expect(vectorSourceSpy).toHaveBeenCalled();
 		});
 
-		it('modifys the visibility of an olLayer', async () => {
+		it('modifies the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
@@ -1185,7 +1227,7 @@ describe('OlMap', () => {
 			expect(layer1.getOpacity()).toBe(1);
 		});
 
-		it('modifys the z-index of an olLayer', async () => {
+		it('modifies the z-index of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));

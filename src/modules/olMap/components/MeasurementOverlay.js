@@ -132,6 +132,10 @@ export class MeasurementOverlay extends BaOverlay {
 		return this._placement;
 	}
 
+	get innerText() {
+		return this._getContent(this._type);
+	}
+
 	static get tag() {
 		return 'ba-measure-overlay';
 	}
