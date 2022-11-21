@@ -1401,7 +1401,7 @@ describe('BvvMfp3Encoder', () => {
 			});
 
 			it('writes a feature with a advanced feature style function (geometryFunction)', () => {
-				const feature = new Feature({ geometry: new LineString([[30, 30], [40, 40]]), partition_delta: 0.4 });
+				const feature = new Feature({ geometry: new LineString([[30, 30], [40, 40]]), measurement: {} });
 				feature.setStyle(getGeometryStyleFunction());
 				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
