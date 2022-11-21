@@ -354,6 +354,7 @@ export class BvvMfp3Encoder {
 			const featureStyles = feature.getStyle();
 			if (featureStyles != null && typeof (featureStyles) === 'function') {
 				// todo: currently only the fallback-style for measurement-features is encodable
+				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
 				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
 				const isMeasurementFeature = feature.get('measurement') != null;
 				return isMeasurementFeature ? getExplicitFallbackStyleForMeasurement(feature) : featureStyles(feature, resolution);
