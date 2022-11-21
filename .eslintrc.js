@@ -3,7 +3,7 @@ module.exports = {
 	env: {
 		browser: true,
 		node: true,
-		es2020: true,
+		es2021: true,
 		'jasmine': true
 	},
 	plugins: ['promise'],
@@ -12,7 +12,6 @@ module.exports = {
 		'plugin:import/errors'
 	],
 	parserOptions: {
-		ecmaVersion: 11,
 		sourceType: 'module'
 	},
 	rules: {
