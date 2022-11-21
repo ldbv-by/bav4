@@ -682,6 +682,10 @@ describe('BvvMfp3Encoder', () => {
 				return styles;
 			};
 
+			const getSingleStyleFunction = () => {
+				return () => getStyle()[0];
+			};
+
 			const getGeometryStyleFunction = () => {
 				return measureStyleFunction;
 			};
@@ -835,6 +839,61 @@ describe('BvvMfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				vectorLayer.setStyle(() => getStyle());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with single style', () => {
+				const feature = new Feature({ geometry: new Point([30, 30]) });
+				feature.setStyle(getSingleStyleFunction());
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				vectorLayer;
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
