@@ -410,6 +410,8 @@ export class VectorGeoResource extends GeoResource {
 				return 'GPX';
 			case VectorSourceType.GEOJSON:
 				return 'GeoJSON';
+			case VectorSourceType.EWKT:
+				return 'EWKT';
 			default: return '';
 		}
 	}

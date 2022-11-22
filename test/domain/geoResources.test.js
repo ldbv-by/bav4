@@ -336,9 +336,11 @@ describe('GeoResource', () => {
 
 		it('provides the source type as fallback label', () => {
 
+			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).label).toBe('foo');
 			expect(new VectorGeoResource('id', null, VectorSourceType.KML).label).toBe('KML');
 			expect(new VectorGeoResource('id', null, VectorSourceType.GPX).label).toBe('GPX');
 			expect(new VectorGeoResource('id', null, VectorSourceType.GEOJSON).label).toBe('GeoJSON');
+			expect(new VectorGeoResource('id', null, VectorSourceType.EWKT).label).toBe('EWKT');
 			expect(new VectorGeoResource('id', null, 'unknown').label).toBe('');
 		});
 
