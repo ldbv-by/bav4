@@ -578,7 +578,7 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-		it('resolves wmts layer(without id) with xyz-source to a mfp \'wmts\' spec', () => {
+		it('resolves wmts layer (without id) with xyz-source to a mfp \'wmts\' spec', () => {
 			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: null };
 
 			const encoder = setup();
