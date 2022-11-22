@@ -19,7 +19,7 @@ describe('UnitsService', () => {
 
 	it('provides default formatted area', () => {
 		const instanceUnderTest = new UnitsService();
-		expect(instanceUnderTest.formatArea(42)).toBe('42 m&sup2;');
+		expect(instanceUnderTest.formatArea(42)).toBe('42 m²');
 	});
 
 	it('provides formatted distance for metric system as default', () => {
@@ -31,6 +31,6 @@ describe('UnitsService', () => {
 	it('provides formatted area for bvv metric system as default', () => {
 		const instanceUnderTest = new UnitsService();
 
-		expect(instanceUnderTest.formatArea(42, 0)).toContain('m&sup2;');
+		expect(instanceUnderTest.formatArea(42, 0)).toContain('m²');
 	});
 });
