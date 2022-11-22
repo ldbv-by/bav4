@@ -46,7 +46,7 @@ import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
 
 
 $injector
-	.registerSingleton('Proj4JsService', new Proj4JsService())
+	.registerSingleton('ProjectionService', new Proj4JsService())
 	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
 	.registerSingleton('TranslationService', new TranslationService)

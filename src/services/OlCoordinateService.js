@@ -1,7 +1,7 @@
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
-import proj4 from 'proj4';
 import { buffer } from 'ol/extent';
+import { $injector } from '../injection';
 
 /**
  * Utilities methods for coordinates like transformation, ..., based on ol.
@@ -16,6 +16,8 @@ export class OlCoordinateService {
 	 */
 	constructor(stringifyFunction = bvvStringifyFunction) {
 		this._stringifyFunction = stringifyFunction;
+		const { ProjectionService } = $injector.inject('ProjectionService');
+		this._projectionService = ProjectionService;
 	}
 
 
@@ -78,7 +80,7 @@ export class OlCoordinateService {
 	transform(coordinate, sourceSrid, targetSrid) {
 		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
 		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
-		if (proj4.defs(targetSridAsString)) {
+		if (this._projectionService.getProjections().includes(targetSrid)) {
 			return transform(coordinate, sourceSridAsString, targetSridAsString);
 		}
 		throw new Error('Unsupported SRID: ' + targetSrid);
@@ -95,7 +97,7 @@ export class OlCoordinateService {
 	transformExtent(extent, sourceSrid, targetSrid) {
 		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
 		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
-		if (proj4.defs(targetSridAsString)) {
+		if (this._projectionService.getProjections().includes(targetSrid)) {
 			return transformExtent(extent, sourceSridAsString, targetSridAsString);
 		}
 		throw new Error('Unsupported SRID: ' + targetSrid);

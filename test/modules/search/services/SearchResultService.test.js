@@ -150,16 +150,24 @@ describe('SearchResultService', () => {
 			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.GEOJSON);
 		});
 
+		it('returns search results for EWKT source type', async () => {
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.EWKT);
+		});
+
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GPX source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GeoJson source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
+		});
+
+		it('returns an empty array as result for a EWKT source type when georesource cannot be created', async () => {
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.EWKT);
 		});
 
 		it('returns search results for Wms source type', async () => {
@@ -429,6 +437,7 @@ describe('SearchResultService', () => {
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GPX))).toBe('GPX Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GEOJSON))).toBe('GeoJSON Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.EWKT))).toBe('EWKT Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypeToLabel('foo')).toBeNull();
 		});

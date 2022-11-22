@@ -375,7 +375,8 @@ export class XyzGeoResource extends GeoResource {
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
 	GPX: Symbol.for('gpx'),
-	GEOJSON: Symbol.for('geojson')
+	GEOJSON: Symbol.for('geojson'),
+	EWKT: Symbol.for('ewkt')
 });
 
 
@@ -399,9 +400,6 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns `true` if this GeoResource contains an non empty string as label
 	 */
 	_getFallbackLabel() {
-		if (this._label) {
-			return this._label;
-		}
 		switch (this.sourceType) {
 			case VectorSourceType.KML:
 				return 'KML';
@@ -409,6 +407,8 @@ export class VectorGeoResource extends GeoResource {
 				return 'GPX';
 			case VectorSourceType.GEOJSON:
 				return 'GeoJSON';
+			case VectorSourceType.EWKT:
+				return 'EWKT';
 			default: return '';
 		}
 	}

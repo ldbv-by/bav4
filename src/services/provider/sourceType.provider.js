@@ -3,10 +3,10 @@
 import { html } from 'lit-html';
 import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
-import { isString } from '../../utils/checks';
 import { observe } from '../../utils/storeUtils';
-import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
+import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
 import { MediaType } from '../HttpService';
+import { parse } from '../../utils/ewkt';
 
 /**
  * A function that tries to detect the source type for a url
@@ -46,8 +46,8 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
  */
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
 
-	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService }
-	= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService');
+	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService, ProjectionService: projectionService }
+		= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService', 'ProjectionService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
 
 	const post = async (url, credential = null) => {
@@ -62,7 +62,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 	const mapResponseToSourceType = async (result, authenticated) => {
 		switch (result.status) {
 			case 200: {
-				const { name, version } = await result.json();
+				const { name, version, srid } = await result.json();
 
 				const sourceTypeNameFor = name => {
 					switch (name) {
@@ -74,11 +74,19 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 							return SourceTypeName.GEOJSON;
 						case 'WMS':
 							return SourceTypeName.WMS;
+						case 'EWKT':
+							return SourceTypeName.EWKT;
 					}
 				};
-
-				return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
-					new SourceType(sourceTypeNameFor(name), version));
+				const sourceTypeName = sourceTypeNameFor(name);
+				if (sourceTypeName) {
+					if (projectionService.getProjections().includes(srid)) { // check if SRID is supported
+						return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+							new SourceType(sourceTypeName, version, srid));
+					}
+					return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
+				}
+				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 			}
 			case 204: {
 				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
@@ -146,24 +154,35 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
  * @returns {SourceTypeResult}
  */
 export const defaultDataSourceTypeProvider = (data) => {
-	if (isString(data)) {
-		// we check the content in a naive manner
-		if (data.includes('<kml') && data.includes('</kml>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML));
+
+	const { ProjectionService: projectionService } = $injector.inject('ProjectionService');
+
+	if (new Blob([data]).size >= SourceTypeMaxFileSize) {
+		return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
+	}
+	// we check the content in a naive manner
+	if (data.includes('<kml') && data.includes('</kml>')) {
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.KML, null, 4326));
+	}
+	if (data.includes('<gpx') && data.includes('</gpx>')) {
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX, null, 4326));
+	}
+	const ewkt = parse(data);
+	if (ewkt) {
+		if (!projectionService.getProjections().includes(ewkt.srid)) {
+			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
 		}
-		if (data.includes('<gpx') && data.includes('</gpx>')) {
-			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GPX));
-		}
-		try {
-			if (JSON.parse(data).type) {
-				return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
-			}
-		}
-		catch {
-			return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
-		}
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, ewkt.srid));
+	}
+	try {
+		JSON.parse(data);
+		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326));
+	}
+	catch {
+		// Nothing todo here
 	}
 	return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
+
 };
 
 /**

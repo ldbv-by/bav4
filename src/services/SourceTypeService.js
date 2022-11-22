@@ -1,5 +1,4 @@
-import { isHttpUrl } from '../utils/checks';
-import { SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../domain/sourceType';
+import { isHttpUrl, isString } from '../utils/checks';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 
@@ -38,20 +37,15 @@ export class SourceTypeService {
 	}
 
 	/**
-	 * Detects the SourceType for given data.
-	 * If the MediaType is available, it is used for SourceTpe detection,
-	 * otherwise, the data are analyzed
+	 * Detects the SourceType for the given data.
 	 * @param {string} data
-	 * @param {string} [mediaType]
 	 * @returns {SourceTypeResult} the result of this request
 	 */
-	forData(data, mediaType = null) {
-		const dataSize = new Blob([data]).size;
-		if (dataSize >= SourceTypeMaxFileSize) {
-			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
+	forData(data) {
+		if (!isString(data)) {
+			throw new TypeError('Parameter <data> must be a String');
 		}
-		const result = mediaType ? this._mediaSourceTypeProvider(mediaType) : null;
-		return result ?? this._dataSourceTypeProvider(data);
+		return this._dataSourceTypeProvider(data);
 	}
 
 	/**
@@ -63,9 +57,6 @@ export class SourceTypeService {
 	async forBlob(blob) {
 		if (!(blob instanceof Blob)) {
 			throw new TypeError('Parameter <blob> must be an instance of Blob');
-		}
-		if (blob.size >= SourceTypeMaxFileSize) {
-			return new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
 		}
 		const dataSourceContent = await blob.text();
 		return this._dataSourceTypeProvider(dataSourceContent);

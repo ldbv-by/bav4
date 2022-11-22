@@ -68,10 +68,11 @@ export class ImportVectorDataService {
 				 * Although we think we already know the source type, we let the SourceTypeService analyze the data
 				 * and derive the final source type. They might not be what they pretend to be ...
 				 **/
-				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
+				const resultingSourceType = this._sourceTypeService.forData(data).sourceType;
+				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 				if (resultingSourceType) {
-					const vgr = new VectorGeoResource(id, label, resultingSourceType);
-					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+					const vgr = new VectorGeoResource(id, label, vectorSourceType);
+					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 					return vgr;
 				}
 				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
@@ -94,10 +95,11 @@ export class ImportVectorDataService {
 	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
+		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
+		const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 		if (resultingSourceType) {
-			const vgr = new VectorGeoResource(id, label, resultingSourceType);
-			vgr.setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
+			const vgr = new VectorGeoResource(id, label, vectorSourceType);
+			vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}
@@ -123,6 +125,9 @@ export class ImportVectorDataService {
 
 					case SourceTypeName.GEOJSON:
 						return VectorSourceType.GEOJSON;
+
+					case SourceTypeName.EWKT:
+						return VectorSourceType.EWKT;
 				}
 			}
 			// is it a VectorSourceType enum value?

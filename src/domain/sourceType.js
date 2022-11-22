@@ -10,11 +10,13 @@ export class SourceType {
 
 	/**
 	 * @param {SourceTypeName} name
-	 * @param {string} version
+	 * @param {string} [version] version of type of source
+	 * @param {number} [srid] SRID of this source
 	 */
-	constructor(name, version = null) {
+	constructor(name, version = null, srid = null) {
 		this._name = name;
 		this._version = version;
+		this._srid = srid;
 	}
 
 	get name() {
@@ -23,6 +25,10 @@ export class SourceType {
 
 	get version() {
 		return this._version;
+	}
+
+	get srid() {
+		return this._srid;
 	}
 }
 
@@ -33,7 +39,8 @@ export const SourceTypeName = Object.freeze({
 	KML: 'kml',
 	GPX: 'gpx',
 	GEOJSON: 'geojson',
-	WMS: 'wms'
+	WMS: 'wms',
+	EWKT: 'ewkt'
 });
 
 
@@ -73,6 +80,7 @@ export const SourceTypeResultStatus = Object.freeze({
 	MAX_SIZE_EXCEEDED: 2,
 	OTHER: 3,
 	BAA_AUTHENTICATED: 4,
-	RESTRICTED: 5
+	RESTRICTED: 5,
+	UNSUPPORTED_SRID: 6
 });
 

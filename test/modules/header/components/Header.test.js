@@ -3,7 +3,6 @@ import { Header } from '../../../../src/modules/header/components/Header';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { OlCoordinateService } from '../../../../src/services/OlCoordinateService';
 import { layersReducer, createDefaultLayer } from '../../../../src/store/layers/layers.reducer';
 import { networkReducer } from '../../../../src/store/network/network.reducer';
 import { setFetching } from '../../../../src/store/network/network.action';
@@ -57,7 +56,6 @@ describe('Header', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
-			.register('CoordinateService', OlCoordinateService)
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
