@@ -400,9 +400,6 @@ export class VectorGeoResource extends GeoResource {
 	 * @returns `true` if this GeoResource contains an non empty string as label
 	 */
 	_getFallbackLabel() {
-		if (this._label) {
-			return this._label;
-		}
 		switch (this.sourceType) {
 			case VectorSourceType.KML:
 				return 'KML';
