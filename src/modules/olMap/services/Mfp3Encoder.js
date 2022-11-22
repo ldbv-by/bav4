@@ -365,10 +365,7 @@ export class BvvMfp3Encoder {
 			}
 
 			const layerStyleFunction = layer.getStyleFunction();
-			if (layerStyleFunction) {
-				return layer.getStyleFunction()(feature, resolution);
-			}
-			return [];
+			return layerStyleFunction ? layerStyleFunction(feature, resolution) : [];
 		};
 
 		const getEncodableOlStyle = (styles, isPreset) => {
@@ -415,7 +412,9 @@ export class BvvMfp3Encoder {
 		};
 
 		const olStyles = presetStyles.length > 0 ? presetStyles : getOlStyles(olFeature, olLayer, resolution);
-		const olStyleToEncode = getEncodableOlStyle(olStyles, presetStyles.length > 0);
+
+		// if multiple styles available, we look for the first non-advanced style
+		const olStyleToEncode = Array.isArray(olStyles) ? getEncodableOlStyle(olStyles, presetStyles.length > 0) : olStyles;
 
 		if (!olStyleToEncode || !(olStyleToEncode instanceof Style)) {
 			console.warn('cannot style feature', olFeature);
@@ -456,7 +455,7 @@ export class BvvMfp3Encoder {
 		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncode);
 
 		// handle advanced styles
-		const advancedStyleFeatures = olStyles.reduce((styleFeatures, style) => {
+		const advancedStyleFeatures = Array.isArray(olStyles) ? olStyles.reduce((styleFeatures, style) => {
 			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
 
 			if (isGeometryFunction) {
@@ -467,7 +466,7 @@ export class BvvMfp3Encoder {
 				}
 			}
 			return styleFeatures;
-		}, defaultResult);
+		}, defaultResult) : { features: [] };
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyleId };

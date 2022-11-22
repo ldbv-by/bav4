@@ -578,7 +578,40 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-		it('does NOT resolve wmts layer to a mfp \'wmts\' spec due to missing substitution georesource', () => {
+		it('resolves wmts layer (without id) with xyz-source to a mfp \'wmts\' spec', () => {
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: null };
+
+			const encoder = setup();
+			const xyzGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz');
+			spyOnProperty(xyzGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_print').and.returnValue(xyzGeoResource);
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				const tileGrid = new TileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10] });
+
+				const xyzSource = new XYZ({ tileGrid: tileGrid, layer: 'bar', matrixSet: 'foo', url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}', requestEncoding: 'REST' });
+				return new TileLayer({
+					id: 'foo',
+					geoResourceId: 'geoResourceId',
+					source: xyzSource,
+					opacity: 0.42
+				});
+			});
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, xyzGeoResource);
+
+			expect(actualSpec).toEqual({
+				opacity: 1,
+				type: 'wmts',
+				layer: 'geoResourceId',
+				requestEncoding: 'REST',
+				matrixSet: 'EPSG:25832',
+				matrices: jasmine.any(Object),
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
+				attribution: null,
+				thirdPartyAttribution: null
+			});
+		});
+
+		it('does NOT resolve wmts layer to a mfp \'wmts\' spec due to missing substitution GeoResource', () => {
 			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
 			const encoder = setup();
 			const wmtsGeoResource = new TestGeoResource(GeoResourceTypes.WMTS, 'something');
@@ -647,6 +680,10 @@ describe('BvvMfp3Encoder', () => {
 					})
 				];
 				return styles;
+			};
+
+			const getSingleStyleFunction = () => {
+				return () => getStyle()[0];
 			};
 
 			const getGeometryStyleFunction = () => {
@@ -802,6 +839,61 @@ describe('BvvMfp3Encoder', () => {
 				const vectorSource = new VectorSource({ wrapX: false, features: [new Feature({ geometry: new Point([30, 30]) })] });
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
 				vectorLayer.setStyle(() => getStyle());
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					thirdPartyAttribution: null,
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
+			it('writes a point feature with single style', () => {
+				const feature = new Feature({ geometry: new Point([30, 30]) });
+				feature.setStyle(getSingleStyleFunction());
+				const vectorSource = new VectorSource({ wrapX: false, features: [feature] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource });
+				vectorLayer;
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
 				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
