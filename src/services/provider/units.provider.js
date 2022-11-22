@@ -35,13 +35,13 @@ export const bvvDistanceUnitsProvider = (distance) => {
 export const bvvAreaUnitsProvider = (area) => {
 	const locales = getLocales();
 	const asSquaredKilometer = (areaValue) => {
-		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' ' + 'km&sup2;';
+		return (Math.round((areaValue / Squaredkilometer_In_Squaredmeters) * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 3, maximumFractionDigits: 3 }) + ' ' + 'km²';
 	};
 	const asSquaredMeter = (areaValue) => {
-		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ' + 'm&sup2;' : '1 m&sup2;';
+		return areaValue > 1 ? (Math.round(areaValue * 100) / 100).toLocaleString(locales, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + ' ' + 'm²' : '1 m²';
 	};
 	if (area < 0.5) {
-		return '0 m&sup2;';
+		return '0 m²';
 	}
 	return area >= Squaredkilometer_In_Squaredmeters ? asSquaredKilometer(area) : asSquaredMeter(area);
 };
@@ -84,18 +84,18 @@ export const areaUnitsProvider = (area, decimals) => {
 	let formatted;
 	if (area >= Squaredkilometer_In_Squaredmeters) {
 		if (decimals) {
-			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'km&sup2;';
+			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100).toFixed(decimals) + ' ' + 'km²';
 		}
 		else {
-			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100) + ' ' + 'km&sup2;';
+			formatted = (Math.round((area / Squaredkilometer_In_Squaredmeters) * 100) / 100) + ' ' + 'km²';
 		}
 	}
 	else {
 		if (decimals) {
-			formatted = (Math.round(area * 100) / 100).toFixed(decimals) + ' ' + 'm&sup2;';
+			formatted = (Math.round(area * 100) / 100).toFixed(decimals) + ' ' + 'm²';
 		}
 		else {
-			formatted = (Math.round(area * 100) / 100) + ' ' + 'm&sup2;';
+			formatted = (Math.round(area * 100) / 100) + ' ' + 'm²';
 		}
 	}
 	return formatted;

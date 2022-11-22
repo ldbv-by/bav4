@@ -27,16 +27,16 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted area for metric system', () => {
-		expect(areaUnitsProvider(42, 0)).toBe('42 m&sup2;');
-		expect(areaUnitsProvider(999, 0)).toBe('999 m&sup2;');
-		expect(areaUnitsProvider(1000000, 0)).toBe('1 km&sup2;');
-		expect(areaUnitsProvider(1234567, 0)).toBe('1.23 km&sup2;');
-		expect(areaUnitsProvider(1234567, 2)).toBe('1.23 km&sup2;');
-		expect(areaUnitsProvider(100000, 0)).toBe('100000 m&sup2;');
-		expect(areaUnitsProvider(12345, 0)).toBe('12345 m&sup2;');
-		expect(areaUnitsProvider(12345, 2)).toBe('12345.00 m&sup2;');
-		expect(areaUnitsProvider(10000000, 0)).toBe('10 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km&sup2;');
+		expect(areaUnitsProvider(42, 0)).toBe('42 m²');
+		expect(areaUnitsProvider(999, 0)).toBe('999 m²');
+		expect(areaUnitsProvider(1000000, 0)).toBe('1 km²');
+		expect(areaUnitsProvider(1234567, 0)).toBe('1.23 km²');
+		expect(areaUnitsProvider(1234567, 2)).toBe('1.23 km²');
+		expect(areaUnitsProvider(100000, 0)).toBe('100000 m²');
+		expect(areaUnitsProvider(12345, 0)).toBe('12345 m²');
+		expect(areaUnitsProvider(12345, 2)).toBe('12345.00 m²');
+		expect(areaUnitsProvider(10000000, 0)).toBe('10 km²');
+		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km²');
 	});
 
 	it('provides formatted distance for bvv-metric system with default-locales (en)', () => {
@@ -54,19 +54,19 @@ describe('Units provider', () => {
 	});
 
 	it('provides formatted area for bvv-metric system with default-locales (en)', () => {
-		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m&sup2;');
-		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m&sup2;');
-		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
-		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m&sup2;');
-		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m&sup2;');
-		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1.000 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1.230 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1.230 km&sup2;');
-		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100,000 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12,345 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12,345 m&sup2;');
-		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10.000 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km&sup2;');
+		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m²');
+		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m²');
+		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m²');
+		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m²');
+		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m²');
+		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1.000 km²');
+		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1.230 km²');
+		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1.230 km²');
+		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100,000 m²');
+		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12,345 m²');
+		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12,345 m²');
+		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10.000 km²');
+		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km²');
 	});
 
 	it('provides formatted distance for bvv-metric system with de-locales', () => {
@@ -86,19 +86,19 @@ describe('Units provider', () => {
 
 	it('provides formatted area for bvv-metric system with de-locales', () => {
 		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('de');
-		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m&sup2;');
-		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m&sup2;');
-		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m&sup2;');
-		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m&sup2;');
-		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m&sup2;');
-		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1,000 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1,230 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1,230 km&sup2;');
-		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100.000 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12.345 m&sup2;');
-		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12.345 m&sup2;');
-		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10,000 km&sup2;');
-		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1.234.567,890 km&sup2;');
+		expect(bvvAreaUnitsProvider(0, 0)).toBe('0 m²');
+		expect(bvvAreaUnitsProvider(0.3, 0)).toBe('0 m²');
+		expect(bvvAreaUnitsProvider(0.6, 0)).toBe('1 m²');
+		expect(bvvAreaUnitsProvider(42, 0)).toBe('42 m²');
+		expect(bvvAreaUnitsProvider(999, 0)).toBe('999 m²');
+		expect(bvvAreaUnitsProvider(1000000, 0)).toBe('1,000 km²');
+		expect(bvvAreaUnitsProvider(1234567, 0)).toBe('1,230 km²');
+		expect(bvvAreaUnitsProvider(1234567, 2)).toBe('1,230 km²');
+		expect(bvvAreaUnitsProvider(100000, 0)).toBe('100.000 m²');
+		expect(bvvAreaUnitsProvider(12345, 0)).toBe('12.345 m²');
+		expect(bvvAreaUnitsProvider(12345, 2)).toBe('12.345 m²');
+		expect(bvvAreaUnitsProvider(10000000, 0)).toBe('10,000 km²');
+		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1.234.567,890 km²');
 	});
 
 	it('provides formatted distance for bvv-metric system with fallback-locales (en)', () => {
@@ -108,6 +108,6 @@ describe('Units provider', () => {
 
 	it('provides formatted area for bvv-metric system with fallback-locales (en)', () => {
 		spyOn(configService, 'getValue').withArgs('DEFAULT_LANG', 'en').and.returnValue('xx');
-		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km&sup2;');
+		expect(bvvAreaUnitsProvider(1234567891234, 2)).toBe('1,234,567.890 km²');
 	});
 });
