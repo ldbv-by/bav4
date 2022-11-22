@@ -72,7 +72,7 @@ export class ImportVectorDataService {
 				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 				if (resultingSourceType) {
 					const vgr = new VectorGeoResource(id, label, vectorSourceType);
-					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx an geoJson**/);
+					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 					return vgr;
 				}
 				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
