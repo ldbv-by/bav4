@@ -232,13 +232,13 @@ describe('BvvMfp3Encoder', () => {
 		it('encodes overlays', async () => {
 			const mapSpy = spyOn(mapMock, 'getOverlays').and.returnValue({ getArray: () => [{}, {}] });
 			const encoder = new BvvMfp3Encoder();
-			const encodingSpy = spyOn(encoder, '_encodeOverlay').and.callFake(() => {
+			const encodingSpy = spyOn(encoder, '_encodeOverlays').and.callFake(() => {
 				return {};
 			});
 
 			await encoder.encode(mapMock, getProperties());
 
-			expect(encodingSpy).toHaveBeenCalledTimes(2);
+			expect(encodingSpy).toHaveBeenCalled();
 			expect(mapSpy).toHaveBeenCalled();
 		});
 
@@ -1743,10 +1743,6 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-
-
-
-
 		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
 			const distanceOverlayMock = {
 				getElement: () => {
@@ -1761,95 +1757,92 @@ describe('BvvMfp3Encoder', () => {
 				getPosition: () => [42, 21]
 			};
 			const encoder = setup();
-			const distanceSpec = encoder._encodeOverlay(distanceOverlayMock);
-			const partitionSpec = encoder._encodeOverlay(partitionDistanceOverlayMock);
-			expect(distanceSpec).toEqual({
+			const specs = encoder._encodeOverlays([distanceOverlayMock, partitionDistanceOverlayMock]);
+			expect(specs.geoJson.features).toHaveSize(2);
+			expect(specs).toEqual({
 				type: 'geojson',
 				name: 'overlay',
 				opacity: 1,
 				geoJson: {
 					type: 'FeatureCollection',
-					features: [{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: jasmine.any(Array)
-						}
-					}]
+					features: jasmine.any(Array)
 				},
 				style: {
 					version: 2,
-					'*': {
-						symbolizers: [{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 3
-						}, {
-							type: 'text',
-							label: 'foo bar baz',
-							labelXOffset: 0.4,
-							labelYOffset: -2,
-							labelAlign: 'ct',
-							fontFamily: 'san-serif',
-							fontColor: '#ffffff',
-							fontSize: 10,
-							fontWeight: 'bold',
-							strokeColor: '#ff0000',
-							haloColor: '#ff0000',
-							haloOpacity: 1,
-							haloRadius: 1
-						}]
+					'[type=\'distance\']': {
+						symbolizers: [
+							{
+								type: 'point',
+								fillColor: '#ff0000',
+								fillOpacity: 1,
+								strokeOpacity: 0,
+								graphicName: 'circle',
+								graphicOpacity: 0.4,
+								pointRadius: 3
+							}, {
+								type: 'text',
+								label: '[label]',
+								labelXOffset: '[labelXOffset]',
+								labelYOffset: '[labelYOffset]',
+								labelAlign: '[labelAlign]',
+								fontColor: '#ffffff',
+								fontSize: 10,
+								fontFamily: 'san-serif',
+								fontWeight: 'bold',
+								haloColor: '#ff0000',
+								haloOpacity: 1,
+								haloRadius: 1,
+								strokeColor: '#ff0000'
+							}]
+					},
+					'[type=\'distance-partition\']': {
+						symbolizers: [
+							{
+								type: 'point',
+								fillColor: '#000000',
+								fillOpacity: 1,
+								strokeOpacity: 1,
+								strokeWidth: 1.5,
+								strokeColor: '#ffffff',
+								graphicName: 'circle',
+								graphicOpacity: 0.4,
+								pointRadius: 2
+							}, {
+								type: 'text',
+								label: '[label]',
+								labelXOffset: '[labelXOffset]',
+								labelYOffset: '[labelYOffset]',
+								labelAlign: '[labelAlign]',
+								fontColor: '#000000',
+								fontSize: 8,
+								fontFamily: 'san-serif',
+								fontWeight: 'normal',
+								haloColor: '#ffffff',
+								haloOpacity: 1,
+								haloRadius: 2,
+								strokeColor: '#ff0000'
+							}]
+					},
+					'[type=\'area\']': {
+						symbolizers: [
+							{
+								type: 'text',
+								label: '[label]',
+								labelXOffset: '[labelXOffset]',
+								labelYOffset: '[labelYOffset]',
+								labelAlign: '[labelAlign]',
+								fontColor: '#ffffff',
+								fontSize: 10,
+								fontFamily: 'san-serif',
+								fontWeight: 'bold',
+								haloColor: '#ff0000',
+								haloOpacity: 1,
+								haloRadius: 1,
+								strokeColor: '#ff0000'
+							}]
 					}
 				}
-			});
-			expect(partitionSpec).toEqual({
-				type: 'geojson',
-				name: 'overlay',
-				opacity: 1,
-				geoJson: {
-					type: 'FeatureCollection',
-					features: [{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: jasmine.any(Array)
-						}
-					}]
-				},
-				style: {
-					version: 2,
-					'*': {
-						symbolizers: [{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 3
-						}, {
-							type: 'text',
-							label: 'foo bar baz',
-							labelXOffset: 0.4,
-							labelYOffset: -2,
-							labelAlign: 'ct',
-							fontFamily: 'san-serif',
-							fontColor: '#000000',
-							fontSize: 10,
-							fontWeight: 'normal',
-							strokeColor: '#ff0000',
-							haloColor: '#ffffff',
-							haloOpacity: 1,
-							haloRadius: 1
-						}]
-					}
-				}
+
 			});
 		});
 
@@ -1861,7 +1854,8 @@ describe('BvvMfp3Encoder', () => {
 				getPosition: () => [42, 21]
 			};
 			const encoder = setup();
-			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
+			const specs = encoder._encodeOverlays([overlayMock]);
+			expect(specs.geoJson.features).toHaveSize(0);
 		});
 
 		it('encodes openlayers geometryType to mfp symbolizer type', () => {

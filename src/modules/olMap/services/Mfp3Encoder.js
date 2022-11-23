@@ -10,7 +10,7 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
-import { MeasurementOverlay, MeasurementOverlayTypes } from '../components/MeasurementOverlay';
+import { MeasurementOverlay } from '../components/MeasurementOverlay';
 import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
@@ -123,11 +123,10 @@ export class BvvMfp3Encoder {
 				};
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
-		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay));
-
+		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
-		const layers = [...encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const layers = [encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -617,10 +616,7 @@ export class BvvMfp3Encoder {
 		return encoded.type === 'text' && encoded.externalGraphic ? addPointSymbolizer(encoded) : [encoded];
 	}
 
-	_encodeOverlay(overlay) {
-		const element = overlay.getElement();
-		const center = overlay.getPosition();
-		const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
+	_encodeOverlays(overlays) {
 		const fromPositioning = (positioning) => {
 			const defaultAlignment = 'cm';
 			const verticalAndHorizontalAlignment = positioning.split('-');
@@ -629,28 +625,43 @@ export class BvvMfp3Encoder {
 			return isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
 		};
 
-		if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
-			console.warn('cannot encode overlay element: No rule defined', element);
-			return null;
-		}
+		const toFeatureWithOverlayProperties = (overlay) => {
+			const element = overlay.getElement();
+
+			if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
+				console.warn('cannot encode overlay element: No rule defined', element);
+				return null;
+			}
+
+			const center = overlay.getPosition();
+			const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
+			return {
+				type: 'Feature',
+				properties: {
+					type: element.type,
+					label: element.innerText,
+					labelXOffset: element.placement.offset[0],
+					labelYOffset: -element.placement.offset[1],
+					labelAlign: fromPositioning(element.placement.positioning)
+				},
+				geometry: {
+					type: 'Point',
+					coordinates: [...mfpCenter, 0]
+				}
+			};
+		};
+
 		return {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
 			geoJson: {
 				type: 'FeatureCollection',
-				features: [{
-					type: 'Feature',
-					properties: {},
-					geometry: {
-						type: 'Point',
-						coordinates: [...mfpCenter, 0]
-					}
-				}]
+				features: overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null)
 			},
 			style: {
 				version: 2,
-				'*': {
+				'[type=\'distance\']': {
 					symbolizers: [
 						{
 							type: 'point',
@@ -662,15 +673,61 @@ export class BvvMfp3Encoder {
 							pointRadius: 3
 						}, {
 							type: 'text',
-							label: element.innerText,
-							labelXOffset: element.placement.offset[0],
-							labelYOffset: -element.placement.offset[1],
-							labelAlign: fromPositioning(element.placement.positioning),
-							fontColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#000000' : '#ffffff',
+							label: '[label]',
+							labelXOffset: '[labelXOffset]',
+							labelYOffset: '[labelYOffset]',
+							labelAlign: '[labelAlign]',
+							fontColor: '#ffffff',
 							fontSize: 10,
 							fontFamily: 'san-serif',
-							fontWeight: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? 'normal' : 'bold',
-							haloColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#ffffff' : '#ff0000',
+							fontWeight: 'bold',
+							haloColor: '#ff0000',
+							haloOpacity: 1,
+							haloRadius: 1,
+							strokeColor: '#ff0000'
+						}]
+				},
+				'[type=\'distance-partition\']': {
+					symbolizers: [
+						{
+							type: 'point',
+							fillColor: '#000000',
+							fillOpacity: 1,
+							strokeOpacity: 1,
+							strokeWidth: 1.5,
+							strokeColor: '#ffffff',
+							graphicName: 'circle',
+							graphicOpacity: 0.4,
+							pointRadius: 2
+						}, {
+							type: 'text',
+							label: '[label]',
+							labelXOffset: '[labelXOffset]',
+							labelYOffset: '[labelYOffset]',
+							labelAlign: '[labelAlign]',
+							fontColor: '#000000',
+							fontSize: 8,
+							fontFamily: 'san-serif',
+							fontWeight: 'normal',
+							haloColor: '#ffffff',
+							haloOpacity: 1,
+							haloRadius: 2,
+							strokeColor: '#ff0000'
+						}]
+				},
+				'[type=\'area\']': {
+					symbolizers: [
+						{
+							type: 'text',
+							label: '[label]',
+							labelXOffset: '[labelXOffset]',
+							labelYOffset: '[labelYOffset]',
+							labelAlign: '[labelAlign]',
+							fontColor: '#ffffff',
+							fontSize: 10,
+							fontFamily: 'san-serif',
+							fontWeight: 'bold',
+							haloColor: '#ff0000',
 							haloOpacity: 1,
 							haloRadius: 1,
 							strokeColor: '#ff0000'
@@ -678,7 +735,6 @@ export class BvvMfp3Encoder {
 				}
 			}
 		};
-
 	}
 
 	static adjustDistance(distance, dpi) {
