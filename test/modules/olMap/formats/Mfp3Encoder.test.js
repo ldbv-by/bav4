@@ -1799,7 +1799,7 @@ describe('BvvMfp3Encoder', () => {
 						symbolizers: [
 							{
 								type: 'point',
-								fillColor: '#000000',
+								fillColor: '#ff0000',
 								fillOpacity: 1,
 								strokeOpacity: 1,
 								strokeWidth: 1.5,
