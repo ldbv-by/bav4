@@ -428,11 +428,10 @@ export const measureStyleFunction = (feature, resolution) => {
 		return new Style({
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
-				fill: new Fill({
-					color: Red_Color.concat([0.4])
-				}),
 				lineDash: [8],
 				width: 2
+			}), fill: new Fill({
+				color: Red_Color.concat([0.4])
 			})
 		});
 	};
