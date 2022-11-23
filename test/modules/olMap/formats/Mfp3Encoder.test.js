@@ -1531,13 +1531,14 @@ describe('BvvMfp3Encoder', () => {
 							symbolizers: [{
 								type: 'line',
 								zIndex: 0,
-								fillOpacity: 0,
+								fillOpacity: 0.4,
 								strokeOpacity: 1,
 								strokeWidth: jasmine.any(Number),
 								strokeColor: '#ff0000',
 								strokeLinecap: 'round',
 								strokeLineJoin: 'round',
-								strokeDashstyle: 'dash'
+								strokeDashstyle: 'dash',
+								fillColor: '#ff0000'
 							}]
 						},
 						'[_gx_style = 1]': {
@@ -1791,8 +1792,8 @@ describe('BvvMfp3Encoder', () => {
 						}, {
 							type: 'text',
 							label: 'foo bar baz',
-							labelXOffset: 0.5,
-							labelYOffset: -2.5,
+							labelXOffset: 0.4,
+							labelYOffset: -2,
 							labelAlign: 'ct',
 							fontFamily: 'san-serif',
 							fontColor: '#ffffff',
@@ -1801,7 +1802,7 @@ describe('BvvMfp3Encoder', () => {
 							strokeColor: '#ff0000',
 							haloColor: '#ff0000',
 							haloOpacity: 1,
-							haloRadius: 2
+							haloRadius: 1
 						}]
 					}
 				}
@@ -1835,8 +1836,8 @@ describe('BvvMfp3Encoder', () => {
 						}, {
 							type: 'text',
 							label: 'foo bar baz',
-							labelXOffset: 0.5,
-							labelYOffset: -2.5,
+							labelXOffset: 0.4,
+							labelYOffset: -2,
 							labelAlign: 'ct',
 							fontFamily: 'san-serif',
 							fontColor: '#000000',
@@ -1845,7 +1846,7 @@ describe('BvvMfp3Encoder', () => {
 							strokeColor: '#ff0000',
 							haloColor: '#ffffff',
 							haloOpacity: 1,
-							haloRadius: 2
+							haloRadius: 1
 						}]
 					}
 				}

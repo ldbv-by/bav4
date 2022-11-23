@@ -621,7 +621,6 @@ export class BvvMfp3Encoder {
 		const element = overlay.getElement();
 		const center = overlay.getPosition();
 		const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
-
 		const fromPositioning = (positioning) => {
 			const defaultAlignment = 'cm';
 			const verticalAndHorizontalAlignment = positioning.split('-');
@@ -664,8 +663,8 @@ export class BvvMfp3Encoder {
 						}, {
 							type: 'text',
 							label: element.innerText,
-							labelXOffset: BvvMfp3Encoder.adjustDistance(element.placement.offset[0], PointsPerInch),
-							labelYOffset: BvvMfp3Encoder.adjustDistance(-element.placement.offset[1], PointsPerInch),
+							labelXOffset: element.placement.offset[0],
+							labelYOffset: -element.placement.offset[1],
 							labelAlign: fromPositioning(element.placement.positioning),
 							fontColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#000000' : '#ffffff',
 							fontSize: 10,
@@ -673,7 +672,7 @@ export class BvvMfp3Encoder {
 							fontWeight: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? 'normal' : 'bold',
 							haloColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#ffffff' : '#ff0000',
 							haloOpacity: 1,
-							haloRadius: 2,
+							haloRadius: 1,
 							strokeColor: '#ff0000'
 						}]
 				}
