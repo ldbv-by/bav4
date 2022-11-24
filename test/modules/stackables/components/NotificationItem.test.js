@@ -1,4 +1,4 @@
-import { NotificationItem } from '../../../../src/modules/notifications/components/NotificationItem';
+import { NotificationItem } from '../../../../src/modules/stackables/components/NotificationItem';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';

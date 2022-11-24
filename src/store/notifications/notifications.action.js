@@ -40,25 +40,3 @@ export const emitNotification = (content, level) => {
 		payload: new EventLike({ content: content, level: level })
 	});
 };
-
-/**
- * Emits a new fixed notification to the system
- * @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
- * @function
-*/
-export const emitFixedNotification = (content) => {
-	getStore().dispatch({
-		type: NOTIFICATION_ADDED,
-		payload: new EventLike({ content: content })
-	});
-};
-
-/**
- * Clears the fixed notification
- */
-export const clearFixedNotification = () => {
-	getStore().dispatch({
-		type: NOTIFICATION_ADDED,
-		payload: new EventLike({ content: null })
-	});
-};

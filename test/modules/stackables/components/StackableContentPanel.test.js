@@ -1,19 +1,23 @@
-import { NotificationPanel } from '../../../../src/modules/notifications/components/NotificationPanel';
-import { NotificationItem, NOTIFICATION_AUTOCLOSE_TIME_NEVER } from '../../../../src/modules/notifications/components/NotificationItem';
+import { StackableContentPanel } from '../../../../src/modules/stackables/components/StackableContentPanel';
+import { NotificationItem } from '../../../../src/modules/stackables/components/NotificationItem';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
-import { emitFixedNotification, emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
+import { emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { TestUtils } from '../../../test-utils';
 import { $injector } from '../../../../src/injection';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
+import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { BottomSheet } from '../../../../src/modules/stackables/components/BottomSheet';
 
-window.customElements.define(NotificationPanel.tag, NotificationPanel);
+window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
+window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('NotificationPanel', () => {
-	const setup = async (state = { notifications: { notification: null } }) => {
-		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, pointer: pointerReducer });
+	const setup = async (state = { notifications: { notification: null }, bottomSheet: { data: null } }) => {
+		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, pointer: pointerReducer, bottomSheet: bottomSheetReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		const element = await TestUtils.render(NotificationPanel.tag);
+		const element = await TestUtils.render(StackableContentPanel.tag);
 
 		return element;
 	};
@@ -57,42 +61,47 @@ describe('NotificationPanel', () => {
 		expect(notificationElements.length).toBe(2);
 	});
 
-	it('adds a fixed NotificationItem, when a notification is emitted', async () => {
+	it('adds a BottomSheet element, when a bottom sheet content is added', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
 		expect(element._model.notifications.length).toBe(0);
+		expect(element._model.bottomSheet).toBeNull();
 
 		emitNotification('fooBar', LevelTypes.INFO);
-		emitFixedNotification('fooBar');
+		openBottomSheet('fooBar');
 
 		expect(element._model.notifications.length).toBe(1);
-		expect(element._model.fixedNotification).toBeTruthy();
+		expect(element._model.bottomSheet).toBe('fooBar');
 
 		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
-		expect(notificationElements.length).toBe(2);
+		const bottomSheetElements = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+		expect(notificationElements).toHaveSize(1);
+		expect(bottomSheetElements).toHaveSize(1);
 	});
 
 
-	it('adds and replace a fixed NotificationItem, when a notification is emitted', async () => {
+	it('adds and replace a bottomSheet content, when a bottomSheet content changed', async () => {
 		const element = await setup();
 
 		expect(element).toBeTruthy();
 		expect(element._model.notifications.length).toBe(0);
+		expect(element._model.bottomSheet).toBeNull();
 
-		emitNotification('fooBar', LevelTypes.INFO);
-		emitFixedNotification('fooBar');
+		openBottomSheet('fooBar');
 
-		expect(element._model.notifications.length).toBe(1);
-		expect(element._model.fixedNotification).toBeTruthy();
+		const bottomSheetElements1 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+		expect(bottomSheetElements1).toHaveSize(1);
+		expect(bottomSheetElements1[0].getModel().content).toBe('fooBar');
+		expect(element._model.bottomSheet).toBe('fooBar');
 
-		emitFixedNotification('fooBarBaz');
 
-		expect(element._model.notifications.length).toBe(1);
-		expect(element._model.fixedNotification).toBeTruthy();
+		openBottomSheet('fooBarBaz');
 
-		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
-		expect(notificationElements.length).toBe(2);
+		const bottomSheetElements2 = element.shadowRoot.querySelectorAll('ba-bottom-sheet');
+		expect(bottomSheetElements2).toHaveSize(1);
+		expect(bottomSheetElements2[0].getModel().content).toBe('fooBarBaz');
+		expect(element._model.bottomSheet).toBe('fooBarBaz');
 	});
 
 	it('adds a NotificationItem only once, when panel is rerendered', async () => {
@@ -112,19 +121,6 @@ describe('NotificationPanel', () => {
 
 		const notificationElements = element.shadowRoot.querySelectorAll('ba-notification-item');
 		expect(notificationElements.length).toBe(1);
-	});
-
-	it('uses the default constant, when a fixed notification is emitted', async () => {
-		const element = await setup();
-
-		expect(element).toBeTruthy();
-		expect(element._model.notifications.length).toBe(0);
-
-		emitFixedNotification('fooBar');
-
-		const notificationElement = element.shadowRoot.querySelector('ba-notification-item');
-		expect(notificationElement).toBeTruthy();
-		expect(notificationElement._model.notification.autocloseTime).toBe(NOTIFICATION_AUTOCLOSE_TIME_NEVER);
 	});
 
 	it('removes notificationItem, when a notification-item closes', async () => {

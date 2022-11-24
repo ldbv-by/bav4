@@ -2,11 +2,10 @@ import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './firststeps.css';
 import { MvuElement } from '../../MvuElement';
-import { emitFixedNotification } from '../../../store/notifications/notifications.action';
-import { clearFixedNotification } from '../../../store/notifications/notifications.action';
 import { QueryParameters } from '../../../domain/queryParameters';
 import { openModal } from '../../../store/modal/modal.action';
 import { isHttpUrl } from '../../../utils/checks';
+import { closeBottomSheet, openBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
 
 export const FIRST_STEPS_NOTIFICATION_DELAY_TIME = 3000;
 
@@ -104,10 +103,10 @@ export class FirstSteps extends MvuElement {
 			const getContent = () => {
 				const onOpen = () => {
 					openModalFirstSteps();
-					clearFixedNotification();
+					closeBottomSheet();
 				};
 				const onClose = () => {
-					clearFixedNotification();
+					closeBottomSheet();
 				};
 				return html`
 						<style>${css}</style>	
@@ -125,7 +124,7 @@ export class FirstSteps extends MvuElement {
 							</div>
 						</div>`;
 			};
-			emitFixedNotification(getContent());
+			openBottomSheet(getContent());
 		};
 
 		const contentAvailable = firstStepsContentSource != null && isHttpUrl(firstStepsContentSource);
