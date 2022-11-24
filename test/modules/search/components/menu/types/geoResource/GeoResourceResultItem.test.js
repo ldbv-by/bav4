@@ -106,6 +106,8 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().layers.active[0].geoResourceId).toBe(geoResourceId);
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+				expect(target.classList.contains('loading')).toBeFalse();
+
 			});
 
 			it('shows and hides a loading hint for a GeoResourceFuture', async () => {
@@ -126,10 +128,12 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 				expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('labelFormatted');
+				expect(target.classList.contains('loading')).toBeTrue();
 
 				await geoResFuture.get();
 
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
+				expect(target.classList.contains('loading')).toBeFalse();
 				expect(element.shadowRoot.querySelector('li').innerText).toBe('labelFormatted');
 			});
 		});
