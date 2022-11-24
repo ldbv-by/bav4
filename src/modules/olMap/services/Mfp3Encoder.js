@@ -621,8 +621,8 @@ export class BvvMfp3Encoder {
 			const defaultAlignment = 'cm';
 			const verticalAndHorizontalAlignment = positioning.split('-');
 			const isValid = verticalAndHorizontalAlignment && verticalAndHorizontalAlignment.length === 2;
-
-			return isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
+			const align = isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
+			return align === 'cc' ? defaultAlignment : align;
 		};
 
 		const toFeatureWithOverlayProperties = (overlay) => {
@@ -635,14 +635,15 @@ export class BvvMfp3Encoder {
 
 			const center = overlay.getPosition();
 			const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
+			const labelAlign = fromPositioning(element.placement.positioning);
 			return {
 				type: 'Feature',
 				properties: {
 					type: element.type,
 					label: element.innerText,
 					labelXOffset: element.placement.offset[0],
-					labelYOffset: -element.placement.offset[1],
-					labelAlign: fromPositioning(element.placement.positioning)
+					labelYOffset: -(element.placement.offset[1]),
+					labelAlign: labelAlign
 				},
 				geometry: {
 					type: 'Point',
@@ -720,9 +721,7 @@ export class BvvMfp3Encoder {
 						{
 							type: 'text',
 							label: '[label]',
-							labelXOffset: '[labelXOffset]',
-							labelYOffset: '[labelYOffset]',
-							labelAlign: '[labelAlign]',
+							labelAlign: 'cm',
 							fontColor: '#ffffff',
 							fontSize: 10,
 							fontFamily: 'sans-serif',

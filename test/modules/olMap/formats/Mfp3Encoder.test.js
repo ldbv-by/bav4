@@ -1828,9 +1828,7 @@ describe('BvvMfp3Encoder', () => {
 							{
 								type: 'text',
 								label: '[label]',
-								labelXOffset: '[labelXOffset]',
-								labelYOffset: '[labelYOffset]',
-								labelAlign: '[labelAlign]',
+								labelAlign: 'cm',
 								fontColor: '#ffffff',
 								fontSize: 10,
 								fontFamily: 'sans-serif',
