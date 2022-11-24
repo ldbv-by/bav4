@@ -41,6 +41,7 @@ import { BaaCredentialService } from '../services/BaaCredentialService';
 import { SearchPlugin } from '../plugins/SearchPlugin';
 import { HistoryStatePlugin } from '../plugins/HistoryStatePlugin';
 import { BvvMfpService } from '../services/MfpService';
+import { ChipsConfigurationService } from '../services/ChipsConfigurationService';
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 import { Proj4JsService } from '../services/Proj4JsService';
 import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
@@ -74,6 +75,7 @@ $injector
 	.registerSingleton('SecurityService', new SecurityService())
 	.registerSingleton('BaaCredentialService', new BaaCredentialService())
 	.registerSingleton('MfpService', new BvvMfpService())
+	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

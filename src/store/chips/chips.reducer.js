@@ -4,7 +4,7 @@ export const initialState = {
 	/**
 	 * List of currently active chips.
 	 */
-	current: null
+	current: []
 
 };
 

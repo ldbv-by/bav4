@@ -1,76 +1,108 @@
-// import { $injector } from '../injection';
-// import { QueryParameters } from '../domain/queryParameters';
+import { $injector } from '../injection';
+import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { setCurrent } from '../store/chips/chips.action';
-
+import { observe } from '../utils/storeUtils';
 
 /**
  * @class
  */
 export class ChipsPlugin extends BaPlugin {
 
-	//TODO
-	// _addChipsFromQueryParams(queryParams) {
-	// }
+	constructor() {
+		super();
 
-	_addChipsFromConfig() {
-		// 	//TODO
-		// const { ChipsConfigurationService: ChipsConfigurationService } = $injector.inject('ChipsConfigurationService');
-
-		//update store
-		setCurrent(
-			[
-				{
-					'id': 'foo',
-					'title': 'zur Denkmalliste', // required
-					'href': 'http://localhost:8383/DenkmalAtlas-2/liste.html', // required
-					'permanent': false, // required
-					'target': 'modal', // required ["modal", "external"]
-					'observer': { // required [object, null]
-						'geoResources': [ // required
-							'6f5a389c-4ef3-4b5a-9916-475fd5c5962b',
-							'd0e7d4ea-62d8-46a0-a54a-09654530beed'
-						],
-						'topics': [ // required
-							'denkmal'
-						]
-					},
-					'style': { // required
-						'color': 'rgb(54, 157, 201)', // required
-						'background-color': '#fff', // required
-						'icon': null // required [String, null]
-					}
-				},
-				{
-					'id': 'bar',
-					'title': 'Erste Schritte',
-					'href': 'https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-firststeps/index.html',
-					'permanent': true,
-					'target': 'external',
-					'observer': null,
-					'style': {
-						'color': 'rgb(54, 157, 201)',
-						'background-color': '#000',
-						'icon': '<path d=\'M6.371 8.107l-0.43 0.367c0.462 0.542 1.028 1.822 1.459 3.219s0.747 2.925 0.809 4.002l0.563-0.033c-0.066-1.155-0.39-2.703-0.832-4.135s-0.98-2.731-1.568-3.42z\'></path>'
-					}
-				}
-			]
-
-
-
-		);
+		this._permanentAndParaChips = [];
+		this._topicsChips = [];
+		this._geoResourcesChips = [];
 	}
 
-	async _init() {
-		this._addChipsFromConfig();
+	_addChipsWithPermanentState(allChips) {
+		const chips = [];
+		allChips.map((chip) => {
+			if (chip.permanent === true) {
+				chips.push(chip);
+			}
+		});
+		return chips;
+	}
 
+	_addChipsFromQueryParams(queryParams, allChips) {
+		const chips = [];
+		const chipIds = queryParams.get(QueryParameters.CHIP);
+		allChips.map((chip) => {
+			if (chipIds.includes(chip.id)) {
+				chips.push(chip);
+			}
+		});
+		return chips;
+	}
+
+	_updateChips() {
+		const chipConfigurationArray = [];
+		chipConfigurationArray.push(...this._permanentAndParaChips);
+		chipConfigurationArray.push(...this._topicsChips);
+		chipConfigurationArray.push(...this._geoResourcesChips);
+		const uniqueChipConfigurationArray = [...new Set(chipConfigurationArray)];
+		setCurrent(uniqueChipConfigurationArray);
 	}
 
 	/**
 	 * @override
-	 * @param {store} store
+	 * @param {Store} store
 	 */
-	async register() {
-		return await this._init();
+	async register(store) {
+
+		const { ChipsConfigurationService: chipsConfigurationService, EnvironmentService: environmentService } = $injector.inject('ChipsConfigurationService', 'EnvironmentService');
+
+		// let's get the initial Chips
+		const allChips = [];
+		try {
+			allChips.push(...await chipsConfigurationService.all());
+		}
+		catch (ex) {
+			console.error('ChipsConfigurationService could not be fetched from backend', ex);
+		}
+
+		const chipConfigurationArray = [];
+		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		//add permanent chips
+		chipConfigurationArray.push(...this._addChipsWithPermanentState(allChips));
+		//add from query params
+		if (queryParams.has(QueryParameters.CHIP)) {
+			chipConfigurationArray.push(...this._addChipsFromQueryParams(queryParams, allChips));
+		}
+		this._permanentAndParaChips.push(...chipConfigurationArray);
+		this._updateChips();
+
+
+		const onCurrentTopicChanged = (store) => {
+			const chipConfigurationArray = [];
+			allChips.map((chip) => {
+				if (chip.observer && chip.observer.topics.includes(store.topics.current) && store.topicsContentPanel.index) {
+					chipConfigurationArray.push(chip);
+				}
+			});
+			this._topicsChips = chipConfigurationArray;
+			this._updateChips();
+		};
+
+		const onActiveLayerChanged = (active) => {
+			const chipConfigurationArray = [];
+			allChips.map((chip) => {
+				if (chip.observer) {
+					active.map((geoResource) => {
+						if (chip.observer.geoResources.includes(geoResource.geoResourceId)) {
+							chipConfigurationArray.push(chip);
+						}
+					});
+				}
+			});
+			this._geoResourcesChips = chipConfigurationArray;
+			this._updateChips();
+		};
+
+		observe(store, store => store, onCurrentTopicChanged);
+		observe(store, store => store.layers.active, onActiveLayerChanged);
 	}
 }

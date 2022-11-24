@@ -14,7 +14,7 @@ const getStore = () => {
 
 /**
   * Sets the current chips.
-  * @param {chipConfigurationArray} array id of the current chips
+  * @param {chipConfigurationArray} array of the current chips
   * @function
   */
 export const setCurrent = (chipConfigurationArray) => {

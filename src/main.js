@@ -33,6 +33,7 @@ import './modules/featureInfo';
 import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
+import './modules/chips';
 import './modules/dndImport';
 import './modules/auth';
 import './modules/profile';
