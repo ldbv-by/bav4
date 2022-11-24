@@ -16,11 +16,12 @@ export class FeatureInfoPlugin extends BaPlugin {
 
 	constructor() {
 		super();
-		const { FeatureInfoService: featureInfoService, MapService: mapService, TranslationService: translationService }
-			= $injector.inject('FeatureInfoService', 'MapService', 'TranslationService');
+		const { FeatureInfoService: featureInfoService, MapService: mapService, TranslationService: translationService, GeoResourceService: geoResourceService }
+			= $injector.inject('FeatureInfoService', 'MapService', 'TranslationService', 'GeoResourceService');
 		this._featureInfoService = featureInfoService;
 		this._mapService = mapService;
 		this._translationService = translationService;
+		this._geoResourceService = geoResourceService;
 		translationService.register('featureInfoPluginProvider', provider);
 	}
 
@@ -43,18 +44,19 @@ export class FeatureInfoPlugin extends BaPlugin {
 				[...state.layers.active]
 					.filter(layerFilter)
 					.forEach(async layerProperties => {
+						const geoRes = this._geoResourceService.byId(layerProperties.geoResourceId);
 						const queryId = createUniqueId();
 						try {
 							registerQuery(queryId);
 							const featureInfoResult = await this._featureInfoService.get(layerProperties.geoResourceId, coordinate, resolution);
 							if (featureInfoResult) {
-								const title = featureInfoResult.title || layerProperties.label;
+								const title = featureInfoResult.title || geoRes.label;
 								addFeatureInfoItems({ title: title, content: featureInfoResult.content });
 							}
 						}
 						catch (error) {
 							console.warn(error);
-							emitNotification(`${layerProperties.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
+							emitNotification(`${geoRes.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
 						}
 						finally {
 							resolveQuery(queryId);
