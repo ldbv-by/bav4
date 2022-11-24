@@ -27,7 +27,7 @@ describe('FeatureInfo provider', () => {
 		toLonLat() { }
 	};
 
-	const geoResourceMock = {
+	const geoResourceServiceMock = {
 		byId() { }
 	};
 
@@ -51,7 +51,7 @@ describe('FeatureInfo provider', () => {
 			.registerSingleton('SecurityService', securityServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('GeoResourceService', geoResourceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
 
 	});
@@ -77,7 +77,7 @@ describe('FeatureInfo provider', () => {
 			it('returns a LayerInfo item', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
@@ -131,7 +131,7 @@ describe('FeatureInfo provider', () => {
 			it('should sanitize description content', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
@@ -147,7 +147,7 @@ describe('FeatureInfo provider', () => {
 			it('should sanitize name content', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
-				spyOn(geoResourceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
 				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
 				const geometry = new Point(coordinate);
 				let feature = new Feature({ geometry: geometry });
