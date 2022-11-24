@@ -649,7 +649,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		// register the stored data as new georesource
 		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { label: label, constraints: { cloneable: false, metaData: false } });
+		addLayer(id, { constraints: { cloneable: false, metaData: false } });
 	}
 
 	static get Debounce_Delay() {

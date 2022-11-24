@@ -1,7 +1,6 @@
 import { $injector } from '../injection';
-import { modifyLayer } from '../store/layers/layers.action';
 import { createUniqueId } from '../utils/numberUtils';
-import { GeoResourceFuture, observable, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
 
 /**
@@ -21,13 +20,12 @@ import { SourceType, SourceTypeName } from './../domain/sourceType';
 export class ImportVectorDataService {
 
 	constructor() {
-		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService, TranslationService: translationService,
+		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService,
 			SourceTypeService: sourceTypeService }
-			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'TranslationService', 'SourceTypeService');
+			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'SourceTypeService');
 		this._httpService = httpService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
-		this._translationService = translationService;
 		this._sourceTypeService = sourceTypeService;
 	}
 
@@ -70,11 +68,11 @@ export class ImportVectorDataService {
 				 * Although we think we already know the source type, we let the SourceTypeService analyze the data
 				 * and derive the final source type. They might not be what they pretend to be ...
 				 **/
-				const resultingSourceType = this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
+				const resultingSourceType = this._sourceTypeService.forData(data).sourceType;
+				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 				if (resultingSourceType) {
-					const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
-						this._newUpdateLayerCallbackFn(id));
-					vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+					const vgr = new VectorGeoResource(id, label, vectorSourceType);
+					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 					return vgr;
 				}
 				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
@@ -82,7 +80,7 @@ export class ImportVectorDataService {
 			throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
 		};
 
-		const geoResource = new GeoResourceFuture(id, loader, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+		const geoResource = new GeoResourceFuture(id, loader);
 		this._geoResourceService.addOrReplace(geoResource);
 		return geoResource;
 	}
@@ -97,11 +95,11 @@ export class ImportVectorDataService {
 	forData(data, options) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
-		const resultingSourceType = this._mapSourceTypeToVectorSourceType(sourceType) ?? this._mapSourceTypeToVectorSourceType(this._sourceTypeService.forData(data).sourceType);
+		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
+		const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 		if (resultingSourceType) {
-			const vgr = observable(new VectorGeoResource(id, label ?? this._translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), resultingSourceType),
-				this._newUpdateLayerCallbackFn(id));
-			vgr.setSource(data, 4326 /**valid for kml, gpx an geoJson**/);
+			const vgr = new VectorGeoResource(id, label, vectorSourceType);
+			vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}
@@ -127,6 +125,9 @@ export class ImportVectorDataService {
 
 					case SourceTypeName.GEOJSON:
 						return VectorSourceType.GEOJSON;
+
+					case SourceTypeName.EWKT:
+						return VectorSourceType.EWKT;
 				}
 			}
 			// is it a VectorSourceType enum value?
@@ -135,30 +136,6 @@ export class ImportVectorDataService {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Returns a callback fn for a GeoResource observer which synchronizes
-	 * changes of the GeoResource properties to all relevant layers.
-	 * @param {String} geoResourceId
-	 * @returns callback fn for observer
-	 */
-	_newUpdateLayerCallbackFn(geoResourceId) {
-		const {
-			StoreService: storeService
-		} = $injector.inject('StoreService');
-
-		return (prop, value) => {
-			if (prop === '_label') {
-				const { layers: { active: activeLayers } } = storeService.getStore().getState();
-
-				activeLayers.forEach(l => {
-					if (l.geoResourceId === geoResourceId) {
-						modifyLayer(l.id, { label: value });
-					}
-				});
-			}
-		};
 	}
 }
 

@@ -117,6 +117,16 @@ describe('measureStyleFunction', () => {
 		expect(circleStyle).toBeTruthy();
 	});
 
+	it('should have a fallback-style', () => {
+		const styles = measureStyleFunction(feature, null);
+
+		expect(styles).toHaveSize(2);
+		expect(styles[1].getStroke().getColor()).toEqual([255, 0, 0, 1]);
+		expect(styles[1].getStroke().getLineDash()).toEqual([8]);
+		expect(styles[1].getStroke().getWidth()).toBe(2);
+		expect(styles[1].getFill().getColor()).toEqual([255, 0, 0, 0.4]);
+	});
+
 	it('should have a ruler-style with renderer-function', () => {
 		const styles = measureStyleFunction(feature, resolution);
 

@@ -30,7 +30,7 @@ describe('BaseLayerInfo', () => {
 	describe('when initialized', () => {
 
 		it('renders BaseLayerInfo component', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -51,7 +51,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders BaseLayerInfo component with georesource.getAttribution', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -93,7 +93,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders fallback content when GeoResource could not be fetched', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -111,7 +111,7 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('renders fallback content when GeoResource.label is not available', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0' };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {
 				layers: {
 					active: [layer]
@@ -131,8 +131,8 @@ describe('BaseLayerInfo', () => {
 		});
 
 		it('updates BaseLayerInfo component', async () => {
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', label: 'label0', zIndex: 0 };
-			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1', label: 'label1', zIndex: 0 };
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', zIndex: 0 };
+			const layer2 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: 'geoResourceId1', zIndex: 0 };
 			const state = {
 				layers: {
 					active: [layer]

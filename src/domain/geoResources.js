@@ -190,6 +190,14 @@ export class GeoResource {
 	}
 
 	/**
+	 * Checks if this GeoResource contains a non-default value as label
+	 * @returns `true` if the label is a non-default value
+	 */
+	hasLabel() {
+		return !!this._label;
+	}
+
+	/**
 	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
 	 * It returns `null` when no attributions are available.
@@ -234,8 +242,8 @@ export class GeoResourceFuture extends GeoResource {
 	 * @param {string} id
 	 * @param {asyncGeoResourceLoader} loader
 	 */
-	constructor(id, loader, label = '') {
-		super(id, label);
+	constructor(id, loader) {
+		super(id);
 		this._loader = loader;
 		this._onResolve = [];
 		this._onReject = [];
@@ -367,7 +375,8 @@ export class XyzGeoResource extends GeoResource {
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
 	GPX: Symbol.for('gpx'),
-	GEOJSON: Symbol.for('geojson')
+	GEOJSON: Symbol.for('geojson'),
+	EWKT: Symbol.for('ewkt')
 });
 
 
@@ -384,6 +393,28 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+	}
+
+	/**
+	 *
+	 * @returns `true` if this GeoResource contains an non empty string as label
+	 */
+	_getFallbackLabel() {
+		switch (this.sourceType) {
+			case VectorSourceType.KML:
+				return 'KML';
+			case VectorSourceType.GPX:
+				return 'GPX';
+			case VectorSourceType.GEOJSON:
+				return 'GeoJSON';
+			case VectorSourceType.EWKT:
+				return 'EWKT';
+			default: return '';
+		}
+	}
+
+	get label() {
+		return this._label ? this._label : this._getFallbackLabel();
 	}
 
 	get url() {
@@ -429,10 +460,19 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * @override
+	 * @returns `true` if this GeoResource contains an non empty string and no fallback as label
+	 */
+	hasLabel() {
+		return !!this._label || this.label !== this._getFallbackLabel();
+	}
+
+	/**
+	 * @override
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
 	}
+
 }
 
 /**

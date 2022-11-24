@@ -69,7 +69,7 @@ describe('MeasureToolContent', () => {
 			}
 
 			formatArea(area, decimals) {
-				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + ' m&sup2;';
+				return new Intl.NumberFormat('de-DE', { maximumSignificantDigits: decimals }).format(area) + ' m²';
 			}
 		}
 

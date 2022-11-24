@@ -34,13 +34,11 @@ export class Header extends MvuElement {
 		});
 
 		const {
-			CoordinateService: coordinateService,
 			EnvironmentService: environmentService,
 			TranslationService: translationService
 		}
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'TranslationService');
+			= $injector.inject('EnvironmentService', 'TranslationService');
 
-		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 	}

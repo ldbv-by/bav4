@@ -144,7 +144,7 @@ describe('GeoResourceService', () => {
 
 	describe('byId', () => {
 
-		it('provides a GeoResource by id', () => {
+		it('provides a GeoResource by its id', () => {
 
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
@@ -163,6 +163,15 @@ describe('GeoResourceService', () => {
 			const geoResource = instanceUnderTest.byId('something');
 
 			expect(geoResource).toBeNull();
+		});
+
+		it('provides null if for null or undefined id', () => {
+
+			const instanceUnderTest = setup();
+			instanceUnderTest._georesources = [xyzGeoResource];
+
+			expect(instanceUnderTest.byId(null)).toBeNull();
+			expect(instanceUnderTest.byId(undefined)).toBeNull();
 		});
 
 		it('logs a warn statement when when service hat not been initialized', () => {

@@ -47,9 +47,9 @@ export class ShowCase extends BaElement {
 			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			// optional exception handling for this GeoResourceFuture
 			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
-			const { id, label } = geoResourceFuture;
+			const { id } = geoResourceFuture;
 			//add a layer that displays the GeoResource in the map
-			addLayer(id, { label: label });
+			addLayer(id);
 		};
 
 		const onClick1 = () => {

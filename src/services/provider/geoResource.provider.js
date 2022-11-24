@@ -24,6 +24,7 @@ export const _definitionToGeoResource = definition => {
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector':
+				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
 				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 					//set specific optional values
 					.setUrl(def.url);
@@ -146,10 +147,9 @@ export const loadBvvGeoResourceById = id => {
 
 	const {
 		HttpService: httpService,
-		ConfigService: configService,
-		TranslationService: translationService
+		ConfigService: configService
 	}
-		= $injector.inject('HttpService', 'ConfigService', 'TranslationService');
+		= $injector.inject('HttpService', 'ConfigService');
 
 	const loader = async id => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
@@ -166,5 +166,5 @@ export const loadBvvGeoResourceById = id => {
 		throw new Error(`GeoResource for id '${id}' could not be loaded`);
 	};
 
-	return new GeoResourceFuture(id, loader, translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+	return new GeoResourceFuture(id, loader);
 };

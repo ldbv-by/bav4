@@ -30,7 +30,8 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a4_landscape: 'DIN A4 landscape',
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 portrait',
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
-				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait'
+				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
+				olMap_vectorLayerService_default_layer_name_vector: 'Data'
 			};
 
 		case 'de':
@@ -62,7 +63,8 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a4_landscape: 'DIN A4 Querformat',
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 Hochformat',
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 Querformat',
-				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat'
+				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat',
+				olMap_vectorLayerService_default_layer_name_vector: 'Daten'
 			};
 
 		default:
