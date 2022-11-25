@@ -156,7 +156,7 @@ describe('GeolocationPlugin', () => {
 
 			instanceUnderTest._handlePositionError(error);
 
-			expect(window.alert).toHaveBeenCalledWith('geolocationPlugin_store_geolocation_not_available');
+			expect(window.alert).toHaveBeenCalledWith('global_store_geolocation_not_available');
 			expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
 
 		});
