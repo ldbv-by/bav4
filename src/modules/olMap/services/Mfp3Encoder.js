@@ -617,12 +617,13 @@ export class BvvMfp3Encoder {
 	}
 
 	_encodeOverlays(overlays) {
-		const fromPositioning = (positioning) => {
-			const defaultAlignment = 'cm';
+		const anchorPointFromPositioning = (positioning) => {
+			const AnchorPointPositions = { top: 0, middle: 0.5, bottom: 1, left: 0, center: 0.5, right: 1 };
+			const defaultAnchorPoint = { x: 0.5, y: 0.5 };
 			const verticalAndHorizontalAlignment = positioning.split('-');
 			const isValid = verticalAndHorizontalAlignment && verticalAndHorizontalAlignment.length === 2;
-			const align = isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
-			return align === 'cc' ? defaultAlignment : align;
+			const anchorPoint = isValid ? { x: AnchorPointPositions[verticalAndHorizontalAlignment[1]], y: AnchorPointPositions[verticalAndHorizontalAlignment[0]] } : defaultAnchorPoint;
+			return anchorPoint;
 		};
 
 		const toFeatureWithOverlayProperties = (overlay) => {
@@ -635,15 +636,19 @@ export class BvvMfp3Encoder {
 
 			const center = overlay.getPosition();
 			const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
-			const labelAlign = fromPositioning(element.placement.positioning);
+
+			const offsetX = Math.round(element.placement.offset[0]);
+			const offsetY = -Math.round(element.placement.offset[1]);
+			const labelAnchorPoint = anchorPointFromPositioning(element.placement.positioning);
 			return {
 				type: 'Feature',
 				properties: {
 					type: element.type,
 					label: element.innerText,
-					labelXOffset: element.placement.offset[0],
-					labelYOffset: -(element.placement.offset[1]),
-					labelAlign: labelAlign
+					labelXOffset: offsetX,
+					labelYOffset: offsetY,
+					labelAnchorPointX: labelAnchorPoint.x,
+					labelAnchorPointY: labelAnchorPoint.y
 				},
 				geometry: {
 					type: 'Point',
@@ -662,6 +667,7 @@ export class BvvMfp3Encoder {
 			},
 			style: {
 				version: 2,
+				conflictResolution: false,
 				'[type=\'distance\']': {
 					symbolizers: [
 						{
@@ -677,7 +683,8 @@ export class BvvMfp3Encoder {
 							label: '[label]',
 							labelXOffset: '[labelXOffset]',
 							labelYOffset: '[labelYOffset]',
-							labelAlign: '[labelAlign]',
+							labelAnchorPointX: '[labelAnchorPointX]',
+							labelAnchorPointY: '[labelAnchorPointY]',
 							fontColor: '#ffffff',
 							fontSize: 10,
 							fontFamily: 'sans-serif',
@@ -705,7 +712,8 @@ export class BvvMfp3Encoder {
 							label: '[label]',
 							labelXOffset: '[labelXOffset]',
 							labelYOffset: '[labelYOffset]',
-							labelAlign: '[labelAlign]',
+							labelAnchorPointX: '[labelAnchorPointX]',
+							labelAnchorPointY: '[labelAnchorPointY]',
 							fontColor: '#000000',
 							fontSize: 8,
 							fontFamily: 'sans-serif',

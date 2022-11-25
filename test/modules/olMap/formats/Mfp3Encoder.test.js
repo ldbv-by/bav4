@@ -1769,6 +1769,7 @@ describe('BvvMfp3Encoder', () => {
 				},
 				style: {
 					version: 2,
+					conflictResolution: false,
 					'[type=\'distance\']': {
 						symbolizers: [
 							{
@@ -1784,7 +1785,8 @@ describe('BvvMfp3Encoder', () => {
 								label: '[label]',
 								labelXOffset: '[labelXOffset]',
 								labelYOffset: '[labelYOffset]',
-								labelAlign: '[labelAlign]',
+								labelAnchorPointX: '[labelAnchorPointX]',
+								labelAnchorPointY: '[labelAnchorPointY]',
 								fontColor: '#ffffff',
 								fontSize: 10,
 								fontFamily: 'sans-serif',
@@ -1812,7 +1814,8 @@ describe('BvvMfp3Encoder', () => {
 								label: '[label]',
 								labelXOffset: '[labelXOffset]',
 								labelYOffset: '[labelYOffset]',
-								labelAlign: '[labelAlign]',
+								labelAnchorPointX: '[labelAnchorPointX]',
+								labelAnchorPointY: '[labelAnchorPointY]',
 								fontColor: '#000000',
 								fontSize: 8,
 								fontFamily: 'sans-serif',
