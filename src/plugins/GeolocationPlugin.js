@@ -28,7 +28,7 @@ export class GeolocationPlugin extends BaPlugin {
 		switch (error.code) {
 			case error.PERMISSION_DENIED:
 				setDenied(true);
-				alert(this._translationService.translate('global_store_geolocation_denied'));
+				alert(this._translationService.translate('global_geolocation_denied'));
 				break;
 			default:
 				alert(this._translationService.translate('global_store_geolocation_not_available'));
