@@ -116,12 +116,15 @@ export class GeoResourceResultItem extends MvuElement {
 				setTab(TabId.MAPS);
 			}
 		};
+		const getActiveClass = () => {
+			return (loadingPreview) ? 'loading' : '';
+		};
 
 		if (geoResourceSearchResult) {
 
 			return html`
 				<style>${css}</style>
-                <li class="ba-list-item"  tabindex="0"
+                <li class="ba-list-item ${getActiveClass()}"  tabindex="0"
 					@click=${() => onClick(geoResourceSearchResult)} 
 					@mouseenter=${() => onMouseEnter(geoResourceSearchResult)} 
 					@mouseleave=${() => onMouseLeave(geoResourceSearchResult)}>
