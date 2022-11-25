@@ -136,7 +136,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', sourceType);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_url_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
@@ -180,7 +180,7 @@ describe('ImportPlugin', () => {
 			setData('<kml some=thing></kml>', MediaType.KML);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_data_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
