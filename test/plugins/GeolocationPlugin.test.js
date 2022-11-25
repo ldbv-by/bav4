@@ -141,7 +141,7 @@ describe('GeolocationPlugin', () => {
 			instanceUnderTest._handlePositionError(error);
 
 			expect(store.getState().geolocation.denied).toBeTrue();
-			expect(window.alert).toHaveBeenCalledWith('geolocationPlugin_store_geolocation_denied');
+			expect(window.alert).toHaveBeenCalledWith('global_store_geolocation_denied');
 			expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
 
 		});
