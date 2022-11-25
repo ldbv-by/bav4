@@ -218,7 +218,7 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
-				expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
+				expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_createJob_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
 			});

@@ -92,7 +92,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				}
 				catch (ex) {
 					console.error('PDF generation was not successful.', ex);
-					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_createJob_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this._translationService.translate('global_mfpService_createJob_exception')}`, LevelTypes.ERROR);
 				}
 				finally {
 					cancelJob();
