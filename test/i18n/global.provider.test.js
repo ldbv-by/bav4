@@ -15,7 +15,7 @@ describe('global i18n', () => {
 		expect(map.global_import_url_failed).toBe('URL-Import failed');
 		expect(map.global_import_data_failed).toBe('Importing data failed');
 		expect(map.global_import_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
-		expect(map.importPlugin_authenticationModal_title).toBe('Authentication required');
+		expect(map.global_import_authenticationModal_title).toBe('Authentication required');
 		expect(map.layersPlugin_store_layer_default_layer_name_vector).toBe('Data');
 	});
 
@@ -31,7 +31,7 @@ describe('global i18n', () => {
 		expect(map.global_import_url_failed).toBe('URL-Import schlug fehl');
 		expect(map.global_import_data_failed).toBe('Import der Daten schlug fehl');
 		expect(map.global_import_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
-		expect(map.importPlugin_authenticationModal_title).toBe('Anmeldung erforderlich');
+		expect(map.global_import_authenticationModal_title).toBe('Anmeldung erforderlich');
 		expect(map.layersPlugin_store_layer_default_layer_name_vector).toBe('Daten');
 	});
 

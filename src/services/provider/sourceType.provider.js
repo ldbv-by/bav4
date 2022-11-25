@@ -140,7 +140,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				}
 			};
 
-			openModal(translate('importPlugin_authenticationModal_title'), createModalContent(url, authenticate, onClose));
+			openModal(translate('global_import_authenticationModal_title'), createModalContent(url, authenticate, onClose));
 		});
 	}
 	return await mapResponseToSourceType(response, !!credential);
