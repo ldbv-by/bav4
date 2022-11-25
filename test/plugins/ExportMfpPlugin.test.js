@@ -90,7 +90,7 @@ describe('ExportMfpPlugin', () => {
 			expect(store.getState().mfp.current.scale).toBeNull();
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeFalse();
-			expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_init_exception');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_init_exception');
 			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
 		});

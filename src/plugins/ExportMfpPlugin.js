@@ -49,7 +49,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				}
 				catch (ex) {
 					console.error('MfpCapabilities could not be fetched from backend', ex);
-					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_init_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this._translationService.translate('global_mfpService_init_exception')}`, LevelTypes.ERROR);
 				}
 				return false;
 			}

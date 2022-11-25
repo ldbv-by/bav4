@@ -7,7 +7,7 @@ describe('global i18n', () => {
 
 		const map = provide('en');
 
-		expect(map.exportMfpPlugin_mfpService_init_exception).toBe('PDF export currently not available.');
+		expect(map.global_mfpService_init_exception).toBe('PDF export currently not available.');
 		expect(map.exportMfpPlugin_mfpService_createJob_exception).toBe('PDF generation was not successful.');
 		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
 		expect(map.geolocationPlugin_store_geolocation_denied).toBe('The acquisition of the position failed because your browser settings does not allow it. Allow your browser / this website to use your location. Deactivate the "private" mode of your browser.');
@@ -23,7 +23,7 @@ describe('global i18n', () => {
 
 		const map = provide('de');
 
-		expect(map.exportMfpPlugin_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich.');
+		expect(map.global_mfpService_init_exception).toBe('PDF Export derzeit leider nicht möglich.');
 		expect(map.exportMfpPlugin_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden.');
 		expect(map.featureInfoPlugin_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
 		expect(map.geolocationPlugin_store_geolocation_denied).toBe('Es ist keine Positionsbestimmung möglich, da ihre Browsereinstellungen dies nicht zulassen. Erlauben sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.');
