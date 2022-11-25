@@ -54,7 +54,7 @@ export class FeatureInfoPlugin extends BaPlugin {
 						}
 						catch (error) {
 							console.warn(error);
-							emitNotification(`${geoRes.label}: ${this._translationService.translate('featureInfoPlugin_featureInfoService_exception')}`, LevelTypes.WARN);
+							emitNotification(`${geoRes.label}: ${this._translationService.translate('global_featureInfoService_exception')}`, LevelTypes.WARN);
 						}
 						finally {
 							resolveQuery(queryId);

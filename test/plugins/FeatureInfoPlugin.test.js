@@ -241,7 +241,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.querying).toBeTrue();
 				await TestUtils.timeout();
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-				expect(store.getState().notifications.latest.payload.content).toBe(`${label0}: featureInfoPlugin_featureInfoService_exception`);
+				expect(store.getState().notifications.latest.payload.content).toBe(`${label0}: global_featureInfoService_exception`);
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
 				expect(store.getState().featureInfo.querying).toBeFalse();
