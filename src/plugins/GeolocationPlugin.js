@@ -4,7 +4,6 @@ import { setPosition, setAccuracy, setDenied, setTracking } from '../store/geolo
 import { changeCenter, fit } from '../store/position/position.action';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { provide as provider } from './i18n/geolocationPlugin.provider';
 
 
 /**
@@ -22,7 +21,6 @@ export class GeolocationPlugin extends BaPlugin {
 		this._geolocationWatcherId = null;
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		translationService.register('geolocationPluginProvider', provider);
 	}
 
 	_handlePositionError(error) {

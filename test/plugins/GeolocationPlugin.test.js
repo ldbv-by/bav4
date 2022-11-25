@@ -7,7 +7,6 @@ import { positionReducer } from '../../src/store/position/position.reducer';
 import { geolocationReducer } from '../../src/store/geolocation/geolocation.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { setBeingDragged } from '../../src/store/pointer/pointer.action';
-import { provide } from '../../src/plugins/i18n/geolocationPlugin.provider';
 
 
 describe('GeolocationPlugin', () => {
@@ -52,15 +51,6 @@ describe('GeolocationPlugin', () => {
 
 			expect(instanceUnderTest._firstTimeActivatingGeolocation).toBeTrue();
 			expect(instanceUnderTest._geolocationWatcherId).toBeNull();
-		});
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationService, 'register');
-			setup();
-
-			new GeolocationPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('geolocationPluginProvider', provide);
 		});
 	});
 

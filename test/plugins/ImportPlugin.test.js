@@ -3,7 +3,6 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { importReducer } from '../../src/store/import/import.reducer';
 import { setUrl, setData } from '../../src/store/import/import.action';
 import { TestUtils } from '../test-utils';
-import { provide } from '../../src/plugins/i18n/importPlugin.provider.js';
 import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
 import { MediaType } from '../../src/services/HttpService';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
@@ -53,18 +52,6 @@ describe('ImportPlugin', () => {
 			.registerSingleton('TranslationService', translationServiceMock);
 		return store;
 	};
-
-	describe('constructor', () => {
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationServiceMock, 'register');
-			setup();
-
-			new ImportPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('importPluginProvider', provide);
-		});
-	});
 
 	describe('when import.url property changes', () => {
 

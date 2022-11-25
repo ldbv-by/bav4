@@ -4,7 +4,6 @@ import { ToolId } from '../store/tools/tools.action';
 import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { provide as provider } from './i18n/exportMfpPlugin.provider';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { changeRotation } from '../store/position/position.action';
 
@@ -28,7 +27,6 @@ export class ExportMfpPlugin extends BaPlugin {
 		this._initialized = false;
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		translationService.register('exportMfpPluginProvider', provider);
 	}
 
 	/**

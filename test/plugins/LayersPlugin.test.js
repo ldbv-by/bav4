@@ -7,7 +7,6 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
-import { provide } from '../../src/plugins/i18n/layersPlugin.provider';
 
 
 describe('LayersPlugin', () => {
@@ -49,18 +48,6 @@ describe('LayersPlugin', () => {
 
 		return store;
 	};
-
-	describe('constructor', () => {
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationService, 'register');
-			setup();
-
-			new LayersPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('layersPluginProvider', provide);
-		});
-	});
 
 	describe('register', () => {
 

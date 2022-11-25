@@ -3,7 +3,6 @@ import { BaPlugin } from '../plugins/BaPlugin';
 import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { provide as provider } from './i18n/featureInfoPlugin.provider';
 import { createUniqueId } from '../utils/numberUtils';
 
 /**
@@ -22,7 +21,6 @@ export class FeatureInfoPlugin extends BaPlugin {
 		this._mapService = mapService;
 		this._translationService = translationService;
 		this._geoResourceService = geoResourceService;
-		translationService.register('featureInfoPluginProvider', provider);
 	}
 
 	/**
