@@ -66,7 +66,7 @@ export class ImportPlugin extends BaPlugin {
 						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 				}
 			}
-			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
+			emitNotification(`${this._translationService.translate('global_import_unsupported_sourceType')}`, LevelTypes.WARN);
 			return null;
 		};
 

@@ -100,7 +100,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', null);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -115,7 +115,7 @@ describe('ImportPlugin', () => {
 
 			await TestUtils.timeout();
 			expect(spy).not.toHaveBeenCalled();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
