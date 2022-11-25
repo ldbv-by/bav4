@@ -31,7 +31,7 @@ export class GeolocationPlugin extends BaPlugin {
 				alert(this._translationService.translate('global_geolocation_denied'));
 				break;
 			default:
-				alert(this._translationService.translate('global_store_geolocation_not_available'));
+				alert(this._translationService.translate('global_geolocation_not_available'));
 				break;
 		}
 	}

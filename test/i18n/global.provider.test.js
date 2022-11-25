@@ -11,7 +11,7 @@ describe('global i18n', () => {
 		expect(map.global_mfpService_createJob_exception).toBe('PDF generation was not successful.');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo could not be retrieved');
 		expect(map.global_geolocation_denied).toBe('The acquisition of the position failed because your browser settings does not allow it. Allow your browser / this website to use your location. Deactivate the "private" mode of your browser.');
-		expect(map.global_store_geolocation_not_available).toBe('The acquisition of the position failed.');
+		expect(map.global_geolocation_not_available).toBe('The acquisition of the position failed.');
 		expect(map.importPlugin_url_failed).toBe('URL-Import failed');
 		expect(map.importPlugin_data_failed).toBe('Importing data failed');
 		expect(map.importPlugin_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
@@ -27,7 +27,7 @@ describe('global i18n', () => {
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden.');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
 		expect(map.global_geolocation_denied).toBe('Es ist keine Positionsbestimmung möglich, da ihre Browsereinstellungen dies nicht zulassen. Erlauben sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.');
-		expect(map.global_store_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich.');
+		expect(map.global_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich.');
 		expect(map.importPlugin_url_failed).toBe('URL-Import schlug fehl');
 		expect(map.importPlugin_data_failed).toBe('Import der Daten schlug fehl');
 		expect(map.importPlugin_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
