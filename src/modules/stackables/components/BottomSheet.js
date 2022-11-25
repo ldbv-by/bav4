@@ -36,7 +36,7 @@ export class BottomSheet extends MvuElement {
 		const { content } = model;
 		return html`
 		<style>${css}</style>
-		<div class='bottom-sheet'>
+		<div class='bottom-sheet' data-test-id>
         	${content}
 		</div>`;
 	}
