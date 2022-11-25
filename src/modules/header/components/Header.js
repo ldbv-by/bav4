@@ -34,13 +34,11 @@ export class Header extends MvuElement {
 		});
 
 		const {
-			CoordinateService: coordinateService,
 			EnvironmentService: environmentService,
 			TranslationService: translationService
 		}
-			= $injector.inject('CoordinateService', 'EnvironmentService', 'TranslationService');
+			= $injector.inject('EnvironmentService', 'TranslationService');
 
-		this._coordinateService = coordinateService;
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 	}
@@ -91,9 +89,8 @@ export class Header extends MvuElement {
 	}
 
 	onWindowLoad() {
-		if (!this.isRenderingSkipped()) {
-			this._root.querySelector('.preload').classList.remove('preload');
-		}
+		// we use optional chaining here because preload class may not be available
+		this._root.querySelector('.preload')?.classList.remove('preload');
 	}
 
 	isRenderingSkipped() {

@@ -13,14 +13,18 @@
  */
 
 import { $injector } from '../injection';
-import { WMTSGeoResource } from '../domain/geoResources';
+import { VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
+export const FALLBACK_GEORESOURCE_ID_2 = 'bmde_vector';
+export const FALLBACK_GEORESOURCE_ID_3 = 'bmde_vector_relief';
 export const FALLBACK_GEORESOURCE_LABEL_0 = 'TopPlusOpen';
 export const FALLBACK_GEORESOURCE_LABEL_1 = 'TopPlusOpen monochrome';
+export const FALLBACK_GEORESOURCE_LABEL_2 = 'Web Vektor';
+export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
 
 /**
  * Service for managing {@link GeoResource}s.
@@ -90,12 +94,15 @@ export class GeoResourceService {
 	/**
 	 * Returns the corresponding  {@link GeoResource} for an id.
 	 * @public
-	 * @param {string} id Id of the desired {@link GeoResource}
+	 * @param {string|null|undefined} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResource | null}
 	 */
 	byId(id) {
 		if (!this._georesources) {
 			console.warn('GeoResourceService not yet initialized');
+			return null;
+		}
+		if (!id) {
 			return null;
 		}
 		const geoResource = this._georesources.find(georesource => georesource.id === id);
@@ -145,9 +152,10 @@ export class GeoResourceService {
 	 * @private
 	 */
 	_newFallbackGeoResources() {
-		return [
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'),
-			new WMTSGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png')
+
+		const topPlusOpenGeoResources = [
+			new XyzGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'),
+			new XyzGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png')
 		].map(gr => {
 			return gr.setAttribution({
 				description: 'TopPlusOpen',
@@ -157,5 +165,17 @@ export class GeoResourceService {
 				] }
 			);
 		});
+
+		const baseMapDeVectorGeoResources = [
+			new VTGeoResource(FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_LABEL_2, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'),
+			new VTGeoResource(FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_3, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json')
+		].map(gr => {
+			return gr.setAttribution({
+				description: 'basemap.de Web Vektor',
+				copyright: { label: 'basemap.de / BKG 08/2022', url: 'https://basemap.de/web-vektor/' }
+			});
+		});
+
+		return [...topPlusOpenGeoResources, ...baseMapDeVectorGeoResources];
 	}
 }

@@ -117,12 +117,32 @@ describe('measureStyleFunction', () => {
 		expect(circleStyle).toBeTruthy();
 	});
 
+	it('should have a fallback-style', () => {
+		const styles = measureStyleFunction(feature, null);
+
+		expect(styles).toHaveSize(2);
+		expect(styles[1].getStroke().getColor()).toEqual([255, 0, 0, 1]);
+		expect(styles[1].getStroke().getLineDash()).toEqual([8]);
+		expect(styles[1].getStroke().getWidth()).toBe(2);
+		expect(styles[1].getFill().getColor()).toEqual([255, 0, 0, 0.4]);
+	});
+
 	it('should have a ruler-style with renderer-function', () => {
 		const styles = measureStyleFunction(feature, resolution);
 
 		const rulerStyle = styles.find(style => style.getRenderer != null);
 
 		expect(rulerStyle).toBeDefined();
+	});
+
+	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
+		const styles = measureStyleFunction(feature, resolution);
+		const stateMock = { context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: () => { } };
+		const spy = spyOn(stateMock, 'customContextRenderFunction');
+		const rulerStyle = styles.find(style => style.getRenderer != null && typeof style.getRenderer() == 'function');
+		rulerStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+
+		expect(spy).toHaveBeenCalled();
 	});
 
 
@@ -134,8 +154,8 @@ describe('measureStyleFunction', () => {
 		const rulerStyle = styles.find(style => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
-		const cunstomRenderer = rulerStyle.getRenderer();
-		cunstomRenderer(pixelCoordinates, stateMock);
+		const customRenderer = rulerStyle.getRenderer();
+		customRenderer(pixelCoordinates, stateMock);
 
 		expect(contextMoveToSpy).toHaveBeenCalled();
 	});

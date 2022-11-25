@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="./logo.svg" height="128">
+   <img src="https://raw.githubusercontent.com/ldbv-by/bav4-nomigration/master/logo.svg" height="128">
 </p>
 <h1 align="center">
    BayernAtlas v4 <br><br>
@@ -23,15 +23,17 @@ Next-generation web-map viewer based on web standards.
 ## Concept
 
 - Use of web standards as far as possible
-  - Modern JavaScript (ES11), no transpiler
+  - Modern JavaScript (ES12), no transpiler
   - Web Components
   - Vanilla CSS 
 - Built-in dependency injection
 - Map state decoupled from map implementation
 - Tools
   - [OpenLayers](https://openlayers.org/): Mapping API
+  - [MapLibre OpenLayers layer](https://github.com/geoblocks/ol-maplibre-layer/): Vector Tiles rendering
   - [lit-html](https://lit-html.polymer-project.org/): Template rendering 
   - [redux](https://redux.js.org/): Application state container 
+  - [Chart.js](https://www.chartjs.org/): JavaScript charting
   - [vanilla-swipe](https://github.com/maxmarinich/vanilla-swipe/): Swipe direction detection
   - [DOMPurify](https://github.com/cure53/DOMPurify/): XSS sanitizer for HTML
   - [webpack](https://webpack.js.org): Bundler
@@ -207,7 +209,7 @@ For example, they could be responsible for setting an initial state or reacting 
 - Redux query-param sync: https://github.com/Treora/redux-query-sync
 ### Webpack
 - Webpack Intro: https://ui.dev/webpack/ 
-### Common
+### Other
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 
 *USE THE PLATFORM*

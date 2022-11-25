@@ -107,7 +107,7 @@ describe('SearchResultService', () => {
 
 		const checkGeoResourceSearchResultForVectorSource = async (sourceTypeName) => {
 			const geoResourceId = 'id';
-			const geoResource = new GeoResourceFuture(geoResourceId, () => { }, 'label');
+			const geoResource = new GeoResourceFuture(geoResourceId, () => { });
 			const sourceType = new SourceType(sourceTypeName);
 			const url = 'http://foo.bar';
 			const label = 'label';
@@ -150,16 +150,24 @@ describe('SearchResultService', () => {
 			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.GEOJSON);
 		});
 
+		it('returns search results for EWKT source type', async () => {
+			await checkGeoResourceSearchResultForVectorSource(SourceTypeName.EWKT);
+		});
+
 		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.KML);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GPX source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GPX);
 		});
 
-		it('returns an empty array as result for a KML source type when georesource cannot be created', async () => {
+		it('returns an empty array as result for a GeoJson source type when georesource cannot be created', async () => {
 			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.GEOJSON);
+		});
+
+		it('returns an empty array as result for a EWKT source type when georesource cannot be created', async () => {
+			await checkGeoResourceSearchResultForNoGeoResource(SourceTypeName.EWKT);
 		});
 
 		it('returns search results for Wms source type', async () => {
@@ -231,8 +239,8 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 			const provider = jasmine.createSpy().and.resolveTo([
-				new GeoResourceSearchResult('geoResouceId0', 'foo'),
-				new GeoResourceSearchResult('geoResouceId1', 'bar')
+				new GeoResourceSearchResult('geoResourceId0', 'foo'),
+				new GeoResourceSearchResult('geoResourceId1', 'bar')
 			]);
 			const instanceUnderTest = setup(null, provider);
 
@@ -247,8 +255,8 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, '_getGeoResourcesForUrl').withArgs(term).and.resolveTo([
-				new GeoResourceSearchResult('geoResouceId0', 'foo'),
-				new GeoResourceSearchResult('geoResouceId1', 'bar')
+				new GeoResourceSearchResult('geoResourceId0', 'foo'),
+				new GeoResourceSearchResult('geoResourceId1', 'bar')
 			]);
 
 			const results = await instanceUnderTest.geoResourcesByTerm(term);
@@ -264,7 +272,7 @@ describe('SearchResultService', () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
 			spyOn(sourceTypeService, 'forData').and.returnValue(new SourceTypeResult(SourceTypeResultStatus.OK, SourceTypeName.GPX));
 			spyOn(importVectorDataService, 'forData').withArgs(term, { sourceType: SourceTypeName.GPX })
-				.and.returnValue(new GeoResourceFuture(geoResourceId, () => { }, 'label'));
+				.and.returnValue(new GeoResourceFuture(geoResourceId, () => { }));
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, '_mapSourceTypeToLabel').withArgs(SourceTypeName.GPX).and.returnValue(label);
 
@@ -429,6 +437,7 @@ describe('SearchResultService', () => {
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.KML))).toBe('KML Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GPX))).toBe('GPX Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.GEOJSON))).toBe('GeoJSON Import');
+			expect(instanceUnderTest._mapSourceTypeToLabel(new SourceType(SourceTypeName.EWKT))).toBe('EWKT Import');
 			expect(instanceUnderTest._mapSourceTypeToLabel()).toBeNull();
 			expect(instanceUnderTest._mapSourceTypeToLabel('foo')).toBeNull();
 		});

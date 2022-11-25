@@ -1,8 +1,7 @@
 import { $injector } from '../injection';
-import { GeoResourceTypes } from '../domain/geoResources';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
-import { addLayer, modifyLayer, setReady } from '../store/layers/layers.action';
+import { addLayer, setReady } from '../store/layers/layers.action';
 import { provide as provider } from './i18n/layersPlugin.provider';
 import { createUniqueId } from '../utils/numberUtils';
 
@@ -36,15 +35,8 @@ export class LayersPlugin extends BaPlugin {
 						const layerId = `${id}_${createUniqueId()}`;
 
 						if (geoResource) {
-							//if we have a GeoResource future, we update the label property after we know it
-							if (geoResource.getType() === GeoResourceTypes.FUTURE) {
-								geoResource.onResolve((geoResource) => {
-									modifyLayer(layerId, { label: geoResource.label });
-								});
-							}
 
 							const layerProperties = { geoResourceId: geoResource.id };
-							layerProperties.label = geoResource.label;
 
 							if (layerVisibility[index] === 'false') {
 								layerProperties.visible = false;
@@ -87,7 +79,7 @@ export class LayersPlugin extends BaPlugin {
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
 		}
-		addLayer(bgGeoresources[0].id, { label: bgGeoresources[0].label });
+		addLayer(bgGeoresources[0].id);
 	}
 
 	/**

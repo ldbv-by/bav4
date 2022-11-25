@@ -1,11 +1,10 @@
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
-import { loadBvvDefinitions } from './provider/proj4.provider';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
-import proj4 from 'proj4';
 import { buffer } from 'ol/extent';
+import { $injector } from '../injection';
 
 /**
- * Utilities methods for coordinates like transformation, based on ol.
+ * Utilities methods for coordinates like transformation, ..., based on ol.
  * @class
  * @author taulinger
  */
@@ -13,12 +12,12 @@ export class OlCoordinateService {
 
 	/**
 	 *
-	 * @param {proj4Provider} [proj4Provider=loadBvvDefinitions]
 	 * @param {stringifyCoordProvider} [stringifyFunction=bvvStringifyFunction]
 	 */
-	constructor(proj4Provider = loadBvvDefinitions, stringifyFunction = bvvStringifyFunction) {
-		proj4Provider();
+	constructor(stringifyFunction = bvvStringifyFunction) {
 		this._stringifyFunction = stringifyFunction;
+		const { ProjectionService } = $injector.inject('ProjectionService');
+		this._projectionService = ProjectionService;
 	}
 
 
@@ -81,7 +80,7 @@ export class OlCoordinateService {
 	transform(coordinate, sourceSrid, targetSrid) {
 		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
 		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
-		if (proj4.defs(targetSridAsString)) {
+		if (this._projectionService.getProjections().includes(targetSrid)) {
 			return transform(coordinate, sourceSridAsString, targetSridAsString);
 		}
 		throw new Error('Unsupported SRID: ' + targetSrid);
@@ -98,7 +97,7 @@ export class OlCoordinateService {
 	transformExtent(extent, sourceSrid, targetSrid) {
 		const targetSridAsString = OlCoordinateService._toEpsgCodeString(targetSrid);
 		const sourceSridAsString = OlCoordinateService._toEpsgCodeString(sourceSrid);
-		if (proj4.defs(targetSridAsString)) {
+		if (this._projectionService.getProjections().includes(targetSrid)) {
 			return transformExtent(extent, sourceSridAsString, targetSridAsString);
 		}
 		throw new Error('Unsupported SRID: ' + targetSrid);

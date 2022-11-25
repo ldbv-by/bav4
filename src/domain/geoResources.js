@@ -22,9 +22,9 @@ import { getDefaultAttribution } from '../services/provider/attribution.provider
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
-	WMTS: Symbol.for('wmts'),
+	XYZ: Symbol.for('xyz'),
 	VECTOR: Symbol.for('vector'),
-	VECTOR_TILES: Symbol.for('vector_tiles'),
+	VT: Symbol.for('vt'),
 	AGGREGATE: Symbol.for('aggregate'),
 	FUTURE: Symbol.for('future')
 });
@@ -66,6 +66,7 @@ export class GeoResource {
 		this._authenticationType = null;
 		this._importedByUser = false;
 		this._queryable = true;
+		this._exportable = true;
 	}
 
 	/**
@@ -117,6 +118,10 @@ export class GeoResource {
 
 	get queryable() {
 		return this._queryable;
+	}
+
+	get exportable() {
+		return this._exportable;
 	}
 
 	setLabel(label) {
@@ -179,6 +184,19 @@ export class GeoResource {
 		return this;
 	}
 
+	setExportable(exportable) {
+		this._exportable = exportable;
+		return this;
+	}
+
+	/**
+	 * Checks if this GeoResource contains a non-default value as label
+	 * @returns `true` if the label is a non-default value
+	 */
+	hasLabel() {
+		return !!this._label;
+	}
+
 	/**
 	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
@@ -224,8 +242,8 @@ export class GeoResourceFuture extends GeoResource {
 	 * @param {string} id
 	 * @param {asyncGeoResourceLoader} loader
 	 */
-	constructor(id, loader, label = '') {
-		super(id, label);
+	constructor(id, loader) {
+		super(id);
 		this._loader = loader;
 		this._onResolve = [];
 		this._onReject = [];
@@ -319,10 +337,11 @@ export class WmsGeoResource extends GeoResource {
 /**
  * @class
  */
-export class WMTSGeoResource extends GeoResource {
+export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
 		this._url = url;
+		this._tileGridId = null;
 	}
 
 	get url() {
@@ -330,10 +349,23 @@ export class WMTSGeoResource extends GeoResource {
 	}
 
 	/**
+	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Default is `null`.
+	 */
+	get tileGridId() {
+		return this._tileGridId;
+	}
+
+	setTileGridId(tileGridId) {
+		this._tileGridId = tileGridId;
+		return this;
+	}
+
+	/**
 	 * @override
 	 */
 	getType() {
-		return GeoResourceTypes.WMTS;
+		return GeoResourceTypes.XYZ;
 	}
 }
 
@@ -343,7 +375,8 @@ export class WMTSGeoResource extends GeoResource {
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
 	GPX: Symbol.for('gpx'),
-	GEOJSON: Symbol.for('geojson')
+	GEOJSON: Symbol.for('geojson'),
+	EWKT: Symbol.for('ewkt')
 });
 
 
@@ -360,6 +393,28 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+	}
+
+	/**
+	 *
+	 * @returns `true` if this GeoResource contains an non empty string as label
+	 */
+	_getFallbackLabel() {
+		switch (this.sourceType) {
+			case VectorSourceType.KML:
+				return 'KML';
+			case VectorSourceType.GPX:
+				return 'GPX';
+			case VectorSourceType.GEOJSON:
+				return 'GeoJSON';
+			case VectorSourceType.EWKT:
+				return 'EWKT';
+			default: return '';
+		}
+	}
+
+	get label() {
+		return this._label ? this._label : this._getFallbackLabel();
 	}
 
 	get url() {
@@ -405,10 +460,19 @@ export class VectorGeoResource extends GeoResource {
 
 	/**
 	 * @override
+	 * @returns `true` if this GeoResource contains an non empty string and no fallback as label
+	 */
+	hasLabel() {
+		return !!this._label || this.label !== this._getFallbackLabel();
+	}
+
+	/**
+	 * @override
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
 	}
+
 }
 
 /**
@@ -429,6 +493,25 @@ export class AggregateGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.AGGREGATE;
+	}
+}
+
+
+export class VTGeoResource extends GeoResource {
+	constructor(id, label, styleUrl) {
+		super(id, label);
+		this._styleUrl = styleUrl;
+	}
+
+	get styleUrl() {
+		return this._styleUrl;
+	}
+
+	/**
+	 * @override
+	 */
+	getType() {
+		return GeoResourceTypes.VT;
 	}
 }
 

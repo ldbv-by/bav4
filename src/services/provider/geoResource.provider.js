@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, WMTSGeoResource, VectorSourceType, GeoResourceFuture } from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, VectorSourceType, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { $injector } from '../../injection';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -17,10 +17,17 @@ export const _definitionToGeoResource = definition => {
 				return new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format)
 					//set specific optional values
 					.setExtraParams(def.extraParams ?? {});
-			case 'wmts':
-				return new WMTSGeoResource(def.id, def.label, def.url);
+			case 'xyz':
+				return new XyzGeoResource(def.id, def.label, def.url)
+					//set specific optional values
+					.setTileGridId(def.tileGridId);
+			case 'vt':
+				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector':
-				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType)).setUrl(def.url);
+				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
+				return new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
+					//set specific optional values
+					.setUrl(def.url);
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
 			default:
@@ -37,6 +44,7 @@ export const _definitionToGeoResource = definition => {
 		geoResource.setMinZoom(definition.minZoom ?? null);
 		geoResource.setMaxZoom(definition.maxZoom ?? null);
 		geoResource.setQueryable(definition.queryable ?? true);
+		geoResource.setExportable(definition.exportable ?? true);
 		return geoResource;
 	}
 	return null;
@@ -120,11 +128,11 @@ export const loadExampleGeoResources = async () => {
 	const wms0 = new WmsGeoResource('bodendenkmal', 'Bodendenkmal', 'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi', 'bodendenkmalO', 'image/png');
 	const wms1 = new WmsGeoResource('baudenkmal', 'Baudenkmal', 'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi', 'bauensembleO,einzeldenkmalO', 'image/png');
 	const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
-	const wmts0 = new WMTSGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
+	const xyz0 = new XyzGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
 	const vector0 = new VectorGeoResource('huetten', 'Hütten', VectorSourceType.KML).setUrl('http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
-	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['wmts0', 'wms0']);
+	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['xyz0', 'wms0']);
 
-	return [wms0, wms1, wms2, wmts0, vector0, aggregate0];
+	return [wms0, wms1, wms2, xyz0, vector0, aggregate0];
 };
 
 
@@ -139,10 +147,9 @@ export const loadBvvGeoResourceById = id => {
 
 	const {
 		HttpService: httpService,
-		ConfigService: configService,
-		TranslationService: translationService
+		ConfigService: configService
 	}
-		= $injector.inject('HttpService', 'ConfigService', 'TranslationService');
+		= $injector.inject('HttpService', 'ConfigService');
 
 	const loader = async id => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesources/byId/${id}`;
@@ -159,5 +166,5 @@ export const loadBvvGeoResourceById = id => {
 		throw new Error(`GeoResource for id '${id}' could not be loaded`);
 	};
 
-	return new GeoResourceFuture(id, loader, translationService.translate('layersPlugin_store_layer_default_layer_name_future'));
+	return new GeoResourceFuture(id, loader);
 };

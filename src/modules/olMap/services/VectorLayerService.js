@@ -2,8 +2,10 @@ import { VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
-import { KML, GPX, GeoJSON } from 'ol/format';
+import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
+import { propertyChanged } from '../../../store/geoResources/geoResources.action';
+import { parse } from '../../../utils/ewkt';
 
 
 
@@ -26,6 +28,9 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 
 		case VectorSourceType.GEOJSON:
 			return new GeoJSON();
+
+		case VectorSourceType.EWKT:
+			return new WKT();
 	}
 	throw new Error(sourceType + ' currently not supported');
 };
@@ -148,26 +153,31 @@ export class VectorLayerService {
 		const destinationSrid = mapService.getSrid();
 		const vectorSource = new VectorSource();
 
-		const data = geoResource.data;
+		const data = (geoResource.sourceType === VectorSourceType.EWKT) ? parse(geoResource.data).wkt : geoResource.data;
 		const format = mapVectorSourceTypeToFormat(geoResource.sourceType);
 		const features = format.readFeatures(data)
 			.filter(f => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
 			.map(f => {
-				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid);
+				f.getGeometry().transform('EPSG:' + geoResource.srid, 'EPSG:' + destinationSrid); //Todo: check for unsupported destinationSrid
 				f.set('srid', destinationSrid, true);
 				return f;
 			});
 		vectorSource.addFeatures(features);
 
 		/**
-		 * If we know a better name for the geoResource now, we update the geoResource's label.
+		 * If we know a name for the GeoResource now, we update the geoResource's label.
 		 * At this moment an olLayer and its source are about to be added to the map.
-		 * To avoid conflicts, we have to delay the update of the geoResouece (and subsequent possible modifications of the connected layer).
+		 * To avoid conflicts, we have to delay the update of the GeoResource (and subsequent possible modifications of the connected layer).
 		 */
-		switch (geoResource.sourceType) {
-			case VectorSourceType.KML:
-				setTimeout(() => geoResource.setLabel(format.readName(data) ?? geoResource.label));
-				break;
+		if (!geoResource.hasLabel()) {
+			switch (geoResource.sourceType) {
+				case VectorSourceType.KML:
+					setTimeout(() => {
+						geoResource.setLabel(format.readName(data));
+						propertyChanged(geoResource);
+					});
+					break;
+			}
 		}
 		return vectorSource;
 	}

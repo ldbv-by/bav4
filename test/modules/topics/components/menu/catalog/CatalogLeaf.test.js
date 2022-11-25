@@ -5,7 +5,7 @@ import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
 import { layersReducer } from '../../../../../../src/store/layers/layers.reducer';
 import { createDefaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
-import { WMTSGeoResource } from '../../../../../../src/domain/geoResources';
+import { XyzGeoResource } from '../../../../../../src/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
@@ -76,7 +76,7 @@ describe('CatalogLeaf', () => {
 
 			it('renders a leaf', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = (await loadExampleCatalog('foo')).pop();
 				const element = await setup();
@@ -97,7 +97,7 @@ describe('CatalogLeaf', () => {
 
 			it('renders a checkbox unchecked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = (await loadExampleCatalog('foo')).pop();
 				const element = await setup('foo', []);
@@ -111,7 +111,7 @@ describe('CatalogLeaf', () => {
 
 			it('renders a checkbox checked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
 				const leaf = (await loadExampleCatalog('foo')).pop();
 				const element = await setup();
@@ -145,7 +145,7 @@ describe('CatalogLeaf', () => {
 
 				it('adds and removes a layer', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
 					const leaf = (await loadExampleCatalog('foo')).pop();
 					const element = await setup('foo', []);
@@ -167,7 +167,7 @@ describe('CatalogLeaf', () => {
 
 				it('shows a georesourceinfo panel as modal', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new WMTSGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
 					const leaf = (await loadExampleCatalog('foo')).pop();
 					const element = await setup('foo', []);

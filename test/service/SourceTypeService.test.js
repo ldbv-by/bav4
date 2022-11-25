@@ -1,4 +1,4 @@
-import { SourceType, SourceTypeMaxFileSize, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
+import { SourceType, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
 import { TestUtils } from '../test-utils';
@@ -54,31 +54,12 @@ describe('SourceTypeService', () => {
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(providerSpy);
 
-			try {
-				await instanceUnderTest.forUrl(url);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (e) {
-				expect(e.message).toBe('Parameter <url> must represent an Http URL');
-				expect(providerSpy).not.toHaveBeenCalled();
-			}
+			await expectAsync(instanceUnderTest.forUrl(url)).toBeRejectedWithError(TypeError, 'Parameter <url> must represent an Http URL');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
 
 	describe('forData', () => {
-
-		it('provides a SourceType result given <data> and <mediaType>', () => {
-
-			const data = 'data';
-			const mediaType = 'mediatype';
-			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
-			const mediaProviderSpy = jasmine.createSpy().withArgs(mediaType).and.returnValue(result);
-			const instanceUnderTest = setup(null, null, mediaProviderSpy);
-
-			const sourceTypeResult = instanceUnderTest.forData(data, mediaType);
-
-			expect(sourceTypeResult).toEqual(result);
-		});
 
 		it('provides a SourceType result given <data> only', () => {
 
@@ -92,14 +73,14 @@ describe('SourceTypeService', () => {
 			expect(sourceTypeResult).toEqual(result);
 		});
 
-		it('returns MAX_SIZE_EXCEEDED when data-size is too large', () => {
-			const tooLargeData = 'x'.repeat(SourceTypeMaxFileSize);
-			const instanceUnderTest = setup();
+		it('throws an exception when data is not a String', async () => {
 
-			const result = instanceUnderTest.forData(tooLargeData);
+			const providerSpy = jasmine.createSpy();
+			const instanceUnderTest = setup(undefined, providerSpy);
+			const data = 0;
 
-			expect(result)
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+			expect(() => instanceUnderTest.forData(data)).toThrowError(TypeError, 'Parameter <data> must be a String');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
 
@@ -127,24 +108,8 @@ describe('SourceTypeService', () => {
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
 
-			try {
-				await instanceUnderTest.forBlob(blobFake);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (e) {
-				expect(e.message).toBe('Parameter <blob> must be an instance of Blob');
-				expect(providerSpy).not.toHaveBeenCalled();
-			}
-		});
-
-		it('returns MAX_SIZE_EXCEEDED when blob-size is too large', async () => {
-
-			const blobMock = getBlob('some', SourceTypeMaxFileSize + 1);
-			const instanceUnderTest = setup();
-
-			const result = await instanceUnderTest.forBlob(blobMock);
-
-			expect(result).toEqual(new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED));
+			await expectAsync(instanceUnderTest.forBlob(blobFake)).toBeRejectedWithError(TypeError, 'Parameter <blob> must be an instance of Blob');
+			expect(providerSpy).not.toHaveBeenCalled();
 		});
 	});
 

@@ -47,9 +47,9 @@ export class ShowCase extends BaElement {
 			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
 			// optional exception handling for this GeoResourceFuture
 			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
-			const { id, label } = geoResourceFuture;
+			const { id } = geoResourceFuture;
 			//add a layer that displays the GeoResource in the map
-			addLayer(id, { label: label });
+			addLayer(id);
 		};
 
 		const onClick1 = () => {
@@ -174,7 +174,7 @@ export class ShowCase extends BaElement {
 					case 1:
 						return html`<div>
 							<h3>Feature-Info</h3>
-							<div style="color: var(--text1);background-color: var(--scondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
+							<div style="color: var(--text1);background-color: var(--secondary-color);"><b>ID:</b>Lorem ipsum dolor </div>
 							<div style="color: var(--text2);background-color: var(--secondary-bg-color);"><b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...</div>
 							<div style="display:flex"><ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button></div>
 						</div>`;
@@ -258,6 +258,7 @@ export class ShowCase extends BaElement {
 			<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
 			<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
 			<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
+			<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
 			</div>
 
 			<h3>ba-icons</h3>
@@ -343,6 +344,11 @@ export class ShowCase extends BaElement {
 			<div class='example row'>
 			<ba-button id='button0' .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
 			<div>Hint: Demo Credentials are foo/bar</div>
+			</div>
+
+			<h3>Profile</h3>
+			<div class='example row'>
+			<ba-profile></ba-profile>
 			</div>
 				
 			</div>	

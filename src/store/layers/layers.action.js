@@ -16,7 +16,6 @@ import { $injector } from '../../injection';
   * Properties of a {@link Layer}.
   * @typedef {Object} LayerProperties
   * @property {string} id Id of this layer
-  * @property {string} label Label of this layer
   * @property {string} geoResourceId  Id of the linked geoResource. If not set, it will take the Id of this layer as value
   * @property {number} [opacity=1] Opacity (0, 1)
   * @property {boolean} [visible=true] Visibility

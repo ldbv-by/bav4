@@ -31,7 +31,7 @@ module.exports = function (config) {
 			}
 		},
 		singleRun: true,
-		concurrency: Infinity,
+		concurrency: 1,
 		webpack: webpackConfig,
 		coverageIstanbulReporter: {
 			dir: path.join(__dirname, 'coverage'),

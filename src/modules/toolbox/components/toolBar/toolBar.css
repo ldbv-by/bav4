@@ -139,7 +139,7 @@
 	width: 6em;
 	border-radius: 3.5em;
 	background-color: var(--primary-bg-color);
-	border: none
+	border: none;
 }
 
 .is-tablet .tool-bar {
@@ -265,7 +265,7 @@
 
 .is-portrait .arrowright,
 .is-tablet .arrowright {
-	transform: rotate(90deg)
+	transform: rotate(90deg);
 }
 
 .close {

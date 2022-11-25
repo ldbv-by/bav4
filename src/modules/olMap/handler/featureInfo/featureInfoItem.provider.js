@@ -16,7 +16,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
-	const { MapService: mapService, SecurityService: securityService } = $injector.inject('MapService', 'SecurityService');
+	const { MapService: mapService, SecurityService: securityService, GeoResourceService: geoResourceService } = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
 	const stats = getStats(olFeature.getGeometry(), { fromProjection: 'EPSG:' + mapService.getSrid(), toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid() });
 
 	const getContent = () => {
@@ -26,8 +26,8 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 		return descContent ? html`${unsafeHTML(securityService.sanitizeHtml(descContent))}${geometryContent}` : html`${geometryContent}`;
 	};
 
-
-	const name = olFeature.get('name') ? `${securityService.sanitizeHtml(olFeature.get('name'))} - ${layerProperties.label}` : `${layerProperties.label}`;
+	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);
+	const name = olFeature.get('name') ? `${securityService.sanitizeHtml(olFeature.get('name'))} - ${geoRes.label}` : `${geoRes.label}`;
 	const content = getContent();
 	const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 	return { title: name, content: content, geometry: geometry };

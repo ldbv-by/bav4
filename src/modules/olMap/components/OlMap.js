@@ -13,7 +13,7 @@ import { setBeingDragged, setClick, setContextClick, setPointerMove } from '../.
 import { setBeingMoved, setMoveEnd, setMoveStart } from '../../../store/map/map.action';
 import VectorSource from 'ol/source/Vector';
 import { Group as LayerGroup } from 'ol/layer';
-import { GeoResourceTypes } from '../../../domain/geoResources';
+import { GeoResourceFuture, GeoResourceTypes } from '../../../domain/geoResources';
 import { setFetching } from '../../../store/network/network.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
@@ -47,9 +47,10 @@ export class OlMap extends MvuElement {
 			OlDrawHandler: olDrawHandler,
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler,
-			OlFeatureInfoHandler: olFeatureInfoHandler
+			OlFeatureInfoHandler: olFeatureInfoHandler,
+			OlMfpHandler: olMfpHandler
 		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'TranslationService',
-			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler');
+			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler', 'OlMfpHandler');
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
@@ -57,7 +58,7 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler]]);
+		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
 		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
 	}
 
@@ -101,7 +102,7 @@ export class OlMap extends MvuElement {
 			minZoom: this._mapService.getMinZoomLevel(),
 			maxZoom: this._mapService.getMaxZoomLevel(),
 			constrainRotation: false,
-			constrainResolution: true
+			constrainResolution: !this._environmentService.isTouch()
 		});
 
 		this._view.on('change:rotation', (evt) => {
@@ -334,25 +335,47 @@ export class OlMap extends MvuElement {
 			this._viewSyncBlocked = false;
 			this._syncStore();
 		};
-		const extent = eventLike.payload.id ? getLayerById(this._map, eventLike.payload.id)?.getSource?.().getExtent?.() : eventLike.payload.extent;
 
-		if (extent) {
-			this._viewSyncBlocked = true;
-			const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
-			const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
-			const padding = eventLike.payload.options.useVisibleViewport
-				? [viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0], viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
-					viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
-				: OlMap.DEFAULT_PADDING_PX;
-			this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
+		const fit = () => {
+			const extent = getLayerById(this._map, eventLike.payload.id)?.getSource?.()?.getExtent?.() ?? eventLike.payload.extent;
+
+			if (extent) {
+				this._viewSyncBlocked = true;
+				const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
+				const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
+				const padding = eventLike.payload.options.useVisibleViewport
+					? [viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0], viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
+						viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
+					: OlMap.DEFAULT_PADDING_PX;
+				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
+			}
+		};
+
+		if (eventLike.payload.id) { // we target a layer
+			const { layers } = this.getModel();
+			const geoResourceId = layers.find(l => l.id === eventLike.payload.id)?.geoResourceId;
+			const gr = this._geoResourceService.byId(geoResourceId);
+			if (gr instanceof GeoResourceFuture) {
+				// when we have a GeoResourceFuture we wait until it is resolved
+				// Note: the actual call of #fit is wrapped within a timeout fn
+				gr.onResolve(() => setTimeout(() => fit()));
+			}
+			else {
+				fit();
+			}
+		}
+		else { // we have an extent
+			fit();
 		}
 	}
 
 	/**
 	 * @override
 	 */
-	onAfterRender() {
-		this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			this._map.setTarget(this.shadowRoot.getElementById('ol-map'));
+		}
 	}
 
 	/**
