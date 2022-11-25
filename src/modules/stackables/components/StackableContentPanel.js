@@ -1,7 +1,7 @@
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../injection';
-import css from './notificationPanel.css';
+import css from './stackableContentPanel.css';
 import { MvuElement } from '../../MvuElement';
 
 
