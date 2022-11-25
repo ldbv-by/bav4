@@ -16,7 +16,7 @@ describe('global i18n', () => {
 		expect(map.global_import_data_failed).toBe('Importing data failed');
 		expect(map.global_import_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
 		expect(map.global_import_authenticationModal_title).toBe('Authentication required');
-		expect(map.layersPlugin_store_layer_default_layer_name_vector).toBe('Data');
+		expect(map.global_default_vector_georesource_name).toBe('Data');
 	});
 
 	it('provides translation for de', () => {
@@ -32,7 +32,7 @@ describe('global i18n', () => {
 		expect(map.global_import_data_failed).toBe('Import der Daten schlug fehl');
 		expect(map.global_import_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
 		expect(map.global_import_authenticationModal_title).toBe('Anmeldung erforderlich');
-		expect(map.layersPlugin_store_layer_default_layer_name_vector).toBe('Daten');
+		expect(map.global_default_vector_georesource_name).toBe('Daten');
 	});
 
 	it('have the expected amount of translations', () => {
