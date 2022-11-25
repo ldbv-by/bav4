@@ -71,7 +71,7 @@
 	transparent 0.75rem, 
 	var(--primary-bg-color) 0.75rem, 
 	var(--primary-bg-color) 1.5rem);
-	opacity:.4;
+	opacity: .4;
 	animation: load .8s infinite linear;
 }
 @keyframes load {
