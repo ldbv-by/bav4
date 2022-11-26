@@ -14,7 +14,7 @@ export const _newLoader = id => {
 			const { data, type, srid } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
-				const vgr = new VectorGeoResource(id, translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), VectorSourceType.KML);
+				const vgr = new VectorGeoResource(id, translationService.translate('global_default_vector_georesource_name'), VectorSourceType.KML);
 				vgr.setSource(data, srid);
 				return vgr;
 			}

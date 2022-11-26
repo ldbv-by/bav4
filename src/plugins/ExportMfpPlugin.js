@@ -4,7 +4,6 @@ import { ToolId } from '../store/tools/tools.action';
 import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
-import { provide as provider } from './i18n/exportMfpPlugin.provider';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { changeRotation } from '../store/position/position.action';
 
@@ -28,7 +27,6 @@ export class ExportMfpPlugin extends BaPlugin {
 		this._initialized = false;
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		translationService.register('exportMfpPluginProvider', provider);
 	}
 
 	/**
@@ -51,7 +49,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				}
 				catch (ex) {
 					console.error('MfpCapabilities could not be fetched from backend', ex);
-					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_init_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this._translationService.translate('global_mfpService_init_exception')}`, LevelTypes.ERROR);
 				}
 				return false;
 			}
@@ -94,7 +92,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				}
 				catch (ex) {
 					console.error('PDF generation was not successful.', ex);
-					emitNotification(`${this._translationService.translate('exportMfpPlugin_mfpService_createJob_exception')}`, LevelTypes.ERROR);
+					emitNotification(`${this._translationService.translate('global_mfpService_createJob_exception')}`, LevelTypes.ERROR);
 				}
 				finally {
 					cancelJob();
