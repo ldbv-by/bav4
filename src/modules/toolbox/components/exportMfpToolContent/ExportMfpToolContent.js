@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { cancelJob, requestJob, setId, setScale } from '../../../../store/mfp/mfp.action';
+import { cancelJob, requestJob, setAutoRotation, setId, setScale } from '../../../../store/mfp/mfp.action';
 import css from './exportMfpToolContent.css';
 import plus from './assets/plus.svg';
 import minus from './assets/minus.svg';
@@ -9,6 +9,7 @@ import minus from './assets/minus.svg';
 const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
+const Update_AutoRotation = 'update_autorotation';
 const Update_Job_Started = 'update_job_started';
 
 /**
@@ -20,6 +21,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		super({
 			id: null,
 			scale: null,
+			autoRotation: true,
 			isJobStarted: false
 		});
 
@@ -30,6 +32,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 	onInitialize() {
 		this.observe(state => state.mfp.current, data => this.signal(Update, data));
+		this.observe(state => state.mfp.autoRotation, data => this.signal(Update_AutoRotation, data));
 		this.observe(state => state.mfp.jobSpec, data => this.signal(Update_Job_Started, data));
 	}
 
@@ -41,13 +44,15 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, scale: data };
 			case Update_Id:
 				return { ...model, id: data };
+			case Update_AutoRotation:
+				return { ...model, autoRotation: data };
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 		}
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted } = model;
+		const { id, scale, isJobStarted, autoRotation } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
@@ -64,7 +69,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${translate('toolbox_exportMfp_header')}
 			</div>
 			<div class='ba-tool-container__content'>
-				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts) : this._getSpinner()}				
+				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, autoRotation) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
 				<ba-button id='${btnId}' class="tool-container__button preview_button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
@@ -76,7 +81,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		return html`<ba-spinner></ba-spinner>`;
 	}
 
-	_getContent(id, scale, layouts) {
+	_getContent(id, scale, layouts, autoRotation) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const layoutItems = layouts.map(capability => {
@@ -131,27 +136,37 @@ export class ExportMfpToolContent extends AbstractToolContent {
 
 		const getActiveClass = (value, selectedId) => value === selectedId ? 'active' : '';
 
+		const onChangeAutoRotation = (event) => {
+			setAutoRotation(event.detail.checked);
+		};
+
 		return html`
 				<div class='tool-section'>
 					<div class='tool-sub-header'>			
 						${translate('toolbox_exportMfp_layout')}				
 					</div>
-						<div class='button-container'>
-							${getLayoutOptions(layoutItems, id)}
-						</div>
+					<div class='button-container'>
+						${getLayoutOptions(layoutItems, id)}
 					</div>
-					<div class='tool-section' style='margin-top:1em'>
-						<div class='tool-sub-header'>	
-							${translate('toolbox_exportMfp_scale')}	
-						</div>
-						<div style='display: flex; justify-content: center'>	
-							<ba-icon id='decrease' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
-							<select id='select_scale' @change=${onChangeScale}>							
-							${getScaleOptions(scales, scale)}
-							</select>
-							<ba-icon id='increase' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
-						<div>
+				</div>
+				<div class='tool-section' style='margin-top:1em'>
+					<div class='tool-sub-header'>	
+						${translate('toolbox_exportMfp_scale')}	
 					</div>
+					<div style='display: flex; justify-content: center'>	
+						<ba-icon id='decrease' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
+						<select id='select_scale' @change=${onChangeScale}>							
+						${getScaleOptions(scales, scale)}
+						</select>
+						<ba-icon id='increase' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
+					<div>
+					</div>
+				</div>
+				<div class='tool-section' style='margin-top:1em'>
+					<div class='tool-sub-header'>	
+						Options	
+					</div>
+					<ba-checkbox id='autorotation' .checked=${autoRotation} .title='AutoRotation' @toggle=${onChangeAutoRotation} ><span>AutoRotation</span></ba-checkbox>
 				</div>`;
 	}
 
