@@ -1038,7 +1038,7 @@ describe('BvvMfp3Encoder', () => {
 								fillOpacity: 1,
 								strokeOpacity: 0,
 								graphicXOffset: jasmine.any(Number),
-								graphicHeight: jasmine.any(Number),
+								graphicYOffset: jasmine.any(Number),
 								externalGraphic: 'https://some.url/to/image/foo.png'
 							}]
 						}
