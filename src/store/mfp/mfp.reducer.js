@@ -25,7 +25,7 @@ export const initialState = {
 	/**
 	* @property {boolean}
 	*/
-	autorotation: true,
+	autoRotation: true,
 	/**
 	 *@property {EvenLike | null}
 	 */
@@ -68,7 +68,7 @@ export const mfpReducer = (state = initialState, action) => {
 		case AUTOROTATION_CHANGED:{
 			return {
 				...state,
-				autorotation: payload
+				autoRotation: payload
 			};
 		}
 		case JOB_REQUEST_CHANGED: {

@@ -63,11 +63,11 @@ describe('mfpReducer', () => {
 
 		setAutoRotation(false);
 
-		expect(store.getState().mfp.autorotation).toBeFalse();
+		expect(store.getState().mfp.autoRotation).toBeFalse();
 
 		setAutoRotation(true);
 
-		expect(store.getState().mfp.autorotation).toBeTrue();
+		expect(store.getState().mfp.autoRotation).toBeTrue();
 	});
 
 	it('places a new request for an mfp job', () => {
