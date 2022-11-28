@@ -323,10 +323,11 @@ describe('defaultStyleFunction', () => {
 		const pointStyles = styleFunction(getFeatureMock('Point'));
 		const lineStyles = styleFunction(getFeatureMock('LineString'));
 		const polygonStyles = styleFunction(getFeatureMock('Polygon'));
+		const collectionStyles = styleFunction(getFeatureMock('GeometryCollection'));
+
 		expect(pointStyles.length).toBe(1);
 		expect(pointStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
 		expect(pointStyles[0].getImage().getRadius()).toBe(5);
-
 
 		expect(lineStyles.length).toBe(1);
 		expect(lineStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
@@ -336,6 +337,13 @@ describe('defaultStyleFunction', () => {
 		expect(polygonStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
 		expect(polygonStyles[0].getStroke().getWidth()).toBe(2);
 		expect(polygonStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
+
+		expect(collectionStyles.length).toBe(1);
+		expect(collectionStyles[0].getImage().getFill().getColor()).toEqual([0, 0, 0, 0]);
+		expect(collectionStyles[0].getImage().getRadius()).toBe(5);
+		expect(collectionStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
+		expect(collectionStyles[0].getStroke().getWidth()).toBe(2);
+		expect(collectionStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
 	});
 });
 

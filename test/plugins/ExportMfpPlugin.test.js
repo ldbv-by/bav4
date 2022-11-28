@@ -8,7 +8,6 @@ import { activate, cancelJob, deactivate, startJob } from '../../src/store/mfp/m
 import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
-import { provide } from '../../src/plugins/i18n/exportMfpPlugin.provider.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { changeRotation } from '../../src/store/position/position.action.js';
 
@@ -43,18 +42,6 @@ describe('ExportMfpPlugin', () => {
 			.registerSingleton('TranslationService', translationService);
 		return store;
 	};
-
-	describe('constructor', () => {
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationService, 'register');
-			setup();
-
-			new ExportMfpPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('exportMfpPluginProvider', provide);
-		});
-	});
 
 	describe('when not yet initialized and toolId changes', () => {
 
@@ -103,7 +90,7 @@ describe('ExportMfpPlugin', () => {
 			expect(store.getState().mfp.current.scale).toBeNull();
 			await TestUtils.timeout();
 			expect(store.getState().mfp.active).toBeFalse();
-			expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_init_exception');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_init_exception');
 			expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 			expect(errorSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend', jasmine.anything());
 		});
@@ -231,7 +218,7 @@ describe('ExportMfpPlugin', () => {
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
-				expect(store.getState().notifications.latest.payload.content).toBe('exportMfpPlugin_mfpService_createJob_exception');
+				expect(store.getState().notifications.latest.payload.content).toBe('global_mfpService_createJob_exception');
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				expect(errorSpy).toHaveBeenCalledWith('PDF generation was not successful.', jasmine.anything());
 			});

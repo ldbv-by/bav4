@@ -312,7 +312,7 @@ describe('sourceType provider', () => {
 
 						expect(authenticationResult).toEqual(response200);
 						expect(store.getState().modal.active).toBeTrue();
-						expect(store.getState().modal.data.title).toBe('importPlugin_authenticationModal_title');
+						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 						// simulate call by UI
 						await onCloseFunction(mockCredential, response200);
 
@@ -382,7 +382,7 @@ describe('sourceType provider', () => {
 
 						expect(authenticationResult).toBeFalse();
 						expect(store.getState().modal.active).toBeTrue();
-						expect(store.getState().modal.data.title).toBe('importPlugin_authenticationModal_title');
+						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 						// simulate call by UI
 						await onCloseFunction(null);
 
@@ -413,7 +413,7 @@ describe('sourceType provider', () => {
 						await authenticateFunction(mockCredential, url);
 
 						expect(store.getState().modal.active).toBeTrue();
-						expect(store.getState().modal.data.title).toBe('importPlugin_authenticationModal_title');
+						expect(store.getState().modal.data.title).toBe('global_import_authenticationModal_title');
 
 						//now let's close the modal
 						closeModal();
