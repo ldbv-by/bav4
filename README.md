@@ -107,6 +107,10 @@ The source code is distributed among the following directories:
 
 Contains global domain-specific classes and type definitions.
 
+###  `src/i18n`
+
+Contains and registers the global i18n provider
+
 ###  `src/injection`
 
 Contains the built-in dependency injection. The central configuration is done in `config.js`.

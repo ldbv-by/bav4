@@ -560,6 +560,16 @@ export const defaultStyleFunction = (color) => {
 					fill: fill,
 					stroke: getColoredStroke(2)
 				})];
+			case 'GeometryCollection':
+				return [new Style({
+					image: new CircleStyle({
+						fill: fill,
+						radius: 5,
+						stoke: getColoredStroke(1)
+					}),
+					fill: fill,
+					stroke: getColoredStroke(2)
+				})];
 		}
 	};
 };

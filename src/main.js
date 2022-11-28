@@ -10,7 +10,8 @@ window.ba_enableTestIds = new URLSearchParams(window.location.search).get(QueryP
 
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
-
+// register global i18n
+import './i18n';
 // register modules
 import './modules/header';
 import './modules/footer';

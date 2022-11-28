@@ -2,7 +2,6 @@ import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, setReady } from '../store/layers/layers.action';
-import { provide as provider } from './i18n/layersPlugin.provider';
 import { createUniqueId } from '../utils/numberUtils';
 
 /**
@@ -15,7 +14,6 @@ export class LayersPlugin extends BaPlugin {
 		super();
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-		translationService.register('layersPluginProvider', provider);
 	}
 
 	_addLayersFromQueryParams(queryParams) {

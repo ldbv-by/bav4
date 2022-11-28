@@ -3,7 +3,6 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { importReducer } from '../../src/store/import/import.reducer';
 import { setUrl, setData } from '../../src/store/import/import.action';
 import { TestUtils } from '../test-utils';
-import { provide } from '../../src/plugins/i18n/importPlugin.provider.js';
 import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
 import { MediaType } from '../../src/services/HttpService';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
@@ -54,18 +53,6 @@ describe('ImportPlugin', () => {
 		return store;
 	};
 
-	describe('constructor', () => {
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationServiceMock, 'register');
-			setup();
-
-			new ImportPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('importPluginProvider', provide);
-		});
-	});
-
 	describe('when import.url property changes', () => {
 
 		it('calls the ImportVectorDataService for vector-url', async () => {
@@ -113,7 +100,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', null);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -128,7 +115,7 @@ describe('ImportPlugin', () => {
 
 			await TestUtils.timeout();
 			expect(spy).not.toHaveBeenCalled();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_unsupported_sourceType');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_unsupported_sourceType');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
@@ -149,7 +136,7 @@ describe('ImportPlugin', () => {
 			setUrl('http://some.url', sourceType);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_url_failed');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_url_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
@@ -193,7 +180,7 @@ describe('ImportPlugin', () => {
 			setData('<kml some=thing></kml>', MediaType.KML);
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('importPlugin_data_failed');
+			expect(store.getState().notifications.latest.payload.content).toBe('global_import_data_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
