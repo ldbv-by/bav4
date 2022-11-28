@@ -164,9 +164,9 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				</div>
 				<div class='tool-section' style='margin-top:1em'>
 					<div class='tool-sub-header'>	
-						Options	
+					${translate('toolbox_exportMfp_options')}		
 					</div>
-					<ba-checkbox id='autorotation' .checked=${autoRotation} .title='AutoRotation' @toggle=${onChangeAutoRotation} ><span>AutoRotation</span></ba-checkbox>
+					<ba-checkbox id='autorotation' .checked=${autoRotation} .title=${translate('toolbox_exportMfp_autorotation_title')} @toggle=${onChangeAutoRotation} ><span>${translate('toolbox_exportMfp_autorotation')}</span></ba-checkbox>
 				</div>`;
 	}
 

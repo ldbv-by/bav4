@@ -102,8 +102,12 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
-			expect(element.shadowRoot.querySelector('ba-checkbox').checked).toBeTrue();
+			expect(element.shadowRoot.querySelector('#autorotation').checked).toBeTrue();
+			expect(element.shadowRoot.querySelector('#autorotation').title).toBe('toolbox_exportMfp_autorotation_title');
 
+			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
+			expect(subHeaderElements).toHaveSize(3);
+			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale', 'toolbox_exportMfp_options']);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {

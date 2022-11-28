@@ -99,7 +99,10 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a4_landscape: 'A4 landscape',
 				toolbox_exportMfp_id_a4_portrait: 'A4 portrait',
 				toolbox_exportMfp_id_a3_landscape: 'A3 landscape',
-				toolbox_exportMfp_id_a3_portrait: 'A3 portrait'
+				toolbox_exportMfp_id_a3_portrait: 'A3 portrait',
+				toolbox_exportMfp_options: 'Options',
+				toolbox_exportMfp_autorotation_title: 'Activate/deactivate autorotation',
+				toolbox_exportMfp_autorotation: 'Autorotation'
 			};
 
 		case 'de':
@@ -200,7 +203,10 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a4_landscape: 'A4 Querformat',
 				toolbox_exportMfp_id_a4_portrait: 'A4 Hochformat',
 				toolbox_exportMfp_id_a3_landscape: 'A3 Querformat',
-				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat'
+				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat',
+				toolbox_exportMfp_options: 'Optionen',
+				toolbox_exportMfp_autorotation_title: 'Autorotation aktivieren/deaktivieren',
+				toolbox_exportMfp_autorotation: 'Autorotation'
 			};
 
 		default:
