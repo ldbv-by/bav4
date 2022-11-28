@@ -2,7 +2,6 @@ import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
 import { observe } from '../utils/storeUtils';
-import { provide as provider } from './i18n/importPlugin.provider';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../domain/sourceType';
 import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
@@ -25,7 +24,6 @@ export class ImportPlugin extends BaPlugin {
 		const { ImportVectorDataService: importVectorDataService, TranslationService: translationService } = $injector.inject('ImportVectorDataService', 'TranslationService');
 		this._importVectorDataService = importVectorDataService;
 		this._translationService = translationService;
-		translationService.register('importPluginProvider', provider);
 	}
 
 	/**
@@ -68,7 +66,7 @@ export class ImportPlugin extends BaPlugin {
 						return this._importVectorDataService.forUrl(url, { sourceType: sourceType });
 				}
 			}
-			emitNotification(`${this._translationService.translate('importPlugin_unsupported_sourceType')}`, LevelTypes.WARN);
+			emitNotification(`${this._translationService.translate('global_import_unsupported_sourceType')}`, LevelTypes.WARN);
 			return null;
 		};
 
@@ -76,7 +74,7 @@ export class ImportPlugin extends BaPlugin {
 		const geoResource = createGeoResource(url, sourceType);
 		if (geoResource) {
 			geoResource.onReject(() => {
-				emitNotification(this._translationService.translate('importPlugin_url_failed'), LevelTypes.ERROR);
+				emitNotification(this._translationService.translate('global_import_url_failed'), LevelTypes.ERROR);
 			});
 			return geoResource;
 		}
@@ -95,7 +93,7 @@ export class ImportPlugin extends BaPlugin {
 		if (vectorGeoResource) {
 			return vectorGeoResource;
 		}
-		emitNotification(this._translationService.translate('importPlugin_data_failed'), LevelTypes.ERROR);
+		emitNotification(this._translationService.translate('global_import_data_failed'), LevelTypes.ERROR);
 		return null;
 	}
 }

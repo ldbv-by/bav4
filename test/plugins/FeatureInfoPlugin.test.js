@@ -11,7 +11,6 @@ import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
-import { provide } from '../../src/plugins/i18n/featureInfoPlugin.provider.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { DRAW_TOOL_ID } from '../../src/plugins/DrawPlugin.js';
@@ -63,18 +62,6 @@ describe('FeatureInfoPlugin', () => {
 			.registerSingleton('TranslationService', translationService);
 		return store;
 	};
-
-	describe('constructor', () => {
-
-		it('registers an i18n provider', async () => {
-			const translationServiceSpy = spyOn(translationService, 'register');
-			setup();
-
-			new FeatureInfoPlugin();
-
-			expect(translationServiceSpy).toHaveBeenCalledWith('featureInfoPluginProvider', provide);
-		});
-	});
 
 	describe('when pointer.click property changes', () => {
 
@@ -254,7 +241,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.querying).toBeTrue();
 				await TestUtils.timeout();
 				expect(store.getState().featureInfo.current).toHaveSize(0);
-				expect(store.getState().notifications.latest.payload.content).toBe(`${label0}: featureInfoPlugin_featureInfoService_exception`);
+				expect(store.getState().notifications.latest.payload.content).toBe(`${label0}: global_featureInfoService_exception`);
 				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
 				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
 				expect(store.getState().featureInfo.querying).toBeFalse();
