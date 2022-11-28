@@ -1,4 +1,4 @@
-import { activate, cancelJob, deactivate, requestJob, setCurrent, setId, setScale, startJob } from '../../../src/store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, requestJob, setAutoRotation, setCurrent, setId, setScale, startJob } from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { TestUtils } from '../../test-utils';
@@ -56,6 +56,18 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.scale).toBe(5);
 		expect(store.getState().mfp.current.dpi).toBe(128);
 		expect(store.getState().mfp.current.mapSize).toEqual({ width: 21, height: 42 });
+	});
+
+	it('updates the autorotation property', () => {
+		const store = setup();
+
+		setAutoRotation(false);
+
+		expect(store.getState().mfp.autorotation).toBeFalse();
+
+		setAutoRotation(true);
+
+		expect(store.getState().mfp.autorotation).toBeTrue();
 	});
 
 	it('places a new request for an mfp job', () => {
