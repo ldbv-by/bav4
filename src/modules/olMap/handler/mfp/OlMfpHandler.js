@@ -86,13 +86,14 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
-		// HINT: To observe the store for map changes (especially livecenter) results in a more intensivied call traffic with the store.
+		// HINT: To observe the store for map changes (especially livecenter) results in a more intensified call traffic with the store.
 		// A shortcut and allowed alternative is the direct binding to the ol map events.
 		// The current design is choosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
 		// the performance and time consumptions (< 1 ms), but makes it simpler to follow only one source of events.
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
+			observe(store, state => state.mfp.autoRotation, () => this._updateRotation()),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
 			observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
@@ -109,8 +110,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
-		const geometry = this._createMfpBoundary(this._pageSize, center);
-		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center);
+		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : this._storeService.getStore().getState().position.rotation;
+		const geometry = this._createMfpBoundary(this._pageSize, center, rotation);
+		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center, rotation);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
@@ -119,12 +121,19 @@ export class OlMfpHandler extends OlLayerHandler {
 	_updateAzimuth(e) {
 		const feature = e.target;
 		const rotation = this._getAzimuth(feature.getGeometry());
+
 		feature.set('azimuth', rotation);
 	}
 
 	_updateRotation() {
-		const rotation = this._mfpBoundaryFeature.get('azimuth');
-		changeRotation(rotation);
+		const rotateMfpExtentByView = () => this._updateMfpPreview();
+		const rotateViewByMfpExtent = () => {
+			const rotation = this._mfpBoundaryFeature.get('azimuth');
+			changeRotation(rotation);
+		};
+
+		const rotateAction = this._storeService.getStore().getState().mfp.autoRotation ? rotateViewByMfpExtent : rotateMfpExtentByView;
+		rotateAction();
 	}
 
 	_updateMfpPage(mfpSettings) {
@@ -222,7 +231,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
 	}
 
-	_createMfpBoundary(pageSize, center) {
+	_createMfpBoundary(pageSize, center, rotation) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
 
 		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
@@ -234,7 +243,14 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		return geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+		const transform = () => geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+		const transformAndRotate = () => {
+			const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+			const azimuthRotation = this._getAzimuth(mfpBoundary);
+			return mfpBoundary.rotate(rotation - azimuthRotation, center.getCoordinates());
+		};
+
+		return rotation !== 0 ? transformAndRotate() : transform();
 	}
 
 	_getMfpProjection() {
@@ -253,8 +269,10 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
+		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : this._getAzimuth(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
 		const pageCenter = this._getVisibleCenterPoint();
-		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
+
+		const encodingProperties = { layoutId: id, scale: scale, rotation: rotation, dpi: dpi, pageCenter: pageCenter };
 		const specs = await this._encoder.encode(this._map, encodingProperties);
 
 		startJob(specs);

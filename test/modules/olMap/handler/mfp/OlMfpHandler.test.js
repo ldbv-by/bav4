@@ -21,7 +21,8 @@ import proj4 from 'proj4';
 describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
-		current: { id: 'foo', scale: null, dpi: 125 }
+		current: { id: 'foo', scale: null, dpi: 125 },
+		autoRotation: true
 	};
 
 	const configService = {
@@ -134,7 +135,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(6);
+			expect(handler._registeredObservers).toHaveSize(7);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -211,7 +212,7 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: 0, dpi: 125, pageCenter: jasmine.any(Point) }).and.callFake(() => { });
+			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: jasmine.any(Number), dpi: 125, pageCenter: jasmine.any(Point) }).and.callFake(() => { });
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
 
@@ -330,12 +331,13 @@ describe('OlMfpHandler', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
 			const center = new Point([0, 0]);
+			const rotation = 0;
 			setup();
 
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 
-			expect(classUnderTest._createMfpBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
+			expect(classUnderTest._createMfpBoundary(pageSize, center, rotation)).toEqual(jasmine.any(Polygon));
 		});
 	});
 });
