@@ -10,11 +10,9 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
-
 /**
  * Opens the bottom sheet.
- * @param {TemplateResult} content  The content of the bottom sheet.
+ * @param {string|TemplateResult} content  The content of the bottom sheet. Could either be a a plain string or a lit-html TemplateResult.
  * @function
  */
 export const openBottomSheet = (content) => {
