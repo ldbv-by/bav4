@@ -24,6 +24,8 @@ describe('NotificationItem', () => {
 	};
 
 	describe('constructor', () => {
+		TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		it('sets a default model', async () => {
 			const element = new NotificationItem();
