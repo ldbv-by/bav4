@@ -2,10 +2,10 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { html } from 'lit-html';
 import { close, open } from '../store/mapContextMenu/mapContextMenu.action';
-import { emitFixedNotification, clearFixedNotification } from '../store/notifications/notifications.action';
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
+import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 
 
 /**
@@ -33,7 +33,7 @@ export class ContextClickPlugin extends BaPlugin {
 				addHighlightFeatures(
 					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS }
 				);
-				emitFixedNotification(content);
+				openBottomSheet(content);
 			}
 			else {
 				open([screenCoordinate[0], screenCoordinate[1]], content);
@@ -43,7 +43,7 @@ export class ContextClickPlugin extends BaPlugin {
 		const onMoveOrClick = () => {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
-				clearFixedNotification();
+				closeBottomSheet();
 			}
 			else {
 				close();
