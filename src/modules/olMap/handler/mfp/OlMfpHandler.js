@@ -113,7 +113,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : this._storeService.getStore().getState().position.rotation;
 		const geometry = this._createMfpBoundary(this._pageSize, center, rotation);
 		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center, rotation);
-
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
 	}
@@ -243,14 +242,14 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		const transform = () => geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
-		const transformAndRotate = () => {
-			const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
-			const azimuthRotation = this._getAzimuth(mfpBoundary);
-			return mfpBoundary.rotate(rotation - azimuthRotation, center.getCoordinates());
+		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+		const rotate = (polygon) => {
+			const azimuthRotation = this._getAzimuth(polygon);
+			polygon.rotate(rotation - azimuthRotation, center.getCoordinates());
+			return polygon;
 		};
 
-		return rotation !== 0 ? transformAndRotate() : transform();
+		return rotation !== 0 ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
 	_getMfpProjection() {
