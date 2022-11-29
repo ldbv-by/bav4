@@ -7,9 +7,18 @@ import { MvuElement } from '../../MvuElement';
 
 export const NOTIFICATION_AUTOCLOSE_TIME_NEVER = 0;
 
-
+const Default_Notification_Content = { content: null, level: null, autocloseTime: NOTIFICATION_AUTOCLOSE_TIME_NEVER };
 const Update_Notification = 'update_notification';
-const Update_Is_Fixed = 'update_is_fixed';
+
+/**
+ * Content of a Notification.
+ *
+ * @typedef NotificationContent
+ * @property {string|TemplateResult} content the displayed content of the notification
+ * @property {LevelTypes} level The type of level for this notification
+ * @property {Number} autocloseTime the time in ms, when the notification should close automatically. 0 sets the Autoclose to "never".
+ */
+
 /**
  * Element to display a notification
  * @class
@@ -18,8 +27,7 @@ const Update_Is_Fixed = 'update_is_fixed';
 export class NotificationItem extends MvuElement {
 	constructor() {
 		super({
-			notification: { content: null, level: null, autocloseTime: NOTIFICATION_AUTOCLOSE_TIME_NEVER },
-			isFixed: false,
+			notification: Default_Notification_Content,
 			autocloseTimeoutId: null
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -36,8 +44,6 @@ export class NotificationItem extends MvuElement {
 					notification: data,
 					autocloseTimeoutId: data.autocloseTime > NOTIFICATION_AUTOCLOSE_TIME_NEVER ? getHideTimeout() : null
 				};
-			case Update_Is_Fixed:
-				return { ...model, isFixed: data };
 		}
 	}
 
@@ -45,13 +51,12 @@ export class NotificationItem extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { notification, isFixed } = model;
+		const { notification } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const levelClass = {
 			notification_info: notification.level === LevelTypes.INFO,
 			notification_warn: notification.level === LevelTypes.WARN,
-			notification_error: notification.level === LevelTypes.ERROR,
-			notification_fixed: isFixed
+			notification_error: notification.level === LevelTypes.ERROR
 		};
 		const getLevelText = (level) => {
 			switch (level) {
@@ -66,13 +71,12 @@ export class NotificationItem extends MvuElement {
 			}
 		};
 
-		const content = notification.content ? notification.content : nothing;
-		return html`
-		<style>${css}</style>
-		<div class='notification_item ${classMap(levelClass)}'>
-        	${getLevelText(notification.level)}
-        	<div class='notification_content'>${content}</div>			
-		</div>`;
+		return notification.content ? html`
+			<style>${css}</style>
+			<div class='notification_item ${classMap(levelClass)}'>
+				${getLevelText(notification.level)}
+				<div class='notification_content'>${notification.content}</div>			
+			</div>` : nothing;
 	}
 
 	_hide() {
@@ -93,12 +97,13 @@ export class NotificationItem extends MvuElement {
 		return 'ba-notification-item';
 	}
 
-	set content(value) {
-		this.signal(Update_Notification, value);
-	}
-
-	set fixed(value) {
-		this.signal(Update_Is_Fixed, value);
+	/**
+	 * Sets the notification content
+	 * @param {NotificationContent} notification
+	 */
+	set content(notification) {
+		const content = { ...Default_Notification_Content, ...notification };
+		this.signal(Update_Notification, content);
 	}
 
 	set onClose(callback) {
