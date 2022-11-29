@@ -1,7 +1,11 @@
+import { EventLike } from '../../utils/storeUtils';
+import { GEORESOURCE_CHANGED } from '../geoResources/geoResources.reducer';
+
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
 export const LAYER_MODIFIED = 'layer/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
+export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
 
 
 export const initialState = {
@@ -71,7 +75,8 @@ export const createDefaultLayerProperties = () => ({
 	visible: true,
 	zIndex: -1,
 	opacity: 1,
-	constraints: createDefaultLayersConstraints()
+	constraints: createDefaultLayersConstraints(),
+	grChangedFlag: null
 });
 
 const addLayer = (state, payload) => {
@@ -146,6 +151,16 @@ const modifyLayer = (state, payload) => {
 	};
 };
 
+const updateGrChangedFlags = (state, payload /* the geoResourceId*/) => {
+	return {
+		...state,
+		active: state.active.map(layer => ({
+			...layer,
+			grChangedFlag: (layer.geoResourceId === payload) ? new EventLike(payload) : layer.grChangedFlag
+		}))
+	};
+};
+
 export const layersReducer = (state = initialState, action) => {
 
 	const { type, payload } = action;
@@ -159,6 +174,9 @@ export const layersReducer = (state = initialState, action) => {
 		}
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);
+		}
+		case GEORESOURCE_CHANGED: {
+			return updateGrChangedFlags(state, payload);
 		}
 		case LAYER_RESOURCES_READY: {
 			return setReady(state, payload);
