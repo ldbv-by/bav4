@@ -44,6 +44,12 @@ describe('NotificationItem', () => {
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
+
+		it('has default callback methods', async () => {
+			const element = await setup();
+
+			expect(element._onClose).toBeDefined();
+		});
 	});
 
 	describe('when notification item is rendered', () => {
@@ -101,8 +107,23 @@ describe('NotificationItem', () => {
 			notificationElement.dispatchEvent(new Event('animationend'));
 			expect(hideSpy).toHaveBeenCalled();
 
-
 			expect(element.onClose).toHaveBeenCalledWith(notification);
+		});
+
+		it('closes the notification item with call of _onClose', async () => {
+			const autocloseTime = 1000;
+			const laterThenAutoCloseTime = autocloseTime + 100;
+			const notification = { ...notificationContent, content: 'FooBar', autocloseTime: autocloseTime };
+
+			const element = await setup(notification);
+			const closeSpy = spyOn(element, '_onClose').and.callThrough();
+			const hideSpy = spyOn(element, '_hide').and.callThrough();
+			const notificationElement = element.shadowRoot.querySelector('.notification_item');
+
+			jasmine.clock().tick(laterThenAutoCloseTime);
+			notificationElement.dispatchEvent(new Event('animationend'));
+			expect(hideSpy).toHaveBeenCalled();
+			expect(closeSpy).toHaveBeenCalled();
 		});
 
 		describe('displays the level type', () => {

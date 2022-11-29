@@ -11,7 +11,7 @@ window.customElements.define(BottomSheet.tag, BottomSheet);
 describe('BottomSheet', () => {
 
 	const setup = async (content) => {
-		TestUtils.setupStoreAndDi({}, {});
+		TestUtils.setupStoreAndDi({});
 
 		const element = await TestUtils.render(BottomSheet.tag);
 		element.content = content;
@@ -19,7 +19,7 @@ describe('BottomSheet', () => {
 	};
 
 	describe('constructor', () => {
-
+		TestUtils.setupStoreAndDi({});
 		it('sets a default model', async () => {
 			const element = new BottomSheet();
 
