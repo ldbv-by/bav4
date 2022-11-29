@@ -1,4 +1,6 @@
+import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
+import { geoResourceChanged } from '../store/layers/layers.action';
 
 
 /**
@@ -126,6 +128,7 @@ export class GeoResource {
 
 	setLabel(label) {
 		this._label = label;
+		geoResourceChanged(this);
 		return this;
 	}
 
@@ -280,7 +283,12 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	async get() {
 		try {
+			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
+			// replace the GeoResourceFuture by the resolved GeoResource in the chache
+			geoResourceService.addOrReplace(resolvedGeoResource);
+			// update 'layers' slice of state
+			geoResourceChanged(resolvedGeoResource);
 			this._onResolve.forEach(f => f(resolvedGeoResource, this));
 			return resolvedGeoResource;
 		}
