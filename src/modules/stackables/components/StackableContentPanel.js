@@ -1,6 +1,5 @@
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
-import { $injector } from '../../../injection';
 import css from './stackableContentPanel.css';
 import { MvuElement } from '../../MvuElement';
 
@@ -26,8 +25,6 @@ export class StackableContentPanel extends MvuElement {
 			autocloseTime: Notification_Autoclose_Time,
 			lastNotification: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
 	}
 
 	onInitialize() {
