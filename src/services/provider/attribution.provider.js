@@ -59,11 +59,11 @@ export const getDefaultAttribution = (georesource) => {
 };
 
 /**
- * Provider function for a locally imported GeoResouce.
+ * Provider function for a locally imported or created GeoResouce.
  * @function
  * @returns {Attribution}
  */
-export const getAttributionForLocallyImportedGeoResource = (georesource) => {
+export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
 	return {
 		description: georesource.label,

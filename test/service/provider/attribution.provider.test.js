@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/domain/geoResources';
-import { getAttributionForLocallyImportedGeoResource, getAttributionProviderForGeoResourceImportedByUrl, getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
+import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionProviderForGeoResourceImportedByUrl, getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 describe('Attribution provider', () => {
 
@@ -89,7 +89,7 @@ describe('Attribution provider', () => {
 		});
 	});
 
-	describe('getAttributionForLocallyImportedGeoResource', () => {
+	describe('getAttributionForLocallyImportedOrCreatedGeoResource', () => {
 
 		beforeAll(() => {
 			$injector
@@ -100,7 +100,7 @@ describe('Attribution provider', () => {
 
 			const label = 'label';
 
-			expect(getAttributionForLocallyImportedGeoResource(new GeoResourceImpl(undefined, 'id', label))).toEqual({
+			expect(getAttributionForLocallyImportedOrCreatedGeoResource(new GeoResourceImpl(undefined, 'id', label))).toEqual({
 				description: label,
 				copyright: { label: 'global_locally_imported_dataset_copyright_label' }
 			});
