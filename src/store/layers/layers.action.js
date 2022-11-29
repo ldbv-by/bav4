@@ -2,9 +2,8 @@
  * Action creators to change the list of active layers and update properties of a layer.
  * @module layers/action
  */
-import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY } from './layers.reducer';
+import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED } from './layers.reducer';
 import { $injector } from '../../injection';
-import { GEORESOURCE_CHANGED } from '../geoResources/geoResources.reducer';
 import { GeoResource } from '../../domain/geoResources';
 
 
@@ -105,7 +104,7 @@ export const setReady = () => {
   */
 export const geoResourceChanged = (grOrId) => {
 	getStore().dispatch({
-		type: GEORESOURCE_CHANGED,
+		type: LAYER_GEORESOURCE_CHANGED,
 		payload: (grOrId instanceof GeoResource ? grOrId.id : grOrId)
 	});
 };

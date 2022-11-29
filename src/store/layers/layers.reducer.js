@@ -1,5 +1,4 @@
 import { EventLike } from '../../utils/storeUtils';
-import { GEORESOURCE_CHANGED } from '../geoResources/geoResources.reducer';
 
 export const LAYER_ADDED = 'layer/added';
 export const LAYER_REMOVED = 'layer/removed';
@@ -175,7 +174,7 @@ export const layersReducer = (state = initialState, action) => {
 		case LAYER_MODIFIED: {
 			return modifyLayer(state, payload);
 		}
-		case GEORESOURCE_CHANGED: {
+		case LAYER_GEORESOURCE_CHANGED: {
 			return updateGrChangedFlags(state, payload);
 		}
 		case LAYER_RESOURCES_READY: {
