@@ -1124,7 +1124,6 @@ describe('OlMap', () => {
 			const message = 'error';
 			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id) => new Layer({ id: id, render: () => { }, properties: { placeholder: true } }));
-			const geoResourceServiceSpy = spyOn(geoResourceServiceStub, 'addOrReplace');
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
 			const warnSpy = spyOn(console, 'warn');
 
@@ -1135,7 +1134,6 @@ describe('OlMap', () => {
 
 			await TestUtils.timeout();
 			expect(map.getLayers().getLength()).toBe(0);
-			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith(message);
 			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
