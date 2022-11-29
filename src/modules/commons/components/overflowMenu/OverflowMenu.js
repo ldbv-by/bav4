@@ -2,11 +2,11 @@ import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { $injector } from '../../../../injection';
-import { clearFixedNotification, emitFixedNotification } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import css from './overflowmenu.css';
 import itemcss from './menuitem.css';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
+import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 
 const Update_IsCollapsed = 'update_is_collapsed';
 const Update_Menu_Type = 'update_menu_type';
@@ -116,10 +116,10 @@ export class OverflowMenu extends MvuElement {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		if (environmentService.isTouch()) {
 			if (isCollapsed) {
-				clearFixedNotification();
+				closeBottomSheet();
 			}
 			else {
-				emitFixedNotification(this._getItems(menuItems));
+				openBottomSheet(this._getItems(menuItems));
 			}
 			return nothing;
 		}
@@ -186,7 +186,7 @@ export class OverflowMenu extends MvuElement {
 		this._deregisterDocumentListener('pointerup');
 
 		const closeTouch = () => {
-			clearFixedNotification();
+			closeBottomSheet();
 			this.signal(Update_IsCollapsed, true);
 		};
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');

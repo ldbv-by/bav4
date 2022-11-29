@@ -3,11 +3,11 @@ import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { render } from 'lit-html';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 
 
 window.customElements.define(FirstSteps.tag, FirstSteps);
@@ -24,9 +24,7 @@ describe('Help', () => {
 			mainMenu: {
 				open: true
 			},
-			notifications: {
-				latest: null
-			},
+			bottomSheet: { data: null },
 			media: {
 				portrait: false,
 				minWidth: true
@@ -37,7 +35,7 @@ describe('Help', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), notifications: notificationReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), bottomSheet: bottomSheetReducer, modal: modalReducer });
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
 			getUrlParams: () => urlParams
@@ -121,7 +119,7 @@ describe('Help', () => {
 
 		});
 
-		it('emits a notification', async () => {
+		it('opens the bottomSheet', async () => {
 			const state = {
 				media: {
 					portrait: true
@@ -129,14 +127,14 @@ describe('Help', () => {
 			};
 
 			const element = await setup(state, {});
-			expect(store.getState().notifications.latest).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 			jasmine.clock().tick(3100);
 
 			expect(element).toBeTruthy();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 		});
 
-		it('emits a notification with a close-Button', async () => {
+		it('opens the bottomSheet with a close-Button', async () => {
 			const target = document.createElement('div');
 			const state = {
 				media: {
@@ -148,17 +146,17 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 
-			const notificationContent = store.getState().notifications.latest.payload.content;
-			render(notificationContent, target);
+			const bottomSheetContent = store.getState().bottomSheet.data;
+			render(bottomSheetContent, target);
 			const closeButtonElement = target.querySelector('#closeButton');
 			closeButtonElement.click();
 
-			expect(store.getState().notifications.latest.payload.content).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
-		it('emits a notification with a open-Button', async () => {
+		it('opens the bottomSheet with a open-Button', async () => {
 			const target = document.createElement('div');
 			const state = {
 				media: {
@@ -170,19 +168,19 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 
-			const notificationContent = store.getState().notifications.latest.payload.content;
-			render(notificationContent, target);
+			const bottomSheetContent = store.getState().bottomSheet.data;
+			render(bottomSheetContent, target);
 
 			const openButtonElement = target.querySelector('#firstSteps');
 			expect(openButtonElement.label).toBe('help_firstSteps_notification_first_steps');
 			openButtonElement.click();
 
-			expect(store.getState().notifications.latest.payload.content).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
-		describe('when a notification with a open-Button is emitted', () => {
+		describe('when the bottomSheet with a open-Button is opened', () => {
 			describe('and when the open-button is clicked', () => {
 				it('opens the modal with the helpcontent', async () => {
 					const target = document.createElement('div');
@@ -196,16 +194,16 @@ describe('Help', () => {
 					jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 					expect(element).toBeTruthy();
-					expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+					expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 
-					const notificationContent = store.getState().notifications.latest.payload.content;
-					render(notificationContent, target);
+					const bottomSheetContent = store.getState().bottomSheet.data;
+					render(bottomSheetContent, target);
 
 					const openButtonElement = target.querySelector('#firstSteps');
 					expect(openButtonElement.label).toBe('help_firstSteps_notification_first_steps');
 					openButtonElement.click();
 
-					expect(store.getState().notifications.latest.payload.content).toBeNull();
+					expect(store.getState().bottomSheet.data).toBeNull();
 					expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 					//we expect a lit-html TemplateResult as content
 					expect(store.getState().modal.data.content.strings[1]).toContain('<iframe title=');
@@ -215,7 +213,7 @@ describe('Help', () => {
 			});
 		});
 
-		it('supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
+		it('supress the bottomSheet, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
 			const state = {
 				media: {
 					portrait: true
@@ -225,7 +223,7 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(store.getState().notifications.latest).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
 		it('supress a notification, when help-content is not available', async () => {
@@ -239,7 +237,7 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(store.getState().notifications.latest).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
 		it('supress a notification, when help-content is not a valid URL', async () => {
@@ -253,7 +251,7 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(store.getState().notifications.latest).toBeNull();
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
 		it('does not supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' have invalid value ', async () => {
@@ -267,7 +265,7 @@ describe('Help', () => {
 			jasmine.clock().tick(FIRST_STEPS_NOTIFICATION_DELAY_TIME + 100);
 
 			expect(element).toBeTruthy();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 		});
 	});
 
