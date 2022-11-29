@@ -258,6 +258,9 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_getAzimuth(polygon) {
+		if (!polygon || polygon.getType() !== 'Polygon') {
+			return null;
+		}
 		const coordinates = polygon.getCoordinates()[0];
 		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
 		const topAngle = getAngle(coordinates[0], coordinates[1]);

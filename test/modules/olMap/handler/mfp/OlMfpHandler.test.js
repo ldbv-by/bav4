@@ -12,8 +12,8 @@ import { TestUtils } from '../../../../test-utils';
 
 
 import { register } from 'ol/proj/proj4';
-import { Polygon, Point } from 'ol/geom';
-import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { Polygon, Point, LineString } from 'ol/geom';
+import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 
@@ -58,7 +58,7 @@ describe('OlMfpHandler', () => {
 		const mfpState = {
 			mfp: state
 		};
-		TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
+		const	store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
@@ -69,6 +69,7 @@ describe('OlMfpHandler', () => {
 			.registerSingleton('Mfp3Encoder', mfpEncoderMock);
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
+		return store;
 	};
 
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
@@ -189,7 +190,7 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			const updateSpy = spyOn(handler, '_updateRotation').and.callThrough();
+			const updateSpy = spyOn(handler, '_updateRotation').and.callFake(() => {});
 
 
 			handler.activate(map);
@@ -205,7 +206,48 @@ describe('OlMfpHandler', () => {
 
 			changeRotation(42);
 			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.calls.reset();
+
+			setAutoRotation(false);
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.calls.reset();
+
+			setAutoRotation(true);
+			expect(updateSpy).toHaveBeenCalled();
 		});
+
+		describe('when autoRotation is false', () => {
+			it('rotates the mfp-boundary', () => {
+				const actualRotationInDegree = 90;
+				const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+				const map = setupMap();
+				setup({ ...initialState, scale: 42 });
+
+				const handler = new OlMfpHandler();
+				handler.activate(map);
+
+				setAutoRotation(false);
+				const spy = spyOn(handler, '_createMfpBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
+				changeRotation(actualRotationInDegree);
+
+				expect(spy).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('when autoRotation is true', () => {
+			it('rotates the view', () => {
+				const map = setupMap();
+				const store =	setup({ ...initialState, scale: 42 });
+
+				const handler = new OlMfpHandler();
+				handler.activate(map);
+
+				expect(store.getState().position.rotation).toBeCloseTo(-0.03355, 5);
+			});
+		});
+
+
+
 
 		it('encodes map to mfp spec after store changes', async () => {
 			const map = setupMap();
@@ -216,10 +258,24 @@ describe('OlMfpHandler', () => {
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
 
+
 			handler.activate(map);
 			requestJob();
 
 			await TestUtils.timeout();
+			expect(encodeSpy).toHaveBeenCalled();
+			expect(centerPointSpy).toHaveBeenCalled();
+
+
+			encodeSpy.calls.reset();
+			centerPointSpy.calls.reset();
+			// autorotation off
+			const azimuthSpy = spyOn(handler, '_getAzimuth').and.callFake(() => 42);
+			setAutoRotation(false);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(azimuthSpy).toHaveBeenCalled();
 			expect(encodeSpy).toHaveBeenCalled();
 			expect(centerPointSpy).toHaveBeenCalled();
 		});
@@ -262,9 +318,18 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 			const nonUniformQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
 			const squaredQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
+			const lineString = new LineString([[0, 10], [10, 9], [10, 0]]);
+			const point = new Point([0, 10]);
 
 			expect(classUnderTest._getAzimuth(nonUniformQuadrangle)).toBeCloseTo(0.048863, 4);
 			expect(classUnderTest._getAzimuth(squaredQuadrangle)).toBeCloseTo(0.0, 5);
+
+			expect(classUnderTest._getAzimuth(lineString)).toBeNull();
+			expect(classUnderTest._getAzimuth(point)).toBeNull();
+
+			expect(classUnderTest._getAzimuth(null)).toBeNull();
+			expect(classUnderTest._getAzimuth(undefined)).toBeNull();
+
 		});
 	});
 
