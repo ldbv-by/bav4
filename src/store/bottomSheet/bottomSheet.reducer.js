@@ -1,4 +1,4 @@
-export const BOTTOM_SHEET_CHANGED = 'bottom_sheet/contentChanged';
+export const BOTTOM_SHEET_CHANGED = 'bottomSheet/contentChanged';
 
 export const initialState = {
 	/**
