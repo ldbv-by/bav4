@@ -24,7 +24,8 @@ describe('LAYER_ADDING_DELAY_MS', () => {
 describe('GeoResourceResultItem', () => {
 
 	const geoResourceService = {
-		byId: () => { }
+		byId: () => { },
+		addOrReplace: () => { }
 	};
 
 	let store;
