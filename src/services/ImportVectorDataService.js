@@ -2,7 +2,7 @@ import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
-import { getAttributionForLocallyImportedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
+import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
 
 /**
  *
@@ -102,7 +102,7 @@ export class ImportVectorDataService {
 		if (resultingSourceType) {
 			const vgr = new VectorGeoResource(id, label, vectorSourceType)
 				.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
-				.setAttributionProvider(getAttributionForLocallyImportedGeoResource);
+				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}

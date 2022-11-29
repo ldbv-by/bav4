@@ -3,7 +3,7 @@ import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResourc
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
-import { getAttributionForLocallyImportedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
+import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 
 describe('ImportVectorDataService', () => {
 
@@ -270,7 +270,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedGeoResource);
+			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
 		});
@@ -292,7 +292,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.label).toBe(options.label);
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedGeoResource);
+			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).not.toHaveBeenCalled();
 		});
@@ -313,7 +313,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.id).toEqual(jasmine.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(4326);
-			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedGeoResource);
+			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
@@ -336,7 +336,7 @@ describe('ImportVectorDataService', () => {
 			expect(vgr.id).toEqual(jasmine.any(String));
 			expect(vgr.data).toBe(data);
 			expect(vgr.srid).toBe(dataSrid);
-			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedGeoResource);
+			expect(vgr._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(vgr);
 			expect(sourceTypeServiceSpy).toHaveBeenCalled();
 			expect(mapSourceTypeToVectorSourceTypeSpy).toHaveBeenCalled();
