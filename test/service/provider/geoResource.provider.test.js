@@ -1,6 +1,7 @@
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
+import { TestUtils } from '../../test-utils';
 
 describe('BVV GeoResource provider', () => {
 	const configService = {
@@ -11,10 +12,16 @@ describe('BVV GeoResource provider', () => {
 		async get() { }
 	};
 
+	const geoResourceService = {
+		addOrReplace() { }
+	};
+
 	beforeAll(() => {
+		TestUtils.setupStoreAndDi();
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('GeoResourceService', geoResourceService);
 	});
 
 	const basicAttribution = {
