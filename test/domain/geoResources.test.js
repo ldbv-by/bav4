@@ -202,7 +202,7 @@ describe('GeoResource', () => {
 
 			describe('when property \'label\' changes', () => {
 
-				it('updated the layers slice of state', () => {
+				it('updates the slice-of-state \'layers\'', () => {
 					const geoResourceId0 = 'geoResourceId0';
 					const geoResourceId1 = 'geoResourceId1';
 					const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
@@ -254,7 +254,7 @@ describe('GeoResource', () => {
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResource);
 		});
 
-		it('updated the \'layers\' slice of state', async () => {
+		it('updates the slice-of-state \'layers\'', async () => {
 			const geoResourceId0 = 'geoResourceId0';
 			const geoResourceId1 = 'geoResourceId1';
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };

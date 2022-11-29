@@ -287,7 +287,7 @@ export class GeoResourceFuture extends GeoResource {
 			const resolvedGeoResource = await this._loader(this.id);
 			// replace the GeoResourceFuture by the resolved GeoResource in the chache
 			geoResourceService.addOrReplace(resolvedGeoResource);
-			// update 'layers' slice of state
+			// update  slice-of-state 'layers'
 			geoResourceChanged(resolvedGeoResource);
 			this._onResolve.forEach(f => f(resolvedGeoResource, this));
 			return resolvedGeoResource;
