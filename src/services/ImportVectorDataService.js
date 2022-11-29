@@ -2,6 +2,7 @@ import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
+import { getAttributionForLocallyImportedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
 
 /**
  *
@@ -71,8 +72,9 @@ export class ImportVectorDataService {
 				const resultingSourceType = this._sourceTypeService.forData(data).sourceType;
 				const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 				if (resultingSourceType) {
-					const vgr = new VectorGeoResource(id, label, vectorSourceType);
-					vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
+					const vgr = new VectorGeoResource(id, label, vectorSourceType)
+						.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
+						.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url));
 					return vgr;
 				}
 				throw new Error(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
@@ -98,8 +100,9 @@ export class ImportVectorDataService {
 		const resultingSourceType = sourceType ?? this._sourceTypeService.forData(data).sourceType;
 		const vectorSourceType = this._mapSourceTypeToVectorSourceType(resultingSourceType);
 		if (resultingSourceType) {
-			const vgr = new VectorGeoResource(id, label, vectorSourceType);
-			vgr.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/);
+			const vgr = new VectorGeoResource(id, label, vectorSourceType)
+				.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
+				.setAttributionProvider(getAttributionForLocallyImportedGeoResource);
 			this._geoResourceService.addOrReplace(vgr);
 			return vgr;
 		}
