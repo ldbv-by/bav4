@@ -10,15 +10,35 @@ window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
 
+	const setup = async (content) => {
+		TestUtils.setupStoreAndDi({}, {});
+
+		const element = await TestUtils.render(BottomSheet.tag);
+		element.content = content;
+		return element;
+	};
+
+	describe('constructor', () => {
+
+		it('sets a default model', async () => {
+			const element = new BottomSheet();
+
+			expect(element.getModel()).toEqual({
+				content: null
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+
+		it('renders nothing when no data available', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
+	});
+
 	describe('when BottomSheet is rendered', () => {
-
-		const setup = async (content) => {
-			TestUtils.setupStoreAndDi({}, {});
-
-			const element = await TestUtils.render(BottomSheet.tag);
-			element.content = content;
-			return element;
-		};
 
 		it('displays the bottom sheet content', async () => {
 			const element = await setup('FooBar');

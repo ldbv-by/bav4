@@ -1,4 +1,4 @@
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import css from './bottomSheet.css';
 import { MvuElement } from '../../MvuElement';
 
@@ -34,11 +34,11 @@ export class BottomSheet extends MvuElement {
 	 */
 	createView(model) {
 		const { content } = model;
-		return html`
+		return content ? html`
 		<style>${css}</style>
 		<div class='bottom-sheet' data-test-id>
         	${content}
-		</div>`;
+		</div>` : nothing;
 	}
 
 	static get tag() {
