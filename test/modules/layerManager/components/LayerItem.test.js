@@ -316,7 +316,7 @@ describe('LayerItem', () => {
 			const element = await TestUtils.render(LayerItem.tag);
 			element.layer = { ...layer, collapsed: true };
 
-			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+			const checkbox = element.shadowRoot.querySelector('ba-checkbox').innerText;
 
 			checkbox.click();
 			const actualLayer = store.getState().layers.active[0];
