@@ -3,6 +3,7 @@ import { VectorGeoResource, VectorSourceType } from '../../src/domain/geoResourc
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 import { MediaType } from '../../src/services/HttpService';
 import { ImportVectorDataService } from '../../src/services/ImportVectorDataService';
+import { TestUtils } from '../test-utils';
 
 describe('ImportVectorDataService', () => {
 
@@ -21,6 +22,7 @@ describe('ImportVectorDataService', () => {
 
 	const setup = () => {
 
+		TestUtils.setupStoreAndDi({});
 		$injector
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
