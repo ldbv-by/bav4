@@ -79,13 +79,15 @@ export class StackableContentPanel extends MvuElement {
 		const createBottomSheet = (content) => {
 			return content ? html`<ba-bottom-sheet .content=${bottomSheet}></ba-bottom-sheet>` : nothing;
 		};
-		return html`
-        <style>${css}</style>
-		<div class="stackable-content-panel">
-			${repeat(notifications, (notification) => notification.id, createNotificationItem)}  
-			${createBottomSheet(bottomSheet)}
-		</div>
-        `;
+
+		const isEmpty = notifications.length === 0 && bottomSheet == null;
+
+		return isEmpty ? nothing : html`
+			<style>${css}</style>
+			<div class="stackable-content-panel">
+				${repeat(notifications, (notification) => notification.id, createNotificationItem)}  
+				${createBottomSheet(bottomSheet)}
+			</div>` ;
 	}
 
 	static get tag() {

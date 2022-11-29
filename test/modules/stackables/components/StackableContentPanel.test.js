@@ -13,7 +13,7 @@ window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
-describe('NotificationPanel', () => {
+describe('StackableContentPanel', () => {
 	const setup = async (state = { notifications: { notification: null }, bottomSheet: { data: null } }) => {
 		TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, pointer: pointerReducer, bottomSheet: bottomSheetReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
@@ -22,11 +22,27 @@ describe('NotificationPanel', () => {
 		return element;
 	};
 
-	it('displays the empty panel', async () => {
-		const element = await setup();
+	describe('constructor', () => {
 
-		expect(element).toBeTruthy();
-		expect(element._model.notifications.length).toBe(0);
+		it('sets a default model', async () => {
+			const element = new StackableContentPanel();
+
+			expect(element.getModel()).toEqual({
+				notifications: [],
+				bottomSheet: null,
+				autocloseTime: jasmine.any(Number),
+				lastNotification: null
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+
+		it('renders nothing when no data available', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
 	});
 
 	it('adds a NotificationItem, when a notification is emitted', async () => {
