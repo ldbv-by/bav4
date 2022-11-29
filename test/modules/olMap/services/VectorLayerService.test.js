@@ -7,7 +7,7 @@ import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
-import { geoResourcesReducer } from '../../../../src/store/geoResources/geoResources.reducer';
+import { layersReducer } from '../../../../src/store/layers/layers.reducer';
 
 
 describe('VectorLayerService', () => {
@@ -66,10 +66,9 @@ describe('VectorLayerService', () => {
 	describe('service methods', () => {
 
 		let instanceUnderTest;
-		let store;
 		beforeEach(() => {
-			store = TestUtils.setupStoreAndDi({}, {
-				geoResources: geoResourcesReducer
+			TestUtils.setupStoreAndDi({}, {
+				layers: layersReducer
 			});
 			$injector
 				.registerSingleton('UrlService', urlService)
@@ -248,7 +247,6 @@ describe('VectorLayerService', () => {
 
 					await TestUtils.timeout();
 					expect(vectorGeoresource.label).toBe(kmlName);
-					expect(store.getState().geoResources.changed.payload).toBe(id);
 				});
 			});
 		});
