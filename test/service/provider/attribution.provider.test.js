@@ -1,12 +1,12 @@
 import { $injector } from '../../../src/injection';
 import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/domain/geoResources';
-import { getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
+import { getAttributionForLocallyImportedGeoResource, getAttributionProviderForGeoResourceImportedByUrl, getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
 
 describe('Attribution provider', () => {
 
 	class GeoResourceImpl extends GeoResource {
-		constructor(attribution, id = 'id') {
-			super(id);
+		constructor(attribution, id = 'id', label) {
+			super(id, label);
 			this._attribution = attribution;
 		}
 
@@ -86,6 +86,37 @@ describe('Attribution provider', () => {
 			expect(getDefaultAttribution(new GeoResourceImpl(undefined))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl('foo'))).toEqual(getMinimalAttribution('foo'));
 			expect(getDefaultAttribution(new GeoResourceImpl(getMinimalAttribution('foo')))).toEqual(getMinimalAttribution('foo'));
+		});
+	});
+
+	describe('getAttributionForLocallyImportedGeoResource', () => {
+
+		beforeAll(() => {
+			$injector
+				.registerSingleton('TranslationService', { translate: (key) => key });
+		});
+
+		it('provides an attribution for locally imported dataset', () => {
+
+			const label = 'label';
+
+			expect(getAttributionForLocallyImportedGeoResource(new GeoResourceImpl(undefined, 'id', label))).toEqual({
+				description: label,
+				copyright: { label: 'global_locally_imported_dataset_copyright_label' }
+			});
+		});
+	});
+
+	describe('getAttributionProviderForGeoResourceImportedByUrl', () => {
+
+		it('Returns a function returning the actual provider for an URL based dataset imported by the user', () => {
+			const label = 'label';
+			const url = 'https://foo.bar/some?k=v';
+
+			expect(getAttributionProviderForGeoResourceImportedByUrl(url)(new GeoResourceImpl(undefined, 'id', label))).toEqual({
+				description: label,
+				copyright: { label: 'foo.bar', url: 'https://foo.bar' }
+			});
 		});
 	});
 });
