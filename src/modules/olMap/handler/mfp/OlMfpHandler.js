@@ -86,18 +86,19 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
-		// HINT: To observe the store for map changes (especially livecenter) results in a more intensified call traffic with the store.
+		// HINT: To observe the store for map changes (especially liveCenter) results in a more intensified call traffic with the store.
 		// A shortcut and allowed alternative is the direct binding to the ol map events.
-		// The current design is choosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
+		// The current design is chosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
 		// the performance and time consumptions (< 1 ms), but makes it simpler to follow only one source of events.
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.mfp.autoRotation, () => this._updateRotation()),
+			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
 			observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
-			observe(store, state => state.position.rotation, () => this._updateRotation())
+			observe(store, state => state.position.rotation, () => this._updateRotation()),
+			observe(store, state => state.position.liveRotation, () => this._updateMfpPreview())
 		];
 	}
 
@@ -110,9 +111,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
-		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : this._storeService.getStore().getState().position.rotation;
+		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.liveRotation;
 		const geometry = this._createMfpBoundary(this._pageSize, center, rotation);
 		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center, rotation);
+
 		this._mfpBoundaryFeature.setGeometry(geometry);
 		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
 	}
@@ -249,7 +251,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			return polygon;
 		};
 
-		return rotation !== 0 ? rotate(mfpBoundary) : mfpBoundary;
+		return rotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
 	_getMfpProjection() {
@@ -267,6 +269,13 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const angle = (topAngle + bottomAngle) / 2;
 		return angle;
+	}
+
+	_onAutoRotationChanged(autorotation) {
+		if (autorotation) {
+			this._updateMfpPreview();
+		}
+		this._updateRotation();
 	}
 
 	async _encodeMap() {

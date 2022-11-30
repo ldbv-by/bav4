@@ -14,8 +14,10 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeLiveCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
+import { changeCenter, changeLiveCenter, changeLiveRotation, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
+
+
 
 
 describe('OlMfpHandler', () => {
@@ -58,7 +60,7 @@ describe('OlMfpHandler', () => {
 		const mfpState = {
 			mfp: state
 		};
-		const	store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
+		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
@@ -136,7 +138,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(7);
+			expect(handler._registeredObservers).toHaveSize(8);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -190,7 +192,7 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			const updateSpy = spyOn(handler, '_updateRotation').and.callFake(() => {});
+			const updateSpy = spyOn(handler, '_updateRotation').and.callFake(() => { });
 
 
 			handler.activate(map);
@@ -228,7 +230,8 @@ describe('OlMfpHandler', () => {
 
 				setAutoRotation(false);
 				const spy = spyOn(handler, '_createMfpBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
-				changeRotation(actualRotationInDegree);
+
+				changeLiveRotation(actualRotationInDegree);
 
 				expect(spy).toHaveBeenCalledTimes(2);
 			});
@@ -237,7 +240,7 @@ describe('OlMfpHandler', () => {
 		describe('when autoRotation is true', () => {
 			it('rotates the view', () => {
 				const map = setupMap();
-				const store =	setup({ ...initialState, scale: 42 });
+				const store = setup({ ...initialState, scale: 42 });
 
 				const handler = new OlMfpHandler();
 				handler.activate(map);
@@ -245,9 +248,6 @@ describe('OlMfpHandler', () => {
 				expect(store.getState().position.rotation).toBeCloseTo(-0.03355, 5);
 			});
 		});
-
-
-
 
 		it('encodes map to mfp spec after store changes', async () => {
 			const map = setupMap();
