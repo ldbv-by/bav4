@@ -963,6 +963,7 @@ describe('OlMap', () => {
 			});
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			expect(element._viewSyncBlocked).toBeUndefined();
@@ -1040,6 +1041,7 @@ describe('OlMap', () => {
 				return olRealLayer;
 			});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1069,6 +1071,7 @@ describe('OlMap', () => {
 				return olRealLayer;
 			});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(id0, { visible: false, opacity: .5, geoResourceId: geoResourceId0 });
 
@@ -1108,6 +1111,7 @@ describe('OlMap', () => {
 				}
 				return nonAsyncGeoResource;
 			});
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(nonAsyncLayerId);
 			addLayer(underTestLayerId, { zIndex: 0 });
