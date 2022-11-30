@@ -1,7 +1,5 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
-import { geoResourceChanged } from '../store/layers/layers.action';
-
 
 /**
  * Attribution data of a GeoResource.
@@ -128,7 +126,6 @@ export class GeoResource {
 
 	setLabel(label) {
 		this._label = label;
-		geoResourceChanged(this);
 		return this;
 	}
 
@@ -286,11 +283,9 @@ export class GeoResourceFuture extends GeoResource {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
 			// replace the GeoResourceFuture by the resolved GeoResource in the chache
-			geoResourceService.addOrReplace(resolvedGeoResource);
-			// update  slice-of-state 'layers'
-			geoResourceChanged(resolvedGeoResource);
-			this._onResolve.forEach(f => f(resolvedGeoResource, this));
-			return resolvedGeoResource;
+			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
+			this._onResolve.forEach(f => f(observedGr, this));
+			return observedGr;
 		}
 		catch (error) {
 			this._onReject.forEach(f => f(this));
@@ -528,17 +523,26 @@ export class VTGeoResource extends GeoResource {
  * Returns an observable GeoResource.
  * All of its fields can be observed for changes.
  * @param {GeoResource} geoResource
- * @param {function (property, value)} onChange callback function
+ * @param {function (property, value)} onChanged callback function, called AFTER the value was changed
+ * @param {String} [identifier] optional identifier which can be used to track if a specific callback function is already registered
  * @returns proxified GeoResource
  */
-export const observable = (geoResource, onChange) => {
+export const observable = (geoResource, onChanged, identifier = null) => {
 
 	return new Proxy(geoResource, {
 		set: function (target, prop, value) {
 			if (Object.keys(target).includes(prop) && target[prop] !== value) {
-				onChange(prop, value);
+				target[prop] = value;
+				onChanged(prop, value);
+				return true;
 			}
 			return Reflect.set(...arguments);
+		},
+		get: (target, key) => {
+			if (identifier && key === identifier) {
+				return true;
+			}
+			return target[key];
 		}
 	});
 };

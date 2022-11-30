@@ -2,7 +2,6 @@
 import { GeoResourceTypes, GeoResource, WmsGeoResource, XyzGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
-import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
 import { TestUtils } from '../test-utils';
 
 
@@ -13,14 +12,11 @@ describe('GeoResource', () => {
 	};
 
 	const setup = (state = {}) => {
-		const store = TestUtils.setupStoreAndDi(state, {
-			layers: layersReducer
-		});
+		const store = TestUtils.setupStoreAndDi(state);
 		$injector
 			.registerSingleton('GeoResourceService', geoResourceServiceMock);
 		return store;
 	};
-
 
 	describe('GeoResourceTypes', () => {
 
@@ -199,28 +195,6 @@ describe('GeoResource', () => {
 				expect(georesource.queryable).toBeFalse();
 				expect(georesource.exportable).toBeFalse();
 			});
-
-			describe('when property \'label\' changes', () => {
-
-				it('updates the slice-of-state \'layers\'', () => {
-					const geoResourceId0 = 'geoResourceId0';
-					const geoResourceId1 = 'geoResourceId1';
-					const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
-					const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
-					const store = setup({
-						layers: {
-							active: [layerProperties0, layerProperties1]
-						}
-					});
-					const georesource = new GeoResourceNoImpl(geoResourceId0);
-
-					georesource
-						.setLabel('some label');
-
-					expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
-					expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
-				});
-			});
 		});
 
 	});
@@ -246,32 +220,12 @@ describe('GeoResource', () => {
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
 
 			const geoResource = await future.get();
 
 			expect(geoResource).toEqual(expectedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResource);
-		});
-
-		it('updates the slice-of-state \'layers\'', async () => {
-			const geoResourceId0 = 'geoResourceId0';
-			const geoResourceId1 = 'geoResourceId1';
-			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
-			const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
-			const store = setup({
-				layers: {
-					active: [layerProperties0, layerProperties1]
-				}
-			});
-			const expectedGeoResource = new WmsGeoResource(geoResourceId0, 'label', 'url', 'layers', 'format');
-			const loader = jasmine.createSpy().withArgs(geoResourceId0).and.resolveTo(expectedGeoResource);
-			const future = new GeoResourceFuture(geoResourceId0, loader);
-
-			await future.get();
-
-			expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
-			expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
 		});
 
 		it('rejects when the loader rejects', async () => {
@@ -294,6 +248,7 @@ describe('GeoResource', () => {
 			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
 			const future = new GeoResourceFuture(id, loader);
@@ -484,6 +439,22 @@ describe('GeoResource', () => {
 
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
 			expect(xyzGeoResource.label).toBe(modifiedLabel);
+		});
+
+		it('observes changes and registers an identifier', () => {
+			setup();
+			const identifier = '__foo';
+			const modifiedLabel = 'modified';
+			const callback = jasmine.createSpy();
+			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback, identifier);
+
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.unknown = modifiedLabel;
+
+			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(xyzGeoResource.label).toBe(modifiedLabel);
+			expect(xyzGeoResource[identifier]).toBeTrue();
 		});
 	});
 });
