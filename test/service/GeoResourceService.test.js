@@ -4,6 +4,8 @@ import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource,
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
+import { TestUtils } from '../test-utils';
+import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
 
 describe('GeoResourceService', () => {
 
@@ -11,12 +13,14 @@ describe('GeoResourceService', () => {
 		isStandalone: () => { }
 	};
 
-	beforeAll(() => {
+	let store;
+
+	const setup = (provider = loadExampleGeoResources, byIdProviders, state = {}) => {
+		store = TestUtils.setupStoreAndDi(state, {
+			layers: layersReducer
+		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService);
-	});
-
-	const setup = (provider = loadExampleGeoResources, byIdProviders) => {
 		return new GeoResourceService(provider, byIdProviders);
 	};
 	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
@@ -35,15 +39,17 @@ describe('GeoResourceService', () => {
 
 	describe('init', () => {
 
-		it('initializes the service', async () => {
+		it('initializes the service and proxifies all GeoResource', async () => {
 
 			const instanceUnderTest = setup();
+			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
 			expect(instanceUnderTest._georesources).toBeNull();
 
 			const georesources = await instanceUnderTest.init();
 
 			//georesources from provider
 			expect(georesources.length).toBe(6);
+			expect(proxifySpy).toHaveBeenCalledTimes(6);
 		});
 
 		it('initializes the service with default providers', async () => {
@@ -189,12 +195,17 @@ describe('GeoResourceService', () => {
 		it('adds a GeoResource', async () => {
 
 			const instanceUnderTest = setup();
+			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
 			instanceUnderTest._georesources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
 
-			instanceUnderTest.addOrReplace(geoResource);
+			const result = instanceUnderTest.addOrReplace(geoResource);
+
 			expect(instanceUnderTest._georesources.length).toBe(1);
 			expect(instanceUnderTest._georesources[0]).toEqual(geoResource);
+			expect(proxifySpy).toHaveBeenCalledWith(geoResource);
+			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(result).toEqual(geoResource);
 		});
 
 		it('replaces a GeoResource', async () => {
@@ -205,9 +216,31 @@ describe('GeoResourceService', () => {
 			instanceUnderTest._georesources = [geoResource];
 			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON).setUrl('another url');
 
-			instanceUnderTest.addOrReplace(geoResource2);
+			const result = instanceUnderTest.addOrReplace(geoResource2);
+
 			expect(instanceUnderTest._georesources.length).toBe(1);
 			expect(instanceUnderTest._georesources[0]).toEqual(geoResource2);
+			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
+			expect(result).toEqual(geoResource2);
+		});
+
+		it('updates the slice-of-state \'layers\'', () => {
+			const geoResourceId0 = 'geoResourceId0';
+			const geoResourceId1 = 'geoResourceId1';
+			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
+			const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
+			const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
+			const instanceUnderTest = setup(null, null, {
+				layers: {
+					active: [layerProperties0, layerProperties1]
+				}
+			});
+			instanceUnderTest._georesources = [geoResource0];
+
+			instanceUnderTest.addOrReplace(geoResource0);
+
+			expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
+			expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
 		});
 	});
 
@@ -237,6 +270,64 @@ describe('GeoResourceService', () => {
 
 			expect(future).toBeNull();
 			expect(instanceUnderTest._georesources).toHaveSize(0);
+		});
+	});
+
+	describe('_proxify', () => {
+
+		it('returns an observable GeoResource', () => {
+
+			const instanceUnderTest = setup();
+			const geoResource0 = new WmsGeoResource('id', 'Wms', 'https://some.url', 'someLayer', 'image/png');
+
+			const observableGr0 = instanceUnderTest._proxify(geoResource0);
+
+			expect(observableGr0[GeoResourceService.proxyIdentifier]).toBeTrue();
+
+			const observableGr1 = instanceUnderTest._proxify(observableGr0);
+
+			expect(observableGr1[GeoResourceService.proxyIdentifier]).toBeTrue();
+		});
+
+		describe('observable GeoResource', () => {
+
+			it('updates the slice-of-state \'layers\' when properyt \'label\' changes', () => {
+				const geoResourceId0 = 'geoResourceId0';
+				const geoResourceId1 = 'geoResourceId1';
+				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
+				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
+				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
+				const instanceUnderTest = setup(null, null, {
+					layers: {
+						active: [layerProperties0, layerProperties1]
+					}
+				});
+				const observableGeoResource = instanceUnderTest._proxify(geoResource0);
+
+				observableGeoResource.setLabel('foo');
+
+				expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
+				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
+			});
+
+			it('does not updates the slice-of-state \'layers\' for other properties', () => {
+				const geoResourceId0 = 'geoResourceId0';
+				const geoResourceId1 = 'geoResourceId1';
+				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
+				const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
+				const geoResource0 = new WmsGeoResource(geoResourceId0, 'Wms', 'https://some.url', 'someLayer', 'image/png');
+				const instanceUnderTest = setup(null, null, {
+					layers: {
+						active: [layerProperties0, layerProperties1]
+					}
+				});
+				const observableGeoResource = instanceUnderTest._proxify(geoResource0);
+
+				observableGeoResource.setOpacity(.5);
+
+				expect(store.getState().layers.active[0].grChangedFlag).toBeNull();
+				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
+			});
 		});
 	});
 });
