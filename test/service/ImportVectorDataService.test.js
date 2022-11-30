@@ -100,6 +100,7 @@ describe('ImportVectorDataService', () => {
 					new Response(data, { status: 200 })
 				));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				const vgr = await geoResourceFuture.get();
@@ -118,7 +119,6 @@ describe('ImportVectorDataService', () => {
 				const instanceUnderTest = setup();
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -127,6 +127,7 @@ describe('ImportVectorDataService', () => {
 						})
 					})
 				));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
@@ -146,7 +147,6 @@ describe('ImportVectorDataService', () => {
 				const instanceUnderTest = setup();
 				const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
 				spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
-
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue(url);
 				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
 					new Response(data, {
@@ -155,6 +155,7 @@ describe('ImportVectorDataService', () => {
 						})
 					})
 				));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 				const geoResourceFuture = instanceUnderTest.forUrl(url);
 
 				const vgr = await geoResourceFuture.get();
