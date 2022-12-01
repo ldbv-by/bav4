@@ -1,5 +1,5 @@
 /**
- * Action creators to change/update the properties of modal state.
+ * Action creators to change/update the properties of altitudeProfile state.
  * @module altitudeProfile/action
  */
 import { $injector } from '../../injection';
