@@ -45,7 +45,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -62,7 +62,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: new SourceType(SourceTypeName.KML)
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
@@ -74,7 +74,7 @@ describe('ImportVectorDataService', () => {
 		it('returns a GeoResourceFuture automatically setting id', () => {
 			const instanceUnderTest = setup();
 			const url = 'http://my.url';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url);
 
@@ -180,15 +180,10 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
 					new Response(null, { status: status })
 				));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				try {
-					await geoResourceFuture.get();
-					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
-					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: Http-Status ${status}`);
-				}
+				await expectAsync(geoResourceFuture.get()).toBeRejectedWithError(`GeoResource for '${url}' could not be loaded: Http-Status ${status}`);
 			});
 
 			it('throws an error when sourceType is not available', async () => {
@@ -204,15 +199,10 @@ describe('ImportVectorDataService', () => {
 				spyOn(httpService, 'get').withArgs(url, { timeout: 5000 }).and.returnValue(Promise.resolve(
 					new Response(data, { status: 200 })
 				));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-				try {
-					await geoResourceFuture.get();
-					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
-					expect(error.message).toBe(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
-				}
+				await expectAsync(geoResourceFuture.get()).toBeRejectedWithError(`GeoResource for '${url}' could not be loaded: SourceType could not be detected`);
 			});
 
 			it('returns NULL when source type is not supported', () => {
@@ -260,7 +250,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: VectorSourceType.KML
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
 
 			const vgr = instanceUnderTest.forData(data, options);
@@ -281,7 +271,7 @@ describe('ImportVectorDataService', () => {
 				label: 'label',
 				sourceType: new SourceType(SourceTypeName.KML)
 			};
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData');
 
 			const vgr = instanceUnderTest.forData(data, options);
@@ -296,7 +286,7 @@ describe('ImportVectorDataService', () => {
 
 		it('returns a VectorGeoResource automatically setting id, sourceType and default SRID', () => {
 			const data = 'data';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const instanceUnderTest = setup();
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON));
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
@@ -318,7 +308,7 @@ describe('ImportVectorDataService', () => {
 		it('returns a VectorGeoResource automatically setting id, label and sourceType and SRID', () => {
 			const data = 'data';
 			const dataSrid = 25832;
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const instanceUnderTest = setup();
 			const sourceTypeResult = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, dataSrid));
 			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forData').withArgs(data).and.returnValue(sourceTypeResult);
