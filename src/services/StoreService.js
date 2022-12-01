@@ -24,6 +24,7 @@ import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { geoResourcesReducer } from '../store/geoResources/geoResources.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
+import { altitudeProfileReducer } from '../store/altitudeProfile/altitudeProfile.reducer';
 
 
 
@@ -64,7 +65,8 @@ export class StoreService {
 			import: importReducer,
 			mfp: mfpReducer,
 			geoResources: geoResourcesReducer,
-			bottomSheet: bottomSheetReducer
+			bottomSheet: bottomSheetReducer,
+			altitudeProfile: altitudeProfileReducer
 		});
 
 		this._store = createStore(rootReducer);
