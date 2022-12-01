@@ -1852,7 +1852,7 @@ describe('BvvMfp3Encoder', () => {
 			};
 			const encoder = setup();
 			const specs = encoder._encodeOverlays([overlayMock]);
-			expect(specs.geoJson.features).toHaveSize(0);
+			expect(specs).toHaveSize(0);
 		});
 
 		it('encodes openlayers geometryType to mfp symbolizer type', () => {

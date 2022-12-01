@@ -662,14 +662,15 @@ export class BvvMfp3Encoder {
 				}
 			};
 		};
+		const overlayFeatures = overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null);
 
-		return {
+		return overlayFeatures.length === 0 ? [] : {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
 			geoJson: {
 				type: 'FeatureCollection',
-				features: overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null)
+				features: overlayFeatures
 			},
 			style: {
 				version: 2,
