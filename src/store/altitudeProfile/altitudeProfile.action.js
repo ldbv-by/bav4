@@ -13,7 +13,7 @@ const getStore = () => {
 
 /**
  * Opens the profile component.
- * @param {Array<Coordinate>} [coordinates]  The coordinates for the calculation of the altitude profile
+ * @param {Array<Coordinate>} [coordinates] The coordinates for the calculation of the altitude profile
  * @function
  */
 export const openProfile = (coordinates = []) => {
@@ -29,7 +29,8 @@ export const openProfile = (coordinates = []) => {
 
 /**
  * Updates the coordinates of the altitude profile.
- * @param {Array<Coordinate>} coordinates  The coordinates for the calculation of the altitude profile
+ * @param {Array<Coordinate>} coordinates The coordinates for the calculation of the altitude profile
+ * @function
  */
 export const updateCoordinates = (coordinates) => {
 	getStore().dispatch({
@@ -39,7 +40,8 @@ export const updateCoordinates = (coordinates) => {
 };
 
 /**
- *Closes the profile component.
+ * Closes the profile component.
+ * @function
  */
 export const closeProfile = () => {
 
