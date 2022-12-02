@@ -20,205 +20,207 @@ import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet
  * @author thiloSchlemmer
  */
 export class ShowCase extends BaElement {
-  constructor() {
-    super();
+	constructor() {
+		super();
 
-    const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService } =
-      $injector.inject(
-        'CoordinateService',
-        'EnvironmentService',
-        'ShareService',
-        'UrlService',
-        'FileStorageService',
-        'ImportVectorDataService'
-      );
-    this._coordinateService = CoordinateService;
-    this._environmentService = EnvironmentService;
-    this._importVectorDataService = ImportVectorDataService;
-    this._urlService = UrlService;
-    this._shareService = ShareService;
-    this._icons = [];
-    this._url = '';
-    this._shortUrl = '';
-    this._fileStorageService = FileStorageService;
-  }
+		const { CoordinateService, EnvironmentService, ShareService, UrlService, FileStorageService, ImportVectorDataService } =
+			$injector.inject(
+				'CoordinateService',
+				'EnvironmentService',
+				'ShareService',
+				'UrlService',
+				'FileStorageService',
+				'ImportVectorDataService'
+			);
+		this._coordinateService = CoordinateService;
+		this._environmentService = EnvironmentService;
+		this._importVectorDataService = ImportVectorDataService;
+		this._urlService = UrlService;
+		this._shareService = ShareService;
+		this._icons = [];
+		this._url = '';
+		this._shortUrl = '';
+		this._fileStorageService = FileStorageService;
+	}
 
-  /**
-   * @override
-   */
-  createView() {
-    const onClick0 = async () => {
-      //create a GeoResource
-      const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
-      // optional exception handling for this GeoResourceFuture
-      geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
-      const { id } = geoResourceFuture;
-      //add a layer that displays the GeoResource in the map
-      addLayer(id);
-    };
+	/**
+	 * @override
+	 */
+	createView() {
+		const onClick0 = async () => {
+			//create a GeoResource
+			const geoResourceFuture = this._importVectorDataService.forUrl('https://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml');
+			// optional exception handling for this GeoResourceFuture
+			geoResourceFuture.onReject(({ id }) => console.warn(`Oops, something got wrong for ${id}`));
+			const { id } = geoResourceFuture;
+			//add a layer that displays the GeoResource in the map
+			addLayer(id);
+		};
 
-    const onClick1 = () => {
-      changeZoomAndCenter({
-        zoom: 11,
-        center: this._coordinateService.fromLonLat([11.081, 49.449]),
-      });
-    };
+		const onClick1 = () => {
+			changeZoomAndCenter({
+				zoom: 11,
+				center: this._coordinateService.fromLonLat([11.081, 49.449])
+			});
+		};
 
-    const onClickAuthenticate = async () => {
-      closeModal();
+		const onClickAuthenticate = async () => {
+			closeModal();
 
-      await sleep(1000);
-      const restrictedUrl = 'https://my.restricted.url/for/wms';
-      const receivedCredential = {};
+			await sleep(1000);
+			const restrictedUrl = 'https://my.restricted.url/for/wms';
+			const receivedCredential = {};
 
-      // the authenticate-callback provides the implementation of the authentication of credential and url
-      const authenticate = async (credential, url) => {
-        await sleep(3000);
-        if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
-          receivedCredential.username = credential.username;
-          receivedCredential.password = credential.password;
-          return { message: 'Credential is valid' };
-        }
-        return null;
-      };
+			// the authenticate-callback provides the implementation of the authentication of credential and url
+			const authenticate = async (credential, url) => {
+				await sleep(3000);
+				if (url === restrictedUrl && credential?.username === 'foo' && credential?.password === 'bar') {
+					receivedCredential.username = credential.username;
+					receivedCredential.password = credential.password;
+					return { message: 'Credential is valid' };
+				}
+				return null;
+			};
 
-      // in case of aborting the authentification-process by closing the modal,
-      // call the onCloseCallback directly
-      const resolveBeforeClosing = (modal) => {
-        if (!modal.active) {
-          unsubscribe();
-          onClose(null);
-        }
-      };
+			// in case of aborting the authentification-process by closing the modal,
+			// call the onCloseCallback directly
+			const resolveBeforeClosing = (modal) => {
+				if (!modal.active) {
+					unsubscribe();
+					onClose(null);
+				}
+			};
 
-      const unsubscribe = observe(
-        this._storeService.getStore(),
-        (state) => state.modal,
-        (modal) => resolveBeforeClosing(modal)
-      );
+			const unsubscribe = observe(
+				this._storeService.getStore(),
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal)
+			);
 
-      // onClose-callback is called with a valid credential or NULL
-      const onClose = (credential, result) => {
-        unsubscribe();
+			// onClose-callback is called with a valid credential or NULL
+			const onClose = (credential, result) => {
+				unsubscribe();
 
-        const succeed = () => {
-          emitNotification(result.message, LevelTypes.INFO);
-          closeModal();
-        };
+				const succeed = () => {
+					emitNotification(result.message, LevelTypes.INFO);
+					closeModal();
+				};
 
-        const abort = () => {
-          emitNotification('Authentication aborted', LevelTypes.WARN);
-        };
+				const abort = () => {
+					emitNotification('Authentication aborted', LevelTypes.WARN);
+				};
 
-        const resolveAction = credential ? succeed : abort;
-        resolveAction();
-      };
+				const resolveAction = credential ? succeed : abort;
+				resolveAction();
+			};
 
-      // creates a PasswordCredentialPanel-element within a templateResult
-      const getCredentialPanel = () => {
-        return html`<ba-auth-password-credential-panel
-          .url=${restrictedUrl}
-          .authenticate=${authenticate}
-          .onClose=${onClose}
-        ></ba-auth-password-credential-panel>`;
-      };
+			// creates a PasswordCredentialPanel-element within a templateResult
+			const getCredentialPanel = () => {
+				return html`<ba-auth-password-credential-panel
+					.url=${restrictedUrl}
+					.authenticate=${authenticate}
+					.onClose=${onClose}
+				></ba-auth-password-credential-panel>`;
+			};
 
-      // using the panel as content for the modal
-      openModal('Connect to restricted WMS...', getCredentialPanel());
-    };
-    const onToggle = (event) => {
-      // eslint-disable-next-line no-console
-      console.log('toggled ' + event.detail.checked);
-    };
+			// using the panel as content for the modal
+			openModal('Connect to restricted WMS...', getCredentialPanel());
+		};
+		const onToggle = (event) => {
+			// eslint-disable-next-line no-console
+			console.log('toggled ' + event.detail.checked);
+		};
 
-    const activateMeasurementTool = () => {
-      activateMeasurement();
-      closeModal();
-    };
+		const activateMeasurementTool = () => {
+			activateMeasurement();
+			closeModal();
+		};
 
-    const deactivateMeasurementTool = () => {
-      deactivateMeasurement();
-      closeModal();
-    };
+		const deactivateMeasurementTool = () => {
+			deactivateMeasurement();
+			closeModal();
+		};
 
-    const onGenerateUrlButtonClick = async () => {
-      const url = this._shareService.encodeState();
-      const shortUrl = await this._urlService.shorten(url);
-      await this._shareService.copyToClipboard(url);
-      this._url = url;
-      this._shortUrl = shortUrl;
-      this.render();
-    };
+		const onGenerateUrlButtonClick = async () => {
+			const url = this._shareService.encodeState();
+			const shortUrl = await this._urlService.shorten(url);
+			await this._shareService.copyToClipboard(url);
+			this._url = url;
+			this._shortUrl = shortUrl;
+			this.render();
+		};
 
-    const onClickEmitInfo = () => {
-      emitNotification('This is just a Info (' + new Date() + ')', LevelTypes.INFO);
-    };
+		const onClickEmitInfo = () => {
+			emitNotification('This is just a Info (' + new Date() + ')', LevelTypes.INFO);
+		};
 
-    const onClickEmitWarn = () => {
-      emitNotification('This is a Warning! Prepare yourself! (' + new Date() + ')', LevelTypes.WARN);
-    };
+		const onClickEmitWarn = () => {
+			emitNotification('This is a Warning! Prepare yourself! (' + new Date() + ')', LevelTypes.WARN);
+		};
 
-    const onClickEmitError = () => {
-      emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
-    };
+		const onClickEmitError = () => {
+			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
+		};
 
-    let version = 1;
-    const onClickOpenBottomSheet = () => {
-      const onCloseAfterWait = () => setTimeout(() => closeBottomSheet(), 2000);
-      const onDismiss = () => closeBottomSheet();
-      const nextVersion = (before, min, max) => {
-        return before === min ? before + 1 : before === max ? min : before + 1;
-      };
-      const getVersionForDragging = () => {
-        const unsubscribe = observe(
-          this._storeService.getStore(),
-          (state) => state.pointer.beingDragged,
-          () => {
-            closeBottomSheet();
-            unsubscribe();
-          }
-        );
-        return html`<div>
-          <h3>Bottom Sheet autoclose with...</h3>
-          <div style="color: white;background-color: var(--warning-color);">observing store...</div>
-          <div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>
-        </div>`;
-      };
-      const getContent = (version) => {
-        switch (version) {
-          case 1:
-            return html`<div>
-              <h3>Feature-Info</h3>
-              <div style="color: var(--text1);background-color: var(--secondary-color);"><b>ID:</b>Lorem ipsum dolor</div>
-              <div style="color: var(--text2);background-color: var(--secondary-bg-color);">
-                <b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...
-              </div>
-              <div style="display:flex">
-                <ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button
-                ><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button>
-              </div>
-            </div>`;
-          case 2:
-            return html`<div>
-              <h3>Bottom Sheet ...</h3>
-              <div style="color: white;background-color: var(--warning-color);">waiting forever...</div>
-              <div style="color: white;background-color: var(--error-color);">until a new content for the bottom sheet comes</div>
-            </div>`;
-          case 3:
-            return getVersionForDragging();
-        }
-      };
-      openBottomSheet(getContent(version));
-      version = nextVersion(version, 1, 3);
-    };
-    const menuitems = [
-      { label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) },
-      { label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) },
-      { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) },
-      { label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) },
-    ];
+		let version = 1;
+		const onClickOpenBottomSheet = () => {
+			const onCloseAfterWait = () => setTimeout(() => closeBottomSheet(), 2000);
+			const onDismiss = () => closeBottomSheet();
+			const nextVersion = (before, min, max) => {
+				return before === min ? before + 1 : before === max ? min : before + 1;
+			};
+			const getVersionForDragging = () => {
+				const unsubscribe = observe(
+					this._storeService.getStore(),
+					(state) => state.pointer.beingDragged,
+					() => {
+						closeBottomSheet();
+						unsubscribe();
+					}
+				);
+				return html`<div>
+					<h3>Bottom Sheet autoclose with...</h3>
+					<div style="color: white;background-color: var(--warning-color);">observing store...</div>
+					<div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>
+				</div>`;
+			};
+			const getContent = (version) => {
+				switch (version) {
+					case 1:
+						return html`<div>
+							<h3>Feature-Info</h3>
+							<div style="color: var(--text1);background-color: var(--secondary-color);"><b>ID:</b>Lorem ipsum dolor</div>
+							<div style="color: var(--text2);background-color: var(--secondary-bg-color);">
+								<b>Value:</b>Lorem ipsum dolor sit amet, consetetur sadipscing elitr...
+							</div>
+							<div style="display:flex">
+								<ba-button .label=${'Wait & close'} @click=${onCloseAfterWait}></ba-button
+								><ba-button .label=${'dismiss!'} @click=${onDismiss}></ba-button>
+							</div>
+						</div>`;
+					case 2:
+						return html`<div>
+							<h3>Bottom Sheet ...</h3>
+							<div style="color: white;background-color: var(--warning-color);">waiting forever...</div>
+							<div style="color: white;background-color: var(--error-color);">
+								until a new content for the bottom sheet comes
+							</div>
+						</div>`;
+					case 3:
+						return getVersionForDragging();
+				}
+			};
+			openBottomSheet(getContent(version));
+			version = nextVersion(version, 1, 3);
+		};
+		const menuitems = [
+			{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) },
+			{ label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) },
+			{ label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) },
+			{ label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }
+		];
 
-    return html`
+		return html`
 		<style>
 		${css}
 		</style>		
@@ -382,9 +384,9 @@ export class ShowCase extends BaElement {
 				
 			</div>	
 		</div > `;
-  }
+	}
 
-  static get tag() {
-    return 'ba-showcase';
-  }
+	static get tag() {
+		return 'ba-showcase';
+	}
 }
