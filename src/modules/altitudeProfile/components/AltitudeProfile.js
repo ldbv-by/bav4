@@ -30,7 +30,7 @@ export class AltitudeProfile extends MvuElement {
 			labels: null,
 			data: null,
 			selectedAttribute: null,
-			darkSchema: null
+			darkSchema: null,
 		});
 		this._chart = null;
 		this._altitudeProfileAttributeTypes = [];
@@ -38,7 +38,7 @@ export class AltitudeProfile extends MvuElement {
 		const {
 			ConfigService: configService,
 			AltitudeService: altitudeService,
-			TranslationService: translationService
+			TranslationService: translationService,
 		} = $injector.inject('ConfigService', 'AltitudeService', 'TranslationService');
 
 		this._translationService = translationService;
@@ -58,8 +58,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	/**
-   * @override
-   */
+	 * @override
+	 */
 	onInitialize() {
 		this.style.width = '100%';
 		this.style.height = '14em';
@@ -75,8 +75,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	/**
-   * @override
-   */
+	 * @override
+	 */
 	update(type, data, model) {
 		switch (type) {
 			case Update_Profile_Data:
@@ -115,15 +115,15 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	/**
-   * @override
-   */
+	 * @override
+	 */
 	onAfterRender() {
 		this._updateOrCreateChart();
 	}
 
 	/**
-   * @override
-   */
+	 * @override
+	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 
@@ -140,27 +140,24 @@ export class AltitudeProfile extends MvuElement {
 		};
 
 		return html`
-      <style>
-        ${css}
-      </style>
+			<style>
+				${css}
+			</style>
 
-      <div class="chart-container" style="position: relative; height:100%; ">
-          <canvas class="altitudeprofile" id="route-altit_getAltitudeProfileude-chart"></canvas>
+			<div class="chart-container" style="position: relative; height:100%; ">
+				<canvas class="altitudeprofile" id="route-altit_getAltitudeProfileude-chart"></canvas>
 
-          <div class="flex"> 
-            ${translate('altitudeProfile_sumUp')}: ${sumUp}
-            ${translate('altitudeProfile_sumDown')}: ${sumDown}
-           <span> 
-              <select id="attrs"  @change=${onChange}>
-                <option value="height" selected>height</option>
-                ${model.profile.attrs.map((attr) => html` <option value="${attr.id}">${attr.id}</option> `)}
-              </select>
-            </span>
-          </div>
-          
-        </div>
-      </div>
-    `;
+				<div class="flex">
+					${translate('altitudeProfile_sumUp')}: ${sumUp} ${translate('altitudeProfile_sumDown')}: ${sumDown}
+					<span>
+						<select id="attrs" @change=${onChange}>
+							<option value="height" selected>height</option>
+							${model.profile.attrs.map((attr) => html` <option value="${attr.id}">${attr.id}</option> `)}
+						</select>
+					</span>
+				</div>
+			</div>
+		`;
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
@@ -181,9 +178,9 @@ export class AltitudeProfile extends MvuElement {
 					tension: 0.1,
 					pointRadius: 0,
 					spanGaps: true,
-					maintainAspectRatio: false
-				}
-			]
+					maintainAspectRatio: false,
+				},
+			],
 		};
 		return _chartData;
 	}
@@ -331,8 +328,7 @@ export class AltitudeProfile extends MvuElement {
 					const xPoint = (xPointWidth / chartArea.width) * index;
 					currentInclineType = startFlat(gradientBg, xPoint, currentInclineType);
 				}
-			}
-			else {
+			} else {
 				// look for first element with slope greater X
 				if (element.slope && element.slope > hereStartsSteep) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
@@ -344,8 +340,7 @@ export class AltitudeProfile extends MvuElement {
 		// end with currentInclineType - color
 		if (currentInclineType === InclineType.Steep) {
 			gradientBg.addColorStop(1, steepColor);
-		}
-		else {
+		} else {
 			gradientBg.addColorStop(1, flatColor);
 		}
 
@@ -353,15 +348,14 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	/**
-   * @private
-   */
+	 * @private
+	 */
 	async _getAltitudeProfile(coordinates) {
 		if (coordinates.length > 0) {
 			try {
 				const profile = await this._altitudeService.getProfile(coordinates);
 				this.signal(Update_Profile_Data, profile);
-			}
-			catch (e) {
+			} catch (e) {
 				console.warn(e.message);
 				// Todo: emit error notification
 				// this.signal(Update_Profile_Data, null);
@@ -402,14 +396,12 @@ export class AltitudeProfile extends MvuElement {
 					if (heightsElement) {
 						if (heightsElement.slope) {
 							slope = heightsElement.slope + '%';
-						}
-						else {
+						} else {
 							slope = translate('altitudeProfile_unknown');
 						}
 						if (heightsElement.surface) {
 							surface = heightsElement.surface;
-						}
-						else {
+						} else {
 							surface = translate('altitudeProfile_unknown');
 						}
 					}
@@ -418,24 +410,23 @@ export class AltitudeProfile extends MvuElement {
 						translate('altitudeProfile_distance') + ': ' + tooltipItem.label + 'm',
 						translate('altitudeProfile_elevation') + ': ' + tooltipItem.raw + 'm',
 						translate('altitudeProfile_incline') + ': ' + slope,
-						'surface: ' + surface
+						'surface: ' + surface,
 					];
 					return content;
-				}
-			}
+				},
+			},
 		};
 
 		const selectedAreaBorderPlugin = {
 			id: 'selectedAreaBorder',
 			afterDraw(chart) {
-				// , args, options
 				const { drawSelectedAreaBorder } = getSelectionProps();
 				if (!drawSelectedAreaBorder) {
 					return;
 				}
 				const { ctx } = chart;
 				_drawSelectionRect(ctx);
-			}
+			},
 		};
 		altitudeData;
 
@@ -447,7 +438,7 @@ export class AltitudeProfile extends MvuElement {
 				firstLeft: this._firstLeft,
 				secondLeft: this._secondLeft,
 				drawSelectedAreaBorder: this._drawSelectedAreaBorder,
-				enableToolTip: this._enableTooltip
+				enableToolTip: this._enableTooltip,
 			};
 		};
 		const setMousedownProps = (mouseIsDown, top, bottom, firstLeft, enableToolTip) => {
@@ -501,14 +492,14 @@ export class AltitudeProfile extends MvuElement {
 							setMouseupOrMouseoutProps(false, tooltip.caretX, true, true);
 							return;
 						}
-					}
+					},
 				},
 				{
 					id: 'shortenLeftEndOfScale',
 					beforeInit: (chart) => {
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
-					}
+					},
 				},
 				{
 					id: 'drawVerticalLineAtMousePosition',
@@ -525,8 +516,8 @@ export class AltitudeProfile extends MvuElement {
 							chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 							chart.ctx.stroke();
 						}
-					}
-				}
+					},
+				},
 			],
 			options: {
 				responsive: true,
@@ -540,8 +531,8 @@ export class AltitudeProfile extends MvuElement {
 						type: 'linear',
 						display: true,
 						position: 'right',
-						grid: { drawOnChartArea: false }
-					}
+						grid: { drawOnChartArea: false },
+					},
 				},
 
 				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
@@ -550,12 +541,17 @@ export class AltitudeProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: 'hier geht was ' + translate('altitudeProfile_distance') + ', m / ' + translate('altitudeProfile_elevation') + ', m'
+						text:
+							'hier geht was ' +
+							translate('altitudeProfile_distance') +
+							', m / ' +
+							translate('altitudeProfile_elevation') +
+							', m',
 					},
 					legend: { display: false },
-					tooltip: tooltipOptions
-				}
-			}
+					tooltip: tooltipOptions,
+				},
+			},
 		};
 
 		return config;
