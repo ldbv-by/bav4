@@ -63,7 +63,6 @@ export class StoreService {
 			media: createMediaReducer(),
 			import: importReducer,
 			mfp: mfpReducer,
-			geoResources: geoResourcesReducer,
 			bottomSheet: bottomSheetReducer,
 			altitudeProfile: altitudeProfileReducer
 		});
