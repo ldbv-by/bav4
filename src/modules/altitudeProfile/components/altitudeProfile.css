@@ -1,18 +1,18 @@
 .profile {
-  margin: 0.1em;
+	margin: 0.1em;
 }
 
 #element1 {
-  display: inline-block;
-  margin-right: 10px;
+	display: inline-block;
+	margin-right: 10px;
 }
 #element2 {
-  display: inline-block;
+	display: inline-block;
 }
 
 .flex {
-  display: flex;
+	display: flex;
 
-  align-items: center;
-  justify-content: space-between;
+	align-items: center;
+	justify-content: space-between;
 }
