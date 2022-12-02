@@ -16,6 +16,7 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.active).toBeFalse();
 		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
+		expect(store.getState().mfp.autoRotation).toBeTrue();
 		expect(store.getState().mfp.jobRequest).toBeNull();
 		expect(store.getState().mfp.jobSpec).toBeNull();
 	});
