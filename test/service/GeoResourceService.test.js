@@ -291,7 +291,7 @@ describe('GeoResourceService', () => {
 
 		describe('observable GeoResource', () => {
 
-			it('updates the slice-of-state \'layers\' when properyt \'label\' changes', () => {
+			it('updates the slice-of-state \'layers\' when property \'label\' changes', () => {
 				const geoResourceId0 = 'geoResourceId0';
 				const geoResourceId1 = 'geoResourceId1';
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
