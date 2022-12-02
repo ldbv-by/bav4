@@ -150,7 +150,6 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	// todo - mock AltitudeService.getAltitude()
 	describe('when profile (slice-of-state) changes', () => {
 		it('updates the view', async () => {
 			// arrange
