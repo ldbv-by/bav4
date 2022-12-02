@@ -57,6 +57,112 @@ export class AltitudeProfile extends MvuElement {
 		this._initAnotherTypeTypes();
 	}
 
+	/**
+   * @override
+   */
+	onInitialize() {
+		this.style.width = '100%';
+		this.style.height = '14em';
+
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
+		);
+		this.observe(
+			(state) => state.altitudeProfile.coordinates,
+			(coordinates) => this._getAltitudeProfile(coordinates)
+		);
+	}
+
+	/**
+   * @override
+   */
+	update(type, data, model) {
+		switch (type) {
+			case Update_Profile_Data:
+				const profile = data;
+
+				const labels = profile.alts.map((alt) => alt.dist);
+				const chartData = profile.alts.map((alt) => alt.alt);
+
+				profile.attrs.forEach((attr) => {
+					const id = attr.id;
+
+					attr.values.forEach((value) => {
+						for (let index = value[0]; index <= value[1]; index++) {
+							const elementValue = value[2];
+							profile.alts[index][id] = elementValue;
+						}
+					});
+
+					profile.alts.forEach((alt) => {
+						if (!alt[id]) {
+							alt[id] = 'missing';
+						}
+					});
+				});
+
+				return { ...model, profile, labels, data: chartData };
+
+			case Update_Schema:
+				return { ...model, darkSchema: data };
+
+			case Update_Selected_Attribute:
+				const selectedAttribute = data;
+				const newLocal = { ...model, selectedAttribute };
+				return newLocal;
+		}
+	}
+
+	/**
+   * @override
+   */
+	onAfterRender() {
+		this._updateOrCreateChart();
+	}
+
+	/**
+   * @override
+   */
+	createView(model) {
+		const translate = (key) => this._translationService.translate(key);
+
+		if (!model.profile) {
+			return nothing;
+		}
+		const sumUp = model.profile?.stats?.sumUp;
+		const sumDown = model.profile?.stats?.sumDown;
+
+		const onChange = () => {
+			const select = this.shadowRoot.getElementById('attrs');
+			const selectedAttribute = select.options[select.selectedIndex].value;
+			this.signal(Update_Selected_Attribute, selectedAttribute);
+		};
+
+		return html`
+      <style>
+        ${css}
+      </style>
+
+      <div class="chart-container" style="position: relative; height:100%; ">
+          <canvas class="altitudeprofile" id="route-altit_getAltitudeProfileude-chart"></canvas>
+
+          <div class="flex"> 
+            ${translate('altitudeProfile_sumUp')}: ${sumUp}
+            ${translate('altitudeProfile_sumDown')}: ${sumDown}
+           <span> 
+              <select id="attrs"  @change=${onChange}>
+                <option value="height" selected>height</option>
+                ${model.profile.attrs.map((attr) => html` <option value="${attr.id}">${attr.id}</option> `)}
+              </select>
+            </span>
+          </div>
+          
+        </div>
+      </div>
+    `;
+	}
+
 	_getChartData(altitudeData, newDataLabels, newDataData) {
 		const _chartData = {
 			labels: newDataLabels,
@@ -263,23 +369,6 @@ export class AltitudeProfile extends MvuElement {
 		}
 	}
 
-	/**
-   * @override
-   */
-	onInitialize() {
-		this.style.width = '100%';
-		this.style.height = '14em';
-
-		this.observe(
-			(state) => state.media.darkSchema,
-			(darkSchema) => this.signal(Update_Schema, darkSchema)
-		);
-		this.observe(
-			(state) => state.altitudeProfile.coordinates,
-			(coordinates) => this._getAltitudeProfile(coordinates)
-		);
-	}
-
 	_getChartConfig(altitudeData, newDataLabels = [], newDataData = []) {
 		const translate = (key) => this._translationService.translate(key);
 
@@ -472,48 +561,6 @@ export class AltitudeProfile extends MvuElement {
 		return config;
 	}
 
-	/**
-   * @override
-   */
-	update(type, data, model) {
-		switch (type) {
-			case Update_Profile_Data:
-				const profile = data;
-
-				const labels = profile.alts.map((alt) => alt.dist);
-				const chartData = profile.alts.map((alt) => alt.alt);
-
-				profile.attrs.forEach((attr) => {
-					const id = attr.id;
-
-					attr.values.forEach((value) => {
-						for (let index = value[0]; index <= value[1]; index++) {
-							const elementValue = value[2];
-							profile.alts[index][id] = elementValue;
-						}
-					});
-
-					profile.alts.forEach((alt) => {
-						if (!alt[id]) {
-							alt[id] = 'missing';
-						}
-					});
-				});
-
-				// this._updateOrCreateChart(profile, labels, chartData);
-
-				return { ...model, profile, labels, data: chartData };
-
-			case Update_Schema:
-				return { ...model, darkSchema: data };
-
-			case Update_Selected_Attribute:
-				const selectedAttribute = data;
-				const newLocal = { ...model, selectedAttribute };
-				return newLocal;
-		}
-	}
-
 	_createChart(profile, newDataLabels, newDataData) {
 		if (!profile) {
 			return;
@@ -540,52 +587,6 @@ export class AltitudeProfile extends MvuElement {
 			return;
 		}
 		this._createChart(profile, labels, data);
-	}
-
-	onAfterRender() {
-		this._updateOrCreateChart();
-	}
-
-	/**
-   * @override
-   */
-	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-
-		if (!model.profile) {
-			return nothing;
-		}
-		const sumUp = model.profile?.stats?.sumUp;
-		const sumDown = model.profile?.stats?.sumDown;
-
-		const onChange = () => {
-			const select = this.shadowRoot.getElementById('attrs');
-			const selectedAttribute = select.options[select.selectedIndex].value;
-			this.signal(Update_Selected_Attribute, selectedAttribute);
-		};
-
-		return html`
-      <style>
-        ${css}
-      </style>
-
-      <div class="chart-container" style="position: relative; height:100%; ">
-          <canvas class="altitudeprofile" id="route-altit_getAltitudeProfileude-chart"></canvas>
-
-          <div class="flex"> 
-            ${translate('altitudeProfile_sumUp')}: ${sumUp}
-            ${translate('altitudeProfile_sumDown')}: ${sumDown}
-           <span> 
-              <select id="attrs"  @change=${onChange}>
-                <option value="height" selected>height</option>
-                ${model.profile.attrs.map((attr) => html` <option value="${attr.id}">${attr.id}</option> `)}
-              </select>
-            </span>
-          </div>
-          
-        </div>
-      </div>
-    `;
 	}
 
 	static get tag() {
