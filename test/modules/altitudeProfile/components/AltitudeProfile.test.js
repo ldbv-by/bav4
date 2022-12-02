@@ -1,6 +1,7 @@
 import { $injector } from '../../../../src/injection/index.js';
 import { AltitudeProfile } from '../../../../src/modules/altitudeProfile/components/AltitudeProfile.js';
 import { altitudeProfileReducer } from '../../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
+import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitudeProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../test-utils.js';
@@ -14,42 +15,42 @@ describe('AltitudeProfile', () => {
 				dist: 0,
 				alt: 0,
 				e: 40,
-				n: 50,
+				n: 50
 			},
 			{
 				dist: 1,
 				alt: 10,
 				e: 41,
-				n: 51,
+				n: 51
 			},
 			{
 				dist: 2,
 				alt: 20,
 				e: 42,
-				n: 52,
+				n: 52
 			},
 			{
 				dist: 3,
 				alt: 30,
 				e: 43,
-				n: 53,
+				n: 53
 			},
 			{
 				dist: 4,
 				alt: 40,
 				e: 44,
-				n: 54,
+				n: 54
 			},
 			{
 				dist: 5,
 				alt: 50,
 				e: 45,
-				n: 55,
-			},
+				n: 55
+			}
 		],
 		stats: {
 			sumUp: 1480.8,
-			sumDown: 1668.6,
+			sumDown: 1668.6
 		},
 		attrs: [
 			{
@@ -58,49 +59,49 @@ describe('AltitudeProfile', () => {
 					[0, 1, 0],
 					[2, 3, 2],
 					[4, 4, 4],
-					[5, 5, 4],
-				],
+					[5, 5, 4]
+				]
 			},
 			{
 				id: 'surface',
 				values: [
 					[0, 2, 'asphalt'],
-					[3, 5, 'gravel'],
-				],
+					[3, 5, 'gravel']
+				]
 			},
 			{
 				id: 'anotherType',
 				values: [
 					[0, 3, 'cycle'],
-					[4, 5, 'foot'],
-				],
-			},
-		],
+					[4, 5, 'foot']
+				]
+			}
+		]
 	};
 
 	const coordinateServiceMock = {
 		stringify() {},
-		toLonLat() {},
+		toLonLat() {}
 	};
 
 	const altitudeServiceMock = {
-		getProfile() {},
+		getProfile() {}
 	};
 
 	const configService = {
-		getValueAsPath: () => {},
+		getValueAsPath: () => {}
 	};
 
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
-				darkSchema: false,
+				darkSchema: false
 			},
-			...state,
+			...state
 		};
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			altitudeProfile: altitudeProfileReducer,
+			altitudeProfile: altitudeProfileReducer
 		});
 
 		$injector
@@ -130,15 +131,15 @@ describe('AltitudeProfile', () => {
 		it('renders the view when  profile is available', async () => {
 			const coordinates = [
 				[0, 1],
-				[2, 3],
+				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
 
 			const element = await setup({
 				altitudeProfile: {
 					active: false,
-					coordinates: coordinates,
-				},
+					coordinates: coordinates
+				}
 			});
 
 			expect(element._chart).not.toBeNull();
@@ -155,7 +156,7 @@ describe('AltitudeProfile', () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
-				[2, 3],
+				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
 			const element = await setup();
@@ -164,6 +165,7 @@ describe('AltitudeProfile', () => {
 			updateCoordinates(coordinates);
 
 			// assert
+			await TestUtils.timeout();
 			expect(element._chart).not.toBeNull();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 		});
