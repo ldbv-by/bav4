@@ -4,7 +4,6 @@ import { $injector } from '../../../injection';
 import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
-import { propertyChanged } from '../../../store/geoResources/geoResources.action';
 import { parse } from '../../../utils/ewkt';
 
 
@@ -174,7 +173,6 @@ export class VectorLayerService {
 				case VectorSourceType.KML:
 					setTimeout(() => {
 						geoResource.setLabel(format.readName(data));
-						propertyChanged(geoResource);
 					});
 					break;
 			}

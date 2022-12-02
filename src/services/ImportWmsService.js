@@ -49,7 +49,6 @@ export class ImportWmsService {
 	async forUrl(url, options = {}) {
 		const { isAuthenticated, sourceType } = { ...this._newDefaultImportWmsOptions(), ...options };
 		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), sourceType, isAuthenticated);
-		geoResources.map(gr => gr.setImportedByUser(true)).forEach(geoResource => this._geoResourceService.addOrReplace(geoResource));
-		return geoResources;
+		return geoResources.map(gr => gr.setImportedByUser(true)).map(geoResource => this._geoResourceService.addOrReplace(geoResource));
 	}
 }
