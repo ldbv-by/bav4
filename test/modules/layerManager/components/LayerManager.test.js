@@ -480,7 +480,6 @@ describe('LayerManager', () => {
 
 		it('renders changed label', async () => {
 			const updatedGeoResourceLabel = 'updatedLabel';
-			// const geoResourceServiceMock = { byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML) };
 			const spy = spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.callFake(() => {
 				if (spy.calls.count() > 1) {
 					return new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML);
