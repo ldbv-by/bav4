@@ -2,6 +2,7 @@ import { render } from 'lit-html';
 import { combineReducers, createStore } from 'redux';
 import { $injector } from '../src/injection';
 import { isTemplateResult } from '../src/utils/checks';
+import { LOG_LIFECYLE_ATTRIBUTE_NAME } from '../src/utils/markup';
 
 class TestableBlob extends Blob {
 
@@ -25,15 +26,31 @@ class TestableBlob extends Blob {
 }
 export class TestUtils {
 	/**
-	 * Renders a given element with provided attributes
-	 * and returns a promise which resolves as soon as
+	 * Renders an already registered {@link HTMLElement}
+	 * and returns a promise which resolves as soon as the
 	 * rendered element becomes available.
-	 * @param {string} tag
-	 * @param {object} attributes
+	 * @param {string} tag the tag of the HTMLElement
+	 * @param {object} [attributes]
+	 * @param {object} [slotContent]
 	 * @returns {Promise<HTMLElement>}
 	 */
-	static render(tag, attributes = {}, slotContent = '') {
+	static async render(tag, attributes = {}, slotContent = '') {
 		TestUtils._renderToDocument(tag, attributes, slotContent);
+		return TestUtils._waitForComponentToRender(tag);
+	}
+
+	/**
+	 * Renders an already registered {@link HTMLElement}
+	 * and returns a promise which resolves as soon as the
+	 * rendered element becomes available.
+	 * Additionally enables logging of the elements lifecycle (if available).
+	 * @param {string} tag the tag of the MvuElement
+	 * @param {object} [attributes]
+	 * @param {object} [slotContent]
+	 * @returns {Promise<HTMLElement>}
+	 */
+	static async renderAndLogLifecycle(tag, attributes = {}, slotContent = '') {
+		TestUtils._renderToDocument(tag, { [LOG_LIFECYLE_ATTRIBUTE_NAME]: '', ...attributes }, slotContent);
 		return TestUtils._waitForComponentToRender(tag);
 	}
 
