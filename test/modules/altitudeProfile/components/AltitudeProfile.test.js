@@ -142,9 +142,15 @@ describe('AltitudeProfile', () => {
 				}
 			});
 
-			expect(element._chart).not.toBeNull();
-			// todo - check chart content / setup
-			// todo - shorten and check test data
+			const chart = element._chart;
+			const config = chart.config;
+			const datasetZero = config.data.datasets[0];
+			expect(chart).not.toBeNull();
+			expect(config.type).toBe('line');
+			expect(config.options.responsive).toBe(true);
+			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
+			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
+			expect(datasetZero.label).toBe('Höhenprofil');
 			// todo - check correct schema is used
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 		});
