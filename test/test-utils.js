@@ -1,5 +1,7 @@
+import { render } from 'lit-html';
 import { combineReducers, createStore } from 'redux';
 import { $injector } from '../src/injection';
+import { isTemplateResult } from '../src/utils/checks';
 
 class TestableBlob extends Blob {
 
@@ -34,7 +36,6 @@ export class TestUtils {
 		TestUtils._renderToDocument(tag, attributes, slotContent);
 		return TestUtils._waitForComponentToRender(tag);
 	}
-
 
 	/**
 	 * Replaces document's body with provided element
@@ -85,6 +86,31 @@ export class TestUtils {
 			}
 			requestComponent();
 		});
+	}
+
+	/**
+	 * Renders a lit-html `TemplateResult`.
+	 * @param {TemplateResult} templateResult the TemplateResult
+	 * @returns HTMLElement Container of the rendered TemplateResult
+	 */
+	static renderTemplateResult(templateResult) {
+
+		if (!isTemplateResult(templateResult)) {
+			console.error(`'${JSON.stringify(templateResult)}' is not a lit-html TemplateResult`);
+			return;
+		}
+
+		const templateTestContainerId = 'templateResultTest';
+		const createTemplateTestContainer = () => {
+			const createdElement = document.createElement('div');
+			createdElement.id = templateTestContainerId;
+			document.body.appendChild(createdElement);
+			return createdElement;
+		};
+
+		const element = document.querySelector(`.${templateTestContainerId}`) ?? createTemplateTestContainer();
+		render(templateResult, element);
+		return element;
 	}
 
 	/**

@@ -56,7 +56,7 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms';
 			const options = getOptions();
 			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const urlServiceSpy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(async () => {
 				return resultMock;

@@ -10,9 +10,7 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
-import { geoResourcesReducer } from '../../../../src/store/geoResources/geoResources.reducer';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
-import { propertyChanged } from '../../../../src/store/geoResources/geoResources.action';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -48,12 +46,11 @@ describe('LayerItem', () => {
 	};
 
 	describe('when layer item is rendered', () => {
-		const geoResourceService = { byId: () => { } };
+		const geoResourceService = { byId: () => { }, addOrReplace: () => { } };
 
 		const setup = async (layer) => {
 			TestUtils.setupStoreAndDi({}, {
-				layers: layersReducer,
-				geoResources: geoResourcesReducer
+				layers: layersReducer
 			}
 			);
 			$injector
@@ -265,67 +262,25 @@ describe('LayerItem', () => {
 			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
 		});
 
-		it('not show a loading hint for Non-GeoResourceFutures', async () => {
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+		it('does not show a loading hint for Non-GeoResourceFutures', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId, visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 		});
 
-		it('shows and hides a loading hint for GeoResourceFutures', async () => {
-			const geoResFuture = new GeoResourceFuture('geoResourceId0', async () => new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(geoResFuture);
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
+		it('shows a loading hint for GeoResourceFutures', async () => {
+			const geoResourceId = 'geoResourceId0';
+			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new GeoResourceFuture(geoResourceId, async () => {}));
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId, visible: true, zIndex: 0, opacity: 1, collapsed: true };
 			const element = await setup(layer);
 
 			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector(Spinner.tag).label).toBe('layerManager_loading_hint');
-
-			await geoResFuture.get(); // resolve future
-
-			expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
 		});
 	});
-
-	describe('when observed slice of state \'geoResources\' changes', () => {
-
-		const geoResourceService = { byId: () => { } };
-
-		const setup = async (layer) => {
-			TestUtils.setupStoreAndDi({}, {
-				geoResources: geoResourcesReducer
-			}
-			);
-			$injector
-				.registerSingleton('TranslationService', { translate: (key) => key })
-				.registerSingleton('GeoResourceService', geoResourceService);
-			const element = await TestUtils.render(LayerItem.tag);
-			element.layer = layer;
-			return element;
-		};
-
-		it('updates the label', async () => {
-			const gr = new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML);
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(gr);
-			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0', visible: true, zIndex: 0, opacity: 1, collapsed: true };
-			const element = await setup(layer);
-
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('label0');
-
-			gr.setLabel('foo');
-			propertyChanged(gr);
-
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('foo');
-
-			propertyChanged('someOtherGeoResourceId');
-
-			expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe('foo');
-		});
-	});
-
-
 
 	describe('when user interacts with layer item', () => {
 		const geoResourceService = { byId: () => { } };
@@ -346,7 +301,6 @@ describe('LayerItem', () => {
 			};
 			const store = TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer,
-				geoResources: geoResourcesReducer,
 				modal: modalReducer,
 				position: positionReducer
 			});
@@ -464,7 +418,7 @@ describe('LayerItem', () => {
 		const geoResourceService = { byId: () => { } };
 		let store;
 		const setup = (state) => {
-			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, geoResources: geoResourcesReducer });
+			store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 			$injector
 				.registerSingleton('TranslationService', { translate: (key) => key })
 				.registerSingleton('GeoResourceService', geoResourceService);
@@ -648,7 +602,7 @@ describe('LayerItem', () => {
 
 		const setup = () => {
 
-			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer, geoResources: geoResourcesReducer });
+			const store = TestUtils.setupStoreAndDi({}, { layers: layersReducer, modal: modalReducer });
 			$injector
 				.registerSingleton('TranslationService', { translate: (key) => key })
 				.registerSingleton('GeoResourceService', geoResourceService);

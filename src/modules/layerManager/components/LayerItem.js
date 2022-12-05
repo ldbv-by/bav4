@@ -76,16 +76,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		}
 	}
 
-	onInitialize() {
-		this.observe(state => state.geoResources.changed, (changed) => {
-			if (this.getModel().layer.geoResourceId === changed.payload) {
-				const geoResource = this._geoResourceService.byId(changed.payload);
-				this.signal(Update_Layer, { ...this.getModel().layer, label: geoResource.label });
-			}
-		}, false);
-	}
-
-
 	/**
 * @override
 */
@@ -252,15 +242,6 @@ export class LayerItem extends AbstractMvuContentPanel {
 		const translate = (key) => this._translationService.translate(key);
 		const geoResource = this._geoResourceService.byId(value.geoResourceId);
 
-		if (geoResource instanceof GeoResourceFuture) {
-			geoResource.onResolve(resolvedGeoR => this.signal(Update_Layer,
-				{
-					...Default_Extra_Property_Values,
-					...value,
-					label: resolvedGeoR.label,
-					loading: false
-				}));
-		}
 		this.signal(Update_Layer, {
 			Default_Extra_Property_Values,
 			...value,

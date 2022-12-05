@@ -56,7 +56,7 @@ export const isPromise = (val) => {
 /**
  * Checks if a value is a lit-html TemplateResult.
  * @param {*} val
- * @returns boolean} true if it is a TemplateResult
+ * @returns `true` if it is a TemplateResult
  */
 export const isTemplateResult = (val) => {
 	return isObject(val) ? '_$litType$' in val : false;
@@ -66,7 +66,7 @@ export const isTemplateResult = (val) => {
  * Checks if a value is a lit-html TemplateResult of a specified tag.
  * @param {*} val
  * @param {strict} tag
- * @returns boolean} true if it is a TemplateResult
+ * @returns boolean `true` if it is a TemplateResult
  */
 export const isTemplateResultOf = (val, tag) => {
 	if (!tag) {
