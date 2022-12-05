@@ -53,7 +53,7 @@ describe('GeoResourceService', () => {
 		});
 
 		it('initializes the service with default providers', async () => {
-
+			setup(); // provide required infrastructure
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
 			expect(instanceUnderTest._byIdProvider).toEqual([loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
