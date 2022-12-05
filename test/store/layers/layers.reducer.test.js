@@ -1,6 +1,7 @@
 import { layersReducer, index, sort, createDefaultLayerProperties, createDefaultLayer, createDefaultLayersConstraints } from '../../../src/store/layers/layers.reducer';
-import { addLayer, removeLayer, modifyLayer, setReady } from '../../../src/store/layers/layers.action';
+import { addLayer, removeLayer, modifyLayer, setReady, geoResourceChanged } from '../../../src/store/layers/layers.action';
 import { TestUtils } from '../../test-utils.js';
+import { GeoResourceFuture } from '../../../src/domain/geoResources';
 
 describe('defaultLayerProperties', () => {
 
@@ -10,6 +11,7 @@ describe('defaultLayerProperties', () => {
 		expect(defaultLayerProperties.visible).toBeTrue();
 		expect(defaultLayerProperties.opacity).toBe(1);
 		expect(defaultLayerProperties.zIndex).toBe(-1);
+		expect(defaultLayerProperties.grChangedFlag).toBeNull();
 		expect(defaultLayerProperties.constraints).toEqual(createDefaultLayersConstraints());
 	});
 });
@@ -37,6 +39,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.visible).toBeTrue();
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
+		expect(layer.grChangedFlag).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 
@@ -49,6 +52,7 @@ describe('createDefaultLayer', () => {
 		expect(layer.visible).toBeTrue();
 		expect(layer.opacity).toBe(1);
 		expect(layer.zIndex).toBe(-1);
+		expect(layer.grChangedFlag).toBeNull();
 		expect(layer.constraints).toEqual(createDefaultLayersConstraints());
 	});
 });
@@ -349,6 +353,46 @@ describe('layersReducer', () => {
 
 		expect(store.getState().layers.active.length).toBe(1);
 		expect(store.getState().layers.active[0].visible).toBe(true);
+	});
+
+	it('updates the GeoResource change flag by a GeoResource id', () => {
+		const geoResourceId0 = 'geoResourceId0';
+		const geoResourceId1 = 'geoResourceId1';
+		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
+		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
+		const store = setup({
+			layers: {
+				active: index([layerProperties0, layerProperties1])
+			}
+		});
+
+		expect(store.getState().layers.active[0].grChangedFlag).toBeNull();
+		expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
+
+		geoResourceChanged(geoResourceId0);
+
+		expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
+		expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
+	});
+
+	it('updates the GeoResource change flag by a GeoResource', () => {
+		const geoResourceId0 = 'geoResourceId0';
+		const geoResourceId1 = 'geoResourceId1';
+		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
+		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', geoResourceId: geoResourceId1 };
+		const store = setup({
+			layers: {
+				active: index([layerProperties0, layerProperties1])
+			}
+		});
+
+		expect(store.getState().layers.active[0].grChangedFlag).toBeNull();
+		expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
+
+		geoResourceChanged(new GeoResourceFuture(geoResourceId0, () => { }));
+
+		expect(store.getState().layers.active[0].grChangedFlag.payload).toBe(geoResourceId0);
+		expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
 	});
 
 	it('marks the state as ready', () => {

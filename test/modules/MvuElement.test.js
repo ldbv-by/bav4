@@ -70,6 +70,10 @@ class MvuElementImpl extends MvuElement {
 		this.onWindowLoadCalled = this.callOrderIndex++;
 	}
 
+	onDisconnect() {
+		this.onDisconnectCalled = this.callOrderIndex++;
+	}
+
 
 	createView(model) {
 		return html`
@@ -225,12 +229,39 @@ describe('MvuElement', () => {
 
 		it('calls lifecycle callbacks in correct order', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
+			document.body.removeChild(element);
 
 			expect(element.onInitializeCalled).toBe(0);
 			expect(element.onBeforeRenderCalled).toBe(1);
 			expect(element.onRenderCalled).toBe(2);
 			expect(element.onAfterRenderCalled).toBe(3);
 			expect(element.onWindowLoadCalled).toBe(4);
+			expect(element.onDisconnectCalled).toBe(5);
+		});
+
+		it('logs the lifecycle', async () => {
+			const warnSpy = spyOn(console, 'log');
+			const element = await TestUtils.renderAndLogLifecycle(MvuElementImpl.tag);
+			document.body.removeChild(element);
+
+			expect(warnSpy.calls.allArgs()).toEqual([
+				['📦 MvuElementImpl#constructor: {"foo":"foo","index":null}'],
+				['🎺 MvuElementImpl#signal: "update_index", 21'],
+				['📌 MvuElementImpl#onModelChanged: {"foo":"foo","index":21}'],
+				['📌 MvuElementImpl#onInitialize'],
+				['📌 MvuElementImpl#onBeforeRender'],
+				['🧪 MvuElementImpl#render: {"foo":"foo","index":21}'],
+				['📌 MvuElementImpl#onAfterRender'],
+				['📌 MvuElementImpl#onDisconnect']
+			]);
+		});
+
+		it('does NOT log the lifecycle', async () => {
+			const warnSpy = spyOn(console, 'log');
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			document.body.removeChild(element);
+
+			expect(warnSpy).not.toHaveBeenCalled();
 		});
 
 		it('calls lifecycle callbacks in correct order when rendering is skipped', async () => {

@@ -28,7 +28,7 @@ import './modules/uiTheme';
 import './modules/modal';
 import './modules/baseLayer';
 import './modules/layerManager';
-import './modules/notifications';
+import './modules/stackables';
 import './modules/examples';
 import './modules/featureInfo';
 import './modules/iconSelect';

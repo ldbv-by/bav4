@@ -83,8 +83,7 @@ export class ImportVectorDataService {
 		};
 
 		const geoResource = new GeoResourceFuture(id, loader);
-		this._geoResourceService.addOrReplace(geoResource);
-		return geoResource;
+		return this._geoResourceService.addOrReplace(geoResource);
 	}
 
 	/**
