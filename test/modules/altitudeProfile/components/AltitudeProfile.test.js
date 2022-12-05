@@ -128,7 +128,7 @@ describe('AltitudeProfile', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders the view when  profile is available', async () => {
+		it('renders the view when a profile is available', async () => {
 			const coordinates = [
 				[0, 1],
 				[2, 3]
@@ -152,7 +152,50 @@ describe('AltitudeProfile', () => {
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('Höhenprofil');
 			// todo - check correct schema is used
+			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
+		});
+
+		describe('when attribute changes', () => {
+			fit('updates the view', async () => {
+				const coordinates = [
+					[0, 1],
+					[2, 3]
+				];
+				spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
+
+				const element = await setup({
+					altitudeProfile: {
+						active: false,
+						coordinates: coordinates
+					},
+					selectedAttribute: 'slope'
+				});
+
+				const attrs = element.shadowRoot.getElementById('attrs');
+
+				attrs.value = 'slope';
+				attrs.dispatchEvent(new Event('change'));
+
+				// const select = element.shadowRoot.querySelector('#attrs');
+				// const options = Array.from(select.options);
+				// //   const optionToSelect = $options.find(item => item.text ===text);
+				// //   optionToSelect.selected = true;
+				// options.forEach((option) => {
+				// 	console.log('🚀🚀 ~ file: AltitudeProfile.test.js:184 ~ fit ~ option', option);
+				// 	return {};
+				// });
+				// const option = select.querySelector('#slope');
+				// select.value = option.value;
+
+				// select.querySelectorAll('option')[2].selected = 'selected';
+
+				await TestUtils.timeout();
+				const attrs2 = element.shadowRoot.getElementById('attrs');
+				console.log('🚀-check-🚀 ~ file: AltitudeProfile.test.js:180 ~ fit ~ attrs2', attrs2);
+				// expect(button.classList.contains('disabled')).toBeFalse();
+				// element.disabled = true;
+			});
 		});
 	});
 

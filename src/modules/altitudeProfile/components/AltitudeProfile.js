@@ -110,6 +110,7 @@ export class AltitudeProfile extends MvuElement {
 			case Update_Selected_Attribute:
 				const selectedAttribute = data;
 				const newLocal = { ...model, selectedAttribute };
+				console.log('🚀 ~ file: AltitudeProfile.js:113 ~ AltitudeProfile ~ update ~ newLocal', newLocal);
 				return newLocal;
 		}
 	}
@@ -125,6 +126,7 @@ export class AltitudeProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
+		console.log('🚀🚀🚀🚀🚀🚀 ~ file: AltitudeProfile.js:129 ~ AltitudeProfile ~ createView ~ model', model);
 		const translate = (key) => this._translationService.translate(key);
 
 		if (!model.profile) {
@@ -136,6 +138,7 @@ export class AltitudeProfile extends MvuElement {
 		const onChange = () => {
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
+			console.log('🚀 ~ file: AltitudeProfile.js:140 ~ AltitudeProfile ~ onChange ~ selectedAttribute', selectedAttribute);
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
@@ -151,8 +154,8 @@ export class AltitudeProfile extends MvuElement {
 					${translate('altitudeProfile_sumUp')}: ${sumUp} ${translate('altitudeProfile_sumDown')}: ${sumDown}
 					<span>
 						<select id="attrs" @change=${onChange}>
-							<option value="height" selected>height</option>
-							${model.profile.attrs.map((attr) => html` <option value="${attr.id}">${attr.id}</option> `)}
+							<option value=${model.selectedAttribute}>height</option>
+							${model.profile.attrs.map((attr) => html` <option id="${attr.id}" value="${attr.id}">${attr.id}</option> `)}
 						</select>
 					</span>
 				</div>
@@ -328,8 +331,7 @@ export class AltitudeProfile extends MvuElement {
 					const xPoint = (xPointWidth / chartArea.width) * index;
 					currentInclineType = startFlat(gradientBg, xPoint, currentInclineType);
 				}
-			}
-			else {
+			} else {
 				// look for first element with slope greater X
 				if (element.slope && element.slope > hereStartsSteep) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
@@ -341,8 +343,7 @@ export class AltitudeProfile extends MvuElement {
 		// end with currentInclineType - color
 		if (currentInclineType === InclineType.Steep) {
 			gradientBg.addColorStop(1, steepColor);
-		}
-		else {
+		} else {
 			gradientBg.addColorStop(1, flatColor);
 		}
 
@@ -357,8 +358,7 @@ export class AltitudeProfile extends MvuElement {
 			try {
 				const profile = await this._altitudeService.getProfile(coordinates);
 				this.signal(Update_Profile_Data, profile);
-			}
-			catch (e) {
+			} catch (e) {
 				console.warn(e.message);
 				// Todo: emit error notification
 				// this.signal(Update_Profile_Data, null);
@@ -399,14 +399,12 @@ export class AltitudeProfile extends MvuElement {
 					if (heightsElement) {
 						if (heightsElement.slope) {
 							slope = heightsElement.slope + '%';
-						}
-						else {
+						} else {
 							slope = translate('altitudeProfile_unknown');
 						}
 						if (heightsElement.surface) {
 							surface = heightsElement.surface;
-						}
-						else {
+						} else {
 							surface = translate('altitudeProfile_unknown');
 						}
 					}
