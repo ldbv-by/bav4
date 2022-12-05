@@ -606,7 +606,7 @@ export class BvvMfp3Encoder {
 				encoded.fontWeight = fontValues[0];
 			}
 
-			if (this._mfpProperties.rotation !== null && this._mfpProperties.rotation !== 0) {
+			if (this._mfpProperties.rotation) {
 				encoded.labelRotation = (360 - this._mfpProperties.rotation) % 360;
 			}
 		}
