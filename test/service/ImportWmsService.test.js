@@ -3,6 +3,7 @@ import { WmsGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
+import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {
@@ -72,6 +73,7 @@ describe('ImportWmsService', () => {
 			expect(result).toHaveSize(3);
 			result.forEach(gr => {
 				expect(gr.importedByUser).toBeTrue();
+				expect(gr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(gr)]);
 				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
 			});
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
