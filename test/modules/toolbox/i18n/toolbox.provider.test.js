@@ -103,7 +103,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 Hochformat');
 		expect(map.toolbox_exportMfp_options).toBe('Optionen');
 		expect(map.toolbox_exportMfp_autorotation_title).toBe('Autorotation aktivieren/deaktivieren');
-		expect(map.toolbox_exportMfp_autorotation).toBe('Autorotation');
+		expect(map.toolbox_exportMfp_autorotation).toBe('Karte automatisch drehen');
 	});
 
 	it('provides translation for en', () => {
@@ -206,7 +206,7 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 portrait');
 		expect(map.toolbox_exportMfp_options).toBe('Options');
 		expect(map.toolbox_exportMfp_autorotation_title).toBe('Activate/deactivate autorotation');
-		expect(map.toolbox_exportMfp_autorotation).toBe('Autorotation');
+		expect(map.toolbox_exportMfp_autorotation).toBe('Automatically rotate map');
 	});
 
 	it('have the expected amount of translations', () => {
