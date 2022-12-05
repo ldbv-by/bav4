@@ -8,7 +8,10 @@ export const provide = (lang) => {
 				altitudeProfile_sumUp: 'SumUp',
 				altitudeProfile_sumDown: 'SumDown',
 				altitudeProfile_elevation: 'Elevation',
+				altitudeProfile_alt: 'Elevation',
+				altitudeProfile_slope: 'Slope',
 				altitudeProfile_surface: 'surface',
+				altitudeProfile_anotherType: 'anotherType',
 				altitudeProfile_unknown: 'unknown'
 			};
 
@@ -20,7 +23,10 @@ export const provide = (lang) => {
 				altitudeProfile_sumUp: 'SumUp de',
 				altitudeProfile_sumDown: 'SumDown de',
 				altitudeProfile_elevation: 'Höhe',
+				altitudeProfile_alt: 'Höhe',
+				altitudeProfile_slope: 'Steigung',
 				altitudeProfile_surface: 'Untergrund',
+				altitudeProfile_anotherType: 'anotherType',
 				altitudeProfile_unknown: 'unbekannt'
 			};
 

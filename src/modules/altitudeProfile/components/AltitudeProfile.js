@@ -78,6 +78,22 @@ export class AltitudeProfile extends MvuElement {
 	 * @override
 	 */
 	update(type, data, model) {
+		const addAttributeData = (attr, profile) => {
+			const id = attr.id;
+			attr.values.forEach((value) => {
+				console.log('🚀 ~ file: AltitudeProfile.js:89 ~ AltitudeProfile ~ attr.values.forEach ~ value', value);
+				for (let index = value[0]; index <= value[1]; index++) {
+					const elementValue = value[2];
+					profile.alts[index][id] = elementValue;
+				}
+			});
+			profile.alts.forEach((alt) => {
+				if (!alt[id]) {
+					alt[id] = 'missing';
+				}
+			});
+		};
+
 		switch (type) {
 			case Update_Profile_Data:
 				const profile = data;
@@ -86,21 +102,9 @@ export class AltitudeProfile extends MvuElement {
 				const chartData = profile.alts.map((alt) => alt.alt);
 
 				profile.attrs.forEach((attr) => {
-					const id = attr.id;
-
-					attr.values.forEach((value) => {
-						for (let index = value[0]; index <= value[1]; index++) {
-							const elementValue = value[2];
-							profile.alts[index][id] = elementValue;
-						}
-					});
-
-					profile.alts.forEach((alt) => {
-						if (!alt[id]) {
-							alt[id] = 'missing';
-						}
-					});
+					addAttributeData(attr, profile);
 				});
+				profile.attrs = [{ id: 'alt' }, ...profile.attrs];
 
 				return { ...model, profile, labels, data: chartData };
 
@@ -110,7 +114,6 @@ export class AltitudeProfile extends MvuElement {
 			case Update_Selected_Attribute:
 				const selectedAttribute = data;
 				const newLocal = { ...model, selectedAttribute };
-				console.log('🚀 ~ file: AltitudeProfile.js:113 ~ AltitudeProfile ~ update ~ newLocal', newLocal);
 				return newLocal;
 		}
 	}
@@ -126,7 +129,6 @@ export class AltitudeProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		console.log('🚀🚀🚀🚀🚀🚀 ~ file: AltitudeProfile.js:129 ~ AltitudeProfile ~ createView ~ model', model);
 		const translate = (key) => this._translationService.translate(key);
 
 		if (!model.profile) {
@@ -138,7 +140,6 @@ export class AltitudeProfile extends MvuElement {
 		const onChange = () => {
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
-			console.log('🚀 ~ file: AltitudeProfile.js:140 ~ AltitudeProfile ~ onChange ~ selectedAttribute', selectedAttribute);
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
@@ -154,8 +155,10 @@ export class AltitudeProfile extends MvuElement {
 					${translate('altitudeProfile_sumUp')}: ${sumUp} ${translate('altitudeProfile_sumDown')}: ${sumDown}
 					<span>
 						<select id="attrs" @change=${onChange}>
-							<option value=${model.selectedAttribute}>height</option>
-							${model.profile.attrs.map((attr) => html` <option id="${attr.id}" value="${attr.id}">${attr.id}</option> `)}
+							${model.profile.attrs.map(
+								(attr) =>
+									html` <option id="${attr.id}" value="${attr.id}">${translate('altitudeProfile_' + attr.id)}</option> `
+							)}
 						</select>
 					</span>
 				</div>
