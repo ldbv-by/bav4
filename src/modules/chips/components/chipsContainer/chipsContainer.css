@@ -11,7 +11,7 @@
 	border: 1px solid var(--chip-color);
 	margin: .8em .5em 0 0;
 	display: flex;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
+	/* transition: all var(--animation-duration-large-open) var(--animation-easing-linea);   */
 	margin-left: 0;
 	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
@@ -32,9 +32,12 @@
 	top: -.1em;
 }
 .chips__button-text {
-	color: var(--chip-color);
+	color: var(--text1);
 	font-weight: bold;
 	margin: auto .5em;
+}
+.chips__button:hover .chips__button-text{
+	color: var(--chip-color);
 }
 
 .is-desktop.is-open.chips__container {
@@ -63,7 +66,7 @@
 	padding: 0 1em;
 	overflow: hidden;
 }  
-.chisp__scroll-button {
+.chips__scroll-button {
 	display: none;
 	position: sticky;
 	background: var(--primary-bg-color);
@@ -78,13 +81,13 @@
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%); 
 }
-.show .chisp__scroll-button {
+.show .chips__scroll-button {
 	display: block;
 }
-.chisp__scroll-button-right {
+.chips__scroll-button-right {
 	right: 0;
 }
-.chisp__scroll-button-right .icon {
+.chips__scroll-button-right .icon {
 	height: 1em;
 	width: .8em;
 	background: var(--text2);
@@ -95,10 +98,10 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.chisp__scroll-button-left {
+.chips__scroll-button-left {
 	left: 0;
 }
-.chisp__scroll-button-left .icon {
+.chips__scroll-button-left .icon {
 	height: 1em;
 	width: 1em;
 	background: var(--text2);
