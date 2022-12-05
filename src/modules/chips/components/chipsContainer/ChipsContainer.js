@@ -54,7 +54,6 @@ export class ChipsContainer extends MvuElement {
 		this.observe(state => state.chips.current, current => this.signal(Update_Chips, { currentChips: [...current] }));
 
 
-		this.observe(state => state.chips.current, current => this.signal(Update_Chips, { currentChips: [...current] }));
 	}
 
 	/**
@@ -118,7 +117,7 @@ export class ChipsContainer extends MvuElement {
 		};
 
 		const openButtonModal = (chip) => {
-			openModal(chip.title, html`<style>${css}</style><iframe title=${chip.title } src=${chip.href} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe`);
+			openModal(chip.title, html`<style>${css}</style><iframe title=${chip.title } src=${chip.href} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`);
 		};
 
 		const renderIcon = (chip) => {
@@ -163,7 +162,6 @@ export class ChipsContainer extends MvuElement {
 			`;
 		};
 
-
 		const getLayoutChips = (currentChips) => {
 			return currentChips.map((chip) => (chip.target === 'modal') ? getButton(chip) : getLink(chip));
 		};
@@ -171,12 +169,12 @@ export class ChipsContainer extends MvuElement {
 		return html`
 			<style>${css}</style>	
 			<div id='chipscontainer' class="${isOverflown()} ${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">  			
-				<button class='chisp__scroll-button chisp__scroll-button-left' @click="${(scrollRight)}">			
+				<button class='chips__scroll-button chips__scroll-button-left' @click="${(scrollRight)}">			
 					<span class="icon">	
 					</span>	
 				</button>
-				${getLayoutChips(currentChips)}	
-				<button class='chisp__scroll-button chisp__scroll-button-right' @click="${(scrollLeft)}">		
+				${ (currentChips.length === 0) ? nothing : getLayoutChips(currentChips)}	
+				<button class='chips__scroll-button chips__scroll-button-right' @click="${(scrollLeft)}">		
 					<span class="icon">	
 					</span>	
 				</button>
