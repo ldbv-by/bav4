@@ -97,7 +97,6 @@ describe('Attribution provider', () => {
 		});
 
 		it('provides an attribution for locally imported dataset', () => {
-
 			const label = 'label';
 
 			expect(getAttributionForLocallyImportedOrCreatedGeoResource(new GeoResourceImpl(undefined, 'id', label))).toEqual({
