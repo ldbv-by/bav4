@@ -32,6 +32,7 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 
 
 
@@ -1169,7 +1170,8 @@ describe('OlDrawHandler', () => {
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 			expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
 				id: 'f_ooBarId',
-				label: 'olMap_handler_draw_layer_label'
+				label: 'olMap_handler_draw_layer_label',
+				_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
 			}));
 		});
 
