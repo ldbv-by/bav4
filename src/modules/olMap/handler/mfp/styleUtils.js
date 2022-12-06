@@ -8,6 +8,7 @@ import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { equals, getIntersection } from 'ol/extent';
 
 
+
 const fontSizePX = 70;
 export const createAreaPattern = () => {
 	// Create a pattern
@@ -210,14 +211,56 @@ export const createMapMaskFunction = (map, feature) => {
 
 		ctx.fillStyle = 'rgba(0,0,0,0.4)';
 		ctx.fill();
-		ctx.restore();
+
+	};
+
+	const getCenter = (coordinates) => {
+		const xValues = coordinates.map(c => c[0]);
+		const yValues = coordinates.map(c => c[1]);
+		const width = Math.max(...xValues) - Math.min(...xValues);
+		const height = Math.max(...yValues) - Math.min(...yValues);
+		return [Math.min(...xValues) + width / 2, Math.min(...yValues) + height / 2];
+	};
+
+	const getScale = (coordinates, passepartoutSize) => {
+		const xValues = coordinates.map(c => c[0]);
+		const yValues = coordinates.map(c => c[1]);
+		const width = Math.max(...xValues) - Math.min(...xValues);
+		const height = Math.max(...yValues) - Math.min(...yValues);
+		return [(width + passepartoutSize) / width, (height + passepartoutSize) / height];
+	};
+
+	const drawPassepartout = (ctx, center, page) => {
+		const passepartoutWidth = 20;
+		const centerRelative = page.map(c => [c[0] - center[0], c[1] - center[1]]);
+		const scale = getScale(page, passepartoutWidth);
+
+		ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+		ctx.beginPath();
+
+		ctx.translate(center[0], center[1]);
+		ctx.scale(scale[0], scale[1]);
+		ctx.lineWidth = passepartoutWidth;
+		ctx.moveTo(centerRelative[0][0], centerRelative[0][1]);
+		centerRelative.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
+
+		ctx.stroke();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+
 	};
 
 	const renderMask = (event) => {
 		const pixelCoordinates = feature.get(FIELD_NAME_PAGE_PIXEL_COORDINATES);
 		const pixelMask = getMask(map, pixelCoordinates);
+		const ctx = event.context;
+		const center = getCenter(pixelCoordinates);
 
-		drawMask(event.context, pixelMask);
+		drawMask(ctx, pixelMask);
+		drawPassepartout(ctx, center, pixelMask[1]);
+
+		ctx.restore();
+
 	};
 	return renderMask;
 };
