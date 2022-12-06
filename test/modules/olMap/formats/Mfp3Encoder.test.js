@@ -1903,6 +1903,33 @@ describe('BvvMfp3Encoder', () => {
 		});
 	});
 
+	describe('_generateQrCode', () => {
+		const linkUrl = 'foo';
+		it('calls the urlService', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').withArgs(linkUrl).and.resolveTo('bar');
+
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(urlServiceSpy).toHaveBeenCalled();
+			expect(qrCodeUrl).toBe('bar');
+		});
+
+		it('warns in console, if qrCode generation fails', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').and.throwError('bar');
+			const warnSpy = spyOn(console, 'warn');
+
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(warnSpy).toHaveBeenCalledWith('Could not generate qr-code url: Error: bar');
+			expect(urlServiceSpy).toThrowError('bar');
+			expect(qrCodeUrl).toBeNull();
+		});
+	});
+
 	describe('buildMatrixSets', () => {
 		it('builds a tileMatrixSet', () => {
 			const tileGrid = new AdvWmtsTileGrid();
