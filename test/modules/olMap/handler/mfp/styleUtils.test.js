@@ -196,11 +196,11 @@ describe('mfp style utility functions', () => {
 	describe('createMapMaskFunction', () => {
 
 		const createFeature = (name) => {
-			const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
+			const geometry = new Polygon([[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]]);
 			const feature = new Feature({ geometry: geometry });
-			const pageBuffer = geometry.clone();
+
 			feature.set('name', name);
-			feature.set('page_buffer', pageBuffer);
+			feature.set('page_pixel_coordinates', [[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]);
 
 			return feature;
 		};
@@ -229,65 +229,45 @@ describe('mfp style utility functions', () => {
 				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState, extent: [0, 0, 10, 10]
 			};
 		};
+		const getPostRenderEvent = (time, context) => new RenderEvent('postrender', transform, setupFrameState(time), context);
 
-		it('draws a innerPolygon with mfpBoundaryStyle', () => {
-			const expectedStrokeColor = 'rgba(9,157,220,1)';
-			const expectedStrokeWidth = 3;
+		it('draws a mask', () => {
+			const expectedFillColor = 'rgba(0,0,0,0.4)';
 			const feature = createFeature('');
 			const mapMock = createMapMock();
 			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
+
+			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
+			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0, context));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
+
+			// for outer drawn polygon
+			expect(moveToSpy).toHaveBeenCalledWith(0, 0);
+			// for inner drawn polygon
+			expect(moveToSpy).toHaveBeenCalledWith(5, 5);
+		});
+
+		it('draws a passpartout', () => {
+			const expectedStrokeColor = 'rgba(255,255,255,0.4)';
+			const expectedStrokeWidth = 20;
+			const feature = createFeature('');
+			const mapMock = createMapMock();
+			const context = get2dContext();
 
 			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
 			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
 
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
 			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
+			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
 			expect(strokeStylePropertySpy).toHaveBeenCalledWith(expectedStrokeColor);
 			expect(strokeWidthPropertySpy).toHaveBeenCalledWith(expectedStrokeWidth);
 		});
-
-		it('draws a outerPolygon with maskFeatureStyle', () => {
-			const expectedFillColor = 'rgba(0,0,0,0.4)';
-			const feature = createFeature('');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const mapSizeForMaskSpy = spyOn(mapMock, 'getSize').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(mapSizeForMaskSpy).toHaveBeenCalled();
-		});
-
-		it('draws a pagePolygon with mfpPageStyle', () => {
-			const expectedFillColor = 'rgba(255,255,255,0.4)';
-			const feature = createFeature('');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(featurePropertySpy).toHaveBeenCalledWith('page_buffer');
-		});
-
 	});
 });

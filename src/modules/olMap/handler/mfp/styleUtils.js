@@ -68,19 +68,6 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 	});
 };
 
-export const mfpBoundaryStyleFunction = () => new Style({
-	stroke: new Stroke({
-		color: [9, 157, 220, 1],
-		width: 3
-	})
-});
-
-export const mfpPageStyleFunction = () => new Style({
-	fill: new Fill({
-		color: [255, 255, 255, 0.4]
-	})
-});
-
 export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 	const baseStyle = new Style({
@@ -163,18 +150,6 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 };
 
 export const nullStyleFunction = () => [new Style({})];
-
-export const maskFeatureStyleFunction = () => {
-
-	const fill = new Fill({
-		color: [0, 0, 0, 0.4]
-	});
-	const maskStyle = new Style({
-		fill: fill
-	});
-
-	return maskStyle;
-};
 
 const getMask = (map, pixelCoordinates) => {
 	const size = map.getSize();
