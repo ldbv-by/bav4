@@ -1,9 +1,9 @@
 import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
-import { getVectorContext } from 'ol/render';
-import { DEVICE_PIXEL_RATIO } from 'ol/has';
-import { Polygon } from 'ol/geom';
 
-import { FIELD_NAME_PAGE_BUFFER } from './OlMfpHandler';
+import { DEVICE_PIXEL_RATIO } from 'ol/has';
+
+
+import { FIELD_NAME_PAGE_PIXEL_SIZE } from './OlMfpHandler';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { equals, getIntersection } from 'ol/extent';
 
@@ -174,38 +174,58 @@ export const maskFeatureStyleFunction = () => {
 	return maskStyle;
 };
 
-const getMaskGeometry = (map, innerGeometry) => {
+const getPixelMask = (map, extent) => {
 	const size = map.getSize();
 	const width = size[0] * DEVICE_PIXEL_RATIO;
 	const height = size[1] * DEVICE_PIXEL_RATIO;
-	const outerPixels = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]];
-	const mask = new Polygon([outerPixels.map(p => map.getCoordinateFromPixel(p))]);
-	mask.appendLinearRing(innerGeometry.getLinearRing(0));
 
-	return mask;
+	const outerPixels = [
+		[0, 0],
+		[width, 0],
+		[width, height],
+		[0, height],
+		[0, 0]];
+
+
+	const innerPixels = [
+		[extent[0], extent[1]],
+		[extent[2], extent[1]],
+		[extent[2], extent[3]],
+		[extent[0], extent[3]],
+		[extent[0], extent[1]]];
+	return [outerPixels, innerPixels];
 };
 
 export const createMapMaskFunction = (map, feature) => {
-	const innerStyle = mfpBoundaryStyleFunction();
-	const outerStyle = maskFeatureStyleFunction();
-	const pageStyle = mfpPageStyleFunction();
+
+	const drawMask = (ctx, mask) => {
+		const outer = mask[0];
+		const inner = mask[1];
+		ctx.beginPath();
+
+		// outside -> clockwise
+		ctx.moveTo(outer[0][0], outer[0][1]);
+		outer.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
+
+		// inside -> counter-clockwise
+		ctx.moveTo(inner[0][0], inner[0][1]);
+		[...inner].reverse().slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
+
+		ctx.fillStyle = 'rgba(0,0,0,0.4)';
+		ctx.fill();
+		ctx.restore();
+	};
 
 	const renderMask = (event) => {
-		const pageBuffer = feature.get(FIELD_NAME_PAGE_BUFFER).clone();
+		// [xmin, ymin, xmax, ymax]
+		const pageExtentInPixels = feature.get(FIELD_NAME_PAGE_PIXEL_SIZE);
+		const pixelMask = getPixelMask(map, pageExtentInPixels);
 
-		const innerPolygon = feature.getGeometry();
-		const mask = getMaskGeometry(map, innerPolygon);
-		const vectorContext = getVectorContext(event);
+		const ctx = event.context;
 
-		vectorContext.setStyle(innerStyle);
-		vectorContext.drawGeometry(innerPolygon);
-
-		vectorContext.setStyle(outerStyle);
-		vectorContext.drawGeometry(mask);
-
-		pageBuffer.appendLinearRing(innerPolygon.getLinearRing(0));
-		vectorContext.setStyle(pageStyle);
-		vectorContext.drawGeometry(pageBuffer);
+		drawMask(ctx, pixelMask);
 	};
 	return renderMask;
 };

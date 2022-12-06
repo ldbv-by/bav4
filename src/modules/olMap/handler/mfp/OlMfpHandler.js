@@ -13,6 +13,7 @@ import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 
 export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
+export const FIELD_NAME_PAGE_PIXEL_SIZE = 'page_pixel_size';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -61,7 +62,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			setScale(this._getOptimalScale(olMap));
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
-
+			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
@@ -94,8 +95,14 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
-			observe(store, state => state.position.liveCenter, () => this._updateMfpPreview()),
-			observe(store, state => state.position.center, () => this._updateRotation()),
+			// observe(store, state => state.position.liveCenter, () => {
+			// 	const hasPixelExtent = this._mfpBoundaryFeature.get(FIELD_NAME_PAGE_PIXEL_SIZE) != null;
+			// 	if (!hasPixelExtent) {
+			// 		this._updateMfpPreview();
+			// 	}
+			// }),
+			observe(store, state => state.position.center, () => this._updateMfpPreview()),
+			//observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
 			observe(store, state => state.position.rotation, () => this._updateRotation()),
 			observe(store, state => state.position.liveRotation, () => this._updateMfpPreview())
@@ -112,11 +119,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.liveRotation;
-		const geometry = this._createMfpBoundary(this._pageSize, center, rotation);
-		const pageBufferGeometry = this._createMfpBoundary(this._bufferSize, center, rotation);
+		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
+		const geometry = this._ToMfpBoundary(geodeticBoundary, center, rotation);
+		const pixelExtent = this._toPixelExtent(geodeticBoundary);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_BUFFER, pageBufferGeometry);
+		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_SIZE, pixelExtent);
+
 	}
 
 	_updateAzimuth(e) {
@@ -252,6 +261,39 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		return rotation !== null ? rotate(mfpBoundary) : mfpBoundary;
+	}
+
+	_createGeodeticBoundary(pageSize, center) {
+		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
+
+		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
+		const geodeticBoundingBox = [
+			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
+			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
+			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
+			geodeticCenterCoordinate[1] + (pageSize.height / 2) // maxY
+		];
+
+		return getPolygonFrom(geodeticBoundingBox);
+	}
+
+	_ToMfpBoundary(geodeticBoundary, center, mapRotation) {
+		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
+		const rotate = (polygon) => {
+			const azimuthRotation = this._getAzimuth(polygon);
+			polygon.rotate(mapRotation - azimuthRotation, center.getCoordinates());
+			return polygon;
+		};
+
+		return mapRotation !== null ? rotate(mfpBoundary) : mfpBoundary;
+	}
+
+	_toPixelExtent(geodeticBoundary) {
+		const pixelCoordinates = geodeticBoundary.getCoordinates()[0].map(c => this._map.getPixelFromCoordinate(c));
+		const xValues = pixelCoordinates.map(c => c[0]);
+		const yValues = pixelCoordinates.map(c => c[1]);
+		// rect(x, y, width, height)
+		return [Math.min(...xValues), Math.min(...yValues), Math.max(...xValues), Math.max(...yValues)];
 	}
 
 	_getMfpProjection() {
