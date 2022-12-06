@@ -2,6 +2,7 @@ import { $injector } from '../../../src/injection';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../../src/domain/geoResources';
 import { FileStorageServiceDataTypes } from '../../../src/services/FileStorageService';
 import { loadBvvFileStorageResourceById, _newLoader } from '../../../src/services/provider/fileStorage.provider';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../src/services/provider/attribution.provider';
 
 describe('BVV GeoResource provider', () => {
 
@@ -90,6 +91,8 @@ describe('BVV GeoResource provider', () => {
 			expect(geoResource instanceof VectorGeoResource).toBeTrue();
 			expect(geoResource._data).toBe(data);
 			expect(geoResource._srid).toBe(srid);
+			expect(geoResource._srid).toBe(srid);
+			expect(geoResource._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResource._sourceType).toBe(VectorSourceType.KML);
 			expect(geoResource.label).toBe('global_default_vector_georesource_name');
 		});

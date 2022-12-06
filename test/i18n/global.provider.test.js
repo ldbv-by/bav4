@@ -17,6 +17,7 @@ describe('global i18n', () => {
 		expect(map.global_import_unsupported_sourceType).toBe('Source type could not be detected or is not supported');
 		expect(map.global_import_authenticationModal_title).toBe('Authentication required');
 		expect(map.global_default_vector_georesource_name).toBe('Data');
+		expect(map.global_locally_imported_dataset_copyright_label).toBe('Dataset and/or style provided by third party');
 	});
 
 	it('provides translation for de', () => {
@@ -33,11 +34,12 @@ describe('global i18n', () => {
 		expect(map.global_import_unsupported_sourceType).toBe('Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt');
 		expect(map.global_import_authenticationModal_title).toBe('Anmeldung erforderlich');
 		expect(map.global_default_vector_georesource_name).toBe('Daten');
+		expect(map.global_locally_imported_dataset_copyright_label).toBe('Mit Darstellung durch den Anwender');
 	});
 
 	it('have the expected amount of translations', () => {
 
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
