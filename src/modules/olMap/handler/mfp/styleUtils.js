@@ -233,9 +233,10 @@ export const createMapMaskFunction = (map, feature) => {
 
 	const drawPassepartout = (ctx, pageCoordinates) => {
 		const passepartoutWidth = 20;
-		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
 		const pageRectangle = getPageRectangle(pageCoordinates);
 		const center = getCenter(pageRectangle);
+		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
+
 		const scale = getScaling(pageRectangle, passepartoutWidth);
 
 		ctx.strokeStyle = 'rgba(255,255,255,0.4)';

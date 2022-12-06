@@ -14,7 +14,7 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeLiveCenter, changeLiveRotation, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
+import { changeCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 
 
@@ -138,7 +138,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(8);
+			expect(handler._registeredObservers).toHaveSize(6);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -182,7 +182,7 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
-			changeLiveCenter(center);
+			changeCenter(center);
 
 			expect(updateSpy).toHaveBeenCalled();
 		});
@@ -229,11 +229,13 @@ describe('OlMfpHandler', () => {
 				handler.activate(map);
 
 				setAutoRotation(false);
-				const spy = spyOn(handler, '_createMfpBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
+				const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
+				const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
 
-				changeLiveRotation(actualRotationInDegree);
+				changeRotation(actualRotationInDegree);
 
-				expect(spy).toHaveBeenCalledTimes(2);
+				expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
+				expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -396,13 +398,13 @@ describe('OlMfpHandler', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
 			const center = new Point([0, 0]);
-			const rotation = 0;
+
 			setup();
 
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 
-			expect(classUnderTest._createMfpBoundary(pageSize, center, rotation)).toEqual(jasmine.any(Polygon));
+			expect(classUnderTest._createGeodeticBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
 		});
 	});
 });

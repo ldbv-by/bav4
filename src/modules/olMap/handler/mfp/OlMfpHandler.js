@@ -109,7 +109,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
-		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.liveRotation;
+		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
 
@@ -228,28 +228,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		return new Point(this._map.getCoordinateFromPixel(getVisibleCenter()));
-	}
-
-	_createMfpBoundary(pageSize, center, rotation) {
-		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
-
-		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
-		const geodeticBoundingBox = [
-			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
-			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
-			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
-			geodeticCenterCoordinate[1] + (pageSize.height / 2) // maxY
-		];
-
-		const geodeticBoundary = getPolygonFrom(geodeticBoundingBox);
-		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
-		const rotate = (polygon) => {
-			const azimuthRotation = this._getAzimuth(polygon);
-			polygon.rotate(rotation - azimuthRotation, center.getCoordinates());
-			return polygon;
-		};
-
-		return rotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
 	_createGeodeticBoundary(pageSize, center) {
