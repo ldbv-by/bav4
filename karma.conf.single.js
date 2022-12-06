@@ -50,6 +50,8 @@ module.exports = function (config) {
 		preprocessors: {
 			'test/**/*.test.js': ['webpack']
 		},
-		browsers: [browser]
+		reporters: ['mocha', 'coverage-istanbul'],
+		browsers: [browser],
+		browserConsoleLogOptions: { level: 'debug', format: '%b %T: %m', terminal: false, path: 'console.log' }
 	});
 };
