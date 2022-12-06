@@ -16,7 +16,7 @@ export const getStore = () => {
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
-const Update_Profile_Data = 'update_altitude_data';
+const Enrich_Profile_Data = 'enrich_profile_data';
 
 const lightBorderWidth = 4;
 
@@ -29,7 +29,7 @@ export class AltitudeProfile extends MvuElement {
 			profile: null,
 			labels: null,
 			data: null,
-			selectedAttribute: null,
+			selectedAttribute: 'alt',
 			darkSchema: null
 		});
 		this._chart = null;
@@ -78,32 +78,34 @@ export class AltitudeProfile extends MvuElement {
 	 * @override
 	 */
 	update(type, data, model) {
-		const addAttributeData = (attr, profile) => {
-			const id = attr.id;
-			attr.values.forEach((value) => {
-				console.log('🚀 ~ file: AltitudeProfile.js:89 ~ AltitudeProfile ~ attr.values.forEach ~ value', value);
-				for (let index = value[0]; index <= value[1]; index++) {
-					const elementValue = value[2];
-					profile.alts[index][id] = elementValue;
+		const enritchAltsArrayWithAttributeData = (attribute, profile) => {
+			// if (attribute.id === 'alt') {
+			// 	return;
+			// }
+			const attributeName = attribute.id;
+			attribute.values.forEach((from_to_value) => {
+				for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
+					profile.alts[index][attributeName] = from_to_value[2];
 				}
 			});
 			profile.alts.forEach((alt) => {
-				if (!alt[id]) {
-					alt[id] = 'missing';
+				if (!alt[attributeName]) {
+					alt[attributeName] = 'missing';
 				}
 			});
 		};
 
 		switch (type) {
-			case Update_Profile_Data:
+			case Enrich_Profile_Data:
 				const profile = data;
 
 				const labels = profile.alts.map((alt) => alt.dist);
 				const chartData = profile.alts.map((alt) => alt.alt);
 
 				profile.attrs.forEach((attr) => {
-					addAttributeData(attr, profile);
+					enritchAltsArrayWithAttributeData(attr, profile);
 				});
+				// add altitude to attribute select
 				profile.attrs = [{ id: 'alt' }, ...profile.attrs];
 
 				return { ...model, profile, labels, data: chartData };
@@ -156,14 +158,23 @@ export class AltitudeProfile extends MvuElement {
 					<span>
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map(
-								(attr) =>
-									html` <option id="${attr.id}" value="${attr.id}">${translate('altitudeProfile_' + attr.id)}</option> `
+								(attr) => html`
+									<option id="${attr.id}" value="${attr.id}" ${selected(attr)}>
+										${translate('altitudeProfile_' + attr.id)}
+									</option>
+								`
 							)}
 						</select>
 					</span>
 				</div>
 			</div>
 		`;
+
+		function selected(attr) {
+			const isSelected = attr.id === model.selectedAttribute;
+			const selectedString = isSelected ? ' SELECTED' : '';
+			return selectedString;
+		}
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
@@ -203,6 +214,7 @@ export class AltitudeProfile extends MvuElement {
 		}
 
 		const selectedAttribute = this.getModel().selectedAttribute;
+		console.log('🚀 ~ file: AltitudeProfile.js:228 ~ AltitudeProfile ~ _getGradient ~ selectedAttribute', selectedAttribute);
 
 		switch (selectedAttribute) {
 			case 'slope':
@@ -213,12 +225,13 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				// console.log('ToDo - unknown attribute');
+				console.log('🚀🚀🚀🚀 ToDo - "alt" or unknown attribute');
 				break;
 		}
 	}
 
 	_getBackgroundColor(context, altitudeData) {
+		console.log('🚀 ~ AltitudeProfile ~ 🚀_getBackgroundColor🚀');
 		const chart = context.chart;
 
 		const selectedAttribute = this.getModel().selectedAttribute;
@@ -234,6 +247,7 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getBorderColor(context, altitudeData) {
+		console.log('🚀 ~ AltitudeProfile ~ _getBorderColor');
 		const chart = context.chart;
 
 		const selectedAttribute = this.getModel().selectedAttribute;
@@ -360,7 +374,7 @@ export class AltitudeProfile extends MvuElement {
 		if (coordinates.length > 0) {
 			try {
 				const profile = await this._altitudeService.getProfile(coordinates);
-				this.signal(Update_Profile_Data, profile);
+				this.signal(Enrich_Profile_Data, profile);
 			} catch (e) {
 				console.warn(e.message);
 				// Todo: emit error notification
