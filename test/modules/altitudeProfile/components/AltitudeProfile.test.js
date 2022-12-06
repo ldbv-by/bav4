@@ -5,6 +5,7 @@ import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitud
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../test-utils.js';
+// import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
 
@@ -109,7 +110,7 @@ describe('AltitudeProfile', () => {
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('AltitudeService', altitudeServiceMock);
-		return TestUtils.render(AltitudeProfile.tag);
+		return TestUtils.renderAndLogLifecycle(AltitudeProfile.tag);
 	};
 
 	describe('when instantiating the component', () => {
@@ -117,7 +118,7 @@ describe('AltitudeProfile', () => {
 			await setup();
 			const altitudeProfile = new AltitudeProfile();
 			const initialModel = altitudeProfile.getModel();
-			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null });
+			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: 'alt', darkSchema: null });
 		});
 	});
 
@@ -128,7 +129,7 @@ describe('AltitudeProfile', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders the view when a profile is available', async () => {
+		fit('renders the view when a profile is available', async () => {
 			const coordinates = [
 				[0, 1],
 				[2, 3]
@@ -136,11 +137,15 @@ describe('AltitudeProfile', () => {
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
 
 			const element = await setup({
+				media: {
+					darkSchema: true
+				},
 				altitudeProfile: {
 					active: false,
 					coordinates: coordinates
 				}
 			});
+			console.log('🚀 ~ file: AltitudeProfile.test.js:145 ~ fit ~ element', element);
 
 			const chart = element._chart;
 			const config = chart.config;
@@ -157,42 +162,42 @@ describe('AltitudeProfile', () => {
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
 		});
+	});
 
-		describe('when attribute changes', () => {
-			it('updates the view', async () => {
-				const coordinates = [
-					[0, 1],
-					[2, 3]
-				];
-				spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
+	describe('when attribute changes', () => {
+		it('updates the view', async () => {
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile);
 
-				const element = await setup({
-					altitudeProfile: {
-						active: false,
-						coordinates: coordinates
-					}
-				});
-
-				const attrs = element.shadowRoot.getElementById('attrs');
-
-				attrs.value = 'slope';
-				attrs.dispatchEvent(new Event('change'));
-
-				const chart = element._chart;
-				const config = chart.config;
-				const datasetZero = config.data.datasets[0];
-				expect(chart).not.toBeNull();
-				expect(config.type).toBe('line');
-				expect(config.options.responsive).toBe(true);
-				expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
-				expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-				expect(datasetZero.label).toBe('Höhenprofil');
-				// todo - check correct schema is used
-				await TestUtils.timeout();
-				expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
-				const attrsCheck = element.shadowRoot.getElementById('attrs');
-				expect(attrsCheck.value).toBe('slope');
+			const element = await setup({
+				altitudeProfile: {
+					active: false,
+					coordinates: coordinates
+				}
 			});
+
+			const attrs = element.shadowRoot.getElementById('attrs');
+
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			const chart = element._chart;
+			const config = chart.config;
+			const datasetZero = config.data.datasets[0];
+			expect(chart).not.toBeNull();
+			expect(config.type).toBe('line');
+			expect(config.options.responsive).toBe(true);
+			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
+			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
+			expect(datasetZero.label).toBe('Höhenprofil');
+			// todo - check correct schema is used
+			await TestUtils.timeout();
+			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
+			const attrsCheck = element.shadowRoot.getElementById('attrs');
+			expect(attrsCheck.value).toBe('slope');
 		});
 	});
 
