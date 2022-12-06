@@ -95,10 +95,8 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			//observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
-			observe(store, state => state.position.rotation, () => this._updateRotation()),
-			observe(store, state => state.position.liveRotation, () => this._updateMfpPreview())
+			observe(store, state => state.position.rotation, () => this._updateRotation())
 		];
 	}
 
@@ -113,11 +111,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		const center = this._getVisibleCenterPoint();
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.liveRotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
-		const geometry = this._ToMfpBoundary(geodeticBoundary, center, rotation);
+		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
 
-		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_COORDINATES, this._toPixelCoordinates(geometry));
-
+		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_COORDINATES, this._toPixelCoordinates(mfpGeometry));
+		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
 	}
 
 	_updateAzimuth(e) {
@@ -156,7 +153,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		this._pageSize = toGeographicSize(layoutSize);
-		this._bufferSize = toGeographicSize({ width: layoutSize.width + Map_View_Margin, height: layoutSize.height + Map_View_Margin });
+
 		this._updateMfpPreview();
 	}
 
@@ -269,7 +266,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		return getPolygonFrom(geodeticBoundingBox);
 	}
 
-	_ToMfpBoundary(geodeticBoundary, center, mapRotation) {
+	_toMfpBoundary(geodeticBoundary, center, mapRotation) {
 		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
 		const rotate = (polygon) => {
 			const azimuthRotation = this._getAzimuth(polygon);

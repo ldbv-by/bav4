@@ -214,26 +214,29 @@ export const createMapMaskFunction = (map, feature) => {
 
 	};
 
-	const getCenter = (coordinates) => {
-		const xValues = coordinates.map(c => c[0]);
-		const yValues = coordinates.map(c => c[1]);
+	const getPageRectangle = (pageCoordinates) => {
+		const xValues = pageCoordinates.map(c => c[0]);
+		const yValues = pageCoordinates.map(c => c[1]);
 		const width = Math.max(...xValues) - Math.min(...xValues);
 		const height = Math.max(...yValues) - Math.min(...yValues);
-		return [Math.min(...xValues) + width / 2, Math.min(...yValues) + height / 2];
+
+		return { x: Math.min(...xValues), y: Math.min(...yValues), width: width, height: height };
 	};
 
-	const getScale = (coordinates, passepartoutSize) => {
-		const xValues = coordinates.map(c => c[0]);
-		const yValues = coordinates.map(c => c[1]);
-		const width = Math.max(...xValues) - Math.min(...xValues);
-		const height = Math.max(...yValues) - Math.min(...yValues);
-		return [(width + passepartoutSize) / width, (height + passepartoutSize) / height];
+	const getCenter = (rectangle) => {
+		return [rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2];
 	};
 
-	const drawPassepartout = (ctx, center, page) => {
+	const getScaling = (rectangle, buffer) => {
+		return [(rectangle.width + buffer) / rectangle.width, (rectangle.height + buffer) / rectangle.height];
+	};
+
+	const drawPassepartout = (ctx, pageCoordinates) => {
 		const passepartoutWidth = 20;
-		const centerRelative = page.map(c => [c[0] - center[0], c[1] - center[1]]);
-		const scale = getScale(page, passepartoutWidth);
+		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
+		const pageRectangle = getPageRectangle(pageCoordinates);
+		const center = getCenter(pageRectangle);
+		const scale = getScaling(pageRectangle, passepartoutWidth);
 
 		ctx.strokeStyle = 'rgba(255,255,255,0.4)';
 		ctx.beginPath();
@@ -254,10 +257,9 @@ export const createMapMaskFunction = (map, feature) => {
 		const pixelCoordinates = feature.get(FIELD_NAME_PAGE_PIXEL_COORDINATES);
 		const pixelMask = getMask(map, pixelCoordinates);
 		const ctx = event.context;
-		const center = getCenter(pixelCoordinates);
 
 		drawMask(ctx, pixelMask);
-		drawPassepartout(ctx, center, pixelMask[1]);
+		drawPassepartout(ctx, pixelMask[1]);
 
 		ctx.restore();
 
