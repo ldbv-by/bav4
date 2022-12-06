@@ -3,9 +3,10 @@ import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 
 
-import { FIELD_NAME_PAGE_PIXEL_SIZE } from './OlMfpHandler';
+import { FIELD_NAME_PAGE_PIXEL_COORDINATES } from './OlMfpHandler';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { equals, getIntersection } from 'ol/extent';
+
 
 const fontSizePX = 70;
 export const createAreaPattern = () => {
@@ -174,7 +175,7 @@ export const maskFeatureStyleFunction = () => {
 	return maskStyle;
 };
 
-const getPixelMask = (map, extent) => {
+const getMask = (map, pixelCoordinates) => {
 	const size = map.getSize();
 	const width = size[0] * DEVICE_PIXEL_RATIO;
 	const height = size[1] * DEVICE_PIXEL_RATIO;
@@ -187,13 +188,7 @@ const getPixelMask = (map, extent) => {
 		[0, 0]];
 
 
-	const innerPixels = [
-		[extent[0], extent[1]],
-		[extent[2], extent[1]],
-		[extent[2], extent[3]],
-		[extent[0], extent[3]],
-		[extent[0], extent[1]]];
-	return [outerPixels, innerPixels];
+	return [outerPixels, pixelCoordinates];
 };
 
 export const createMapMaskFunction = (map, feature) => {
@@ -219,13 +214,10 @@ export const createMapMaskFunction = (map, feature) => {
 	};
 
 	const renderMask = (event) => {
-		// [xmin, ymin, xmax, ymax]
-		const pageExtentInPixels = feature.get(FIELD_NAME_PAGE_PIXEL_SIZE);
-		const pixelMask = getPixelMask(map, pageExtentInPixels);
+		const pixelCoordinates = feature.get(FIELD_NAME_PAGE_PIXEL_COORDINATES);
+		const pixelMask = getMask(map, pixelCoordinates);
 
-		const ctx = event.context;
-
-		drawMask(ctx, pixelMask);
+		drawMask(event.context, pixelMask);
 	};
 	return renderMask;
 };

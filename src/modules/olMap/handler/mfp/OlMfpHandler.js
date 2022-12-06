@@ -12,8 +12,7 @@ import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 
-export const FIELD_NAME_PAGE_BUFFER = 'page_buffer';
-export const FIELD_NAME_PAGE_PIXEL_SIZE = 'page_pixel_size';
+export const FIELD_NAME_PAGE_PIXEL_COORDINATES = 'page_pixel_coordinates';
 export const FIELD_NAME_AZIMUTH = 'azimuth';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -95,12 +94,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
-			// observe(store, state => state.position.liveCenter, () => {
-			// 	const hasPixelExtent = this._mfpBoundaryFeature.get(FIELD_NAME_PAGE_PIXEL_SIZE) != null;
-			// 	if (!hasPixelExtent) {
-			// 		this._updateMfpPreview();
-			// 	}
-			// }),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			//observe(store, state => state.position.center, () => this._updateRotation()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
@@ -121,10 +114,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.liveRotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const geometry = this._ToMfpBoundary(geodeticBoundary, center, rotation);
-		const pixelExtent = this._toPixelExtent(geodeticBoundary);
 
 		this._mfpBoundaryFeature.setGeometry(geometry);
-		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_SIZE, pixelExtent);
+		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_COORDINATES, this._toPixelCoordinates(geometry));
 
 	}
 
@@ -288,12 +280,8 @@ export class OlMfpHandler extends OlLayerHandler {
 		return mapRotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
-	_toPixelExtent(geodeticBoundary) {
-		const pixelCoordinates = geodeticBoundary.getCoordinates()[0].map(c => this._map.getPixelFromCoordinate(c));
-		const xValues = pixelCoordinates.map(c => c[0]);
-		const yValues = pixelCoordinates.map(c => c[1]);
-		// rect(x, y, width, height)
-		return [Math.min(...xValues), Math.min(...yValues), Math.max(...xValues), Math.max(...yValues)];
+	_toPixelCoordinates(geodeticBoundary) {
+		return geodeticBoundary.getCoordinates()[0].map(c => this._map.getPixelFromCoordinate(c));
 	}
 
 	_getMfpProjection() {
