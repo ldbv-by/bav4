@@ -83,7 +83,7 @@ describe('ShareButton', () => {
 			expect(shareButton).toBeTruthy();
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
 			expect(warnSpy).toHaveBeenCalledTimes(2);
-			expect(warnSpy).toHaveBeenCalledWith('Could shortener-service is not working:', 'not available');
+			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url', 'not available');
 		});
 
 		it('contains test-id attributes', async () => {
