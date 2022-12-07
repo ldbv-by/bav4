@@ -70,7 +70,7 @@ describe('IconsService', () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Icons could not be loaded');
 				});
-				const errorSpy = spyOn(console, 'warn');
+				const warnSpy = spyOn(console, 'warn');
 
 
 				const icons = await instanceUnderTest.all();
@@ -85,7 +85,7 @@ describe('IconsService', () => {
 					jasmine.objectContaining({ id: 'square-stroked' }),
 					jasmine.objectContaining({ id: 'square' })
 				]));
-				expect(errorSpy).toHaveBeenCalledWith('Icons could not be fetched from backend.', jasmine.anything());
+				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
 			});
 		});
 	});

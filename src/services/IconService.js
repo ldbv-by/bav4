@@ -63,7 +63,7 @@ export class IconService {
 		}
 		catch (e) {
 			this._icons = [this._default, ...loadFallbackIcons()];
-			console.warn('Icons could not be fetched from backend.', e);
+			console.warn('Icons could not be fetched from backend. Using fallback icons ...');
 		}
 		return this._icons;
 	}

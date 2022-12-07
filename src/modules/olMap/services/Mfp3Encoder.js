@@ -125,7 +125,7 @@ export class BvvMfp3Encoder {
 
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const shortLinkUrl = await this._generateShortUrl();
-		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
+		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
 		const layers = [encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
@@ -767,6 +767,16 @@ export class BvvMfp3Encoder {
 			console.warn('Could not shorten url: ' + e);
 			return url;
 		}
+	}
+
+	_generateQrCode(linkUrl) {
+		try {
+			return this._urlService.qrCode(linkUrl);
+		}
+		catch (e) {
+			console.warn('Could not generate qr-code url: ' + e);
+		}
+		return null;
 	}
 
 	static buildMatrixSets(tileGrid) {
