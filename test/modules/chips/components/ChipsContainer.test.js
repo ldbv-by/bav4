@@ -132,8 +132,9 @@ describe('ChipsContainer', () => {
 		// state of store
 		const initialState = {
 			chips: { current: [] },
-			media: { portrait: false,
-				minWidth: true,
+			media: {
+				portrait: true, //because of safari test bug
+				minWidth: false,
 				darkSchema: false,
 				observeResponsiveParameter: true
 			},
@@ -202,7 +203,7 @@ describe('ChipsContainer', () => {
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 
 			expect(chips[0].classList.contains('chips__ID1')).toBeTrue();
-			expect(element.shadowRoot.querySelectorAll('.chips__button-text')[0].innerText).toEqual('Permanent');
+			expect(chips[0].querySelector('.chips__button-text').innerText).toEqual('Permanent');
 
 			expect(chips[1].classList.contains('chips__ID2')).toBeTrue();
 			expect(chips[1].href).toEqual('https://www.tow.com/');
@@ -293,7 +294,7 @@ describe('ChipsContainer', () => {
 
 	describe('when scroll button is clicked', () => {
 
-		it('shows a modal window containing a iframe with content', async () => {
+		it(' scroll right and back left', async () => {
 			const element = await setup({ media: { portrait: true, minWidth: true, darkSchema: false, observeResponsiveParameter: true }, chips: { current: chipsTest1 } });
 
 			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');

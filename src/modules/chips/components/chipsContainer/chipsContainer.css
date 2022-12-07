@@ -11,7 +11,6 @@
 	border: 1px solid var(--chip-color);
 	margin: .8em .5em 0 0;
 	display: flex;
-	/* transition: all var(--animation-duration-large-open) var(--animation-easing-linea);   */
 	margin-left: 0;
 	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
@@ -36,7 +35,7 @@
 	font-weight: bold;
 	margin: auto .5em;
 }
-.chips__button:hover .chips__button-text{
+.chips__button:hover .chips__button-text {
 	color: var(--chip-color);
 }
 
