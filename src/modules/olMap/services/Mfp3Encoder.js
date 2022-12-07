@@ -567,8 +567,10 @@ export class BvvMfp3Encoder {
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = textStyle.getText();
-			encoded.labelXOffset = textStyle.getOffsetX();
-			encoded.labelYOffset = textStyle.getOffsetY();
+			// additional X- or Y-Offset is ommitted, text is currently center aligned.
+			// An Y-offset of -5 is only needed to display the text in ol map vertical centered.
+			// encoded.labelXOffset = textStyle.getOffsetX();
+			// encoded.labelYOffset = textStyle.getOffsetY();
 			encoded.type = 'text';
 
 			const fromOlTextAlign = (olTextAlign) => {
@@ -602,6 +604,10 @@ export class BvvMfp3Encoder {
 				encoded.fontFamily = fontValues[2].toUpperCase();
 				encoded.fontSize = parseInt(fontValues[1]);
 				encoded.fontWeight = fontValues[0];
+			}
+
+			if (this._mfpProperties.rotation) {
+				encoded.labelRotation = (360 - this._mfpProperties.rotation) % 360;
 			}
 		}
 
@@ -656,14 +662,15 @@ export class BvvMfp3Encoder {
 				}
 			};
 		};
+		const overlayFeatures = overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null);
 
-		return {
+		return overlayFeatures.length === 0 ? [] : {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
 			geoJson: {
 				type: 'FeatureCollection',
-				features: overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null)
+				features: overlayFeatures
 			},
 			style: {
 				version: 2,

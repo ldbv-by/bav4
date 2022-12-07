@@ -1103,8 +1103,6 @@ describe('BvvMfp3Encoder', () => {
 								graphicHeight: 56.25,
 								pointRadius: 5,
 								label: 'FooBarBaz',
-								labelXOffset: 0,
-								labelYOffset: 0,
 								labelAlign: 'cm',
 								fontColor: '#000000',
 								fontFamily: 'SANS-SERIF',
@@ -1161,8 +1159,6 @@ describe('BvvMfp3Encoder', () => {
 								graphicHeight: 56.25,
 								pointRadius: 5,
 								label: 'FooBarBaz',
-								labelXOffset: 0,
-								labelYOffset: 0,
 								labelAlign: 'lt',
 								fontColor: '#000000',
 								fontFamily: 'SANS-SERIF',
@@ -1265,6 +1261,68 @@ describe('BvvMfp3Encoder', () => {
 							}]
 						}
 					}
+				});
+			});
+
+			describe('when the map is rotated', () => {
+				it('writes a point feature (text) with a label relative to map rotation', () => {
+					const mapRotation = 42;
+					const expectedLabelRotation = (360 - mapRotation) % 360;
+
+					const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+					featureWithStyle.setStyle(getTextStyle());
+					const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+					const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+					spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+					const geoResourceMock = getGeoResourceMock();
+					spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+					const encoder = setup({ rotation: mapRotation });
+					encoder._pageExtent = [20, 20, 50, 50];
+					const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+					expect(actualSpec).toEqual({
+						opacity: 1,
+						type: 'geojson',
+						name: 'foo',
+						attribution: { copyright: { label: 'Foo CopyRight' } },
+						thirdPartyAttribution: null,
+						geoJson: {
+							features: [{
+								type: 'Feature',
+								geometry: {
+									type: 'Point',
+									coordinates: jasmine.any(Array)
+								},
+								properties: {
+									_gx_style: 0
+								}
+							}],
+							type: 'FeatureCollection'
+						},
+						style: {
+							version: '2',
+							'[_gx_style = 0]': {
+								symbolizers: [{
+									type: 'text',
+									zIndex: 0,
+									rotation: 0,
+									fillOpacity: 0.4,
+									fillColor: '#ffffff',
+									strokeOpacity: 0,
+									graphicWidth: 56.25,
+									graphicHeight: 56.25,
+									pointRadius: 5,
+									label: 'FooBarBaz',
+									labelAlign: 'cm',
+									labelRotation: expectedLabelRotation,
+									fontColor: '#000000',
+									fontFamily: 'SANS-SERIF',
+									fontSize: 10,
+									fontWeight: 'normal'
+								}]
+							}
+						}
+					});
 				});
 			});
 
@@ -1868,7 +1926,7 @@ describe('BvvMfp3Encoder', () => {
 			};
 			const encoder = setup();
 			const specs = encoder._encodeOverlays([overlayMock]);
-			expect(specs.geoJson.features).toHaveSize(0);
+			expect(specs).toHaveSize(0);
 		});
 
 		it('encodes openlayers geometryType to mfp symbolizer type', () => {
