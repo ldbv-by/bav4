@@ -34,6 +34,7 @@ import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
@@ -686,7 +687,8 @@ describe('OlMeasurementHandler', () => {
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
 			expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
 				id: 'f_ooBarId',
-				label: 'olMap_handler_draw_layer_label'
+				label: 'olMap_handler_draw_layer_label',
+				_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
 			}));
 		});
 
