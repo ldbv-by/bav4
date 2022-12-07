@@ -56,6 +56,9 @@ describe('StoreService', () => {
 		const mediaPluginMock = {
 			register() { }
 		};
+		const chipsPlugin = {
+			register() { }
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -77,6 +80,7 @@ describe('StoreService', () => {
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('ChipsPlugin', chipsPlugin)
 
 				.ready();
 		};
@@ -89,7 +93,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(23);
+			expect(reducerKeys.length).toBe(24);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
