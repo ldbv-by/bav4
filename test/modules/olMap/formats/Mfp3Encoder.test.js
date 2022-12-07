@@ -146,14 +146,12 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('requests a ShortUrl and QrCode from urlService', async () => {
-			const encodingProperties = getProperties();
-
 			const encoder = new BvvMfp3Encoder();
 			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
 			const shortenerSpy = spyOn(encoder, '_generateShortUrl').and.resolveTo('foo');
 			const qrCodeSpy = spyOn(encoder, '_generateQrCode').withArgs('foo').and.returnValue('bar');
 
-			await encoder.encode(mapMock, encodingProperties);
+			await encoder.encode(mapMock, getProperties());
 
 			expect(shortenerSpy).toHaveBeenCalled();
 			expect(qrCodeSpy).toHaveBeenCalled();
