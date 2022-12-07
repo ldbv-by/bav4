@@ -11,6 +11,11 @@ export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
 export const REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME = 'data-register-for-viewport-calc';
 
 /**
+ * An element containing this attribute will be logging its lifecycle.
+ */
+export const LOG_LIFECYLE_ATTRIBUTE_NAME = 'data-log-lifecycle';
+
+/**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
  * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
  *(BaElements are also supported).

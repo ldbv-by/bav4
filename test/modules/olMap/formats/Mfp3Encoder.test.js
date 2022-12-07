@@ -145,6 +145,18 @@ describe('BvvMfp3Encoder', () => {
 			expect(encoder._mfpProjection).toBe('EPSG:25832');
 		});
 
+		it('requests a ShortUrl and QrCode from urlService', async () => {
+			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+			const shortenerSpy = spyOn(encoder, '_generateShortUrl').and.resolveTo('foo');
+			const qrCodeSpy = spyOn(encoder, '_generateQrCode').withArgs('foo').and.returnValue('bar');
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(shortenerSpy).toHaveBeenCalled();
+			expect(qrCodeSpy).toHaveBeenCalled();
+		});
+
 		it('fails to encode for invalid properties', async () => {
 			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
 
@@ -232,13 +244,13 @@ describe('BvvMfp3Encoder', () => {
 		it('encodes overlays', async () => {
 			const mapSpy = spyOn(mapMock, 'getOverlays').and.returnValue({ getArray: () => [{}, {}] });
 			const encoder = new BvvMfp3Encoder();
-			const encodingSpy = spyOn(encoder, '_encodeOverlay').and.callFake(() => {
+			const encodingSpy = spyOn(encoder, '_encodeOverlays').and.callFake(() => {
 				return {};
 			});
 
 			await encoder.encode(mapMock, getProperties());
 
-			expect(encodingSpy).toHaveBeenCalledTimes(2);
+			expect(encodingSpy).toHaveBeenCalled();
 			expect(mapSpy).toHaveBeenCalled();
 		});
 
@@ -1038,7 +1050,7 @@ describe('BvvMfp3Encoder', () => {
 								fillOpacity: 1,
 								strokeOpacity: 0,
 								graphicXOffset: jasmine.any(Number),
-								graphicHeight: jasmine.any(Number),
+								graphicYOffset: jasmine.any(Number),
 								externalGraphic: 'https://some.url/to/image/foo.png'
 							}]
 						}
@@ -1743,10 +1755,6 @@ describe('BvvMfp3Encoder', () => {
 			});
 		});
 
-
-
-
-
 		it('resolves overlay with element of \'ba-measure-overlay\' to a mfp \'geojson\' spec', () => {
 			const distanceOverlayMock = {
 				getElement: () => {
@@ -1761,95 +1769,93 @@ describe('BvvMfp3Encoder', () => {
 				getPosition: () => [42, 21]
 			};
 			const encoder = setup();
-			const distanceSpec = encoder._encodeOverlay(distanceOverlayMock);
-			const partitionSpec = encoder._encodeOverlay(partitionDistanceOverlayMock);
-			expect(distanceSpec).toEqual({
+			const specs = encoder._encodeOverlays([distanceOverlayMock, partitionDistanceOverlayMock]);
+			expect(specs.geoJson.features).toHaveSize(2);
+			expect(specs).toEqual({
 				type: 'geojson',
 				name: 'overlay',
 				opacity: 1,
 				geoJson: {
 					type: 'FeatureCollection',
-					features: [{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: jasmine.any(Array)
-						}
-					}]
+					features: jasmine.any(Array)
 				},
 				style: {
 					version: 2,
-					'*': {
-						symbolizers: [{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 3
-						}, {
-							type: 'text',
-							label: 'foo bar baz',
-							labelXOffset: 0.4,
-							labelYOffset: -2,
-							labelAlign: 'ct',
-							fontFamily: 'san-serif',
-							fontColor: '#ffffff',
-							fontSize: 10,
-							fontWeight: 'bold',
-							strokeColor: '#ff0000',
-							haloColor: '#ff0000',
-							haloOpacity: 1,
-							haloRadius: 1
-						}]
+					conflictResolution: false,
+					'[type=\'distance\']': {
+						symbolizers: [
+							{
+								type: 'point',
+								fillColor: '#ff0000',
+								fillOpacity: 1,
+								strokeOpacity: 0,
+								graphicName: 'circle',
+								graphicOpacity: 0.4,
+								pointRadius: 3
+							}, {
+								type: 'text',
+								label: '[label]',
+								labelXOffset: '[labelXOffset]',
+								labelYOffset: '[labelYOffset]',
+								labelAnchorPointX: '[labelAnchorPointX]',
+								labelAnchorPointY: '[labelAnchorPointY]',
+								fontColor: '#ffffff',
+								fontSize: 10,
+								fontFamily: 'sans-serif',
+								fontWeight: 'bold',
+								haloColor: '#ff0000',
+								haloOpacity: 1,
+								haloRadius: 1,
+								strokeColor: '#ff0000'
+							}]
+					},
+					'[type=\'distance-partition\']': {
+						symbolizers: [
+							{
+								type: 'point',
+								fillColor: '#ff0000',
+								fillOpacity: 1,
+								strokeOpacity: 1,
+								strokeWidth: 1.5,
+								strokeColor: '#ffffff',
+								graphicName: 'circle',
+								graphicOpacity: 0.4,
+								pointRadius: 2
+							}, {
+								type: 'text',
+								label: '[label]',
+								labelXOffset: '[labelXOffset]',
+								labelYOffset: '[labelYOffset]',
+								labelAnchorPointX: '[labelAnchorPointX]',
+								labelAnchorPointY: '[labelAnchorPointY]',
+								fontColor: '#000000',
+								fontSize: 8,
+								fontFamily: 'sans-serif',
+								fontWeight: 'normal',
+								haloColor: '#ffffff',
+								haloOpacity: 1,
+								haloRadius: 2,
+								strokeColor: '#ff0000'
+							}]
+					},
+					'[type=\'area\']': {
+						symbolizers: [
+							{
+								type: 'text',
+								label: '[label]',
+								labelAlign: 'cm',
+								fontColor: '#ffffff',
+								fontSize: 10,
+								fontFamily: 'sans-serif',
+								fontWeight: 'bold',
+								haloColor: '#ff0000',
+								haloOpacity: 1,
+								haloRadius: 1,
+								strokeColor: '#ff0000'
+							}]
 					}
 				}
-			});
-			expect(partitionSpec).toEqual({
-				type: 'geojson',
-				name: 'overlay',
-				opacity: 1,
-				geoJson: {
-					type: 'FeatureCollection',
-					features: [{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: jasmine.any(Array)
-						}
-					}]
-				},
-				style: {
-					version: 2,
-					'*': {
-						symbolizers: [{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 3
-						}, {
-							type: 'text',
-							label: 'foo bar baz',
-							labelXOffset: 0.4,
-							labelYOffset: -2,
-							labelAlign: 'ct',
-							fontFamily: 'san-serif',
-							fontColor: '#000000',
-							fontSize: 10,
-							fontWeight: 'normal',
-							strokeColor: '#ff0000',
-							haloColor: '#ffffff',
-							haloOpacity: 1,
-							haloRadius: 1
-						}]
-					}
-				}
+
 			});
 		});
 
@@ -1861,7 +1867,8 @@ describe('BvvMfp3Encoder', () => {
 				getPosition: () => [42, 21]
 			};
 			const encoder = setup();
-			expect(encoder._encodeOverlay(overlayMock)).toBeNull();
+			const specs = encoder._encodeOverlays([overlayMock]);
+			expect(specs.geoJson.features).toHaveSize(0);
 		});
 
 		it('encodes openlayers geometryType to mfp symbolizer type', () => {
@@ -1905,6 +1912,31 @@ describe('BvvMfp3Encoder', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
 			expect(shortUrl).toBe('foo');
+		});
+	});
+
+	describe('_generateQrCode', () => {
+		const linkUrl = 'foo';
+		it('calls the urlService', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').withArgs(linkUrl).and.resolveTo('bar');
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(urlServiceSpy).toHaveBeenCalled();
+			expect(qrCodeUrl).toBe('bar');
+		});
+
+		it('warns in console, if qrCode generation fails', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').and.throwError('bar');
+			const warnSpy = spyOn(console, 'warn');
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(warnSpy).toHaveBeenCalledWith('Could not generate qr-code url: Error: bar');
+			expect(urlServiceSpy).toThrowError('bar');
+			expect(qrCodeUrl).toBeNull();
 		});
 	});
 

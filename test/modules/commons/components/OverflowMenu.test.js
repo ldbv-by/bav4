@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { OverflowMenu, MenuTypes } from '../../../../src/modules/commons/components/overflowMenu/OverflowMenu';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
@@ -13,7 +13,7 @@ describe('OverflowMenu', () => {
 	};
 
 	beforeEach(async () => {
-		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
+		store = TestUtils.setupStoreAndDi({}, { bottomSheet: bottomSheetReducer });
 		$injector
 			.registerSingleton('EnvironmentService', environmentService);
 	});
@@ -302,12 +302,12 @@ describe('OverflowMenu', () => {
 			button.click();
 
 			// menu is open
-			expect(isTemplateResult(store.getState().notifications.latest.payload));
+			expect(isTemplateResult(store.getState().bottomSheet.data));
 
 			document.dispatchEvent(new Event('pointerdown'));
 
 			// menu is closed
-			expect(store.getState().notifications.latest.payload).toEqual({ content: null });
+			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
 		it('deregisters the document listener on pointerdown', async () => {

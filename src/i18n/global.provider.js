@@ -13,7 +13,8 @@ export const provide = (lang) => {
 				global_import_data_failed: 'Importing data failed',
 				global_import_unsupported_sourceType: 'Source type could not be detected or is not supported',
 				global_import_authenticationModal_title: 'Authentication required',
-				global_default_vector_georesource_name: 'Data'
+				global_default_vector_georesource_name: 'Data',
+				global_locally_imported_dataset_copyright_label: 'Dataset and/or style provided by third party'
 			};
 
 		case 'de':
@@ -28,7 +29,8 @@ export const provide = (lang) => {
 				global_import_data_failed: 'Import der Daten schlug fehl',
 				global_import_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt',
 				global_import_authenticationModal_title: 'Anmeldung erforderlich',
-				global_default_vector_georesource_name: 'Daten'
+				global_default_vector_georesource_name: 'Daten',
+				global_locally_imported_dataset_copyright_label: 'Mit Darstellung durch den Anwender'
 			};
 
 		default:

@@ -29,6 +29,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 
 const Debounce_Delay = 1000;
 
@@ -642,7 +643,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const id = this._storageHandler.getStorageId();
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
-			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 		};
 		const vgr = getOrCreateVectorGeoResource();
 		vgr.setSource(this._storedContent, 4326);

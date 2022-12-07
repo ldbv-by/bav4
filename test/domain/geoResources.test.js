@@ -1,9 +1,28 @@
 /* eslint-disable no-undef */
 import { GeoResourceTypes, GeoResource, WmsGeoResource, XyzGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
+import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
+import { TestUtils } from '../test-utils';
 
 
 describe('GeoResource', () => {
+
+	const geoResourceServiceMock = {
+		addOrReplace() { }
+	};
+
+	const setup = (state = {}) => {
+		const store = TestUtils.setupStoreAndDi(state);
+		$injector
+			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		return store;
+	};
+
+	const handledByGeoResourceServiceMarker = 'marker';
+	const addOrReplaceMethodMock = gr => {
+		gr.marker = handledByGeoResourceServiceMarker;
+		return gr;
+	};
 
 	describe('GeoResourceTypes', () => {
 
@@ -138,6 +157,7 @@ describe('GeoResource', () => {
 
 		describe('properties', () => {
 			it('provides default properties', () => {
+				setup();
 				const georesource = new GeoResourceNoImpl('id');
 
 				expect(georesource.label).toBe('');
@@ -154,6 +174,7 @@ describe('GeoResource', () => {
 			});
 
 			it('provides set methods and getters', () => {
+				setup();
 				const georesource = new GeoResourceNoImpl('id');
 
 				georesource
@@ -187,6 +208,7 @@ describe('GeoResource', () => {
 	describe('GeoResourceFuture', () => {
 
 		it('instantiates a GeoResourceFuture', () => {
+			setup();
 			const loader = async () => { };
 
 			const future = new GeoResourceFuture('id', loader);
@@ -198,18 +220,23 @@ describe('GeoResource', () => {
 			expect(futureWithoutLabel.label).toHaveSize(0);
 		});
 
-		it('returns the real GeoResource by calling loader', async () => {
+		it('registers and returns the real GeoResource by calling loader', async () => {
+			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.callFake(addOrReplaceMethodMock);
 
 			const geoResource = await future.get();
 
 			expect(geoResource).toEqual(expectedGeoResource);
+			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResource);
+			expect(geoResource.marker).toBe(handledByGeoResourceServiceMarker);
 		});
 
 		it('rejects when the loader rejects', async () => {
+			setup();
 			const id = 'id';
 			const message = 'error';
 			const loader = jasmine.createSpy().withArgs(id).and.rejectWith(message);
@@ -225,8 +252,10 @@ describe('GeoResource', () => {
 		});
 
 		it('calls the onResolve callback', async () => {
+			setup();
 			const id = 'id';
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
+			spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
 			const future = new GeoResourceFuture(id, loader);
@@ -238,6 +267,7 @@ describe('GeoResource', () => {
 		});
 
 		it('calls the onReject callback', async () => {
+			setup();
 			const id = 'id';
 			const loader = jasmine.createSpy().withArgs(id).and.rejectWith('error');
 			const onResolveCallback = jasmine.createSpy();
@@ -405,7 +435,7 @@ describe('GeoResource', () => {
 	describe('observableGeoResource', () => {
 
 		it('observes changes', () => {
-
+			setup();
 			const modifiedLabel = 'modified';
 			const callback = jasmine.createSpy();
 			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback);
@@ -416,6 +446,22 @@ describe('GeoResource', () => {
 
 			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
 			expect(xyzGeoResource.label).toBe(modifiedLabel);
+		});
+
+		it('observes changes and registers an identifier', () => {
+			setup();
+			const identifier = '__foo';
+			const modifiedLabel = 'modified';
+			const callback = jasmine.createSpy();
+			const xyzGeoResource = observable(new XyzGeoResource('xyzId', 'label', 'url'), callback, identifier);
+
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.setLabel(modifiedLabel);
+			xyzGeoResource.unknown = modifiedLabel;
+
+			expect(callback).toHaveBeenCalledOnceWith('_label', modifiedLabel);
+			expect(xyzGeoResource.label).toBe(modifiedLabel);
+			expect(xyzGeoResource[identifier]).toBeTrue();
 		});
 	});
 });

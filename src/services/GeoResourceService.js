@@ -13,9 +13,10 @@
  */
 
 import { $injector } from '../injection';
-import { VTGeoResource, XyzGeoResource } from '../domain/geoResources';
+import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
+import { geoResourceChanged } from '../store/layers/layers.action';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
 export const FALLBACK_GEORESOURCE_ID_1 = 'tpo_mono';
@@ -61,7 +62,7 @@ export class GeoResourceService {
 	async init() {
 		if (!this._georesources) {
 			try {
-				this._georesources = await this._provider();
+				this._georesources = (await this._provider()).map(gr => this._proxify(gr));
 			}
 			catch (e) {
 				this._georesources = [];
@@ -134,18 +135,25 @@ export class GeoResourceService {
 	 * Adds a {@link GeoResource} to the internal cache.
 	 * An existing GeoResource will be replaced by the new one.
 	 * The replacement is done based on the id of the GeoResource.
-	 * @param {GeoResource} georesource
+	 * Note:  It's recommended to use the return value for further handling,
+	 * which guarantees all necessary synchronization between the GeoResource and the layers slice-of-state
+	 * @param {GeoResource} geoResource
+	 * @returns the added or replaced  and observed GeoResource
 	 */
-	addOrReplace(georesource) {
+	addOrReplace(geoResource) {
 
-		const existingGeoR = this._georesources.find(_georesource => _georesource.id === georesource.id);
+		const observedGeoResource = this._proxify(geoResource);
+		const existingGeoR = this._georesources.find(_georesource => _georesource.id === geoResource.id);
 		if (existingGeoR) {
 			const index = this._georesources.indexOf(existingGeoR);
-			this._georesources.splice(index, 1, georesource);
+			this._georesources.splice(index, 1, observedGeoResource);
 		}
 		else {
-			this._georesources.push(georesource);
+			this._georesources.push(observedGeoResource);
 		}
+		// update  slice-of-state 'layers'
+		geoResourceChanged(observedGeoResource);
+		return observedGeoResource;
 	}
 
 	/**
@@ -162,7 +170,8 @@ export class GeoResourceService {
 				copyright: [
 					{ label: 'Bundesamt für Kartographie und Geodäsie (2021)', url: 'http://www.bkg.bund.de/' },
 					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
-				] }
+				]
+			}
 			);
 		});
 
@@ -176,6 +185,20 @@ export class GeoResourceService {
 			});
 		});
 
-		return [...topPlusOpenGeoResources, ...baseMapDeVectorGeoResources];
+		return [...topPlusOpenGeoResources, ...baseMapDeVectorGeoResources].map(gr => this._proxify(gr));
+	}
+
+	_proxify(geoResource) {
+		return geoResource[GeoResourceService.proxyIdentifier]
+			? geoResource // already proxified
+			: observable(geoResource, (key) => {
+				if (key === '_label') {
+					geoResourceChanged(geoResource.id);
+				}
+			}, GeoResourceService.proxyIdentifier);
+	}
+
+	static get proxyIdentifier() {
+		return '__geoResourceServiceProxy';
 	}
 }

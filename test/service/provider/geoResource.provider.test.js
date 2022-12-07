@@ -1,6 +1,7 @@
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
+import { TestUtils } from '../../test-utils';
 
 describe('BVV GeoResource provider', () => {
 	const configService = {
@@ -11,10 +12,16 @@ describe('BVV GeoResource provider', () => {
 		async get() { }
 	};
 
+	const geoResourceService = {
+		addOrReplace() { }
+	};
+
 	beforeAll(() => {
+		TestUtils.setupStoreAndDi();
 		$injector
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+			.registerSingleton('HttpService', httpService)
+			.registerSingleton('GeoResourceService', geoResourceService);
 	});
 
 	const basicAttribution = {
@@ -359,6 +366,7 @@ describe('BVV GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/byId/${wmsDefinition.id}`;
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl + '/');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
 			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(wmsDefinition)
@@ -372,6 +380,7 @@ describe('BVV GeoResource provider', () => {
 			expect(future.label).toBe('');
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
+			expect(geoResourceServiceSpy).toHaveBeenCalled();
 			expect(geoResource.id).toBe(wmsDefinition.id);
 		});
 

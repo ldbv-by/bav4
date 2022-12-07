@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/notifications/i18n/notifications.provider';
+import { provide } from '../../../../src/modules/stackables/i18n/notifications.provider';
 
 
 describe('i18n for search module', () => {

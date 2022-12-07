@@ -963,6 +963,7 @@ describe('OlMap', () => {
 			});
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			expect(element._viewSyncBlocked).toBeUndefined();
@@ -1040,6 +1041,7 @@ describe('OlMap', () => {
 				return olRealLayer;
 			});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1069,6 +1071,7 @@ describe('OlMap', () => {
 				return olRealLayer;
 			});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(id0, { visible: false, opacity: .5, geoResourceId: geoResourceId0 });
 
@@ -1108,6 +1111,7 @@ describe('OlMap', () => {
 				}
 				return nonAsyncGeoResource;
 			});
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 
 			addLayer(nonAsyncLayerId);
 			addLayer(underTestLayerId, { zIndex: 0 });
@@ -1124,7 +1128,6 @@ describe('OlMap', () => {
 			const message = 'error';
 			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id) => new Layer({ id: id, render: () => { }, properties: { placeholder: true } }));
-			const geoResourceServiceSpy = spyOn(geoResourceServiceStub, 'addOrReplace');
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
 			const warnSpy = spyOn(console, 'warn');
 
@@ -1135,7 +1138,6 @@ describe('OlMap', () => {
 
 			await TestUtils.timeout();
 			expect(map.getLayers().getLength()).toBe(0);
-			expect(geoResourceServiceSpy).not.toHaveBeenCalled();
 			expect(warnSpy).toHaveBeenCalledWith(message);
 			expect(store.getState().notifications.latest.payload.content).toBe(`olMap_layer_not_available '${geoResourceId0}'`);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);

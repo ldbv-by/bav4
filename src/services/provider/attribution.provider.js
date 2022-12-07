@@ -59,6 +59,41 @@ export const getDefaultAttribution = (georesource) => {
 };
 
 /**
+ * Provider function for a locally imported or created GeoResouce.
+ * @function
+ * @returns {Attribution}
+ */
+export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource) => {
+	const { TranslationService: translationService } = $injector.inject('TranslationService');
+	return {
+		description: georesource.label,
+		copyright: { label: translationService.translate('global_locally_imported_dataset_copyright_label') }
+	};
+};
+
+/**
+ * Returns a `function` returning the actual provider for an URL based GeoResource imported by the user.
+ * @function
+ * @param {String} url the URL as `string`
+ * @returns a `function` which returns an attribution provider
+ */
+export const getAttributionProviderForGeoResourceImportedByUrl = (url) => {
+
+	return (georesource) => {
+
+		const getCopyright = urlAsString => {
+			const url = new URL(urlAsString);
+			return { label: url.hostname, url: `${url.protocol}//${url.hostname}` };
+		};
+
+		return {
+			description: georesource.label,
+			copyright: getCopyright(url)
+		};
+	};
+};
+
+/**
  * Returns a minimal attribution containing only a copyright label
  * @param {string} copyrightLabel
  * @returns {Attribution}

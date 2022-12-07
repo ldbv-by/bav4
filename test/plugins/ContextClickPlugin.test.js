@@ -7,9 +7,10 @@ import { setMoveStart } from '../../src/store/map/map.action.js';
 import { mapContextMenuReducer } from '../../src/store/mapContextMenu/mapContextMenu.reducer.js';
 import { isTemplateResult } from '../../src/utils/checks.js';
 import { $injector } from '../../src/injection/index.js';
-import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
+
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType } from '../../src/store/highlight/highlight.action.js';
+import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 
 describe('ContextClickPlugin', () => {
 
@@ -22,7 +23,7 @@ describe('ContextClickPlugin', () => {
 			pointer: pointerReducer,
 			map: mapReducer,
 			mapContextMenu: mapContextMenuReducer,
-			notifications: notificationReducer,
+			bottomSheet: bottomSheetReducer,
 			highlight: highlightReducer
 		});
 
@@ -46,14 +47,14 @@ describe('ContextClickPlugin', () => {
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
-				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+				expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 
 				//let's call it again
 				setContextClick({ coordinate: [21210, 42420], screenCoordinate: [210, 420] });
 
-				expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+				expect(isTemplateResult(store.getState().bottomSheet.data)).toBeTrue();
 				expect(store.getState().highlight.features).toHaveSize(1);
 				expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.QUERY_SUCCESS);
 			});
@@ -67,12 +68,12 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().notifications.latest.payload.content).not.toBeNull();
+					expect(store.getState().bottomSheet.data).not.toBeNull();
 
 					setMoveStart();
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().notifications.latest.payload.content).toBeNull();
+					expect(store.getState().bottomSheet.data).toBeNull();
 				});
 			});
 
@@ -85,12 +86,13 @@ describe('ContextClickPlugin', () => {
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().notifications.latest.payload.content).not.toBeNull();
+					expect(store.getState().bottomSheet.data).not.toBeNull();
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().notifications.latest.payload.content).toBeNull();
+
+					expect(store.getState().bottomSheet.data).toBeNull();
 				});
 			});
 		});
