@@ -18,6 +18,12 @@ describe('GeoResource', () => {
 		return store;
 	};
 
+	const handledByGeoResourceServiceMarker = 'marker';
+	const addOrReplaceMethodMock = gr => {
+		gr.marker = handledByGeoResourceServiceMarker;
+		return gr;
+	};
+
 	describe('GeoResourceTypes', () => {
 
 		it('provides an enum of all available types', () => {
@@ -220,12 +226,13 @@ describe('GeoResource', () => {
 			const expectedGeoResource = new WmsGeoResource(id, 'label', 'url', 'layers', 'format');
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const future = new GeoResourceFuture(id, loader);
-			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
+			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.callFake(addOrReplaceMethodMock);
 
 			const geoResource = await future.get();
 
 			expect(geoResource).toEqual(expectedGeoResource);
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResource);
+			expect(geoResource.marker).toBe(handledByGeoResourceServiceMarker);
 		});
 
 		it('rejects when the loader rejects', async () => {
