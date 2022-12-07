@@ -202,23 +202,17 @@ export const createMapMaskFunction = (map, feature) => {
 		return [rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2];
 	};
 
-	const getScaling = (rectangle, bufferFactor) => {
-		return [1 + bufferFactor, 1 + bufferFactor];
-	};
-
 	const drawPassepartout = (ctx, pageCoordinates) => {
 		const passepartoutWidthFactor = 0.02;
 		const pageRectangle = getPageRectangle(pageCoordinates);
 		const center = getCenter(pageRectangle);
 		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
 
-		const scale = getScaling(pageRectangle, passepartoutWidthFactor);
-
 		ctx.strokeStyle = 'rgba(255,255,255,0.4)';
 		ctx.beginPath();
 
 		ctx.translate(center[0], center[1]);
-		ctx.scale(scale[0], scale[1]);
+		ctx.scale(1 + passepartoutWidthFactor, 1 + passepartoutWidthFactor);
 		ctx.lineWidth = pageRectangle.width * passepartoutWidthFactor;
 		ctx.moveTo(centerRelative[0][0], centerRelative[0][1]);
 		centerRelative.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));

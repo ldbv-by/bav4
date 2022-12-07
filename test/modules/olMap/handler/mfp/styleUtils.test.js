@@ -254,7 +254,7 @@ describe('mfp style utility functions', () => {
 
 		it('draws a passpartout', () => {
 			const expectedStrokeColor = 'rgba(255,255,255,0.4)';
-			const expectedStrokeWidth = 20;
+			const expectedStrokeWidth = 0.02;
 			const feature = createFeature('');
 			const mapMock = createMapMock();
 			const context = get2dContext();
