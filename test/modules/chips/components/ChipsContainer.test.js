@@ -287,8 +287,13 @@ describe('ChipsContainer', () => {
 
 			expect(store.getState().modal.data.title).toBe('Permanent');
 			expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
-			//TODO test rendering of TemplateResult
 
+			const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(contentElement.querySelector('iframe').getAttribute('allowfullscreen')).toBe('true');
+			expect(contentElement.querySelector('iframe').getAttribute('webkitallowfullscreen')).toBe('true');
+			expect(contentElement.querySelector('iframe').getAttribute('mozallowfullscreen')).toBe('true');
+			expect(contentElement.querySelector('iframe').src).toBe('https://www.one.com/');
+			expect(contentElement.querySelector('iframe').title).toBe('Permanent');
 		});
 	});
 
