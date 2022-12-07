@@ -145,6 +145,18 @@ describe('BvvMfp3Encoder', () => {
 			expect(encoder._mfpProjection).toBe('EPSG:25832');
 		});
 
+		it('requests a ShortUrl and QrCode from urlService', async () => {
+			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+			const shortenerSpy = spyOn(encoder, '_generateShortUrl').and.resolveTo('foo');
+			const qrCodeSpy = spyOn(encoder, '_generateQrCode').withArgs('foo').and.returnValue('bar');
+
+			await encoder.encode(mapMock, getProperties());
+
+			expect(shortenerSpy).toHaveBeenCalled();
+			expect(qrCodeSpy).toHaveBeenCalled();
+		});
+
 		it('fails to encode for invalid properties', async () => {
 			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
 
@@ -1900,6 +1912,31 @@ describe('BvvMfp3Encoder', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Could not shorten url: Error: bar');
 			expect(urlServiceSpy).toThrowError('bar');
 			expect(shortUrl).toBe('foo');
+		});
+	});
+
+	describe('_generateQrCode', () => {
+		const linkUrl = 'foo';
+		it('calls the urlService', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').withArgs(linkUrl).and.resolveTo('bar');
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(urlServiceSpy).toHaveBeenCalled();
+			expect(qrCodeUrl).toBe('bar');
+		});
+
+		it('warns in console, if qrCode generation fails', async () => {
+			const urlServiceSpy = spyOn(urlServiceMock, 'qrCode').and.throwError('bar');
+			const warnSpy = spyOn(console, 'warn');
+			const classUnderTest = setup();
+
+			const qrCodeUrl = await classUnderTest._generateQrCode(linkUrl);
+
+			expect(warnSpy).toHaveBeenCalledWith('Could not generate qr-code url: Error: bar');
+			expect(urlServiceSpy).toThrowError('bar');
+			expect(qrCodeUrl).toBeNull();
 		});
 	});
 
