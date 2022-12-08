@@ -753,42 +753,43 @@ export class BvvMfp3Encoder {
 	}
 
 	_encodeGridLayer(scale) {
+		const defaultSpacing = 1000;
 		const spacings = new Map([
-			[2000000, 100000],
+			[2000000, 200000],
 			[1000000, 100000],
 			[500000, 50000],
 			[200000, 20000],
 			[100000, 10000],
-			[50000, 1000],
-			[25000, 1000],
-			[10000, 500],
-			[5000, 100],
-			[2500, 100],
-			[1250, 50],
-			[1000, 50],
-			[500, 10]
+			[50000, 5000],
+			[25000, 2000],
+			[10000, 1000],
+			[5000, 500],
+			[2500, 200],
+			[1250, 100],
+			[1000, 100],
+			[500, 50]
 		]);
 
-		const spacing = spacings.get(scale);
+		const spacing = spacings.has(scale) ? spacings.get(scale) : defaultSpacing;
 		return {
-			'type': 'grid',
-			'gridType': 'lines',
-			'origin': [
+			type: 'grid',
+			gridType: 'lines',
+			origin: [
 				600000,
 				4800000
 			],
-			'spacing': [
+			spacing: [
 				spacing,
 				spacing
 			],
-			'renderAsSvg': true,
-			'haloColor': '#CCFFCC',
-			'labelColor': 'black',
-			'labelFormat': '%1.0f %s',
-			'indent': 10,
-			'haloRadius': 4,
-			'font': {
-				'name': [
+			renderAsSvg: true,
+			haloColor: '#CCFFCC',
+			labelColor: 'black',
+			labelFormat: '%1.0f %s',
+			indent: 10,
+			haloRadius: 4,
+			font: {
+				name: [
 					'Liberation Sans',
 					'Helvetica',
 					'Nimbus Sans L',
@@ -796,8 +797,8 @@ export class BvvMfp3Encoder {
 					'FreeSans',
 					'Sans-serif'
 				],
-				'size': 8,
-				'style': 'BOLD'
+				size: 8,
+				style: 'BOLD'
 			}
 		};
 	}
