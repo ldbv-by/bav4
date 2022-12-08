@@ -151,23 +151,22 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 export const nullStyleFunction = () => [new Style({})];
 
-const getMask = (map, pixelCoordinates) => {
-	const size = map.getSize();
-	const width = size[0] * DEVICE_PIXEL_RATIO;
-	const height = size[1] * DEVICE_PIXEL_RATIO;
-
-	const outerPixels = [
-		[0, 0],
-		[width, 0],
-		[width, height],
-		[0, height],
-		[0, 0]];
-
-
-	return [outerPixels, pixelCoordinates];
-};
-
 export const createMapMaskFunction = (map, feature) => {
+
+	const getMask = (map, pixelCoordinates) => {
+		const size = map.getSize();
+		const width = size[0] * DEVICE_PIXEL_RATIO;
+		const height = size[1] * DEVICE_PIXEL_RATIO;
+
+		const outerPixelPolygon = [
+			[0, 0],
+			[width, 0],
+			[width, height],
+			[0, height],
+			[0, 0]];
+
+		return [outerPixelPolygon, pixelCoordinates];
+	};
 
 	const drawMask = (ctx, mask) => {
 		const outer = mask[0];
@@ -186,7 +185,6 @@ export const createMapMaskFunction = (map, feature) => {
 
 		ctx.fillStyle = 'rgba(0,0,0,0.4)';
 		ctx.fill();
-
 	};
 
 	const getPageRectangle = (pageCoordinates) => {
@@ -220,7 +218,6 @@ export const createMapMaskFunction = (map, feature) => {
 
 		ctx.stroke();
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
-
 	};
 
 	const renderMask = (event) => {
@@ -232,7 +229,6 @@ export const createMapMaskFunction = (map, feature) => {
 		drawPassepartout(ctx, pixelMask[1]);
 
 		ctx.restore();
-
 	};
 	return renderMask;
 };
