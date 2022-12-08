@@ -12,6 +12,7 @@ import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { closeProfile, openProfile } from '../../../../store/altitudeProfile/altitudeProfile.action';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -149,6 +150,15 @@ export class ShowCase extends BaElement {
 
 		const onClickEmitError = () => {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
+		};
+
+		const onClickOpenProfile = () => {
+			if (this._storeService.getStore().getState().altitudeProfile.active) {
+				closeProfile();
+			}
+			else {
+				openProfile([[1328315.0062647895, 6089975.78297438], [1310581.6157026286, 6045336.558455837]]);
+			}
 		};
 
 		let version = 1;
@@ -349,6 +359,7 @@ export class ShowCase extends BaElement {
 
 			<h3>Profile</h3>
 			<div class='example row'>
+			<ba-button id='button1' .label=${'Show/Hide altitude profile'} @click=${onClickOpenProfile}></ba-button>
 			<ba-profile></ba-profile>
 			</div>
 				
