@@ -269,5 +269,23 @@ describe('mfp style utility functions', () => {
 			expect(strokeStylePropertySpy).toHaveBeenCalledWith(expectedStrokeColor);
 			expect(strokeWidthPropertySpy).toHaveBeenCalledWith(expectedStrokeWidth);
 		});
+
+		it('draws a inner contour', () => {
+			const expectedStrokeColor = 'rgba(44, 90, 146, 1)';
+			const expectedStrokeWidth = 3;
+			const feature = createFeature('');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+
+			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
+			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
+
+			const renderFunction = createMapMaskFunction(mapMock, feature);
+			renderFunction(getPostRenderEvent(0, context));
+
+			expect(renderFunction).toEqual(jasmine.any(Function));
+			expect(strokeStylePropertySpy).toHaveBeenCalledWith(expectedStrokeColor);
+			expect(strokeWidthPropertySpy).toHaveBeenCalledWith(expectedStrokeWidth);
+		});
 	});
 });

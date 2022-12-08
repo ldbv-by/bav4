@@ -220,6 +220,19 @@ export const createMapMaskFunction = (map, feature) => {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 	};
 
+	const drawInnerContour = (ctx, pageCoordinates) => {
+
+		ctx.strokeStyle = 'rgba(44, 90, 146, 1)';
+		ctx.lineWidth = 3;
+		ctx.beginPath();
+		ctx.moveTo(pageCoordinates[0], pageCoordinates[1]);
+		pageCoordinates.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
+
+		ctx.stroke();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+	};
+
 	const renderMask = (event) => {
 		const pixelCoordinates = feature.get(FIELD_NAME_PAGE_PIXEL_COORDINATES);
 		const pixelMask = getMask(map, pixelCoordinates);
@@ -227,6 +240,7 @@ export const createMapMaskFunction = (map, feature) => {
 
 		drawMask(ctx, pixelMask);
 		drawPassepartout(ctx, pixelMask[1]);
+		drawInnerContour(ctx, pixelMask[1]);
 
 		ctx.restore();
 	};
