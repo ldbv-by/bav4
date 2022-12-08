@@ -3,6 +3,7 @@ export const ACTIVE_CHANGED = 'mfp/active';
 export const SCALE_CHANGED = 'mfp/current/scale';
 export const ID_CHANGED = 'mfp/current/id';
 export const CURRENT_CHANGED = 'mfp/current';
+export const AUTOROTATION_CHANGED = 'mfp/autorotation';
 export const JOB_REQUEST_CHANGED = 'mfp/job/request';
 export const JOB_SPEC_CHANGED = 'mfp/job/spec';
 
@@ -21,6 +22,10 @@ export const initialState = {
 		scale: null,
 		dpi: null
 	},
+	/**
+	* @property {boolean}
+	*/
+	autoRotation: true,
 	/**
 	 *@property {EvenLike | null}
 	 */
@@ -58,6 +63,12 @@ export const mfpReducer = (state = initialState, action) => {
 			return {
 				...state,
 				current: payload
+			};
+		}
+		case AUTOROTATION_CHANGED:{
+			return {
+				...state,
+				autoRotation: payload
 			};
 		}
 		case JOB_REQUEST_CHANGED: {

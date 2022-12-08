@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
@@ -8,7 +9,7 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
-
+window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('ExportMfpToolContent', () => {
 	let store;
@@ -28,6 +29,7 @@ describe('ExportMfpToolContent', () => {
 	const mfpDefaultState = {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
+		autoRotation: true,
 		jobSpec: null,
 		isJobStarted: false
 	};
@@ -72,6 +74,7 @@ describe('ExportMfpToolContent', () => {
 			expect(model).toEqual({
 				id: null,
 				scale: null,
+				autoRotation: true,
 				isJobStarted: false
 			});
 		});
@@ -99,7 +102,12 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('#autorotation').checked).toBeTrue();
+			expect(element.shadowRoot.querySelector('#autorotation').title).toBe('toolbox_exportMfp_autorotation_title');
 
+			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
+			expect(subHeaderElements).toHaveSize(3);
+			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale', 'toolbox_exportMfp_options']);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
@@ -366,5 +374,26 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
+	});
+
+	describe('when the user toggles the autorotation-button', () => {
+
+		it('changes store', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			expect(store.getState().mfp.autoRotation).toBeTrue();
+
+			const toggleButton = element.shadowRoot.querySelector('#autorotation');
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.autoRotation).toBeFalse();
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.autoRotation).toBeTrue();
+		});
+
 	});
 });
