@@ -768,6 +768,7 @@ export class BvvMfp3Encoder {
 			[1000, 50],
 			[500, 10]
 		]);
+
 		const spacing = spacings.get(scale);
 		return {
 			'type': 'grid',
