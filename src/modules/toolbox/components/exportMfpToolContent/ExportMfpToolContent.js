@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
-import { cancelJob, requestJob, setAutoRotation, setId, setScale } from '../../../../store/mfp/mfp.action';
+import { cancelJob, requestJob, setAutoRotation, setId, setScale, setShowGrid } from '../../../../store/mfp/mfp.action';
 import css from './exportMfpToolContent.css';
 import plus from './assets/plus.svg';
 import minus from './assets/minus.svg';
@@ -10,6 +10,7 @@ const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
 const Update_AutoRotation = 'update_autorotation';
+const Update_Show_Grid = 'update_show_grid';
 const Update_Job_Started = 'update_job_started';
 
 /**
@@ -22,6 +23,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			id: null,
 			scale: null,
 			autoRotation: true,
+			showGrid: false,
 			isJobStarted: false
 		});
 
@@ -33,6 +35,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	onInitialize() {
 		this.observe(state => state.mfp.current, data => this.signal(Update, data));
 		this.observe(state => state.mfp.autoRotation, data => this.signal(Update_AutoRotation, data));
+		this.observe(state => state.mfp.showGrid, data => this.signal(Update_Show_Grid, data));
 		this.observe(state => state.mfp.jobSpec, data => this.signal(Update_Job_Started, data));
 	}
 
@@ -46,13 +49,15 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				return { ...model, id: data };
 			case Update_AutoRotation:
 				return { ...model, autoRotation: data };
+			case Update_Show_Grid:
+				return { ...model, showGrid: data };
 			case Update_Job_Started:
 				return { ...model, isJobStarted: !!data?.payload };
 		}
 	}
 
 	createView(model) {
-		const { id, scale, isJobStarted, autoRotation } = model;
+		const { id, scale, isJobStarted, autoRotation, showGrid } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const capabilities = this._mfpService.getCapabilities();
 
@@ -69,7 +74,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 				${translate('toolbox_exportMfp_header')}
 			</div>
 			<div class='ba-tool-container__content'>
-				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, autoRotation) : this._getSpinner()}				
+				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, autoRotation, showGrid) : this._getSpinner()}				
 			</div>
 			<div class="ba-tool-container__actions"> 
 				<ba-button id='${btnId}' class="tool-container__button preview_button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
@@ -81,7 +86,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		return html`<ba-spinner></ba-spinner>`;
 	}
 
-	_getContent(id, scale, layouts, autoRotation) {
+	_getContent(id, scale, layouts, autoRotation, showGrid) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const layoutItems = layouts.map(capability => {
@@ -140,6 +145,10 @@ export class ExportMfpToolContent extends AbstractToolContent {
 			setAutoRotation(event.detail.checked);
 		};
 
+		const onChangeShowGrid = (event) => {
+			setShowGrid(event.detail.checked);
+		};
+
 		return html`
 				<div class='tool-section'>
 					<div class='tool-sub-header'>			
@@ -167,6 +176,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 					${translate('toolbox_exportMfp_options')}		
 					</div>
 					<ba-checkbox id='autorotation' .checked=${autoRotation} .title=${translate('toolbox_exportMfp_autorotation_title')} @toggle=${onChangeAutoRotation} ><span>${translate('toolbox_exportMfp_autorotation')}</span></ba-checkbox>
+					<ba-checkbox id='showgrid' .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid} ><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-checkbox>
 				</div>`;
 	}
 

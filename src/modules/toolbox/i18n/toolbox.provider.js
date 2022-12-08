@@ -102,7 +102,9 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 portrait',
 				toolbox_exportMfp_options: 'Options',
 				toolbox_exportMfp_autorotation_title: 'Activate/deactivate autorotation',
-				toolbox_exportMfp_autorotation: 'Automatically rotate map'
+				toolbox_exportMfp_autorotation: 'Automatically rotate map',
+				toolbox_exportMfp_show_grid_title: 'Show/Hide map grid in export',
+				toolbox_exportMfp_show_grid: 'Show a map grid'
 			};
 
 		case 'de':
@@ -206,7 +208,9 @@ export const provide = (lang) => {
 				toolbox_exportMfp_id_a3_portrait: 'A3 Hochformat',
 				toolbox_exportMfp_options: 'Optionen',
 				toolbox_exportMfp_autorotation_title: 'Autorotation aktivieren/deaktivieren',
-				toolbox_exportMfp_autorotation: 'Karte automatisch drehen'
+				toolbox_exportMfp_autorotation: 'Karte automatisch drehen',
+				toolbox_exportMfp_show_grid_title: 'Ein Kartengitter im Export anzeigen/ nicht anzeigen',
+				toolbox_exportMfp_show_grid: 'Kartengitter anzeigen'
 			};
 
 		default:

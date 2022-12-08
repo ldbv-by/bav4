@@ -30,6 +30,7 @@ describe('ExportMfpToolContent', () => {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
 		autoRotation: true,
+		showGrid: false,
 		jobSpec: null,
 		isJobStarted: false
 	};
@@ -75,6 +76,7 @@ describe('ExportMfpToolContent', () => {
 				id: null,
 				scale: null,
 				autoRotation: true,
+				showGrid: false,
 				isJobStarted: false
 			});
 		});
