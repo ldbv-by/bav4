@@ -254,7 +254,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
 		const pageCenter = this._getVisibleCenterPoint();
-		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter };
+		const encodingProperties = { layoutId: id, scale: scale, rotation: 0, dpi: dpi, pageCenter: pageCenter, showGrid: true };
 		const specs = await this._encoder.encode(this._map, encodingProperties);
 
 		startJob(specs);
