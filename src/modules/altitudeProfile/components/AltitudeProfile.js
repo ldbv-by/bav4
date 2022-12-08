@@ -29,7 +29,7 @@ export class AltitudeProfile extends MvuElement {
 			profile: null,
 			labels: null,
 			data: null,
-			selectedAttribute: 'alt',
+			selectedAttribute: null,
 			darkSchema: null
 		});
 		this._chart = null;
@@ -64,6 +64,8 @@ export class AltitudeProfile extends MvuElement {
 		this.style.width = '100%';
 		this.style.height = '14em';
 
+		this.signal(Update_Selected_Attribute, 'slope');
+
 		this.observe(
 			(state) => state.media.darkSchema,
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
@@ -79,9 +81,6 @@ export class AltitudeProfile extends MvuElement {
 	 */
 	update(type, data, model) {
 		const enritchAltsArrayWithAttributeData = (attribute, profile) => {
-			// if (attribute.id === 'alt') {
-			// 	return;
-			// }
 			const attributeName = attribute.id;
 			attribute.values.forEach((from_to_value) => {
 				for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
@@ -98,6 +97,7 @@ export class AltitudeProfile extends MvuElement {
 		switch (type) {
 			case Enrich_Profile_Data:
 				const profile = data;
+				// console.log('🚀 🚀 🚀 ', JSON.stringify(profile, null, 2));
 
 				const labels = profile.alts.map((alt) => alt.dist);
 				const chartData = profile.alts.map((alt) => alt.alt);
@@ -140,6 +140,7 @@ export class AltitudeProfile extends MvuElement {
 		const sumDown = model.profile?.stats?.sumDown;
 
 		const onChange = () => {
+			console.log('🚀 ~ file: AltitudeProfile.js:143 ~ AltitudeProfile ~ onChange');
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -159,7 +160,7 @@ export class AltitudeProfile extends MvuElement {
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map(
 								(attr) => html`
-									<option id="${attr.id}" value="${attr.id}" ${selected(attr)}>
+									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
 										${translate('altitudeProfile_' + attr.id)}
 									</option>
 								`
@@ -169,12 +170,6 @@ export class AltitudeProfile extends MvuElement {
 				</div>
 			</div>
 		`;
-
-		function selected(attr) {
-			const isSelected = attr.id === model.selectedAttribute;
-			const selectedString = isSelected ? ' SELECTED' : '';
-			return selectedString;
-		}
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
@@ -214,7 +209,6 @@ export class AltitudeProfile extends MvuElement {
 		}
 
 		const selectedAttribute = this.getModel().selectedAttribute;
-		console.log('🚀 ~ file: AltitudeProfile.js:228 ~ AltitudeProfile ~ _getGradient ~ selectedAttribute', selectedAttribute);
 
 		switch (selectedAttribute) {
 			case 'slope':
@@ -225,13 +219,11 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				console.log('🚀🚀🚀🚀 ToDo - "alt" or unknown attribute');
-				break;
+				return null;
 		}
 	}
 
 	_getBackgroundColor(context, altitudeData) {
-		console.log('🚀 ~ AltitudeProfile ~ 🚀_getBackgroundColor🚀');
 		const chart = context.chart;
 
 		const selectedAttribute = this.getModel().selectedAttribute;
@@ -247,7 +239,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getBorderColor(context, altitudeData) {
-		console.log('🚀 ~ AltitudeProfile ~ _getBorderColor');
 		const chart = context.chart;
 
 		const selectedAttribute = this.getModel().selectedAttribute;
@@ -286,9 +277,6 @@ export class AltitudeProfile extends MvuElement {
 
 	_getTextTypeGradient(chart, altitudeData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
-		if (!chartArea) {
-			return null;
-		}
 
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.alts.length;
@@ -374,6 +362,7 @@ export class AltitudeProfile extends MvuElement {
 		if (coordinates.length > 0) {
 			try {
 				const profile = await this._altitudeService.getProfile(coordinates);
+				// console.log('🚀🚀🚀🚀🚀 ~ file: AltitudeProfile.js:382 ~ AltitudeProfile ~ _getAltitudeProfile');
 				this.signal(Enrich_Profile_Data, profile);
 			} catch (e) {
 				console.warn(e.message);
