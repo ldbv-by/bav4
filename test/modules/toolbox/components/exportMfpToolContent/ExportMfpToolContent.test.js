@@ -379,6 +379,9 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
 	});
+	const getToggleEventFor = (toggleElement) => new CustomEvent('toggle', {
+		detail: { checked: !toggleElement.checked }
+	});
 
 	describe('when the user toggles the autorotation-toggle', () => {
 
@@ -390,15 +393,11 @@ describe('ExportMfpToolContent', () => {
 
 			const toggleButton = element.shadowRoot.querySelector('#autorotation');
 
-			toggleButton.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: false }
-			}));
+			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.autoRotation).toBeFalse();
 
-			toggleButton.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: true }
-			}));
+			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.autoRotation).toBeTrue();
 		});
@@ -406,6 +405,7 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user toggles the showGrid-toggle', () => {
+
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
@@ -415,15 +415,11 @@ describe('ExportMfpToolContent', () => {
 
 			const toggleButton = element.shadowRoot.querySelector('#showgrid');
 
-			toggleButton.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: true }
-			}));
+			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.showGrid).toBeTrue();
 
-			toggleButton.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: false }
-			}));
+			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
