@@ -106,6 +106,8 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
 			expect(element.shadowRoot.querySelector('#autorotation').checked).toBeTrue();
 			expect(element.shadowRoot.querySelector('#autorotation').title).toBe('toolbox_exportMfp_autorotation_title');
+			expect(element.shadowRoot.querySelector('#showgrid').checked).toBeFalse();
+			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 
 			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
 			expect(subHeaderElements).toHaveSize(3);
@@ -378,7 +380,7 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
-	describe('when the user toggles the autorotation-button', () => {
+	describe('when the user toggles the autorotation-toggle', () => {
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
@@ -388,13 +390,42 @@ describe('ExportMfpToolContent', () => {
 
 			const toggleButton = element.shadowRoot.querySelector('#autorotation');
 
-			toggleButton.click();
+			toggleButton.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: false }
+			}));
 
 			expect(store.getState().mfp.autoRotation).toBeFalse();
 
-			toggleButton.click();
+			toggleButton.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: true }
+			}));
 
 			expect(store.getState().mfp.autoRotation).toBeTrue();
+		});
+
+	});
+
+	describe('when the user toggles the showGrid-toggle', () => {
+
+		it('changes store', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
+
+			const toggleButton = element.shadowRoot.querySelector('#showgrid');
+
+			toggleButton.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: true }
+			}));
+
+			expect(store.getState().mfp.showGrid).toBeTrue();
+
+			toggleButton.dispatchEvent(new CustomEvent('toggle', {
+				detail: { checked: false }
+			}));
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
 
 	});

@@ -86,3 +86,6 @@
 .separator {
 	border-top: 1px dotted var(--header-background-color);
 }
+.tool-option {
+	margin: 0 1em 1em;
+}
