@@ -783,7 +783,7 @@ export class BvvMfp3Encoder {
 				spacing
 			],
 			renderAsSvg: true,
-			haloColor: '#CCFFCC',
+			haloColor: '#f5f5f5',
 			labelColor: 'black',
 			labelFormat: '%1.0f %s',
 			indent: 10,
