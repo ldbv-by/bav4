@@ -32,6 +32,7 @@ describe('ExportMfpToolContent', () => {
 		autoRotation: true,
 		showGrid: false,
 		jobSpec: null,
+		collapsedOptions: null,
 		isJobStarted: false
 	};
 
@@ -77,6 +78,7 @@ describe('ExportMfpToolContent', () => {
 				scale: null,
 				autoRotation: true,
 				showGrid: false,
+				collapsedOptions: null,
 				isJobStarted: false
 			});
 		});
@@ -110,8 +112,12 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 
 			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
-			expect(subHeaderElements).toHaveSize(3);
-			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale', 'toolbox_exportMfp_options']);
+			expect(subHeaderElements).toHaveSize(2);
+			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
+
+			expect(element.shadowRoot.querySelectorAll('.sub-header')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.sub-header').innerText).toBe('toolbox_exportMfp_options');
+
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
@@ -171,6 +177,22 @@ describe('ExportMfpToolContent', () => {
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
 			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
+		});
+
+		it('collapse container', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			expect(collapseButton.length).toBe(1);
+
+			const isCollapse = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse.length).toBe(1);
+
+			collapseButton[0].click();
+
+			const isCollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse1.length).toBe(0);
 		});
 	});
 
