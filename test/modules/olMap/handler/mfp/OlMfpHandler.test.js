@@ -223,23 +223,15 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			const syncSpy = spyOn(handler, '_syncMfpPreview').and.callThrough();
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => { });
 
 
 			handler.activate(map);
 			updateSpy.calls.reset();
 			changeLiveRotation(42);
-
-			expect(syncSpy).toHaveBeenCalled();
-			expect(updateSpy).not.toHaveBeenCalled();
-			updateSpy.calls.reset();
-			syncSpy.calls.reset();
-
 			changeLiveRotation(0);
 
-			expect(syncSpy).toHaveBeenCalled();
-			expect(updateSpy).toHaveBeenCalled();
+			expect(updateSpy).toHaveBeenCalledTimes(2);
 		});
 
 		describe('when autoRotation is false', () => {
