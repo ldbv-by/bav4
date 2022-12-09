@@ -239,10 +239,10 @@ export class TestUtils {
 	 * Returns a Promise that either resolves as soon as the check is successful or rejects
 	 * when the amount of time defined by the timeout argument passed
 	 * @param {Function} checkFn the check function. Must return `true` to resolve the Promise
-	 * @param {Number} timeout timeout in ms. Default is `1000`
+	 * @param {Number} timeout timeout in ms. Default is `3000`
 	 * @returns {Promise}
 	 */
-	static async waitFor(checkFn, timeout = 1000) {
+	static async waitFor(checkFn, timeout = 3000) {
 
 		return new Promise((resolve, reject) => {
 			const clear = () => {
