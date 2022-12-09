@@ -97,7 +97,6 @@ export class AltitudeProfile extends MvuElement {
 		switch (type) {
 			case Enrich_Profile_Data:
 				const profile = data;
-				// console.log('🚀 🚀 🚀 ', JSON.stringify(profile, null, 2));
 
 				const labels = profile.alts.map((alt) => alt.dist);
 				const chartData = profile.alts.map((alt) => alt.alt);
@@ -140,7 +139,6 @@ export class AltitudeProfile extends MvuElement {
 		const sumDown = model.profile?.stats?.sumDown;
 
 		const onChange = () => {
-			console.log('🚀 ~ file: AltitudeProfile.js:143 ~ AltitudeProfile ~ onChange');
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -209,7 +207,7 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				return null;
+				return '#88dd88';
 		}
 	}
 
@@ -225,7 +223,7 @@ export class AltitudeProfile extends MvuElement {
 			return '#ddddff';
 		}
 
-		return '#88dd88';
+		return this._getGradient(chart, altitudeData);
 	}
 
 	_getBorderColor(context, altitudeData) {
@@ -350,7 +348,6 @@ export class AltitudeProfile extends MvuElement {
 		if (coordinates.length > 0) {
 			try {
 				const profile = await this._altitudeService.getProfile(coordinates);
-				// console.log('🚀🚀🚀🚀🚀 ~ file: AltitudeProfile.js:382 ~ AltitudeProfile ~ _getAltitudeProfile');
 				this.signal(Enrich_Profile_Data, profile);
 			} catch (e) {
 				console.warn(e.message);
@@ -363,156 +360,15 @@ export class AltitudeProfile extends MvuElement {
 	_getChartConfig(altitudeData, newDataLabels = [], newDataData = []) {
 		const translate = (key) => this._translationService.translate(key);
 
-		const _drawSelectionRect = (ctx) => {
-			const { firstLeft, secondLeft, top, bottom } = getSelectionProps();
-
-			ctx.save();
-			ctx.fillStyle = '#aaaacc40';
-			ctx.fillRect(firstLeft, top, secondLeft - firstLeft, bottom);
-			ctx.restore();
-		};
-
-		const tooltipOptions = {
-			displayColors: false,
-			mode: 'index',
-			intersect: false,
-			callbacks: {
-				// title: () => {
-				//   return 'Header';
-				// },
-				// footer: () => {
-				//   return 'Footer';
-				// },
-				label: (tooltipItem) => {
-					let slope = '';
-					let surface = '';
-					const { parsed } = tooltipItem;
-					const heightsElement = altitudeData.alts.find((element) => {
-						return element.dist === parsed.x;
-					});
-					if (heightsElement) {
-						if (heightsElement.slope) {
-							slope = heightsElement.slope + '%';
-						} else {
-							slope = translate('altitudeProfile_unknown');
-						}
-						if (heightsElement.surface) {
-							surface = heightsElement.surface;
-						} else {
-							surface = translate('altitudeProfile_unknown');
-						}
-					}
-
-					const content = [
-						translate('altitudeProfile_distance') + ': ' + tooltipItem.label + 'm',
-						translate('altitudeProfile_elevation') + ': ' + tooltipItem.raw + 'm',
-						translate('altitudeProfile_incline') + ': ' + slope,
-						'surface: ' + surface
-					];
-					return content;
-				}
-			}
-		};
-
-		const selectedAreaBorderPlugin = {
-			id: 'selectedAreaBorder',
-			afterDraw(chart) {
-				const { drawSelectedAreaBorder } = getSelectionProps();
-				if (!drawSelectedAreaBorder) {
-					return;
-				}
-				const { ctx } = chart;
-				_drawSelectionRect(ctx);
-			}
-		};
-		altitudeData;
-
-		const getSelectionProps = () => {
-			return {
-				mouseIsDown: this._mouseIsDown,
-				top: this._top,
-				bottom: this._bottom,
-				firstLeft: this._firstLeft,
-				secondLeft: this._secondLeft,
-				drawSelectedAreaBorder: this._drawSelectedAreaBorder,
-				enableToolTip: this._enableTooltip
-			};
-		};
-		const setMousedownProps = (mouseIsDown, top, bottom, firstLeft, enableToolTip) => {
-			this._mouseIsDown = mouseIsDown;
-			this._top = top;
-			this._bottom = bottom;
-			this._firstLeft = firstLeft;
-			this._enableTooltip = enableToolTip;
-		};
-		const setMousemoveProps = (secondLeft) => {
-			this._secondLeft = secondLeft;
-		};
-
-		const setMouseupOrMouseoutProps = (mouseIsDown, secondLeft, drawSelectedAreaBorder, enableToolTip) => {
-			this._mouseIsDown = mouseIsDown;
-			this._secondLeft = secondLeft;
-			this._drawSelectedAreaBorder = drawSelectedAreaBorder;
-			this._enableTooltip = enableToolTip;
-		};
-
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
 			plugins: [
-				selectedAreaBorderPlugin,
-				{
-					id: 'areaSelect',
-					beforeEvent(chart, args) {
-						const { mouseIsDown } = getSelectionProps();
-						const event = args.event;
-						if (!event) {
-							return;
-						}
-						const { ctx, tooltip, chartArea } = chart;
-
-						if (event.type === 'mousedown') {
-							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
-							return;
-						}
-						if (!mouseIsDown) {
-							return;
-						}
-						if (event.type === 'mousemove') {
-							setMousemoveProps(tooltip.caretX);
-							_drawSelectionRect(ctx);
-
-							return;
-						}
-
-						if (event.type === 'mouseup' || event.type === 'mouseout') {
-							setMouseupOrMouseoutProps(false, tooltip.caretX, true, true);
-							return;
-						}
-					}
-				},
 				{
 					id: 'shortenLeftEndOfScale',
 					beforeInit: (chart) => {
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
-					}
-				},
-				{
-					id: 'drawVerticalLineAtMousePosition',
-					afterTooltipDraw(chart, args) {
-						if (this._enableTooltip) {
-							const tooltip = args.tooltip;
-							const x = tooltip.caretX;
-							const { scales, ctx } = chart;
-
-							const yScale = scales.y;
-							ctx.beginPath();
-							chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-							chart.ctx.strokeStyle = '#ff0000';
-							chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-							chart.ctx.stroke();
-						}
 					}
 				}
 			],
@@ -545,8 +401,7 @@ export class AltitudeProfile extends MvuElement {
 							translate('altitudeProfile_elevation') +
 							', m'
 					},
-					legend: { display: false },
-					tooltip: tooltipOptions
+					legend: { display: false }
 				}
 			}
 		};
