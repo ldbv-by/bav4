@@ -252,7 +252,7 @@ export class TestUtils {
 					resolve();
 				}
 			}, 10);
-			const timeOutId = setTimeout(reject, timeout);
+			const timeOutId = setTimeout(() => reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`), timeout);
 		});
 	}
 
