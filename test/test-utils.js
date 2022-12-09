@@ -245,14 +245,20 @@ export class TestUtils {
 	static async waitFor(checkFn, timeout = 1000) {
 
 		return new Promise((resolve, reject) => {
+			const clear = () => {
+				clearInterval(intervallId);
+				clearTimeout(timeOutId);
+			};
 			const intervallId = setInterval(() => {
 				if (checkFn()) {
-					clearInterval(intervallId);
-					clearTimeout(timeOutId);
+					clear();
 					resolve();
 				}
 			}, 10);
-			const timeOutId = setTimeout(() => reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`), timeout);
+			const timeOutId = setTimeout(() => {
+				clear();
+				reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`);
+			}, timeout);
 		});
 	}
 
