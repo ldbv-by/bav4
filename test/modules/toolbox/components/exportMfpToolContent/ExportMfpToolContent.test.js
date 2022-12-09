@@ -116,8 +116,9 @@ describe('ExportMfpToolContent', () => {
 			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
 
 			expect(element.shadowRoot.querySelectorAll('.sub-header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.sub-header').innerText).toContain('toolbox_exportMfp_options');
-
+			// HINT: Safari renders the innerText with a carriage return line feed. So instead of asserting with .toBe() we
+			// have to test against a regex.
+			expect(element.shadowRoot.querySelector('.sub-header').innerText).toMatch(/^toolbox_exportMfp_options[\r\n]?$/);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
