@@ -198,16 +198,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getGradient(chart, altitudeData) {
-		if (!altitudeData) {
-			return;
-		}
-		if (!altitudeData.alts) {
-			return;
-		}
-		if (altitudeData.alts.length === 0) {
-			return;
-		}
-
 		const selectedAttribute = this.getModel().selectedAttribute;
 
 		switch (selectedAttribute) {
@@ -284,9 +274,7 @@ export class AltitudeProfile extends MvuElement {
 
 		const altitudeProfileAttributeString = altitudeData.alts[0][selectedAttribute];
 		let currentAltitudeProfileAttributeType = this.getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
-		if (!currentAltitudeProfileAttributeType) {
-			return;
-		}
+
 		gradientBg.addColorStop(0, currentAltitudeProfileAttributeType.color);
 
 		let altitudeProfileAttributeType;
@@ -567,12 +555,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_createChart(profile, newDataLabels, newDataData) {
-		if (!profile) {
-			return;
-		}
-		if (this._chart) {
-			this._chart.destroy();
-		}
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData));
 	}
