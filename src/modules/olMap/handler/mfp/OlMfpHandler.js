@@ -96,8 +96,8 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
-			observe(store, state => state.position.rotation, (rotation) => this._updateRotation(rotation)),
-			observe(store, state => state.position.liveRotation, (rotation) => this._syncMfpPreview(rotation))
+			observe(store, state => state.position.rotation, () => this._updateRotation()),
+			observe(store, state => state.position.liveRotation, () => this._updateMfpPreview())
 		];
 	}
 
@@ -123,13 +123,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._getAzimuth(feature.getGeometry());
 
 		feature.set('azimuth', rotation);
-	}
-
-	_syncMfpPreview(rotation) {
-		const mfpPreviewNeedsSynchronization = rotation === 0;
-		if (mfpPreviewNeedsSynchronization) {
-			this._updateMfpPreview();
-		}
 	}
 
 	_updateRotation() {
