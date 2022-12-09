@@ -17,7 +17,7 @@ export const getBvvProfile = async (coordinates3857) => {
 
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/profile';
-	const requestPayload = coordinates3857.map(c => ({ e: c[0], n: c[1] }));
+	const requestPayload = { coords: coordinates3857.map(c => ({ e: c[0], n: c[1] })) };
 	const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON);
 
 	switch (result.status) {

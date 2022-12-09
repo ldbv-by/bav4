@@ -96,7 +96,7 @@ describe('profile provider', () => {
 		it('fetches a profile', async () => {
 			const backendUrl = 'https://backend.url';
 			const coords = [[0, 1], [2, 3]];
-			const expectedPayload = JSON.stringify([{ e: 0, n: 1 }, { e: 2, n: 3 }]);
+			const expectedPayload = JSON.stringify({ coords: [{ e: 0, n: 1 }, { e: 2, n: 3 }] });
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON).and.resolveTo(new Response(
 				JSON.stringify(mockProfileResponse))
@@ -109,11 +109,11 @@ describe('profile provider', () => {
 			expect(profile).toEqual(mockProfileResponse);
 		});
 
-		it('throws error when backend request cannot be fulfilled', async () => {
+		it('throws an error when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const coords = [[0, 1], [2, 3]];
-			const expectedPayload = JSON.stringify([{ e: 0, n: 1 }, { e: 2, n: 3 }]);
+			const expectedPayload = JSON.stringify({ coords: [{ e: 0, n: 1 }, { e: 2, n: 3 }] });
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON).and.resolveTo(
 				new Response(JSON.stringify({}), { status: 500 })
