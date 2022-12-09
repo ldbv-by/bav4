@@ -101,7 +101,8 @@
 
 
 .separator {
-	border-top: 1px dotted var(--header-background-color);
+	border-top: 1px solid var(--header-background-color);
+	padding-top: 0.5em;
 }
 
 .tool-option {
