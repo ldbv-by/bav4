@@ -45,6 +45,7 @@ import { ChipsConfigurationService } from '../services/ChipsConfigurationService
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 import { Proj4JsService } from '../services/Proj4JsService';
 import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
+import { AltitudeProfilePlugin } from '../plugins/AltitudeProfilePlugin';
 
 
 $injector
@@ -92,6 +93,7 @@ $injector
 	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerSingleton('SearchPlugin', new SearchPlugin())
 	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
+	.registerSingleton('AltitudeProfilePlugin', new AltitudeProfilePlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

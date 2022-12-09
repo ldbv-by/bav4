@@ -59,6 +59,9 @@ describe('StoreService', () => {
 		const chipsPlugin = {
 			register() { }
 		};
+		const altitudeProfilePluginMock = {
+			register() { }
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -79,6 +82,7 @@ describe('StoreService', () => {
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
+				.registerSingleton('AltitudeProfilePlugin', altitudeProfilePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 
@@ -138,6 +142,7 @@ describe('StoreService', () => {
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
+			const altitudeProfilePluginSpy = spyOn(altitudeProfilePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -162,6 +167,7 @@ describe('StoreService', () => {
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
+			expect(altitudeProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
