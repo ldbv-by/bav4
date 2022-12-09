@@ -97,7 +97,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
 			observe(store, state => state.position.rotation, () => this._updateRotation()),
-			observe(store, state => state.position.liveRotation, () => this._updateMfpPreview())
+			observe(store, state => state.map.moveEnd, () => this._updateMfpPreview())
 		];
 	}
 

@@ -8,6 +8,8 @@ import { $injector } from '../../../../../src/injection';
 import { OlMfpHandler } from '../../../../../src/modules/olMap/handler/mfp/OlMfpHandler';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
+import { mapReducer } from '../../../../../src/store/map/map.reducer';
+
 import { TestUtils } from '../../../../test-utils';
 
 
@@ -16,6 +18,7 @@ import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveRotation, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
+import { setMoveEnd } from '../../../../../src/store/map/map.action';
 
 
 
@@ -60,7 +63,7 @@ describe('OlMfpHandler', () => {
 		const mfpState = {
 			mfp: state
 		};
-		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer });
+		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer, map: mapReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
@@ -221,17 +224,14 @@ describe('OlMfpHandler', () => {
 		it('synchronizes mfpPreview after store changes', () => {
 			const map = setupMap();
 			setup();
-
 			const handler = new OlMfpHandler();
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => { });
 
-
 			handler.activate(map);
 			updateSpy.calls.reset();
-			changeLiveRotation(42);
-			changeLiveRotation(0);
+			setMoveEnd();
 
-			expect(updateSpy).toHaveBeenCalledTimes(2);
+			expect(updateSpy).toHaveBeenCalledTimes(1);
 		});
 
 		describe('when autoRotation is false', () => {
