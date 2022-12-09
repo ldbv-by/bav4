@@ -454,6 +454,21 @@ describe('getPolygonFrom', () => {
 	it('creates a polygon from an extent', () => {
 		expect(getPolygonFrom([0, 0, 1, 1]).getCoordinates()).toEqual([[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]);
 	});
+
+	it('does NOT create anything from invalid input', () => {
+		expect(getPolygonFrom(undefined)).toBeNull();
+		expect(getPolygonFrom(null)).toBeNull();
+
+		expect(getPolygonFrom([])).toBeNull();
+		expect(getPolygonFrom([0])).toBeNull();
+		expect(getPolygonFrom([0, 1])).toBeNull();
+		expect(getPolygonFrom([0, 1, 2])).toBeNull();
+		expect(getPolygonFrom([0, 1, 2, 3, 4])).toBeNull();
+
+		expect(getPolygonFrom('foo ')).toBeNull();
+
+		expect(getPolygonFrom({})).toBeNull();
+	});
 });
 
 
