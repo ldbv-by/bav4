@@ -16,7 +16,7 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeLiveRotation, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
+import { changeCenter, changeRotation, changeZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import { setMoveEnd } from '../../../../../src/store/map/map.action';
 
