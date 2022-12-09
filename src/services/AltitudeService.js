@@ -45,7 +45,7 @@ export class AltitudeService {
 	}
 
 	/**
-	 * Returns an altitute for a coordinate.
+	 * Returns an altitude for a coordinate.
 	 * @param {Coordinate} coordinate3857
 	 * @returns {Number} altitude
 	 */
