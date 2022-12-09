@@ -10,6 +10,8 @@ import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
 
 describe('AltitudeProfile', () => {
+	let store;
+
 	const _profile = {
 		alts: [
 			{
@@ -57,23 +59,23 @@ describe('AltitudeProfile', () => {
 			{
 				id: 'slope',
 				values: [
-					[0, 1, 0],
-					[2, 3, 2],
-					[4, 4, 4],
-					[5, 5, 4]
+					[0, 1, 0.01],
+					[2, 3, 0.2],
+					[4, 4, 0.4],
+					[5, 5, 0.01]
 				]
 			},
 			{
 				id: 'surface',
 				values: [
-					[0, 2, 'asphalt'],
+					[0, 1, 'asphalt'],
 					[3, 5, 'gravel']
 				]
 			},
 			{
 				id: 'anotherType',
 				values: [
-					[0, 3, 'cycle'],
+					[0, 2, 'cycle'],
 					[4, 5, 'foot']
 				]
 			}
@@ -108,7 +110,7 @@ describe('AltitudeProfile', () => {
 			selectedAttribute: 'slope',
 			...state
 		};
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			altitudeProfile: altitudeProfileReducer
 		});
@@ -198,11 +200,67 @@ describe('AltitudeProfile', () => {
 
 			await TestUtils.timeout();
 			const canvas = element.shadowRoot.querySelectorAll('.chart-container canvas');
-			console.log('🚀 ~ file: AltitudeProfile.test.js:196 ~ it ~ canvas', canvas);
 			expect(canvas).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
-			console.log('🚀 ~ file: AltitudeProfile.test.js:198 ~ fit ~ attrs', attrs);
 			expect(attrs.value).toBe('surface');
+		});
+
+		it('updates the model when slope is selected in DOM', async () => {
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+
+			const element = await setup({
+				altitudeProfile: {
+					active: false,
+					coordinates: coordinates
+				}
+			});
+			const model = element.getModel();
+			console.log('🚀 ~ file: AltitudeProfile.test.js:224 ~ fit ~ model', model);
+			const selectedAttributeOrg = model.selectedAttribute;
+			expect(selectedAttributeOrg).toBe('slope');
+
+			// const chart = element._chart;
+			// const config = chart.config;
+			// // const datasetZero = config.data.datasets[0];
+
+			// await TestUtils.timeout();
+			// const canvas = element.shadowRoot.querySelectorAll('.chart-container canvas');
+			// console.log('🚀 ~ file: AltitudeProfile.test.js:196 ~ it ~ canvas', canvas);
+			const attrs = element.shadowRoot.getElementById('attrs');
+			console.log('🚀 ~ file: AltitudeProfile.test.js:198 ~ fit ~ attrs', attrs);
+
+			attrs.value = 'alt';
+			attrs.dispatchEvent(new Event('change'));
+
+			// const select = element.shadowRoot.querySelector('#attrs');
+			// const options = Array.from(select.options);
+			// //   const optionToSelect = $options.find(item => item.text ===text);
+			// //   optionToSelect.selected = true;
+			// options.forEach((option) => {
+			// 	console.log('🚀🚀 ~ file: AltitudeProfile.test.js:184 ~ fit ~ option', option);
+			// 	return {};
+			// });
+			// const option = select.querySelector('#slope');
+			// select.value = option.value;
+
+			await TestUtils.timeout();
+
+			// element.signal('update_selected_attribute', 'surface');
+			// element.dispatchEvent(new Event('select'));
+			// await TestUtils.timeout();
+			// const xxx = store.getState();
+
+			// console.log('🚀 ~ file: AltitudeProfile.test.js:236 ~ fit ~ xxx', xxx);
+			// console.log('🚀 ~ file: AltitudeProfile.test.js:236 ~ fit ~ element.getModel()', element.getModel());
+			// console.log('🚀 ~ file: AltitudeProfile.test.js:236 ~ fit ~ xxx.media', xxx.media);
+
+			console.log('🚀 ~ file: AltitudeProfile.test.js:198 ~ fit ~ attrs', attrs);
+			const selectedAttribute = element.getModel().selectedAttribute;
+			expect(selectedAttribute).toBe('alt');
 		});
 	});
 
