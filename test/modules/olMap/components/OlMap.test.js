@@ -342,9 +342,12 @@ describe('OlMap', () => {
 			it('updates the \'movestart\' property in map store', async () => {
 				const element = await setup();
 
+				expect(element._viewSyncBlocked).toBeUndefined();
+
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
 
 				expect(store.getState().map.moveStart.payload).toBe('movestart');
+				expect(element._viewSyncBlocked).toBeTrue();
 			});
 
 			it('updates the \'beingMoved\' property in pointer store', async () => {
@@ -365,9 +368,13 @@ describe('OlMap', () => {
 			it('updates the \'moveend\' property in map store', async () => {
 				const element = await setup();
 
+				expect(element._viewSyncBlocked).toBeUndefined();
+
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 				expect(store.getState().map.moveEnd.payload).toBe('moveend');
+				await TestUtils.timeout();
+				expect(element._viewSyncBlocked).toBeFalse();
 			});
 
 			it('updates the position state properties', async () => {
