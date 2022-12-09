@@ -116,7 +116,7 @@ describe('ExportMfpToolContent', () => {
 			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
 
 			expect(element.shadowRoot.querySelectorAll('.sub-header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.sub-header').innerText).toBe('toolbox_exportMfp_options');
+			expect(element.shadowRoot.querySelector('.sub-header').innerText).toContain('toolbox_exportMfp_options');
 
 		});
 
