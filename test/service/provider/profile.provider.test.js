@@ -109,7 +109,7 @@ describe('profile provider', () => {
 			expect(profile).toEqual(mockProfileResponse);
 		});
 
-		it('throws error on failed request', async () => {
+		it('throws error when backend request cannot be fulfilled', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const coords = [[0, 1], [2, 3]];
