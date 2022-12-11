@@ -5,6 +5,7 @@ import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitud
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../test-utils.js';
+import { SurfaceType } from '../../../../src/modules/altitudeProfile/components/SurfaceType.js';
 // import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
@@ -339,11 +340,18 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	describe('when media schema changes', () => {
-		it('updates the view', async () => {});
-	});
-
 	describe('when attribute types are initialized only with light color', () => {
-		it('returns light if requesting dark', async () => {});
+		it('returns light if requesting dark', async () => {
+			const element = await setup({
+				media: {
+					darkSchema: true
+				}
+			});
+			const xx = new SurfaceType('asphalt', '#222222');
+			expect(xx.name).toBe('asphalt');
+			expect(xx.caption).toBe('altitudeProfile_surface');
+			expect(xx.color).toBe('#222222');
+			//   element._addAttributeType(new SurfaceType('asphalt', '#222222'));
+		});
 	});
 });
