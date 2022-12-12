@@ -6,13 +6,10 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 import { TestUtils } from '../../../test-utils.js';
 import { SurfaceType } from '../../../../src/modules/altitudeProfile/components/SurfaceType.js';
-// import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
 
 describe('AltitudeProfile', () => {
-	let store;
-
 	const _profile = {
 		alts: [
 			{
@@ -143,7 +140,7 @@ describe('AltitudeProfile', () => {
 			},
 			...state
 		};
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			altitudeProfile: altitudeProfileReducer
 		});
@@ -159,8 +156,11 @@ describe('AltitudeProfile', () => {
 
 	describe('when instantiating the component', () => {
 		it('expects the initial values of the model to be empty', async () => {
+			// arrange
 			await setup();
 			const altitudeProfile = new AltitudeProfile();
+
+			// assert
 			const initialModel = altitudeProfile.getModel();
 			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null });
 		});
@@ -168,18 +168,20 @@ describe('AltitudeProfile', () => {
 
 	describe('when initialized', () => {
 		it('renders nothing when no profile is available', async () => {
+			// arrange
 			const element = await setup();
 
+			// assert
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders the view when a profile is available', async () => {
+			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -190,6 +192,7 @@ describe('AltitudeProfile', () => {
 				}
 			});
 
+			// assert
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
@@ -199,7 +202,6 @@ describe('AltitudeProfile', () => {
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('Höhenprofil');
-			// todo - check correct schema is used
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
@@ -207,12 +209,12 @@ describe('AltitudeProfile', () => {
 		});
 
 		it('for coverage - slope ends in steep - renders the view when a profile is available', async () => {
+			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profileSlopeSteep());
-
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -223,19 +225,20 @@ describe('AltitudeProfile', () => {
 				}
 			});
 
+			// assert
 			const chart = element._chart;
 			expect(chart).not.toBeNull();
 		});
 	});
 
 	describe('when attribute changes', () => {
-		it('updates the view (todo remove - when attribute changes)', async () => {
+		it('updates the view', async () => {
+			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-
 			const element = await setup({
 				altitudeProfile: {
 					active: false,
@@ -243,11 +246,12 @@ describe('AltitudeProfile', () => {
 				}
 			});
 
+			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
-
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
 
+			// assert
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
@@ -257,7 +261,6 @@ describe('AltitudeProfile', () => {
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('Höhenprofil');
-			// todo - check correct schema is used
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
@@ -287,12 +290,12 @@ describe('AltitudeProfile', () => {
 
 	describe('when user changes profile attribute', () => {
 		it('renders the surface view when surface is selected', async () => {
+			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-
 			const element = await setup({
 				altitudeProfile: {
 					active: false,
@@ -300,10 +303,11 @@ describe('AltitudeProfile', () => {
 				}
 			});
 
+			//act
 			element.signal('update_selected_attribute', 'surface');
 			element.dispatchEvent(new Event('select'));
-			await TestUtils.timeout();
 
+			// assert
 			await TestUtils.timeout();
 			const canvas = element.shadowRoot.querySelectorAll('.chart-container canvas');
 			expect(canvas).toHaveSize(1);
@@ -311,47 +315,42 @@ describe('AltitudeProfile', () => {
 			expect(attrs.value).toBe('surface');
 		});
 
-		it('updates the model when slope is selected in DOM', async () => {
+		it('updates the model when alt is selected in DOM', async () => {
+			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-
 			const element = await setup({
 				altitudeProfile: {
 					active: false,
 					coordinates: coordinates
 				}
 			});
-			const model = element.getModel();
-			const selectedAttributeOrg = model.selectedAttribute;
-			expect(selectedAttributeOrg).toBe('slope');
 
+			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
-
 			attrs.value = 'alt';
 			attrs.dispatchEvent(new Event('change'));
 
+			// assert
 			await TestUtils.timeout();
-
 			const selectedAttribute = element.getModel().selectedAttribute;
 			expect(selectedAttribute).toBe('alt');
 		});
 	});
 
 	describe('when attribute types are initialized only with light color', () => {
-		it('returns light if requesting dark', async () => {
-			const element = await setup({
-				media: {
-					darkSchema: true
-				}
-			});
-			const xx = new SurfaceType('asphalt', '#222222');
-			expect(xx.name).toBe('asphalt');
-			expect(xx.caption).toBe('altitudeProfile_surface');
-			expect(xx.color).toBe('#222222');
-			//   element._addAttributeType(new SurfaceType('asphalt', '#222222'));
+		it('returns light color (as dark) if requesting dark', async () => {
+			// arrange
+			const surfaceType = new SurfaceType('asphalt', '#222222');
+
+			// assert
+			expect(surfaceType.name).toBe('asphalt');
+			expect(surfaceType.caption).toBe('altitudeProfile_surface');
+			expect(surfaceType.color).toBe('#222222');
 		});
 	});
+	// todo - check correct schema is used
 });
