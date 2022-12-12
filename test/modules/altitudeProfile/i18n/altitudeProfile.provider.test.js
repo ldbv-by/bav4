@@ -10,7 +10,10 @@ describe('i18n for altitudeProfile module', () => {
 		expect(map.altitudeProfile_sumUp).toBe('SumUp de');
 		expect(map.altitudeProfile_sumDown).toBe('SumDown de');
 		expect(map.altitudeProfile_elevation).toBe('Höhe');
-		expect(map.altitudeProfile_surface).toBe('Untergrund');
+		expect(map.altitudeProfile_alt).toBe('Höhe');
+		expect(map.altitudeProfile_slope).toBe('Steigung');
+		expect(map.altitudeProfile_surface).toBe('anotherType');
+		expect(map.altitudeProfile_anotherType).toBe('Untergrund');
 		expect(map.altitudeProfile_unknown).toBe('unbekannt');
 	});
 
@@ -23,7 +26,10 @@ describe('i18n for altitudeProfile module', () => {
 		expect(map.altitudeProfile_sumUp).toBe('SumUp');
 		expect(map.altitudeProfile_sumDown).toBe('SumDown');
 		expect(map.altitudeProfile_elevation).toBe('Elevation');
+		expect(map.altitudeProfile_alt).toBe('Elevation');
+		expect(map.altitudeProfile_slope).toBe('Slope');
 		expect(map.altitudeProfile_surface).toBe('surface');
+		expect(map.altitudeProfile_anotherType).toBe('anotherType');
 		expect(map.altitudeProfile_unknown).toBe('unknown');
 	});
 
