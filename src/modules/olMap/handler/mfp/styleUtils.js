@@ -1,51 +1,11 @@
 import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
-
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
-
-
 import { FIELD_NAME_PAGE_PIXEL_COORDINATES } from './OlMfpHandler';
-import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { equals, getIntersection } from 'ol/extent';
 
 
 
 const fontSizePX = 70;
-export const createAreaPattern = () => {
-	// Create a pattern
-	const patternCanvas = document.createElement('canvas');
-	const patternContext = patternCanvas.getContext('2d');
-
-	// Give the pattern a width and height of 50
-	patternCanvas.width = 50;
-	patternCanvas.height = 50;
-
-	// Give the pattern a background color and draw a line
-	patternContext.fillStyle = 'rgba(204, 204, 204, 0.33)';
-	patternContext.strokeStyle = 'rgba(100, 100, 100, 0.2)';
-	patternContext.lineWidth = 15;
-	patternContext.lineCap = 'square';
-	// Shadow
-	patternContext.shadowColor = 'rgba(100, 100, 100, 1)';
-	patternContext.shadowBlur = 3;
-	patternContext.beginPath();
-	patternContext.moveTo(-50, 0);
-	patternContext.lineTo(0, 50);
-	patternContext.stroke();
-	patternContext.beginPath();
-	patternContext.moveTo(0, 0);
-	patternContext.lineTo(50, 50);
-	patternContext.stroke();
-	patternContext.beginPath();
-	patternContext.moveTo(50, 0);
-	patternContext.lineTo(100, 50);
-	patternContext.stroke();
-
-	// Create our primary canvas and fill it with the pattern
-	const canvas = document.createElement('canvas');
-	const ctx = canvas.getContext('2d');
-	const pattern = ctx.createPattern(patternCanvas, 'repeat');
-	return pattern;
-};
 export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 
 	return new Style({
@@ -127,25 +87,10 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 				overflow: false
 			})
 	});
-	const pattern = createAreaPattern();
-	const areaOfDistortionStyle = new Style({
-		geometry: (feature) => {
-			const extent = feature.getGeometry().getExtent();
-			const intersect = getIntersection(extent, validExtent);
-			if (!equals(intersect, extent)) {
-				const outer = getPolygonFrom(extent);
-				outer.appendLinearRing(getPolygonFrom(intersect));
-				return outer;
-			}
-		},
-		fill: new Fill({
-			color: pattern
-		})
-	});
+
 	return [
 		baseStyle,
-		warnStyle,
-		areaOfDistortionStyle
+		warnStyle
 	];
 };
 

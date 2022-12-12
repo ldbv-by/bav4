@@ -50,14 +50,14 @@ describe('mfp style utility functions', () => {
 		it('should create a style ', () => {
 
 			const styles = createThumbnailStyleFunction('foo', 'bar', []);
-			expect(styles).toHaveSize(3);
-			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style), jasmine.any(Style)]);
+			expect(styles).toHaveSize(2);
+			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style)]);
 		});
 
 		it('should create a base style with a stroke style ', () => {
 			const styles = createThumbnailStyleFunction('foo', 'bar', []);
 
-			expect(styles).toHaveSize(3);
+			expect(styles).toHaveSize(2);
 			const style = styles[0];
 			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
 			expect(style.getStroke().getWidth()).toBe(3);
@@ -67,7 +67,7 @@ describe('mfp style utility functions', () => {
 		it('should create a base style with a text style ', () => {
 			const styles = createThumbnailStyleFunction('foo', 'bar', []);
 
-			expect(styles).toHaveSize(3);
+			expect(styles).toHaveSize(2);
 			const style = styles[0];
 			expect(style.getText().getText()).toEqual('  foo');
 			expect(style.getText().getTextAlign()).toBe('left');
@@ -130,46 +130,6 @@ describe('mfp style utility functions', () => {
 				expect(geometryFunction(featureDisjoiningStyleExtent)).toBe(geometryDisjoiningMock);
 			});
 		});
-
-		describe('with a areaOfDistortionStyle', () => {
-
-			it('should have a pattern as fill style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
-
-				const style = styles[2];
-
-				expect(style.getFill().getColor()).toEqual(jasmine.any(CanvasPattern));
-			});
-
-			it('should have a geometry function validating the extent and creating a overlapping polygon', () => {
-				const featureWithinOrEqualsStyleExtent = new Feature();
-				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
-
-				const featureIntersectingStyleExtent = new Feature();
-				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
-
-				const featureDisjoiningStyleExtent = new Feature();
-				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
-
-				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
-				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
-				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
-
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
-
-				const style = styles[2];
-				const geometryFunction = style.getGeometry();
-
-
-				// we test only the creation of a polygon, not the specific coordinates due to usage of
-				// openlayers internal geometry functions for building intersections
-				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
-				expect(geometryFunction(featureIntersectingStyleExtent)).toEqual(jasmine.any(Polygon));
-				expect(geometryFunction(featureDisjoiningStyleExtent)).toEqual(jasmine.any(Polygon));
-			});
-		});
-
-
 	});
 
 	describe('nullStyleFunction', () => {
