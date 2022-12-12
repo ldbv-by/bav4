@@ -1,5 +1,9 @@
-import { getStore } from './AltitudeProfile';
 import { $injector } from '../../../injection';
+
+const getStore = () => {
+	const { StoreService: storeService } = $injector.inject('StoreService');
+	return storeService.getStore();
+};
 
 export class AltitudeProfileAttributeType {
 	constructor(attribute, name, lightColor, darkColor = null) {
@@ -39,3 +43,17 @@ export class AltitudeProfileAttributeType {
 		return this._lightColor;
 	}
 }
+
+export class SurfaceType extends AltitudeProfileAttributeType {
+	constructor(name, lightColor, darkColor) {
+		super('surface', name, lightColor, darkColor);
+	}
+}
+
+
+export class AnotherType extends AltitudeProfileAttributeType {
+	constructor(name, lightColor, darkColor) {
+		super('anotherType', name, lightColor, darkColor);
+	}
+}
+
