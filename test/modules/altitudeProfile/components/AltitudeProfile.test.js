@@ -5,7 +5,6 @@ import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitud
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../test-utils.js';
-import { SurfaceType } from '../../../../src/modules/altitudeProfile/components/SurfaceType.js';
 
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
 
@@ -151,7 +150,7 @@ describe('AltitudeProfile', () => {
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('AltitudeService', altitudeServiceMock);
 
-		return TestUtils.renderAndLogLifecycle(AltitudeProfile.tag);
+		return TestUtils.render(AltitudeProfile.tag);
 	};
 
 	describe('when instantiating the component', () => {
@@ -202,7 +201,6 @@ describe('AltitudeProfile', () => {
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('Höhenprofil');
-			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('slope');
@@ -261,7 +259,6 @@ describe('AltitudeProfile', () => {
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('Höhenprofil');
-			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
@@ -341,17 +338,5 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	describe('when attribute types are initialized only with light color', () => {
-		it('returns light color (as dark) if requesting dark', async () => {
-			// arrange
-			await setup();
-			const surfaceType = new SurfaceType('asphalt', '#222222');
-
-			// assert
-			expect(surfaceType.name).toBe('asphalt');
-			expect(surfaceType.caption).toBe('altitudeProfile_surface');
-			expect(surfaceType.color).toBe('#222222');
-		});
-	});
 	// todo - check correct schema is used
 });
