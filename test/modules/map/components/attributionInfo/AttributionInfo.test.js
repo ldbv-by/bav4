@@ -68,8 +68,8 @@ describe('AttributionInfo', () => {
 			const attributions = element._getAttributions(layer, 5);
 
 			expect(attributions).toHaveSize(2);
-			expect(attributions[0].copyright.label).toBe('foo_5');
-			expect(attributions[1].copyright.label).toBe('bar_5');
+			expect(attributions[0].copyright.label).toBe('bar_5');
+			expect(attributions[1].copyright.label).toBe('foo_5');
 		});
 	});
 
@@ -135,7 +135,7 @@ describe('AttributionInfo', () => {
 
 			// we expect two kinds of attribution: a <span> containing a plain string and two <a> elements
 			expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId0 + ','); //should contain also a separator
+			expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(layerId0);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toContain('© map_attributionInfo_label');
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')).toHaveSize(2);
@@ -144,7 +144,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[0].innerText).toBe(layerId1 + ',');
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].href).toBe(url2);
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].target).toBe('_blank');
-			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].innerText).toBe(layerId1 + '_2');
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].innerText).toBe(layerId1 + '_2' + ','); //should contain also a separator
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveSize(1);
 		});
