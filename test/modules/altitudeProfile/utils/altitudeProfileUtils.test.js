@@ -1,19 +1,19 @@
 import { $injector } from '../../../../src/injection';
-import { InclineType } from '../../../../src/modules/altitudeProfile/utils/AltitudeProfileUtils';
+import { SlopeType } from '../../../../src/modules/altitudeProfile/utils/altitudeProfileUtils';
 
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-describe('Unit test functions AltitudeProfileUtils.js', () => {
-	describe('check InclineType', () => {
-		const inclineType = InclineType.Flat;
+describe('Unit test functions altitudeProfileUtils.js', () => {
+	describe('check SlopeType', () => {
+		const slopeType = SlopeType.Flat;
 
-		it('check InclineType length', () => {
-			expect(Object.keys(inclineType).length).toBe(4);
+		it('check SlopeType length', () => {
+			expect(Object.keys(slopeType).length).toBe(4);
 		});
 
-		it('check InclineType possible values', () => {
-			expect(InclineType.Flat).toBe('Flat');
-			expect(InclineType.Steep).toBe('Steep');
+		it('check SlopeType possible values', () => {
+			expect(SlopeType.Flat).toBe('Flat');
+			expect(SlopeType.Steep).toBe('Steep');
 		});
 	});
 });

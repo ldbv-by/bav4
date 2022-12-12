@@ -4,9 +4,9 @@ import css from './altitudeProfile.css';
 import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../injection';
-import { SurfaceType } from './SurfaceType';
-import { AnotherType } from './AnotherType';
-import { flatColor, hereStartsSteep, InclineType, startFlat, startSteep, steepColor } from '../utils/AltitudeProfileUtils';
+
+import { AnotherType, SurfaceType } from '../utils/altitudeProfileAttributeTypes';
+import { flatColor, hereStartsSteep, SlopeType, startFlat, startSteep, steepColor } from '../utils/altitudeProfileUtils';
 import { nothing } from 'lit-html';
 
 export const getStore = () => {
@@ -313,27 +313,27 @@ export class AltitudeProfile extends MvuElement {
 
 		// start gradient with 'flat' color
 		gradientBg.addColorStop(0, flatColor);
-		let currentInclineType = InclineType.Flat;
+		let currentSlopeType = SlopeType.Flat;
 
 		altitudeData?.alts.forEach((element, index) => {
-			if (currentInclineType === InclineType.Steep) {
+			if (currentSlopeType === SlopeType.Steep) {
 				// look for first element with slope less than X
 				if (!element.slope || element.slope <= hereStartsSteep) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					currentInclineType = startFlat(gradientBg, xPoint, currentInclineType);
+					currentSlopeType = startFlat(gradientBg, xPoint, currentSlopeType);
 				}
 			}
 			else {
 				// look for first element with slope greater X
 				if (element.slope && element.slope > hereStartsSteep) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					currentInclineType = startSteep(gradientBg, xPoint, currentInclineType);
+					currentSlopeType = startSteep(gradientBg, xPoint, currentSlopeType);
 				}
 			}
 		});
 
-		// end with currentInclineType - color
-		if (currentInclineType === InclineType.Steep) {
+		// end with currentSlopeType - color
+		if (currentSlopeType === SlopeType.Steep) {
 			gradientBg.addColorStop(1, steepColor);
 		}
 		else {
