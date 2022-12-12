@@ -269,7 +269,7 @@ describe('AltitudeProfile', () => {
 	});
 
 	describe('when profile (slice-of-state) changes', () => {
-		it('updates the view (todo remove - when profile (slice-of-state) changes)', async () => {
+		it('updates the view', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -344,6 +344,7 @@ describe('AltitudeProfile', () => {
 	describe('when attribute types are initialized only with light color', () => {
 		it('returns light color (as dark) if requesting dark', async () => {
 			// arrange
+			await setup();
 			const surfaceType = new SurfaceType('asphalt', '#222222');
 
 			// assert
