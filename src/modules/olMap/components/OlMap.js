@@ -135,6 +135,7 @@ export class OlMap extends MvuElement {
 		});
 
 		this._map.on('movestart', () => {
+			this._viewSyncBlocked = true;
 			setMoveStart();
 			setBeingMoved(true);
 		});
@@ -146,6 +147,9 @@ export class OlMap extends MvuElement {
 			setBeingDragged(false);
 			setMoveEnd();
 			setBeingMoved(false);
+			setTimeout(() => {
+				this._viewSyncBlocked = false;
+			});
 		});
 
 		const singleClickOrShortPressHandler = (evt) => {

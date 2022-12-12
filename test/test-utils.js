@@ -235,4 +235,31 @@ export class TestUtils {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 
+	/**
+	 * Returns a Promise that either resolves as soon as the check is successful or rejects
+	 * when the amount of time defined by the timeout argument passed
+	 * @param {Function} checkFn the check function. Must return `true` to resolve the Promise
+	 * @param {Number} timeout timeout in ms. Default is `3000`
+	 * @returns {Promise}
+	 */
+	static async waitFor(checkFn, timeout = 3000) {
+
+		return new Promise((resolve, reject) => {
+			const clear = () => {
+				clearInterval(intervallId);
+				clearTimeout(timeOutId);
+			};
+			const intervallId = setInterval(() => {
+				if (checkFn()) {
+					clear();
+					resolve();
+				}
+			}, 10);
+			const timeOutId = setTimeout(() => {
+				clear();
+				reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`);
+			}, timeout);
+		});
+	}
+
 }
