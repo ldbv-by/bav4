@@ -33,8 +33,8 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
-				color: [9, 157, 220, 0.3],
-				width: 3
+				color: [9, 157, 220, 0.5],
+				width: 6
 			}),
 		text: new TextStyle(
 			{
@@ -67,7 +67,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 		stroke: new Stroke(
 			{
 				color: [255, 100, 100, 1],
-				width: 4
+				width: 10
 			}),
 		text: new TextStyle(
 			{
