@@ -12,8 +12,8 @@ describe('i18n for altitudeProfile module', () => {
 		expect(map.altitudeProfile_elevation).toBe('Höhe');
 		expect(map.altitudeProfile_alt).toBe('Höhe');
 		expect(map.altitudeProfile_slope).toBe('Steigung');
-		expect(map.altitudeProfile_surface).toBe('anotherType');
-		expect(map.altitudeProfile_anotherType).toBe('Untergrund');
+		expect(map.altitudeProfile_surface).toBe('Untergrund');
+		expect(map.altitudeProfile_anotherType).toBe('anotherType');
 		expect(map.altitudeProfile_unknown).toBe('unbekannt');
 	});
 
