@@ -342,9 +342,12 @@ describe('OlMap', () => {
 			it('updates the \'movestart\' property in map store', async () => {
 				const element = await setup();
 
+				expect(element._viewSyncBlocked).toBeUndefined();
+
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
 
 				expect(store.getState().map.moveStart.payload).toBe('movestart');
+				expect(element._viewSyncBlocked).toBeTrue();
 			});
 
 			it('updates the \'beingMoved\' property in pointer store', async () => {
@@ -365,9 +368,12 @@ describe('OlMap', () => {
 			it('updates the \'moveend\' property in map store', async () => {
 				const element = await setup();
 
+				expect(element._viewSyncBlocked).toBeUndefined();
+
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 				expect(store.getState().map.moveEnd.payload).toBe('moveend');
+				await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			});
 
 			it('updates the position state properties', async () => {
@@ -742,10 +748,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -767,9 +771,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -788,9 +791,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
 			expect(element._viewSyncBlocked).toBeTrue();
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -815,10 +817,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -844,10 +844,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -871,10 +869,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -971,18 +967,15 @@ describe('OlMap', () => {
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			fitLayer(id0);
 
-			// we have to wait for two timeout calls!
-			await TestUtils.timeout();
-			await TestUtils.timeout();
+			// we would have to wait for a couple of timeout calls, so to simply that we wait until the expected state is available
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === true)).toBeResolved();
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
-			expect(element._viewSyncBlocked).toBeTrue();
 
-			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
+			// we would have to wait for a couple of timeout calls, so to simply that we wait until the expected state is available
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
+			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
 	});
