@@ -234,26 +234,26 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalledTimes(1);
 		});
 
-		describe('when autoRotation is false', () => {
-			// it('rotates the mfp-boundary', () => {
-			// 	const actualRotationInDegree = 90;
-			// 	const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
-			// 	const map = setupMap();
-			// 	setup({ ...initialState, scale: 42 });
+		// describe('when autoRotation is false', () => {
+		// it('rotates the mfp-boundary', () => {
+		// 	const actualRotationInDegree = 90;
+		// 	const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+		// 	const map = setupMap();
+		// 	setup({ ...initialState, scale: 42 });
 
-			// 	const handler = new OlMfpHandler();
-			// 	handler.activate(map);
+		// 	const handler = new OlMfpHandler();
+		// 	handler.activate(map);
 
-			// 	setAutoRotation(false);
-			// 	const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
-			// 	const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
+		// 	setAutoRotation(false);
+		// 	const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
+		// 	const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
 
-			// 	changeRotation(actualRotationInDegree);
+		// 	changeRotation(actualRotationInDegree);
 
-			// 	expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
-			// 	expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
-			// });
-		});
+		// 	expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
+		// 	expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
+		// });
+		// });
 
 		describe('when autoRotation is true', () => {
 			it('rotates the view', () => {
