@@ -285,58 +285,7 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	describe('when user changes profile attribute', () => {
-		it('renders the surface view when surface is selected', async () => {
-			// arrange
-			const coordinates = [
-				[0, 1],
-				[2, 3]
-			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-			const element = await setup({
-				altitudeProfile: {
-					active: false,
-					coordinates: coordinates
-				}
-			});
 
-			//act
-			element.signal('update_selected_attribute', 'surface');
-			element.dispatchEvent(new Event('select'));
-
-			// assert
-			await TestUtils.timeout();
-			const canvas = element.shadowRoot.querySelectorAll('.chart-container canvas');
-			expect(canvas).toHaveSize(1);
-			const attrs = element.shadowRoot.getElementById('attrs');
-			expect(attrs.value).toBe('surface');
-		});
-
-		it('updates the model when alt is selected in DOM', async () => {
-			// arrange
-			const coordinates = [
-				[0, 1],
-				[2, 3]
-			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-			const element = await setup({
-				altitudeProfile: {
-					active: false,
-					coordinates: coordinates
-				}
-			});
-
-			//act
-			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'alt';
-			attrs.dispatchEvent(new Event('change'));
-
-			// assert
-			await TestUtils.timeout();
-			const selectedAttribute = element.getModel().selectedAttribute;
-			expect(selectedAttribute).toBe('alt');
-		});
-	});
 
 	// todo - check correct schema is used
 });
