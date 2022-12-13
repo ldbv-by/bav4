@@ -93,11 +93,17 @@ export class OlMfpHandler extends OlLayerHandler {
 		return [
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			//observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
+			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			observe(store, state => state.position.zoom, () => this._updateRotation()),
-			observe(store, state => state.position.rotation, () => this._updateRotation()),
-			observe(store, state => state.map.moveEnd, () => this._updateMfpPreview())
+			observe(store, state => state.map.moveEnd, () => {
+				setTimeout(() => {
+					this._updateMfpPreview();
+					this._updateRotation();
+				}
+				);
+			}
+			)
 		];
 	}
 
@@ -126,7 +132,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_updateRotation() {
-		const rotateMfpExtentByView = () => {};
+		const rotateMfpExtentByView = () => {}; // do nothing
 		const rotateViewByMfpExtent = () => {
 			const rotation = this._mfpBoundaryFeature.get('azimuth');
 			setTimeout(() => changeRotation(rotation));
@@ -278,10 +284,12 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_onAutoRotationChanged(autorotation) {
-		// if (autorotation) {
-		// 	this._updateMfpPreview();
-		// }
-		this._updateRotation();
+		setTimeout(() => {
+			if (autorotation) {
+				this._updateMfpPreview();
+			}
+			this._updateRotation();
+		});
 	}
 
 	async _encodeMap() {

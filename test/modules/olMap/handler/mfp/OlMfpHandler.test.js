@@ -190,7 +190,7 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it('updates rotation after store changes', () => {
+		it('updates rotation after store changes', async () => {
 			const map = setupMap();
 			setup();
 
@@ -209,19 +209,31 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 			updateSpy.calls.reset();
 
-			changeRotation(42);
+			setMoveEnd();
+
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+
 			expect(updateSpy).toHaveBeenCalled();
 			updateSpy.calls.reset();
 
-			// setAutoRotation(false);
-			// expect(updateSpy).toHaveBeenCalled();
-			// updateSpy.calls.reset();
+			setAutoRotation(false);
 
-			// setAutoRotation(true);
-			// expect(updateSpy).toHaveBeenCalled();
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+
+			expect(updateSpy).toHaveBeenCalled();
+			updateSpy.calls.reset();
+
+			setAutoRotation(true);
+
+			await TestUtils.timeout();
+			await TestUtils.timeout();
+
+			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it('synchronizes mfpPreview after store changes', () => {
+		it('synchronizes mfpPreview after store changes', async () => {
 			const map = setupMap();
 			setup();
 			const handler = new OlMfpHandler();
@@ -231,29 +243,32 @@ describe('OlMfpHandler', () => {
 			updateSpy.calls.reset();
 			setMoveEnd();
 
+			await TestUtils.timeout();
+
 			expect(updateSpy).toHaveBeenCalledTimes(1);
 		});
 
-		// describe('when autoRotation is false', () => {
-		// it('rotates the mfp-boundary', () => {
-		// 	const actualRotationInDegree = 90;
-		// 	const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
-		// 	const map = setupMap();
-		// 	setup({ ...initialState, scale: 42 });
+		describe('when autoRotation is false', () => {
+			it('rotates the mfp-boundary', async () => {
+				const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+				const map = setupMap();
+				setup({ ...initialState, scale: 42 });
 
-		// 	const handler = new OlMfpHandler();
-		// 	handler.activate(map);
+				const handler = new OlMfpHandler();
+				handler.activate(map);
 
-		// 	setAutoRotation(false);
-		// 	const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
-		// 	const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), actualRotationInDegree).and.callFake(() => mockBoundary);
+				setAutoRotation(false);
+				const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
+				const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), jasmine.any(Number)).and.callThrough();
 
-		// 	changeRotation(actualRotationInDegree);
+				setMoveEnd();
 
-		// 	expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
-		// 	expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
-		// });
-		// });
+				await TestUtils.timeout();
+
+				expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
+				expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
+			});
+		});
 
 		describe('when autoRotation is true', () => {
 			it('rotates the view', async () => {
