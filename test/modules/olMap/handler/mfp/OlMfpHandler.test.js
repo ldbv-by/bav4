@@ -16,7 +16,7 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeZoom } from '../../../../../src/store/position/position.action';
+import { changeCenter } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import { setMoveEnd } from '../../../../../src/store/map/map.action';
 
@@ -141,7 +141,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(6);
+			expect(handler._registeredObservers).toHaveSize(5);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -200,11 +200,6 @@ describe('OlMfpHandler', () => {
 
 			handler.activate(map);
 			changeCenter([0, 42]);
-
-			expect(updateSpy).toHaveBeenCalled();
-			updateSpy.calls.reset();
-
-			changeZoom(2);
 
 			expect(updateSpy).toHaveBeenCalled();
 			updateSpy.calls.reset();

@@ -95,11 +95,11 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			observe(store, state => state.position.zoom, () => this._updateRotation()),
 			observe(store, state => state.map.moveEnd, () => {
+				this._updateMfpPreview();
+				this._updateRotation();
 				setTimeout(() => {
-					this._updateMfpPreview();
-					this._updateRotation();
+
 				}
 				);
 			}
