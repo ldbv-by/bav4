@@ -129,7 +129,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotateMfpExtentByView = () => {};
 		const rotateViewByMfpExtent = () => {
 			const rotation = this._mfpBoundaryFeature.get('azimuth');
-			changeRotation(rotation);
+			setTimeout(() => changeRotation(rotation));
 		};
 
 		const rotateAction = this._storeService.getStore().getState().mfp.autoRotation ? rotateViewByMfpExtent : rotateMfpExtentByView;

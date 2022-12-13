@@ -256,13 +256,13 @@ describe('OlMfpHandler', () => {
 		// });
 
 		describe('when autoRotation is true', () => {
-			it('rotates the view', () => {
+			it('rotates the view', async () => {
 				const map = setupMap();
 				const store = setup({ ...initialState, scale: 42 });
 
 				const handler = new OlMfpHandler();
 				handler.activate(map);
-
+				await TestUtils.timeout();
 				expect(store.getState().position.rotation).toBeCloseTo(-0.03355, 5);
 			});
 		});
