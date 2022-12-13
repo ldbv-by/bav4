@@ -147,9 +147,7 @@ export class OlMap extends MvuElement {
 			setBeingDragged(false);
 			setMoveEnd();
 			setBeingMoved(false);
-			setTimeout(() => {
-				this._viewSyncBlocked = false;
-			});
+			this._viewSyncBlocked = false;
 		});
 
 		const singleClickOrShortPressHandler = (evt) => {

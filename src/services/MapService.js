@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
-import { findAllByAttribute } from '../utils/markup';
+import { findAllByAttribute, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
 import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
@@ -132,7 +132,7 @@ export class MapService {
 	}
 
 	/**
-	 * Additional Padding of a Viewport in pixel.
+	 * Additional padding of a viewport in pixel.
 	 * @typedef ViewportPadding
 	 * @property {number} top
 	 * @property {number} right
@@ -141,13 +141,13 @@ export class MapService {
 	 */
 
 	/**
-	 * Returns a {@see ViewportPadding} describing the visible part of the specified map
+	 * Returns a  {@link ViewportPadding} describing the visible part of the specified map
 	 * (which means the part of the map that is not overlapped by any other UI element)
 	 * @param {HTMLElement} mapElement the map containing element
 	 * @returns {ViewportPadding}
 	 */
 	getVisibleViewport(mapElement) {
-		const overlappingElements = findAllByAttribute(document, 'data-register-for-viewport-calc');
+		const overlappingElements = findAllByAttribute(document, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME);
 		const visibleRectangle = calculateVisibleViewport(mapElement, overlappingElements);
 
 		const baseRectangle = mapElement.getBoundingClientRect();

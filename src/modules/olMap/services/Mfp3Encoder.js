@@ -113,13 +113,12 @@ export class BvvMfp3Encoder {
 			.flatMap(l => this._encode(l))
 			.reduce((layerSpecs, encodedLayer) => {
 				// todo: extract to method
-				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
+				const { attribution, ...restSpec } = encodedLayer;
 				const getLabels = (attribution) => Array.isArray(attribution) ? attribution?.map(a => a.copyright.label) : [attribution?.copyright?.label];
 
 				return {
 					specs: [...layerSpecs.specs, restSpec],
-					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
-					thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
+					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners]
 				};
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
@@ -139,7 +138,6 @@ export class BvvMfp3Encoder {
 					layers: layers
 				},
 				dataOwner: encodedLayers.dataOwners.length !== 0 ? Array.from(new Set(encodedLayers.dataOwners)).join(',') : '',
-				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? Array.from(new Set(encodedLayers.thirdPartyDataOwners)).join(',') : '',
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -229,8 +227,7 @@ export class BvvMfp3Encoder {
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
-				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
-				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
+				attribution: wmtsGeoResource.attribution
 			};
 		};
 
@@ -264,8 +261,7 @@ export class BvvMfp3Encoder {
 			opacity: olLayer.getOpacity(),
 			styles: styles,
 			customParams: defaultCustomParams,
-			attribution: wmsGeoResource.importedByUser ? null : wmsGeoResource.attribution,
-			thirdPartyAttribution: wmsGeoResource.importedByUser ? wmsGeoResource.attribution : null
+			attribution: wmsGeoResource.attribution
 		};
 	}
 
@@ -340,8 +336,7 @@ export class BvvMfp3Encoder {
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(Array.from(styleCache.values())),
 			opacity: olVectorLayer.getOpacity(),
-			attribution: geoResource.importedByUser ? null : geoResource.attribution,
-			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
+			attribution: geoResource.attribution
 		};
 	}
 
