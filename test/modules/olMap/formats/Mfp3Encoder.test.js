@@ -1,5 +1,5 @@
 
-import { LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { LineString, MultiLineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
@@ -461,7 +461,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -493,7 +493,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -525,7 +525,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -556,7 +556,7 @@ describe('BvvMfp3Encoder', () => {
 			const wmsLayerMock = { get: () => 'foo', getSource: () => sourceMock, getOpacity: () => 1 };
 
 			const wmsGeoResourceMock = {
-				id: 'foo', format: 'image/png', get attribution() {
+				id: 'foo', format: 'image/png', getAttribution: () => {
 					return { copyright: { label: 'Foo CopyRight' } };
 				}, importedByUser: false
 			};
@@ -707,7 +707,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const getGeoResourceMock = () => {
 				return {
-					id: 'foo', get attribution() {
+					id: 'foo', getAttribution: () => {
 						return { copyright: { label: 'Foo CopyRight' } };
 					}, importedByUser: false
 				};
@@ -1278,6 +1278,54 @@ describe('BvvMfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'LineString',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'line',
+								zIndex: 0,
+								fillOpacity: 0,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
+			it('writes a multiline feature with stroke style', () => {
+				const featureWithStyle = new Feature({ geometry: new MultiLineString([[[30, 30], [40, 40]], [[40, 40], [35, 350]]]) });
+				featureWithStyle.setStyle(getStrokeStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'MultiLineString',
 								coordinates: jasmine.any(Array)
 							},
 							properties: {
