@@ -45,6 +45,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = null;
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
+		this._blockSyncForRotation = false;
 	}
 
 	/**
@@ -96,12 +97,16 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			observe(store, state => state.map.moveEnd, () => {
-				this._updateMfpPreview();
-				this._updateRotation();
-				setTimeout(() => {
-
+				if (!this._storeService.getStore().getState().mfp.autoRotation) {
+					this._updateMfpPreview();
 				}
-				);
+				else {
+					if (this._blockSyncForRotation) {
+						this._updateMfpPreview();
+					}
+					this._blockSyncForRotation = false;
+				}
+				this._updateRotation();
 			}
 			)
 		];
@@ -287,6 +292,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		setTimeout(() => {
 			if (autorotation) {
 				this._updateMfpPreview();
+				this._blockSyncForRotation = true;
 			}
 			this._updateRotation();
 		});
