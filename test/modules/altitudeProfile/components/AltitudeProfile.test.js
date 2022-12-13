@@ -128,9 +128,19 @@ describe('AltitudeProfile', () => {
 		getProfile() {}
 	};
 
+	const elementMock = {
+		_getSlopeGradient() {},
+		_getTextTypeGradient() {}
+	};
+
 	const configService = {
 		getValueAsPath: () => {}
 	};
+
+	const chart = { ctx: { createLinearGradient: () => {
+		return { addColorStop: () => {} };
+	} }, chartArea: { left: 0, right: 100, width: 200 } } ;
+	const altitudeData = profileSlopeSteep();
 
 	const setup = (state = {}) => {
 		const initialState = {
@@ -203,9 +213,11 @@ describe('AltitudeProfile', () => {
 			expect(datasetZero.label).toBe('Höhenprofil');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
-			expect(attrs.value).toBe('slope');
+			expect(attrs.value).toBe('alt');
 		});
+	});
 
+	describe('when _getSlopeGradient() is called', () => {
 		it('for coverage - slope ends in steep - renders the view when a profile is available', async () => {
 			// arrange
 			const coordinates = [
@@ -222,21 +234,122 @@ describe('AltitudeProfile', () => {
 					coordinates: coordinates
 				}
 			});
+			// element._getGradient();
+			// const xxx = spyOn(element, '_getGradient').withArgs(jasmine.any(Chart), jasmine.anything).and.callThrough();
+
+
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
 
 			// assert
 			const chart = element._chart;
 			expect(chart).not.toBeNull();
+			// expect(xxx).toHaveBeenCalled();
 		});
+	});
+	describe('when _getGradient() is called', () => {
+
+		it('returns a valid value for "selectedAttribute alt"', async () => {
+			// arrange
+			const element = await setup();
+
+			// act
+			const value = element._getGradient('alt', chart, altitudeData);
+			// element.signal('update_selected_attribute', 'alt');
+
+			// assert
+			expect(value).toBe('#88dd88');
+		});
+
+		it('executes the branch "slope" for "selectedAttribute slope"', async () => {
+			// arrange
+			const element = await setup();
+			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
+
+			// act
+			element._getGradient('slope', chart, altitudeData);
+			// element.signal('update_selected_attribute', 'slope');
+
+			// assert
+			expect(slopeGradientSpy).toHaveBeenCalled();
+		});
+
+		const checkTextTypeWorks = async (attributeType, chart, altitudeData) => {
+			// arrange
+			const element = await setup();
+			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
+			spyOn(element, 'getAltitudeProfileAttributeType').and.resolveTo(attributeType);
+
+			// act
+			element._getGradient(attributeType, chart, altitudeData);
+
+			// assert
+			expect(textTypeGradientSpy).toHaveBeenCalled();
+		};
+
+		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
+			await checkTextTypeWorks('surface', chart, altitudeData);
+		});
+
+		it('executes the branch "TextType" for "selectedAttribute anotherType"', async () => {
+			await checkTextTypeWorks('anotherType', chart, altitudeData);
+		});
+
+		// it('executes the branch "slope" for "selectedAttribute slope"', async () => {
+		// 	// arrange
+		// 	const element = await setup();
+		// 	const getGradientSpy = spyOn(element, '_getGradient').and.callThrough();
+		// 	const getSlopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
+
+		// 	// act
+		// 	const altValue = element._getGradient(chart, altitudeData);
+		// 	element.signal('update_selected_attribute', 'slope');
+		// 	// element.signal(Update_Selected_Attribute, 'other');
+
+		// 	element._getGradient(chart, altitudeData);
+
+		// 	// assert
+		// 	expect(altValue).toBe('#88dd88');
+		// 	expect(getGradientSpy).toHaveBeenCalled();
+		// 	expect(getSlopeGradientSpy).toHaveBeenCalled();
+		// });
+
+
+		// it('for coverage - slope ends in steep - _getSlopeGradient', async () => {
+		// 	// arrange
+		// 	// const element =
+		// 	await setup();
+		// 	const altitudeProfile = new AltitudeProfile();
+		// 	const getSlopeGradientSpy = spyOn(altitudeProfile, '_getSlopeGradient').and.callThrough();
+		// 	//.withArgs(chart, altitudeData).and.resolveTo(profileSlopeSteep())     .withArgs(jasmine.any(Chart), jasmine.anything)
+		// 	// element.shadowRoot.querySelectorAll('.chart-container canvas')
+
+		// 	// act
+		// 	altitudeProfile._getSlopeGradient(chart, altitudeData);
+
+		// 	// assert
+		// 	expect(getSlopeGradientSpy).toHaveBeenCalled();
+		// });
+
 	});
 
 	describe('when attribute changes', () => {
-		it('updates the view', async () => {
+
+		it('should call chart.update() and updates the view', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
 				[2, 3]
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+
+
+			// const chartSpy = jasmine.createSpyObj({ update: null });
+			// const chartMock = { chart: chartSpy };
+			// service.updateChartWith(chartMock);
+
+
 			const element = await setup({
 				altitudeProfile: {
 					active: false,
@@ -250,6 +363,10 @@ describe('AltitudeProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 
 			// assert
+
+			// expect(chartSpy.update).toHaveBeenCalled();
+
+
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];

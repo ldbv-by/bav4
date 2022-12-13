@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable no-case-declarations */
 import { html } from 'lit-html';
 import css from './altitudeProfile.css';
@@ -64,7 +65,7 @@ export class AltitudeProfile extends MvuElement {
 		this.style.width = '100%';
 		this.style.height = '14em';
 
-		this.signal(Update_Selected_Attribute, 'slope');
+		this.signal(Update_Selected_Attribute, 'alt');
 
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -104,7 +105,7 @@ export class AltitudeProfile extends MvuElement {
 				profile.attrs.forEach((attr) => {
 					enritchAltsArrayWithAttributeData(attr, profile);
 				});
-				// add altitude to attribute select
+				// add alt itude to attribute select
 				profile.attrs = [{ id: 'alt' }, ...profile.attrs];
 
 				return { ...model, profile, labels, data: chartData };
@@ -170,7 +171,7 @@ export class AltitudeProfile extends MvuElement {
 		`;
 	}
 
-	_getChartData(altitudeData, newDataLabels, newDataData) {
+	_getChartData(selectedAttribute, altitudeData, newDataLabels, newDataData) {
 		const _chartData = {
 			labels: newDataLabels,
 			datasets: [
@@ -180,10 +181,10 @@ export class AltitudeProfile extends MvuElement {
 					fill: true,
 					borderWidth: lightBorderWidth,
 					backgroundColor: (context) => {
-						return this._getBackgroundColor(context, altitudeData);
+						return this._getBackgroundColor(context, selectedAttribute, altitudeData);
 					},
 					borderColor: (context) => {
-						return this._getBorderColor(context, altitudeData);
+						return this._getBorderColor(context, selectedAttribute, altitudeData);
 					},
 					tension: 0.1,
 					pointRadius: 0,
@@ -195,9 +196,7 @@ export class AltitudeProfile extends MvuElement {
 		return _chartData;
 	}
 
-	_getGradient(chart, altitudeData) {
-		const selectedAttribute = this.getModel().selectedAttribute;
-
+	_getGradient(selectedAttribute, chart, altitudeData) {
 		switch (selectedAttribute) {
 			case 'slope':
 				return this._getSlopeGradient(chart, altitudeData);
@@ -211,27 +210,27 @@ export class AltitudeProfile extends MvuElement {
 		}
 	}
 
-	_getBackgroundColor(context, altitudeData) {
+	_getBackgroundColor(context, selectedAttribute, altitudeData) {
 		const chart = context.chart;
 
-		const selectedAttribute = this.getModel().selectedAttribute;
+		// const selectedAttribute = this.getModel().selectedAttribute;
 		if (selectedAttribute === 'surface') {
-			return this._getGradient(chart, altitudeData);
+			return this._getGradient(selectedAttribute, chart, altitudeData);
 		}
 
 		if (selectedAttribute === 'slope') {
 			return '#ddddff';
 		}
 
-		return this._getGradient(chart, altitudeData);
+		return this._getGradient(selectedAttribute, chart, altitudeData);
 	}
 
-	_getBorderColor(context, altitudeData) {
+	_getBorderColor(context, selectedAttribute, altitudeData) {
 		const chart = context.chart;
 
-		const selectedAttribute = this.getModel().selectedAttribute;
+		// const selectedAttribute = this.getModel().selectedAttribute;
 		if (selectedAttribute === 'surface' || selectedAttribute === 'slope' || selectedAttribute === 'anotherType') {
-			return this._getGradient(chart, altitudeData);
+			return this._getGradient(selectedAttribute, chart, altitudeData);
 		}
 
 		return '#88dd88';
@@ -301,7 +300,9 @@ export class AltitudeProfile extends MvuElement {
 		return gradientBg;
 	}
 
+
 	_getSlopeGradient(chart, altitudeData) {
+		console.log('🚀 ~ file: AltitudeProfile.js:306 ~ AltitudeProfile ~ _getSlopeGradient ');
 		const { ctx, chartArea } = chart;
 		if (!chartArea) {
 			return null;
@@ -360,12 +361,12 @@ export class AltitudeProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(altitudeData, newDataLabels = [], newDataData = []) {
+	_getChartConfig(selectedAttribute, altitudeData, newDataLabels = [], newDataData = []) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const config = {
 			type: 'line',
-			data: this._getChartData(altitudeData, newDataLabels, newDataData),
+			data: this._getChartData(selectedAttribute, altitudeData, newDataLabels, newDataData),
 			plugins: [
 				{
 					id: 'shortenLeftEndOfScale',
@@ -412,13 +413,13 @@ export class AltitudeProfile extends MvuElement {
 		return config;
 	}
 
-	_createChart(profile, newDataLabels, newDataData) {
+	_createChart(selectedAttribute, profile, newDataLabels, newDataData) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
-		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData));
+		this._chart = new Chart(ctx, this._getChartConfig(selectedAttribute, profile, newDataLabels, newDataData));
 	}
 
 	_updateOrCreateChart() {
-		const { profile, labels, data } = this.getModel();
+		const { selectedAttribute, profile, labels, data } = this.getModel();
 
 		if (profile === null) {
 			return;
@@ -431,10 +432,11 @@ export class AltitudeProfile extends MvuElement {
 
 			return;
 		}
-		this._createChart(profile, labels, data);
+		this._createChart(selectedAttribute, profile, labels, data);
 	}
 
 	static get tag() {
 		return 'ba-altitudeprofile-n';
 	}
 }
+
