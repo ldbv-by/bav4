@@ -2037,7 +2037,7 @@ describe('BvvMfp3Encoder', () => {
 	describe('_encodeGridLayer', () => {
 		it('uses the appropriate spacing for defined scale', () => {
 			const validScales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
-			const expectedSpacings = [200000, 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 100, 50];
+			const expectedSpacings = [100000, 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 100, 50];
 			const classUnderTest = setup();
 
 

@@ -755,7 +755,7 @@ export class BvvMfp3Encoder {
 	_encodeGridLayer(scale) {
 		const defaultSpacing = 1000;
 		const spacings = new Map([
-			[2000000, 200000],
+			[2000000, 100000],
 			[1000000, 100000],
 			[500000, 50000],
 			[200000, 20000],
