@@ -748,10 +748,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -773,9 +771,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -794,9 +791,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
 			expect(element._viewSyncBlocked).toBeTrue();
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -821,10 +817,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -850,10 +844,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
@@ -877,10 +869,8 @@ describe('OlMap', () => {
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
 			expect(element._viewSyncBlocked).toBeTrue();
-
-			await TestUtils.timeout();
 			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
+			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
 			//and store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});
