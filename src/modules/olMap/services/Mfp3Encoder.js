@@ -11,7 +11,7 @@ import Style from 'ol/style/Style';
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
-import { Circle, LineString, MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
+import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
@@ -275,7 +275,7 @@ export class BvvMfp3Encoder {
 			return group;
 		}, {});
 
-		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], Point: [] };
+		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], MultiPoint: [], Point: [] };
 		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
 		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
 
@@ -286,6 +286,7 @@ export class BvvMfp3Encoder {
 			...groupedByGeometryType['GeometryCollection'],
 			...groupedByGeometryType['LineString'],
 			...groupedByGeometryType['MultiLineString'],
+			...groupedByGeometryType['MultiPoint'],
 			...groupedByGeometryType['Point']];
 
 		const transformForMfp = (olFeature) => {
@@ -396,7 +397,7 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point;
+				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point || geometry instanceof MultiPoint;
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
@@ -475,7 +476,7 @@ export class BvvMfp3Encoder {
 
 	_encodeGeometryType(olGeometryType) {
 		const defaultEncoding = (geometryType) => geometryType.toLowerCase();
-		const specialEncodings = { LineString: () => 'line', MultiPolygon: () => 'polygon', MultiLineString: () => 'line' };
+		const specialEncodings = { MultiPoint: () => 'point', LineString: () => 'line', MultiPolygon: () => 'polygon', MultiLineString: () => 'line' };
 
 		return Object.hasOwn(specialEncodings, olGeometryType) ? specialEncodings[olGeometryType]() : defaultEncoding(olGeometryType);
 	}

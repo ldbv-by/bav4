@@ -1,5 +1,5 @@
 
-import { LineString, MultiLineString, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
@@ -1160,6 +1160,59 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
+			it('writes a multiPoint feature with feature style function', () => {
+				const featureWithStyle = new Feature({ geometry: new MultiPoint([[30, 30], [30, 40]]) });
+				featureWithStyle.setStyle(getStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'MultiPoint',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
 			describe('when the map is rotated', () => {
 				it('writes a point feature (text) with a label relative to map rotation', () => {
 					const mapRotation = 42;
@@ -1226,8 +1279,8 @@ describe('BvvMfp3Encoder', () => {
 				featureWithStyle.setStyle(getImageStyle());
 				const featureWithoutStyle = new Feature({ geometry: new Point([30, 30]) });
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle, featureWithoutStyle] });
-
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const warnSpy = spyOn(console, 'warn');
 
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
@@ -1236,6 +1289,28 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
+				expect(warnSpy).toHaveBeenCalledWith('cannot style feature', jasmine.any(Feature));
+				expect(actualSpec.geoJson.features).toHaveSize(1);
+			});
+
+			it('does NOT writes a feature with unsupported geometry', () => {
+				const unsupportedGeometry = new GeometryCollection([new Point([30, 30]), new LineString([[30, 30], [40, 40]])]);
+				const featureWithGeometry = new Feature({ geometry: new Point([30, 30]) });
+				const featureWithInvalidGeometry = new Feature({ geometry: unsupportedGeometry });
+				featureWithGeometry.setStyle(getImageStyle());
+				featureWithInvalidGeometry.setStyle(getImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithGeometry, featureWithInvalidGeometry] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const warnSpy = spyOn(console, 'warn');
+
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(warnSpy).toHaveBeenCalledWith('feature not encodable', jasmine.any(Feature));
 				expect(actualSpec.geoJson.features).toHaveSize(1);
 			});
 
