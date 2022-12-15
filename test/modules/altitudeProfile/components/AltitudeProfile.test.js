@@ -459,9 +459,52 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
+	describe('when _enrichProfileData is called', () => {
+		it('updates the profile', async () => {
+			// arrange
+			const profile = {
+				alts: [
+					{
+						dist: 0,
+						alt: 0,
+						e: 40,
+						n: 50
+					},
+					{
+						dist: 1,
+						alt: 10,
+						e: 41,
+						n: 51
+					},
+					{
+						dist: 2,
+						alt: 20,
+						e: 42,
+						n: 52
+					}
+				],
+				attrs: [
+					{
+						id: 'surface',
+						values: [
+							[0, 0, 'asphalt'],
+							[2, 2, 'gravel']
+						]
+					}
+				]
+			};
+			const altitudeProfile = new AltitudeProfile();
+
+			//act
+			altitudeProfile._enrichProfileData(profile);
+
+			// assert
+			expect(profile.alts[0].surface).toBe('asphalt');
+			expect(profile.alts[1].surface).toBe('missing');
+			expect(profile.alts[2].surface).toBe('gravel');
+		});
+	});
 
 
 	// todo - check correct schema is used
-	// todo - check missing
-	// todo - check _enrichProfileData
 });
