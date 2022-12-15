@@ -1,21 +1,47 @@
 import { $injector } from '../injection';
+import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider.test';
 
 /**
  * @class
  * @author alsturm
+ * @author taulinger
  */
 export class ChipsConfigurationService {
 
-
-	constructor() {
-		this._credentials = new Map();
-		const { UrlService: urlService } = $injector.inject('UrlService');
-		this._urlService = urlService;
+	constructor(provider = loadBvvChipConfiguration) {
+		this._provider = provider;
+		this._configurations = null;
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
-
+	/**
+	 * Loads all available Chip configurations and caches them internally.
+	 * If loading fails a fallback is delivered if app is in standalone mode
+	 * @public
+	 * @async
+	 * @returns {Promise<Array<ChipConfiguration>>}
+	 */
 	async all() {
+		if (!this._configurations) {
+			try {
+				this._configurations = await this._provider();
+			}
+			catch (e) {
+				this._configurations = [];
+				if (this._environmentService.isStandalone()) {
+					this._configurations.push(...this._newFallbackConfiguration());
+					console.warn('Chips configuration could not be fetched from backend. Using fallback configuration ...');
+				}
+				else {
+					console.error('Chips configuration could not be fetched from backend.', e);
+				}
+			}
+		}
+		return this._configurations;
+	}
 
+	_newFallbackConfiguration() {
 		return [
 			{
 				'id': 'foo',
@@ -174,6 +200,4 @@ export class ChipsConfigurationService {
 			}
 		];
 	}
-
-
 }
