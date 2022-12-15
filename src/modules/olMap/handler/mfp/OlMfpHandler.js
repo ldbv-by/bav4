@@ -8,12 +8,9 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { changeRotation } from '../../../../store/position/position.action';
+import { changeCenter, changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
-
-export const FIELD_NAME_PAGE_PIXEL_COORDINATES = 'page_pixel_coordinates';
-export const FIELD_NAME_AZIMUTH = 'azimuth';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -39,13 +36,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
-		this._mfpBoundaryFeature.on('change:geometry', (e) => this._updateAzimuth(e));
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
 		this._blockSyncForRotation = false;
+		this._useCachedPreview = false;
 	}
 
 	/**
@@ -63,7 +60,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature));
+			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature, () => this._storeService.getStore().getState().pointer.beingDragged));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
 			this._updateRotation();
@@ -96,19 +93,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			observe(store, state => state.map.moveEnd, () => {
-				if (!this._storeService.getStore().getState().mfp.autoRotation) {
-					this._updateMfpPreview();
-				}
-				else {
-					if (this._blockSyncForRotation) {
-						this._updateMfpPreview();
-					}
-					this._blockSyncForRotation = false;
-				}
-				this._updateRotation();
-			}
-			)
+			observe(store, state => state.position.rotation, () => this._updateRotation())
 		];
 	}
 
@@ -124,20 +109,17 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
-
-		this._mfpBoundaryFeature.set(FIELD_NAME_PAGE_PIXEL_COORDINATES, this._toPixelCoordinates(mfpGeometry));
+		const geodeticRotation = this._getAzimuth(mfpGeometry);
+		this._mfpBoundaryFeature.set('azimuth', geodeticRotation);
+		this._mfpBoundaryFeature.set('center', this._storeService.getStore().getState().position.center);
 		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
-	}
-
-	_updateAzimuth(e) {
-		const feature = e.target;
-		const rotation = this._getAzimuth(feature.getGeometry());
-
-		feature.set('azimuth', rotation);
+		setTimeout(() => changeRotation(geodeticRotation));
 	}
 
 	_updateRotation() {
-		const rotateMfpExtentByView = () => {}; // do nothing
+		const rotateMfpExtentByView = () => {
+			this._updateMfpPreview();
+		}; // do nothing
 		const rotateViewByMfpExtent = () => {
 			const rotation = this._mfpBoundaryFeature.get('azimuth');
 			setTimeout(() => changeRotation(rotation));
@@ -289,13 +271,10 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_onAutoRotationChanged(autorotation) {
-		setTimeout(() => {
-			if (autorotation) {
-				this._updateMfpPreview();
-				this._blockSyncForRotation = true;
-			}
-			this._updateRotation();
-		});
+		if (autorotation) {
+			setTimeout(() => changeCenter(this._mfpBoundaryFeature.get('center')));
+			this._updateMfpPreview();
+		}
 	}
 
 	async _encodeMap() {

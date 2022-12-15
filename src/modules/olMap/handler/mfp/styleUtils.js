@@ -1,6 +1,5 @@
 import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
-import { FIELD_NAME_PAGE_PIXEL_COORDINATES } from './OlMfpHandler';
 import { equals, getIntersection } from 'ol/extent';
 
 
@@ -96,8 +95,8 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const createMapMaskFunction = (map, feature) => {
-
+export const createMapMaskFunction = (map, feature, useCacheCallback) => {
+	let cachedPixelCoordinates = null;
 	const getMask = (map, pixelCoordinates) => {
 		const size = map.getSize();
 		const width = size[0] * DEVICE_PIXEL_RATIO;
@@ -178,8 +177,25 @@ export const createMapMaskFunction = (map, feature) => {
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 	};
 
+	const toPixelCoordinates = (geometry) => {
+		return geometry.getCoordinates()[0].map(c => map.getPixelFromCoordinate(c));
+	};
+	const getOrCreatePixelCoordinates = (feature) => {
+		const createNew = () => {
+			const pixelCoordinates = toPixelCoordinates(feature.getGeometry());
+			cachedPixelCoordinates = pixelCoordinates;
+			return pixelCoordinates;
+		};
+
+		const getCached = () => {
+			return cachedPixelCoordinates ? cachedPixelCoordinates : createNew();
+		};
+		const useCache = useCacheCallback();
+		return useCache ? getCached() : createNew();
+	};
+
 	const renderMask = (event) => {
-		const pixelCoordinates = feature.get(FIELD_NAME_PAGE_PIXEL_COORDINATES);
+		const pixelCoordinates = getOrCreatePixelCoordinates(feature);
 		const pixelMask = getMask(map, pixelCoordinates);
 		const ctx = event.context;
 

@@ -200,7 +200,7 @@ describe('mfp style utility functions', () => {
 			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
 			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
 
-			const renderFunction = createMapMaskFunction(mapMock, feature);
+			const renderFunction = createMapMaskFunction(mapMock, feature, () => false);
 			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
@@ -222,7 +222,7 @@ describe('mfp style utility functions', () => {
 			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
 			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
 
-			const renderFunction = createMapMaskFunction(mapMock, feature);
+			const renderFunction = createMapMaskFunction(mapMock, feature, () => false);
 			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
@@ -240,7 +240,7 @@ describe('mfp style utility functions', () => {
 			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
 			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
 
-			const renderFunction = createMapMaskFunction(mapMock, feature);
+			const renderFunction = createMapMaskFunction(mapMock, feature, () => false);
 			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
