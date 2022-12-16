@@ -47,9 +47,11 @@ export class ChipsPlugin extends BaPlugin {
 			= $injector.inject('ChipsConfigurationService');
 
 		const chips = await chipsConfigurationService.all();
-		const permanentChips /** we store them */ = this._findPermanentAndQueryParamChips(chips);
+		const permanentChips /** let's store them here*/ = this._findPermanentAndQueryParamChips(chips);
 
+		// initial update
 		this._updateStore(chips, permanentChips, store.getState());
+		// register observer
 		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
 		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
 	}
