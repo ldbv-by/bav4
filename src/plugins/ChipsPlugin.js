@@ -28,13 +28,13 @@ export class ChipsPlugin extends BaPlugin {
 	_findPermanentAndQueryParamChips(chips) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
-		const addChipsFromQueryParams = () => {
+		const findChipsFromQueryParams = () => {
 			const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 			const chipId = queryParams.get(QueryParameters.CHIP) ?? [];
 			return chips.filter(c => chipId === c.id);
 		};
 
-		return [...chips.filter(c => c.permanent), ...addChipsFromQueryParams(chips)];
+		return [...chips.filter(c => c.permanent), ...findChipsFromQueryParams(chips)];
 	}
 
 	/**
