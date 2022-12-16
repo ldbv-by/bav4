@@ -103,8 +103,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_options: 'Options',
 				toolbox_exportMfp_autorotation_title: 'Activate/deactivate autorotation',
 				toolbox_exportMfp_autorotation: 'Automatically rotate map',
-				toolbox_exportMfp_show_grid_title: 'Show/Hide map grid in export',
-				toolbox_exportMfp_show_grid: 'Show a map grid'
+				toolbox_exportMfp_show_grid_title: 'Add coordinate grid in export',
+				toolbox_exportMfp_show_grid: 'Coordinate grid'
 			};
 
 		case 'de':
@@ -209,8 +209,8 @@ export const provide = (lang) => {
 				toolbox_exportMfp_options: 'Optionen',
 				toolbox_exportMfp_autorotation_title: 'Autorotation aktivieren/deaktivieren',
 				toolbox_exportMfp_autorotation: 'Karte automatisch drehen',
-				toolbox_exportMfp_show_grid_title: 'Ein Kartengitter im Export anzeigen/ nicht anzeigen',
-				toolbox_exportMfp_show_grid: 'Kartengitter anzeigen'
+				toolbox_exportMfp_show_grid_title: 'Ein Koordinatennetz im Export hinzufügen',
+				toolbox_exportMfp_show_grid: 'Koordinatennetz'
 			};
 
 		default:
