@@ -185,18 +185,18 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						</select>
 						<ba-icon id='increase' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
 					<div>
-					</div>
-				</div>
+					</div>					
+				</div>				
 				<div class='tool-section separator' style='margin-top:1em'>
-					<div class='sub-header' @click="${toggleCollapseOptions}"> 
+					<div  class='tool-section' style='margin-top:1em'><ba-toggle id='autorotation' .checked=${autoRotation} .title=${translate('toolbox_exportMfp_autorotation_title')} @toggle=${onChangeAutoRotation} ><span>${translate('toolbox_exportMfp_autorotation')}</span></ba-toggle></div>
+					<div class='sub-header' style='margin-top:1em' @click="${toggleCollapseOptions}"> 
 						<span class='sub-header-text'>
 						${translate('toolbox_exportMfp_options')}
 						</span>
 						<i class='icon chevron ${classMap(iconCollapseOptionsClass)}'>
 						</i>
-					</div>
-					<div class="collapse-content ${classMap(bodyCollapseOptionsClass)}">
-						<div class='tool-option'><ba-toggle id='autorotation' .checked=${autoRotation} .title=${translate('toolbox_exportMfp_autorotation_title')} @toggle=${onChangeAutoRotation} ><span>${translate('toolbox_exportMfp_autorotation')}</span></ba-toggle></div>
+					</div>					
+					<div class="collapse-content ${classMap(bodyCollapseOptionsClass)}">						
 						<div class='tool-option'><ba-toggle id='showgrid' .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid} ><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-toggle></div>
 					</div>
 				</div>`;

@@ -415,7 +415,7 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.autoRotation).toBeTrue();
 
 			const toggleButton = element.shadowRoot.querySelector('#autorotation');
-
+			toggleButton.click();
 			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.autoRotation).toBeFalse();
