@@ -135,7 +135,6 @@ export class OlMap extends MvuElement {
 		});
 
 		this._map.on('movestart', () => {
-			this._viewSyncBlocked = true;
 			setMoveStart();
 			setBeingMoved(true);
 		});
@@ -147,7 +146,6 @@ export class OlMap extends MvuElement {
 			setBeingDragged(false);
 			setMoveEnd();
 			setBeingMoved(false);
-			this._viewSyncBlocked = false;
 		});
 
 		const singleClickOrShortPressHandler = (evt) => {
@@ -197,7 +195,7 @@ export class OlMap extends MvuElement {
 			handler.register(this._map);
 		});
 
-		//register particular obeservers on our Model
+		//register particular observers on our model
 		//handle fitRequest
 		this.observeModel(['fitRequest', 'fitLayerRequest'], eventLike => this._fitToExtent(eventLike));
 		//sync layers
@@ -232,15 +230,12 @@ export class OlMap extends MvuElement {
 	_syncView() {
 		const { zoom, center, rotation } = this.getModel();
 
-		if (!this._viewSyncBlocked) {
-
-			this._view.animate({
-				zoom: zoom,
-				center: center,
-				rotation: rotation,
-				duration: 200
-			});
-		}
+		this._view.animate({
+			zoom: zoom,
+			center: center,
+			rotation: rotation,
+			duration: 200
+		});
 	}
 
 	_syncLayers() {
@@ -332,7 +327,6 @@ export class OlMap extends MvuElement {
 
 	_fitToExtent(eventLike) {
 		const onAfterFit = () => {
-			this._viewSyncBlocked = false;
 			this._syncStore();
 		};
 
@@ -340,7 +334,6 @@ export class OlMap extends MvuElement {
 			const extent = getLayerById(this._map, eventLike.payload.id)?.getSource?.()?.getExtent?.() ?? eventLike.payload.extent;
 
 			if (extent) {
-				this._viewSyncBlocked = true;
 				const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
 				const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
 				const padding = eventLike.payload.options.useVisibleViewport

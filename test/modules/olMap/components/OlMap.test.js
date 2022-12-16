@@ -342,12 +342,9 @@ describe('OlMap', () => {
 			it('updates the \'movestart\' property in map store', async () => {
 				const element = await setup();
 
-				expect(element._viewSyncBlocked).toBeUndefined();
-
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
 
 				expect(store.getState().map.moveStart.payload).toBe('movestart');
-				expect(element._viewSyncBlocked).toBeTrue();
 			});
 
 			it('updates the \'beingMoved\' property in pointer store', async () => {
@@ -368,12 +365,9 @@ describe('OlMap', () => {
 			it('updates the \'moveend\' property in map store', async () => {
 				const element = await setup();
 
-				expect(element._viewSyncBlocked).toBeUndefined();
-
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 				expect(store.getState().map.moveEnd.payload).toBe('moveend');
-				expect(element._viewSyncBlocked).toBeFalse();
 			});
 
 			it('updates the position state properties', async () => {
@@ -741,19 +735,14 @@ describe('OlMap', () => {
 			const extent = [38, 57, 39, 58];
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitMap(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
-			expect(element._viewSyncBlocked).toBeTrue();
 
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('fits to an extent with custom maxZoom option', async () => {
@@ -766,18 +755,13 @@ describe('OlMap', () => {
 			const maxZoom = 10;
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitMap(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
-			expect(element._viewSyncBlocked).toBeTrue();
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('fits to an extent with custom useVisibleViewport option', async () => {
@@ -787,18 +771,13 @@ describe('OlMap', () => {
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const extent = [38, 57, 39, 58];
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitMap(extent, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
-			expect(element._viewSyncBlocked).toBeTrue();
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('fits to a vector layers extent', async () => {
@@ -814,19 +793,14 @@ describe('OlMap', () => {
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
-			expect(element._viewSyncBlocked).toBeTrue();
 
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('fits to a vector layers extent with custom maxZoom option', async () => {
@@ -843,19 +817,14 @@ describe('OlMap', () => {
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitLayer(id0, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
-			expect(element._viewSyncBlocked).toBeTrue();
 
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('fits to  vector layers extent with custom useVisibleViewport option', async () => {
@@ -870,19 +839,14 @@ describe('OlMap', () => {
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitLayer(id0, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
-			expect(element._viewSyncBlocked).toBeTrue();
 
 			await TestUtils.timeout();
-			//check if flag is reset
-			expect(element._viewSyncBlocked).toBeFalse();
-			//and store is in sync with view
-			expect(spy).toHaveBeenCalled();
+			// store is in sync with view
+			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
 		it('does nothing when layer has no source', async () => {
@@ -897,7 +861,6 @@ describe('OlMap', () => {
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
-			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
 		it('does nothing when layer return NULL as source', async () => {
@@ -912,7 +875,6 @@ describe('OlMap', () => {
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
-			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
 		it('does nothing when layers source is not a vector source', async () => {
@@ -927,7 +889,6 @@ describe('OlMap', () => {
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
-			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
 		it('does nothing when source can\'t provide an extent', async () => {
@@ -940,13 +901,10 @@ describe('OlMap', () => {
 			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).not.toHaveBeenCalled();
-			expect(element._viewSyncBlocked).toBeUndefined();
 		});
 
 		it('adds an olLayer resolving a GeoResourceFuture', async () => {
@@ -972,18 +930,16 @@ describe('OlMap', () => {
 			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
-			expect(element._viewSyncBlocked).toBeUndefined();
-
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			fitLayer(id0);
 
-			// we would have to wait for a couple of timeout calls, so to simply that we wait until the expected state is available
-			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === true)).toBeResolved();
+			await TestUtils.timeout(); // resolve GeoResource
+			await TestUtils.timeout(); // internal calling of #fit is wrapped within a timeout fn
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
 
-			await expectAsync(TestUtils.waitFor(() => element._viewSyncBlocked === false)).toBeResolved();
+			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalled();
 		});

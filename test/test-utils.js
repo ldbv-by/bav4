@@ -249,16 +249,16 @@ export class TestUtils {
 				clearInterval(intervallId);
 				clearTimeout(timeOutId);
 			};
+			const timeOutId = setTimeout(() => {
+				clear();
+				reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`);
+			}, timeout);
 			const intervallId = setInterval(() => {
 				if (checkFn()) {
 					clear();
 					resolve();
 				}
 			}, 10);
-			const timeOutId = setTimeout(() => {
-				clear();
-				reject(`Aborted TestUtils#waitFor due to timeout of ${timeout}ms`);
-			}, timeout);
 		});
 	}
 

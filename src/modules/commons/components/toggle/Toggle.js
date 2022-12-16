@@ -30,7 +30,6 @@ export class Toggle extends MvuElement {
 			title: ''
 		});
 
-		this._onToggle = () => { };
 	}
 
 	update(type, data, model) {
@@ -48,6 +47,13 @@ export class Toggle extends MvuElement {
 	}
 
 	onInitialize() {
+		this._onToggle = () => { };
+
+		this.addEventListener('click', (event) => {
+			this._click();
+			event.stopPropagation();
+		});
+
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
@@ -85,6 +91,10 @@ export class Toggle extends MvuElement {
 
 	static get tag() {
 		return 'ba-toggle';
+	}
+
+	_click() {
+		this._root.querySelector('.switch').click();
 	}
 
 	/**
