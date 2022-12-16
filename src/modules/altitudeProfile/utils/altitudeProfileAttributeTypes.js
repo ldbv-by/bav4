@@ -1,10 +1,5 @@
 import { $injector } from '../../../injection';
 
-const getStore = () => {
-	const { StoreService: storeService } = $injector.inject('StoreService');
-	return storeService.getStore();
-};
-
 export class AltitudeProfileAttributeType {
 	constructor(attribute, name, lightColor, darkColor = null) {
 		this._attribute = attribute;
@@ -17,8 +12,9 @@ export class AltitudeProfileAttributeType {
 			this._darkColor = darkColor;
 		}
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, StoreService: storeService } = $injector.inject('TranslationService', 'StoreService');
 		this._translationService = translationService;
+		this._storeService = storeService;
 	}
 
 	get caption() {
@@ -35,7 +31,7 @@ export class AltitudeProfileAttributeType {
 	get color() {
 		const {
 			media: { darkSchema }
-		} = getStore().getState();
+		} = this._storeService.getStore().getState(); // KnowHow NK this._storeService.getStore().getState();
 
 		if (darkSchema) {
 			return this._darkColor;
