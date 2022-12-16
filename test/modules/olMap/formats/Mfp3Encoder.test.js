@@ -2059,6 +2059,7 @@ describe('BvvMfp3Encoder', () => {
 				expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
 			});
 		});
+
 		it('uses the default spacing for a unknown scale', () => {
 			const unknownScale = 42;
 			const expectedSpacing = 1000;
