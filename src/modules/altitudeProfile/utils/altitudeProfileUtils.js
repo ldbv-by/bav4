@@ -2,10 +2,14 @@ export const hereStartsSteep = 0.02;
 export const flatColor = '#66eeff';
 export const steepColor = '#ee4444';
 
-export const SlopeType = {
-	Flat: 'Flat',
-	Steep: 'Steep'
-};
+/**
+ * different types of slope
+ * @enum
+ */
+export const SlopeType = Object.freeze({
+	Flat: 0,
+	Steep: 1
+});
 
 export const startSteep = (gradientBg, xPoint) => {
 	gradientBg.addColorStop(xPoint, flatColor);
