@@ -6,45 +6,35 @@ import { observe } from '../utils/storeUtils';
 
 /**
  * @class
+ * @author alsturm
+ * @author taulinger
  */
 export class ChipsPlugin extends BaPlugin {
 
-	constructor() {
-		super();
+	_updateStore(chips, permanentChips, state) {
 
-		this._permanentAndParaChips = [];
-		this._topicsChips = [];
-		this._geoResourcesChips = [];
+		const findTopicsChips = () => {
+			return chips.filter(c => c.observer?.topics.includes(state.topics.current));
+		};
+
+		const findActiveGeoResourceChips = () => {
+			const geoResourceIds = state.layers.active.map(l => l.geoResourceId);
+			return chips.filter(c => geoResourceIds.some(grId => c.observer?.geoResources.includes(grId)));
+		};
+
+		setCurrent([...new Set([...permanentChips, ...findTopicsChips(), ...findActiveGeoResourceChips()])]);
 	}
 
-	_addChipsWithPermanentState(allChips) {
-		const chips = [];
-		allChips.map((chip) => {
-			if (chip.permanent === true) {
-				chips.push(chip);
-			}
-		});
-		return chips;
-	}
+	_findPermanentAndQueryParamChips(chips) {
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
-	_addChipsFromQueryParams(queryParams, allChips) {
-		const chips = [];
-		const chipIds = queryParams.get(QueryParameters.CHIP);
-		allChips.map((chip) => {
-			if (chipIds.includes(chip.id)) {
-				chips.push(chip);
-			}
-		});
-		return chips;
-	}
+		const addChipsFromQueryParams = () => {
+			const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+			const chipId = queryParams.get(QueryParameters.CHIP) ?? [];
+			return chips.filter(c => chipId === c.id);
+		};
 
-	_updateChips() {
-		const chipConfigurationArray = [];
-		chipConfigurationArray.push(...this._permanentAndParaChips);
-		chipConfigurationArray.push(...this._topicsChips);
-		chipConfigurationArray.push(...this._geoResourcesChips);
-		const uniqueChipConfigurationArray = [...new Set(chipConfigurationArray)];
-		setCurrent(uniqueChipConfigurationArray);
+		return [...chips.filter(c => c.permanent), ...addChipsFromQueryParams(chips)];
 	}
 
 	/**
@@ -52,57 +42,14 @@ export class ChipsPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
+		const { ChipsConfigurationService: chipsConfigurationService }
+			= $injector.inject('ChipsConfigurationService');
 
-		const { ChipsConfigurationService: chipsConfigurationService, EnvironmentService: environmentService } = $injector.inject('ChipsConfigurationService', 'EnvironmentService');
+		const chips = await chipsConfigurationService.all();
+		const permanentChips = this._findPermanentAndQueryParamChips(chips);
 
-		// let's get the initial Chips
-		const allChips = [];
-		try {
-			allChips.push(...await chipsConfigurationService.all());
-		}
-		catch (ex) {
-			console.error('ChipsConfigurationService could not be fetched from backend', ex);
-		}
-
-		const chipConfigurationArray = [];
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
-		//add permanent chips
-		chipConfigurationArray.push(...this._addChipsWithPermanentState(allChips));
-		//add from query params
-		if (queryParams.has(QueryParameters.CHIP)) {
-			chipConfigurationArray.push(...this._addChipsFromQueryParams(queryParams, allChips));
-		}
-		this._permanentAndParaChips.push(...chipConfigurationArray);
-		this._updateChips();
-
-
-		const onCurrentTopicChanged = (store) => {
-			const chipConfigurationArray = [];
-			allChips.map((chip) => {
-				if (chip.observer && chip.observer.topics.includes(store.topics.current) && store.topicsContentPanel.index) {
-					chipConfigurationArray.push(chip);
-				}
-			});
-			this._topicsChips = chipConfigurationArray;
-			this._updateChips();
-		};
-
-		const onActiveLayerChanged = (active) => {
-			const chipConfigurationArray = [];
-			allChips.map((chip) => {
-				if (chip.observer) {
-					active.map((geoResource) => {
-						if (chip.observer.geoResources.includes(geoResource.geoResourceId)) {
-							chipConfigurationArray.push(chip);
-						}
-					});
-				}
-			});
-			this._geoResourcesChips = chipConfigurationArray;
-			this._updateChips();
-		};
-
-		observe(store, store => store, onCurrentTopicChanged);
-		observe(store, store => store.layers.active, onActiveLayerChanged);
+		this._updateStore(chips, permanentChips, store.getState());
+		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
+		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
 	}
 }

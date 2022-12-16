@@ -1,12 +1,12 @@
 import { ChipsPlugin } from '../../src/plugins/ChipsPlugin';
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection';
-// import { QueryParameters } from '../../src/domain/queryParameters';
 import { chipsReducer } from '../../src/store/chips/chips.reducer';
-import { layersReducer } from '../../src/store/layers/layers.reducer.js';
-import { setCurrent } from '../../src/store/chips/chips.action';
-
-
+import { createDefaultLayer, layersReducer } from '../../src/store/layers/layers.reducer.js';
+import { setCurrent as setCurrentTopic } from '../../src/store/topics/topics.action.js';
+import { QueryParameters } from '../../src/domain/queryParameters';
+import { topicsReducer } from '../../src/store/topics/topics.reducer';
+import { addLayer } from '../../src/store/layers/layers.action';
 
 describe('ChipsPlugin', () => {
 
@@ -26,7 +26,8 @@ describe('ChipsPlugin', () => {
 
 		const store = TestUtils.setupStoreAndDi(state, {
 			chips: chipsReducer,
-			layers: layersReducer
+			layers: layersReducer,
+			topics: topicsReducer
 		});
 		$injector
 			.registerSingleton('ChipsConfigurationService', chipsConfigurationService)
@@ -35,92 +36,163 @@ describe('ChipsPlugin', () => {
 		return store;
 	};
 
-	describe('when not yet initialized and toolId changes', () => {
+	describe('register', () => {
 
-		const getAllMockChips = () => {
-			return {
-				'id': 'ID1',
-				'title': 'Permanent',
-				'href': 'https://www.one.com',
-				'permanent': true,
-				'target': 'modal',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)',
-					'backgroundColorLight': 'var(--primary-bg-color)',
-					'colorDark': 'var(--primary-color)',
-					'backgroundColorDark': 'var(--primary-bg-color)',
-					'icon': null
-				}
-			},
-			{
-				'id': 'ID2',
-				'title': 'Parameter',
-				'href': 'https://www.tow.com',
-				'permanent': true,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)',
-					'backgroundColorLight': 'var(--primary-bg-color)',
-					'colorDark': 'var(--primary-color)',
-					'backgroundColorDark': 'var(--primary-bg-color)',
-					'icon': null
-				}
-			},
-			{
-				'id': 'ID3',
-				'title': 'Theme Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy',
-				'href': 'https://www.three.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': {
-					'geoResources': [
-					],
-					'topics': [
-						'test'
-					]
-				},
-				'style': {
-					'colorLight': 'var(--primary-color)',
-					'backgroundColorLight': 'var(--primary-bg-color)',
-					'colorDark': 'var(--primary-color)',
-					'icon': null
-				}
-			},
-			{
-				'id': 'ID4',
-				'title': 'GeoResource',
-				'href': 'https://www.four.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': {
-					'geoResources': [
-						'6f5a389c-4ef3-4b5a-9916-475fd5c5962b',
-						'd0e7d4ea-62d8-46a0-a54a-09654530beed'
-					],
-					'topics': [
-					]
-				},
-				'style': {
-					'colorLight': 'black',
-					'backgroundColorLight': 'red',
-					'colorDark': 'white',
-					'backgroundColorDark': 'maroon',
-					'icon': '<path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>'
-				}
-			};
-		};
-
-		it('initializes with chips', async () => {
+		it('loads all chip configurations and publishes all permanent chips', async () => {
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': true
+			}, {
+				'id': 'id1',
+				'permanent': false
+			}];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+
 			await instanceUnderTest.register(store);
-			spyOn(chipsConfigurationService, 'all').and.resolveTo(getAllMockChips());
 
-			setCurrent();
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[0]);
+		});
 
+		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
+			const chipId = 'id1';
+			const queryParam = `${QueryParameters.CHIP}=${chipId}`;
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': false
+			}, {
+				'id': chipId,
+				'permanent': false
+			}];
+			const store = setup();
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+		});
+
+		it('publishe Topic related chips', async () => {
+			const topicId = 'topic0';
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': false
+			}, {
+				'id': 'id1',
+				'permanent': false,
+				'observer': {
+					'geoResources': [
+					],
+					'topics': [
+						topicId
+					]
+				}
+			}];
+			const store = setup({
+				topics: {
+					current: topicId
+				}
+			});
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+		});
+
+		it('publishes GeoResource related chips', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': false
+			}, {
+				'id': 'id1',
+				'permanent': false,
+				'observer': {
+					'geoResources': [
+						geoResourceId
+					],
+					'topics': [
+					]
+				}
+			}];
+			const store = setup({
+				layers: {
+					active: [createDefaultLayer('foo'), createDefaultLayer('bar', geoResourceId)]
+				}
+			});
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+		});
+
+		it('it registes an observer for Topic related chips', async () => {
+			const topicId = 'topic0';
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': false
+			}, {
+				'id': 'id1',
+				'permanent': false,
+				'observer': {
+					'geoResources': [
+					],
+					'topics': [
+						topicId
+					]
+				}
+			}];
+			const store = setup();
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(0);
+
+			setCurrentTopic(topicId);
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+		});
+
+		it('it registes an observer for GeoResource related chips', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const mockChips = [{
+				'id': 'id0',
+				'permanent': false
+			}, {
+				'id': 'id1',
+				'permanent': false,
+				'observer': {
+					'geoResources': [
+						geoResourceId
+					],
+					'topics': [
+					]
+				}
+			}];
+			const store = setup();
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(0);
+
+			addLayer('foo', { geoResourceId: geoResourceId });
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 	});
 });
