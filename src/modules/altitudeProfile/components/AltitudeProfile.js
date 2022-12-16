@@ -376,7 +376,7 @@ export class AltitudeProfile extends MvuElement {
 							'hier geht was ' +
 							translate('altitudeProfile_distance') +
 							', m / ' +
-							translate('altitudeProfile_elevation') +
+							translate('altitudeProfile_alt') +
 							', m'
 					},
 					legend: { display: false }
