@@ -98,8 +98,6 @@
 	content: "A3";
 }
 
-
-
 .separator {
 	border-top: 1px solid var(--header-background-color);
 	padding-top: 0.5em;
@@ -108,7 +106,6 @@
 .tool-option {
 	margin: 0 1em 1em;
 }
-
 
 .sub-header {
 	display: flex;
