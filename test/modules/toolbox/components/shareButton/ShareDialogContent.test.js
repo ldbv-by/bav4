@@ -78,10 +78,6 @@ describe('ShareDialogContent', () => {
 		expect(toggleElement.checked).toBe(false);
 	});
 
-	const getToggleEventFor = (toggleElement) => new CustomEvent('toggle', {
-		detail: { checked: !toggleElement.checked }
-	});
-
 	it('should switch the toggle showing different urls ', async () => {
 		const element = await setup();
 		element.shareurls = shareUrls;
@@ -93,7 +89,7 @@ describe('ShareDialogContent', () => {
 		expect(toggleElement.checked).toBe(false);
 
 		// switch the toggle element
-		toggleElement.dispatchEvent(getToggleEventFor(toggleElement));
+		toggleElement.click();
 
 		// toggle switched to be checked => true => url = adminId
 		expect(element.shadowRoot.querySelector('.share_url').value).toBe(shareUrls.adminId);
@@ -117,7 +113,7 @@ describe('ShareDialogContent', () => {
 		element.shareurls = shareUrls;
 
 		const toggleElement = element.shadowRoot.querySelector('ba-toggle');
-		toggleElement.dispatchEvent(getToggleEventFor(toggleElement));
+		toggleElement.click();
 
 		const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
 
