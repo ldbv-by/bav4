@@ -42,7 +42,7 @@ describe('ThemeToggle', () => {
 		it('changes the theme', async () => {
 			const element = await setup();
 
-			element.shadowRoot.querySelector('.icon.adjust').click();
+			element.shadowRoot.querySelector('ba-toggle').click();
 
 			expect(store.getState().media.darkSchema).toBeFalse();
 			expect(element.shadowRoot.querySelector('ba-toggle').checked).toBeFalse();
