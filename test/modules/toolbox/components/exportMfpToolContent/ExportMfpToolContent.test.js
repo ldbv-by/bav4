@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
+import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
@@ -9,7 +9,7 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
-window.customElements.define(Checkbox.tag, Checkbox);
+window.customElements.define(Toggle.tag, Toggle);
 
 describe('ExportMfpToolContent', () => {
 	let store;
@@ -402,9 +402,6 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
 	});
-	const getToggleEventFor = (toggleElement) => new CustomEvent('toggle', {
-		detail: { checked: !toggleElement.checked }
-	});
 
 	describe('when the user toggles the autorotation-toggle', () => {
 
@@ -415,12 +412,12 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.autoRotation).toBeTrue();
 
 			const toggleButton = element.shadowRoot.querySelector('#autorotation');
+
 			toggleButton.click();
-			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
 
 			expect(store.getState().mfp.autoRotation).toBeFalse();
 
-			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
+			toggleButton.click();
 
 			expect(store.getState().mfp.autoRotation).toBeTrue();
 		});
@@ -428,7 +425,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user toggles the showGrid-toggle', () => {
-
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
@@ -438,11 +434,11 @@ describe('ExportMfpToolContent', () => {
 
 			const toggleButton = element.shadowRoot.querySelector('#showgrid');
 
-			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
+			toggleButton.click();
 
 			expect(store.getState().mfp.showGrid).toBeTrue();
 
-			toggleButton.dispatchEvent(getToggleEventFor(toggleButton));
+			toggleButton.click();
 
 			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
