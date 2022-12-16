@@ -16,7 +16,7 @@ export const chipsReducer = (state = initialState, action) => {
 
 			return {
 				...state,
-				current: payload
+				current: [...payload]
 
 			};
 		}

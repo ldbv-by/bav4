@@ -13,14 +13,16 @@ const getStore = () => {
 
 
 /**
-  * Sets the current chips.
-  * @param {chipConfigurationArray} array of the current chips
+  * Sets the current active chips.
+  * @param {Array<ChipConfiguration>} array of the current chips
   * @function
   */
 export const setCurrent = (chipConfigurationArray) => {
-	getStore().dispatch({
-		type: CHIPS_CHANGED,
-		payload: chipConfigurationArray
-	});
+	if (Array.isArray(chipConfigurationArray)) {
+		getStore().dispatch({
+			type: CHIPS_CHANGED,
+			payload: chipConfigurationArray
+		});
+	}
 };
 
