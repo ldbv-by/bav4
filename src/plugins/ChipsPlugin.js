@@ -5,6 +5,7 @@ import { setCurrent } from '../store/chips/chips.action';
 import { observe } from '../utils/storeUtils';
 
 /**
+ * This plugin loads all available chips and permanently updates the chips slice-of-state dependent on the app's state.
  * @class
  * @author alsturm
  * @author taulinger
@@ -46,7 +47,7 @@ export class ChipsPlugin extends BaPlugin {
 			= $injector.inject('ChipsConfigurationService');
 
 		const chips = await chipsConfigurationService.all();
-		const permanentChips = this._findPermanentAndQueryParamChips(chips);
+		const permanentChips /** we store them */ = this._findPermanentAndQueryParamChips(chips);
 
 		this._updateStore(chips, permanentChips, store.getState());
 		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
