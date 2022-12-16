@@ -77,7 +77,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('publishe Topic related chips', async () => {
+		it('publishes all Topic related chips', async () => {
 			const topicId = 'topic0';
 			const mockChips = [{
 				'id': 'id0',
@@ -107,7 +107,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('publishes GeoResource related chips', async () => {
+		it('publishes all GeoResource related chips', async () => {
 			const geoResourceId = 'geoResourceId0';
 			const mockChips = [{
 				'id': 'id0',
