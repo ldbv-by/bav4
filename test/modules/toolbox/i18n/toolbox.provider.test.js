@@ -101,9 +101,11 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 Hochformat');
 		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 Querformat');
 		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 Hochformat');
-		expect(map.toolbox_exportMfp_options).toBe('Optionen');
+		expect(map.toolbox_exportMfp_options).toBe('Export-Optionen');
 		expect(map.toolbox_exportMfp_autorotation_title).toBe('Autorotation aktivieren/deaktivieren');
 		expect(map.toolbox_exportMfp_autorotation).toBe('Karte automatisch drehen');
+		expect(map.toolbox_exportMfp_show_grid_title).toBe('Ein Koordinatennetz im Export hinzufügen');
+		expect(map.toolbox_exportMfp_show_grid).toBe('Koordinatennetz');
 	});
 
 	it('provides translation for en', () => {
@@ -204,13 +206,15 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_exportMfp_id_a4_portrait).toBe('A4 portrait');
 		expect(map.toolbox_exportMfp_id_a3_landscape).toBe('A3 landscape');
 		expect(map.toolbox_exportMfp_id_a3_portrait).toBe('A3 portrait');
-		expect(map.toolbox_exportMfp_options).toBe('Options');
+		expect(map.toolbox_exportMfp_options).toBe('Export options');
 		expect(map.toolbox_exportMfp_autorotation_title).toBe('Activate/deactivate autorotation');
 		expect(map.toolbox_exportMfp_autorotation).toBe('Automatically rotate map');
+		expect(map.toolbox_exportMfp_show_grid_title).toBe('Add coordinate grid in export');
+		expect(map.toolbox_exportMfp_show_grid).toBe('Coordinate grid');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 99;
+		const expectedSize = 101;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

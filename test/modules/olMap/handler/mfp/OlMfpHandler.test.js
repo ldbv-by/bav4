@@ -24,7 +24,8 @@ describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
 		current: { id: 'foo', scale: null, dpi: 125 },
-		autoRotation: true
+		autoRotation: true,
+		showGrid: false
 	};
 
 	const configService = {
@@ -254,7 +255,7 @@ describe('OlMfpHandler', () => {
 			setup();
 
 			const handler = new OlMfpHandler();
-			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: jasmine.any(Number), dpi: 125, pageCenter: jasmine.any(Point) }).and.callFake(() => { });
+			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: jasmine.any(Number), dpi: 125, pageCenter: jasmine.any(Point), showGrid: jasmine.any(Boolean) }).and.callFake(() => { });
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
 

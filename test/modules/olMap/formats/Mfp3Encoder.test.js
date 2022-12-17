@@ -157,6 +157,19 @@ describe('BvvMfp3Encoder', () => {
 			expect(qrCodeSpy).toHaveBeenCalled();
 		});
 
+		it('encodes with optional grid', async () => {
+			const expectedScale = 1000;
+			const encodingProperties = getProperties({ ...defaultProperties, showGrid: true, scale: expectedScale });
+			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+			const gridSpy = spyOn(encoder, '_encodeGridLayer').withArgs(expectedScale).and.callThrough();
+
+
+			await encoder.encode(mapMock, encodingProperties);
+
+			expect(gridSpy).toHaveBeenCalled();
+		});
+
 		it('fails to encode for invalid properties', async () => {
 			const baseProps = { dpi: 42, rotation: null, mapCenter: new Point([42, 21]), mapExtent: [0, 0, 42, 21] };
 
@@ -2029,6 +2042,32 @@ describe('BvvMfp3Encoder', () => {
 			expect(tileMatrixSet[15].topLeftCorner).toEqual([-46133.17, 6301219.54]);
 			expect(tileMatrixSet[15].tileSize).toEqual([256, 256]);
 			expect(tileMatrixSet[15].matrixSize).toEqual([32768, 32768]);
+		});
+	});
+
+	describe('_encodeGridLayer', () => {
+		it('uses the appropriate spacing for defined scale', () => {
+			const validScales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
+			const expectedSpacings = [100000, 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 100, 50];
+			const classUnderTest = setup();
+
+
+			// act & assert
+			validScales.forEach((validScale, index) => {
+				const actualGridLayerSpec = classUnderTest._encodeGridLayer(validScale);
+				const expectedSpacing = expectedSpacings[index];
+				expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
+			});
+		});
+
+		it('uses the default spacing for a unknown scale', () => {
+			const unknownScale = 42;
+			const expectedSpacing = 1000;
+			const classUnderTest = setup();
+
+			const actualGridLayerSpec = classUnderTest._encodeGridLayer(unknownScale);
+
+			expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
 		});
 	});
 });

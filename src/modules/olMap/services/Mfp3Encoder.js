@@ -123,9 +123,10 @@ export class BvvMfp3Encoder {
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
+		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -747,6 +748,57 @@ export class BvvMfp3Encoder {
 							strokeColor: '#ff0000'
 						}]
 				}
+			}
+		};
+	}
+
+	_encodeGridLayer(scale) {
+		const defaultSpacing = 1000;
+		const spacings = new Map([
+			[2000000, 100000],
+			[1000000, 100000],
+			[500000, 50000],
+			[200000, 20000],
+			[100000, 10000],
+			[50000, 5000],
+			[25000, 2000],
+			[10000, 1000],
+			[5000, 500],
+			[2500, 200],
+			[1250, 100],
+			[1000, 100],
+			[500, 50]
+		]);
+
+		const spacing = spacings.has(scale) ? spacings.get(scale) : defaultSpacing;
+		return {
+			type: 'grid',
+			gridType: 'lines',
+			origin: [
+				600000,
+				4800000
+			],
+			spacing: [
+				spacing,
+				spacing
+			],
+			renderAsSvg: true,
+			haloColor: '#f5f5f5',
+			labelColor: 'black',
+			labelFormat: '%1.0f %s',
+			indent: 10,
+			haloRadius: 4,
+			font: {
+				name: [
+					'Liberation Sans',
+					'Helvetica',
+					'Nimbus Sans L',
+					'Liberation Sans',
+					'FreeSans',
+					'Sans-serif'
+				],
+				size: 8,
+				style: 'BOLD'
 			}
 		};
 	}
