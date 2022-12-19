@@ -167,7 +167,7 @@ describe('AltitudeProfile', () => {
 
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			altitudeProfile: altitudeProfileReducer
+			profile: altitudeProfileReducer
 		});
 
 		$injector
@@ -427,7 +427,7 @@ describe('AltitudeProfile', () => {
 				}
 			});
 			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
-
+			console.log(1);
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'anotherType';
@@ -436,6 +436,7 @@ describe('AltitudeProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
+			console.log(2);
 
 			// assert
 			expect(updateChartSpy).toHaveBeenCalled();

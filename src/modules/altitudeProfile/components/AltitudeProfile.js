@@ -73,7 +73,7 @@ export class AltitudeProfile extends MvuElement {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 		this.observe(
-			(state) => state.altitudeProfile.coordinates,
+			(state) => state.profile.coordinates,
 			(coordinates) => this._getAltitudeProfile(coordinates)
 		);
 	}
@@ -174,7 +174,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getChartData(selectedAttribute, altitudeData, newDataLabels, newDataData) {
-		console.log('🚀 ~ _getChartData');
 		const _chartData = {
 			labels: newDataLabels,
 			datasets: [
@@ -214,7 +213,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getBackgroundColor(context, altitudeData) {
-		console.log('🚀 ~ _getBackgroundColor');
 		const chart = context.chart;
 		const selectedAttribute = this.getModel().selectedAttribute;
 		if (selectedAttribute === 'surface') {
@@ -227,7 +225,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getBorderColor(context, altitudeData) {
-		console.log('🚀 ~ _getBorderColor');
 		const chart = context.chart;
 		const selectedAttribute = this.getModel().selectedAttribute;
 		if (selectedAttribute === 'surface' || selectedAttribute === 'slope' || selectedAttribute === 'anotherType') {
