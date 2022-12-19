@@ -7,7 +7,7 @@
 
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-import { ACTIVE_CHANGED, AUTOROTATION_CHANGED, CURRENT_CHANGED, ID_CHANGED, JOB_REQUEST_CHANGED, JOB_SPEC_CHANGED, SCALE_CHANGED } from './mfp.reducer';
+import { ACTIVE_CHANGED, AUTOROTATION_CHANGED, CURRENT_CHANGED, ID_CHANGED, JOB_REQUEST_CHANGED, JOB_SPEC_CHANGED, SCALE_CHANGED, SHOW_GRID_CHANGED } from './mfp.reducer';
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -75,6 +75,17 @@ export const setCurrent = (setting) => {
 export const setAutoRotation = (isActive) => {
 	getStore().dispatch({
 		type: AUTOROTATION_CHANGED,
+		payload: isActive
+	});
+};
+
+/**
+ * Updates the current mfp constraint.
+ * @param {boolean} isActive Whether activates the MFP map grid or not.
+ */
+export const setShowGrid = (isActive) => {
+	getStore().dispatch({
+		type: SHOW_GRID_CHANGED,
 		payload: isActive
 	});
 };

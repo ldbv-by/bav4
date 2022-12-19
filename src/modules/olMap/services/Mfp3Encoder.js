@@ -11,7 +11,7 @@ import Style from 'ol/style/Style';
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
-import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
+import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
@@ -123,9 +123,10 @@ export class BvvMfp3Encoder {
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
+		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -227,7 +228,7 @@ export class BvvMfp3Encoder {
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
-				attribution: wmtsGeoResource.attribution
+				attribution: wmtsGeoResource.getAttribution()
 			};
 		};
 
@@ -261,7 +262,7 @@ export class BvvMfp3Encoder {
 			opacity: olLayer.getOpacity(),
 			styles: styles,
 			customParams: defaultCustomParams,
-			attribution: wmsGeoResource.attribution
+			attribution: wmsGeoResource.getAttribution()
 		};
 	}
 
@@ -275,7 +276,7 @@ export class BvvMfp3Encoder {
 			return group;
 		}, {});
 
-		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], Point: [] };
+		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], MultiPoint: [], Point: [] };
 		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
 		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
 
@@ -286,6 +287,7 @@ export class BvvMfp3Encoder {
 			...groupedByGeometryType['GeometryCollection'],
 			...groupedByGeometryType['LineString'],
 			...groupedByGeometryType['MultiLineString'],
+			...groupedByGeometryType['MultiPoint'],
 			...groupedByGeometryType['Point']];
 
 		const transformForMfp = (olFeature) => {
@@ -336,7 +338,7 @@ export class BvvMfp3Encoder {
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(Array.from(styleCache.values())),
 			opacity: olVectorLayer.getOpacity(),
-			attribution: geoResource.attribution
+			attribution: geoResource.getAttribution()
 		};
 	}
 
@@ -396,7 +398,7 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof Point;
+				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point || geometry instanceof MultiPoint;
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
@@ -416,6 +418,10 @@ export class BvvMfp3Encoder {
 		}
 
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
+		if (!olFeatureToEncode) {
+			console.warn('feature not encodable', olFeature);
+			return null;
+		}
 		const addOrUpdateEncodedStyle = (olStyle) => {
 			const addEncodedStyle = () => {
 				const encodedStyle = { ...initEncodedStyle(), symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
@@ -471,7 +477,7 @@ export class BvvMfp3Encoder {
 
 	_encodeGeometryType(olGeometryType) {
 		const defaultEncoding = (geometryType) => geometryType.toLowerCase();
-		const specialEncodings = { LineString: () => 'line', MultiPolygon: () => 'polygon' };
+		const specialEncodings = { MultiPoint: () => 'point', LineString: () => 'line', MultiPolygon: () => 'polygon', MultiLineString: () => 'line' };
 
 		return Object.hasOwn(specialEncodings, olGeometryType) ? specialEncodings[olGeometryType]() : defaultEncoding(olGeometryType);
 	}
@@ -742,6 +748,57 @@ export class BvvMfp3Encoder {
 							strokeColor: '#ff0000'
 						}]
 				}
+			}
+		};
+	}
+
+	_encodeGridLayer(scale) {
+		const defaultSpacing = 1000;
+		const spacings = new Map([
+			[2000000, 100000],
+			[1000000, 100000],
+			[500000, 50000],
+			[200000, 20000],
+			[100000, 10000],
+			[50000, 5000],
+			[25000, 2000],
+			[10000, 1000],
+			[5000, 500],
+			[2500, 200],
+			[1250, 100],
+			[1000, 100],
+			[500, 50]
+		]);
+
+		const spacing = spacings.has(scale) ? spacings.get(scale) : defaultSpacing;
+		return {
+			type: 'grid',
+			gridType: 'lines',
+			origin: [
+				600000,
+				4800000
+			],
+			spacing: [
+				spacing,
+				spacing
+			],
+			renderAsSvg: true,
+			haloColor: '#f5f5f5',
+			labelColor: 'black',
+			labelFormat: '%1.0f %s',
+			indent: 10,
+			haloRadius: 4,
+			font: {
+				name: [
+					'Liberation Sans',
+					'Helvetica',
+					'Nimbus Sans L',
+					'Liberation Sans',
+					'FreeSans',
+					'Sans-serif'
+				],
+				size: 8,
+				style: 'BOLD'
 			}
 		};
 	}

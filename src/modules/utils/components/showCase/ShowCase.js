@@ -359,7 +359,7 @@ export class ShowCase extends BaElement {
 
 			<h3>Profile</h3>
 			<div class='example row'>
-			<ba-button id='button1' .label=${'Show/Hide altitude profile'} @click=${onClickOpenProfile}></ba-button>
+			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
 			<ba-profile></ba-profile>
 			</div>
 				

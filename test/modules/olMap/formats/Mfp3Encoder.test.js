@@ -1,5 +1,5 @@
 
-import { LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
+import { GeometryCollection, LineString, MultiLineString, MultiPoint, MultiPolygon, Point, Polygon } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
@@ -155,6 +155,19 @@ describe('BvvMfp3Encoder', () => {
 
 			expect(shortenerSpy).toHaveBeenCalled();
 			expect(qrCodeSpy).toHaveBeenCalled();
+		});
+
+		it('encodes with optional grid', async () => {
+			const expectedScale = 1000;
+			const encodingProperties = getProperties({ ...defaultProperties, showGrid: true, scale: expectedScale });
+			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+			const gridSpy = spyOn(encoder, '_encodeGridLayer').withArgs(expectedScale).and.callThrough();
+
+
+			await encoder.encode(mapMock, encodingProperties);
+
+			expect(gridSpy).toHaveBeenCalled();
 		});
 
 		it('fails to encode for invalid properties', async () => {
@@ -461,7 +474,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -493,7 +506,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -525,7 +538,7 @@ describe('BvvMfp3Encoder', () => {
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
 				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: null
+				attribution: jasmine.any(Object)
 			});
 		});
 
@@ -556,7 +569,7 @@ describe('BvvMfp3Encoder', () => {
 			const wmsLayerMock = { get: () => 'foo', getSource: () => sourceMock, getOpacity: () => 1 };
 
 			const wmsGeoResourceMock = {
-				id: 'foo', format: 'image/png', get attribution() {
+				id: 'foo', format: 'image/png', getAttribution: () => {
 					return { copyright: { label: 'Foo CopyRight' } };
 				}, importedByUser: false
 			};
@@ -707,7 +720,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const getGeoResourceMock = () => {
 				return {
-					id: 'foo', get attribution() {
+					id: 'foo', getAttribution: () => {
 						return { copyright: { label: 'Foo CopyRight' } };
 					}, importedByUser: false
 				};
@@ -1160,6 +1173,59 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
+			it('writes a multiPoint feature with feature style function', () => {
+				const featureWithStyle = new Feature({ geometry: new MultiPoint([[30, 30], [30, 40]]) });
+				featureWithStyle.setStyle(getStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'MultiPoint',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'point',
+								zIndex: 0,
+								rotation: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								fillColor: '#ffffff',
+								fillOpacity: 0.4,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
 			describe('when the map is rotated', () => {
 				it('writes a point feature (text) with a label relative to map rotation', () => {
 					const mapRotation = 42;
@@ -1226,8 +1292,8 @@ describe('BvvMfp3Encoder', () => {
 				featureWithStyle.setStyle(getImageStyle());
 				const featureWithoutStyle = new Feature({ geometry: new Point([30, 30]) });
 				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle, featureWithoutStyle] });
-
 				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const warnSpy = spyOn(console, 'warn');
 
 				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
 				const geoResourceMock = getGeoResourceMock();
@@ -1236,6 +1302,28 @@ describe('BvvMfp3Encoder', () => {
 				encoder._pageExtent = [20, 20, 50, 50];
 				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
 
+				expect(warnSpy).toHaveBeenCalledWith('cannot style feature', jasmine.any(Feature));
+				expect(actualSpec.geoJson.features).toHaveSize(1);
+			});
+
+			it('does NOT writes a feature with unsupported geometry', () => {
+				const unsupportedGeometry = new GeometryCollection([new Point([30, 30]), new LineString([[30, 30], [40, 40]])]);
+				const featureWithGeometry = new Feature({ geometry: new Point([30, 30]) });
+				const featureWithInvalidGeometry = new Feature({ geometry: unsupportedGeometry });
+				featureWithGeometry.setStyle(getImageStyle());
+				featureWithInvalidGeometry.setStyle(getImageStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithGeometry, featureWithInvalidGeometry] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				const warnSpy = spyOn(console, 'warn');
+
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(warnSpy).toHaveBeenCalledWith('feature not encodable', jasmine.any(Feature));
 				expect(actualSpec.geoJson.features).toHaveSize(1);
 			});
 
@@ -1278,6 +1366,54 @@ describe('BvvMfp3Encoder', () => {
 							type: 'Feature',
 							geometry: {
 								type: 'LineString',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'line',
+								zIndex: 0,
+								fillOpacity: 0,
+								strokeWidth: 2.6785714285714284,
+								strokeColor: '#3399cc',
+								strokeOpacity: 1,
+								strokeLinecap: 'round',
+								strokeLineJoin: 'round'
+							}]
+						}
+					}
+				});
+			});
+
+			it('writes a multiline feature with stroke style', () => {
+				const featureWithStyle = new Feature({ geometry: new MultiLineString([[[30, 30], [40, 40]], [[40, 40], [35, 350]]]) });
+				featureWithStyle.setStyle(getStrokeStyle());
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					attribution: { copyright: { label: 'Foo CopyRight' } },
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'MultiLineString',
 								coordinates: jasmine.any(Array)
 							},
 							properties: {
@@ -1906,6 +2042,32 @@ describe('BvvMfp3Encoder', () => {
 			expect(tileMatrixSet[15].topLeftCorner).toEqual([-46133.17, 6301219.54]);
 			expect(tileMatrixSet[15].tileSize).toEqual([256, 256]);
 			expect(tileMatrixSet[15].matrixSize).toEqual([32768, 32768]);
+		});
+	});
+
+	describe('_encodeGridLayer', () => {
+		it('uses the appropriate spacing for defined scale', () => {
+			const validScales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
+			const expectedSpacings = [100000, 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100, 100, 50];
+			const classUnderTest = setup();
+
+
+			// act & assert
+			validScales.forEach((validScale, index) => {
+				const actualGridLayerSpec = classUnderTest._encodeGridLayer(validScale);
+				const expectedSpacing = expectedSpacings[index];
+				expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
+			});
+		});
+
+		it('uses the default spacing for a unknown scale', () => {
+			const unknownScale = 42;
+			const expectedSpacing = 1000;
+			const classUnderTest = setup();
+
+			const actualGridLayerSpec = classUnderTest._encodeGridLayer(unknownScale);
+
+			expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
 		});
 	});
 });

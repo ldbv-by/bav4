@@ -1,4 +1,4 @@
-import { activate, cancelJob, deactivate, requestJob, setAutoRotation, setCurrent, setId, setScale, startJob } from '../../../src/store/mfp/mfp.action';
+import { activate, cancelJob, deactivate, requestJob, setAutoRotation, setCurrent, setId, setScale, setShowGrid, startJob } from '../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../src/store/mfp/mfp.reducer';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { TestUtils } from '../../test-utils';
@@ -17,6 +17,7 @@ describe('mfpReducer', () => {
 		expect(store.getState().mfp.current.id).toBeNull();
 		expect(store.getState().mfp.current.scale).toBeNull();
 		expect(store.getState().mfp.autoRotation).toBeTrue();
+		expect(store.getState().mfp.showGrid).toBeFalse();
 		expect(store.getState().mfp.jobRequest).toBeNull();
 		expect(store.getState().mfp.jobSpec).toBeNull();
 	});
@@ -69,6 +70,19 @@ describe('mfpReducer', () => {
 		setAutoRotation(true);
 
 		expect(store.getState().mfp.autoRotation).toBeTrue();
+	});
+
+
+	it('updates the showGrid property', () => {
+		const store = setup();
+
+		setShowGrid(true);
+
+		expect(store.getState().mfp.showGrid).toBeTrue();
+
+		setShowGrid(false);
+
+		expect(store.getState().mfp.showGrid).toBeFalse();
 	});
 
 	it('places a new request for an mfp job', () => {

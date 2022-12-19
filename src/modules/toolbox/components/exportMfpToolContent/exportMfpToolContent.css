@@ -6,15 +6,18 @@
 	position: relative;
 	top: -.2em;
 }
+
 .preview_button {
 	width: 100%;
 	padding: .8em 1.5em;
 }
+
 .button-container {
 	display: flex;
 	align-items: flex-end;
 	justify-content: center;
 }
+
 .button-container button {
 	margin: .5em .8em;
 	background: transparent;
@@ -22,20 +25,25 @@
 	font-weight: bold;
 	color: var(--primary-color);
 	transform: scale(1.2);
-	transition: all var(--animation-duration-small-open) var(--animation-easing-close);      
+	transition: all var(--animation-duration-small-open) var(--animation-easing-close);
 }
+
 .button-container button::after {
 	color: var(--primary-color);
 }
+
 .button-container button.active::after {
 	color: var(--text3);
 }
+
 .button-container button:hover::after {
 	color: var(--text3);
 }
+
 .button-container button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
+
 .button-container button:hover {
 	margin: .5em .8em;
 	background: var(--secondary-color);
@@ -44,6 +52,7 @@
 	color: var(--text3);
 	transform: scale(1.2);
 }
+
 .button-container button.active {
 	margin: .5em .8em;
 	background: var(--primary-color);
@@ -52,37 +61,100 @@
 	color: var(--text3);
 	transform: scale(1.2);
 }
+
 .a4_portrait {
 	width: 2.1em;
-	height: 2.97em;	
+	height: 2.97em;
 }
+
 .a4_portrait::after {
 	content: "A4";
 }
+
 .a4_landscape {
 	height: 2.1em;
-	width: 2.97em;	
+	width: 2.97em;
 }
+
 .a4_landscape::after {
 	content: "A4";
 }
+
 .a3_portrait {
 	height: 4.2em;
-	width: 2.97em;		
+	width: 2.97em;
 }
+
 .a3_portrait::after {
 	content: "A3";
 }
+
 .a3_landscape {
-	height: 2.97em;		
+	height: 2.97em;
 	width: 4.2em;
 }
+
 .a3_landscape::after {
 	content: "A3";
 }
-.tool-sub-header {
-	margin: 0 0em 1em;
-}
+
 .separator {
-	border-top: 1px dotted var(--header-background-color);
+	border-top: 1px solid var(--header-background-color);
+	padding-top: 0.5em;
+}
+
+.tool-option {
+	margin: 0 1em 1em;
+}
+
+.sub-header {
+	display: flex;
+	cursor: pointer;
+}
+
+.sub-header-text {
+	font-weight: bold;
+	color: var(--text2);
+	flex-grow: 1;
+	font-size: .9rem;
+}
+
+.iscollapse {
+	max-height: 0;
+	display: none;
+}
+
+.collapse-content {
+	padding: 1em 0em 0em;
+}
+
+.iscollaps {
+	max-height: 0;
+	display: none;
+}
+
+.chevron {
+	position: relative;
+	mask: url('./assets/chevron-right.svg');
+	-webkit-mask-image: url('./assets/chevron-right.svg');
+	mask-image: url('./assets/chevron-right.svg');
+}
+
+.icon {
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	display: inline-block;
+	height: 16px;
+	width: 10px;
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+}
+
+.iconexpand {
+	-moz-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
 }
