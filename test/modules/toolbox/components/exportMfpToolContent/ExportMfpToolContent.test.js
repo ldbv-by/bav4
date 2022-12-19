@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
@@ -8,7 +9,7 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
-
+window.customElements.define(Toggle.tag, Toggle);
 
 describe('ExportMfpToolContent', () => {
 	let store;
@@ -28,7 +29,10 @@ describe('ExportMfpToolContent', () => {
 	const mfpDefaultState = {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
+		autoRotation: true,
+		showGrid: false,
 		jobSpec: null,
+		collapsedOptions: null,
 		isJobStarted: false
 	};
 
@@ -72,6 +76,9 @@ describe('ExportMfpToolContent', () => {
 			expect(model).toEqual({
 				id: null,
 				scale: null,
+				autoRotation: true,
+				showGrid: false,
+				collapsedOptions: null,
 				isJobStarted: false
 			});
 		});
@@ -99,7 +106,19 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#select_scale')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#btn_submit').label).toBe('toolbox_exportMfp_submit');
 			expect(element.shadowRoot.querySelector('#btn_submit').disabled).toBeFalse();
+			expect(element.shadowRoot.querySelector('#autorotation').checked).toBeTrue();
+			expect(element.shadowRoot.querySelector('#autorotation').title).toBe('toolbox_exportMfp_autorotation_title');
+			expect(element.shadowRoot.querySelector('#showgrid').checked).toBeFalse();
+			expect(element.shadowRoot.querySelector('#showgrid').title).toBe('toolbox_exportMfp_show_grid_title');
 
+			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
+			expect(subHeaderElements).toHaveSize(2);
+			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
+
+			expect(element.shadowRoot.querySelectorAll('.sub-header')).toHaveSize(1);
+			// HINT: Safari renders the innerText with a carriage return line feed. So instead of asserting with .toBe() we
+			// have to test against a regex.
+			expect(element.shadowRoot.querySelector('.sub-header').innerText).toMatch(/^toolbox_exportMfp_options[\r\n]?$/);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
@@ -159,6 +178,22 @@ describe('ExportMfpToolContent', () => {
 			const layoutOptions = element.shadowRoot.querySelectorAll('#select_scale option');
 
 			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
+		});
+
+		it('collapse container', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			const collapseButton = element.shadowRoot.querySelectorAll('.sub-header');
+			expect(collapseButton.length).toBe(1);
+
+			const isCollapse = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse.length).toBe(1);
+
+			collapseButton[0].click();
+
+			const isCollapse1 = element.shadowRoot.querySelectorAll('.iscollapse');
+			expect(isCollapse1.length).toBe(0);
 		});
 	});
 
@@ -366,5 +401,47 @@ describe('ExportMfpToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('#btn_submit')[0].type).toBe('primary');
 		});
+	});
+
+	describe('when the user toggles the autorotation-toggle', () => {
+
+		it('changes store', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			expect(store.getState().mfp.autoRotation).toBeTrue();
+
+			const toggleButton = element.shadowRoot.querySelector('#autorotation');
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.autoRotation).toBeFalse();
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.autoRotation).toBeTrue();
+		});
+
+	});
+
+	describe('when the user toggles the showGrid-toggle', () => {
+
+		it('changes store', async () => {
+			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
+
+			const toggleButton = element.shadowRoot.querySelector('#showgrid');
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.showGrid).toBeTrue();
+
+			toggleButton.click();
+
+			expect(store.getState().mfp.showGrid).toBeFalse();
+		});
+
 	});
 });

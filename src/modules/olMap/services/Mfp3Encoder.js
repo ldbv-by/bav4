@@ -11,7 +11,7 @@ import Style from 'ol/style/Style';
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
 import { MeasurementOverlay } from '../components/MeasurementOverlay';
-import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
+import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
@@ -113,20 +113,20 @@ export class BvvMfp3Encoder {
 			.flatMap(l => this._encode(l))
 			.reduce((layerSpecs, encodedLayer) => {
 				// todo: extract to method
-				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
+				const { attribution, ...restSpec } = encodedLayer;
 				const getLabels = (attribution) => Array.isArray(attribution) ? attribution?.map(a => a.copyright.label) : [attribution?.copyright?.label];
 
 				return {
 					specs: [...layerSpecs.specs, restSpec],
-					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
-					thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
+					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners]
 				};
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
+		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
-		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
-		const layers = [encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -139,7 +139,6 @@ export class BvvMfp3Encoder {
 					layers: layers
 				},
 				dataOwner: encodedLayers.dataOwners.length !== 0 ? Array.from(new Set(encodedLayers.dataOwners)).join(',') : '',
-				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? Array.from(new Set(encodedLayers.thirdPartyDataOwners)).join(',') : '',
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -229,8 +228,7 @@ export class BvvMfp3Encoder {
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
-				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
-				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
+				attribution: wmtsGeoResource.getAttribution()
 			};
 		};
 
@@ -264,8 +262,7 @@ export class BvvMfp3Encoder {
 			opacity: olLayer.getOpacity(),
 			styles: styles,
 			customParams: defaultCustomParams,
-			attribution: wmsGeoResource.importedByUser ? null : wmsGeoResource.attribution,
-			thirdPartyAttribution: wmsGeoResource.importedByUser ? wmsGeoResource.attribution : null
+			attribution: wmsGeoResource.getAttribution()
 		};
 	}
 
@@ -279,7 +276,7 @@ export class BvvMfp3Encoder {
 			return group;
 		}, {});
 
-		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], Point: [] };
+		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], MultiPoint: [], Point: [] };
 		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
 		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
 
@@ -290,6 +287,7 @@ export class BvvMfp3Encoder {
 			...groupedByGeometryType['GeometryCollection'],
 			...groupedByGeometryType['LineString'],
 			...groupedByGeometryType['MultiLineString'],
+			...groupedByGeometryType['MultiPoint'],
 			...groupedByGeometryType['Point']];
 
 		const transformForMfp = (olFeature) => {
@@ -340,8 +338,7 @@ export class BvvMfp3Encoder {
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(Array.from(styleCache.values())),
 			opacity: olVectorLayer.getOpacity(),
-			attribution: geoResource.importedByUser ? null : geoResource.attribution,
-			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
+			attribution: geoResource.getAttribution()
 		};
 	}
 
@@ -401,7 +398,7 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof Point;
+				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point || geometry instanceof MultiPoint;
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
@@ -421,6 +418,10 @@ export class BvvMfp3Encoder {
 		}
 
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
+		if (!olFeatureToEncode) {
+			console.warn('feature not encodable', olFeature);
+			return null;
+		}
 		const addOrUpdateEncodedStyle = (olStyle) => {
 			const addEncodedStyle = () => {
 				const encodedStyle = { ...initEncodedStyle(), symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
@@ -476,7 +477,7 @@ export class BvvMfp3Encoder {
 
 	_encodeGeometryType(olGeometryType) {
 		const defaultEncoding = (geometryType) => geometryType.toLowerCase();
-		const specialEncodings = { LineString: () => 'line', MultiPolygon: () => 'polygon' };
+		const specialEncodings = { MultiPoint: () => 'point', LineString: () => 'line', MultiPolygon: () => 'polygon', MultiLineString: () => 'line' };
 
 		return Object.hasOwn(specialEncodings, olGeometryType) ? specialEncodings[olGeometryType]() : defaultEncoding(olGeometryType);
 	}
@@ -567,8 +568,10 @@ export class BvvMfp3Encoder {
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = textStyle.getText();
-			encoded.labelXOffset = textStyle.getOffsetX();
-			encoded.labelYOffset = textStyle.getOffsetY();
+			// additional X- or Y-Offset is ommitted, text is currently center aligned.
+			// An Y-offset of -5 is only needed to display the text in ol map vertical centered.
+			// encoded.labelXOffset = textStyle.getOffsetX();
+			// encoded.labelYOffset = textStyle.getOffsetY();
 			encoded.type = 'text';
 
 			const fromOlTextAlign = (olTextAlign) => {
@@ -602,6 +605,10 @@ export class BvvMfp3Encoder {
 				encoded.fontFamily = fontValues[2].toUpperCase();
 				encoded.fontSize = parseInt(fontValues[1]);
 				encoded.fontWeight = fontValues[0];
+			}
+
+			if (this._mfpProperties.rotation) {
+				encoded.labelRotation = (360 - this._mfpProperties.rotation) % 360;
 			}
 		}
 
@@ -656,14 +663,15 @@ export class BvvMfp3Encoder {
 				}
 			};
 		};
+		const overlayFeatures = overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null);
 
-		return {
+		return overlayFeatures.length === 0 ? [] : {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
 			geoJson: {
 				type: 'FeatureCollection',
-				features: overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null)
+				features: overlayFeatures
 			},
 			style: {
 				version: 2,
@@ -744,6 +752,57 @@ export class BvvMfp3Encoder {
 		};
 	}
 
+	_encodeGridLayer(scale) {
+		const defaultSpacing = 1000;
+		const spacings = new Map([
+			[2000000, 100000],
+			[1000000, 100000],
+			[500000, 50000],
+			[200000, 20000],
+			[100000, 10000],
+			[50000, 5000],
+			[25000, 2000],
+			[10000, 1000],
+			[5000, 500],
+			[2500, 200],
+			[1250, 100],
+			[1000, 100],
+			[500, 50]
+		]);
+
+		const spacing = spacings.has(scale) ? spacings.get(scale) : defaultSpacing;
+		return {
+			type: 'grid',
+			gridType: 'lines',
+			origin: [
+				600000,
+				4800000
+			],
+			spacing: [
+				spacing,
+				spacing
+			],
+			renderAsSvg: true,
+			haloColor: '#f5f5f5',
+			labelColor: 'black',
+			labelFormat: '%1.0f %s',
+			indent: 10,
+			haloRadius: 4,
+			font: {
+				name: [
+					'Liberation Sans',
+					'Helvetica',
+					'Nimbus Sans L',
+					'Liberation Sans',
+					'FreeSans',
+					'Sans-serif'
+				],
+				size: 8,
+				style: 'BOLD'
+			}
+		};
+	}
+
 	static adjustDistance(distance, dpi) {
 		return distance != null ? distance * 90 / dpi : null;
 	}
@@ -760,6 +819,16 @@ export class BvvMfp3Encoder {
 			console.warn('Could not shorten url: ' + e);
 			return url;
 		}
+	}
+
+	_generateQrCode(linkUrl) {
+		try {
+			return this._urlService.qrCode(linkUrl);
+		}
+		catch (e) {
+			console.warn('Could not generate qr-code url: ' + e);
+		}
+		return null;
 	}
 
 	static buildMatrixSets(tileGrid) {

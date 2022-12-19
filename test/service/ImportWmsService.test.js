@@ -3,6 +3,7 @@ import { WmsGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { ImportWmsService } from '../../src/services/ImportWmsService';
 import { bvvCapabilitiesProvider } from '../../src/services/provider/wmsCapabilities.provider';
+import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/services/provider/attribution.provider';
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {
@@ -17,6 +18,12 @@ describe('ImportWmsService', () => {
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('UrlService', urlService);
 	});
+
+	const handledByGeoResourceServiceMarker = 'marker';
+	const addOrReplaceMethodMock = gr => {
+		gr.marker = handledByGeoResourceServiceMarker;
+		return gr;
+	};
 
 	describe('init', () => {
 
@@ -56,7 +63,7 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms';
 			const options = getOptions();
 			const resultMock = [new WmsGeoResource('0', '', '', '', ''), new WmsGeoResource('1', '', '', '', ''), new WmsGeoResource('2', '', '', '', '')];
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
 			const urlServiceSpy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(async () => {
 				return resultMock;
@@ -66,12 +73,14 @@ describe('ImportWmsService', () => {
 			expect(result).toHaveSize(3);
 			result.forEach(gr => {
 				expect(gr.importedByUser).toBeTrue();
+				expect(gr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(gr)]);
+				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
 			});
 			expect(geoResourceServiceSpy).toHaveBeenCalledTimes(3);
 			expect(urlServiceSpy).toHaveBeenCalled();
 		});
 
-		it('use defaultOptions', async () => {
+		it('uses defaultOptions', async () => {
 			const url = 'https://some.url/wms';
 
 			const resultMock = [];

@@ -235,7 +235,7 @@ describe('sourceType provider', () => {
 			const version = 'version';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const payload = JSON.stringify({ url: url });
-			const sourceTypeResultPayload = { name: 'WMS', version: 'version', srid: 3857 };
+			const sourceTypeResultPayload = { name: 'WMS', version: 'version' };
 			const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(null);
 			const httpServiceSpy = spyOn(httpService, 'post').withArgs(backendUrl + 'sourceType', payload, MediaType.JSON).and.returnValue(Promise.resolve(
 				new Response(
@@ -252,6 +252,7 @@ describe('sourceType provider', () => {
 			expect(sourceType).toBeInstanceOf(SourceType);
 			expect(sourceType.name).toBe(SourceTypeName.WMS);
 			expect(sourceType.version).toBe(version);
+			expect(sourceType.srid).toBeNull();
 			expect(status).toEqual(SourceTypeResultStatus.OK);
 			expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		});

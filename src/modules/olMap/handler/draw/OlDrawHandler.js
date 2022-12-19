@@ -31,6 +31,7 @@ import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
 import { hexToRgb } from '../../../../utils/colors';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 
 
 
@@ -782,7 +783,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const id = this._storageHandler.getStorageId();
 		const getOrCreateVectorGeoResource = () => {
 			const fromService = this._geoResourceService.byId(id);
-			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML);
+			return fromService ? fromService : new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 		};
 		const vgr = getOrCreateVectorGeoResource();
 		vgr.setSource(this._storedContent, 4326);

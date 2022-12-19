@@ -50,7 +50,8 @@ export class AttributionInfo extends MvuElement {
 			.map(l => this._georesourceService.byId(l.geoResourceId)?.getAttribution(zoomLevel))
 			//remove null 'attr'
 			.filter(attr => !!attr)
-			.flat();
+			.flat()
+			.reverse();
 
 		// make attributions unique by 'label'
 		const labels = rawAttributions.map(a => a?.copyright?.label); //attr.copyright.label should be guaranteed
