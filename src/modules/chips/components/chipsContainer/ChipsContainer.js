@@ -5,13 +5,14 @@ import { MvuElement } from '../../../MvuElement';
 import { openModal } from '../../../../store/modal/modal.action';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 
-const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
+const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Chips = 'update_chips';
 
 /**
  * @class
  * @author alsturm
+ * @author taulinger
  */
 export class ChipsContainer extends MvuElement {
 
@@ -19,6 +20,8 @@ export class ChipsContainer extends MvuElement {
 		super({
 			isPortrait: false,
 			hasMinWidth: false,
+			isDarkSchema: false,
+			isOpen: false,
 			currentChips: []
 		});
 
@@ -28,6 +31,7 @@ export class ChipsContainer extends MvuElement {
 			= $injector.inject('EnvironmentService');
 
 		this._environmentService = environmentService;
+		this._resizeObserver = null;
 	}
 
 
@@ -36,7 +40,7 @@ export class ChipsContainer extends MvuElement {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_IsPortrait_HasMinWidth:
+			case Update_Media_Related_Properties:
 				return { ...model, ...data };
 			case Update_IsOpen_TabIndex:
 				return { ...model, ...data };
@@ -49,11 +53,9 @@ export class ChipsContainer extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isDarkSchema: media.darkSchema, isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
+		this.observe(state => state.media, media => this.signal(Update_Media_Related_Properties, { isDarkSchema: media.darkSchema, isPortrait: media.portrait, hasMinWidth: media.minWidth }));
+		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open }));
 		this.observe(state => state.chips.current, current => this.signal(Update_Chips, { currentChips: [...current] }));
-
-
 	}
 
 	/**
@@ -61,22 +63,29 @@ export class ChipsContainer extends MvuElement {
 	*/
 	onAfterRender(firsttime) {
 
-		this._myObserver = new ResizeObserver(entries => {
+		const showOrHideScrollButtons = (container) => {
+			const isScrollable = (container.scrollWidth > container.clientWidth) ? true : false;
+			(isScrollable) ? container.classList.add('show') : container.classList.remove('show');
+		};
+		const scrollElement = this.shadowRoot.getElementById('chipscontainer');
+		showOrHideScrollButtons(scrollElement);
+
+		this._resizeObserver = new (this._environmentService.getWindow()).ResizeObserver(entries => {
 			for (const entry of entries) {
-				const isScrollable = (entry.target.scrollWidth > entry.target.clientWidth) ? true : false;
-				(isScrollable) ? entry.target.classList.add('show') : entry.target.classList.remove('show');
+				showOrHideScrollButtons(entry.target);
 			}
 		});
 
 		if (firsttime) {
 			const chipsContainer = this.shadowRoot.getElementById('chipscontainer');
-			this._myObserver.observe(chipsContainer);
+			this._resizeObserver.observe(chipsContainer);
 		}
 	}
 
 	onDisconnect() {
-		const chipsContainer = this.shadowRoot.getElementById('chipscontainer');
-		this._myObserver.unobserve(chipsContainer);
+		if (this._resizeObserver) {
+			this._resizeObserver.disconnect();
+		}
 	}
 
 	/**
@@ -97,27 +106,18 @@ export class ChipsContainer extends MvuElement {
 			return (isOpen && !isPortrait) ? 'is-open' : '';
 		};
 
-		const isOverflown = () => {
-			const scrollElement = this.shadowRoot.getElementById('chipscontainer');
-			if (scrollElement) {
-				return (scrollElement.scrollWidth > scrollElement.clientWidth) ? 'show' : '';
-			}
-			return '';
-
-		};
-
 		const scrollLeft = () => {
-			const scrollElement = this.shadowRoot.getElementById('chipscontainer');
-			scrollElement.scrollLeft += scrollElement.clientWidth;
+			const container = this.shadowRoot.getElementById('chipscontainer');
+			container.scrollLeft += container.clientWidth;
 		};
 
 		const scrollRight = () => {
-			const scrollElement = this.shadowRoot.getElementById('chipscontainer');
-			scrollElement.scrollLeft -= scrollElement.clientWidth;
+			const container = this.shadowRoot.getElementById('chipscontainer');
+			container.scrollLeft -= container.clientWidth;
 		};
 
 		const openButtonModal = (chip) => {
-			openModal(chip.title, html`<style>${css}</style><iframe title=${chip.title } src=${chip.href} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`);
+			openModal(chip.title, html`<style>${css}</style><iframe title=${chip.title} src=${chip.href} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe>`);
 		};
 
 		const renderIcon = (chip) => {
@@ -168,12 +168,12 @@ export class ChipsContainer extends MvuElement {
 
 		return html`
 			<style>${css}</style>	
-			<div id='chipscontainer' class="${isOverflown()} ${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">  			
+			<div id='chipscontainer' class="${getOrientationClass()} ${getMinWidthClass()} ${getOverlayClass()} chips__container">  			
 				<button class='chips__scroll-button chips__scroll-button-left' @click="${(scrollRight)}">			
 					<span class="icon">	
 					</span>	
 				</button>
-				${ (currentChips.length === 0) ? nothing : getLayoutChips(currentChips)}	
+				${(currentChips.length === 0) ? nothing : getLayoutChips(currentChips)}	
 				<button class='chips__scroll-button chips__scroll-button-right' @click="${(scrollLeft)}">		
 					<span class="icon">	
 					</span>	
