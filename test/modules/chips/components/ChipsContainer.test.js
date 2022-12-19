@@ -239,11 +239,11 @@ describe('ChipsContainer', () => {
 			expect(chips).toHaveSize(2);
 
 			const chip0 = container.querySelectorAll(`.chips__${chipId0}`)[0];
-			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color')).toBe('colorLight');
-			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-background-color')).toBe('backgroundColorLight');
+			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color').trim()).toBe('colorLight');
+			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-background-color').trim()).toBe('backgroundColorLight');
 			const chip1 = container.querySelectorAll(`.chips__${chipId1}`)[0];
-			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-color')).toBe('colorLight');
-			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-background-color')).toBe('backgroundColorLight');
+			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-color').trim()).toBe('colorLight');
+			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-background-color').trim()).toBe('backgroundColorLight');
 		});
 
 		it('adds css classes reflecting the dark schema', async () => {
@@ -290,11 +290,11 @@ describe('ChipsContainer', () => {
 			expect(chips).toHaveSize(2);
 
 			const chip0 = container.querySelectorAll(`.chips__${chipId0}`)[0];
-			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color')).toBe('colorDark');
-			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-background-color')).toBe('backgroundColorDark');
+			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-color').trim()).toBe('colorDark');
+			expect(window.getComputedStyle(chip0).getPropertyValue('--chip-background-color').trim()).toBe('backgroundColorDark');
 			const chip1 = container.querySelectorAll(`.chips__${chipId1}`)[0];
-			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-color')).toBe('colorDark');
-			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-background-color')).toBe('backgroundColorDark');
+			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-color').trim()).toBe('colorDark');
+			expect(window.getComputedStyle(chip1).getPropertyValue('--chip-background-color').trim()).toBe('backgroundColorDark');
 		});
 
 		it('renders 4 chips', async () => {
