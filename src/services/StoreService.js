@@ -24,6 +24,7 @@ import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
 import { altitudeProfileReducer } from '../store/altitudeProfile/altitudeProfile.reducer';
+import { chipsReducer } from '../store/chips/chips.reducer';
 
 
 
@@ -64,7 +65,8 @@ export class StoreService {
 			import: importReducer,
 			mfp: mfpReducer,
 			bottomSheet: bottomSheetReducer,
-			altitudeProfile: altitudeProfileReducer
+			altitudeProfile: altitudeProfileReducer,
+			chips: chipsReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -74,6 +76,7 @@ export class StoreService {
 			const {
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
+				ChipsPlugin: chipsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
 				DrawPlugin: drawPlugin,
@@ -91,6 +94,7 @@ export class StoreService {
 			}
 				= $injector.inject(
 					'TopicsPlugin',
+					'ChipsPlugin',
 					'LayersPlugin',
 					'GeolocationPlugin',
 					'MeasurementPlugin',
@@ -112,6 +116,7 @@ export class StoreService {
 				//register plugins
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
+				await chipsPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
