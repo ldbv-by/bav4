@@ -104,9 +104,15 @@ describe('OlMfpHandler', () => {
 				zoom: 1
 			})
 		});
-		spyOn(map, 'getSize').and.callFake(() => mapSize);
+		spyOn(map, 'getSize').and.callFake(() => [...mapSize]);
 		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => requestedCoordinate);
 		return map;
+	};
+
+	const getClassUnderTest = () => {
+		const classUnderTest = new OlMfpHandler();
+		spyOn(classUnderTest, '_updateMfpPreviewLazy').and.callFake(() => classUnderTest._updateMfpPreview()); //deactivates the lazy interval
+		return classUnderTest;
 	};
 
 	it('instantiates the handler', () => {
@@ -124,9 +130,10 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
+
 		it('creates a mfp-layer', () => {
 			setup();
-			const classUnderTest = new OlMfpHandler();
+			const classUnderTest = getClassUnderTest();
 			const map = setupMap();
 			const layer = classUnderTest.activate(map);
 
@@ -137,7 +144,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
@@ -148,7 +155,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			const mfpBoundaryFeatureSpy = spyOn(handler._mfpBoundaryFeature, 'setStyle').and.callThrough();
 
 
@@ -167,7 +174,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			handler.activate(map);
 
 			const updateSpy = spyOn(handler, '_updateMfpPage').withArgs(current).and.callThrough();
@@ -176,12 +183,21 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
+		it('updates the preview lazy', () => {
+			const map = setupMap();
+			setup({ ...initialState, scale: 42 });
+			const handler = new OlMfpHandler();
+			const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
+			handler.activate(map);
+			expect(lazySpy).toHaveBeenCalledTimes(1);
+		});
+
 		it('updates mfpPreview after store changes', () => {
 			const center = [0, 0];
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			handler.activate(map);
 
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
@@ -194,7 +210,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			const updateSpy = spyOn(handler, '_updateRotation').and.callFake(() => { });
 
 
@@ -215,7 +231,7 @@ describe('OlMfpHandler', () => {
 		it('synchronizes mfpPreview after store changes', async () => {
 			const map = setupMap();
 			setup();
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => { });
 
 			handler.activate(map);
@@ -225,20 +241,43 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalledTimes(1);
 		});
 
-		describe('when autoRotation is false', () => {
-			xit('rotates the mfp-boundary', async () => {
-				const mockBoundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+		describe('when autoRotation is reactivated', () => {
+			it('updates the preview lazy', () => {
 				const map = setupMap();
 				setup({ ...initialState, scale: 42 });
-
 				const handler = new OlMfpHandler();
+				const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
 				handler.activate(map);
-				const geodeticBoundarySpy = spyOn(handler, '_createGeodeticBoundary').withArgs({ width: jasmine.any(Number), height: jasmine.any(Number) }, jasmine.any(Point)).and.callFake(() => mockBoundary);
-				const mfpBoundarySpy = spyOn(handler, '_toMfpBoundary').withArgs(jasmine.any(Polygon), jasmine.any(Point), jasmine.any(Number)).and.callThrough();
+				lazySpy.calls.reset();
 
 				setAutoRotation(false);
-				expect(geodeticBoundarySpy).toHaveBeenCalledTimes(1);
-				expect(mfpBoundarySpy).toHaveBeenCalledTimes(1);
+				setAutoRotation(true);
+
+				expect(lazySpy).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when autoRotation is false', () => {
+
+			it('rotates the mfp-boundary', async () => {
+				const map = setupMap();
+				setup({ ...initialState, scale: 42 });
+				const handler = new OlMfpHandler();
+				spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
+				const updateRotationSpy = spyOn(handler, '_updateRotation').and.callThrough();
+				const previewSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => {	});
+
+				handler.activate(map);
+
+				setAutoRotation(false);
+				updateRotationSpy.calls.reset();
+				previewSpy.calls.reset();
+
+				changeRotation(42);
+
+				await TestUtils.timeout();
+				expect(updateRotationSpy).toHaveBeenCalledTimes(2);
+				expect(previewSpy).toHaveBeenCalledTimes(2);
 			});
 		});
 
@@ -247,7 +286,7 @@ describe('OlMfpHandler', () => {
 				const map = setupMap();
 				const store = setup({ ...initialState, scale: 42 });
 
-				const handler = new OlMfpHandler();
+				const handler = getClassUnderTest();
 				handler.activate(map);
 				await TestUtils.timeout();
 				expect(store.getState().position.rotation).toBeCloseTo(-0.03355, 5);
@@ -258,7 +297,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: jasmine.any(Number), dpi: 125, pageCenter: jasmine.any(Point), showGrid: jasmine.any(Boolean) }).and.callFake(() => { });
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
@@ -289,7 +328,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 
 			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
 
@@ -306,7 +345,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup();
 
-			const handler = new OlMfpHandler();
+			const handler = getClassUnderTest();
 			handler.activate(map);
 			const spyOnUnregister = spyOn(handler, '_unregister').withArgs(handler._registeredObservers).and.callThrough();
 			handler.deactivate(map);
@@ -408,6 +447,69 @@ describe('OlMfpHandler', () => {
 			classUnderTest._map = setupMap();
 
 			expect(classUnderTest._createGeodeticBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
+		});
+	});
+
+	describe('_updateMfpPreviewLazy', () => {
+		beforeEach(function () {
+			jasmine.clock().install();
+		});
+
+		afterEach(function () {
+			jasmine.clock().uninstall();
+		});
+		it('waits with preview until animation ends', () => {
+			setup();
+			const viewMock = { getAnimating: () => false };
+			spyOn(viewMock, 'getAnimating').and.returnValues(true, false);
+			const mapMock = { getView: () => viewMock };
+			const classUnderTest = new OlMfpHandler();
+			classUnderTest._map = mapMock;
+			const previewSpy = spyOn(classUnderTest, '_updateMfpPreview').and.callFake(() => {});
+
+			classUnderTest._updateMfpPreviewLazy();
+			jasmine.clock().tick(100 + 10); // let's 'wait' for the first and second interval
+
+			expect(previewSpy).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('_toMfpBoundary', () => {
+		const boundary = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
+		const cloned = new Polygon([[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]);
+		const center = new Point([0, 0]);
+
+		it('clone and transforms a geodetic boundary to a bundary with map projection', () => {
+			setup();
+			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
+			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
+
+			const classUnderTest = new OlMfpHandler();
+
+			const mfpBoundary = classUnderTest._toMfpBoundary(boundary, center, null);
+
+
+			expect(cloneSpy).toHaveBeenCalled();
+			expect(transformSpy).toHaveBeenCalled();
+			expect(mfpBoundary).toBe(cloned);
+		});
+
+		it('clone,transforms and rotates a geodetic boundary to a bundary with map projection', () => {
+			const azimuth = 21;
+			const mapRotation = 42;
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			spyOn(classUnderTest, '_getAzimuth').withArgs(cloned).and.returnValue(azimuth);
+			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
+			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
+			const rotationSpy = spyOn(cloned, 'rotate').and.returnValue(cloned);
+			const mfpBoundary = classUnderTest._toMfpBoundary(boundary, center, mapRotation);
+
+
+			expect(cloneSpy).toHaveBeenCalled();
+			expect(transformSpy).toHaveBeenCalled();
+			expect(rotationSpy).toHaveBeenCalledWith(mapRotation - azimuth, [0, 0]);
+			expect(mfpBoundary).toBe(cloned);
 		});
 	});
 });
