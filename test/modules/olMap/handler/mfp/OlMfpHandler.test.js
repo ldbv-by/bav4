@@ -307,8 +307,8 @@ describe('OlMfpHandler', () => {
 				changeRotation(42);
 
 				await TestUtils.timeout();
-				expect(updateRotationSpy).toHaveBeenCalledTimes(2);
-				expect(previewSpy).toHaveBeenCalledTimes(2);
+				expect(updateRotationSpy).toHaveBeenCalled();
+				expect(previewSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -546,6 +546,7 @@ describe('OlMfpHandler', () => {
 
 	describe('_isMapDraggedByUser', () => {
 		it('reads the store', () => {
+			setup();
 			const classUnderTest = new OlMfpHandler();
 			expect(classUnderTest._isMapDraggedByUser()).toBeFalse();
 
