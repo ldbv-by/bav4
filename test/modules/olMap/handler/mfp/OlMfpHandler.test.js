@@ -18,6 +18,9 @@ import { Polygon, Point, LineString } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeRotation } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
+import RenderEvent from 'ol/render/Event';
+import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
+import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
 
 
 
@@ -63,7 +66,7 @@ describe('OlMfpHandler', () => {
 		const mfpState = {
 			mfp: state
 		};
-		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer, map: mapReducer });
+		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer, map: mapReducer, pointer: pointerReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
@@ -106,12 +109,14 @@ describe('OlMfpHandler', () => {
 		});
 		spyOn(map, 'getSize').and.callFake(() => [...mapSize]);
 		spyOn(map, 'getCoordinateFromPixel').and.callFake(() => requestedCoordinate);
+		spyOn(map, 'getPixelFromCoordinate').and.callFake(() => requestedCoordinate);
 		return map;
 	};
 
 	const getClassUnderTest = () => {
 		const classUnderTest = new OlMfpHandler();
-		spyOn(classUnderTest, '_updateMfpPreviewLazy').and.callFake(() => classUnderTest._updateMfpPreview()); //deactivates the lazy interval
+		//ignores the lazy interval, it been tested seperatedly
+		spyOn(classUnderTest, '_updateMfpPreviewLazy').and.callFake(() => classUnderTest._updateMfpPreview());
 		return classUnderTest;
 	};
 
@@ -130,14 +135,40 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
+		const transform = [1, 0, 0, 1, 0, 0];
+		const get2dContext = () => {
+			const canvas = document.createElement('canvas');
+			return canvas.getContext('2d');
+		};
+		const viewState = {
+			projection: null, resolution: 1, rotation: 0
+		};
+		const setupFrameState = (time) => {
+			return {
+				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+			};
+		};
+
+		const getRenderEvent = (time, eventName) => new RenderEvent(eventName, transform, setupFrameState(time), get2dContext());
 
 		it('creates a mfp-layer', () => {
 			setup();
 			const classUnderTest = getClassUnderTest();
-			const map = setupMap();
+
+			const prerenderEvent = getRenderEvent(Date.now() - 1000, 'prerender');
+			const postrenderEvent = getRenderEvent(Date.now() - 1000, 'postrender');
+			const saveContextSpy = spyOn(prerenderEvent.context, 'save').and.callThrough();
+			const isDraggedByUserSpy = spyOn(classUnderTest, '_isMapDraggedByUser').and.returnValue(false);
+			const map = setupMap([100, 100], [50, 50], [1, 1]);
 			const layer = classUnderTest.activate(map);
 
 			expect(layer).toBeTruthy();
+
+			layer.dispatchEvent(prerenderEvent);
+			expect(saveContextSpy).toHaveBeenCalled();
+
+			layer.dispatchEvent(postrenderEvent);
+			expect(isDraggedByUserSpy).toHaveBeenCalled();
 		});
 
 		it('registers observer', () => {
@@ -510,6 +541,17 @@ describe('OlMfpHandler', () => {
 			expect(transformSpy).toHaveBeenCalled();
 			expect(rotationSpy).toHaveBeenCalledWith(mapRotation - azimuth, [0, 0]);
 			expect(mfpBoundary).toBe(cloned);
+		});
+	});
+
+	describe('_isMapDraggedByUser', () => {
+		it('reads the store', () => {
+			const classUnderTest = new OlMfpHandler();
+			expect(classUnderTest._isMapDraggedByUser()).toBeFalse();
+
+			setBeingDragged(true);
+
+			expect(classUnderTest._isMapDraggedByUser()).toBeTrue();
 		});
 	});
 });

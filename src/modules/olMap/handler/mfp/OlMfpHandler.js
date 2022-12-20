@@ -58,7 +58,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature, () => this._storeService.getStore().getState().pointer.beingDragged));
+			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature, () => this._isMapDraggedByUser()));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
 			this._updateMfpPreviewLazy();
@@ -260,10 +260,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		return mapRotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
-	_toPixelCoordinates(geodeticBoundary) {
-		return geodeticBoundary.getCoordinates()[0].map(c => this._map.getPixelFromCoordinate(c));
-	}
-
 	_getMfpProjection() {
 		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
@@ -285,6 +281,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		if (autorotation) {
 			this._updateMfpPreviewLazy();
 		}
+	}
+
+	_isMapDraggedByUser() {
+		return this._storeService.getStore().getState().pointer.beingDragged;
 	}
 
 	async _encodeMap() {
