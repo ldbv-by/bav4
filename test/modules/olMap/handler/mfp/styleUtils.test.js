@@ -212,6 +212,23 @@ describe('mfp style utility functions', () => {
 			expect(moveToSpy).toHaveBeenCalledWith(5, 5);
 		});
 
+		it('uses chached pixelCoordinates for the mask', () => {
+			const feature = createFeature('');
+			const mapMock = createMapMock();
+			const context = get2dContext();
+			const expectedRequests = 5; // for each coordinate in a boundary-polygon
+
+			const renderFunction = createMapMaskFunction(mapMock, feature, () => true);
+			const mapSpy = spyOn(mapMock, 'getPixelFromCoordinate').and.callThrough();
+
+			renderFunction(getPostRenderEvent(0, context)); // --> pixelCoordinates now cached
+
+			expect(mapSpy).toHaveBeenCalledTimes(expectedRequests);
+
+			renderFunction(getPostRenderEvent(0, context)); // should not request pixelCoordinates anymore
+			expect(mapSpy).toHaveBeenCalledTimes(expectedRequests);
+		});
+
 		it('draws a passpartout', () => {
 			const expectedStrokeColor = 'rgba(255,255,255,0.4)';
 			const expectedStrokeWidth = 0.02;
