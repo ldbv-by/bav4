@@ -60,7 +60,7 @@ describe('ChipsPlugin', () => {
 
 		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
 			const chipId = 'id1';
-			const queryParam = `${QueryParameters.CHIP}=${chipId}`;
+			const queryParam = `${QueryParameters.CHIP_ID}=${chipId}`;
 			const mockChips = [{
 				'id': 'id0',
 				'permanent': false

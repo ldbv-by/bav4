@@ -12,8 +12,8 @@ describe('QueryParameters', () => {
 		expect(QueryParameters.LAYER_VISIBILITY).toBe('l_v');
 		expect(QueryParameters.LAYER_OPACITY).toBe('l_o');
 		expect(QueryParameters.TOPIC).toBe('t');
-		expect(QueryParameters.CHIP).toBe('ch');
 		expect(QueryParameters.QUERY).toBe('q');
+		expect(QueryParameters.CHIP_ID).toBe('chid');
 		expect(QueryParameters.MENU_ID).toBe('mid');
 
 		expect(QueryParameters.T_ENABLE_TEST_IDS).toBe('t_enable-test-ids');

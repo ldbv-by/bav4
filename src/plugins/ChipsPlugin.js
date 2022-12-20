@@ -33,7 +33,7 @@ export class ChipsPlugin extends BaPlugin {
 
 		const findChipsFromQueryParams = () => {
 			const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
-			const chipId = queryParams.get(QueryParameters.CHIP) ?? [];
+			const chipId = queryParams.get(QueryParameters.CHIP_ID) ?? [];
 			return chips.filter(c => chipId === c.id);
 		};
 
