@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { ChipsConfigurationService } from '../../src/services/ChipsConfigurationService';
-import { loadBvvChipConfiguration } from '../../src/services/provider/chipsConfiguration.provider.test';
+import { loadBvvChipConfiguration } from '../../src/services/provider/chipsConfiguration.provider';
 
 
 describe('ChipsCofigurationService', () => {

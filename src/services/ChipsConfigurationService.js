@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from './GeoResourceService';
-import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider.test';
+import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider';
 import { FALLBACK_TOPICS_IDS } from './TopicsService';
 
 /**

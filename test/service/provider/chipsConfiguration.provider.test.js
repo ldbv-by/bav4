@@ -1,4 +1,4 @@
-import { loadBvvChipConfiguration } from '../../../src/services/provider/chipsConfiguration.provider.test';
+import { loadBvvChipConfiguration } from '../../../src/services/provider/chipsConfiguration.provider';
 
 describe('Chips configuration provider', () => {
 
