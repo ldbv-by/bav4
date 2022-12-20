@@ -96,7 +96,7 @@ describe('ChipsCofigurationService', () => {
 
 		describe('provider cannot fulfill', () => {
 
-			it('loads two fallback topics when we are in standalone mode', async () => {
+			it('loads three fallback chips when we are in standalone mode', async () => {
 
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(async () => {
@@ -106,7 +106,7 @@ describe('ChipsCofigurationService', () => {
 
 				const configurations = await instanceUnderTest.all();
 
-				expect(configurations.length).toBe(9);
+				expect(configurations.length).toBe(3);
 				expect(warnSpy).toHaveBeenCalledWith('Chips configuration could not be fetched from backend. Using fallback configuration ...');
 			});
 

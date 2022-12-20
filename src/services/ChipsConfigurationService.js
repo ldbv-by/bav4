@@ -1,5 +1,7 @@
 import { $injector } from '../injection';
+import { FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from './GeoResourceService';
 import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider.test';
+import { FALLBACK_TOPICS_IDS } from './TopicsService';
 
 /**
  * @class
@@ -43,15 +45,39 @@ export class ChipsConfigurationService {
 
 	_newFallbackConfiguration() {
 		return [
+
 			{
-				'id': 'foo',
-				'title': 'geoResources', // required
-				'href': 'https://geoportal.bayern.de/denkmalatlas/liste.html', // required
+				'id': 'gh',
+				'title': 'Fork me', // required
+				'href': 'https://github.com/ldbv-by/bav4-nomigration/', // required
+				'permanent': true, // required
+				'target': 'external', // required ["modal", "external"]
+				'observer': { // required [object, null]
+					'geoResources': [ // required
+					],
+					'topics': [ // required
+
+					]
+				},
+				'style': { // required
+					'colorLight': 'var(--primary-color)', // required
+					'backgroundColorLight': 'var(--primary-bg-color)', // required
+					'colorDark': 'var(--primary-color)', // required
+					'backgroundColorDark': 'var(--primary-bg-color)', // required
+					'icon': '<path d="m 8.06415,0.2995526 c -4.260197,0 -7.70415223,3.4693444 -7.70415223,7.7613964 0,3.430867 2.20666073,6.335023 5.26788413,7.362895 0.3827318,0.07727 0.5229249,-0.167002 0.5229249,-0.372481 0,-0.179933 -0.012616,-0.796688 -0.012616,-1.439305 -2.1431086,0.462685 -2.5893925,-0.925211 -2.5893925,-0.925211 -0.3444112,-0.899506 -0.8547202,-1.13069 -0.8547202,-1.13069 -0.7014384,-0.475459 0.051094,-0.475459 0.051094,-0.475459 0.7780792,0.05141 1.186358,0.796688 1.186358,0.796688 0.6886649,1.1821 1.7983821,0.848097 2.2448237,0.64246 0.06371,-0.501163 0.2679279,-0.848097 0.4847619,-1.040804 -1.7092829,-0.179933 -3.5076649,-0.848097 -3.5076649,-3.8293681 0,-0.8480967 0.3059331,-1.5419653 0.7906951,-2.0816063 -0.076484,-0.1927064 -0.3444113,-0.9895518 0.076641,-2.0560597 0,0 0.6505021,-0.2056375 2.1172463,0.7966877 A 7.4070501,7.4070501 0 0 1 8.0641496,4.0516488 c 0.6505021,0 1.3136194,0.090045 1.9259593,0.2570468 1.4669011,-1.0023252 2.1174031,-0.7966877 2.1174031,-0.7966877 0.421052,1.0665079 0.152967,1.8633533 0.07648,2.0560597 0.497535,0.539641 0.790853,1.2335096 0.790853,2.0816063 0,2.9812711 -1.798381,3.6365041 -3.5204379,3.8293681 0.2807011,0.244116 0.5229254,0.706642 0.5229254,1.439147 0,1.040804 -0.012621,1.876127 -0.012621,2.133016 0,0.205637 0.1403505,0.449911 0.5229245,0.372798 3.061224,-1.028189 5.267885,-3.932187 5.267885,-7.363054 0.01262,-4.292052 -3.443952,-7.7613964 -7.6913753,-7.7613964 z" />'
+				}
+			},
+
+			{
+				'id': 'smart_mapping',
+				'title': 'Smart Mapping', // required
+				'href': 'https://www.adv-smart.de/', // required
 				'permanent': false, // required
 				'target': 'external', // required ["modal", "external"]
 				'observer': { // required [object, null]
 					'geoResources': [ // required
-						'luftbild'
+						FALLBACK_GEORESOURCE_ID_2,
+						FALLBACK_GEORESOURCE_ID_3
 					],
 					'topics': [ // required
 
@@ -66,108 +92,16 @@ export class ChipsConfigurationService {
 				}
 			},
 			{
-				'id': 'bar',
+				'id': 'brradl22',
 				'title': 'BR-Radeltour',
-				'href': 'https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-firststeps/index.html',
-				'permanent': true,
+				'href': 'https://www.geodaten.bayern.de/bayernatlas-info/brradl22/index.html',
+				'permanent': false,
 				'target': 'modal',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': '<path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>'
-				}
-			},
-			{
-				'id': 'ch',
-				'title': 'Denkmäler suchen',
-				'href': 'https://google.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'ch',
-				'title': 'Denkmalliste',
-				'href': 'https://google.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'ch',
-				'title': 'Infos',
-				'href': 'https://google.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'ch',
-				'title': 'Ich Teste Gerne',
-				'href': 'https://google.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'ch',
-				'title': 'Ich arbeite schwer für mein Geld',
-				'href': 'https://google.com',
-				'permanent': false,
-				'target': 'extern',
-				'observer': null,
-				'style': {
-					'colorLight': 'var(--primary-color)', // required
-					'backgroundColorLight': 'var(--primary-bg-color)', // required
-					'colorDark': 'var(--primary-color)', // required
-					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'ea',
-				'title': 'Theme',
-				'href': 'https://www.karten.energieatlas.bayern.de/',
-				'permanent': false,
-				'target': 'extern',
 				'observer': { // required [object, null]
 					'geoResources': [ // required
-						'6f5a389c-4ef3-4b5a-9916-475fd5c5962b',
-						'd0e7d4ea-62d8-46a0-a54a-09654530beed'
 					],
 					'topics': [ // required
-						'eab'
+						FALLBACK_TOPICS_IDS[1]
 					]
 				},
 				'style': {
@@ -175,27 +109,7 @@ export class ChipsConfigurationService {
 					'backgroundColorLight': 'var(--primary-bg-color)', // required
 					'colorDark': 'var(--primary-color)', // required
 					'backgroundColorDark': 'var(--primary-bg-color)', // required
-					'icon': null
-				}
-			},
-			{
-				'id': 'bau',
-				'title': 'Bauleitpläne suchen',
-				'href': 'https://geoportal.bayern.de/bauleitplanungsportal/index.html',
-				'permanent': false,
-				'target': 'extern',
-				'observer': {
-					'geoResources': [
-						'26d2b2b8-3944-4a49-aec2-59f827d9aa9e'
-					],
-					'topics': []
-				},
-				'style': {
-					'colorLight': 'hsl(60, 60%, 40%)',
-					'backgroundColorLight': 'var(--primary-bg-color)',
-					'colorDark': 'hsl(60, 70%, 70%)',
-					'backgroundColorDark': 'var(--primary-bg-color)',
-					'icon': '<path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.707V5.5a.5.5 0 0 0 1 0v-5z"/>'
+					'icon': '<path d="M5 8a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm4 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="m2.165 15.803.02-.004c1.83-.363 2.948-.842 3.468-1.105A9.06 9.06 0 0 0 8 15c4.418 0 8-3.134 8-7s-3.582-7-8-7-8 3.134-8 7c0 1.76.743 3.37 1.97 4.6a10.437 10.437 0 0 1-.524 2.318l-.003.011a10.722 10.722 0 0 1-.244.637c-.079.186.074.394.273.362a21.673 21.673 0 0 0 .693-.125zm.8-3.108a1 1 0 0 0-.287-.801C1.618 10.83 1 9.468 1 8c0-3.192 3.004-6 7-6s7 2.808 7 6c0 3.193-3.004 6-7 6a8.06 8.06 0 0 1-2.088-.272 1 1 0 0 0-.711.074c-.387.196-1.24.57-2.634.893a10.97 10.97 0 0 0 .398-2z"/>'
 				}
 			}
 		];
