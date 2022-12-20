@@ -8,7 +8,7 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { createMapMaskFunction, nullStyleFunction, createThumbnailStyleFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { changeCenter, changeRotation } from '../../../../store/position/position.action';
+import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 
@@ -41,8 +41,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = null;
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
-		this._blockSyncForRotation = false;
-		this._useCachedPreview = false;
 	}
 
 	/**
@@ -63,6 +61,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, this._mfpBoundaryFeature, () => this._storeService.getStore().getState().pointer.beingDragged));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
+			this._updateMfpPreviewLazy();
 			this._updateRotation();
 		}
 
@@ -92,8 +91,12 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
-			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			observe(store, state => state.position.rotation, () => this._updateRotation())
+			observe(store, state => state.position.center, () => {
+				this._updateMfpPreview();
+			}),
+			observe(store, state => state.position.rotation, () => {
+				this._updateRotation();
+			})
 		];
 	}
 
@@ -114,6 +117,16 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpBoundaryFeature.set('center', this._storeService.getStore().getState().position.center);
 		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
 		setTimeout(() => changeRotation(geodeticRotation));
+	}
+
+	_updateMfpPreviewLazy() {
+		const intervalId = setInterval(() => {
+			if (!this._map.getView().getAnimating()) {// let's wait until map animation has stopped
+				this._updateMfpPreview();
+				clearInterval(intervalId);
+			}
+		}, 50);
+		this._updateMfpPreview();
 	}
 
 	_updateRotation() {
@@ -147,8 +160,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		this._pageSize = toGeographicSize(layoutSize);
-
-		this._updateMfpPreview();
 	}
 
 	_getLocales() {
@@ -272,8 +283,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_onAutoRotationChanged(autorotation) {
 		if (autorotation) {
-			setTimeout(() => changeCenter(this._mfpBoundaryFeature.get('center')));
-			this._updateMfpPreview();
+			this._updateMfpPreviewLazy();
 		}
 	}
 
