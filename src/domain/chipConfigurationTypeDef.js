@@ -5,7 +5,7 @@
  * @property {string} title The title of this chip
  * @property {string} href The url pointing to the content
  * @property {boolean} permanent Chip should be always visible
- * @property {string} target One of `["modal", "external"]`
+ * @property {'modal' | 'external'} target Whether the content is shown in the modal component or a new browser tab
  * @property {object} style The style of this chip
  * @property {object} [observer] Optional observer for this chip
 
