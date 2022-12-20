@@ -343,7 +343,7 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('none');
 		});
 
-		it('shows two scroll button when needed', async () => {
+		it('shows two scroll buttons on shortage of space', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 
@@ -497,7 +497,6 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
-
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -515,7 +514,6 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('128px');
-
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
@@ -533,7 +531,6 @@ describe('ChipsContainer', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#chipscontainer')).top).toBe('8px');
-
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
