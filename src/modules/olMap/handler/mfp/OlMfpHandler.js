@@ -88,7 +88,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		// The current design is chosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
 		// the performance and time consumptions (< 1 ms), but makes it simpler to follow only one source of events.
 		return [
-			observe(store, state => state.mfp.current, (current) => this._updateMfpPage(current)),
+			observe(store, state => state.mfp.current, (current) => {
+				this._updateMfpPage(current);
+				this._updateMfpPreview();
+			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
 			observe(store, state => state.position.center, () => {
