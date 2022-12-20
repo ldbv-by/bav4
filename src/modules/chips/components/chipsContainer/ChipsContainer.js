@@ -82,10 +82,11 @@ export class ChipsContainer extends MvuElement {
 		}
 	}
 
+	/**
+	 * @override
+	 */
 	onDisconnect() {
-		if (this._resizeObserver) {
-			this._resizeObserver.disconnect();
-		}
+		this._resizeObserver?.disconnect();
 	}
 
 	/**
@@ -183,6 +184,9 @@ export class ChipsContainer extends MvuElement {
 
 	}
 
+	/**
+	 * @override
+	 */
 	isRenderingSkipped() {
 		return this._environmentService.isEmbedded();
 	}
