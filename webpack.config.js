@@ -13,7 +13,9 @@ module.exports = {
 	mode: 'development',
 	entry: {
 		config: './src/assets/config.js',
-		bundle: './src/main.js'
+		sw: './src/assets/sw.js',
+		offline: './src/offline.js',
+		main: './src/main.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -43,7 +45,14 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',
-			templateParameters: templateParameters
+			templateParameters: templateParameters,
+			chunks: ['main']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'offline.html',
+			template: 'src/offline.html',
+			templateParameters: templateParameters,
+			chunks: ['offline'] // we only want to inject offline.js
 		}),
 		new CopyPlugin({
 			patterns: [

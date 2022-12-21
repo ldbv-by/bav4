@@ -39,3 +39,13 @@ import './modules/dndImport';
 import './modules/auth';
 import './modules/profile';
 
+if ('serviceWorker' in navigator) {
+
+	(async () => {
+		await navigator
+			.serviceWorker
+			.register('sw.js');
+		// eslint-disable-next-line no-console
+		console.log('SW registration successful');
+	})();
+}
