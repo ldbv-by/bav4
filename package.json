@@ -12,7 +12,7 @@
   },
   "devDependencies": {
     "@jsdevtools/coverage-istanbul-loader": "3.0.5",
-    "@playwright/test": "1.27.1 ",
+    "@playwright/test": "1.29.0",
     "copy-webpack-plugin": "11.0.0",
     "css-loader": "6.7.3",
     "dotenv-webpack": "8.0.1",
@@ -37,7 +37,7 @@
     "karma-script-launcher": "1.0.0",
     "karma-webkit-launcher": "1.1.0",
     "karma-webpack": "5.0.0",
-    "playwright": "1.27.1 ",
+    "playwright": "1.29.0",
     "portfinder-sync": "0.0.2",
     "redux-test-utils": "1.0.2",
     "style-loader": "3.3.1",
