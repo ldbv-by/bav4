@@ -80,11 +80,11 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				};
 				const sourceTypeName = sourceTypeNameFor(name);
 				if (sourceTypeName) {
-					if (projectionService.getProjections().includes(srid)) { // check if SRID is supported
-						return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
-							new SourceType(sourceTypeName, version, srid));
+					if (srid && !projectionService.getProjections().includes(srid)) { // check if SRID is supported
+						return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
 					}
-					return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
+					return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+						new SourceType(sourceTypeName, version, srid));
 				}
 				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 			}
@@ -140,7 +140,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				}
 			};
 
-			openModal(translate('importPlugin_authenticationModal_title'), createModalContent(url, authenticate, onClose));
+			openModal(translate('global_import_authenticationModal_title'), createModalContent(url, authenticate, onClose));
 		});
 	}
 	return await mapResponseToSourceType(response, !!credential);

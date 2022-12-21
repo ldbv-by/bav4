@@ -4,7 +4,7 @@
 <h1 align="center">
    BayernAtlas v4 <br><br>
 
-   [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ldbv-by/bav4-nomigration/Node.js%20CI?style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
+   [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4-nomigration/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
 [![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4-nomigration/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
 [![GitHub](https://img.shields.io/github/license/ldbv-by/bav4-nomigration?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 </h1>
@@ -107,6 +107,10 @@ The source code is distributed among the following directories:
 
 Contains global domain-specific classes and type definitions.
 
+###  `src/i18n`
+
+Contains and registers the global i18n provider
+
 ###  `src/injection`
 
 Contains the built-in dependency injection. The central configuration is done in `config.js`.
@@ -196,7 +200,6 @@ For example, they could be responsible for setting an initial state or reacting 
 ### Various topics relating web components
 - Introduction to custom elements and web components: https://javascript.info/web-components
 - https://www.thinktecture.com/de/articles/web-components/
-- https://alligator.io/web-components/attributes-properties/
 - https://itnext.io/handling-data-with-web-components-9e7e4a452e6e
 
 ### CSS

@@ -5,12 +5,14 @@ import { changeZoomAndCenter } from '../../../../store/position/position.action'
 import arrowUpSvg from './assets/arrow-up.svg';
 import { activate as activateMeasurement, deactivate as deactivateMeasurement } from '../../../../store/measurement/measurement.action';
 import { addLayer } from '../../../../store/layers/layers.action';
-import { clearFixedNotification, emitFixedNotification, emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
 import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
+import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
+import { closeProfile, openProfile } from '../../../../store/altitudeProfile/altitudeProfile.action';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -150,21 +152,30 @@ export class ShowCase extends BaElement {
 			emitNotification('This is a Error! Oh no...something went wrong. (' + new Date() + ')', LevelTypes.ERROR);
 		};
 
-		let version = 1;
-		const onClickEmitFixed = () => {
+		const onClickOpenProfile = () => {
+			if (this._storeService.getStore().getState().altitudeProfile.active) {
+				closeProfile();
+			}
+			else {
+				openProfile([[1328315.0062647895, 6089975.78297438], [1310581.6157026286, 6045336.558455837]]);
+			}
+		};
 
-			const onCloseAfterWait = () => setTimeout(() => clearFixedNotification(), 2000);
-			const onDismiss = () => clearFixedNotification();
+		let version = 1;
+		const onClickOpenBottomSheet = () => {
+
+			const onCloseAfterWait = () => setTimeout(() => closeBottomSheet(), 2000);
+			const onDismiss = () => closeBottomSheet();
 			const nextVersion = (before, min, max) => {
 				return before === min ? before + 1 : (before === max ? min : before + 1);
 			};
 			const getVersionForDragging = () => {
 				const unsubscribe = observe(this._storeService.getStore(), state => state.pointer.beingDragged, () => {
-					clearFixedNotification();
+					closeBottomSheet();
 					unsubscribe();
 				});
 				return html`<div>
-					<h3>Fixed Notifications autoclose with...</h3>
+					<h3>Bottom Sheet autoclose with...</h3>
 					<div style="color: white;background-color: var(--warning-color);">observing store... </div>
 					<div style="color: white;background-color: var(--error-color);">i.e. dragging map</div>					
 				</div>`;
@@ -180,16 +191,16 @@ export class ShowCase extends BaElement {
 						</div>`;
 					case 2:
 						return html`<div>
-							<h3>Fixed Notifications ...</h3>
+							<h3>Bottom Sheet ...</h3>
 							<div style="color: white;background-color: var(--warning-color);">waiting forever... </div>
-							<div style="color: white;background-color: var(--error-color);">until a new fixed Notification comes</div>							
+							<div style="color: white;background-color: var(--error-color);">until a new content for the bottom sheet comes</div>							
 						</div>`;
 					case 3:
 						return getVersionForDragging();
 
 				}
 			};
-			emitFixedNotification(getContent(version));
+			openBottomSheet(getContent(version));
 			version = nextVersion(version, 1, 3);
 		};
 		const menuitems = [{ label: 'Apple', icon: arrowUpSvg, action: () => emitNotification('Apple', LevelTypes.INFO) }, { label: 'Lemon', icon: arrowUpSvg, action: () => emitNotification('Lemon', LevelTypes.INFO) }, { label: 'Orange', action: () => emitNotification('Orange', LevelTypes.INFO) }, { label: 'Banana', icon: arrowUpSvg, disabled: true, action: () => emitNotification('Banana', LevelTypes.INFO) }];
@@ -243,7 +254,7 @@ export class ShowCase extends BaElement {
 				<ba-button id='notification0' .label=${'Info Notification'} .type=${'primary'} @click=${onClickEmitInfo}></ba-button>
 				<ba-button id='notification1' .label=${'Warn Notification'} .type=${'primary'} @click=${onClickEmitWarn}></ba-button>
 				<ba-button id='notification2' .label=${'Error Notification'} .type=${'primary'} @click=${onClickEmitError}></ba-button>
-				<ba-button id='notification3' .label=${'Fixed Notification'} .type=${'primary'} @click=${onClickEmitFixed}></ba-button>			
+				<ba-button id='notification3' .label=${'Open Bottom Sheet'} .type=${'primary'} @click=${onClickOpenBottomSheet}></ba-button>			
 			</div>	
 
 			</div>	
@@ -348,6 +359,7 @@ export class ShowCase extends BaElement {
 
 			<h3>Profile</h3>
 			<div class='example row'>
+			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
 			<ba-profile></ba-profile>
 			</div>
 				

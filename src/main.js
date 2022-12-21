@@ -10,7 +10,8 @@ window.ba_enableTestIds = new URLSearchParams(window.location.search).get(QueryP
 
 // eslint-disable-next-line no-unused-vars
 import * as config from './injection/config';
-
+// register global i18n
+import './i18n';
 // register modules
 import './modules/header';
 import './modules/footer';
@@ -27,12 +28,13 @@ import './modules/uiTheme';
 import './modules/modal';
 import './modules/baseLayer';
 import './modules/layerManager';
-import './modules/notifications';
+import './modules/stackables';
 import './modules/examples';
 import './modules/featureInfo';
 import './modules/iconSelect';
 import './modules/geoResourceInfo';
 import './modules/help';
+import './modules/chips';
 import './modules/dndImport';
 import './modules/auth';
 import './modules/profile';

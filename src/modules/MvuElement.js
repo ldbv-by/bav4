@@ -1,6 +1,6 @@
 import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { $injector } from '../injection';
-import { generateTestIds } from '../utils/markup';
+import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
 import css from './baElement.css';
@@ -59,6 +59,7 @@ export class MvuElement extends HTMLElement {
 	constructor(model = {}) {
 
 		super();
+		this._logLifeCycle(`📦 ${this.constructor.name}#constructor`, model);
 		if (this.constructor === MvuElement) {
 			// Abstract class can not be constructed.
 			throw new Error('Can not construct abstract class.');
@@ -92,10 +93,12 @@ export class MvuElement extends HTMLElement {
 	 * @param {Object|string|number} [data=null] data of this update request
 	 */
 	signal(type, data = null) {
+		this._logLifeCycle(`🎺 ${this.constructor.name}#signal`, type, data);
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
 			this._observer.forEach(o => o());
+			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
 	}
@@ -130,6 +133,7 @@ export class MvuElement extends HTMLElement {
 			this.onWindowLoad();
 		});
 
+		this._logLifeCycle(`📌 ${this.constructor.name}#onInitialize`);
 		this.onInitialize();
 		this._initialized = true;
 
@@ -140,6 +144,7 @@ export class MvuElement extends HTMLElement {
 	 * @private
 	 */
 	disconnectedCallback() {
+		this._logLifeCycle(`📌 ${this.constructor.name}#onDisconnect`);
 		this.onDisconnect();
 	}
 
@@ -200,7 +205,9 @@ export class MvuElement extends HTMLElement {
 		if (this._initialized && !this.isRenderingSkipped()) {
 
 			const initialRendering = !this._rendered;
+			this._logLifeCycle(`📌 ${this.constructor.name}#onBeforeRender`);
 			this.onBeforeRender(initialRendering);
+			this._logLifeCycle(`🧪 ${this.constructor.name}#render`, this.getModel());
 			const template = this.createView(this.getModel());
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
@@ -211,6 +218,7 @@ export class MvuElement extends HTMLElement {
 
 			generateTestIds(this);
 			this._rendered = true;
+			this._logLifeCycle(`📌 ${this.constructor.name}#onAfterRender`);
 			this.onAfterRender(initialRendering);
 		}
 	}
@@ -341,5 +349,12 @@ export class MvuElement extends HTMLElement {
 				console.error(`Could not register observer --> '${key}' is not a field in the Model of ${this.constructor.name}`);
 			}
 		});
+	}
+
+	_logLifeCycle(message, ...values) {
+		if (this.hasAttribute(LOG_LIFECYLE_ATTRIBUTE_NAME)) {
+			// eslint-disable-next-line no-console
+			console.log(`${message}${values.length ? ': ' : ''}${values.map(v => JSON.stringify(v)).join(', ')}`);
+		}
 	}
 }

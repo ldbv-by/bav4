@@ -22,7 +22,9 @@ import { createMainMenuReducer } from '../store/mainMenu/mainMenu.reducer';
 import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
-import { geoResourcesReducer } from '../store/geoResources/geoResources.reducer';
+import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
+import { altitudeProfileReducer } from '../store/altitudeProfile/altitudeProfile.reducer';
+import { chipsReducer } from '../store/chips/chips.reducer';
 
 
 
@@ -62,7 +64,9 @@ export class StoreService {
 			media: createMediaReducer(),
 			import: importReducer,
 			mfp: mfpReducer,
-			geoResources: geoResourcesReducer
+			bottomSheet: bottomSheetReducer,
+			altitudeProfile: altitudeProfileReducer,
+			chips: chipsReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -72,6 +76,7 @@ export class StoreService {
 			const {
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
+				ChipsPlugin: chipsPlugin,
 				GeolocationPlugin: geolocationPlugin,
 				MeasurementPlugin: measurementPlugin,
 				DrawPlugin: drawPlugin,
@@ -84,10 +89,12 @@ export class StoreService {
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
+				AltitudeProfilePlugin: altitudeProfilePlugin,
 				HistoryStatePlugin: historyStatePlugin
 			}
 				= $injector.inject(
 					'TopicsPlugin',
+					'ChipsPlugin',
 					'LayersPlugin',
 					'GeolocationPlugin',
 					'MeasurementPlugin',
@@ -101,6 +108,7 @@ export class StoreService {
 					'ImportPlugin',
 					'SearchPlugin',
 					'ExportMfpPlugin',
+					'AltitudeProfilePlugin',
 					'HistoryStatePlugin'
 				);
 
@@ -108,6 +116,7 @@ export class StoreService {
 				//register plugins
 				await mediaPlugin.register(this._store);
 				await topicsPlugin.register(this._store);
+				await chipsPlugin.register(this._store);
 				await layersPlugin.register(this._store);
 				await positionPlugin.register(this._store);
 				await measurementPlugin.register(this._store);
@@ -120,6 +129,7 @@ export class StoreService {
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
+				await altitudeProfilePlugin.register(this._store);
 				await historyStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});

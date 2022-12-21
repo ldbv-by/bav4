@@ -66,8 +66,8 @@ test.describe('page', () => {
 			expect(description).toBe(templateParameters.description);
 		});
 
-		test('should contain 13 top level ba-components', async ({ page }) => {
-			expect(await page.locator('body > *').count()).toBe(13);
+		test('should contain 14 top level ba-components', async ({ page }) => {
+			expect(await page.locator('body > *').count()).toBe(14);
 		});
 
 		test('should contain a <ba-header> component', async ({ page }) => {

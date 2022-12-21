@@ -10,8 +10,8 @@ import Style from 'ol/style/Style';
 
 import { Icon as IconStyle } from 'ol/style';
 import { Feature } from 'ol';
-import { MeasurementOverlay, MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { Circle, LineString, MultiPolygon, Polygon } from 'ol/geom';
+import { MeasurementOverlay } from '../components/MeasurementOverlay';
+import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon } from 'ol/geom';
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
@@ -113,21 +113,20 @@ export class BvvMfp3Encoder {
 			.flatMap(l => this._encode(l))
 			.reduce((layerSpecs, encodedLayer) => {
 				// todo: extract to method
-				const { attribution, thirdPartyAttribution, ...restSpec } = encodedLayer;
+				const { attribution, ...restSpec } = encodedLayer;
 				const getLabels = (attribution) => Array.isArray(attribution) ? attribution?.map(a => a.copyright.label) : [attribution?.copyright?.label];
 
 				return {
 					specs: [...layerSpecs.specs, restSpec],
-					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners],
-					thirdPartyDataOwners: thirdPartyAttribution ? [...layerSpecs.thirdPartyDataOwners, getLabels(thirdPartyAttribution)] : [...layerSpecs.thirdPartyDataOwners]
+					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners]
 				};
 			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
 
-		const encodedOverlays = olMap.getOverlays().getArray().map(overlay => this._encodeOverlay(overlay));
-
+		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
+		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
-		const qrCodeUrl = this._urlService.qrCode(shortLinkUrl);
-		const layers = [...encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -140,7 +139,6 @@ export class BvvMfp3Encoder {
 					layers: layers
 				},
 				dataOwner: encodedLayers.dataOwners.length !== 0 ? Array.from(new Set(encodedLayers.dataOwners)).join(',') : '',
-				thirdPartyDataOwner: encodedLayers.thirdPartyDataOwners.length !== 0 ? Array.from(new Set(encodedLayers.thirdPartyDataOwners)).join(',') : '',
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -230,8 +228,7 @@ export class BvvMfp3Encoder {
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
 				matrixSet: tileMatrixSet,
-				attribution: wmtsGeoResource.importedByUser ? null : wmtsGeoResource.attribution,
-				thirdPartyAttribution: wmtsGeoResource.importedByUser ? wmtsGeoResource.attribution : null
+				attribution: wmtsGeoResource.getAttribution()
 			};
 		};
 
@@ -265,8 +262,7 @@ export class BvvMfp3Encoder {
 			opacity: olLayer.getOpacity(),
 			styles: styles,
 			customParams: defaultCustomParams,
-			attribution: wmsGeoResource.importedByUser ? null : wmsGeoResource.attribution,
-			thirdPartyAttribution: wmsGeoResource.importedByUser ? wmsGeoResource.attribution : null
+			attribution: wmsGeoResource.getAttribution()
 		};
 	}
 
@@ -280,7 +276,7 @@ export class BvvMfp3Encoder {
 			return group;
 		}, {});
 
-		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], Point: [] };
+		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], MultiPoint: [], Point: [] };
 		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
 		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
 
@@ -291,6 +287,7 @@ export class BvvMfp3Encoder {
 			...groupedByGeometryType['GeometryCollection'],
 			...groupedByGeometryType['LineString'],
 			...groupedByGeometryType['MultiLineString'],
+			...groupedByGeometryType['MultiPoint'],
 			...groupedByGeometryType['Point']];
 
 		const transformForMfp = (olFeature) => {
@@ -341,8 +338,7 @@ export class BvvMfp3Encoder {
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(Array.from(styleCache.values())),
 			opacity: olVectorLayer.getOpacity(),
-			attribution: geoResource.importedByUser ? null : geoResource.attribution,
-			thirdPartyAttribution: geoResource.importedByUser ? geoResource.attribution : null
+			attribution: geoResource.getAttribution()
 		};
 	}
 
@@ -402,7 +398,7 @@ export class BvvMfp3Encoder {
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof Point;
+				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point || geometry instanceof MultiPoint;
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
@@ -422,6 +418,10 @@ export class BvvMfp3Encoder {
 		}
 
 		const olFeatureToEncode = getEncodableOlFeature(olFeature);
+		if (!olFeatureToEncode) {
+			console.warn('feature not encodable', olFeature);
+			return null;
+		}
 		const addOrUpdateEncodedStyle = (olStyle) => {
 			const addEncodedStyle = () => {
 				const encodedStyle = { ...initEncodedStyle(), symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
@@ -477,7 +477,7 @@ export class BvvMfp3Encoder {
 
 	_encodeGeometryType(olGeometryType) {
 		const defaultEncoding = (geometryType) => geometryType.toLowerCase();
-		const specialEncodings = { LineString: () => 'line', MultiPolygon: () => 'polygon' };
+		const specialEncodings = { MultiPoint: () => 'point', LineString: () => 'line', MultiPolygon: () => 'polygon', MultiLineString: () => 'line' };
 
 		return Object.hasOwn(specialEncodings, olGeometryType) ? specialEncodings[olGeometryType]() : defaultEncoding(olGeometryType);
 	}
@@ -530,7 +530,7 @@ export class BvvMfp3Encoder {
 
 			if (styleProperties.anchor) {
 				encoded.graphicXOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[0] * scale, dpi);
-				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
+				encoded.graphicYOffset = BvvMfp3Encoder.adjustDistance(-styleProperties.anchor[1] * scale, dpi);
 			}
 
 			if (styleProperties.imageSrc) {
@@ -568,8 +568,10 @@ export class BvvMfp3Encoder {
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = textStyle.getText();
-			encoded.labelXOffset = textStyle.getOffsetX();
-			encoded.labelYOffset = textStyle.getOffsetY();
+			// additional X- or Y-Offset is ommitted, text is currently center aligned.
+			// An Y-offset of -5 is only needed to display the text in ol map vertical centered.
+			// encoded.labelXOffset = textStyle.getOffsetX();
+			// encoded.labelYOffset = textStyle.getOffsetY();
 			encoded.type = 'text';
 
 			const fromOlTextAlign = (olTextAlign) => {
@@ -604,6 +606,10 @@ export class BvvMfp3Encoder {
 				encoded.fontSize = parseInt(fontValues[1]);
 				encoded.fontWeight = fontValues[0];
 			}
+
+			if (this._mfpProperties.rotation) {
+				encoded.labelRotation = (360 - this._mfpProperties.rotation) % 360;
+			}
 		}
 
 		const addPointSymbolizer = (labelSymbolizer) => {
@@ -617,40 +623,60 @@ export class BvvMfp3Encoder {
 		return encoded.type === 'text' && encoded.externalGraphic ? addPointSymbolizer(encoded) : [encoded];
 	}
 
-	_encodeOverlay(overlay) {
-		const element = overlay.getElement();
-		const center = overlay.getPosition();
-		const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
-		const fromPositioning = (positioning) => {
-			const defaultAlignment = 'cm';
+	_encodeOverlays(overlays) {
+		const anchorPointFromPositioning = (positioning) => {
+			const AnchorPointPositions = { top: 0, middle: 0.5, bottom: 1, left: 0, center: 0.5, right: 1 };
+			const defaultAnchorPoint = { x: 0.5, y: 0.5 };
 			const verticalAndHorizontalAlignment = positioning.split('-');
 			const isValid = verticalAndHorizontalAlignment && verticalAndHorizontalAlignment.length === 2;
-
-			return isValid ? `${verticalAndHorizontalAlignment[1][0]}${verticalAndHorizontalAlignment[0][0]}` : defaultAlignment;
+			const anchorPoint = isValid ? { x: AnchorPointPositions[verticalAndHorizontalAlignment[1]], y: AnchorPointPositions[verticalAndHorizontalAlignment[0]] } : defaultAnchorPoint;
+			return anchorPoint;
 		};
 
-		if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
-			console.warn('cannot encode overlay element: No rule defined', element);
-			return null;
-		}
-		return {
+		const toFeatureWithOverlayProperties = (overlay) => {
+			const element = overlay.getElement();
+
+			if (element.tagName.toLowerCase() !== MeasurementOverlay.tag) {
+				console.warn('cannot encode overlay element: No rule defined', element);
+				return null;
+			}
+
+			const center = overlay.getPosition();
+			const mfpCenter = new Point(center).transform(this._mapProjection, this._mfpProjection).getCoordinates();
+
+			const offsetX = Math.round(element.placement.offset[0]);
+			const offsetY = -Math.round(element.placement.offset[1]);
+			const labelAnchorPoint = anchorPointFromPositioning(element.placement.positioning);
+			return {
+				type: 'Feature',
+				properties: {
+					type: element.type,
+					label: element.innerText,
+					labelXOffset: offsetX,
+					labelYOffset: offsetY,
+					labelAnchorPointX: labelAnchorPoint.x,
+					labelAnchorPointY: labelAnchorPoint.y
+				},
+				geometry: {
+					type: 'Point',
+					coordinates: [...mfpCenter, 0]
+				}
+			};
+		};
+		const overlayFeatures = overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null);
+
+		return overlayFeatures.length === 0 ? [] : {
 			type: 'geojson',
 			name: 'overlay',
 			opacity: 1,
 			geoJson: {
 				type: 'FeatureCollection',
-				features: [{
-					type: 'Feature',
-					properties: {},
-					geometry: {
-						type: 'Point',
-						coordinates: [...mfpCenter, 0]
-					}
-				}]
+				features: overlayFeatures
 			},
 			style: {
 				version: 2,
-				'*': {
+				conflictResolution: false,
+				'[type=\'distance\']': {
 					symbolizers: [
 						{
 							type: 'point',
@@ -662,15 +688,61 @@ export class BvvMfp3Encoder {
 							pointRadius: 3
 						}, {
 							type: 'text',
-							label: element.innerText,
-							labelXOffset: element.placement.offset[0],
-							labelYOffset: -element.placement.offset[1],
-							labelAlign: fromPositioning(element.placement.positioning),
-							fontColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#000000' : '#ffffff',
+							label: '[label]',
+							labelXOffset: '[labelXOffset]',
+							labelYOffset: '[labelYOffset]',
+							labelAnchorPointX: '[labelAnchorPointX]',
+							labelAnchorPointY: '[labelAnchorPointY]',
+							fontColor: '#ffffff',
 							fontSize: 10,
-							fontFamily: 'san-serif',
-							fontWeight: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? 'normal' : 'bold',
-							haloColor: element.type === MeasurementOverlayTypes.DISTANCE_PARTITION ? '#ffffff' : '#ff0000',
+							fontFamily: 'sans-serif',
+							fontWeight: 'bold',
+							haloColor: '#ff0000',
+							haloOpacity: 1,
+							haloRadius: 1,
+							strokeColor: '#ff0000'
+						}]
+				},
+				'[type=\'distance-partition\']': {
+					symbolizers: [
+						{
+							type: 'point',
+							fillColor: '#ff0000',
+							fillOpacity: 1,
+							strokeOpacity: 1,
+							strokeWidth: 1.5,
+							strokeColor: '#ffffff',
+							graphicName: 'circle',
+							graphicOpacity: 0.4,
+							pointRadius: 2
+						}, {
+							type: 'text',
+							label: '[label]',
+							labelXOffset: '[labelXOffset]',
+							labelYOffset: '[labelYOffset]',
+							labelAnchorPointX: '[labelAnchorPointX]',
+							labelAnchorPointY: '[labelAnchorPointY]',
+							fontColor: '#000000',
+							fontSize: 8,
+							fontFamily: 'sans-serif',
+							fontWeight: 'normal',
+							haloColor: '#ffffff',
+							haloOpacity: 1,
+							haloRadius: 2,
+							strokeColor: '#ff0000'
+						}]
+				},
+				'[type=\'area\']': {
+					symbolizers: [
+						{
+							type: 'text',
+							label: '[label]',
+							labelAlign: 'cm',
+							fontColor: '#ffffff',
+							fontSize: 10,
+							fontFamily: 'sans-serif',
+							fontWeight: 'bold',
+							haloColor: '#ff0000',
 							haloOpacity: 1,
 							haloRadius: 1,
 							strokeColor: '#ff0000'
@@ -678,7 +750,57 @@ export class BvvMfp3Encoder {
 				}
 			}
 		};
+	}
 
+	_encodeGridLayer(scale) {
+		const defaultSpacing = 1000;
+		const spacings = new Map([
+			[2000000, 100000],
+			[1000000, 100000],
+			[500000, 50000],
+			[200000, 20000],
+			[100000, 10000],
+			[50000, 5000],
+			[25000, 2000],
+			[10000, 1000],
+			[5000, 500],
+			[2500, 200],
+			[1250, 100],
+			[1000, 100],
+			[500, 50]
+		]);
+
+		const spacing = spacings.has(scale) ? spacings.get(scale) : defaultSpacing;
+		return {
+			type: 'grid',
+			gridType: 'lines',
+			origin: [
+				600000,
+				4800000
+			],
+			spacing: [
+				spacing,
+				spacing
+			],
+			renderAsSvg: true,
+			haloColor: '#f5f5f5',
+			labelColor: 'black',
+			labelFormat: '%1.0f %s',
+			indent: 10,
+			haloRadius: 4,
+			font: {
+				name: [
+					'Liberation Sans',
+					'Helvetica',
+					'Nimbus Sans L',
+					'Liberation Sans',
+					'FreeSans',
+					'Sans-serif'
+				],
+				size: 8,
+				style: 'BOLD'
+			}
+		};
 	}
 
 	static adjustDistance(distance, dpi) {
@@ -697,6 +819,16 @@ export class BvvMfp3Encoder {
 			console.warn('Could not shorten url: ' + e);
 			return url;
 		}
+	}
+
+	_generateQrCode(linkUrl) {
+		try {
+			return this._urlService.qrCode(linkUrl);
+		}
+		catch (e) {
+			console.warn('Could not generate qr-code url: ' + e);
+		}
+		return null;
 	}
 
 	static buildMatrixSets(tileGrid) {

@@ -51,7 +51,7 @@ export class ShareButton extends MvuElement {
 				return shortUrl;
 			}
 			catch (error) {
-				console.warn('Could shortener-service is not working:', error);
+				console.warn('Could not shorten url', error);
 				return url;
 			}
 

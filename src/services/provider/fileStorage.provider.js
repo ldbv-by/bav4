@@ -1,6 +1,7 @@
 import { $injector } from '../../injection';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
+import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribution.provider';
 
 export const _newLoader = id => {
 
@@ -14,8 +15,9 @@ export const _newLoader = id => {
 			const { data, type, srid } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
-				const vgr = new VectorGeoResource(id, translationService.translate('layersPlugin_store_layer_default_layer_name_vector'), VectorSourceType.KML);
-				vgr.setSource(data, srid);
+				const vgr = new VectorGeoResource(id, translationService.translate('global_default_vector_georesource_name'), VectorSourceType.KML)
+					.setSource(data, srid)
+					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 				return vgr;
 			}
 			throw new Error(`Unsupported FileStorageServiceDataType '${type}'`);

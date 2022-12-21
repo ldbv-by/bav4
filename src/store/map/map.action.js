@@ -1,5 +1,6 @@
 /**
- * Action creators concerning interactions of a user with the map
+ * Action creators concerning interactions of a user with the map.
+ * This actions are typically called by map implementations only.
  * @module map/action
  */
 

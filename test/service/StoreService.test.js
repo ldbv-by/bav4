@@ -56,6 +56,12 @@ describe('StoreService', () => {
 		const mediaPluginMock = {
 			register() { }
 		};
+		const chipsPlugin = {
+			register() { }
+		};
+		const altitudeProfilePluginMock = {
+			register() { }
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -76,7 +82,9 @@ describe('StoreService', () => {
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
+				.registerSingleton('AltitudeProfilePlugin', altitudeProfilePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('ChipsPlugin', chipsPlugin)
 
 				.ready();
 		};
@@ -89,7 +97,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(23);
+			expect(reducerKeys.length).toBe(25);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -112,7 +120,10 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('media')).toBeTrue();
 			expect(reducerKeys.includes('import')).toBeTrue();
 			expect(reducerKeys.includes('mfp')).toBeTrue();
-			expect(reducerKeys.includes('geoResources')).toBeTrue();
+			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
+			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
+			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
+			expect(reducerKeys.includes('chips')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -131,6 +142,7 @@ describe('StoreService', () => {
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
+			const altitudeProfilePluginSpy = spyOn(altitudeProfilePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -155,6 +167,7 @@ describe('StoreService', () => {
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
+			expect(altitudeProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
