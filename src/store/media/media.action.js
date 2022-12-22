@@ -43,7 +43,7 @@ export const setIsMinWidth = (isMinWidth) => {
 
 /**
  *
- * @param {boolean} isMinWidth
+ * @param {boolean} isDarkSchema
  * @function
  */
 export const setIsDarkSchema = (isDarkSchema) => {
