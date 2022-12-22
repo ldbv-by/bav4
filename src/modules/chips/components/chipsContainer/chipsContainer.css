@@ -1,0 +1,127 @@
+.chips__container {
+	margin-left: 7em;
+	display: flex;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
+	position: absolute;
+	scroll-behavior: smooth;
+	overflow: hidden;	
+}
+.chips__button {
+	background: var(--chip-background-color);
+	border: 1px solid var(--chip-color);
+	margin: .8em .5em 0 0;
+	display: flex;
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20);
+	border-radius: 2em;
+	padding: .5em 0.9em;
+	cursor: pointer;
+	font-size: .9rem;
+	text-decoration: none;
+	flex-shrink: 0;
+}
+.chips__button:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+.chips__icon {
+	fill: var(--chip-color);
+	height: 1.5em;
+	width: 1.5em;
+	position: relative;
+	top: -.1em;
+}
+.chips__button-text {
+	color: var(--text1);
+	font-weight: bold;
+	margin: auto .5em;
+}
+.chips__button:hover .chips__button-text {
+	color: var(--chip-color);
+}
+
+.is-desktop.is-open.chips__container {
+	right: 38em;
+	margin-left: 1em;
+	transform: translate(28em, 0);
+	left: 0;
+	overflow: auto;
+	padding-bottom: .5em;
+	white-space: nowrap;
+}
+.is-tablet.is-open.chips__container {
+	right: 29em;
+	margin-left: 1em;
+	transform: translate(28em, 0);
+	left: 0;
+	overflow: auto;
+	padding-bottom: .5em;
+	white-space: nowrap;
+}
+.is-portrait.chips__container {
+	top: 8em;
+	margin: 0;
+	width: 100%;
+	z-index: 100;
+	padding: 0 1em;
+	overflow: hidden;
+}  
+.chips__scroll-button {
+	display: none;
+	position: sticky;
+	background: var(--primary-bg-color);
+	color: var(--text1);
+	font-size: 1em;
+	margin: .7em .5em 0 0;
+	z-index: calc(var( --z-header) + 30);
+	border-radius: 2em;
+	padding: .5em 0.9em;
+	cursor: pointer;
+	border: 1px solid var(--text1);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%); 
+}
+.show .chips__scroll-button {
+	display: block;
+}
+.chips__scroll-button-right {
+	right: 0;
+}
+.chips__scroll-button-right .icon {
+	height: 1em;
+	width: .8em;
+	background: var(--text2);
+	display: block;
+	margin: auto;
+	mask: url('assets/caretright.svg');
+	-webkit-mask: url('assets/caretright.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.chips__scroll-button-left {
+	left: 0;
+}
+.chips__scroll-button-left .icon {
+	height: 1em;
+	width: 1em;
+	background: var(--text2);
+	display: block;
+	margin: auto;
+	mask: url('assets/caretleft.svg');
+	-webkit-mask: url('assets/caretleft.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+iframe {
+	min-height: 50em;
+	border: 0;
+	width: 100%;
+	min-width: 60em;
+}
+.is-portrait iframe {
+	height: 92em;
+	width: 100%;
+	min-width: auto;
+}
+::-webkit-scrollbar {
+	height: 0;
+}

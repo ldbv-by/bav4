@@ -12,6 +12,7 @@ export const QueryParameters = Object.freeze({
 	LAYER_OPACITY: 'l_o',
 	TOPIC: 't',
 	QUERY: 'q',
+	CHIP_ID: 'chid',
 	MENU_ID: 'mid',
 	// technical parameters
 	T_ENABLE_TEST_IDS: 't_enable-test-ids',
