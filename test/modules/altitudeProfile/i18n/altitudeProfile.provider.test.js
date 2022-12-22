@@ -28,7 +28,7 @@ describe('i18n for altitudeProfile module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 9;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
