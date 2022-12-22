@@ -338,7 +338,7 @@ export class AltitudeProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(altitudeData, newDataLabels = [], newDataData = []) {
+	_getChartConfig(altitudeData, newDataLabels, newDataData) {
 		const translate = (key) => this._translationService.translate(key);
 		const config = {
 			type: 'line',
