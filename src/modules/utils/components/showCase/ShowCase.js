@@ -225,6 +225,11 @@ export class ShowCase extends BaElement {
 			<div class='example'>
 				<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 			</div>	
+
+			<h3>Profile</h3>
+			<div class='example row'>
+			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
+			</div>
 						
 			<h3>Measure Distance</h3>
 			<div class='example row'>
@@ -357,12 +362,6 @@ export class ShowCase extends BaElement {
 			<div>Hint: Demo Credentials are foo/bar</div>
 			</div>
 
-			<h3>Profile</h3>
-			<div class='example row'>
-			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
-			<ba-profile></ba-profile>
-			</div>
-				
 			</div>	
 		</div > `;
 	}
