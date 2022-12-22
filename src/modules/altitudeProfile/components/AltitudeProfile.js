@@ -422,6 +422,6 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-altitudeprofile-n';
+		return 'ba-altitude-profile';
 	}
 }
