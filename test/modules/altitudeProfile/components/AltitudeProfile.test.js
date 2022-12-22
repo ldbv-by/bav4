@@ -167,7 +167,7 @@ describe('AltitudeProfile', () => {
 
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			profile: altitudeProfileReducer
+			altitudeProfile: altitudeProfileReducer
 		});
 
 		$injector
@@ -221,7 +221,7 @@ describe('AltitudeProfile', () => {
 				media: {
 					darkSchema: true
 				},
-				profile: {
+				altitudeProfile: {
 					active: false,
 					coordinates: coordinates
 				}
@@ -339,7 +339,7 @@ describe('AltitudeProfile', () => {
 			];
 			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
-				profile: {
+				altitudeProfile: {
 					active: false,
 					coordinates: coordinates
 				}
@@ -394,7 +394,7 @@ describe('AltitudeProfile', () => {
 	describe('when _enrichProfileData is called', () => {
 		it('updates the profile', async () => {
 			// arrange
-			const profile = {
+			const altitudeProfile = {
 				alts: [
 					{
 						dist: 0,
@@ -427,17 +427,17 @@ describe('AltitudeProfile', () => {
 			};
 			// const element =
 			await setup({
-				profile
+				altitudeProfile
 			});
-			const altitudeProfile = new AltitudeProfile();
+			const ap = new AltitudeProfile();
 
 			//act
-			altitudeProfile._enrichProfileData(profile);
+			ap._enrichProfileData(altitudeProfile);
 
 			// assert
-			expect(profile.alts[0].surface).toBe('asphalt');
-			expect(profile.alts[1].surface).toBe('missing');
-			expect(profile.alts[2].surface).toBe('gravel');
+			expect(altitudeProfile.alts[0].surface).toBe('asphalt');
+			expect(altitudeProfile.alts[1].surface).toBe('missing');
+			expect(altitudeProfile.alts[2].surface).toBe('gravel');
 		});
 	});
 
