@@ -68,13 +68,6 @@ describe('AltitudeProfile', () => {
 					[0, 1, 'asphalt'],
 					[3, 5, 'gravel']
 				]
-			},
-			{
-				id: 'anotherType',
-				values: [
-					[0, 2, 'cycle'],
-					[4, 5, 'foot']
-				]
 			}
 		]
 	};
@@ -283,20 +276,6 @@ describe('AltitudeProfile', () => {
 			expect(textTypeGradientSpy).toHaveBeenCalled();
 		});
 
-		it('executes the branch "TextType" for "selectedAttribute anotherType"', async () => {
-			// arrange
-			const attributeType = 'anotherType';
-			const element = await setup();
-			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
-			spyOn(element, 'getAltitudeProfileAttributeType').and.resolveTo(attributeType);
-
-			// act
-			element._getGradient(attributeType, chart, altitudeData);
-
-			// assert
-			expect(textTypeGradientSpy).toHaveBeenCalled();
-		});
-
 	});
 
 	describe('when _getSlopeGradient() is called', () => {
@@ -347,8 +326,6 @@ describe('AltitudeProfile', () => {
 			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
-			attrs.value = 'anotherType';
-			attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'surface';
 			attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'slope';

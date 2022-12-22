@@ -4,7 +4,7 @@ import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../injection';
 
-import { AnotherType, SurfaceType } from '../utils/altitudeProfileAttributeTypes';
+import { SurfaceType } from '../utils/altitudeProfileAttributeTypes';
 import { nothing } from 'lit-html';
 
 const Update_Schema = 'update_schema';
@@ -54,7 +54,6 @@ export class AltitudeProfile extends MvuElement {
 		this._bottom = 0;
 
 		this._initSurfaceTypes();
-		this._initAnotherTypeTypes();
 	}
 
 	/**
@@ -197,7 +196,6 @@ export class AltitudeProfile extends MvuElement {
 				return this._getSlopeGradient(chart, altitudeData);
 
 			case 'surface':
-			case 'anotherType':
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
@@ -220,7 +218,7 @@ export class AltitudeProfile extends MvuElement {
 	_getBorderColor(context, altitudeData) {
 		const chart = context.chart;
 		const selectedAttribute = this.getModel().selectedAttribute;
-		if (selectedAttribute === 'surface' || selectedAttribute === 'slope' || selectedAttribute === 'anotherType') {
+		if (selectedAttribute === 'surface' || selectedAttribute === 'slope') {
 			return this._getGradient(selectedAttribute, chart, altitudeData);
 		}
 		return '#88dd88';
@@ -244,13 +242,6 @@ export class AltitudeProfile extends MvuElement {
 		this._addAttributeType(new SurfaceType('asphalt', '#222222', '#444444'));
 		this._addAttributeType(new SurfaceType('gravel', '#eeeeee', '#dddddd'));
 		this._addAttributeType(new SurfaceType('missing', '#2222ee', '#ee2222'));
-	}
-
-	_initAnotherTypeTypes() {
-		this._addAttributeType(new AnotherType('cycle', '#224488', '#44aa44'));
-		this._addAttributeType(new AnotherType('foot', '#eeaaaa', '#ddaaaa'));
-		this._addAttributeType(new AnotherType('car', '#aaeeee', '#aadddd'));
-		this._addAttributeType(new AnotherType('missing', '#2222ee', '#ee2222'));
 	}
 
 	_getTextTypeGradient(chart, altitudeData, selectedAttribute) {

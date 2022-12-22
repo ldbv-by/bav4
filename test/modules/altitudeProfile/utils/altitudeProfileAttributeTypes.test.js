@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { AnotherType, SurfaceType } from '../../../../src/modules/altitudeProfile/utils/altitudeProfileAttributeTypes';
+import { SurfaceType } from '../../../../src/modules/altitudeProfile/utils/altitudeProfileAttributeTypes';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TestUtils } from '../../../test-utils';
 
@@ -31,20 +31,6 @@ describe('tests for altitudeProfileAttributeTypes.js', () => {
 			expect(surfaceType.name).toBe('asphalt');
 			expect(surfaceType.caption).toBe('altitudeProfile_surface');
 			expect(surfaceType.color).toBe('#111111');
-		});
-	});
-
-
-	describe('when AnotherType is initialized', () => {
-		it('all fields should be set', async () => {
-			// arrange
-			await setup();
-			const anotherType = new AnotherType('asphalt', '#111111', '#222222');
-
-			// assert
-			expect(anotherType.name).toBe('asphalt');
-			expect(anotherType.caption).toBe('altitudeProfile_anotherType');
-			expect(anotherType.color).toBe('#111111');
 		});
 	});
 

@@ -9,7 +9,6 @@ export const provide = (lang) => {
 				altitudeProfile_sumDown: 'Descent',
 				altitudeProfile_alt: 'Elevation',
 				altitudeProfile_surface: 'surface',
-				altitudeProfile_anotherType: 'anotherType',
 				altitudeProfile_unknown: 'unknown'
 			};
 
@@ -22,7 +21,6 @@ export const provide = (lang) => {
 				altitudeProfile_sumDown: 'Abstieg',
 				altitudeProfile_alt: 'Höhe',
 				altitudeProfile_surface: 'Untergrund',
-				altitudeProfile_anotherType: 'anotherType',
 				altitudeProfile_unknown: 'unbekannt'
 			};
 
