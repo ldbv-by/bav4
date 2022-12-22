@@ -66,7 +66,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 		stroke: new Stroke(
 			{
 				color: [255, 100, 100, 1],
-				width: 10
+				width: 1
 			}),
 		text: new TextStyle(
 			{
@@ -144,7 +144,7 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) =>
 	};
 
 	const drawPassepartout = (ctx, pageCoordinates) => {
-		const passepartoutWidthFactor = 0.02;
+		const passepartoutWidthFactor = 0.03;
 		const pageRectangle = getPageRectangle(pageCoordinates);
 		const center = getCenter(pageRectangle);
 		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
