@@ -243,44 +243,6 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	// describe('when _getGradient() is called', () => {
-	// 	it('renders the view when a profile is available', async () => {
-	// 		// arrange
-	// 		const coordinates = [
-	// 			[0, 1],
-	// 			[2, 3]
-	// 		];
-	// 		spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profileSlopeSteep());
-	// 		const element = await setup({
-	// 			media: {
-	// 				darkSchema: true
-	// 			},
-	// 			altitudeProfile: {
-	// 				active: false,
-	// 				coordinates: coordinates
-	// 			}
-	// 		});
-
-	// 		// act
-	// 		const attrs = element.shadowRoot.getElementById('attrs');
-	// 		attrs.value = 'slope';
-	// 		attrs.dispatchEvent(new Event('change'));
-
-	// 		// assert
-	// 		const chart = element._chart;
-	// 		const config = chart.config;
-	// 		const datasetZero = config.data.datasets[0];
-	// 		expect(chart).not.toBeNull();
-	// 		expect(config.type).toBe('line');
-	// 		expect(config.options.responsive).toBe(true);
-	// 		expect(config.data.labels).toEqual([0, 1, 2, 3]);
-	// 		expect(datasetZero.data).toEqual([0, 10, 20, 30]);
-	// 		expect(datasetZero.label).toBe('Höhenprofil');
-	// 		expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
-	// 		const attrsCheck = element.shadowRoot.getElementById('attrs');
-	// 		expect(attrsCheck.value).toBe('slope');
-	// 	});
-	// });
 
 	describe('when _getGradient() is called', () => {
 
@@ -352,50 +314,6 @@ describe('AltitudeProfile', () => {
 		});
 	});
 
-	// describe('when _getBackgroundColor() is called', () => {
-
-	// 	it('returns a valid value for "selectedAttribute alt"', async () => {
-	// 		// arrange
-	// 		const element = await setup();
-
-	// 		// act
-	// 		const gradientSpy = spyOn(element, '_getGradient').and.callThrough();
-	// 		spyOn(element, 'getAltitudeProfileAttributeType').and.resolveTo('alt');
-	// 		const value = element._getBackgroundColor(context, altitudeData);
-
-	// 		// assert
-	// 		expect(value).toBe('#88dd88');
-	// 		expect(gradientSpy).toHaveBeenCalled();
-	// 	});
-
-	// 	it('returns a valid value for "selectedAttribute slope"', async () => {
-	// 		// arrange
-	// 		const element = await setup();
-
-	// 		// act
-	// 		spyOn(element, '_getGradient').and.callThrough();
-	// 		spyOn(element, 'getAltitudeProfileAttributeType').and.resolveTo('slope');
-	// 		const value = element._getBackgroundColor(context, altitudeData);
-
-	// 		// assert
-	// 		expect(value).toBe('#ddddff');
-	// 	});
-
-
-	// 	it('executes _getGradient for "selectedAttribute surface"', async () => {
-	// 		// arrange
-	// 		const element = await setup();
-	// 		const gradientSpy = spyOn(element, '_getGradient').and.callThrough();
-	// 		spyOn(element, 'getAltitudeProfileAttributeType').and.resolveTo('surface');
-
-	// 		// act
-	// 		element._getBackgroundColor(context, altitudeData);
-
-	// 		// assert
-	// 		// expect(value).toBe('#ddddff');
-	// 		expect(gradientSpy).toHaveBeenCalled();
-	// 	});
-	// });
 
 	describe('when _getBorderColor() is called', () => {
 
@@ -427,7 +345,6 @@ describe('AltitudeProfile', () => {
 				}
 			});
 			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
-			console.log(1);
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'anotherType';
@@ -436,7 +353,6 @@ describe('AltitudeProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
-			console.log(2);
 
 			// assert
 			expect(updateChartSpy).toHaveBeenCalled();
