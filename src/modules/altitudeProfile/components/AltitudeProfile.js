@@ -309,7 +309,6 @@ export class AltitudeProfile extends MvuElement {
 	 * @private
 	 */
 	async _getAltitudeProfile(coordinates) {
-		console.log('🚀 ~ file: AltitudeProfile.js:312 ~ AltitudeProfile ~ _getAltitudeProfile ~ coordinates', coordinates);
 		try {
 			const profile = await this._altitudeService.getProfile(coordinates);
 			this.signal(Enrich_Profile_Data, profile);
