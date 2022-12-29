@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from '../../../../../src/services/GeoResourceService';
 
 describe('Catalog provider', () => {
 
@@ -84,6 +85,10 @@ describe('Catalog provider', () => {
 			expect(catalog[0].open).toBeTrue();
 			expect(catalog[0].children.length).toBe(3);
 			expect(catalog[0].children[2].children.length).toBe(1);
+			expect(catalog[0].children[0].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_0);
+			expect(catalog[0].children[1].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_1);
+			expect(catalog[0].children[2].children[0].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_2);
+			expect(catalog[1].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_3);
 		});
 	});
 });

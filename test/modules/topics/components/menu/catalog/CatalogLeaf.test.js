@@ -1,10 +1,8 @@
 import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
-import { loadExampleCatalog } from '../../../../../../src/modules/topics/services/provider/catalog.provider';
 import { TestUtils } from '../../../../../test-utils.js';
 import { $injector } from '../../../../../../src/injection';
 import { topicsReducer } from '../../../../../../src/store/topics/topics.reducer';
-import { layersReducer } from '../../../../../../src/store/layers/layers.reducer';
-import { createDefaultLayerProperties } from '../../../../../../src/store/layers/layers.reducer';
+import { createDefaultLayer, layersReducer } from '../../../../../../src/store/layers/layers.reducer';
 import { XyzGeoResource } from '../../../../../../src/domain/geoResources';
 import { Checkbox } from '../../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../../src/store/modal/modal.reducer';
@@ -24,7 +22,8 @@ describe('CatalogLeaf', () => {
 
 	let store;
 
-	const layer = { ...createDefaultLayerProperties(), id: 'atkis_sw' };
+	const geoResourceId = 'geoResourceId';
+	const layer = createDefaultLayer('id', geoResourceId);
 
 	const setup = (topics = 'foo', layers = [layer], ready = true) => {
 
@@ -33,7 +32,6 @@ describe('CatalogLeaf', () => {
 			layers: {
 				active: layers,
 				ready: ready
-
 			}
 		};
 
@@ -43,8 +41,10 @@ describe('CatalogLeaf', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(CatalogLeaf.tag);
+		return TestUtils.renderAndLogLifecycle(CatalogLeaf.tag);
 	};
+
+	const getLeaf = () => ({ geoResourceId });
 
 	describe('when initialized', () => {
 
@@ -61,7 +61,7 @@ describe('CatalogLeaf', () => {
 		describe('and layers are NOT yet loaded', () => {
 
 			it('renders the nothing', async () => {
-				const leaf = (await loadExampleCatalog('foo')).pop();
+				const leaf = getLeaf();
 				const element = await setup('foo', [layer], false);
 
 				//assign data
@@ -76,9 +76,9 @@ describe('CatalogLeaf', () => {
 
 			it('renders a leaf', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
-				const leaf = (await loadExampleCatalog('foo')).pop();
+				const leaf = getLeaf();
 				const element = await setup();
 
 				//assign data
@@ -97,9 +97,9 @@ describe('CatalogLeaf', () => {
 
 			it('renders a checkbox unchecked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
-				const leaf = (await loadExampleCatalog('foo')).pop();
+				const leaf = getLeaf();
 				const element = await setup('foo', []);
 
 				//assign data
@@ -111,9 +111,9 @@ describe('CatalogLeaf', () => {
 
 			it('renders a checkbox checked', async () => {
 				const geoResourceLabel = 'someLabel';
-				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+				spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 				//load leaf data
-				const leaf = (await loadExampleCatalog('foo')).pop();
+				const leaf = getLeaf();
 				const element = await setup();
 
 				//assign data
@@ -126,9 +126,9 @@ describe('CatalogLeaf', () => {
 			describe('geoResource not available', () => {
 
 				it('sets the georesourceId as fallback label', async () => {
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(null);
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(null);
 					//load leaf data
-					const leaf = (await loadExampleCatalog('foo')).pop();
+					const leaf = getLeaf();
 					const element = await setup();
 
 					//assign data
@@ -137,7 +137,7 @@ describe('CatalogLeaf', () => {
 					const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 					expect(checkbox.disabled).toBeTrue();
 					expect(checkbox.title).toBe('topics_catalog_leaf_no_georesource_title');
-					expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(layer.id);
+					expect(element.shadowRoot.querySelector('.ba-list-item__text').innerText).toBe(layer.geoResourceId);
 				});
 			});
 
@@ -145,9 +145,9 @@ describe('CatalogLeaf', () => {
 
 				it('adds and removes a layer', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
-					const leaf = (await loadExampleCatalog('foo')).pop();
+					const leaf = getLeaf();
 					const element = await setup('foo', []);
 					//assign data
 					element.data = leaf;
@@ -167,9 +167,9 @@ describe('CatalogLeaf', () => {
 
 				it('shows a georesourceinfo panel as modal', async () => {
 					const geoResourceLabel = 'someLabel';
-					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.id).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
+					spyOn(geoResourceServiceMock, 'byId').withArgs(layer.geoResourceId).and.returnValue(new XyzGeoResource(layer.id, geoResourceLabel, 'someUrl'));
 					//load leaf data
-					const leaf = (await loadExampleCatalog('foo')).pop();
+					const leaf = getLeaf();
 					const element = await setup('foo', []);
 					//assign data
 					element.data = leaf;
