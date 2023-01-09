@@ -78,7 +78,7 @@ export class CatalogLeaf extends AbstractContentPanel {
 		const { layers: { active: activeLayers, ready: layersStoreReady } } = globalState;
 
 		const geoResourceId = this._catalogPart ? this._catalogPart.geoResourceId : null;
-		const checked = geoResourceId ? activeLayers.map(geoResource => geoResource.id).includes(geoResourceId) : false;
+		const checked = geoResourceId ? activeLayers.map(layer => layer.geoResourceId).includes(geoResourceId) : false;
 
 		return { layersStoreReady, geoResourceId, checked };
 	}

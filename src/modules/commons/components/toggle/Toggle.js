@@ -48,12 +48,6 @@ export class Toggle extends MvuElement {
 
 	onInitialize() {
 		this._onToggle = () => { };
-
-		this.addEventListener('click', (event) => {
-			this._click();
-			event.stopPropagation();
-		});
-
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
@@ -93,7 +87,7 @@ export class Toggle extends MvuElement {
 		return 'ba-toggle';
 	}
 
-	_click() {
+	click() {
 		this._root.querySelector('.switch').click();
 	}
 
