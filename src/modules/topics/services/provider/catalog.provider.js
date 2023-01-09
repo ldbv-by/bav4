@@ -1,4 +1,5 @@
 import { $injector } from '../../../../injection';
+import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from '../../../../services/GeoResourceService';
 
 
 /**
@@ -38,20 +39,20 @@ export const loadFallbackCatalog = () => {
 			open: true,
 			children: [
 				{
-					geoResourceId: 'atkis'
+					geoResourceId: FALLBACK_GEORESOURCE_ID_0
 				},
 				{
-					geoResourceId: 'atkis_sw'
+					geoResourceId: FALLBACK_GEORESOURCE_ID_1
 				},
 				{
 					label: 'Suptopic 2',
 					children: [{
-						geoResourceId: 'atkis_sw'
+						geoResourceId: FALLBACK_GEORESOURCE_ID_2
 					}]
 				}
 			]
 		}, {
-			geoResourceId: 'atkis_sw'
+			geoResourceId: FALLBACK_GEORESOURCE_ID_3
 		}
 	];
 };

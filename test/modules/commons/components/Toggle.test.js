@@ -118,7 +118,7 @@ describe('Toggle', () => {
 
 				element.click();
 
-				expect(window.alert).toHaveBeenCalledWith('called');
+				expect(window.alert).toHaveBeenCalledOnceWith('called');
 				expect(element.checked).toBeTrue();
 			});
 
@@ -132,7 +132,7 @@ describe('Toggle', () => {
 				element.click();
 
 				expect(element.onClick).not.toHaveBeenCalled();
-				expect(window.alert).not.toHaveBeenCalledWith('called');
+				expect(window.alert).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
 			});
 		});

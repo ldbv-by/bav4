@@ -8,7 +8,7 @@ describe('AltitudeService', () => {
 		return new AltitudeService(altitudeProvider, profileProvider);
 	};
 
-	describe('init', () => {
+	describe('constructor', () => {
 
 		it('initializes the service with custom provider', async () => {
 			const customAltitudeProvider = async () => { };
