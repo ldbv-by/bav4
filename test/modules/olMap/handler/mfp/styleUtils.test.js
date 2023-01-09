@@ -70,8 +70,8 @@ describe('mfp style utility functions', () => {
 
 				const style = styles[1];
 
-				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 1]);
-				expect(style.getStroke().getWidth()).toBe(1);
+				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 0]);
+				expect(style.getStroke().getWidth()).toBe(6);
 			});
 			it('should have a text style ', () => {
 				const styles = createThumbnailStyleFunction('foo', 'bar', []);

@@ -12,6 +12,7 @@ import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
+import { equals, getIntersection } from 'ol/extent';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -59,7 +60,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates()));
+			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates(), () => this._hasValidExtent()));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
 			this._updateMfpPreview();
@@ -119,12 +120,9 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_updateRotation() {
-		const resetUserRotation = () => {
+		if (this._storeService.getStore().getState().mfp.autoRotation) {
 			setTimeout(() => changeRotation(0));
-		};
-
-		const rotateAction = this._storeService.getStore().getState().mfp.autoRotation ? resetUserRotation : () => { };
-		rotateAction();
+		}
 	}
 
 	_updateMfpPage(mfpSettings) {
@@ -165,6 +163,14 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+	}
+
+	_hasValidExtent() {
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+
+		const extent = this._mfpBoundaryFeature.getGeometry().getExtent();
+		const intersect = getIntersection(extent, mfpExtent);
+		return equals(intersect, extent);
 	}
 
 	_getLocales() {

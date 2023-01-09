@@ -65,8 +65,8 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 		},
 		stroke: new Stroke(
 			{
-				color: [255, 100, 100, 1],
-				width: 1
+				color: [255, 100, 100, 0],
+				width: 6
 			}),
 		text: new TextStyle(
 			{
@@ -95,7 +95,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) => {
+export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback, validExtentCallback) => {
 
 	const getMask = (map, pixelCoordinates) => {
 		const size = map.getSize();
@@ -164,9 +164,9 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) =>
 		ctx.setTransform(1, 0, 0, 1, 0, 0);
 	};
 
-	const drawInnerContour = (ctx, pageCoordinates) => {
+	const drawInnerContour = (ctx, pageCoordinates, color) => {
 
-		ctx.strokeStyle = 'rgba(44, 90, 146, 1)';
+		ctx.strokeStyle = color;
 		ctx.lineWidth = 3;
 		ctx.beginPath();
 		ctx.moveTo(pageCoordinates[0], pageCoordinates[1]);
@@ -179,13 +179,15 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) =>
 
 	const renderMask = (event) => {
 		const pixelCoordinates = getPixelCoordinatesCallback();
+		const hasValidExtent = validExtentCallback();
+
 		const pixelMask = getMask(map, pixelCoordinates);
 		const ctx = event.context;
-
+		const color = hasValidExtent ? 'rgba(44, 90, 146, 1)' : 'rgba(255, 90, 40, 1)';
 		drawMask(ctx, pixelMask);
 
 		drawPassepartout(ctx, pixelMask[1]);
-		drawInnerContour(ctx, pixelMask[1]);
+		drawInnerContour(ctx, pixelMask[1], color);
 		ctx.restore();
 	};
 	return renderMask;
