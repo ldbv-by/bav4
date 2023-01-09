@@ -122,16 +122,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	}
 
-	_updateMfpPreviewLazy() {
-		const intervalId = setInterval(() => {
-			if (!this._map.getView().getAnimating()) {// let's wait until map animation has stopped
-				this._updateMfpPreview();
-				clearInterval(intervalId);
-			}
-		}, 50);
-		this._updateMfpPreview();
-	}
-
 	_updateRotation() {
 		const resetUserRotation = () => {
 			setTimeout(() => changeRotation(0));
@@ -304,8 +294,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		if (autorotation) {
 			// reset rotation
 			changeRotation(0);
-
-			this._updateMfpPreviewLazy();
 		}
 	}
 
