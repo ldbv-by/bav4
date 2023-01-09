@@ -151,14 +151,14 @@ describe('OlMfpHandler', () => {
 
 		const getRenderEvent = (time, eventName) => new RenderEvent(eventName, transform, setupFrameState(time), get2dContext());
 
-		it('creates a mfp-layer', () => {
+		it('creates a mfp-layer with renderevent-handling', () => {
 			setup();
 			const classUnderTest = getClassUnderTest();
 
 			const prerenderEvent = getRenderEvent(Date.now() - 1000, 'prerender');
 			const postrenderEvent = getRenderEvent(Date.now() - 1000, 'postrender');
 			const saveContextSpy = spyOn(prerenderEvent.context, 'save').and.callThrough();
-			const isDraggedByUserSpy = spyOn(classUnderTest, '_isMapDraggedByUser').and.returnValue(false);
+			const restoreContextSpy = spyOn(postrenderEvent.context, 'restore').and.callThrough();
 			const map = setupMap([100, 100], [50, 50], [1, 1]);
 			const layer = classUnderTest.activate(map);
 
@@ -168,7 +168,7 @@ describe('OlMfpHandler', () => {
 			expect(saveContextSpy).toHaveBeenCalled();
 
 			layer.dispatchEvent(postrenderEvent);
-			expect(isDraggedByUserSpy).toHaveBeenCalled();
+			expect(restoreContextSpy).toHaveBeenCalled();
 		});
 
 		it('registers observer', () => {
@@ -218,7 +218,7 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			setup({ ...initialState, scale: 42 });
 			const handler = new OlMfpHandler();
-			const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
+			const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => { });
 			handler.activate(map);
 			expect(lazySpy).toHaveBeenCalledTimes(1);
 		});
@@ -246,14 +246,8 @@ describe('OlMfpHandler', () => {
 
 
 			handler.activate(map);
-			changeCenter([0, 42]);
-
-			expect(updateSpy).toHaveBeenCalled();
-			updateSpy.calls.reset();
-
 			changeRotation(42);
 
-			await TestUtils.timeout();
 			await TestUtils.timeout();
 
 			expect(updateSpy).toHaveBeenCalled();
@@ -273,17 +267,18 @@ describe('OlMfpHandler', () => {
 		});
 
 		describe('when autoRotation is reactivated', () => {
-			it('updates the preview lazy', () => {
+			it('updates the preview lazy', async () => {
 				const map = setupMap();
 				setup({ ...initialState, scale: 42 });
 				const handler = new OlMfpHandler();
-				const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
+				const lazySpy = spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => { });
 				handler.activate(map);
 				lazySpy.calls.reset();
 
 				setAutoRotation(false);
 				setAutoRotation(true);
 
+				await TestUtils.timeout();
 				expect(lazySpy).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -294,9 +289,9 @@ describe('OlMfpHandler', () => {
 				const map = setupMap();
 				setup({ ...initialState, scale: 42 });
 				const handler = new OlMfpHandler();
-				spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => {});
+				spyOn(handler, '_updateMfpPreviewLazy').and.callFake(() => { });
 				const updateRotationSpy = spyOn(handler, '_updateRotation').and.callThrough();
-				const previewSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => {	});
+				const previewSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => { });
 
 				handler.activate(map);
 
@@ -308,7 +303,7 @@ describe('OlMfpHandler', () => {
 
 				await TestUtils.timeout();
 				expect(updateRotationSpy).toHaveBeenCalled();
-				expect(previewSpy).toHaveBeenCalled();
+				expect(previewSpy).not.toHaveBeenCalled();
 			});
 		});
 
@@ -320,7 +315,7 @@ describe('OlMfpHandler', () => {
 				const handler = getClassUnderTest();
 				handler.activate(map);
 				await TestUtils.timeout();
-				expect(store.getState().position.rotation).toBeCloseTo(-0.03355, 5);
+				expect(store.getState().position.rotation).toBe(0);
 			});
 		});
 
@@ -496,7 +491,7 @@ describe('OlMfpHandler', () => {
 			const mapMock = { getView: () => viewMock };
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = mapMock;
-			const previewSpy = spyOn(classUnderTest, '_updateMfpPreview').and.callFake(() => {});
+			const previewSpy = spyOn(classUnderTest, '_updateMfpPreview').and.callFake(() => { });
 
 			classUnderTest._updateMfpPreviewLazy();
 			jasmine.clock().tick(100 + 10); // let's 'wait' for the first and second interval
@@ -541,18 +536,6 @@ describe('OlMfpHandler', () => {
 			expect(transformSpy).toHaveBeenCalled();
 			expect(rotationSpy).toHaveBeenCalledWith(mapRotation - azimuth, [0, 0]);
 			expect(mfpBoundary).toBe(cloned);
-		});
-	});
-
-	describe('_isMapDraggedByUser', () => {
-		it('reads the store', () => {
-			setup();
-			const classUnderTest = new OlMfpHandler();
-			expect(classUnderTest._isMapDraggedByUser()).toBeFalse();
-
-			setBeingDragged(true);
-
-			expect(classUnderTest._isMapDraggedByUser()).toBeTrue();
 		});
 	});
 });

@@ -133,14 +133,11 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_updateRotation() {
-		const rotateMfpExtentByView = () => {
-			//this._updateMfpPreview();
-		};
-		const rotateViewByMfpExtent = () => {
+		const resetUserRotation = () => {
 			setTimeout(() => changeRotation(0));
 		};
 
-		const rotateAction = this._storeService.getStore().getState().mfp.autoRotation ? rotateViewByMfpExtent : rotateMfpExtentByView;
+		const rotateAction = this._storeService.getStore().getState().mfp.autoRotation ? resetUserRotation : () => { };
 		rotateAction();
 	}
 
@@ -261,8 +258,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		return new Point(this._map.getCoordinateFromPixel(this._getVisibleCenterPixel()));
 	}
 
-
-
 	_createGeodeticBoundary(pageSize, center) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
 
@@ -307,12 +302,11 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_onAutoRotationChanged(autorotation) {
 		if (autorotation) {
+			// reset rotation
+			changeRotation(0);
+
 			this._updateMfpPreviewLazy();
 		}
-	}
-
-	_isMapDraggedByUser() {
-		return this._storeService.getStore().getState().pointer.beingDragged;
 	}
 
 	async _encodeMap() {
