@@ -59,21 +59,8 @@ describe('mfp style utility functions', () => {
 
 			expect(styles).toHaveSize(2);
 			const style = styles[0];
-			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.5]);
-			expect(style.getStroke().getWidth()).toBe(6);
-		});
-
-
-		it('should create a base style with a text style ', () => {
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
-
-			expect(styles).toHaveSize(2);
-			const style = styles[0];
-			expect(style.getText().getText()).toEqual('  foo');
-			expect(style.getText().getTextAlign()).toBe('left');
-			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
-			expect(style.getText().getStroke().getWidth()).toBe(2);
-			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
+			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0]);
+			expect(style.getStroke().getWidth()).toBe(1);
 		});
 
 		describe('with a warnstyle', () => {
@@ -84,7 +71,7 @@ describe('mfp style utility functions', () => {
 				const style = styles[1];
 
 				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 1]);
-				expect(style.getStroke().getWidth()).toBe(10);
+				expect(style.getStroke().getWidth()).toBe(1);
 			});
 			it('should have a text style ', () => {
 				const styles = createThumbnailStyleFunction('foo', 'bar', []);

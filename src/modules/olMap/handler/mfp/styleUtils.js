@@ -32,7 +32,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
-				color: [9, 157, 220, 1],
+				color: [9, 157, 220, 0],
 				width: 1
 			})
 		/* text: new TextStyle(
@@ -94,6 +94,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 };
 
 export const nullStyleFunction = () => [new Style({})];
+
 export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 	const getMask = (map, pixelCoordinates) => {

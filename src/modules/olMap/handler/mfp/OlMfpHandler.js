@@ -115,11 +115,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
-		const geodeticRotation = this._getAzimuth(mfpGeometry);
-		this._mfpBoundaryFeature.set('azimuth', geodeticRotation);
-		this._mfpBoundaryFeature.set('center', this._storeService.getStore().getState().position.center);
 		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
-
 	}
 
 	_updateRotation() {
