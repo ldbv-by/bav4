@@ -30,7 +30,8 @@ export class AltitudeProfile extends MvuElement {
 			labels: null,
 			data: null,
 			selectedAttribute: null,
-			darkSchema: null
+			darkSchema: null,
+			distUnit: null
 		});
 		this._chart = null;
 		this._altitudeProfileAttributeTypes = [];
@@ -80,7 +81,7 @@ export class AltitudeProfile extends MvuElement {
 		switch (type) {
 			case Enrich_Profile_Data:
 				this._enrichProfileData(data);
-				return { ...model, profile: data, labels: data.labels, data: data.chartData };
+				return { ...model, profile: data, labels: data.labels, data: data.chartData, distUnit: data.distUnit };
 
 			case Update_Schema:
 				return { ...model, darkSchema: data };
@@ -162,7 +163,28 @@ export class AltitudeProfile extends MvuElement {
 		});
 		// add alt(itude) to attribute select
 		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+		// check m or km
+		profile.distUnit = this._getDistUnit(profile);
+		const newLabels = [];
+		profile.alts.forEach((alt) => {
+			if (profile.distUnit === 'km') {
+				newLabels.push(alt.dist / 1000);
+			}
+			else {
+				newLabels.push(alt.dist);
+			}
+		});
+		profile.labels = newLabels;
 		return;
+	}
+
+	_getDistUnit(profile) {
+		const from = profile.alts[0].dist;
+		const to = profile.alts[profile.alts.length - 1].dist;
+
+		const dist = to - from;
+		const distUnit = dist >= 10000 ? 'km' : 'm';
+		return distUnit;
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
@@ -320,7 +342,7 @@ export class AltitudeProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(altitudeData, newDataLabels, newDataData) {
+	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
 		const config = {
 			type: 'line',
@@ -340,8 +362,18 @@ export class AltitudeProfile extends MvuElement {
 				maintainAspectRatio: false,
 
 				scales: {
-					x: { type: 'linear' },
-					y: { type: 'linear', beginAtZero: false }, // HINT: UX decision
+					x: { type: 'linear',
+						title: {
+							display: true,
+							text: translate('altitudeProfile_distance') + '[' + distUnit + ']'
+						}
+					},
+					y: { type: 'linear', beginAtZero: false,
+						title: {
+							display: true,
+							text: translate('altitudeProfile_alt') + '[m]'
+						}
+					}, // HINT: UX decision
 					y1: {
 						type: 'linear',
 						display: true,
@@ -355,11 +387,7 @@ export class AltitudeProfile extends MvuElement {
 						align: 'end',
 						display: true,
 						text:
-							'hier geht was ' +
-							translate('altitudeProfile_distance') +
-							', m / ' +
-							translate('altitudeProfile_alt') +
-							', m'
+							'DGM 25 / DHHN2016 / DGM 25 / DHHN2016'
 					},
 					legend: { display: false }
 				}
@@ -368,19 +396,20 @@ export class AltitudeProfile extends MvuElement {
 		return config;
 	}
 
+
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
 		this._chart.data.datasets[0].data = data;
 		this._chart.update();
 	}
 
-	_createChart(profile, newDataLabels, newDataData) {
+	_createChart(profile, newDataLabels, newDataData, distUnit) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
-		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData));
+		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
 	}
 
 	_updateOrCreateChart() {
-		const { profile, labels, data } = this.getModel();
+		const { profile, labels, data, distUnit } = this.getModel();
 		if (profile === null) {
 			return;
 		}
@@ -388,7 +417,7 @@ export class AltitudeProfile extends MvuElement {
 			this._updateChart(labels, data);
 			return;
 		}
-		this._createChart(profile, labels, data);
+		this._createChart(profile, labels, data, distUnit);
 	}
 
 	static get IS_DARK() {
