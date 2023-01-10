@@ -11,7 +11,6 @@ import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
 import { getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
-import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { equals, getIntersection } from 'ol/extent';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -60,7 +59,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates(), () => this._hasValidExtent()));
+			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates(), () => this._mfpBoundaryFeature.get('inPrintableArea')));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
 			this._updateMfpPreview();
@@ -116,7 +115,12 @@ export class OlMfpHandler extends OlLayerHandler {
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
-		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+
+
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
+		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
+		this._mfpBoundaryFeature.setGeometry(center);
 	}
 
 	_updateRotation() {
@@ -151,7 +155,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const centerCoordinate = this._map.getCoordinateFromPixel(centerPixel);
 		const sphericalCenter = toLonLat(centerCoordinate);
 		const toPixelSize = (size) => {
-			const toPixel = (layoutValue) => layoutValue / resolution * DEVICE_PIXEL_RATIO / Math.abs(Math.cos(sphericalCenter[1] * Math.PI / 180));
+			const toPixel = (layoutValue) => layoutValue / resolution / Math.abs(Math.cos(sphericalCenter[1] * Math.PI / 180));
 			return { width: toPixel(size.width), height: toPixel(size.height) };
 		};
 		const pixelSize = toPixelSize(this._pageSize);
@@ -242,7 +246,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			const padding = getOrRequestVisibleViewport();
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
-
 		return getVisibleCenter();
 	}
 

@@ -1,4 +1,4 @@
-import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
+import { Style, Stroke, Fill, Text as TextStyle, Circle as CircleStyle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 import { equals, getIntersection } from 'ol/extent';
 
@@ -34,7 +34,13 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 			{
 				color: [9, 157, 220, 0],
 				width: 1
+			}),
+		image: new CircleStyle({
+			radius: 1,
+			fill: new Fill({
+				color: [255, 255, 255, 0.1]
 			})
+		})
 		/* text: new TextStyle(
 			{
 				text: '  ' + label.replace('\n', ' '),
@@ -101,7 +107,6 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback, va
 		const size = map.getSize();
 		const width = size[0] * DEVICE_PIXEL_RATIO;
 		const height = size[1] * DEVICE_PIXEL_RATIO;
-
 		const outerPixelPolygon = [
 			[0, 0],
 			[width, 0],
@@ -109,7 +114,7 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback, va
 			[0, height],
 			[0, 0]];
 
-		return [outerPixelPolygon, pixelCoordinates];
+		return [outerPixelPolygon, pixelCoordinates.map(c => [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO])];
 	};
 
 	const drawMask = (ctx, mask) => {
