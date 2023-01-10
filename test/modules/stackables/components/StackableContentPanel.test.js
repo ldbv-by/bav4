@@ -8,6 +8,8 @@ import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 import { BottomSheet } from '../../../../src/modules/stackables/components/BottomSheet';
+import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
+import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
 window.customElements.define(StackableContentPanel.tag, StackableContentPanel);
 window.customElements.define(NotificationItem.tag, NotificationItem);
@@ -41,8 +43,14 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when rendered', () => {
-		const setup = async (state = { notifications: { notification: null }, bottomSheet: { data: null } }) => {
-			TestUtils.setupStoreAndDi(state, { notifications: notificationReducer, pointer: pointerReducer, bottomSheet: bottomSheetReducer });
+		const setup = async (state = { notifications: { notification: null }, bottomSheet: { data: null }, mainMenu: { open: false }, media: { portrait: false } }) => {
+			TestUtils.setupStoreAndDi(state, {
+				notifications: notificationReducer,
+				pointer: pointerReducer,
+				bottomSheet: bottomSheetReducer,
+				mainMenu: createNoInitialStateMainMenuReducer(),
+				media: createNoInitialStateMediaReducer()
+			});
 			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 			const element = await TestUtils.render(StackableContentPanel.tag);
 

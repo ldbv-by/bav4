@@ -1,13 +1,29 @@
-.stackable-content-panel {
+.stackable-content-notification-panel {
 	max-height: 100%;
 	display: flex; 
 	position: fixed;
 	justify-content: center; 
 	flex-direction: column;
-	bottom: 0.625em;
-	bottom: 1.2em;
-	left: 1em;
-	right: 1em;
+	bottom: .7em;
+	left: 0;
+	right: 0;
 	z-index: var(--z-notification);
 	pointer-events: none;
+}
+
+.stackable-content-sheet-panel {
+	max-height: 100%;
+	display: flex; 
+	position: fixed;
+	justify-content: center; 
+	flex-direction: column;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: var(--z-mainmenu);
+	pointer-events: none;
+}
+
+.stackable-content-panel ba-notification-item:last-child {
+	margin-bottom: 1em;
 }
