@@ -199,7 +199,7 @@ describe('AltitudeProfile', () => {
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
-			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null });
+			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null, distUnit: null });
 		});
 	});
 
@@ -520,6 +520,46 @@ describe('AltitudeProfile', () => {
 			expect(altitudeProfile.alts[0].surface).toBe('asphalt');
 			expect(altitudeProfile.alts[1].surface).toBe('missing');
 			expect(altitudeProfile.alts[2].surface).toBe('gravel');
+		});
+
+		it('considers distances over 10000m and uses km instead', async () => {
+			// arrange
+			const altitudeProfile = {
+				alts: [
+					{
+						dist: 0,
+						alt: 0,
+						e: 40,
+						n: 50
+					},
+					{
+						dist: 10000,
+						alt: 10,
+						e: 41,
+						n: 51
+					},
+					{
+						dist: 20000,
+						alt: 20,
+						e: 42,
+						n: 52
+					}
+				],
+				attrs: [
+				]
+			};
+			await setup({
+				altitudeProfile
+			});
+			const ap = new AltitudeProfile();
+
+			//act
+			ap._enrichProfileData(altitudeProfile);
+
+			// assert
+			expect(altitudeProfile.distUnit).toBe('km');
+			expect(altitudeProfile.alts[1].alt).toBe(10);
+			expect(altitudeProfile.alts[2].alt).toBe(20);
 		});
 	});
 
