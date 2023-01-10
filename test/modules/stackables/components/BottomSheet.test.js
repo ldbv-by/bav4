@@ -10,8 +10,19 @@ window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
 
-	const setup = async (content) => {
-		TestUtils.setupStoreAndDi({});
+	const setup = async (content, state = {}) => {
+
+		const initialState = {
+			mainMenu: {
+				open: false
+			},
+			media: {
+				portrait: false
+			},
+			...state
+		};
+
+		TestUtils.setupStoreAndDi(initialState);
 
 		const element = await TestUtils.render(BottomSheet.tag);
 		element.content = content;
@@ -24,7 +35,9 @@ describe('BottomSheet', () => {
 			const element = new BottomSheet();
 
 			expect(element.getModel()).toEqual({
-				content: null
+				content: null,
+				open: false,
+				portrait: false
 			});
 		});
 	});
@@ -57,4 +70,36 @@ describe('BottomSheet', () => {
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
 		});
 	});
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape and open Menu', async () => {
+			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+
+			expect(contentElement.innerText).toContain('FooBar');
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(1);
+		});
+
+		it('layouts for landscape and closed Menu', async () => {
+			const element = await setup('FooBar', { mainMenu: { open: false }, media: { portrait: true } });
+			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+
+			expect(contentElement.innerText).toContain('FooBar');
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
+		});
+
+		it('layouts for portrait and open Menu', async () => {
+			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: true } });
+			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+
+			expect(contentElement.innerText).toContain('FooBar');
+			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
+		});
+	});
+
+
 });

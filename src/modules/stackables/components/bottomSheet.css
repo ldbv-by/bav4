@@ -1,17 +1,24 @@
 .bottom-sheet {
-	animation-name: animateIn;
-	animation-fill-mode: both;
-	animation-duration: var(--animation-duration-medium-open);
-	animation-timing-function: var(--animation-easing-open);
 	background-color: var(--primary-bg-color);   
-	box-shadow: 0px 0px 2px rgb(0 0 0 / 50%);
+	box-shadow: 3px 0px 4px rgb(0 0 0 / 50%);
 	display: flex;
 	flex-direction: column;
-	margin: .1em auto;
 	padding: 0.8em 1.5em;
 	min-width: 25em;
 	pointer-events: all;
 	color: var(--text3);
+	margin: 0 0 0 0;
+	animation-name: animateIn;
+	animation-fill-mode: both;
+	animation-duration: var(--animation-duration-medium-open);
+	animation-timing-function: var(--animation-easing-open);
+	transition-property: margin;
+	transition-duration: var(--animation-duration-large-open);
+	transition-timing-function: var(--animation-easing-linea);   
+}
+
+.is-open {
+	margin: 0 0 0 28em;	
 }
 
 .notification_item_hide {
