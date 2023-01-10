@@ -59,7 +59,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates(), () => this._mfpBoundaryFeature.get('inPrintableArea')));
+			this._mfpLayer.on('postrender', createSimpleMapMaskFunction(this._map, () => this._getPixelCoordinates()));
 			this._registeredObservers = this._register(this._storeService.getStore());
 			this._updateMfpPage(mfpSettings);
 			this._updateMfpPreview();
@@ -119,7 +119,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
 		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
-		this._mfpBoundaryFeature.setGeometry(center);
+		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
 	}
 
 	_updateRotation() {

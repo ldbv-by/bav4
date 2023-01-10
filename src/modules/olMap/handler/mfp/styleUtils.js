@@ -1,6 +1,5 @@
 import { Style, Stroke, Fill, Text as TextStyle, Circle as CircleStyle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
-import { equals, getIntersection } from 'ol/extent';
 
 
 
@@ -27,7 +26,7 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 	});
 };
 
-export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
+export const createThumbnailStyleFunction = (label, warnLabel) => {
 
 	const baseStyle = new Style({
 		stroke: new Stroke(
@@ -63,16 +62,15 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 	const warnStyle = new Style({
 		geometry: (feature) => {
-			const extent = feature.getGeometry().getExtent();
-			const intersect = getIntersection(extent, validExtent);
-			if (!equals(intersect, extent)) {
+			const isInPrintableArea = feature.get('inPrintableArea') ?? true;
+			if (!isInPrintableArea) {
 				return feature.getGeometry();
 			}
 		},
 		stroke: new Stroke(
 			{
-				color: [255, 100, 100, 0],
-				width: 6
+				color: [255, 100, 100, 0.5],
+				width: 3
 			}),
 		text: new TextStyle(
 			{
@@ -101,7 +99,7 @@ export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback, validExtentCallback) => {
+export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 	const getMask = (map, pixelCoordinates) => {
 		const size = map.getSize();
@@ -136,63 +134,12 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback, va
 		ctx.fill();
 	};
 
-	const getPageRectangle = (pageCoordinates) => {
-		const xValues = pageCoordinates.map(c => c[0]);
-		const yValues = pageCoordinates.map(c => c[1]);
-		const width = Math.max(...xValues) - Math.min(...xValues);
-		const height = Math.max(...yValues) - Math.min(...yValues);
-
-		return { x: Math.min(...xValues), y: Math.min(...yValues), width: width, height: height };
-	};
-
-	const getCenter = (rectangle) => {
-		return [rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2];
-	};
-
-	const drawPassepartout = (ctx, pageCoordinates) => {
-		const passepartoutWidthFactor = 0.03;
-		const pageRectangle = getPageRectangle(pageCoordinates);
-		const center = getCenter(pageRectangle);
-		const centerRelative = pageCoordinates.map(c => [c[0] - center[0], c[1] - center[1]]);
-
-		ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-		ctx.beginPath();
-
-		ctx.translate(center[0], center[1]);
-		ctx.scale(1 + passepartoutWidthFactor, 1 + passepartoutWidthFactor);
-		ctx.lineWidth = pageRectangle.width * passepartoutWidthFactor;
-		ctx.moveTo(centerRelative[0][0], centerRelative[0][1]);
-		centerRelative.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
-		ctx.closePath();
-
-		ctx.stroke();
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-	};
-
-	const drawInnerContour = (ctx, pageCoordinates, color) => {
-
-		ctx.strokeStyle = color;
-		ctx.lineWidth = 3;
-		ctx.beginPath();
-		ctx.moveTo(pageCoordinates[0], pageCoordinates[1]);
-		pageCoordinates.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
-		ctx.closePath();
-
-		ctx.stroke();
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-	};
-
 	const renderMask = (event) => {
 		const pixelCoordinates = getPixelCoordinatesCallback();
-		const hasValidExtent = validExtentCallback();
-
 		const pixelMask = getMask(map, pixelCoordinates);
 		const ctx = event.context;
-		const color = hasValidExtent ? 'rgba(44, 90, 146, 1)' : 'rgba(255, 90, 40, 1)';
 		drawMask(ctx, pixelMask);
 
-		drawPassepartout(ctx, pixelMask[1]);
-		drawInnerContour(ctx, pixelMask[1], color);
 		ctx.restore();
 	};
 	return renderMask;
