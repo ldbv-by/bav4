@@ -112,12 +112,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
 		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
 
-
-		const { extent: mfpExtent } = this._mfpService.getCapabilities();
 		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
 		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
 		this._mfpBoundaryFeature.setGeometry(center);
@@ -153,9 +152,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const resolution = this._map.getView().getResolution();
 		const centerPixel = this._getVisibleCenterPixel();
 		const centerCoordinate = this._map.getCoordinateFromPixel(centerPixel);
-		const sphericalCenter = toLonLat(centerCoordinate);
+		const averageDeviation = this._getAverageDeviationFromEquator(centerCoordinate);
 		const toPixelSize = (size) => {
-			const toPixel = (layoutValue) => layoutValue / resolution / Math.abs(Math.cos(sphericalCenter[1] * Math.PI / 180));
+			const toPixel = (layoutValue) => layoutValue / resolution / averageDeviation;
 			return { width: toPixel(size.width), height: toPixel(size.height) };
 		};
 		const pixelSize = toPixelSize(this._pageSize);
@@ -167,14 +166,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
-	}
-
-	_hasValidExtent() {
-		const { extent: mfpExtent } = this._mfpService.getCapabilities();
-
-		const extent = this._mfpBoundaryFeature.getGeometry().getExtent();
-		const intersect = getIntersection(extent, mfpExtent);
-		return equals(intersect, extent);
 	}
 
 	_getLocales() {
@@ -190,14 +181,18 @@ export class OlMfpHandler extends OlLayerHandler {
 		return `${layout} 1:${formattedScale}`;
 	}
 
+	_getAverageDeviationFromEquator(smercCoordinate) {
+		const lonLat = toLonLat(smercCoordinate);
+		return Math.abs(Math.cos(lonLat[1] * Math.PI / 180));
+	}
+
 	_getOptimalScale(map) {
 		const getEffectiveSizeFromPadding = (size, padding) => {
 			return { width: size[0] - (padding.left + padding.right), height: size[1] - (padding.bottom + padding.top) };
 		};
 		const availableSize = getEffectiveSizeFromPadding(map.getSize(), this._mapService.getVisibleViewport(map.getTarget()));
 
-		const center = toLonLat(map.getView().getCenter());
-		const averageDeviation = Math.abs(Math.cos(center[1] * Math.PI / 180));
+		const averageDeviation = this._getAverageDeviationFromEquator(map.getView().getCenter());
 		const resolution = map.getView().getResolution();
 
 		// due to standard map projection of (EPSG:3857) we have to add a average deviation
