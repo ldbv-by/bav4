@@ -386,8 +386,7 @@ export class AltitudeProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text:
-							'DGM 25 / DHHN2016 / DGM 25 / DHHN2016'
+						text: translate('altitudeProfile_elevation_reference_system')
 					},
 					legend: { display: false }
 				}
