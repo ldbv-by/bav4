@@ -1,5 +1,5 @@
 /**
- * Action creators to change/update the properties of altitudeProfile state.
+ * Action creators to change/update the properties of elevationProfile state.
  * @module elevationProfile/action
  */
 import { $injector } from '../../injection';
