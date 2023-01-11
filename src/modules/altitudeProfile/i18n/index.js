@@ -1,4 +1,4 @@
-import { provide as altitudeProfileProvider } from './altitudeProfile.provider';
+import { provide as elevationProfileProvider } from './elevationProfile.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
-translationService.register('altitudeProfileProvider', altitudeProfileProvider);
+translationService.register('altitudeProfileProvider', elevationProfileProvider);
