@@ -12,7 +12,7 @@ import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
-import { closeProfile, openProfile } from '../../../../store/altitudeProfile/altitudeProfile.action';
+import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 
 /**
  * Displays a showcase of common and reusable components or
