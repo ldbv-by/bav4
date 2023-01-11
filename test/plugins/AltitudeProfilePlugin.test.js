@@ -24,7 +24,7 @@ describe('AltitudeProfilePlugin', () => {
 			openProfile([[0, 1], [2, 3]]);
 
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
-			expect(wrapperElement.querySelectorAll('ba-altitude-profile')).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll('ba-elevation-profile')).toHaveSize(1);
 
 			closeProfile();
 

@@ -19,7 +19,7 @@ export class AltitudeProfilePlugin extends BaPlugin {
 
 		const onChange = active => {
 			if (active) {
-				openBottomSheet(html`<ba-altitude-profile></ba-altitude-profile>`);
+				openBottomSheet(html`<ba-elevation-profile></ba-elevation-profile>`);
 			}
 			else {
 				closeBottomSheet();
