@@ -93,7 +93,7 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview();
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation)),
+			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation), false),
 			observe(store, state => state.position.center, () => {
 				this._updateMfpPreview();
 			}),
