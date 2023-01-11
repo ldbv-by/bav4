@@ -368,13 +368,13 @@ export class AltitudeProfile extends MvuElement {
 					x: { type: 'linear',
 						title: {
 							display: true,
-							text: translate('altitudeProfile_distance') + '[' + distUnit + ']'
+							text: translate('altitudeProfile_distance') + ' [' + distUnit + ']'
 						}
 					},
 					y: { type: 'linear', beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('altitudeProfile_alt') + '[m]'
+							text: translate('altitudeProfile_alt') + ' [m]'
 						}
 					}, // HINT: UX decision
 					y1: {
