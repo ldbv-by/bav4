@@ -16,7 +16,7 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter, changeRotation } from '../../../../../src/store/position/position.action';
+import { changeCenter } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
@@ -172,7 +172,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(6);
+			expect(handler._registeredObservers).toHaveSize(5);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -273,22 +273,6 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it('updates rotation after store changes', async () => {
-			const map = setupMap();
-			setup();
-
-			const handler = new OlMfpHandler();
-			const updateSpy = spyOn(handler, '_updateRotation').and.callFake(() => { });
-
-
-			handler.activate(map);
-			changeRotation(42);
-
-			await TestUtils.timeout();
-
-			expect(updateSpy).toHaveBeenCalled();
-		});
-
 		it('synchronizes mfpPreview after store changes', async () => {
 			const map = setupMap();
 			setup();
@@ -300,59 +284,6 @@ describe('OlMfpHandler', () => {
 			changeCenter([0, 42]);
 
 			expect(updateSpy).toHaveBeenCalledTimes(1);
-		});
-
-		describe('when autoRotation is reactivated', () => {
-			it('rotates the view', async () => {
-				const map = setupMap();
-				setup({ ...initialState, scale: 42 });
-				const handler = new OlMfpHandler();
-				const rotationSpy = spyOn(handler, '_updateRotation').and.callThrough();
-				handler.activate(map);
-				setAutoRotation(false);
-				changeRotation(42);
-				rotationSpy.calls.reset();
-
-				setAutoRotation(true);
-
-				await TestUtils.timeout();
-				expect(rotationSpy).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('when autoRotation is false', () => {
-
-			it('rotates the mfp-boundary', async () => {
-				const map = setupMap();
-				setup({ ...initialState, scale: 42 });
-				const handler = new OlMfpHandler();
-				const updateRotationSpy = spyOn(handler, '_updateRotation').and.callThrough();
-				const previewSpy = spyOn(handler, '_updateMfpPreview').and.callFake(() => { });
-
-				handler.activate(map);
-
-				setAutoRotation(false);
-				updateRotationSpy.calls.reset();
-				previewSpy.calls.reset();
-
-				changeRotation(42);
-
-				await TestUtils.timeout();
-				expect(updateRotationSpy).toHaveBeenCalled();
-				expect(previewSpy).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when autoRotation is true', () => {
-			it('rotates the view', async () => {
-				const map = setupMap();
-				const store = setup({ ...initialState, scale: 42 });
-
-				const handler = new OlMfpHandler();
-				handler.activate(map);
-				await TestUtils.timeout();
-				expect(store.getState().position.rotation).toBe(0);
-			});
 		});
 
 		it('encodes map to mfp spec after store changes', async () => {

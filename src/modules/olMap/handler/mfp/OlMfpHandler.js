@@ -8,7 +8,6 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { nullStyleFunction, createThumbnailStyleFunction, createSimpleMapMaskFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { changeRotation } from '../../../../store/position/position.action';
 import { getAzimuthFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
@@ -96,9 +95,10 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview();
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation), false),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			observe(store, state => state.position.rotation, () => this._updateRotation()),
+			observe(store, state => state.position.rotation, () => {
+				setTimeout(() => this._updateMfpPreview(), this._previewDelayTime);
+			}),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
 				const immediate = () => this._beingDragged = beingDragged;
 				const lazy = () => {
@@ -107,7 +107,6 @@ export class OlMfpHandler extends OlLayerHandler {
 						this._updateMfpPreview();
 					}, this._previewDelayTime);
 				};
-
 
 				const action = beingDragged ? immediate : lazy;
 				action();
@@ -125,19 +124,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
 		const { extent: mfpExtent } = this._mfpService.getCapabilities();
-		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? null : this._storeService.getStore().getState().position.rotation;
+		const rotation = this._storeService.getStore().getState().position.rotation;
 		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
 		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
 
 		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
 		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
 		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
-	}
-
-	_updateRotation() {
-		if (this._storeService.getStore().getState().mfp.autoRotation) {
-			setTimeout(() => changeRotation(0));
-		}
 	}
 
 	_updateMfpPage(mfpSettings) {
@@ -292,16 +285,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
-	_onAutoRotationChanged(autorotation) {
-		if (autorotation) {
-			// reset rotation
-			changeRotation(0);
-		}
-	}
-
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
-		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
+		const rotation = getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = { layoutId: id, scale: scale, rotation: rotation, dpi: dpi, pageCenter: pageCenter, showGrid: showGrid };
