@@ -10,6 +10,10 @@ import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
 
 describe('AltitudeProfile', () => {
+
+	const sumUp = 1480.8;
+	const sumDown = 1668.6;
+
 	const _profile = {
 		alts: [
 			{
@@ -50,8 +54,8 @@ describe('AltitudeProfile', () => {
 			}
 		],
 		stats: {
-			sumUp: 1480.8,
-			sumDown: 1668.6
+			sumUp: sumUp,
+			sumDown: sumDown
 		},
 		attrs: [
 			{
@@ -101,8 +105,8 @@ describe('AltitudeProfile', () => {
 			}
 		],
 		stats: {
-			sumUp: 1480.8,
-			sumDown: 1668.6
+			sumUp: sumUp,
+			sumDown: sumDown
 		},
 		attrs: [
 			{
@@ -242,6 +246,12 @@ describe('AltitudeProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
+
+			const sumUpElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumUp');
+			expect(sumUpElement.innerText).toBe('altitudeProfile_sumUp: ' + sumUp);
+
+			const sumDownElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumDown');
+			expect(sumDownElement.innerText).toBe('altitudeProfile_sumDown: ' + sumDown);
 		});
 	});
 

@@ -125,7 +125,8 @@ export class AltitudeProfile extends MvuElement {
 				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 
 				<div class="flex" id="route-altitude-chart-footer">
-					${translate('altitudeProfile_sumUp')}: ${sumUp} ${translate('altitudeProfile_sumDown')}: ${sumDown}
+					<span id="route-altitude-chart-footer-sumUp">${translate('altitudeProfile_sumUp')}: ${sumUp}</span>
+					<span id="route-altitude-chart-footer-sumDown">${translate('altitudeProfile_sumDown')}: ${sumDown}</span>
 					<span>
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map((attr) => html`

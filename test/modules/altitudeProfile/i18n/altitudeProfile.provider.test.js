@@ -4,7 +4,6 @@ describe('i18n for altitudeProfile module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.).toBe('this is a header');
 		expect(map.altitudeProfile_distance).toBe('Entfernung');
 		expect(map.altitudeProfile_slope).toBe('Steigung');
 		expect(map.altitudeProfile_sumUp).toBe('Aufstieg');
