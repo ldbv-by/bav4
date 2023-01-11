@@ -12,6 +12,7 @@ describe('i18n for altitudeProfile module', () => {
 		expect(map.altitudeProfile_alt).toBe('Höhe');
 		expect(map.altitudeProfile_surface).toBe('Untergrund');
 		expect(map.altitudeProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
+		expect(map.altitudeProfile_elevation_profile).toBe('Höhenprofil');
 		expect(map.altitudeProfile_unknown).toBe('unbekannt');
 	});
 
@@ -26,11 +27,12 @@ describe('i18n for altitudeProfile module', () => {
 		expect(map.altitudeProfile_alt).toBe('Elevation');
 		expect(map.altitudeProfile_surface).toBe('surface');
 		expect(map.altitudeProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
+		expect(map.altitudeProfile_elevation_profile).toBe('Elevation Profile');
 		expect(map.altitudeProfile_unknown).toBe('unknown');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 9;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

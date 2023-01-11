@@ -238,7 +238,7 @@ describe('AltitudeProfile', () => {
 			expect(config.options.responsive).toBe(true);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('Höhenprofil');
+			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
@@ -415,7 +415,7 @@ describe('AltitudeProfile', () => {
 			expect(config.options.responsive).toBe(true);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('Höhenprofil');
+			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');

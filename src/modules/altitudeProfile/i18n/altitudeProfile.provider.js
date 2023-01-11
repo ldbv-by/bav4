@@ -10,6 +10,7 @@ export const provide = (lang) => {
 				altitudeProfile_alt: 'Elevation',
 				altitudeProfile_surface: 'surface',
 				altitudeProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
+				altitudeProfile_elevation_profile: 'Elevation Profile',
 				altitudeProfile_unknown: 'unknown'
 			};
 
@@ -23,6 +24,7 @@ export const provide = (lang) => {
 				altitudeProfile_alt: 'Höhe',
 				altitudeProfile_surface: 'Untergrund',
 				altitudeProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
+				altitudeProfile_elevation_profile: 'Höhenprofil',
 				altitudeProfile_unknown: 'unbekannt'
 			};
 

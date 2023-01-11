@@ -122,9 +122,9 @@ export class AltitudeProfile extends MvuElement {
 			</style>
 
 			<div class="chart-container" style="position: relative; height:100%; ">
-				<canvas class="altitudeprofile" id="route-altit_getAltitudeProfileude-chart"></canvas>
+				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 
-				<div class="flex">
+				<div class="flex" id="route-altitude-chart-footer">
 					${translate('altitudeProfile_sumUp')}: ${sumUp} ${translate('altitudeProfile_sumDown')}: ${sumDown}
 					<span>
 						<select id="attrs" @change=${onChange}>
@@ -188,12 +188,14 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
+		const translate = (key) => this._translationService.translate(key);
+
 		const _chartData = {
 			labels: newDataLabels,
 			datasets: [
 				{
 					data: newDataData,
-					label: 'Höhenprofil',
+					label: translate('altitudeProfile_elevation_profile'),
 					fill: true,
 					borderWidth: 4,
 					backgroundColor: (context) => {
