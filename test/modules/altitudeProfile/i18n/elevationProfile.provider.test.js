@@ -4,29 +4,29 @@ describe('i18n for altitudeProfile module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.altitudeProfile_distance).toBe('Entfernung');
-		expect(map.altitudeProfile_slope).toBe('Steigung');
-		expect(map.altitudeProfile_sumUp).toBe('Aufstieg');
-		expect(map.altitudeProfile_sumDown).toBe('Abstieg');
-		expect(map.altitudeProfile_alt).toBe('Höhe');
-		expect(map.altitudeProfile_surface).toBe('Untergrund');
-		expect(map.altitudeProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
-		expect(map.altitudeProfile_elevation_profile).toBe('Höhenprofil');
-		expect(map.altitudeProfile_unknown).toBe('unbekannt');
+		expect(map.elevationProfile_distance).toBe('Entfernung');
+		expect(map.elevationProfile_slope).toBe('Steigung');
+		expect(map.elevationProfile_sumUp).toBe('Aufstieg');
+		expect(map.elevationProfile_sumDown).toBe('Abstieg');
+		expect(map.elevationProfile_alt).toBe('Höhe');
+		expect(map.elevationProfile_surface).toBe('Untergrund');
+		expect(map.elevationProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
+		expect(map.elevationProfile_elevation_profile).toBe('Höhenprofil');
+		expect(map.elevationProfile_unknown).toBe('unbekannt');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.altitudeProfile_distance).toBe('Distance');
-		expect(map.altitudeProfile_slope).toBe('Slope');
-		expect(map.altitudeProfile_sumUp).toBe('Ascent');
-		expect(map.altitudeProfile_sumDown).toBe('Descent');
-		expect(map.altitudeProfile_alt).toBe('Elevation');
-		expect(map.altitudeProfile_surface).toBe('surface');
-		expect(map.altitudeProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
-		expect(map.altitudeProfile_elevation_profile).toBe('Elevation Profile');
-		expect(map.altitudeProfile_unknown).toBe('unknown');
+		expect(map.elevationProfile_distance).toBe('Distance');
+		expect(map.elevationProfile_slope).toBe('Slope');
+		expect(map.elevationProfile_sumUp).toBe('Ascent');
+		expect(map.elevationProfile_sumDown).toBe('Descent');
+		expect(map.elevationProfile_alt).toBe('Elevation');
+		expect(map.elevationProfile_surface).toBe('surface');
+		expect(map.elevationProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
+		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
+		expect(map.elevationProfile_unknown).toBe('unknown');
 	});
 
 	it('have the expected amount of translations', () => {

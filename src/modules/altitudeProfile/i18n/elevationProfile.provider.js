@@ -2,28 +2,28 @@ export const provide = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {
-				altitudeProfile_distance: 'Distance',
-				altitudeProfile_slope: 'Slope',
-				altitudeProfile_sumUp: 'Ascent',
-				altitudeProfile_sumDown: 'Descent',
-				altitudeProfile_alt: 'Elevation',
-				altitudeProfile_surface: 'surface',
-				altitudeProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
-				altitudeProfile_elevation_profile: 'Elevation Profile',
-				altitudeProfile_unknown: 'unknown'
+				elevationProfile_distance: 'Distance',
+				elevationProfile_slope: 'Slope',
+				elevationProfile_sumUp: 'Ascent',
+				elevationProfile_sumDown: 'Descent',
+				elevationProfile_alt: 'Elevation',
+				elevationProfile_surface: 'surface',
+				elevationProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
+				elevationProfile_elevation_profile: 'Elevation Profile',
+				elevationProfile_unknown: 'unknown'
 			};
 
 		case 'de':
 			return {
-				altitudeProfile_distance: 'Entfernung',
-				altitudeProfile_slope: 'Steigung',
-				altitudeProfile_sumUp: 'Aufstieg',
-				altitudeProfile_sumDown: 'Abstieg',
-				altitudeProfile_alt: 'Höhe',
-				altitudeProfile_surface: 'Untergrund',
-				altitudeProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
-				altitudeProfile_elevation_profile: 'Höhenprofil',
-				altitudeProfile_unknown: 'unbekannt'
+				elevationProfile_distance: 'Entfernung',
+				elevationProfile_slope: 'Steigung',
+				elevationProfile_sumUp: 'Aufstieg',
+				elevationProfile_sumDown: 'Abstieg',
+				elevationProfile_alt: 'Höhe',
+				elevationProfile_surface: 'Untergrund',
+				elevationProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
+				elevationProfile_elevation_profile: 'Höhenprofil',
+				elevationProfile_unknown: 'unbekannt'
 			};
 
 		default:
