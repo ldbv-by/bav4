@@ -38,13 +38,13 @@ export class AltitudeProfile extends MvuElement {
 
 		const {
 			ConfigService: configService,
-			AltitudeService: altitudeService,
+			ElevationService: elevationService,
 			TranslationService: translationService
-		} = $injector.inject('ConfigService', 'AltitudeService', 'TranslationService');
+		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService');
 
 		this._translationService = translationService;
 		this._configService = configService;
-		this._altitudeService = altitudeService;
+		this._elevationService = elevationService;
 
 		this._enableTooltip = true;
 		this._drawSelectedAreaBorder = false;
@@ -335,7 +335,7 @@ export class AltitudeProfile extends MvuElement {
 	 */
 	async _getAltitudeProfile(coordinates) {
 		try {
-			const profile = await this._altitudeService.getProfile(coordinates);
+			const profile = await this._elevationService.getProfile(coordinates);
 			this.signal(Enrich_Profile_Data, profile);
 		}
 		catch (e) {

@@ -141,7 +141,7 @@ describe('AltitudeProfile', () => {
 		toLonLat() {}
 	};
 
-	const altitudeServiceMock = {
+	const elevationServiceMock = {
 		getProfile() {}
 	};
 
@@ -176,7 +176,7 @@ describe('AltitudeProfile', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('AltitudeService', altitudeServiceMock);
+			.registerSingleton('ElevationService', elevationServiceMock);
 
 		return TestUtils.renderAndLogLifecycle(AltitudeProfile.tag);
 	};
@@ -222,7 +222,7 @@ describe('AltitudeProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -266,7 +266,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
@@ -294,7 +294,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
@@ -321,7 +321,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
@@ -348,7 +348,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
@@ -403,7 +403,7 @@ describe('AltitudeProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
@@ -444,7 +444,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup();
 			const getAltitudeProfileSpy = spyOn(element, '_getAltitudeProfile').and.callThrough();
 
@@ -466,7 +466,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').and.resolveTo(altitudeData);
 			const element = await setup({
 				altitudeProfile: {
 					active: true,
