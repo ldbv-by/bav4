@@ -4,7 +4,7 @@ import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../injection';
 
-import { SurfaceType } from '../utils/altitudeProfileAttributeTypes';
+import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 
 const Update_Schema = 'update_schema';
@@ -125,13 +125,13 @@ export class ElevationProfile extends MvuElement {
 				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 
 				<div class="flex" id="route-altitude-chart-footer">
-					<span id="route-altitude-chart-footer-sumUp">${translate('altitudeProfile_sumUp')}: ${sumUp}</span>
-					<span id="route-altitude-chart-footer-sumDown">${translate('altitudeProfile_sumDown')}: ${sumDown}</span>
+					<span id="route-altitude-chart-footer-sumUp">${translate('elevationProfile_sumUp')}: ${sumUp}</span>
+					<span id="route-altitude-chart-footer-sumDown">${translate('elevationProfile_sumDown')}: ${sumDown}</span>
 					<span>
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map((attr) => html`
 									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
-										${translate('altitudeProfile_' + attr.id)}
+										${translate('elevationProfile_' + attr.id)}
 									</option>
 								`)}
 						</select>
@@ -196,7 +196,7 @@ export class ElevationProfile extends MvuElement {
 			datasets: [
 				{
 					data: newDataData,
-					label: translate('altitudeProfile_elevation_profile'),
+					label: translate('elevationProfile_elevation_profile'),
 					fill: true,
 					borderWidth: 4,
 					backgroundColor: (context) => {
@@ -368,13 +368,13 @@ export class ElevationProfile extends MvuElement {
 					x: { type: 'linear',
 						title: {
 							display: true,
-							text: translate('altitudeProfile_distance') + ' [' + distUnit + ']'
+							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
 						}
 					},
 					y: { type: 'linear', beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('altitudeProfile_alt') + ' [m]'
+							text: translate('elevationProfile_alt') + ' [m]'
 						}
 					}, // HINT: UX decision
 					y1: {
@@ -389,7 +389,7 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('altitudeProfile_elevation_reference_system')
+						text: translate('elevationProfile_elevation_reference_system')
 					},
 					legend: { display: false }
 				}

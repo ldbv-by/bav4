@@ -240,21 +240,21 @@ describe('ElevationProfile', () => {
 			expect(chart).not.toBeNull();
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
-			expect(config.options.scales.x.title.text).toBe('altitudeProfile_distance [m]');
-			expect(config.options.scales.y.title.text).toBe('altitudeProfile_alt [m]');
-			expect(config.options.plugins.title.text).toBe('altitudeProfile_elevation_reference_system');
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
+			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
+			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
 
 			const sumUpElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe('altitudeProfile_sumUp: ' + sumUp);
+			expect(sumUpElement.innerText).toBe('elevationProfile_sumUp: ' + sumUp);
 
 			const sumDownElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe('altitudeProfile_sumDown: ' + sumDown);
+			expect(sumDownElement.innerText).toBe('elevationProfile_sumDown: ' + sumDown);
 		});
 	});
 
@@ -428,7 +428,7 @@ describe('ElevationProfile', () => {
 			expect(config.options.responsive).toBe(true);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
+			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
