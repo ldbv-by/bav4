@@ -9,7 +9,7 @@ import { Feature } from 'ol';
 import { nullStyleFunction, createThumbnailStyleFunction, createSimpleMapMaskFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { changeRotation } from '../../../../store/position/position.action';
-import { getPolygonFrom } from '../../utils/olGeometryUtils';
+import { getAzimuthFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 
@@ -265,7 +265,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	_toMfpBoundary(geodeticBoundary, center, mapRotation) {
 		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
 		const rotate = (polygon) => {
-			const azimuthRotation = this._getAzimuth(polygon);
+			const azimuthRotation = getAzimuthFrom(polygon);
 			polygon.rotate(mapRotation - azimuthRotation, center.getCoordinates());
 			return polygon;
 		};
@@ -277,19 +277,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
-	_getAzimuth(polygon) {
-		if (!polygon || polygon.getType() !== 'Polygon') {
-			return null;
-		}
-		const coordinates = polygon.getCoordinates()[0];
-		const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
-		const topAngle = getAngle(coordinates[0], coordinates[1]);
-		const bottomAngle = getAngle(coordinates[3], coordinates[2]);
-
-		const angle = (topAngle + bottomAngle) / 2;
-		return angle;
-	}
-
 	_onAutoRotationChanged(autorotation) {
 		if (autorotation) {
 			// reset rotation
@@ -299,7 +286,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
-		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : this._getAzimuth(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
+		const rotation = this._storeService.getStore().getState().mfp.autoRotation ? 0 : getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = { layoutId: id, scale: scale, rotation: rotation, dpi: dpi, pageCenter: pageCenter, showGrid: showGrid };

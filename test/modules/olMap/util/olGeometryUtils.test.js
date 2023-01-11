@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom, getAzimuthFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -149,6 +149,27 @@ describe('getAzimuth', () => {
 
 			expect(getAzimuth(twoPointLineString)).toBe(270);
 		});
+	});
+});
+
+describe('getAzimuthFrom', () => {
+
+	it('calculates the intermediate azimuth for a convex quadrilateral polygon', () => {
+
+		const nonUniformQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+		const squaredQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
+		const lineString = new LineString([[0, 10], [10, 9], [10, 0]]);
+		const point = new Point([0, 10]);
+
+		expect(getAzimuthFrom(nonUniformQuadrangle)).toBeCloseTo(0.048863, 4);
+		expect(getAzimuthFrom(squaredQuadrangle)).toBeCloseTo(0.0, 5);
+
+		expect(getAzimuthFrom(lineString)).toBeNull();
+		expect(getAzimuthFrom(point)).toBeNull();
+
+		expect(getAzimuthFrom(null)).toBeNull();
+		expect(getAzimuthFrom(undefined)).toBeNull();
+
 	});
 });
 

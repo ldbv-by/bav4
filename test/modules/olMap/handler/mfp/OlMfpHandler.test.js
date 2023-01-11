@@ -14,7 +14,7 @@ import { TestUtils } from '../../../../test-utils';
 
 
 import { register } from 'ol/proj/proj4';
-import { Polygon, Point, LineString } from 'ol/geom';
+import { Polygon, Point } from 'ol/geom';
 import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeRotation } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
@@ -323,12 +323,10 @@ describe('OlMfpHandler', () => {
 			encodeSpy.calls.reset();
 			centerPointSpy.calls.reset();
 			// autorotation off
-			const azimuthSpy = spyOn(handler, '_getAzimuth').and.callFake(() => 42);
 			setAutoRotation(false);
 			requestJob();
 
 			await TestUtils.timeout();
-			expect(azimuthSpy).toHaveBeenCalled();
 			expect(encodeSpy).toHaveBeenCalled();
 			expect(centerPointSpy).toHaveBeenCalled();
 		});
@@ -361,28 +359,6 @@ describe('OlMfpHandler', () => {
 
 			expect(handler._mfpLayer).toBeNull();
 			expect(spyOnUnregister).toHaveBeenCalled();
-		});
-	});
-
-	describe('_getAzimuth', () => {
-
-		it('calculates the intermediate azimuth for a quadrangle polygon', () => {
-			setup();
-			const classUnderTest = new OlMfpHandler();
-			const nonUniformQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
-			const squaredQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
-			const lineString = new LineString([[0, 10], [10, 9], [10, 0]]);
-			const point = new Point([0, 10]);
-
-			expect(classUnderTest._getAzimuth(nonUniformQuadrangle)).toBeCloseTo(0.048863, 4);
-			expect(classUnderTest._getAzimuth(squaredQuadrangle)).toBeCloseTo(0.0, 5);
-
-			expect(classUnderTest._getAzimuth(lineString)).toBeNull();
-			expect(classUnderTest._getAzimuth(point)).toBeNull();
-
-			expect(classUnderTest._getAzimuth(null)).toBeNull();
-			expect(classUnderTest._getAzimuth(undefined)).toBeNull();
-
 		});
 	});
 
@@ -479,12 +455,10 @@ describe('OlMfpHandler', () => {
 			expect(mfpBoundary).toBe(cloned);
 		});
 
-		it('clone,transforms and rotates a geodetic boundary to a bundary with map projection', () => {
-			const azimuth = 21;
+		it('clone,transforms and rotates a geodetic boundary to a boundary with map projection', () => {
 			const mapRotation = 42;
 			setup();
 			const classUnderTest = new OlMfpHandler();
-			spyOn(classUnderTest, '_getAzimuth').withArgs(cloned).and.returnValue(azimuth);
 			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
 			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
 			const rotationSpy = spyOn(cloned, 'rotate').and.returnValue(cloned);
@@ -493,7 +467,7 @@ describe('OlMfpHandler', () => {
 
 			expect(cloneSpy).toHaveBeenCalled();
 			expect(transformSpy).toHaveBeenCalled();
-			expect(rotationSpy).toHaveBeenCalledWith(mapRotation - azimuth, [0, 0]);
+			expect(rotationSpy).toHaveBeenCalledWith(mapRotation, [0, 0]);
 			expect(mfpBoundary).toBe(cloned);
 		});
 	});

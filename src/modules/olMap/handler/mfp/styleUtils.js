@@ -31,8 +31,8 @@ export const createThumbnailStyleFunction = (label, warnLabel) => {
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
-				color: [9, 157, 220, 0],
-				width: 1
+				color: [9, 157, 220, 0.5],
+				width: 2
 			}),
 		image: new CircleStyle({
 			radius: 1,
@@ -40,24 +40,6 @@ export const createThumbnailStyleFunction = (label, warnLabel) => {
 				color: [255, 255, 255, 0.1]
 			})
 		})
-		/* text: new TextStyle(
-			{
-				text: '  ' + label.replace('\n', ' '),
-				textAlign: 'left',
-				font: `bold ${fontSizePX / 4}px sans-serif`,
-				stroke: new Stroke({
-					color: [255, 255, 255, 0.8],
-					width: 2
-				}),
-				fill: new Fill({
-					color: [44, 90, 146, 1]
-				}),
-				scale: 1,
-				offsetY: 15,
-				overflow: false,
-				placement: 'line',
-				baseline: 'hanging'
-			}) */
 	});
 
 	const warnStyle = new Style({

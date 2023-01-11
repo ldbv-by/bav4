@@ -59,8 +59,8 @@ describe('mfp style utility functions', () => {
 
 			expect(styles).toHaveSize(2);
 			const style = styles[0];
-			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0]);
-			expect(style.getStroke().getWidth()).toBe(1);
+			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.5]);
+			expect(style.getStroke().getWidth()).toBe(2);
 		});
 
 		describe('with a warnstyle', () => {
