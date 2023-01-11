@@ -6,7 +6,7 @@ import { MvuElement } from '../../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update_Coordinate = 'update_coordinate';
-const Update_Altitude = 'update_altitude';
+const Update_Elevation = 'update_elevation';
 const Update_Administration = 'update_administration';
 
 
@@ -35,15 +35,15 @@ export class MapContextMenuContent extends MvuElement {
 			CoordinateService: coordinateService,
 			TranslationService: translationService,
 			ShareService: shareService,
-			AltitudeService: altitudeService,
+			ElevationService: elevationService,
 			AdministrationService: administrationService
-		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'AltitudeService', 'AdministrationService');
+		} = $injector.inject('MapService', 'CoordinateService', 'TranslationService', 'ShareService', 'ElevationService', 'AdministrationService');
 
 		this._mapService = mapService;
 		this._coordinateService = coordinateService;
 		this._translationService = translationService;
 		this._shareService = shareService;
-		this._altitudeService = altitudeService;
+		this._elevationService = elevationService;
 		this._administrationService = administrationService;
 	}
 
@@ -51,7 +51,7 @@ export class MapContextMenuContent extends MvuElement {
 		switch (type) {
 			case Update_Coordinate:
 				return { ...model, coordinate: data };
-			case Update_Altitude:
+			case Update_Elevation:
 				return { ...model, altitude: data };
 			case Update_Administration:
 				return { ...model, administration: data };
@@ -60,21 +60,21 @@ export class MapContextMenuContent extends MvuElement {
 
 	set coordinate(coordinateInMapSrid) {
 		this.signal(Update_Coordinate, coordinateInMapSrid);
-		this._getAltitude(coordinateInMapSrid);
+		this._getElevation(coordinateInMapSrid);
 		this._getAdministration(coordinateInMapSrid);
 	}
 
 	/**
 	 * @private
 	 */
-	async _getAltitude(coordinate) {
+	async _getElevation(coordinate) {
 		try {
-			const altitude = await this._altitudeService.getAltitude(coordinate) + ' (m)';
-			this.signal(Update_Altitude, altitude);
+			const altitude = await this._elevationService.getElevation(coordinate) + ' (m)';
+			this.signal(Update_Elevation, altitude);
 		}
 		catch (e) {
 			console.warn(e.message);
-			this.signal(Update_Altitude, null);
+			this.signal(Update_Elevation, null);
 		}
 	}
 
