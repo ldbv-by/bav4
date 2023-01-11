@@ -1,6 +1,6 @@
 import { $injector } from '../../../injection';
 
-export class AltitudeProfileAttributeType {
+export class ElevationProfileAttributeType {
 	constructor(attribute, name, lightColor, darkColor = null) {
 		this._attribute = attribute;
 		this._name = name;
@@ -20,7 +20,7 @@ export class AltitudeProfileAttributeType {
 	get caption() {
 		const translate = (key) => this._translationService.translate(key);
 
-		const caption = translate('altitudeProfile_' + this._attribute);
+		const caption = translate('elevationProfile_' + this._attribute);
 		return caption;
 	}
 
@@ -40,7 +40,7 @@ export class AltitudeProfileAttributeType {
 	}
 }
 
-export class SurfaceType extends AltitudeProfileAttributeType {
+export class SurfaceType extends ElevationProfileAttributeType {
 	constructor(name, lightColor, darkColor) {
 		super('surface', name, lightColor, darkColor);
 	}
