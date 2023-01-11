@@ -3,7 +3,7 @@
  * @module elevationProfile/action
  */
 import { $injector } from '../../injection';
-import { ELEVATION_PROFILE_ACTIVE_CHANGED, ELEVATION_PROFILE_COORDINATES_CHANGED } from './altitudeProfile.reducer';
+import { ELEVATION_PROFILE_ACTIVE_CHANGED, ELEVATION_PROFILE_COORDINATES_CHANGED } from './elevationProfile.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');

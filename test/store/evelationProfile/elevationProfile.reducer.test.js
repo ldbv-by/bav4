@@ -1,5 +1,5 @@
-import { closeProfile, openProfile, updateCoordinates } from '../../../src/store/altitudeProfile/altitudeProfile.action.js';
-import { elevationProfileReducer } from '../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
+import { closeProfile, openProfile, updateCoordinates } from '../../../src/store/elevationProfile/elevationProfile.action.js';
+import { elevationProfileReducer } from '../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
 
