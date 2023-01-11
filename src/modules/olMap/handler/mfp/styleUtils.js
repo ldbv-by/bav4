@@ -1,5 +1,6 @@
-import { Style, Stroke, Fill, Text as TextStyle, Circle as CircleStyle } from 'ol/style';
+import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
+import { toContext } from 'ol/render';
 
 
 
@@ -26,29 +27,16 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 	});
 };
 
-export const createThumbnailStyleFunction = (label, warnLabel) => {
-
+export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) => {
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
-				color: [9, 157, 220, 0.5],
+				color: [9, 157, 220, 0.3],
 				width: 2
-			}),
-		image: new CircleStyle({
-			radius: 1,
-			fill: new Fill({
-				color: [255, 255, 255, 0.1]
 			})
-		})
 	});
 
 	const warnStyle = new Style({
-		geometry: (feature) => {
-			const isInPrintableArea = feature.get('inPrintableArea') ?? true;
-			if (!isInPrintableArea) {
-				return feature.getGeometry();
-			}
-		},
 		stroke: new Stroke(
 			{
 				color: [255, 100, 100, 0.5],
@@ -73,10 +61,27 @@ export const createThumbnailStyleFunction = (label, warnLabel) => {
 			})
 	});
 
-	return [
-		baseStyle,
-		warnStyle
-	];
+	const renderStyle = new Style({
+		renderer: (pixelCoordinates, state) => {
+			const beingDragged = beingDraggedCallback();
+			const context = state.context;
+
+			if (!beingDragged) {
+				const geometry = state.geometry.clone();
+				geometry.setCoordinates(pixelCoordinates);
+
+				const renderContext = toContext(context, {
+					pixelRatio: DEVICE_PIXEL_RATIO
+				});
+				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
+				const currentStyle = inPrintableArea ? baseStyle : warnStyle;
+				renderContext.setStyle(currentStyle);
+				renderContext.drawGeometry(geometry);
+			}
+		}
+	});
+
+	return [renderStyle];
 };
 
 export const nullStyleFunction = () => [new Style({})];

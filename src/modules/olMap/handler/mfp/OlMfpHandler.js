@@ -42,6 +42,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = null;
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
+		this._beingDragged = false;
 	}
 
 	/**
@@ -94,11 +95,20 @@ export class OlMfpHandler extends OlLayerHandler {
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.mfp.autoRotation, (autoRotation) => this._onAutoRotationChanged(autoRotation), false),
-			observe(store, state => state.position.center, () => {
-				this._updateMfpPreview();
-			}),
-			observe(store, state => state.position.rotation, () => {
-				this._updateRotation();
+			observe(store, state => state.position.center, () => this._updateMfpPreview()),
+			observe(store, state => state.position.rotation, () => this._updateRotation()),
+			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
+				const immediate = () => this._beingDragged = beingDragged;
+				const lazy = () => {
+					setTimeout(() => {
+						this._beingDragged = beingDragged;
+						this._updateMfpPreview();
+					}, 1000);
+				};
+
+
+				const action = beingDragged ? immediate : lazy;
+				action();
 			})
 		];
 	}
@@ -138,7 +148,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		// init/update mfpBoundaryFeature
 		this._mfpBoundaryFeature.set('name', label);
-		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(label, translate('olMap_handler_mfp_distortion_warning'), mfpExtent));
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(translate('olMap_handler_mfp_distortion_warning'), () => this._beingDragged));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;

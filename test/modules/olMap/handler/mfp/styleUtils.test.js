@@ -46,79 +46,17 @@ describe('mfp style utility functions', () => {
 	});
 
 	describe('createThumbnailStyleFunction', () => {
+		const beingDraggedCallback = () => false;
 
-		it('should create a style ', () => {
+		it('should create a render style ', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			expect(styles).toHaveSize(1);
+			expect(styles).toEqual([jasmine.any(Style)]);
 
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
-			expect(styles).toHaveSize(2);
-			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style)]);
-		});
+			const renderStyle = styles[0];
+			const renderFunction = renderStyle.getRenderer();
 
-		it('should create a base style with a stroke style ', () => {
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
-
-			expect(styles).toHaveSize(2);
-			const style = styles[0];
-			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.5]);
-			expect(style.getStroke().getWidth()).toBe(2);
-		});
-
-		describe('with a warnstyle', () => {
-
-			it('should have a stroke style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar');
-
-				const style = styles[1];
-
-				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 0.5]);
-				expect(style.getStroke().getWidth()).toBe(3);
-			});
-			it('should have a text style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar');
-
-				const style = styles[1];
-
-				expect(style.getText().getText()).toEqual('bar');
-				expect(style.getText().getTextAlign()).toBe('center');
-				expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
-				expect(style.getText().getStroke().getWidth()).toBe(3);
-				expect(style.getText().getFill().getColor()).toEqual([250, 50, 50, 1]);
-			});
-
-			it('should have a geometry function ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar');
-
-				const style = styles[1];
-
-				expect(style.getGeometry()).toEqual(jasmine.any(Function));
-			});
-
-			it('should have a geometry function validating the extent ', () => {
-				const featureWithinOrEqualsStyleExtent = new Feature();
-				const initialFeature = new Feature();
-				const featureIntersectingStyleExtent = new Feature();
-				const featureDisjoiningStyleExtent = new Feature();
-				const geometryMock = { foo: 'bar' };
-
-				spyOn(initialFeature, 'getGeometry').and.callFake(() => geometryMock);
-				spyOn(initialFeature, 'get').and.returnValue(undefined);
-				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryMock);
-				spyOn(featureWithinOrEqualsStyleExtent, 'get').and.returnValue(true);
-				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryMock);
-				spyOn(featureIntersectingStyleExtent, 'get').and.returnValue(false);
-				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryMock);
-				spyOn(featureDisjoiningStyleExtent, 'get').and.returnValue(false);
-
-				const styles = createThumbnailStyleFunction('foo', 'bar');
-
-				const style = styles[1];
-				const geometryFunction = style.getGeometry();
-
-				expect(geometryFunction(initialFeature)).toBeUndefined();
-				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
-				expect(geometryFunction(featureIntersectingStyleExtent)).toBe(geometryMock);
-				expect(geometryFunction(featureDisjoiningStyleExtent)).toBe(geometryMock);
-			});
+			expect(renderFunction).toEqual(jasmine.any(Function));
 		});
 	});
 
