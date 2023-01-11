@@ -121,8 +121,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('import')).toBeTrue();
 			expect(reducerKeys.includes('mfp')).toBeTrue();
 			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
-			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
-			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
+			expect(reducerKeys.includes('elevationProfile')).toBeTrue();
 			expect(reducerKeys.includes('chips')).toBeTrue();
 		});
 
