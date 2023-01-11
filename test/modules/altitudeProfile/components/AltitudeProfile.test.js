@@ -242,6 +242,7 @@ describe('AltitudeProfile', () => {
 			expect(config.options.responsive).toBe(true);
 			expect(config.options.scales.x.title.text).toBe('altitudeProfile_distance [m]');
 			expect(config.options.scales.y.title.text).toBe('altitudeProfile_alt [m]');
+			expect(config.options.plugins.title.text).toBe('altitudeProfile_elevation_reference_system');
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
