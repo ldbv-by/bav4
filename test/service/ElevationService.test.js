@@ -82,7 +82,7 @@ describe('ElevationService', () => {
 			});
 			const mockCoordinates = [[0, 1], [2, 3]];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load altitude from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load profile from provider: ${message}`);
 		});
 
 		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {

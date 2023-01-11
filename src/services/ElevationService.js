@@ -46,9 +46,9 @@ export class ElevationService {
 	}
 
 	/**
-	 * Returns an altitude for a coordinate.
+	 * Returns an elevation for a coordinate.
 	 * @param {Coordinate} coordinate3857
-	 * @returns {Number} altitude
+	 * @returns {Number} elevation
 	 */
 	async getElevation(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
@@ -82,7 +82,7 @@ export class ElevationService {
 			return await this._profileProvider(coordinates3857);
 		}
 		catch (e) {
-			throw new Error('Could not load altitude from provider: ' + e.message);
+			throw new Error('Could not load profile from provider: ' + e.message);
 		}
 	}
 }
