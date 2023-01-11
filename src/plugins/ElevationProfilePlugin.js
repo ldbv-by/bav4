@@ -26,6 +26,6 @@ export class ElevationProfilePlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, state => state.altitudeProfile.active, onChange);
+		observe(store, state => state.elevationProfile.active, onChange);
 	}
 }

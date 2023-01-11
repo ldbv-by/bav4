@@ -1,6 +1,6 @@
 import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
 import { closeProfile, openProfile } from '../../src/store/altitudeProfile/altitudeProfile.action';
-import { altitudeProfileReducer } from '../../src/store/altitudeProfile/altitudeProfile.reducer';
+import { elevationProfileReducer } from '../../src/store/altitudeProfile/altitudeProfile.reducer';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { TestUtils } from '../test-utils';
 
@@ -8,7 +8,7 @@ describe('ElevationProfilePlugin', () => {
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
-			altitudeProfile: altitudeProfileReducer,
+			elevationProfile: elevationProfileReducer,
 			bottomSheet: bottomSheetReducer
 		});
 		return store;
