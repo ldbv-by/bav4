@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import css from './altitudeProfile.css';
+import css from './elevationProfile.css';
 import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../injection';
@@ -23,7 +23,7 @@ export const SlopeType = Object.freeze({
 /**
  * @author nklein
  */
-export class AltitudeProfile extends MvuElement {
+export class ElevationProfile extends MvuElement {
 	constructor() {
 		super({
 			profile: null,
@@ -222,7 +222,7 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				return AltitudeProfile.BACKGROUND_COLOR;
+				return ElevationProfile.BACKGROUND_COLOR;
 		}
 	}
 
@@ -236,7 +236,7 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				return AltitudeProfile.BORDER_COLOR;
+				return ElevationProfile.BORDER_COLOR;
 		}
 	}
 
@@ -298,34 +298,34 @@ export class AltitudeProfile extends MvuElement {
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
 		// start gradient with 'flat' color
-		gradientBg.addColorStop(0, AltitudeProfile.SLOPE_FLAT_COLOR);
+		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
 		let currentSlopeType = SlopeType.FLAT;
 		altitudeData?.elevations.forEach((element, index) => {
 			if (currentSlopeType === SlopeType.STEEP) {
 				// look for first element with slope less than X
-				if (!element.slope || element.slope <= AltitudeProfile.SLOPE_STEEP_THRESHOLD) {
+				if (!element.slope || element.slope <= ElevationProfile.SLOPE_STEEP_THRESHOLD) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_STEEP_COLOR);
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_FLAT_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
 					currentSlopeType = SlopeType.FLAT;
 				}
 			}
 			else {
 				// look for first element with slope greater X
-				if (element.slope && element.slope > AltitudeProfile.SLOPE_STEEP_THRESHOLD) {
+				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_FLAT_COLOR);
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_STEEP_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
 					currentSlopeType = SlopeType.STEEP;
 				}
 			}
 		});
 		// end with currentSlopeType - color
 		if (currentSlopeType === SlopeType.STEEP) {
-			gradientBg.addColorStop(1, AltitudeProfile.SLOPE_STEEP_COLOR);
+			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
 		}
 		else {
-			gradientBg.addColorStop(1, AltitudeProfile.SLOPE_FLAT_COLOR);
+			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
 		}
 		return gradientBg;
 	}
@@ -443,10 +443,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get SLOPE_FLAT_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.SLOPE_FLAT_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.SLOPE_FLAT_COLOR_DARK;
 		}
-		return AltitudeProfile.SLOPE_FLAT_COLOR_LIGHT;
+		return ElevationProfile.SLOPE_FLAT_COLOR_LIGHT;
 	}
 
 	static get SLOPE_STEEP_COLOR_DARK() {
@@ -458,10 +458,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get SLOPE_STEEP_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.SLOPE_STEEP_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
 		}
-		return AltitudeProfile.SLOPE_STEEP_COLOR_LIGHT;
+		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
 	}
 
 	static get BACKGROUND_COLOR_DARK() {
@@ -473,10 +473,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get BACKGROUND_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.BACKGROUND_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.BACKGROUND_COLOR_DARK;
 		}
-		return AltitudeProfile.BACKGROUND_COLOR_LIGHT;
+		return ElevationProfile.BACKGROUND_COLOR_LIGHT;
 	}
 
 	static get BORDER_COLOR_DARK() {
@@ -488,13 +488,13 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get BORDER_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.BORDER_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.BORDER_COLOR_DARK;
 		}
-		return AltitudeProfile.BORDER_COLOR_LIGHT;
+		return ElevationProfile.BORDER_COLOR_LIGHT;
 	}
 
 	static get tag() {
-		return 'ba-altitude-profile';
+		return 'ba-elevation-profile';
 	}
 }

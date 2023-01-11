@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { AltitudeProfile, SlopeType } from '../../../../src/modules/altitudeProfile/components/AltitudeProfile.js';
+import { ElevationProfile, SlopeType } from '../../../../src/modules/altitudeProfile/components/ElevationProfile.js';
 import { altitudeProfileReducer } from '../../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitudeProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
@@ -7,9 +7,9 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { TestUtils } from '../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 
-window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
+window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
-describe('AltitudeProfile', () => {
+describe('ElevationProfile', () => {
 
 	const sumUp = 1480.8;
 	const sumDown = 1668.6;
@@ -178,20 +178,20 @@ describe('AltitudeProfile', () => {
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('ElevationService', elevationServiceMock);
 
-		return TestUtils.renderAndLogLifecycle(AltitudeProfile.tag);
+		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
 	};
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(AltitudeProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR_DARK).toBe('#66eeff');
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('#eeff66');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR_DARK).toBe('#ee4444');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('#4444ee');
-			expect(AltitudeProfile.BACKGROUND_COLOR_DARK).toBe('#888888');
-			expect(AltitudeProfile.BACKGROUND_COLOR_LIGHT).toBe('#ddddff');
-			expect(AltitudeProfile.BORDER_COLOR_DARK).toBe('#886644');
-			expect(AltitudeProfile.BORDER_COLOR_LIGHT).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('#66eeff');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('#eeff66');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('#ee4444');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('#4444ee');
+			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('#888888');
+			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#ddddff');
+			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('#886644');
+			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#AA2266');
 		});
 	});
 
@@ -199,7 +199,7 @@ describe('AltitudeProfile', () => {
 		it('expects the initial values of the model to be empty', async () => {
 			// arrange
 			await setup();
-			const altitudeProfile = new AltitudeProfile();
+			const altitudeProfile = new ElevationProfile();
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
@@ -384,7 +384,7 @@ describe('AltitudeProfile', () => {
 		it('for coverage - slope ends in steep - _getSlopeGradient', async () => {
 			// arrange
 			await setup();
-			const altitudeProfile = new AltitudeProfile();
+			const altitudeProfile = new ElevationProfile();
 			const getSlopeGradientSpy = spyOn(altitudeProfile, '_getSlopeGradient').and.callThrough();
 
 			// act
@@ -524,7 +524,7 @@ describe('AltitudeProfile', () => {
 			await setup({
 				altitudeProfile
 			});
-			const ap = new AltitudeProfile();
+			const ap = new ElevationProfile();
 
 			//act
 			ap._enrichProfileData(altitudeProfile);
@@ -564,7 +564,7 @@ describe('AltitudeProfile', () => {
 			await setup({
 				altitudeProfile
 			});
-			const ap = new AltitudeProfile();
+			const ap = new ElevationProfile();
 
 			//act
 			ap._enrichProfileData(altitudeProfile);
@@ -594,10 +594,10 @@ describe('AltitudeProfile', () => {
 			setIsDarkSchema(true);
 
 			// assert
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR).toBe('#66eeff');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR).toBe('#ee4444');
-			expect(AltitudeProfile.BACKGROUND_COLOR).toBe('#888888');
-			expect(AltitudeProfile.BORDER_COLOR).toBe('#886644');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#66eeff');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#ee4444');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#888888');
+			expect(ElevationProfile.BORDER_COLOR).toBe('#886644');
 		});
 	});
 
@@ -610,10 +610,10 @@ describe('AltitudeProfile', () => {
 			setIsDarkSchema(false);
 
 			// assert
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR).toBe('#eeff66');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR).toBe('#4444ee');
-			expect(AltitudeProfile.BACKGROUND_COLOR).toBe('#ddddff');
-			expect(AltitudeProfile.BORDER_COLOR).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#eeff66');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#4444ee');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#ddddff');
+			expect(ElevationProfile.BORDER_COLOR).toBe('#AA2266');
 		});
 	});
 });
