@@ -5,23 +5,23 @@ import { getBvvProfile } from './provider/profile.provider';
 
 /**
  * @typedef {Object} Profile
- * @property {Array<Altitude>} alts altitude objects of this profile
+ * @property {Array<Elevation>} elevations elevations objects of this profile
  * @property {ProfileStats} stats  stats objects of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile
  */
 
 /**
- * @typedef {Object} Altitude
- * @property {number} dist distance from the previous altitude
- * @property {number} alt the altitude (in meter)
+ * @typedef {Object} Elevation
+ * @property {number} dist distance from the previous elevation
+ * @property {number} z the elevation (in meter)
  * @property {number} e easting
  * @property {number} n northing
  */
 
 /**
  * @typedef {Object} ProfileStats
- * @property {number} sumUp cumulated positive altitude difference (in meter)
- * @property {number} sumDown cumulated negative altitude difference (in meter)
+ * @property {number} sumUp cumulated positive elevation difference (in meter)
+ * @property {number} sumDown cumulated negative elevation difference (in meter)
  */
 
 /**
