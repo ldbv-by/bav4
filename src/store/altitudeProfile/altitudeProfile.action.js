@@ -1,9 +1,9 @@
 /**
  * Action creators to change/update the properties of altitudeProfile state.
- * @module altitudeProfile/action
+ * @module elevationProfile/action
  */
 import { $injector } from '../../injection';
-import { ALTITUDE_PROFILE_ACTIVE_CHANGED, ALTITUDE_PROFILE_COORDINATES_CHANGED } from './altitudeProfile.reducer';
+import { ELEVATION_PROFILE_ACTIVE_CHANGED, ELEVATION_PROFILE_COORDINATES_CHANGED } from './altitudeProfile.reducer';
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -13,13 +13,13 @@ const getStore = () => {
 
 /**
  * Opens the profile component.
- * @param {Array<Coordinate>} [coordinates] The coordinates for the calculation of the altitude profile
+ * @param {Array<Coordinate>} [coordinates] The coordinates for the calculation of the elevation profile
  * @function
  */
 export const openProfile = (coordinates = []) => {
 
 	getStore().dispatch({
-		type: ALTITUDE_PROFILE_ACTIVE_CHANGED,
+		type: ELEVATION_PROFILE_ACTIVE_CHANGED,
 		payload: {
 			active: true,
 			coordinates: coordinates
@@ -28,13 +28,13 @@ export const openProfile = (coordinates = []) => {
 };
 
 /**
- * Updates the coordinates of the altitude profile.
- * @param {Array<Coordinate>} coordinates The coordinates for the calculation of the altitude profile
+ * Updates the coordinates of the elevation profile.
+ * @param {Array<Coordinate>} coordinates The coordinates for the calculation of the elevation profile
  * @function
  */
 export const updateCoordinates = (coordinates) => {
 	getStore().dispatch({
-		type: ALTITUDE_PROFILE_COORDINATES_CHANGED,
+		type: ELEVATION_PROFILE_COORDINATES_CHANGED,
 		payload: coordinates
 	});
 };
@@ -46,7 +46,7 @@ export const updateCoordinates = (coordinates) => {
 export const closeProfile = () => {
 
 	getStore().dispatch({
-		type: ALTITUDE_PROFILE_ACTIVE_CHANGED,
+		type: ELEVATION_PROFILE_ACTIVE_CHANGED,
 		payload: {
 			active: false
 		}

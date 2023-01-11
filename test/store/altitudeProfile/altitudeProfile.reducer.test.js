@@ -1,20 +1,20 @@
 import { closeProfile, openProfile, updateCoordinates } from '../../../src/store/altitudeProfile/altitudeProfile.action.js';
-import { altitudeProfileReducer } from '../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
+import { elevationProfileReducer } from '../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
 
-describe('altitudeProfileReducer', () => {
+describe('elevationProfileReducer', () => {
 
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
-			altitudeProfile: altitudeProfileReducer
+			elevationProfile: elevationProfileReducer
 		});
 	};
 
 	it('initiales the store with default values', () => {
 		const store = setup();
-		expect(store.getState().altitudeProfile.active).toBeFalse();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([]);
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 	});
 
 	it('updates the \'active\' and optionally the \'coordinates\' property', () => {
@@ -22,23 +22,23 @@ describe('altitudeProfileReducer', () => {
 
 		openProfile();
 
-		expect(store.getState().altitudeProfile.active).toBeTrue();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([]);
+		expect(store.getState().elevationProfile.active).toBeTrue();
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
 		closeProfile();
 
-		expect(store.getState().altitudeProfile.active).toBeFalse();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([]);
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
 		openProfile([[21, 42]]);
 
-		expect(store.getState().altitudeProfile.active).toBeTrue();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([[21, 42]]);
+		expect(store.getState().elevationProfile.active).toBeTrue();
+		expect(store.getState().elevationProfile.coordinates).toEqual([[21, 42]]);
 
 		closeProfile();
 
-		expect(store.getState().altitudeProfile.active).toBeFalse();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([[21, 42]]);
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([[21, 42]]);
 	});
 
 	it('updates the \'coordinates\' property', () => {
@@ -46,7 +46,7 @@ describe('altitudeProfileReducer', () => {
 
 		updateCoordinates([[21, 42]]);
 
-		expect(store.getState().altitudeProfile.active).toBeFalse();
-		expect(store.getState().altitudeProfile.coordinates).toEqual([[21, 42]]);
+		expect(store.getState().elevationProfile.active).toBeFalse();
+		expect(store.getState().elevationProfile.coordinates).toEqual([[21, 42]]);
 	});
 });
