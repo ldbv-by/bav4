@@ -1,6 +1,6 @@
 import './i18n';
-import { AltitudeProfile } from './components/AltitudeProfile';
+import { ElevationProfile } from './components/ElevationProfile';
 
-if (!window.customElements.get(AltitudeProfile.tag)) {
-	window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
+if (!window.customElements.get(ElevationProfile.tag)) {
+	window.customElements.define(ElevationProfile.tag, ElevationProfile);
 }
