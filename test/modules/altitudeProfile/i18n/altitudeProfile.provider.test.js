@@ -4,7 +4,7 @@ describe('i18n for altitudeProfile module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.altitudeProfile_header).toBe('this is a header');
+		expect(map.).toBe('this is a header');
 		expect(map.altitudeProfile_distance).toBe('Entfernung');
 		expect(map.altitudeProfile_slope).toBe('Steigung');
 		expect(map.altitudeProfile_sumUp).toBe('Aufstieg');
@@ -19,7 +19,6 @@ describe('i18n for altitudeProfile module', () => {
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.altitudeProfile_header).toBe('this is a header');
 		expect(map.altitudeProfile_distance).toBe('Distance');
 		expect(map.altitudeProfile_slope).toBe('Slope');
 		expect(map.altitudeProfile_sumUp).toBe('Ascent');
@@ -32,7 +31,7 @@ describe('i18n for altitudeProfile module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 10;
+		const expectedSize = 9;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
