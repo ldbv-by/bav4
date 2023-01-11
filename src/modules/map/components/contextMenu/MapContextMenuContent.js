@@ -138,7 +138,7 @@ export class MapContextMenuContent extends MvuElement {
 				  	<li><span class='label'>${translate('map_contextMenuContent_community_label')}</span><span class='coordinate'>${community || '-'}</span></li>
 					<li><span class='label'>${translate('map_contextMenuContent_district_label')}</span><span class='coordinate'>${district || '-'}</span></li>
 					${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-					<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${elevation || '-'}</span></li>
+					<li><span class='label'>${translate('map_contextMenuContent_elevation_label')}</span><span class='coordinate'>${elevation || '-'}</span></li>
   				</ul>
 			</div>
 			`;
