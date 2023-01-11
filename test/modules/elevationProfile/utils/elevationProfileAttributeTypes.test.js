@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { SurfaceType } from '../../../../src/modules/altitudeProfile/utils/elevationProfileAttributeTypes';
+import { SurfaceType } from '../../../../src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TestUtils } from '../../../test-utils';
 

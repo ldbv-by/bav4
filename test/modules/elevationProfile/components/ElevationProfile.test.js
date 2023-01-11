@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { ElevationProfile, SlopeType } from '../../../../src/modules/altitudeProfile/components/ElevationProfile.js';
+import { ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
