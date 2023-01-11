@@ -153,7 +153,7 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickOpenProfile = () => {
-			if (this._storeService.getStore().getState().altitudeProfile.active) {
+			if (this._storeService.getStore().getState().elevationProfile.active) {
 				closeProfile();
 			}
 			else {
@@ -228,7 +228,7 @@ export class ShowCase extends BaElement {
 
 			<h3>Profile</h3>
 			<div class='example row'>
-			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
+			<ba-button id='button1' .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
 			</div>
 						
 			<h3>Measure Distance</h3>
