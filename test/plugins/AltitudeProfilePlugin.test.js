@@ -14,16 +14,17 @@ describe('AltitudeProfilePlugin', () => {
 		return store;
 	};
 
-	describe('when `active` of slice-of-state `altitudeProfile` changes', () => {
+	describe('when property `active` of slice-of-state `altitudeProfile` changes', () => {
 
-		fit('opens/closes the BottomSheet component', async () => {
+		it('opens/closes the BottomSheet component', async () => {
 			const store = setup();
 			const instanceUnderTest = new AltitudeProfilePlugin();
 			await instanceUnderTest.register(store);
 
 			openProfile([[0, 1], [2, 3]]);
 
-			expect(store.getState().bottomSheet.data).toBe('Comming soon ... the AltitudeProfile component');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
+			expect(wrapperElement.querySelectorAll('ba-altitude-profile')).toHaveSize(1);
 
 			closeProfile();
 

@@ -1,3 +1,4 @@
+import { html } from 'lit-html';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
@@ -11,14 +12,14 @@ import { BaPlugin } from './BaPlugin';
 export class AltitudeProfilePlugin extends BaPlugin {
 
 	/**
-     * @override
-     * @param {Store} store
-     */
+	 * @override
+	 * @param {Store} store
+	 */
 	async register(store) {
 
 		const onChange = active => {
 			if (active) {
-				openBottomSheet('Comming soon ... the AltitudeProfile component');
+				openBottomSheet(html`<ba-altitude-profile></ba-altitude-profile>`);
 			}
 			else {
 				closeBottomSheet();
