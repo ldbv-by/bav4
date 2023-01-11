@@ -23,7 +23,7 @@ import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
-import { elevationProfileReducer } from '../store/altitudeProfile/altitudeProfile.reducer';
+import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
 
 
