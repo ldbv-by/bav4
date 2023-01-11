@@ -15,40 +15,40 @@ describe('AltitudeProfile', () => {
 	const sumDown = 1668.6;
 
 	const _profile = {
-		alts: [
+		elevations: [
 			{
 				dist: 0,
-				alt: 0,
+				z: 0,
 				e: 40,
 				n: 50
 			},
 			{
 				dist: 1,
-				alt: 10,
+				z: 10,
 				e: 41,
 				n: 51
 			},
 			{
 				dist: 2,
-				alt: 20,
+				z: 20,
 				e: 42,
 				n: 52
 			},
 			{
 				dist: 3,
-				alt: 30,
+				z: 30,
 				e: 43,
 				n: 53
 			},
 			{
 				dist: 4,
-				alt: 40,
+				z: 40,
 				e: 44,
 				n: 54
 			},
 			{
 				dist: 5,
-				alt: 50,
+				z: 50,
 				e: 45,
 				n: 55
 			}
@@ -78,28 +78,28 @@ describe('AltitudeProfile', () => {
 	};
 
 	const _profileSlopeSteep = {
-		alts: [
+		elevations: [
 			{
 				dist: 0,
-				alt: 0,
+				z: 0,
 				e: 40,
 				n: 50
 			},
 			{
 				dist: 1,
-				alt: 10,
+				z: 10,
 				e: 41,
 				n: 51
 			},
 			{
 				dist: 2,
-				alt: 20,
+				z: 20,
 				e: 42,
 				n: 52
 			},
 			{
 				dist: 3,
-				alt: 30,
+				z: 30,
 				e: 43,
 				n: 53
 			}
@@ -491,22 +491,22 @@ describe('AltitudeProfile', () => {
 		it('updates the profile', async () => {
 			// arrange
 			const altitudeProfile = {
-				alts: [
+				elevations: [
 					{
 						dist: 0,
-						alt: 0,
+						z: 0,
 						e: 40,
 						n: 50
 					},
 					{
 						dist: 1,
-						alt: 10,
+						z: 10,
 						e: 41,
 						n: 51
 					},
 					{
 						dist: 2,
-						alt: 20,
+						z: 20,
 						e: 42,
 						n: 52
 					}
@@ -530,30 +530,30 @@ describe('AltitudeProfile', () => {
 			ap._enrichProfileData(altitudeProfile);
 
 			// assert
-			expect(altitudeProfile.alts[0].surface).toBe('asphalt');
-			expect(altitudeProfile.alts[1].surface).toBe('missing');
-			expect(altitudeProfile.alts[2].surface).toBe('gravel');
+			expect(altitudeProfile.elevations[0].surface).toBe('asphalt');
+			expect(altitudeProfile.elevations[1].surface).toBe('missing');
+			expect(altitudeProfile.elevations[2].surface).toBe('gravel');
 		});
 
 		it('considers distances over 10000m and uses km instead', async () => {
 			// arrange
 			const altitudeProfile = {
-				alts: [
+				elevations: [
 					{
 						dist: 0,
-						alt: 0,
+						z: 0,
 						e: 40,
 						n: 50
 					},
 					{
 						dist: 10000,
-						alt: 10,
+						z: 10,
 						e: 41,
 						n: 51
 					},
 					{
 						dist: 20000,
-						alt: 20,
+						z: 20,
 						e: 42,
 						n: 52
 					}
@@ -571,8 +571,8 @@ describe('AltitudeProfile', () => {
 
 			// assert
 			expect(altitudeProfile.distUnit).toBe('km');
-			expect(altitudeProfile.alts[1].alt).toBe(10);
-			expect(altitudeProfile.alts[2].alt).toBe(20);
+			expect(altitudeProfile.elevations[1].z).toBe(10);
+			expect(altitudeProfile.elevations[2].z).toBe(20);
 		});
 	});
 

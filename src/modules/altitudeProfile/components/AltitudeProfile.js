@@ -145,10 +145,10 @@ export class AltitudeProfile extends MvuElement {
 		const attributeName = attribute.id;
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
-				profile.alts[index][attributeName] = from_to_value[2];
+				profile.elevations[index][attributeName] = from_to_value[2];
 			}
 		});
-		profile.alts.forEach((alt) => {
+		profile.elevations.forEach((alt) => {
 			if (!alt[attributeName]) {
 				alt[attributeName] = 'missing';
 			}
@@ -156,8 +156,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
-		profile.labels = profile.alts.map((alt) => alt.dist);
-		profile.chartData = profile.alts.map((alt) => alt.alt);
+		profile.labels = profile.elevations.map((alt) => alt.dist);
+		profile.chartData = profile.elevations.map((alt) => alt.z);
 
 		profile.attrs.forEach((attr) => {
 			this._enritchAltsArrayWithAttributeData(attr, profile);
@@ -167,7 +167,7 @@ export class AltitudeProfile extends MvuElement {
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
-		profile.alts.forEach((alt) => {
+		profile.elevations.forEach((alt) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(alt.dist / 1000);
 			}
@@ -180,8 +180,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getDistUnit(profile) {
-		const from = profile.alts[0].dist;
-		const to = profile.alts[profile.alts.length - 1].dist;
+		const from = profile.elevations[0].dist;
+		const to = profile.elevations[profile.elevations.length - 1].dist;
 
 		const dist = to - from;
 		const distUnit = dist >= 10000 ? 'km' : 'm';
@@ -263,17 +263,17 @@ export class AltitudeProfile extends MvuElement {
 	_getTextTypeGradient(chart, altitudeData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.alts.length;
+		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		const altitudeProfileAttributeString = altitudeData.alts[0][selectedAttribute];
+		const altitudeProfileAttributeString = altitudeData.elevations[0][selectedAttribute];
 		let currentAltitudeProfileAttributeType = this.getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
 		gradientBg.addColorStop(0, currentAltitudeProfileAttributeType.color);
 		let altitudeProfileAttributeType;
-		altitudeData.alts.forEach((element, index) => {
+		altitudeData.elevations.forEach((element, index) => {
 			if (index === 0) {
 				return;
 			}
-			if (index === altitudeData.alts.length - 1) {
+			if (index === altitudeData.elevations.length - 1) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				gradientBg.addColorStop(xPoint, currentAltitudeProfileAttributeType.color);
 				return;
@@ -295,12 +295,12 @@ export class AltitudeProfile extends MvuElement {
 	_getSlopeGradient(chart, altitudeData) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.alts.length;
+		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
 		// start gradient with 'flat' color
 		gradientBg.addColorStop(0, AltitudeProfile.SLOPE_FLAT_COLOR);
 		let currentSlopeType = SlopeType.FLAT;
-		altitudeData?.alts.forEach((element, index) => {
+		altitudeData?.elevations.forEach((element, index) => {
 			if (currentSlopeType === SlopeType.STEEP) {
 				// look for first element with slope less than X
 				if (!element.slope || element.slope <= AltitudeProfile.SLOPE_STEEP_THRESHOLD) {
