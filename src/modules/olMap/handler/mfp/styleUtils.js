@@ -65,7 +65,6 @@ export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) =>
 		renderer: (pixelCoordinates, state) => {
 			const beingDragged = beingDraggedCallback();
 			const context = state.context;
-
 			if (!beingDragged) {
 				const geometry = state.geometry.clone();
 				geometry.setCoordinates(pixelCoordinates);

@@ -20,6 +20,7 @@ import { changeCenter, changeRotation } from '../../../../../src/store/position/
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
+import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
 
 
 
@@ -191,6 +192,26 @@ describe('OlMfpHandler', () => {
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
 		});
 
+		it('initializing mfpBoundaryFeature with a render style', () => {
+			const map = setupMap();
+			setup();
+			const handler = new OlMfpHandler();
+			const beingDraggedSpy = spyOn(handler, '_getBeingDragged').and.callThrough();
+
+			handler.activate(map);
+			handler._beingDragged = true;
+			const style = handler._mfpBoundaryFeature.getStyle()[0];
+
+
+			const renderFunction = style.getRenderer();
+			const pixelCoordinates = [];
+			const stateMock = { context: {} };
+			renderFunction(pixelCoordinates, stateMock);
+
+
+			expect(beingDraggedSpy).toHaveBeenCalled();
+		});
+
 
 		it('updates mfpPage after store changes', () => {
 			const current = { id: 'bar', scale: 42 };
@@ -217,6 +238,38 @@ describe('OlMfpHandler', () => {
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
 			changeCenter(center);
 
+			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates internal beingDragged state immediately after store changes', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			setBeingDragged(true);
+
+			expect(handler._beingDragged).toBeTrue();
+		});
+
+		it('updates mfpPreview lazy after store changes', async () => {
+			const map = setupMap();
+			const previewDelayTime = 10;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			setBeingDragged(true);
+			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
+			setBeingDragged(false);
+
+			await TestUtils.timeout(previewDelayTime + 10);
+			expect(handler._beingDragged).toBeFalse();
 			expect(updateSpy).toHaveBeenCalled();
 		});
 

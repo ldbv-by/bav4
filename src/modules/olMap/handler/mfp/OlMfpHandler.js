@@ -18,6 +18,7 @@ const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
 const Locales_Fallback = 'en';
+const Default_Preview_Delay_Time = 1000;
 
 /**
  * @class
@@ -43,6 +44,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._visibleViewport = null;
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
 		this._beingDragged = false;
+		this._previewDelayTime = Default_Preview_Delay_Time;
 	}
 
 	/**
@@ -103,7 +105,7 @@ export class OlMfpHandler extends OlLayerHandler {
 					setTimeout(() => {
 						this._beingDragged = beingDragged;
 						this._updateMfpPreview();
-					}, 1000);
+					}, this._previewDelayTime);
 				};
 
 
@@ -140,7 +142,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
-		const { extent: mfpExtent } = this._mfpService.getCapabilities();
 		const translate = (key) => this._translationService.translate(key);
 
 		const label = this._getPageLabel(mfpSettings);
@@ -148,7 +149,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		// init/update mfpBoundaryFeature
 		this._mfpBoundaryFeature.set('name', label);
-		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(translate('olMap_handler_mfp_distortion_warning'), () => this._beingDragged));
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(translate('olMap_handler_mfp_distortion_warning'), () => this._getBeingDragged()));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -176,6 +177,10 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+	}
+
+	_getBeingDragged() {
+		return this._beingDragged;
 	}
 
 	_getLocales() {
