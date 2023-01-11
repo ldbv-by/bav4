@@ -141,7 +141,7 @@ describe('StoreService', () => {
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
-			const altitudeProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
+			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -166,7 +166,7 @@ describe('StoreService', () => {
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
-			expect(altitudeProfilePluginSpy).toHaveBeenCalledWith(store);
+			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
