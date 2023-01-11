@@ -4,12 +4,12 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
- * This plugin observes the 'active' property of the altitudeProfile slice-of-state and shows/hides
- * the BottomSheet component containing the current altitude profile.
+ * This plugin observes the 'active' property of the elevationProfile slice-of-state and shows/hides
+ * the BottomSheet component containing the current elevation profile.
  * @class
  * @author taulinger
  */
-export class AltitudeProfilePlugin extends BaPlugin {
+export class ElevationProfilePlugin extends BaPlugin {
 
 	/**
 	 * @override
