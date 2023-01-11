@@ -23,7 +23,7 @@ export class MapContextMenuContent extends MvuElement {
 	constructor() {
 		super({
 			coordinate: null,
-			altitude: null,
+			elevation: null,
 			administration: {
 				community: null,
 				district: null
@@ -52,7 +52,7 @@ export class MapContextMenuContent extends MvuElement {
 			case Update_Coordinate:
 				return { ...model, coordinate: data };
 			case Update_Elevation:
-				return { ...model, altitude: data };
+				return { ...model, elevation: data };
 			case Update_Administration:
 				return { ...model, administration: data };
 		}
@@ -69,8 +69,8 @@ export class MapContextMenuContent extends MvuElement {
 	 */
 	async _getElevation(coordinate) {
 		try {
-			const altitude = await this._elevationService.getElevation(coordinate) + ' (m)';
-			this.signal(Update_Elevation, altitude);
+			const elevation = await this._elevationService.getElevation(coordinate) + ' (m)';
+			this.signal(Update_Elevation, elevation);
 		}
 		catch (e) {
 			console.warn(e.message);
@@ -110,7 +110,7 @@ export class MapContextMenuContent extends MvuElement {
 
 	createView(model) {
 
-		const { coordinate, altitude, administration: { community, district } } = model;
+		const { coordinate, elevation, administration: { community, district } } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		if (coordinate) {
@@ -138,7 +138,7 @@ export class MapContextMenuContent extends MvuElement {
 				  	<li><span class='label'>${translate('map_contextMenuContent_community_label')}</span><span class='coordinate'>${community || '-'}</span></li>
 					<li><span class='label'>${translate('map_contextMenuContent_district_label')}</span><span class='coordinate'>${district || '-'}</span></li>
 					${stringifiedCoords.map((strCoord) => html`<li>${strCoord}</li>`)}
-					<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${altitude || '-'}</span></li>
+					<li><span class='label'>${translate('map_contextMenuContent_altitude_label')}</span><span class='coordinate'>${elevation || '-'}</span></li>
   				</ul>
 			</div>
 			`;

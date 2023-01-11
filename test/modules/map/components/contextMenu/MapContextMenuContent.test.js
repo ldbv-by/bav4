@@ -67,7 +67,7 @@ describe('OlMapContextMenuContent', () => {
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			const altitudeMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
+			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
@@ -93,7 +93,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
-			expect(altitudeMock).toHaveBeenCalledOnceWith(coordinateMock);
+			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 		});
@@ -144,16 +144,16 @@ describe('OlMapContextMenuContent', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 
-		it('logs a warn statement when Altitude Service is not available', async () => {
+		it('logs a warn statement when Elevation Service is not available', async () => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(new Error('Altitude Error')));
+			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(new Error('Elevation Error')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
+			expect(warnSpy).toHaveBeenCalledWith('Elevation Error');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 		});
 
