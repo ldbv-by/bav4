@@ -1,4 +1,4 @@
-import { loadBvvAltitude } from './provider/altitude.provider';
+import { loadBvvElevation } from './provider/elevation.provider';
 import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
 
@@ -33,14 +33,15 @@ import { getBvvProfile } from './provider/profile.provider';
 /**
  * @class
  */
-export class AltitudeService {
+export class ElevationService {
 
 	/**
 	 *
-	 * @param {altitudeProvider} [altitudeProvider=loadBvvAltitude, profileProvider=getBvvProfile]
+	 * @param {elevationProvider} [elevationProvider=loadBvvElevation]
+	 * @param {profileProvider} [profileProvider=getBvvProfile]
 	 */
-	constructor(altitudeProvider = loadBvvAltitude, profileProvider = getBvvProfile) {
-		this._altitudeProvider = altitudeProvider;
+	constructor(elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) {
+		this._elevationProvider = elevationProvider;
 		this._profileProvider = profileProvider;
 	}
 
@@ -49,16 +50,16 @@ export class AltitudeService {
 	 * @param {Coordinate} coordinate3857
 	 * @returns {Number} altitude
 	 */
-	async getAltitude(coordinate3857) {
+	async getElevation(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
 			throw new TypeError('Parameter \'coordinate3857\' must be a coordinate');
 		}
 
 		try {
-			return await this._altitudeProvider(coordinate3857);
+			return await this._elevationProvider(coordinate3857);
 		}
 		catch (e) {
-			throw new Error('Could not load altitude from provider: ' + e.message);
+			throw new Error('Could not load elevation from provider: ' + e.message);
 		}
 	}
 

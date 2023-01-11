@@ -1,47 +1,47 @@
-import { AltitudeService } from '../../src/services/AltitudeService';
-import { loadBvvAltitude } from '../../src/services/provider/altitude.provider';
+import { ElevationService } from '../../src/services/ElevationService';
+import { loadBvvElevation } from '../../src/services/provider/elevation.provider';
 import { getBvvProfile } from '../../src/services/provider/profile.provider';
 
-describe('AltitudeService', () => {
+describe('ElevationService', () => {
 
-	const setup = (altitudeProvider = loadBvvAltitude, profileProvider = getBvvProfile) => {
-		return new AltitudeService(altitudeProvider, profileProvider);
+	const setup = (elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) => {
+		return new ElevationService(elevationProvider, profileProvider);
 	};
 
 	describe('constructor', () => {
 
 		it('initializes the service with custom provider', async () => {
-			const customAltitudeProvider = async () => { };
+			const customElevationProvider = async () => { };
 			const customProfileProvider = async () => { };
 
-			const instanceUnderTest = setup(customAltitudeProvider, customProfileProvider);
+			const instanceUnderTest = setup(customElevationProvider, customProfileProvider);
 
-			expect(instanceUnderTest._altitudeProvider).toBeDefined();
-			expect(instanceUnderTest._altitudeProvider).toEqual(customAltitudeProvider);
+			expect(instanceUnderTest._elevationProvider).toBeDefined();
+			expect(instanceUnderTest._elevationProvider).toEqual(customElevationProvider);
 			expect(instanceUnderTest._profileProvider).toBeDefined();
 			expect(instanceUnderTest._profileProvider).toEqual(customProfileProvider);
 		});
 
 		it('initializes the service with default provider', async () => {
-			const instanceUnderTest = new AltitudeService();
+			const instanceUnderTest = new ElevationService();
 
-			expect(instanceUnderTest._altitudeProvider).toEqual(loadBvvAltitude);
+			expect(instanceUnderTest._elevationProvider).toEqual(loadBvvElevation);
 			expect(instanceUnderTest._profileProvider).toEqual(getBvvProfile);
 		});
 	});
 
-	describe('getAltitude', () => {
+	describe('getElevation', () => {
 
-		it('provides a altitude', async () => {
-			const mockAltitude = 42;
+		it('provides a elevation', async () => {
+			const mockElevation = 42;
 			const instanceUnderTest = setup(async () => {
-				return mockAltitude;
+				return mockElevation;
 			});
 			const mockCoordinate = [0, 0];
 
-			const result = await instanceUnderTest.getAltitude(mockCoordinate);
+			const result = await instanceUnderTest.getElevation(mockCoordinate);
 
-			expect(result).toEqual(mockAltitude);
+			expect(result).toEqual(mockElevation);
 		});
 
 		it('rejects when backend is not available', async () => {
@@ -51,13 +51,13 @@ describe('AltitudeService', () => {
 			});
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getAltitude(mockCoordinate)).toBeRejectedWithError(`Could not load altitude from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(`Could not load elevation from provider: ${message}`);
 		});
 
 		it('rejects when argument is not a coordinate', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getAltitude('invalid input')).toBeRejectedWithError('Parameter \'coordinate3857\' must be a coordinate');
+			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError('Parameter \'coordinate3857\' must be a coordinate');
 		});
 	});
 
