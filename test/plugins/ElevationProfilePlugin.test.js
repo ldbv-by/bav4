@@ -1,6 +1,6 @@
 import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
-import { closeProfile, openProfile } from '../../src/store/altitudeProfile/altitudeProfile.action';
-import { elevationProfileReducer } from '../../src/store/altitudeProfile/altitudeProfile.reducer';
+import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
+import { elevationProfileReducer } from '../../src/store/elevationProfile/elevationProfile.reducer';
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { TestUtils } from '../test-utils';
 
