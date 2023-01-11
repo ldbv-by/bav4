@@ -59,7 +59,7 @@ describe('StoreService', () => {
 		const chipsPlugin = {
 			register() { }
 		};
-		const altitudeProfilePluginMock = {
+		const elevationProfilePluginMock = {
 			register() { }
 		};
 
@@ -82,7 +82,7 @@ describe('StoreService', () => {
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
-				.registerSingleton('AltitudeProfilePlugin', altitudeProfilePluginMock)
+				.registerSingleton('ElevationProfilePlugin', elevationProfilePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 
@@ -142,7 +142,7 @@ describe('StoreService', () => {
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
-			const altitudeProfilePluginSpy = spyOn(altitudeProfilePluginMock, 'register');
+			const altitudeProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
