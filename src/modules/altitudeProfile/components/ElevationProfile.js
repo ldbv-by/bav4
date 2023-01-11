@@ -69,7 +69,7 @@ export class ElevationProfile extends MvuElement {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 		this.observe(
-			(state) => state.altitudeProfile.coordinates,
+			(state) => state.elevationProfile.coordinates,
 			(coordinates) => this._getAltitudeProfile(coordinates)
 		);
 	}

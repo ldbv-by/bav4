@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection/index.js';
 import { ElevationProfile, SlopeType } from '../../../../src/modules/altitudeProfile/components/ElevationProfile.js';
-import { altitudeProfileReducer } from '../../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
+import { elevationProfileReducer } from '../../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitudeProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
@@ -169,7 +169,7 @@ describe('ElevationProfile', () => {
 
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			altitudeProfile: altitudeProfileReducer
+			elevationProfile: elevationProfileReducer
 		});
 
 		$injector
@@ -227,7 +227,7 @@ describe('ElevationProfile', () => {
 				media: {
 					darkSchema: true
 				},
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -268,7 +268,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profile();
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -296,7 +296,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profile();
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -323,7 +323,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profileSlopeSteep();
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -350,7 +350,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profile();
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -405,7 +405,7 @@ describe('ElevationProfile', () => {
 			];
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -468,7 +468,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profileSlopeSteep();
 			spyOn(elevationServiceMock, 'getProfile').and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
