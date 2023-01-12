@@ -1,10 +1,10 @@
 
 import { Feature } from 'ol';
-import { Polygon } from 'ol/geom';
+import { Geometry, Point, Polygon } from 'ol/geom';
 import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
-import { Style, Text as TextStyle } from 'ol/style';
+import { Stroke, Style, Text as TextStyle } from 'ol/style';
 import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, createThumbnailStyleFunction, createSimpleMapMaskFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
@@ -47,8 +47,10 @@ describe('mfp style utility functions', () => {
 
 	describe('createThumbnailStyleFunction', () => {
 		const beingDraggedCallback = () => false;
-
-		it('should create a render style ', () => {
+		const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+		const geometry = new Polygon(pixelCoordinates);
+		const feature = new Feature({ geometry: geometry });
+		it('should create a preview-style with renderer-function ', () => {
 			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
 			expect(styles).toHaveSize(1);
 			expect(styles).toEqual([jasmine.any(Style)]);
@@ -57,6 +59,80 @@ describe('mfp style utility functions', () => {
 			const renderFunction = renderStyle.getRenderer();
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
+		});
+
+		it('should draw to context with preview-style', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, closePath: () => { }, moveTo: () => { }, lineTo: () => { }, setLineDash: () => { } };
+			const stateMock = { feature: feature, context: contextMock, geometry: geometry };
+			const renderStyle = styles.find(style => style.getRenderer());
+
+			const contextSpy = spyOn(contextMock, 'moveTo');
+			const customRenderer = renderStyle.getRenderer();
+			customRenderer(pixelCoordinates, stateMock);
+
+			expect(contextSpy).toHaveBeenCalled();
+		});
+
+		it('should have a preview-style with renderer-function, which uses customContextRenderFunction', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			const stateMock = { feature: feature, context: null, geometry: geometry, pixelRatio: 1, customContextRenderFunction: () => { } };
+			const spy = spyOn(stateMock, 'customContextRenderFunction');
+
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should have a preview-style with renderer-function, which skips rendering, while beingDragged=true', () => {
+			const state = { beingDragged: true };
+			const styles = createThumbnailStyleFunction('foo', () => state.beingDragged);
+			const stateMock = { feature: feature, context: null, geometry: geometry, pixelRatio: 1, customContextRenderFunction: () => { } };
+			const spy = spyOn(stateMock, 'customContextRenderFunction');
+			const renderStyle = styles[0];
+
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+			expect(spy).not.toHaveBeenCalled();
+
+			state.beingDragged = false;
+
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+			expect(spy).toHaveBeenCalled();
+		});
+
+		it('should use the basestyle for a feature in the printable area', () => {
+			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			let receivedStyle = null;
+			const stateMock = { feature: new Feature(), context: null, geometry: new Point([0, 0]), pixelRatio: 1, customContextRenderFunction: (geometry, style) => {
+				receivedStyle = style;
+			} };
+			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
+
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()(pixelCoordinates, stateMock);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Style));
+			expect(receivedStyle.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
+			expect(receivedStyle.getStroke().getWidth()).toBe(2);
+		});
+
+		it('should use the warnstyle for a feature out of the printable area', () => {
+			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			let receivedStyle = null;
+			const stateMock = { feature: new Feature({ 'inPrintableArea': false }), context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: (geometry, style) => {
+				receivedStyle = style;
+			} };
+			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
+
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()(pixelCoordinates, stateMock);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Style));
+			expect(receivedStyle.getStroke().getColor()).toEqual([255, 100, 100, 0.5]);
+			expect(receivedStyle.getStroke().getWidth()).toBe(3);
 		});
 	});
 

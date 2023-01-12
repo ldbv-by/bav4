@@ -28,6 +28,14 @@ export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
 };
 
 export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) => {
+	const getCanvasContextRenderFunction = (state) => {
+		const renderContext = toContext(state.context, { pixelRatio: 1 });
+		return (geometry, style) => {
+			renderContext.setStyle(style);
+			renderContext.drawGeometry(geometry);
+		};
+	};
+
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
@@ -63,25 +71,22 @@ export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) =>
 
 	const renderStyle = new Style({
 		renderer: (pixelCoordinates, state) => {
+			const getContextRenderFunction = (state) => state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			const beingDragged = beingDraggedCallback();
-			const context = state.context;
 			if (!beingDragged) {
 				const geometry = state.geometry.clone();
 				geometry.setCoordinates(pixelCoordinates);
-
-				const renderContext = toContext(context, {
-					pixelRatio: DEVICE_PIXEL_RATIO
-				});
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
-				const currentStyle = inPrintableArea ? baseStyle : warnStyle;
-				renderContext.setStyle(currentStyle);
-				renderContext.drawGeometry(geometry);
+
+				const contextRenderFunction = getContextRenderFunction(state);
+				contextRenderFunction(geometry, inPrintableArea ? baseStyle : warnStyle);
 			}
 		}
 	});
 
 	return [renderStyle];
 };
+
 
 export const nullStyleFunction = () => [new Style({})];
 
