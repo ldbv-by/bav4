@@ -81,10 +81,12 @@ export class StackableContentPanel extends MvuElement {
 
 		return isEmpty ? nothing : html`
 			<style>${css}</style>
-			<div class="stackable-content-panel">
-				${repeat(notifications, (notification) => notification.id, createNotificationItem)}  
+			<div class="stackable-content-notification-panel">
+				${repeat(notifications, (notification) => notification.id, createNotificationItem)}  					
+			</div>
+			<div class="stackable-content-sheet-panel">				
 				${createBottomSheet(bottomSheet)}
-			</div>` ;
+			</div>`;
 	}
 
 	static get tag() {
