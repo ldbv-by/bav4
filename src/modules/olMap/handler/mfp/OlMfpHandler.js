@@ -44,6 +44,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mapProjection = 'EPSG:' + this._mapService.getSrid();
 		this._beingDragged = false;
 		this._previewDelayTime = Default_Preview_Delay_Time;
+		this._previewDelayTimeoutId = null;
 	}
 
 	/**
@@ -96,15 +97,38 @@ export class OlMfpHandler extends OlLayerHandler {
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
-			observe(store, state => state.position.rotation, () => {
-				setTimeout(() => this._updateMfpPreview(), this._previewDelayTime);
+			observe(store, state => state.map.moveStart, () => {
+				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
+				// triggered and we must set the internal 'beingDragged'-state. In the other cases this state is
+				// set twice by the events 'pointer.beingDragged' and 'map.moveStart'.
+				// To prevent flickering, we check for a already existing delay, caused by pointer.beingDragged.
+				if (!this._previewDelayTimeoutId) {
+					this._beingDragged = true;
+				}
+
+			}),
+			observe(store, state => state.map.moveEnd, () => {
+				if (!this._previewDelayTimeoutId) {
+					this._previewDelayTimeoutId = setTimeout(() => {
+						this._beingDragged = false;
+						this._updateMfpPreview();
+						this._previewDelayTimeoutId = null;
+					}, this._previewDelayTime);
+				}
 			}),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
-				const immediate = () => this._beingDragged = beingDragged;
+				const immediate = () => {
+					this._beingDragged = beingDragged;
+					if (this._previewDelayTimeoutId) {
+						clearTimeout(this._previewDelayTimeoutId);
+						this._previewDelayTimeoutId = null;
+					}
+				};
 				const lazy = () => {
-					setTimeout(() => {
+					this._previewDelayTimeoutId = setTimeout(() => {
 						this._beingDragged = beingDragged;
 						this._updateMfpPreview();
+						this._previewDelayTimeoutId = null;
 					}, this._previewDelayTime);
 				};
 

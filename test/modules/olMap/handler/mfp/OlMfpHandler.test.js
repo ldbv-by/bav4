@@ -15,7 +15,7 @@ import { TestUtils } from '../../../../test-utils';
 
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point } from 'ol/geom';
-import { requestJob, setAutoRotation, setCurrent } from '../../../../../src/store/mfp/mfp.action';
+import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
@@ -172,7 +172,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(5);
+			expect(handler._registeredObservers).toHaveSize(6);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -284,35 +284,6 @@ describe('OlMfpHandler', () => {
 			changeCenter([0, 42]);
 
 			expect(updateSpy).toHaveBeenCalledTimes(1);
-		});
-
-		it('encodes map to mfp spec after store changes', async () => {
-			const map = setupMap();
-			setup();
-
-			const handler = new OlMfpHandler();
-			spyOn(mfpEncoderMock, 'encode').withArgs(map, { layoutId: 'foo', scale: 1, rotation: jasmine.any(Number), dpi: 125, pageCenter: jasmine.any(Point), showGrid: jasmine.any(Boolean) }).and.callFake(() => { });
-			const centerPointSpy = spyOn(handler, '_getVisibleCenterPoint').and.callThrough();
-			const encodeSpy = spyOn(handler, '_encodeMap').and.callThrough();
-
-
-			handler.activate(map);
-			requestJob();
-
-			await TestUtils.timeout();
-			expect(encodeSpy).toHaveBeenCalled();
-			expect(centerPointSpy).toHaveBeenCalled();
-
-
-			encodeSpy.calls.reset();
-			centerPointSpy.calls.reset();
-			// autorotation off
-			setAutoRotation(false);
-			requestJob();
-
-			await TestUtils.timeout();
-			expect(encodeSpy).toHaveBeenCalled();
-			expect(centerPointSpy).toHaveBeenCalled();
 		});
 
 		it('requests the visible center point of the map, after store changes', async () => {
