@@ -12,7 +12,7 @@ import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
-import { closeProfile, openProfile } from '../../../../store/altitudeProfile/altitudeProfile.action';
+import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -153,7 +153,7 @@ export class ShowCase extends BaElement {
 		};
 
 		const onClickOpenProfile = () => {
-			if (this._storeService.getStore().getState().altitudeProfile.active) {
+			if (this._storeService.getStore().getState().elevationProfile.active) {
 				closeProfile();
 			}
 			else {
@@ -225,6 +225,11 @@ export class ShowCase extends BaElement {
 			<div class='example'>
 				<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 			</div>	
+
+			<h3>Profile</h3>
+			<div class='example row'>
+			<ba-button id='button1' .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
+			</div>
 						
 			<h3>Measure Distance</h3>
 			<div class='example row'>
@@ -357,12 +362,6 @@ export class ShowCase extends BaElement {
 			<div>Hint: Demo Credentials are foo/bar</div>
 			</div>
 
-			<h3>Profile</h3>
-			<div class='example row'>
-			<ba-button id='button1' .label=${'Show/Hide altitude profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
-			<ba-profile></ba-profile>
-			</div>
-				
 			</div>	
 		</div > `;
 	}
@@ -371,3 +370,4 @@ export class ShowCase extends BaElement {
 		return 'ba-showcase';
 	}
 }
+

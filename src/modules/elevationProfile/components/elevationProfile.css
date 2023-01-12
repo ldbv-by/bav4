@@ -1,0 +1,10 @@
+.profile {
+	margin: 0.1em;
+}
+
+.flex {
+	display: flex;
+
+	align-items: center;
+	justify-content: space-between;
+}

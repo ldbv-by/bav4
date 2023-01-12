@@ -59,7 +59,7 @@ describe('StoreService', () => {
 		const chipsPlugin = {
 			register() { }
 		};
-		const altitudeProfilePluginMock = {
+		const elevationProfilePluginMock = {
 			register() { }
 		};
 
@@ -82,7 +82,7 @@ describe('StoreService', () => {
 				.registerSingleton('ImportPlugin', importPluginMock)
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
-				.registerSingleton('AltitudeProfilePlugin', altitudeProfilePluginMock)
+				.registerSingleton('ElevationProfilePlugin', elevationProfilePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 
@@ -121,8 +121,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('import')).toBeTrue();
 			expect(reducerKeys.includes('mfp')).toBeTrue();
 			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
-			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
-			expect(reducerKeys.includes('altitudeProfile')).toBeTrue();
+			expect(reducerKeys.includes('elevationProfile')).toBeTrue();
 			expect(reducerKeys.includes('chips')).toBeTrue();
 		});
 
@@ -142,7 +141,7 @@ describe('StoreService', () => {
 			const importPluginSpy = spyOn(importPluginMock, 'register');
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
-			const altitudeProfilePluginSpy = spyOn(altitudeProfilePluginMock, 'register');
+			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -167,7 +166,7 @@ describe('StoreService', () => {
 			expect(importPluginSpy).toHaveBeenCalledWith(store);
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
-			expect(altitudeProfilePluginSpy).toHaveBeenCalledWith(store);
+			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});

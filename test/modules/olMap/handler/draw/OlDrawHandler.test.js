@@ -7,10 +7,7 @@ import { OverlayService } from '../../../../../src/modules/olMap/services/Overla
 import { Icon, Style } from 'ol/style';
 import { OlDrawHandler } from '../../../../../src/modules/olMap/handler/draw/OlDrawHandler';
 import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
-import { OSM, TileDebug } from 'ol/source';
-import { fromLonLat } from 'ol/proj';
 import { DragPan, Modify, Select, Snap } from 'ol/interaction';
 import { finish, reset, remove, setType, setStyle, setDescription } from '../../../../../src/store/draw/draw.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -111,6 +108,29 @@ describe('OlDrawHandler', () => {
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
+	const setupMap = (center = [0, 0], zoom = 0) => {
+		const containerId = 'mapContainer';
+		document.getElementById(containerId)?.remove(); //remove existing map container
+		document.body.style.margin = '0';
+		document.body.style.padding = '0';
+
+		const container = document.createElement('div');
+		container.id = containerId;
+		container.style.height = '100px';
+		container.style.width = '100px';
+		document.body.appendChild(container);
+
+		const map = new Map({
+			layers: [],
+			target: container,
+			view: new View({
+				center: center,
+				zoom: zoom
+			})
+		});
+		return map;
+	};
+
 	const setup = (state = initialState) => {
 		const drawState = {
 			draw: state,
@@ -172,32 +192,6 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-
-		const setupMap = () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: initialCenter,
-					zoom: 1
-				})
-			});
-
-		};
 
 		it('creates a layer to draw', () => {
 			setup();
@@ -1088,32 +1082,6 @@ describe('OlDrawHandler', () => {
 
 	describe('when deactivated over olMap', () => {
 
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-
-		const setupMap = () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: initialCenter,
-					zoom: 1
-				})
-			});
-
-		};
-
 		const createFeature = () => {
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			return feature;
@@ -1247,32 +1215,6 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when draw a line', () => {
-		const initialCenter = fromLonLat([42, 42]);
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-
-
-		const setupMap = (zoom = 10) => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: initialCenter,
-					zoom: zoom
-				})
-			});
-
-		};
 
 		it('feature gets valid id after start drawing', () => {
 			setup();
@@ -1402,33 +1344,6 @@ describe('OlDrawHandler', () => {
 	};
 
 	describe('when pointer move', () => {
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-
-		const setupMap = () => {
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: [42, 42],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
 
 		it('creates and activates helpTooltip', () => {
 			setup();
@@ -1650,37 +1565,11 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when pointer doubleclick', () => {
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-		const setupMap = () => {
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: [0, 0],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
 
 		it('does not zooming in', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const map = setupMap();
+			const map = setupMap(null, 1);
 
 			classUnderTest.activate(map);
 			expect(map.getView().getZoom()).toBe(1);
@@ -1692,32 +1581,6 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when pointer click', () => {
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-		const setupMap = () => {
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: [0, 0],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
 
 		const style = new Style({
 			image: new Icon({
@@ -1726,11 +1589,10 @@ describe('OlDrawHandler', () => {
 			})
 		});
 
-
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
 			setup({ ...initialState, selection: ['draw_1'] });
 			const classUnderTest = new OlDrawHandler();
-			const map = setupMap();
+			const map = setupMap(null, 1);
 
 			classUnderTest.activate(map);
 			setStyle({ symbolSrc: 'something' });

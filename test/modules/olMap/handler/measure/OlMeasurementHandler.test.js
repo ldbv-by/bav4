@@ -1,10 +1,7 @@
 import { OlMeasurementHandler } from '../../../../../src/modules/olMap/handler/measure/OlMeasurementHandler';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
-import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
-import { OSM, TileDebug } from 'ol/source';
-import { fromLonLat } from 'ol/proj';
 import { Feature } from 'ol';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
@@ -102,6 +99,29 @@ describe('OlMeasurementHandler', () => {
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
 
+	const setupMap = (center = [0, 0], zoom = 0) => {
+		const containerId = 'mapContainer';
+		document.getElementById(containerId)?.remove(); //remove existing map container
+		document.body.style.margin = '0';
+		document.body.style.padding = '0';
+
+		const container = document.createElement('div');
+		container.id = containerId;
+		container.style.height = '100px';
+		container.style.width = '100px';
+		document.body.appendChild(container);
+
+		const map = new Map({
+			layers: [],
+			target: container,
+			view: new View({
+				center: center,
+				zoom: zoom
+			})
+		});
+		return map;
+	};
+
 	const setup = (state = initialState) => {
 		const measurementState = {
 			measurement: state,
@@ -170,26 +190,6 @@ describe('OlMeasurementHandler', () => {
 	};
 
 	describe('when activated over olMap', () => {
-		const container = document.createElement('div');
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-
-		const setupMap = () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: container,
-				view: new View({
-					center: initialCenter,
-					zoom: 1
-				})
-			});
-
-		};
 
 		it('adds a label to the session vectorlayer', () => {
 			setup();
@@ -604,31 +604,6 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when deactivated over olMap', () => {
 
-		const initialCenter = fromLonLat([11.57245, 48.14021]);
-		const getTarget = () => {
-			const target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			return target;
-		};
-		const setupMap = () => {
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: getTarget(),
-				view: new View({
-					center: initialCenter,
-					zoom: 1
-				})
-			});
-
-		};
-
 		const createFeature = () => {
 			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
 			return feature;
@@ -732,31 +707,11 @@ describe('OlMeasurementHandler', () => {
 
 
 	describe('when draw a line', () => {
-		const initialCenter = fromLonLat([42, 42]);
-		let target;
-		const setupMap = (zoom = 10) => {
-			target = document.createElement('div');
-			return new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: target,
-				view: new View({
-					center: initialCenter,
-					zoom: zoom
-				})
-			});
-
-		};
 
 		it('removes partition tooltips after zoom out', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap(16);
+			const map = setupMap(null, 16);
 			const geometry = new LineString([[0, 0], [1234, 0]]);
 			const feature = new Feature({ geometry: geometry });
 
@@ -971,32 +926,6 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when storing layer', () => {
 
-		let target;
-		const setupMap = () => {
-			target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: target,
-				view: new View({
-					center: [0, 0],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
-
-
 		describe('debouncing takes place', () => {
 			const afterDebounceDelay = OlMeasurementHandler.Debounce_Delay + 100;
 			beforeEach(function () {
@@ -1088,36 +1017,13 @@ describe('OlMeasurementHandler', () => {
 			getGeometry: () => new Point(coordinate)
 		};
 	};
+
 	describe('when pointer move', () => {
-		let target;
-		const setupMap = () => {
-			target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: target,
-				view: new View({
-					center: [42, 42],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
 
 		it('deactivates dblclick', () => {
 			setup();
 			const classUnderTest = new OlMeasurementHandler();
-			const map = setupMap();
+			const map = setupMap(null, 1);
 
 			classUnderTest.activate(map);
 			expect(map.getView().getZoom()).toBe(1);
@@ -1562,30 +1468,6 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when pointer click', () => {
-		let target;
-		const setupMap = () => {
-			target = document.createElement('div');
-			target.style.height = '100px';
-			target.style.width = '100px';
-			const map = new Map({
-				layers: [
-					new TileLayer({
-						source: new OSM()
-					}),
-					new TileLayer({
-						source: new TileDebug()
-					})],
-				target: target,
-				view: new View({
-					center: [0, 0],
-					zoom: 1
-				})
-			});
-
-			map.renderSync();
-			return map;
-
-		};
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
 			const store = setup({ ...initialState, selection: ['measure_1'] });

@@ -1,27 +1,27 @@
-import { loadBvvAltitude } from './provider/altitude.provider';
+import { loadBvvElevation } from './provider/elevation.provider';
 import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
 
 
 /**
  * @typedef {Object} Profile
- * @property {Array<Altitude>} alts altitude objects of this profile
+ * @property {Array<Elevation>} elevations elevations objects of this profile
  * @property {ProfileStats} stats  stats objects of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile
  */
 
 /**
- * @typedef {Object} Altitude
- * @property {number} dist distance from the previous altitude
- * @property {number} alt the altitude (in meter)
+ * @typedef {Object} Elevation
+ * @property {number} dist distance from the previous elevation
+ * @property {number} z the elevation (in meter)
  * @property {number} e easting
  * @property {number} n northing
  */
 
 /**
  * @typedef {Object} ProfileStats
- * @property {number} sumUp cumulated positive altitude difference (in meter)
- * @property {number} sumDown cumulated negative altitude difference (in meter)
+ * @property {number} sumUp cumulated positive elevation difference (in meter)
+ * @property {number} sumDown cumulated negative elevation difference (in meter)
  */
 
 /**
@@ -33,32 +33,33 @@ import { getBvvProfile } from './provider/profile.provider';
 /**
  * @class
  */
-export class AltitudeService {
+export class ElevationService {
 
 	/**
 	 *
-	 * @param {altitudeProvider} [altitudeProvider=loadBvvAltitude, profileProvider=getBvvProfile]
+	 * @param {elevationProvider} [elevationProvider=loadBvvElevation]
+	 * @param {profileProvider} [profileProvider=getBvvProfile]
 	 */
-	constructor(altitudeProvider = loadBvvAltitude, profileProvider = getBvvProfile) {
-		this._altitudeProvider = altitudeProvider;
+	constructor(elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) {
+		this._elevationProvider = elevationProvider;
 		this._profileProvider = profileProvider;
 	}
 
 	/**
-	 * Returns an altitude for a coordinate.
+	 * Returns an elevation for a coordinate.
 	 * @param {Coordinate} coordinate3857
-	 * @returns {Number} altitude
+	 * @returns {Number} elevation
 	 */
-	async getAltitude(coordinate3857) {
+	async getElevation(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
 			throw new TypeError('Parameter \'coordinate3857\' must be a coordinate');
 		}
 
 		try {
-			return await this._altitudeProvider(coordinate3857);
+			return await this._elevationProvider(coordinate3857);
 		}
 		catch (e) {
-			throw new Error('Could not load altitude from provider: ' + e.message);
+			throw new Error('Could not load elevation from provider: ' + e.message);
 		}
 	}
 
@@ -81,7 +82,7 @@ export class AltitudeService {
 			return await this._profileProvider(coordinates3857);
 		}
 		catch (e) {
-			throw new Error('Could not load altitude from provider: ' + e.message);
+			throw new Error('Could not load profile from provider: ' + e.message);
 		}
 	}
 }

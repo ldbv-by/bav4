@@ -23,7 +23,7 @@ import { featureInfoReducer } from '../store/featureInfo/featureInfo.reducer';
 import { importReducer } from '../store/import/import.reducer';
 import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
-import { altitudeProfileReducer } from '../store/altitudeProfile/altitudeProfile.reducer';
+import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
 
 
@@ -65,7 +65,7 @@ export class StoreService {
 			import: importReducer,
 			mfp: mfpReducer,
 			bottomSheet: bottomSheetReducer,
-			altitudeProfile: altitudeProfileReducer,
+			elevationProfile: elevationProfileReducer,
 			chips: chipsReducer
 		});
 
@@ -89,7 +89,7 @@ export class StoreService {
 				ImportPlugin: importPlugin,
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
-				AltitudeProfilePlugin: altitudeProfilePlugin,
+				ElevationProfilePlugin: elevationProfilePlugin,
 				HistoryStatePlugin: historyStatePlugin
 			}
 				= $injector.inject(
@@ -108,7 +108,7 @@ export class StoreService {
 					'ImportPlugin',
 					'SearchPlugin',
 					'ExportMfpPlugin',
-					'AltitudeProfilePlugin',
+					'ElevationProfilePlugin',
 					'HistoryStatePlugin'
 				);
 
@@ -129,7 +129,7 @@ export class StoreService {
 				await importPlugin.register(this._store);
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
-				await altitudeProfilePlugin.register(this._store);
+				await elevationProfilePlugin.register(this._store);
 				await historyStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});

@@ -8,7 +8,6 @@ import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
 import { GeoResourceService } from '../services/GeoResourceService';
-import { AltitudeService } from '../services/AltitudeService';
 import { UrlService } from '../services/UrlService';
 import { IconService } from '../services/IconService';
 import { MapService } from '../services/MapService';
@@ -45,7 +44,8 @@ import { ChipsConfigurationService } from '../services/ChipsConfigurationService
 import { ExportMfpPlugin } from '../plugins/ExportMfpPlugin';
 import { Proj4JsService } from '../services/Proj4JsService';
 import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
-import { AltitudeProfilePlugin } from '../plugins/AltitudeProfilePlugin';
+import { ElevationProfilePlugin } from '../plugins/ElevationProfilePlugin';
+import { ElevationService } from '../services/ElevationService';
 
 
 $injector
@@ -59,7 +59,7 @@ $injector
 	.registerSingleton('StoreService', new StoreService())
 	.registerSingleton('GeoResourceService', new GeoResourceService())
 	.registerSingleton('TopicsService', new TopicsService())
-	.register('AltitudeService', AltitudeService)
+	.register('ElevationService', ElevationService)
 	.register('SearchResultService', SearchResultService)
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
@@ -93,7 +93,7 @@ $injector
 	.registerSingleton('ImportPlugin', new ImportPlugin())
 	.registerSingleton('SearchPlugin', new SearchPlugin())
 	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
-	.registerSingleton('AltitudeProfilePlugin', new AltitudeProfilePlugin())
+	.registerSingleton('ElevationProfilePlugin', new ElevationProfilePlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)

@@ -38,4 +38,4 @@ import './modules/chips';
 import './modules/dndImport';
 import './modules/auth';
 import './modules/profile';
-
+import './modules/elevationProfile';

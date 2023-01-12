@@ -1,5 +1,5 @@
-export const ALTITUDE_PROFILE_ACTIVE_CHANGED = 'altitudeProfile/activeChanged';
-export const ALTITUDE_PROFILE_COORDINATES_CHANGED = 'altitudeProfile/coordinatesChanged';
+export const ELEVATION_PROFILE_ACTIVE_CHANGED = 'elevationProfile/activeChanged';
+export const ELEVATION_PROFILE_COORDINATES_CHANGED = 'elevationProfile/coordinatesChanged';
 
 export const initialState = {
 	/**
@@ -13,11 +13,11 @@ export const initialState = {
 	active: false
 };
 
-export const altitudeProfileReducer = (state = initialState, action) => {
+export const elevationProfileReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 
 	switch (type) {
-		case ALTITUDE_PROFILE_ACTIVE_CHANGED: {
+		case ELEVATION_PROFILE_ACTIVE_CHANGED: {
 			const { active, coordinates = [] } = payload;
 			return coordinates.length
 				? {
@@ -30,7 +30,7 @@ export const altitudeProfileReducer = (state = initialState, action) => {
 					active: active
 				};
 		}
-		case ALTITUDE_PROFILE_COORDINATES_CHANGED: {
+		case ELEVATION_PROFILE_COORDINATES_CHANGED: {
 			return {
 				...state,
 				coordinates: [...payload]
