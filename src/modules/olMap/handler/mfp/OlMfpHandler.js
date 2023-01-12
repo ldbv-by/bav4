@@ -118,7 +118,7 @@ export class OlMfpHandler extends OlLayerHandler {
 					}
 				};
 
-				const action = beingDragged ? clearPreview : this._delayedUpdateMfpPreview;
+				const action = beingDragged ? clearPreview : () => this._delayedUpdateMfpPreview();
 				action();
 			})
 		];
@@ -144,12 +144,13 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_delayedUpdateMfpPreview() {
+		const timeOut = this._previewDelayTime;
 		if (!this._previewDelayTimeoutId) {
 			this._previewDelayTimeoutId = setTimeout(() => {
 				this._beingDragged = false;
 				this._updateMfpPreview();
 				this._previewDelayTimeoutId = null;
-			}, this._previewDelayTime);
+			}, timeOut);
 		}
 	}
 

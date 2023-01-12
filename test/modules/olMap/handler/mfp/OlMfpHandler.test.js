@@ -21,6 +21,7 @@ import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
 import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
+import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
 
 
 
@@ -241,7 +242,7 @@ describe('OlMfpHandler', () => {
 			expect(updateSpy).toHaveBeenCalled();
 		});
 
-		it('updates internal beingDragged state immediately after store changes', async () => {
+		it('updates internal beingDragged state immediately after store changes by user interaction with the map', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			setup();
@@ -249,13 +250,39 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
-
+			handler._previewDelayTimeoutId = 1;
 			setBeingDragged(true);
 
 			expect(handler._beingDragged).toBeTrue();
+			expect(handler._previewDelayTimeoutId).toBeNull();
 		});
 
-		it('updates mfpPreview lazy after store changes', async () => {
+		it('updates internal beingDragged state immediately after store changes by app', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+			setMapMoveStart();
+			setBeingMoved(true);
+
+			expect(handler._beingDragged).toBeTrue();
+			expect(handler._previewDelayTimeoutId).toBeNull();
+
+			// store changes by user and internal state is set by pointer.beingDragged-observer
+			handler._previewDelayTimeoutId = 42;
+			handler._beingDragged = false;
+
+			setMapMoveStart();
+			setBeingMoved(true);
+
+			expect(handler._beingDragged).toBeFalse();
+			expect(handler._previewDelayTimeoutId).toBe(42);
+		});
+
+		it('updates delayed mfpPreview after store changes by user interaction', async () => {
 			const map = setupMap();
 			const previewDelayTime = 10;
 			setup();
@@ -267,6 +294,43 @@ describe('OlMfpHandler', () => {
 			setBeingDragged(true);
 			const updateSpy = spyOn(handler, '_updateMfpPreview').and.callThrough();
 			setBeingDragged(false);
+
+			await TestUtils.timeout(previewDelayTime + 10);
+			expect(handler._beingDragged).toBeFalse();
+			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates delayed mfpPreview after store changes by app', async () => {
+			const map = setupMap();
+			const previewDelayTime = 10;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			const updateSpy = spyOn(handler, '_delayedUpdateMfpPreview').and.callThrough();
+			setMapMoveEnd();
+			setBeingMoved(false);
+
+			await TestUtils.timeout(previewDelayTime + 10);
+			expect(handler._beingDragged).toBeFalse();
+			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('skips delayed mfpPreview after store changes by app, if delay is already started by user', async () => {
+			const map = setupMap();
+			const previewDelayTime = 10;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+			handler._previewDelayTimeoutId = 42;
+			const updateSpy = spyOn(handler, '_delayedUpdateMfpPreview').and.callThrough();
+
+			setMapMoveEnd();
+			setBeingMoved(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
 			expect(handler._beingDragged).toBeFalse();
