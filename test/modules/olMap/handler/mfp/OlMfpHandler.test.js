@@ -30,7 +30,6 @@ describe('OlMfpHandler', () => {
 	const initialState = {
 		active: false,
 		current: { id: 'foo', scale: null, dpi: 125 },
-		autoRotation: true,
 		showGrid: false
 	};
 

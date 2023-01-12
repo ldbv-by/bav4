@@ -29,7 +29,6 @@ describe('ExportMfpToolContent', () => {
 	const mfpDefaultState = {
 		active: false,
 		current: { id: null, scale: null, dpi: null },
-		autoRotation: true,
 		showGrid: false,
 		jobSpec: null,
 		collapsedOptions: null,
