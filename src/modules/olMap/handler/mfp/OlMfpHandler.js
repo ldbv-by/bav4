@@ -107,32 +107,18 @@ export class OlMfpHandler extends OlLayerHandler {
 				}
 
 			}),
-			observe(store, state => state.map.moveEnd, () => {
-				if (!this._previewDelayTimeoutId) {
-					this._previewDelayTimeoutId = setTimeout(() => {
-						this._beingDragged = false;
-						this._updateMfpPreview();
-						this._previewDelayTimeoutId = null;
-					}, this._previewDelayTime);
-				}
-			}),
+			observe(store, state => state.map.moveEnd, () => this._delayedUpdateMfpPreview()),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
-				const immediate = () => {
+				const clearPreview = () => {
+					// forcing the used renderfunction to skip the drawing of the geometry
 					this._beingDragged = beingDragged;
 					if (this._previewDelayTimeoutId) {
 						clearTimeout(this._previewDelayTimeoutId);
 						this._previewDelayTimeoutId = null;
 					}
 				};
-				const lazy = () => {
-					this._previewDelayTimeoutId = setTimeout(() => {
-						this._beingDragged = beingDragged;
-						this._updateMfpPreview();
-						this._previewDelayTimeoutId = null;
-					}, this._previewDelayTime);
-				};
 
-				const action = beingDragged ? immediate : lazy;
+				const action = beingDragged ? clearPreview : this._delayedUpdateMfpPreview;
 				action();
 			})
 		];
@@ -155,6 +141,16 @@ export class OlMfpHandler extends OlLayerHandler {
 		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
 		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
 		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+	}
+
+	_delayedUpdateMfpPreview() {
+		if (!this._previewDelayTimeoutId) {
+			this._previewDelayTimeoutId = setTimeout(() => {
+				this._beingDragged = false;
+				this._updateMfpPreview();
+				this._previewDelayTimeoutId = null;
+			}, this._previewDelayTime);
+		}
 	}
 
 	_updateMfpPage(mfpSettings) {
