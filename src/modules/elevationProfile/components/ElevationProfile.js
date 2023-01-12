@@ -355,7 +355,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
-		console.log('🚀 ~ file: ElevationProfile.js:358 ~ ElevationProfile ~ _getChartConfig ~ newDataData', newDataData);
+		console.log('🚀 ~ altitudeData', altitudeData);
 		const translate = (key) => this._translationService.translate(key);
 		const config = {
 			type: 'line',
@@ -408,15 +408,21 @@ export class ElevationProfile extends MvuElement {
 						intersect: false,
 						callbacks: {
 							title: (tooltipItems) => {
-								// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
+								console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
 								const { parsed } = tooltipItems[0];
-								// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
+								console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
 
-								// const found = myData.heights.find(element => element.dist === parsed.x);
-								// if (found) {
-								// 	// console.log('🚀 ~ file: ProfileN.js ~ line 1733 ~ found', found.easting);
-								// 	setCoordinates([found.easting, found.northing]);
-								// }
+								const index = altitudeData.labels.indexOf(parsed.x);
+								console.log('🚀 ~ file: ElevationProfile.js:416 ~ ElevationProfile ~ _getChartConfig ~ index', index);
+
+								// const found = altitudeData.elevations.find(element => {
+								//     return element.dist === parsed.x;
+								// });
+								if (index > -1) {
+									const found = altitudeData.elevations[index];
+									console.log('🚀 ~ found', found);
+									this.setCoordinates([found.e, found.n]);
+								}
 
 								return 'Distance: ' + tooltipItems[0].label + 'm';
 							},
@@ -438,6 +444,10 @@ export class ElevationProfile extends MvuElement {
 		return config;
 	}
 
+	setCoordinates(coordinates) {
+		// TODO NK action??
+		console.log(coordinates);
+	}
 
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
