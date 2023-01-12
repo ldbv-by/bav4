@@ -13,6 +13,10 @@ describe('ElevationProfile', () => {
 
 	const sumUp = 1480.8;
 	const sumDown = 1668.6;
+	const verticalHeight = 50;
+	const highestPoint = 50;
+	const lowestPoint = 0;
+	const linearDistance = 5;
 
 	const _profile = {
 		elevations: [
@@ -55,7 +59,11 @@ describe('ElevationProfile', () => {
 		],
 		stats: {
 			sumUp: sumUp,
-			sumDown: sumDown
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
 		},
 		attrs: [
 			{
@@ -106,7 +114,11 @@ describe('ElevationProfile', () => {
 		],
 		stats: {
 			sumUp: sumUp,
-			sumDown: sumDown
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
 		},
 		attrs: [
 			{
@@ -249,12 +261,18 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
-
-			const sumUpElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumUp');
+			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
 			expect(sumUpElement.innerText).toBe('elevationProfile_sumUp: ' + sumUp);
-
-			const sumDownElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumDown');
+			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
 			expect(sumDownElement.innerText).toBe('elevationProfile_sumDown: ' + sumDown);
+			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
+			expect(verticalHeightElement.innerText).toBe('elevationProfile_verticalHeight: ' + verticalHeight);
+			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
+			expect(highestPointElement.innerText).toBe('elevationProfile_highestPoint: ' + highestPoint);
+			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
+			expect(lowestPointElement.innerText).toBe('elevationProfile_lowestPoint: ' + lowestPoint);
+			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
+			expect(linearDistanceElement.innerText).toBe('elevationProfile_linearDistance: ' + linearDistance);
 		});
 	});
 
