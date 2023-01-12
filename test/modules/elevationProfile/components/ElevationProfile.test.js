@@ -1,54 +1,54 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { AltitudeProfile, SlopeType } from '../../../../src/modules/altitudeProfile/components/AltitudeProfile.js';
-import { altitudeProfileReducer } from '../../../../src/store/altitudeProfile/altitudeProfile.reducer.js';
-import { updateCoordinates } from '../../../../src/store/altitudeProfile/altitudeProfile.action.js';
+import { ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
+import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
+import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
 
 import { TestUtils } from '../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 
-window.customElements.define(AltitudeProfile.tag, AltitudeProfile);
+window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
-describe('AltitudeProfile', () => {
+describe('ElevationProfile', () => {
 
 	const sumUp = 1480.8;
 	const sumDown = 1668.6;
 
 	const _profile = {
-		alts: [
+		elevations: [
 			{
 				dist: 0,
-				alt: 0,
+				z: 0,
 				e: 40,
 				n: 50
 			},
 			{
 				dist: 1,
-				alt: 10,
+				z: 10,
 				e: 41,
 				n: 51
 			},
 			{
 				dist: 2,
-				alt: 20,
+				z: 20,
 				e: 42,
 				n: 52
 			},
 			{
 				dist: 3,
-				alt: 30,
+				z: 30,
 				e: 43,
 				n: 53
 			},
 			{
 				dist: 4,
-				alt: 40,
+				z: 40,
 				e: 44,
 				n: 54
 			},
 			{
 				dist: 5,
-				alt: 50,
+				z: 50,
 				e: 45,
 				n: 55
 			}
@@ -78,28 +78,28 @@ describe('AltitudeProfile', () => {
 	};
 
 	const _profileSlopeSteep = {
-		alts: [
+		elevations: [
 			{
 				dist: 0,
-				alt: 0,
+				z: 0,
 				e: 40,
 				n: 50
 			},
 			{
 				dist: 1,
-				alt: 10,
+				z: 10,
 				e: 41,
 				n: 51
 			},
 			{
 				dist: 2,
-				alt: 20,
+				z: 20,
 				e: 42,
 				n: 52
 			},
 			{
 				dist: 3,
-				alt: 30,
+				z: 30,
 				e: 43,
 				n: 53
 			}
@@ -141,7 +141,7 @@ describe('AltitudeProfile', () => {
 		toLonLat() {}
 	};
 
-	const altitudeServiceMock = {
+	const elevationServiceMock = {
 		getProfile() {}
 	};
 
@@ -169,29 +169,29 @@ describe('AltitudeProfile', () => {
 
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
-			altitudeProfile: altitudeProfileReducer
+			elevationProfile: elevationProfileReducer
 		});
 
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('AltitudeService', altitudeServiceMock);
+			.registerSingleton('ElevationService', elevationServiceMock);
 
-		return TestUtils.renderAndLogLifecycle(AltitudeProfile.tag);
+		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
 	};
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(AltitudeProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR_DARK).toBe('#66eeff');
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('#eeff66');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR_DARK).toBe('#ee4444');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('#4444ee');
-			expect(AltitudeProfile.BACKGROUND_COLOR_DARK).toBe('#888888');
-			expect(AltitudeProfile.BACKGROUND_COLOR_LIGHT).toBe('#ddddff');
-			expect(AltitudeProfile.BORDER_COLOR_DARK).toBe('#886644');
-			expect(AltitudeProfile.BORDER_COLOR_LIGHT).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('#66eeff');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('#eeff66');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('#ee4444');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('#4444ee');
+			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('#888888');
+			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#ddddff');
+			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('#886644');
+			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#AA2266');
 		});
 	});
 
@@ -199,7 +199,7 @@ describe('AltitudeProfile', () => {
 		it('expects the initial values of the model to be empty', async () => {
 			// arrange
 			await setup();
-			const altitudeProfile = new AltitudeProfile();
+			const altitudeProfile = new ElevationProfile();
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
@@ -222,12 +222,12 @@ describe('AltitudeProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
 				media: {
 					darkSchema: true
 				},
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -240,21 +240,21 @@ describe('AltitudeProfile', () => {
 			expect(chart).not.toBeNull();
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
-			expect(config.options.scales.x.title.text).toBe('altitudeProfile_distance [m]');
-			expect(config.options.scales.y.title.text).toBe('altitudeProfile_alt [m]');
-			expect(config.options.plugins.title.text).toBe('altitudeProfile_elevation_reference_system');
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
+			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
+			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
 
 			const sumUpElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe('altitudeProfile_sumUp: ' + sumUp);
+			expect(sumUpElement.innerText).toBe('elevationProfile_sumUp: ' + sumUp);
 
 			const sumDownElement = element.shadowRoot.getElementById('route-altitude-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe('altitudeProfile_sumDown: ' + sumDown);
+			expect(sumDownElement.innerText).toBe('elevationProfile_sumDown: ' + sumDown);
 		});
 	});
 
@@ -266,9 +266,9 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -294,9 +294,9 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -321,9 +321,9 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -348,9 +348,9 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profile();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -384,7 +384,7 @@ describe('AltitudeProfile', () => {
 		it('for coverage - slope ends in steep - _getSlopeGradient', async () => {
 			// arrange
 			await setup();
-			const altitudeProfile = new AltitudeProfile();
+			const altitudeProfile = new ElevationProfile();
 			const getSlopeGradientSpy = spyOn(altitudeProfile, '_getSlopeGradient').and.callThrough();
 
 			// act
@@ -403,9 +403,9 @@ describe('AltitudeProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -428,7 +428,7 @@ describe('AltitudeProfile', () => {
 			expect(config.options.responsive).toBe(true);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
-			expect(datasetZero.label).toBe('altitudeProfile_elevation_profile');
+			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
@@ -444,7 +444,7 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup();
 			const getAltitudeProfileSpy = spyOn(element, '_getAltitudeProfile').and.callThrough();
 
@@ -466,9 +466,9 @@ describe('AltitudeProfile', () => {
 				[2, 3]
 			];
 			const altitudeData = profileSlopeSteep();
-			spyOn(altitudeServiceMock, 'getProfile').and.resolveTo(altitudeData);
+			spyOn(elevationServiceMock, 'getProfile').and.resolveTo(altitudeData);
 			const element = await setup({
-				altitudeProfile: {
+				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
@@ -491,22 +491,22 @@ describe('AltitudeProfile', () => {
 		it('updates the profile', async () => {
 			// arrange
 			const altitudeProfile = {
-				alts: [
+				elevations: [
 					{
 						dist: 0,
-						alt: 0,
+						z: 0,
 						e: 40,
 						n: 50
 					},
 					{
 						dist: 1,
-						alt: 10,
+						z: 10,
 						e: 41,
 						n: 51
 					},
 					{
 						dist: 2,
-						alt: 20,
+						z: 20,
 						e: 42,
 						n: 52
 					}
@@ -524,36 +524,36 @@ describe('AltitudeProfile', () => {
 			await setup({
 				altitudeProfile
 			});
-			const ap = new AltitudeProfile();
+			const ap = new ElevationProfile();
 
 			//act
 			ap._enrichProfileData(altitudeProfile);
 
 			// assert
-			expect(altitudeProfile.alts[0].surface).toBe('asphalt');
-			expect(altitudeProfile.alts[1].surface).toBe('missing');
-			expect(altitudeProfile.alts[2].surface).toBe('gravel');
+			expect(altitudeProfile.elevations[0].surface).toBe('asphalt');
+			expect(altitudeProfile.elevations[1].surface).toBe('missing');
+			expect(altitudeProfile.elevations[2].surface).toBe('gravel');
 		});
 
 		it('considers distances over 10000m and uses km instead', async () => {
 			// arrange
 			const altitudeProfile = {
-				alts: [
+				elevations: [
 					{
 						dist: 0,
-						alt: 0,
+						z: 0,
 						e: 40,
 						n: 50
 					},
 					{
 						dist: 10000,
-						alt: 10,
+						z: 10,
 						e: 41,
 						n: 51
 					},
 					{
 						dist: 20000,
-						alt: 20,
+						z: 20,
 						e: 42,
 						n: 52
 					}
@@ -564,15 +564,15 @@ describe('AltitudeProfile', () => {
 			await setup({
 				altitudeProfile
 			});
-			const ap = new AltitudeProfile();
+			const ap = new ElevationProfile();
 
 			//act
 			ap._enrichProfileData(altitudeProfile);
 
 			// assert
 			expect(altitudeProfile.distUnit).toBe('km');
-			expect(altitudeProfile.alts[1].alt).toBe(10);
-			expect(altitudeProfile.alts[2].alt).toBe(20);
+			expect(altitudeProfile.elevations[1].z).toBe(10);
+			expect(altitudeProfile.elevations[2].z).toBe(20);
 		});
 	});
 
@@ -594,10 +594,10 @@ describe('AltitudeProfile', () => {
 			setIsDarkSchema(true);
 
 			// assert
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR).toBe('#66eeff');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR).toBe('#ee4444');
-			expect(AltitudeProfile.BACKGROUND_COLOR).toBe('#888888');
-			expect(AltitudeProfile.BORDER_COLOR).toBe('#886644');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#66eeff');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#ee4444');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#888888');
+			expect(ElevationProfile.BORDER_COLOR).toBe('#886644');
 		});
 	});
 
@@ -610,10 +610,10 @@ describe('AltitudeProfile', () => {
 			setIsDarkSchema(false);
 
 			// assert
-			expect(AltitudeProfile.SLOPE_FLAT_COLOR).toBe('#eeff66');
-			expect(AltitudeProfile.SLOPE_STEEP_COLOR).toBe('#4444ee');
-			expect(AltitudeProfile.BACKGROUND_COLOR).toBe('#ddddff');
-			expect(AltitudeProfile.BORDER_COLOR).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#eeff66');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#4444ee');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#ddddff');
+			expect(ElevationProfile.BORDER_COLOR).toBe('#AA2266');
 		});
 	});
 });

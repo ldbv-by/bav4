@@ -1,7 +1,7 @@
 /**
  * A function that returns a promise resolving to an array of `ChipConfiguration`.
  *
- * @typedef {function() : (Promise<Array<ChipConfiguration>>)} altitudeProvider
+ * @typedef {function() : (Promise<Array<ChipConfiguration>>)} chipsConfigurationProvider
  */
 
 /**

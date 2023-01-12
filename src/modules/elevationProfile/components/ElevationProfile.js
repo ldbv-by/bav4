@@ -1,10 +1,10 @@
 import { html } from 'lit-html';
-import css from './altitudeProfile.css';
+import css from './elevationProfile.css';
 import { MvuElement } from '../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
 import { $injector } from '../../../injection';
 
-import { SurfaceType } from '../utils/altitudeProfileAttributeTypes';
+import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 
 const Update_Schema = 'update_schema';
@@ -23,7 +23,7 @@ export const SlopeType = Object.freeze({
 /**
  * @author nklein
  */
-export class AltitudeProfile extends MvuElement {
+export class ElevationProfile extends MvuElement {
 	constructor() {
 		super({
 			profile: null,
@@ -38,13 +38,13 @@ export class AltitudeProfile extends MvuElement {
 
 		const {
 			ConfigService: configService,
-			AltitudeService: altitudeService,
+			ElevationService: elevationService,
 			TranslationService: translationService
-		} = $injector.inject('ConfigService', 'AltitudeService', 'TranslationService');
+		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService');
 
 		this._translationService = translationService;
 		this._configService = configService;
-		this._altitudeService = altitudeService;
+		this._elevationService = elevationService;
 
 		this._enableTooltip = true;
 		this._drawSelectedAreaBorder = false;
@@ -69,7 +69,7 @@ export class AltitudeProfile extends MvuElement {
 			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 		this.observe(
-			(state) => state.altitudeProfile.coordinates,
+			(state) => state.elevationProfile.coordinates,
 			(coordinates) => this._getAltitudeProfile(coordinates)
 		);
 	}
@@ -125,13 +125,13 @@ export class AltitudeProfile extends MvuElement {
 				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 
 				<div class="flex" id="route-altitude-chart-footer">
-					<span id="route-altitude-chart-footer-sumUp">${translate('altitudeProfile_sumUp')}: ${sumUp}</span>
-					<span id="route-altitude-chart-footer-sumDown">${translate('altitudeProfile_sumDown')}: ${sumDown}</span>
+					<span id="route-altitude-chart-footer-sumUp">${translate('elevationProfile_sumUp')}: ${sumUp}</span>
+					<span id="route-altitude-chart-footer-sumDown">${translate('elevationProfile_sumDown')}: ${sumDown}</span>
 					<span>
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map((attr) => html`
 									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
-										${translate('altitudeProfile_' + attr.id)}
+										${translate('elevationProfile_' + attr.id)}
 									</option>
 								`)}
 						</select>
@@ -145,10 +145,10 @@ export class AltitudeProfile extends MvuElement {
 		const attributeName = attribute.id;
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
-				profile.alts[index][attributeName] = from_to_value[2];
+				profile.elevations[index][attributeName] = from_to_value[2];
 			}
 		});
-		profile.alts.forEach((alt) => {
+		profile.elevations.forEach((alt) => {
 			if (!alt[attributeName]) {
 				alt[attributeName] = 'missing';
 			}
@@ -156,8 +156,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
-		profile.labels = profile.alts.map((alt) => alt.dist);
-		profile.chartData = profile.alts.map((alt) => alt.alt);
+		profile.labels = profile.elevations.map((alt) => alt.dist);
+		profile.chartData = profile.elevations.map((alt) => alt.z);
 
 		profile.attrs.forEach((attr) => {
 			this._enritchAltsArrayWithAttributeData(attr, profile);
@@ -167,7 +167,7 @@ export class AltitudeProfile extends MvuElement {
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
-		profile.alts.forEach((alt) => {
+		profile.elevations.forEach((alt) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(alt.dist / 1000);
 			}
@@ -180,8 +180,8 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	_getDistUnit(profile) {
-		const from = profile.alts[0].dist;
-		const to = profile.alts[profile.alts.length - 1].dist;
+		const from = profile.elevations[0].dist;
+		const to = profile.elevations[profile.elevations.length - 1].dist;
 
 		const dist = to - from;
 		const distUnit = dist >= 10000 ? 'km' : 'm';
@@ -196,7 +196,7 @@ export class AltitudeProfile extends MvuElement {
 			datasets: [
 				{
 					data: newDataData,
-					label: translate('altitudeProfile_elevation_profile'),
+					label: translate('elevationProfile_elevation_profile'),
 					fill: true,
 					borderWidth: 4,
 					backgroundColor: (context) => {
@@ -222,7 +222,7 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				return AltitudeProfile.BACKGROUND_COLOR;
+				return ElevationProfile.BACKGROUND_COLOR;
 		}
 	}
 
@@ -236,7 +236,7 @@ export class AltitudeProfile extends MvuElement {
 				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
 			default:
-				return AltitudeProfile.BORDER_COLOR;
+				return ElevationProfile.BORDER_COLOR;
 		}
 	}
 
@@ -263,17 +263,17 @@ export class AltitudeProfile extends MvuElement {
 	_getTextTypeGradient(chart, altitudeData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.alts.length;
+		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		const altitudeProfileAttributeString = altitudeData.alts[0][selectedAttribute];
+		const altitudeProfileAttributeString = altitudeData.elevations[0][selectedAttribute];
 		let currentAltitudeProfileAttributeType = this.getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
 		gradientBg.addColorStop(0, currentAltitudeProfileAttributeType.color);
 		let altitudeProfileAttributeType;
-		altitudeData.alts.forEach((element, index) => {
+		altitudeData.elevations.forEach((element, index) => {
 			if (index === 0) {
 				return;
 			}
-			if (index === altitudeData.alts.length - 1) {
+			if (index === altitudeData.elevations.length - 1) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				gradientBg.addColorStop(xPoint, currentAltitudeProfileAttributeType.color);
 				return;
@@ -295,37 +295,37 @@ export class AltitudeProfile extends MvuElement {
 	_getSlopeGradient(chart, altitudeData) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.alts.length;
+		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
 		// start gradient with 'flat' color
-		gradientBg.addColorStop(0, AltitudeProfile.SLOPE_FLAT_COLOR);
+		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
 		let currentSlopeType = SlopeType.FLAT;
-		altitudeData?.alts.forEach((element, index) => {
+		altitudeData?.elevations.forEach((element, index) => {
 			if (currentSlopeType === SlopeType.STEEP) {
 				// look for first element with slope less than X
-				if (!element.slope || element.slope <= AltitudeProfile.SLOPE_STEEP_THRESHOLD) {
+				if (!element.slope || element.slope <= ElevationProfile.SLOPE_STEEP_THRESHOLD) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_STEEP_COLOR);
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_FLAT_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
 					currentSlopeType = SlopeType.FLAT;
 				}
 			}
 			else {
 				// look for first element with slope greater X
-				if (element.slope && element.slope > AltitudeProfile.SLOPE_STEEP_THRESHOLD) {
+				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_FLAT_COLOR);
-					gradientBg.addColorStop(xPoint, AltitudeProfile.SLOPE_STEEP_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
+					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
 					currentSlopeType = SlopeType.STEEP;
 				}
 			}
 		});
 		// end with currentSlopeType - color
 		if (currentSlopeType === SlopeType.STEEP) {
-			gradientBg.addColorStop(1, AltitudeProfile.SLOPE_STEEP_COLOR);
+			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
 		}
 		else {
-			gradientBg.addColorStop(1, AltitudeProfile.SLOPE_FLAT_COLOR);
+			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
 		}
 		return gradientBg;
 	}
@@ -335,7 +335,7 @@ export class AltitudeProfile extends MvuElement {
 	 */
 	async _getAltitudeProfile(coordinates) {
 		try {
-			const profile = await this._altitudeService.getProfile(coordinates);
+			const profile = await this._elevationService.getProfile(coordinates);
 			this.signal(Enrich_Profile_Data, profile);
 		}
 		catch (e) {
@@ -368,13 +368,13 @@ export class AltitudeProfile extends MvuElement {
 					x: { type: 'linear',
 						title: {
 							display: true,
-							text: translate('altitudeProfile_distance') + ' [' + distUnit + ']'
+							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
 						}
 					},
 					y: { type: 'linear', beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('altitudeProfile_alt') + ' [m]'
+							text: translate('elevationProfile_alt') + ' [m]'
 						}
 					}, // HINT: UX decision
 					y1: {
@@ -389,7 +389,7 @@ export class AltitudeProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('altitudeProfile_elevation_reference_system')
+						text: translate('elevationProfile_elevation_reference_system')
 					},
 					legend: { display: false }
 				}
@@ -443,10 +443,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get SLOPE_FLAT_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.SLOPE_FLAT_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.SLOPE_FLAT_COLOR_DARK;
 		}
-		return AltitudeProfile.SLOPE_FLAT_COLOR_LIGHT;
+		return ElevationProfile.SLOPE_FLAT_COLOR_LIGHT;
 	}
 
 	static get SLOPE_STEEP_COLOR_DARK() {
@@ -458,10 +458,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get SLOPE_STEEP_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.SLOPE_STEEP_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
 		}
-		return AltitudeProfile.SLOPE_STEEP_COLOR_LIGHT;
+		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
 	}
 
 	static get BACKGROUND_COLOR_DARK() {
@@ -473,10 +473,10 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get BACKGROUND_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.BACKGROUND_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.BACKGROUND_COLOR_DARK;
 		}
-		return AltitudeProfile.BACKGROUND_COLOR_LIGHT;
+		return ElevationProfile.BACKGROUND_COLOR_LIGHT;
 	}
 
 	static get BORDER_COLOR_DARK() {
@@ -488,13 +488,13 @@ export class AltitudeProfile extends MvuElement {
 	}
 
 	static get BORDER_COLOR() {
-		if (AltitudeProfile.IS_DARK) {
-			return AltitudeProfile.BORDER_COLOR_DARK;
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.BORDER_COLOR_DARK;
 		}
-		return AltitudeProfile.BORDER_COLOR_LIGHT;
+		return ElevationProfile.BORDER_COLOR_LIGHT;
 	}
 
 	static get tag() {
-		return 'ba-altitude-profile';
+		return 'ba-elevation-profile';
 	}
 }

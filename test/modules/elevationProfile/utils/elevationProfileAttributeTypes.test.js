@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { SurfaceType } from '../../../../src/modules/altitudeProfile/utils/altitudeProfileAttributeTypes';
+import { SurfaceType } from '../../../../src/modules/elevationProfile/utils/elevationProfileAttributeTypes';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TestUtils } from '../../../test-utils';
 
@@ -20,7 +20,7 @@ const setup = (state = {}) => {
 	return;
 };
 
-describe('tests for altitudeProfileAttributeTypes.js', () => {
+describe('tests for elevationProfileAttributeTypes.js', () => {
 	describe('when SurfaceType is initialized', () => {
 		it('all fields should be set', async () => {
 			// arrange
@@ -29,7 +29,7 @@ describe('tests for altitudeProfileAttributeTypes.js', () => {
 
 			// assert
 			expect(surfaceType.name).toBe('asphalt');
-			expect(surfaceType.caption).toBe('altitudeProfile_surface');
+			expect(surfaceType.caption).toBe('elevationProfile_surface');
 			expect(surfaceType.color).toBe('#111111');
 		});
 	});
@@ -48,7 +48,7 @@ describe('tests for altitudeProfileAttributeTypes.js', () => {
 
 			// assert
 			expect(surfaceType.name).toBe('asphalt');
-			expect(surfaceType.caption).toBe('altitudeProfile_surface');
+			expect(surfaceType.caption).toBe('elevationProfile_surface');
 			expect(surfaceType.color).toBe('#222222');
 		});
 	});
@@ -61,7 +61,7 @@ describe('tests for altitudeProfileAttributeTypes.js', () => {
 
 			// assert
 			expect(surfaceType.name).toBe('asphalt');
-			expect(surfaceType.caption).toBe('altitudeProfile_surface');
+			expect(surfaceType.caption).toBe('elevationProfile_surface');
 			expect(surfaceType.color).toBe('#111111');
 		});
 	});

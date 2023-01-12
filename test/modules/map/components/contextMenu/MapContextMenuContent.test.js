@@ -24,8 +24,8 @@ describe('OlMapContextMenuContent', () => {
 	const shareServiceMock = {
 		copyToClipboard() { }
 	};
-	const altitudeServiceMock = {
-		getAltitude() { }
+	const elevationServiceMock = {
+		getElevation() { }
 	};
 	const administrationServiceMock = {
 		getAdministration() { }
@@ -45,7 +45,7 @@ describe('OlMapContextMenuContent', () => {
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('AltitudeService', altitudeServiceMock)
+			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('AdministrationService', administrationServiceMock);
 		return TestUtils.render(MapContextMenuContent.tag);
 	};
@@ -67,7 +67,7 @@ describe('OlMapContextMenuContent', () => {
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			const altitudeMock = spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
+			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
@@ -78,7 +78,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
-			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_altitude_label');
+			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_elevation_label');
 
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('LDBV');
@@ -93,7 +93,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(getSridDefinitionsForViewMock).toHaveBeenCalledWith([1000, 2000]);
 			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
 			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
-			expect(altitudeMock).toHaveBeenCalledOnceWith(coordinateMock);
+			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 		});
@@ -106,7 +106,7 @@ describe('OlMapContextMenuContent', () => {
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
-			spyOn(altitudeServiceMock, 'getAltitude').withArgs(coordinateMock).and.returnValue(42);
+			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
@@ -144,16 +144,16 @@ describe('OlMapContextMenuContent', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 
-		it('logs a warn statement when Altitude Service is not available', async () => {
+		it('logs a warn statement when Elevation Service is not available', async () => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(altitudeServiceMock, 'getAltitude').and.returnValue(Promise.reject(new Error('Altitude Error')));
+			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(new Error('Elevation Error')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Altitude Error');
+			expect(warnSpy).toHaveBeenCalledWith('Elevation Error');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 		});
 

@@ -1,8 +1,8 @@
 import { $injector } from '../../../src/injection';
-import { loadBvvAltitude } from '../../../src/services/provider/altitude.provider';
+import { loadBvvElevation } from '../../../src/services/provider/elevation.provider';
 
-describe('Altitude provider', () => {
-	describe('Bvv Altitude provider', () => {
+describe('Elevation provider', () => {
+	describe('Bvv Elevation provider', () => {
 
 		const configService = {
 			getValueAsPath: () => { }
@@ -21,24 +21,24 @@ describe('Altitude provider', () => {
 		const coordinateMock = [21, 42];
 
 
-		it('loads Altitude', async () => {
+		it('loads an elevation', async () => {
 
 			const backendUrl = 'https://backend.url';
-			const altitudeMock = { altitude: 5 };
+			const elevationMock = { z: 5 };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
 				new Response(
 					JSON.stringify(
-						altitudeMock
+						elevationMock
 					)
 				)
 			));
 
-			const altitude = await loadBvvAltitude(coordinateMock);
+			const elevation = await loadBvvElevation(coordinateMock);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(altitude).toEqual(altitudeMock.altitude);
+			expect(elevation).toEqual(elevationMock.z);
 		});
 
 		it('throws error when backend provides empty payload', async () => {
@@ -49,35 +49,22 @@ describe('Altitude provider', () => {
 				new Response(JSON.stringify({}), { status: 200 })
 			));
 
-			try {
-				await loadBvvAltitude(coordinateMock);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toContain('Altitude could not be retrieved');
-			}
+			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
-		it('throws error when backend provides empty altitude', async () => {
+		it('throws error when backend provides empty elevation', async () => {
 
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-				new Response(JSON.stringify({ altitude: null }), { status: 200 })
+				new Response(JSON.stringify({ z: null }), { status: 200 })
 			));
 
-			try {
-				await loadBvvAltitude(coordinateMock);
-				throw new Error('Promise should not be resolved');
-
-			}
-			catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toContain('Altitude could not be retrieved');
-			}
+			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
 		it('throws error when backend request cannot be fulfilled', async () => {
@@ -88,15 +75,9 @@ describe('Altitude provider', () => {
 				new Response(null, { status: 404 })
 			));
 
-			try {
-				await loadBvvAltitude(coordinateMock);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('Altitude could not be retrieved');
-			}
+			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
 });
