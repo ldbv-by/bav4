@@ -355,6 +355,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
+		console.log('🚀 ~ file: ElevationProfile.js:358 ~ ElevationProfile ~ _getChartConfig ~ newDataData', newDataData);
 		const translate = (key) => this._translationService.translate(key);
 		const config = {
 			type: 'line',
@@ -400,7 +401,37 @@ export class ElevationProfile extends MvuElement {
 						display: true,
 						text: translate('elevationProfile_elevation_reference_system')
 					},
-					legend: { display: false }
+					legend: { display: false },
+					tooltip: {
+						displayColors: false,
+						mode: 'index',
+						intersect: false,
+						callbacks: {
+							title: (tooltipItems) => {
+								// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
+								const { parsed } = tooltipItems[0];
+								// console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
+
+								// const found = myData.heights.find(element => element.dist === parsed.x);
+								// if (found) {
+								// 	// console.log('🚀 ~ file: ProfileN.js ~ line 1733 ~ found', found.easting);
+								// 	setCoordinates([found.easting, found.northing]);
+								// }
+
+								return 'Distance: ' + tooltipItems[0].label + 'm';
+							},
+							label: (tooltipItem) => {
+								return 'Elevation: ' + tooltipItem.raw + 'm test test';
+							}
+							// ,
+							// labelPointStyle: function () {
+							// 	return {
+							// 		pointStyle: 'triangle',
+							// 		rotation: 0
+							// 	};
+							// }
+						}
+					}
 				}
 			}
 		};
