@@ -110,6 +110,11 @@ export class ElevationProfile extends MvuElement {
 		const sumUp = model.profile?.stats?.sumUp;
 		const sumDown = model.profile?.stats?.sumDown;
 
+		const verticalHeight = model.profile?.stats?.verticalHeight;
+		const highestPoint = model.profile?.stats?.highestPoint;
+		const lowestPoint = model.profile?.stats?.lowestPoint;
+		const linearDistance = model.profile?.stats?.linearDistance;
+
 		const onChange = () => {
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
@@ -125,8 +130,12 @@ export class ElevationProfile extends MvuElement {
 				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 
 				<div class="flex" id="route-altitude-chart-footer">
-					<span id="route-altitude-chart-footer-sumUp">${translate('elevationProfile_sumUp')}: ${sumUp}</span>
-					<span id="route-altitude-chart-footer-sumDown">${translate('elevationProfile_sumDown')}: ${sumDown}</span>
+					<span id="route-elevation-chart-footer-sumUp">${translate('elevationProfile_sumUp')}: ${sumUp}</span>
+					<span id="route-elevation-chart-footer-sumDown">${translate('elevationProfile_sumDown')}: ${sumDown}</span>
+					<span id="route-elevation-chart-footer-verticalHeight">${translate('elevationProfile_verticalHeight')}: ${verticalHeight}</span>
+					<span id="route-elevation-chart-footer-highestPoint">${translate('elevationProfile_highestPoint')}: ${highestPoint}</span>
+					<span id="route-elevation-chart-footer-lowestPoint">${translate('elevationProfile_lowestPoint')}: ${lowestPoint}</span>
+					<span id="route-elevation-chart-footer-linearDistance">${translate('elevationProfile_linearDistance')}: ${linearDistance}</span>
 					<span>
 						<select id="attrs" @change=${onChange}>
 							${model.profile.attrs.map((attr) => html`
