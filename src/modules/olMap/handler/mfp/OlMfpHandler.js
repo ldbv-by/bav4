@@ -217,8 +217,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_createPagePolygon(pageSize, center) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
-		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
-		const geodeticBoundingBox = this._getBoundingBoxFrom(geodeticCenterCoordinate, pageSize);
+		const geodeticBoundingBox = this._getBoundingBoxFrom(geodeticCenter.getCoordinates(), pageSize);
 
 		return getPolygonFrom(geodeticBoundingBox);
 	}
