@@ -17,7 +17,7 @@ const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
 const Locales_Fallback = 'en';
-const Default_Preview_Delay_Time = 1000;
+const Default_Preview_Delay_Time = 1500;
 
 /**
  * @class

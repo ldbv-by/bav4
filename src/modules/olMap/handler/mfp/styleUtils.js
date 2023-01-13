@@ -39,8 +39,8 @@ export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) =>
 	const baseStyle = new Style({
 		stroke: new Stroke(
 			{
-				color: [9, 157, 220, 0.3],
-				width: 2
+				color: [9, 157, 220, 0.5],
+				width: 3
 			})
 	});
 
@@ -121,7 +121,7 @@ export const createSimpleMapMaskFunction = (map, getPixelCoordinatesCallback) =>
 		[...inner].reverse().slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
 		ctx.closePath();
 
-		ctx.fillStyle = 'rgba(0,0,0,0.4)';
+		ctx.fillStyle = 'rgba(0, 5, 25, 0.75)';
 		ctx.fill();
 	};
 

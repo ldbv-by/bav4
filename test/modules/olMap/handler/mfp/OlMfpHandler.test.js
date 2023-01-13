@@ -122,6 +122,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._storeService.getStore()).toBeDefined();
 		expect(handler._registeredObservers).toEqual([]);
 		expect(handler._mfpBoundaryFeature).toEqual(jasmine.any(Feature));
+		expect(handler._previewDelayTime).toBe(1500);
 		expect(handler._mfpLayer).toBeNull();
 		expect(handler._map).toBeNull();
 		expect(handler._pageSize).toBeNull();

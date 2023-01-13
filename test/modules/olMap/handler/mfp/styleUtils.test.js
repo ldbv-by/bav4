@@ -105,26 +105,30 @@ describe('mfp style utility functions', () => {
 			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
 			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
 			let receivedStyle = null;
-			const stateMock = { feature: new Feature(), context: null, geometry: new Point([0, 0]), pixelRatio: 1, customContextRenderFunction: (geometry, style) => {
-				receivedStyle = style;
-			} };
+			const stateMock = {
+				feature: new Feature(), context: null, geometry: new Point([0, 0]), pixelRatio: 1, customContextRenderFunction: (geometry, style) => {
+					receivedStyle = style;
+				}
+			};
 			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
 
 			const renderStyle = styles[0];
 			renderStyle.getRenderer()(pixelCoordinates, stateMock);
 
 			expect(spy).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Style));
-			expect(receivedStyle.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
-			expect(receivedStyle.getStroke().getWidth()).toBe(2);
+			expect(receivedStyle.getStroke().getColor()).toEqual([9, 157, 220, 0.5]);
+			expect(receivedStyle.getStroke().getWidth()).toBe(3);
 		});
 
 		it('should use the warnstyle for a feature out of the printable area', () => {
 			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
 			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
 			let receivedStyle = null;
-			const stateMock = { feature: new Feature({ 'inPrintableArea': false }), context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: (geometry, style) => {
-				receivedStyle = style;
-			} };
+			const stateMock = {
+				feature: new Feature({ 'inPrintableArea': false }), context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: (geometry, style) => {
+					receivedStyle = style;
+				}
+			};
 			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
 
 			const renderStyle = styles[0];
@@ -264,7 +268,7 @@ describe('mfp style utility functions', () => {
 		const getPostRenderEvent = (time, context) => new RenderEvent('postrender', transform, setupFrameState(time), context);
 
 		it('draws a mask', () => {
-			const expectedFillColor = 'rgba(0,0,0,0.4)';
+			const expectedFillColor = 'rgba(0, 5, 25, 0.75)';
 			const mapMock = createMapMock();
 			const context = get2dContext();
 
