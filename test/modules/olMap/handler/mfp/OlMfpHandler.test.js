@@ -440,7 +440,32 @@ describe('OlMfpHandler', () => {
 		});
 	});
 
-	describe('_createMfpBoundary', () => {
+	describe('_updateMfpPreview', () => {
+		it('creates a projected polygon', () => {
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			classUnderTest._map = setupMap();
+			classUnderTest._pageSize = { width: 20, height: 20 };
+			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
+
+			classUnderTest._updateMfpPreview();
+
+			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Polygon));
+		});
+
+		it('skips the preview', () => {
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			classUnderTest._map = setupMap();
+			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:3857');
+
+			classUnderTest._updateMfpPreview();
+
+			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Point));
+		});
+	});
+
+	describe('_createPagePolygon', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
 			const center = new Point([0, 0]);

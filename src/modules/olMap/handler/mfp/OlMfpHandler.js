@@ -149,17 +149,25 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_updateMfpPreview() {
-		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
-		// bvv version (print in UTM32) is not fitting
 		const center = this._getVisibleCenterPoint();
-		const { extent: mfpExtent } = this._mfpService.getCapabilities();
-		const rotation = this._storeService.getStore().getState().position.rotation;
-		const pagePolygon = this._createPagePolygon(this._pageSize, center);
-		const mfpGeometry = this._toMfpBoundary(pagePolygon, center, rotation);
+		const skipPreview = () => {
+			// HINT: In standalone-mode is the map- and the mfp-projection identical
+			// and a projected geometry not needed.
+			this._mfpBoundaryFeature.setGeometry(center);
+		};
+		const createProjectedGeometry = () => {
+			const { extent: mfpExtent } = this._mfpService.getCapabilities();
+			const rotation = this._storeService.getStore().getState().position.rotation;
+			const pagePolygon = this._createPagePolygon(this._pageSize, center);
+			const mfpGeometry = this._toMfpBoundary(pagePolygon, center, rotation);
 
-		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
-		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
-		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+			const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
+			this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
+			this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+		};
+
+		const updateAction = this._getMfpProjection() === this._mapProjection ? skipPreview : createProjectedGeometry;
+		updateAction();
 	}
 
 	_delayedUpdateMfpPreview() {
@@ -303,7 +311,8 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_getMfpProjection() {
-		return `EPSG:${this._mfpService.getCapabilities().srid}`;
+		return this._mapProjection;
+		//		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
 	async _encodeMap() {
