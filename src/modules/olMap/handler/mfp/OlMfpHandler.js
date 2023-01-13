@@ -311,8 +311,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_getMfpProjection() {
-		return this._mapProjection;
-		//		return `EPSG:${this._mfpService.getCapabilities().srid}`;
+		return `EPSG:${this._mfpService.getCapabilities().srid}`;
 	}
 
 	async _encodeMap() {
