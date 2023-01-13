@@ -99,7 +99,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			observe(store, state => state.position.center, () => this._updateMfpPreview()),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
-				// triggered and we must set the internal 'beingDragged'-state. In the other cases this state is
+				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
 				// set twice by the events 'pointer.beingDragged' and 'map.moveStart'.
 				// To prevent flickering, we check for a already existing delay, caused by pointer.beingDragged.
 				if (!this._previewDelayTimeoutId) {
