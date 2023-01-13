@@ -129,31 +129,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		observers = [];
 	}
 
-	_updateMfpPreview() {
-		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
-		// bvv version (print in UTM32) is not fitting
-		const center = this._getVisibleCenterPoint();
-		const { extent: mfpExtent } = this._mfpService.getCapabilities();
-		const rotation = this._storeService.getStore().getState().position.rotation;
-		const geodeticBoundary = this._createGeodeticBoundary(this._pageSize, center);
-		const mfpGeometry = this._toMfpBoundary(geodeticBoundary, center, rotation);
-
-		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
-		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
-		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
-	}
-
-	_delayedUpdateMfpPreview() {
-		const timeOut = this._previewDelayTime;
-		if (!this._previewDelayTimeoutId) {
-			this._previewDelayTimeoutId = setTimeout(() => {
-				this._beingDragged = false;
-				this._updateMfpPreview();
-				this._previewDelayTimeoutId = null;
-			}, timeOut);
-		}
-	}
-
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
 		const translate = (key) => this._translationService.translate(key);
@@ -171,6 +146,31 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		this._pageSize = toGeographicSize(layoutSize);
+	}
+
+	_updateMfpPreview() {
+		// todo: May be better suited in a mfpBoundary-provider and pageLabel-provider, in cases where the
+		// bvv version (print in UTM32) is not fitting
+		const center = this._getVisibleCenterPoint();
+		const { extent: mfpExtent } = this._mfpService.getCapabilities();
+		const rotation = this._storeService.getStore().getState().position.rotation;
+		const pagePolygon = this._createPagePolygon(this._pageSize, center);
+		const mfpGeometry = this._toMfpBoundary(pagePolygon, center, rotation);
+
+		const intersect = getIntersection(mfpGeometry.getExtent(), mfpExtent);
+		this._mfpBoundaryFeature.set('inPrintableArea', equals(intersect, mfpGeometry.getExtent()));
+		this._mfpBoundaryFeature.setGeometry(mfpGeometry);
+	}
+
+	_delayedUpdateMfpPreview() {
+		const timeOut = this._previewDelayTime;
+		if (!this._previewDelayTimeoutId) {
+			this._previewDelayTimeoutId = setTimeout(() => {
+				this._beingDragged = false;
+				this._updateMfpPreview();
+				this._previewDelayTimeoutId = null;
+			}, timeOut);
+		}
 	}
 
 	_getPixelCoordinates() {
@@ -191,6 +191,31 @@ export class OlMfpHandler extends OlLayerHandler {
 		];
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
+	}
+
+	_createPagePolygon(pageSize, center) {
+		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
+		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
+
+		const geodeticBoundingBox = [
+			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
+			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
+			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
+			geodeticCenterCoordinate[1] + (pageSize.height / 2) // maxY
+		];
+
+		return getPolygonFrom(geodeticBoundingBox);
+	}
+
+	_toMfpBoundary(pagePolygon, center, mapRotation) {
+		const mfpBoundary = pagePolygon.clone().transform(this._getMfpProjection(), this._mapProjection);
+		const rotate = (polygon) => {
+			const azimuthRotation = getAzimuthFrom(polygon);
+			polygon.rotate(mapRotation - azimuthRotation, center.getCoordinates());
+			return polygon;
+		};
+
+		return mapRotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
 	_getBeingDragged() {
@@ -275,31 +300,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getVisibleCenterPoint() {
 		return new Point(this._map.getCoordinateFromPixel(this._getVisibleCenterPixel()));
-	}
-
-	_createGeodeticBoundary(pageSize, center) {
-		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
-
-		const geodeticCenterCoordinate = geodeticCenter.getCoordinates();
-		const geodeticBoundingBox = [
-			geodeticCenterCoordinate[0] - (pageSize.width / 2), // minX
-			geodeticCenterCoordinate[1] - (pageSize.height / 2), // minY
-			geodeticCenterCoordinate[0] + (pageSize.width / 2), // maxX
-			geodeticCenterCoordinate[1] + (pageSize.height / 2) // maxY
-		];
-
-		return getPolygonFrom(geodeticBoundingBox);
-	}
-
-	_toMfpBoundary(geodeticBoundary, center, mapRotation) {
-		const mfpBoundary = geodeticBoundary.clone().transform(this._getMfpProjection(), this._mapProjection);
-		const rotate = (polygon) => {
-			const azimuthRotation = getAzimuthFrom(polygon);
-			polygon.rotate(mapRotation - azimuthRotation, center.getCoordinates());
-			return polygon;
-		};
-
-		return mapRotation !== null ? rotate(mfpBoundary) : mfpBoundary;
 	}
 
 	_getMfpProjection() {

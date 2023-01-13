@@ -449,7 +449,7 @@ describe('OlMfpHandler', () => {
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 
-			expect(classUnderTest._createGeodeticBoundary(pageSize, center)).toEqual(jasmine.any(Polygon));
+			expect(classUnderTest._createPagePolygon(pageSize, center)).toEqual(jasmine.any(Polygon));
 		});
 	});
 
