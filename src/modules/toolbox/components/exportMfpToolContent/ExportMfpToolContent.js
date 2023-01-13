@@ -155,16 +155,16 @@ export class ExportMfpToolContent extends AbstractToolContent {
 						${translate('toolbox_exportMfp_scale')}	
 					</div>
 					<div style='display: flex; justify-content: center'>	
-						<ba-icon id='decrease' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
+						<ba-icon id='decrease' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
 						<select id='select_scale' @change=${onChangeScale}>							
 						${getScaleOptions(scales, scale)}
 						</select>
-						<ba-icon id='increase' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
+						<ba-icon id='increase' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
 					<div>
 					</div>					
 				</div>				
 				<div class='tool-section separator' style='margin-top:1em'>
-					<div  class='tool-section' style='margin-top:1em'><ba-toggle id='showgrid' .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid} ><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-toggle></div>
+					<div  class='tool-section' style='margin-top:1em'><ba-checkbox id='showgrid' .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid} ><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-checkbox></div>
 				</div>`;
 	}
 

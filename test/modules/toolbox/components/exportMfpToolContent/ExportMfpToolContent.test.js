@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { Toggle } from '../../../../../src/modules/commons/components/toggle/Toggle';
+import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
@@ -9,7 +9,7 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportMfpToolContent.tag, ExportMfpToolContent);
-window.customElements.define(Toggle.tag, Toggle);
+window.customElements.define(Checkbox.tag, Checkbox);
 
 describe('ExportMfpToolContent', () => {
 	let store;
@@ -245,7 +245,7 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
-	describe('when the user press the minus button', () => {
+	describe('when the user press the plus button', () => {
 
 		it('changes store, decrease the scale', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
@@ -286,7 +286,7 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
-	describe('when the user press the plus button', () => {
+	describe('when the user press the minus button', () => {
 
 		it('changes store, increase the scale', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
@@ -379,21 +379,20 @@ describe('ExportMfpToolContent', () => {
 		});
 	});
 
-	describe('when the user toggles the showGrid-toggle', () => {
+	describe('when the user toggles the showGrid-checkbox', () => {
 
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+			const checkbox = element.shadowRoot.querySelector('#showgrid');
 
 			expect(store.getState().mfp.showGrid).toBeFalse();
 
-			const toggleButton = element.shadowRoot.querySelector('#showgrid');
-
-			toggleButton.click();
+			checkbox.click();
 
 			expect(store.getState().mfp.showGrid).toBeTrue();
 
-			toggleButton.click();
+			checkbox.click();
 
 			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
