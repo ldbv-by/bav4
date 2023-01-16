@@ -193,7 +193,7 @@ describe('OlMfpHandler', () => {
 			expect(mfpLayerSpy).not.toHaveBeenCalled();
 		});
 
-		it('initializing mfpBoundaryFeature with a render style', () => {
+		it('initializes the mfpBoundaryFeature with a render style', () => {
 			const map = setupMap();
 			setup();
 			const handler = new OlMfpHandler();
@@ -506,7 +506,7 @@ describe('OlMfpHandler', () => {
 		const cloned = new Polygon([[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]);
 		const center = new Point([0, 0]);
 
-		it('clone and transforms a geodetic boundary to a bundary with map projection', () => {
+		it('clones and transforms a geodetic boundary to a boundary with map projection', () => {
 			setup();
 			const cloneSpy = spyOn(boundary, 'clone').and.returnValue(cloned);
 			const transformSpy = spyOn(cloned, 'transform').withArgs(jasmine.any(String), jasmine.any(String)).and.returnValue(cloned);
@@ -521,7 +521,7 @@ describe('OlMfpHandler', () => {
 			expect(mfpBoundary).toBe(cloned);
 		});
 
-		it('clone,transforms and rotates a geodetic boundary to a boundary with map projection', () => {
+		it('clones,transforms and rotates a geodetic boundary to a boundary with map projection', () => {
 			const mapRotation = 42;
 			setup();
 			const classUnderTest = new OlMfpHandler();
