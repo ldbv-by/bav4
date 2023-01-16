@@ -31,7 +31,6 @@ describe('ExportMfpToolContent', () => {
 		current: { id: null, scale: null, dpi: null },
 		showGrid: false,
 		jobSpec: null,
-		collapsedOptions: null,
 		isJobStarted: false
 	};
 
