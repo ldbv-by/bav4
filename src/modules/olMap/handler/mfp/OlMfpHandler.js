@@ -12,6 +12,7 @@ import { getAzimuthFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 import { isNumber } from '../../../../utils/checks';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -46,6 +47,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._beingDragged = false;
 		this._previewDelayTime = Default_Preview_Delay_Time;
 		this._previewDelayTimeoutId = null;
+		this._alreadyWarned = false;
 	}
 
 	/**
@@ -65,8 +67,12 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, () => this._getPixelCoordinates()));
 			this._registeredObservers = this._register(this._storeService.getStore());
+			// Initialize boundaryFeature with centerpoint to get a first valid
+			// feature-geometry for the postrender-event. The postrender-event is
+			// not fired, if there is no geometry at all.
+			this._mfpBoundaryFeature.setGeometry(this._getVisibleCenterPoint());
 			this._updateMfpPage(mfpSettings);
-			this._updateMfpPreview();
+			this._delayedUpdateMfpPreview();
 		}
 
 		return this._mfpLayer;
@@ -84,6 +90,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpLayer = null;
 		this._map = null;
 		this._visibleViewport = null;
+		this._alreadyWarned = false;
 	}
 
 	_register(store) {
@@ -132,14 +139,12 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
-		const translate = (key) => this._translationService.translate(key);
-
 		const label = this._getPageLabel(mfpSettings);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
 
 		// init/update mfpBoundaryFeature
 		this._mfpBoundaryFeature.set('name', label);
-		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(translate('olMap_handler_mfp_distortion_warning'), () => this._getBeingDragged()));
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(() => this._getBeingDragged()));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -173,10 +178,15 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_delayedUpdateMfpPreview() {
 		const timeOut = this._previewDelayTime;
+		const translate = (key) => this._translationService.translate(key);
 		if (!this._previewDelayTimeoutId) {
 			this._previewDelayTimeoutId = setTimeout(() => {
 				this._beingDragged = false;
 				this._updateMfpPreview();
+				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea') ?? true;
+				if (!inPrintableArea) {
+					this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
+				}
 				this._previewDelayTimeoutId = null;
 			}, timeOut);
 		}
@@ -319,6 +329,13 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getMfpProjection() {
 		return `EPSG:${this._mfpService.getCapabilities().srid}`;
+	}
+
+	_warnOnce(warnText) {
+		if (!this._alreadyWarned) {
+			emitNotification(warnText, LevelTypes.WARN);
+			this._alreadyWarned = true;
+		}
 	}
 
 	async _encodeMap() {
