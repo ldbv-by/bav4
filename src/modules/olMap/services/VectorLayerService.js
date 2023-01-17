@@ -50,7 +50,6 @@ export class VectorLayerService {
 			visible: olLayer.getVisible(),
 			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
 			top: active.filter(({ constraints: { hidden } }) => !hidden).pop().id === olLayer.get('id'),
-			// top: active.pop().id === olLayer.get('id'),
 			opacity: olLayer.getOpacity()
 		});
 	}
