@@ -316,7 +316,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			return this._visibleViewport;
 		};
 		const getVisibleCenter = () => {
-			const size = this._map.getSize();
+			const size = this._map.getSize() ?? [0, 0];
 			const padding = getOrRequestVisibleViewport();
 			return [size[0] / 2 + (padding.left - padding.right) / 2, size[1] / 2 + (padding.top - padding.bottom) / 2];
 		};
