@@ -250,6 +250,8 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
+			// wait for first delayedPreview after activation
+			await TestUtils.timeout(previewDelayTime + 10);
 			handler._previewDelayTimeoutId = 1;
 			setBeingDragged(true);
 
@@ -265,6 +267,8 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
+			// wait for first delayedPreview after activation
+			await TestUtils.timeout(previewDelayTime + 10);
 			setMapMoveStart();
 			setBeingMoved(true);
 
