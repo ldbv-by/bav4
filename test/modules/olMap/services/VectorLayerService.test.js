@@ -388,7 +388,7 @@ describe('VectorLayerService', () => {
 
 		describe('_updateStyle', () => {
 
-			it('calls the updates the styles', () => {
+			it('calls #updateStyle of the underlying StyleService', () => {
 				const id = 'id';
 				const state = {
 					layers: {
@@ -411,7 +411,7 @@ describe('VectorLayerService', () => {
 				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, updateProperties);
 			});
 
-			it('calls the updates the styles correctly ignoring hidden layers', () => {
+			it('calls #updateStyle of the underlying StyleService ignoring hidden layers', () => {
 				const id = 'id';
 				const state = {
 					layers: {
