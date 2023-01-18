@@ -165,6 +165,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const skipPreview = () => {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
+			this._mfpBoundaryFeature.set('inPrintableArea', true);
 			this._mfpBoundaryFeature.setGeometry(center);
 		};
 		const createProjectedGeometry = () => {
@@ -189,7 +190,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._previewDelayTimeoutId = setTimeout(() => {
 				this._beingDragged = false;
 				this._updateMfpPreview(center);
-				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea') ?? true;
+				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
 				if (!inPrintableArea) {
 					const content = html`${translate('olMap_handler_mfp_distortion_warning')} <a href='https://www.ldbv.bayern.de/hilfe-v4.html#koordinatensyseme' target='_blank'>${translate('olMap_handler_mfp_distortion_more_info')}</a>`;
 					this._warnOnce(content);

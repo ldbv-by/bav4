@@ -368,6 +368,44 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout();
 			expect(centerPointSpy).toHaveBeenCalled();
 		});
+
+		it('warns if preview is not in print area', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			setup();
+
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			setBeingDragged(true);
+
+			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => { });
+			setBeingDragged(false);
+
+			await TestUtils.timeout(previewDelayTime + 10);
+			expect(warnOnceSpy).toHaveBeenCalled();
+		});
+
+		it('warns NOT if preview is in print area', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			setup();
+
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', true));
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			setBeingDragged(true);
+
+			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => { });
+			setBeingDragged(false);
+
+			await TestUtils.timeout(previewDelayTime + 10);
+			expect(warnOnceSpy).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('when deactivate', () => {
@@ -445,6 +483,7 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('_updateMfpPreview', () => {
+		const center = new Point([0, 0]);
 		it('creates a projected polygon', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
@@ -452,20 +491,33 @@ describe('OlMfpHandler', () => {
 			classUnderTest._pageSize = { width: 20, height: 20 };
 			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
 
-			classUnderTest._updateMfpPreview(classUnderTest._getVisibleCenterPoint());
+			classUnderTest._updateMfpPreview(center);
 
 			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Polygon));
 		});
 
-		it('skips the preview', () => {
+		it('skips the preview on smerc projection', () => {
 			setup();
 			const classUnderTest = new OlMfpHandler();
 			classUnderTest._map = setupMap();
 			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:3857');
 
-			classUnderTest._updateMfpPreview(classUnderTest._getVisibleCenterPoint());
+			classUnderTest._updateMfpPreview(center);
 
 			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Point));
+		});
+
+		it('skips the preview on non existing center ', () => {
+			setup();
+			const classUnderTest = new OlMfpHandler();
+			classUnderTest._map = setupMap();
+			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
+
+			classUnderTest._mfpBoundaryFeature.setGeometry(center);
+			classUnderTest._updateMfpPreview(null);
+
+			// the geometry of the mfpBoundaryFeature is NOT updated
+			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toBe(center);
 		});
 	});
 
