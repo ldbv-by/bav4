@@ -151,7 +151,7 @@ export class GeoResource {
 
 	/**
 	 * Sets the attribution for this GeoResource.
-	 * @param {Attribution|string|null} attribution
+	 * @param {Attribution|Array<Attribution>|string|null} attribution
 	 * @returns `this` for chaining
 	 */
 	setAttribution(attribution) {
