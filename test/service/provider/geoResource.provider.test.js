@@ -164,40 +164,35 @@ describe('BVV GeoResource provider', () => {
 
 	describe('_parseBvvAttributionDefinition', () => {
 
-		it('it returns null when basic attribution definition is missing', () => {
+		it('returns null when basic attribution definition is missing', () => {
 
 			const result = _parseBvvAttributionDefinition({});
 
 			expect(result).toBeNull();
 		});
 
-		it('it parses a basic attribution definition', () => {
+		it('parses a basic attribution definition', () => {
 
 			const attribution = {
-				copyright: {
+				copyright: [{
 					label: 'label',
 					url: 'url'
-				},
+				}],
 				description: 'description'
 			};
-			const attributionDefinition = {
-				attribution: {
-					copyright: attribution.copyright.label,
-					href: attribution.copyright.url,
-					description: attribution.description
-				}
-			};
-			const result = _parseBvvAttributionDefinition(attributionDefinition);
+			const result = _parseBvvAttributionDefinition({ attribution });
 
-			expect(result).toEqual([attribution]);
+			expect(result).toEqual(attribution);
 		});
 
-		it('it parses extended attribution definitions', () => {
+		it('parses extended attribution definitions', () => {
 
 			const attributionDefinition = {
 				attribution: {
-					copyright: 'label',
-					href: 'url',
+					copyright: [{
+						label: 'label',
+						url: 'url'
+					}],
 					description: 'description'
 				},
 				extendedAttributions: [
@@ -205,8 +200,10 @@ describe('BVV GeoResource provider', () => {
 
 					},
 					{
-						copyright: 'label1',
-						href: 'url1',
+						copyright: [{
+							label: 'label1',
+							url: 'url1'
+						}],
 						description: 'description1'
 					},
 					{
@@ -220,31 +217,31 @@ describe('BVV GeoResource provider', () => {
 			expect(result.length).toBe(3);
 			//completely from basic attribution definition
 			expect(result[0]).toEqual({
-				copyright: {
+				copyright: [{
 					label: 'label',
 					url: 'url'
-				},
+				}],
 				description: 'description'
 			});
 			//completely from extended attribution definition
 			expect(result[1]).toEqual({
-				copyright: {
+				copyright: [{
 					label: 'label1',
 					url: 'url1'
-				},
+				}],
 				description: 'description1'
 			});
 			//partially from extended attribution definition
 			expect(result[2]).toEqual({
-				copyright: {
+				copyright: [{
 					label: 'label',
 					url: 'url'
-				},
+				}],
 				description: 'description2'
 			});
 		});
 
-		it('it set extended attribution properties to NULL when not available', () => {
+		it('sets extended attribution properties to NULL when not available', () => {
 
 			const attributionDefinition = {
 				attribution: {
@@ -259,10 +256,7 @@ describe('BVV GeoResource provider', () => {
 
 			expect(result.length).toBe(1);
 			expect(result[0]).toEqual({
-				copyright: {
-					label: null,
-					url: null
-				},
+				copyright: null,
 				description: null
 			});
 
