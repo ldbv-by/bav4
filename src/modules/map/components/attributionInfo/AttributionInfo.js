@@ -53,7 +53,7 @@ export class AttributionInfo extends MvuElement {
 			.filter(attr => !!attr)
 			.flat()
 			.reverse()
-			.map(attr => Array.isArray(attr.copyright) ? attr.copyright : [attr?.copyright]) // copyright property may be an array
+			.map(attr => Array.isArray(attr.copyright) ? attr.copyright : [attr?.copyright]) // copyright property may be an array or null
 			.flat()
 			//remove null/undefined
 			.filter(copyr => !!copyr);
