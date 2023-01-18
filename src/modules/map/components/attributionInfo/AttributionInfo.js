@@ -44,18 +44,27 @@ export class AttributionInfo extends MvuElement {
 		}
 	}
 
-	_getAttributions(activeLayers, zoomLevel) {
-		const rawAttributions = activeLayers
+	_getCopyrights(activeLayers, zoomLevel) {
+
+		const availableCopyrights = activeLayers
 			.filter(l => l.visible)
 			.map(l => this._georesourceService.byId(l.geoResourceId)?.getAttribution(zoomLevel))
-			//remove null 'attr'
+			//remove null/undefined
 			.filter(attr => !!attr)
 			.flat()
-			.reverse();
+			.reverse()
+			.map(attr => Array.isArray(attr.copyright) ? attr.copyright : [attr?.copyright]) // copyright property may be an array
+			.flat()
+			//remove null/undefined
+			.filter(copyr => !!copyr);
 
-		// make attributions unique by 'label'
-		const labels = rawAttributions.map(a => a?.copyright?.label); //attr.copyright.label should be guaranteed
-		return rawAttributions.filter(({ copyright: { label } }, index) => !labels.includes(label, index + 1));
+		//make array unique by label
+		const uniqueCopyrights = availableCopyrights
+			.filter((copyr, index) => {
+				return availableCopyrights.findIndex(item => item.label === copyr.label) === index;
+			});
+
+		return uniqueCopyrights;
 	}
 
 	/**
@@ -66,8 +75,7 @@ export class AttributionInfo extends MvuElement {
 		const { activeLayers, zoomLevel, open } = model;
 
 		const attributionTemplates =
-			this._getAttributions(activeLayers, zoomLevel)
-				.flatMap(attribution => Array.isArray(attribution.copyright) ? attribution.copyright : [attribution.copyright]) // copyright field could also be an array
+			this._getCopyrights(activeLayers, zoomLevel)
 				.map((copyright, index, array) => {
 					const separator = index === array.length - 1 ? '' : ',';
 					return copyright.url

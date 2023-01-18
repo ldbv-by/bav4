@@ -17,8 +17,8 @@ describe('AttributionInfo', () => {
 		byId: () => { }
 	};
 	const mapServiceMock = {
-		getMinZoomLevel: () => {},
-		getMaxZoomLevel: () => {}
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 
 	const setup = (state) => {
@@ -35,7 +35,7 @@ describe('AttributionInfo', () => {
 	};
 
 
-	describe('_getAttributions', () => {
+	describe('_getCopyrights', () => {
 
 		it('return a set of valid attributions', async () => {
 
@@ -44,9 +44,14 @@ describe('AttributionInfo', () => {
 					case '0':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
 					case '1':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
+							copyright: [
+								{ label: `foo_${zoomLevel}` },
+								{ label: `bar_${zoomLevel}` }
+							]
+						}));
 					case '2':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`)]);
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`), getMinimalAttribution(`foo_${zoomLevel}`)]);
 					case '3':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
 					case '4':
@@ -65,11 +70,11 @@ describe('AttributionInfo', () => {
 			];
 
 			const element = await setup();
-			const attributions = element._getAttributions(layer, 5);
+			const copyrights = element._getCopyrights(layer, 5);
 
-			expect(attributions).toHaveSize(2);
-			expect(attributions[0].copyright.label).toBe('bar_5');
-			expect(attributions[1].copyright.label).toBe('foo_5');
+			expect(copyrights).toHaveSize(2);
+			expect(copyrights[0].label).toBe('bar_5');
+			expect(copyrights[1].label).toBe('foo_5');
 		});
 	});
 
