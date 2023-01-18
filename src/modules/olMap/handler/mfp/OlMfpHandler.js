@@ -13,6 +13,7 @@ import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 import { isNumber } from '../../../../utils/checks';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { html } from 'lit-html';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -190,7 +191,8 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview(center);
 				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea') ?? true;
 				if (!inPrintableArea) {
-					this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
+					const content = html`${translate('olMap_handler_mfp_distortion_warning')} <a href='https://www.ldbv.bayern.de/hilfe-v4.html#koordinatensyseme' target='_blank'>${translate('olMap_handler_mfp_distortion_more_info')}</a>`;
+					this._warnOnce(content);
 				}
 				this._previewDelayTimeoutId = null;
 			}, timeOut);
