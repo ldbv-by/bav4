@@ -452,7 +452,7 @@ describe('OlMfpHandler', () => {
 			classUnderTest._pageSize = { width: 20, height: 20 };
 			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:25832');
 
-			classUnderTest._updateMfpPreview();
+			classUnderTest._updateMfpPreview(classUnderTest._getVisibleCenterPoint());
 
 			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Polygon));
 		});
@@ -463,7 +463,7 @@ describe('OlMfpHandler', () => {
 			classUnderTest._map = setupMap();
 			spyOn(classUnderTest, '_getMfpProjection').and.returnValue('EPSG:3857');
 
-			classUnderTest._updateMfpPreview();
+			classUnderTest._updateMfpPreview(classUnderTest._getVisibleCenterPoint());
 
 			expect(classUnderTest._mfpBoundaryFeature.getGeometry()).toEqual(jasmine.any(Point));
 		});

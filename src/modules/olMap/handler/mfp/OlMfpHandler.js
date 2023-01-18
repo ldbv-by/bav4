@@ -72,7 +72,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			// not fired, if there is no geometry at all.
 			this._mfpBoundaryFeature.setGeometry(new Point(this._map.getView().getCenter()));
 			this._updateMfpPage(mfpSettings);
-			this._delayedUpdateMfpPreview();
+			this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
 		}
 
 		return this._mfpLayer;
@@ -101,10 +101,12 @@ export class OlMfpHandler extends OlLayerHandler {
 		return [
 			observe(store, state => state.mfp.current, (current) => {
 				this._updateMfpPage(current);
-				this._updateMfpPreview();
+				this._updateMfpPreview(this._getVisibleCenterPoint());
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.position.center, () => this._updateMfpPreview()),
+			observe(store, state => state.position.center, () => {
+				this._updateMfpPreview(this._getVisibleCenterPoint());
+			}),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
 				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
@@ -115,7 +117,7 @@ export class OlMfpHandler extends OlLayerHandler {
 				}
 
 			}),
-			observe(store, state => state.map.moveEnd, () => this._delayedUpdateMfpPreview()),
+			observe(store, state => state.map.moveEnd, () => this._delayedUpdateMfpPreview(this._getVisibleCenterPoint())),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
 				const clearPreview = () => {
 					// forcing the used renderfunction to skip the drawing of the geometry
@@ -126,7 +128,7 @@ export class OlMfpHandler extends OlLayerHandler {
 					}
 				};
 
-				const action = beingDragged ? clearPreview : () => this._delayedUpdateMfpPreview();
+				const action = beingDragged ? clearPreview : () => this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
 				action();
 			})
 		];
@@ -154,8 +156,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = toGeographicSize(layoutSize);
 	}
 
-	_updateMfpPreview() {
-		const center = this._getVisibleCenterPoint();
+	_updateMfpPreview(center) {
+		if (!center) {
+			return;
+		}
+
 		const skipPreview = () => {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
@@ -176,13 +181,13 @@ export class OlMfpHandler extends OlLayerHandler {
 		updateAction();
 	}
 
-	_delayedUpdateMfpPreview() {
+	_delayedUpdateMfpPreview(center) {
 		const timeOut = this._previewDelayTime;
 		const translate = (key) => this._translationService.translate(key);
 		if (!this._previewDelayTimeoutId) {
 			this._previewDelayTimeoutId = setTimeout(() => {
 				this._beingDragged = false;
-				this._updateMfpPreview();
+				this._updateMfpPreview(center);
 				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea') ?? true;
 				if (!inPrintableArea) {
 					this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
