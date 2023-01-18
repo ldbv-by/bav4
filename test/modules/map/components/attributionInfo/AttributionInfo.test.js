@@ -44,6 +44,7 @@ describe('AttributionInfo', () => {
 					case '0':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
 					case '1':
+						//array of copyright
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
 							copyright: [
 								{ label: `foo_${zoomLevel}` },
@@ -51,12 +52,18 @@ describe('AttributionInfo', () => {
 							]
 						}));
 					case '2':
+						// array of attribution
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`), getMinimalAttribution(`foo_${zoomLevel}`)]);
 					case '3':
+						// attribution is null
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
 					case '4':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
+						// copyright is null
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => ({ copyright: null }));
 					case '5':
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
+					case '6':
+						// layer is not visisble
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
 				}
 			});
@@ -66,7 +73,8 @@ describe('AttributionInfo', () => {
 				{ ...createDefaultLayerProperties(), id: 'id2', geoResourceId: '2' },
 				{ ...createDefaultLayerProperties(), id: 'id3', geoResourceId: '3' },
 				{ ...createDefaultLayerProperties(), id: 'id4', geoResourceId: '4' },
-				{ ...createDefaultLayerProperties(), id: 'id5', geoResourceId: '5', visible: false }
+				{ ...createDefaultLayerProperties(), id: 'id4', geoResourceId: '5' },
+				{ ...createDefaultLayerProperties(), id: 'id5', geoResourceId: '6', visible: false }
 			];
 
 			const element = await setup();
