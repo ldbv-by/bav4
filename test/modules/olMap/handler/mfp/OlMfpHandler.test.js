@@ -22,6 +22,8 @@ import RenderEvent from 'ol/render/Event';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
 import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action';
 import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { observe } from '../../../../../src/utils/storeUtils';
 
 
 
@@ -66,7 +68,7 @@ describe('OlMfpHandler', () => {
 		const mfpState = {
 			mfp: state
 		};
-		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer, map: mapReducer, pointer: pointerReducer });
+		const store = TestUtils.setupStoreAndDi(mfpState, { mfp: mfpReducer, position: positionReducer, map: mapReducer, pointer: pointerReducer, notifications: notificationReducer });
 		$injector.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('ConfigService', configService)
 			.registerSingleton('MapService', mapServiceMock)
@@ -406,6 +408,38 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout(previewDelayTime + 10);
 			expect(warnOnceSpy).not.toHaveBeenCalled();
 		});
+
+		it('warns only ONCE', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			const store = setup();
+			const onChangeNotificationSpy = jasmine.createSpy();
+			observe(store, (state) => state.notifications.latest, onChangeNotificationSpy);
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			expect(handler._alreadyWarned).toBeFalse();
+
+			setBeingDragged(true);
+
+			setBeingDragged(false);
+			await TestUtils.timeout(previewDelayTime + 10);
+
+			expect(handler._alreadyWarned).toBeTrue();
+			setBeingDragged(true);
+
+			setBeingDragged(false);
+			await TestUtils.timeout(previewDelayTime + 10);
+
+			expect(handler._alreadyWarned).toBeTrue();
+			expect(warnOnceSpy).toHaveBeenCalledTimes(2);
+			expect(onChangeNotificationSpy).toHaveBeenCalledTimes(1);
+		});
+
+
 	});
 
 	describe('when deactivate', () => {

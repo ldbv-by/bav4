@@ -116,12 +116,11 @@ export class OlMfpHandler extends OlLayerHandler {
 				if (!this._previewDelayTimeoutId) {
 					this._beingDragged = true;
 				}
-
 			}),
 			observe(store, state => state.map.moveEnd, () => this._delayedUpdateMfpPreview(this._getVisibleCenterPoint())),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
 				const clearPreview = () => {
-					// forcing the used renderfunction to skip the drawing of the geometry
+					// forcing the used render function to skip the drawing of the geometry
 					this._beingDragged = beingDragged;
 					if (this._previewDelayTimeoutId) {
 						clearTimeout(this._previewDelayTimeoutId);
