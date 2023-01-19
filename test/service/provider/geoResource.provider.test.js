@@ -378,7 +378,7 @@ describe('BVV GeoResource provider', () => {
 			expect(geoResource.id).toBe(wmsDefinition.id);
 		});
 
-		it('rejects when type is unknwon', async () => {
+		it('rejects when type is unknown', async () => {
 			const id = 'foo';
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
