@@ -155,6 +155,26 @@ export const getAzimuth = (geometry) => {
 	return (360 + (factor * rad * 180 / Math.PI)) % 360;
 };
 
+/**
+ * Calculates the median azimuth-angle of a convex quadrilateral (polygon).
+ * The first and the third segment are defined as the top- and bottom-segment,
+ * which are used to calculate the azimuth-angle
+ * @param {Polygon} polygon the polygon, with shape-properties of a convex quadrilateral
+ * @returns {number} the azimuth-angle in radian
+ */
+export const getAzimuthFrom = (polygon) => {
+	if (!polygon || polygon.getType() !== 'Polygon') {
+		return null;
+	}
+	const coordinates = polygon.getCoordinates()[0];
+	const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+	const topAngle = getAngle(coordinates[0], coordinates[1]);
+	const bottomAngle = getAngle(coordinates[3], coordinates[2]);
+
+	const angle = (topAngle + bottomAngle) / 2;
+	return angle;
+};
+
 
 /**
  * Calculates delta-value as a factor of the length of a provided geometry,

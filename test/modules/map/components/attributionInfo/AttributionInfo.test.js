@@ -17,8 +17,8 @@ describe('AttributionInfo', () => {
 		byId: () => { }
 	};
 	const mapServiceMock = {
-		getMinZoomLevel: () => {},
-		getMaxZoomLevel: () => {}
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 
 	const setup = (state) => {
@@ -35,7 +35,7 @@ describe('AttributionInfo', () => {
 	};
 
 
-	describe('_getAttributions', () => {
+	describe('_getCopyrights', () => {
 
 		it('return a set of valid attributions', async () => {
 
@@ -44,14 +44,26 @@ describe('AttributionInfo', () => {
 					case '0':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
 					case '1':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+						//array of copyright
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
+							copyright: [
+								{ label: `foo_${zoomLevel}` },
+								{ label: `bar_${zoomLevel}` }
+							]
+						}));
 					case '2':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`)]);
+						// array of attribution
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`), getMinimalAttribution(`foo_${zoomLevel}`)]);
 					case '3':
+						// attribution is null
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
 					case '4':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
+						// copyright is null
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => ({ copyright: null }));
 					case '5':
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
+					case '6':
+						// layer is not visisble
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
 				}
 			});
@@ -61,15 +73,16 @@ describe('AttributionInfo', () => {
 				{ ...createDefaultLayerProperties(), id: 'id2', geoResourceId: '2' },
 				{ ...createDefaultLayerProperties(), id: 'id3', geoResourceId: '3' },
 				{ ...createDefaultLayerProperties(), id: 'id4', geoResourceId: '4' },
-				{ ...createDefaultLayerProperties(), id: 'id5', geoResourceId: '5', visible: false }
+				{ ...createDefaultLayerProperties(), id: 'id4', geoResourceId: '5' },
+				{ ...createDefaultLayerProperties(), id: 'id5', geoResourceId: '6', visible: false }
 			];
 
 			const element = await setup();
-			const attributions = element._getAttributions(layer, 5);
+			const copyrights = element._getCopyrights(layer, 5);
 
-			expect(attributions).toHaveSize(2);
-			expect(attributions[0].copyright.label).toBe('bar_5');
-			expect(attributions[1].copyright.label).toBe('foo_5');
+			expect(copyrights).toHaveSize(2);
+			expect(copyrights[0].label).toBe('bar_5');
+			expect(copyrights[1].label).toBe('foo_5');
 		});
 	});
 

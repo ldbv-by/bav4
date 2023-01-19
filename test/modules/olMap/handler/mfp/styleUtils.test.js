@@ -1,11 +1,11 @@
 
 import { Feature } from 'ol';
-import { Polygon } from 'ol/geom';
+import { Geometry, Point, Polygon } from 'ol/geom';
 import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
-import { Style, Text as TextStyle } from 'ol/style';
-import { createMapMaskFunction, mfpTextStyleFunction, nullStyleFunction, createThumbnailStyleFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import { Stroke, Style } from 'ol/style';
+import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 
@@ -14,162 +14,99 @@ describe('mfp style utility functions', () => {
 		return canvas.getContext('2d');
 	};
 
-	describe('mfpTextStyleFunction', () => {
-
-		it('should create a text-style ', () => {
-			const label = 'foo';
-			const textStyle = mfpTextStyleFunction(label).getText();
-
-			expect(textStyle).toEqual(jasmine.any(TextStyle));
-			expect(textStyle.getText()).toBe(label);
-			expect(textStyle.getFont()).toBe('normal 70px sans-serif');
-			expect(textStyle.getFill()).toBeTruthy();
-			expect(textStyle.getStroke()).toBeTruthy();
-			expect(textStyle.getScale()).toBe(1);
-			expect(textStyle.getOverflow()).toBeFalse();
-			expect(textStyle.getPlacement()).toBe('point');
-		});
-
-		it('should create a text-style with offset ', () => {
-			expect(mfpTextStyleFunction('foo', 0, 1).getText().getOffsetY()).toBe(-35);
-			expect(mfpTextStyleFunction('foo', 0).getText().getOffsetY()).toBe(-35);
-			expect(mfpTextStyleFunction('foo').getText().getOffsetY()).toBe(-35);
-
-			expect(mfpTextStyleFunction('foo', 0, 2).getText().getOffsetY()).toBe(-70);
-			expect(mfpTextStyleFunction('foo', 1, 2).getText().getOffsetY()).toBe(0);
-
-
-			expect(mfpTextStyleFunction('foo', 0, 3).getText().getOffsetY()).toBe(-105);
-			expect(mfpTextStyleFunction('foo', 1, 3).getText().getOffsetY()).toBe(-35);
-			expect(mfpTextStyleFunction('foo', 2, 3).getText().getOffsetY()).toBe(35);
-		});
-	});
-
 	describe('createThumbnailStyleFunction', () => {
+		const beingDraggedCallback = () => false;
+		const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+		const geometry = new Polygon(pixelCoordinates);
+		const feature = new Feature({ geometry: geometry });
+		it('should create a preview-style with renderer-function ', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			expect(styles).toHaveSize(1);
+			expect(styles).toEqual([jasmine.any(Style)]);
 
-		it('should create a style ', () => {
+			const renderStyle = styles[0];
+			const renderFunction = renderStyle.getRenderer();
 
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
-			expect(styles).toHaveSize(3);
-			expect(styles).toEqual([jasmine.any(Style), jasmine.any(Style), jasmine.any(Style)]);
+			expect(renderFunction).toEqual(jasmine.any(Function));
 		});
 
-		it('should create a base style with a stroke style ', () => {
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
+		it('should draw to context with preview-style', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, closePath: () => { }, moveTo: () => { }, lineTo: () => { }, setLineDash: () => { } };
+			const stateMock = { feature: feature, context: contextMock, geometry: geometry };
+			const renderStyle = styles.find(style => style.getRenderer());
 
-			expect(styles).toHaveSize(3);
-			const style = styles[0];
-			expect(style.getStroke().getColor()).toEqual([9, 157, 220, 0.3]);
-			expect(style.getStroke().getWidth()).toBe(3);
+			const contextSpy = spyOn(contextMock, 'moveTo');
+			const customRenderer = renderStyle.getRenderer();
+			customRenderer(pixelCoordinates, stateMock);
+
+			expect(contextSpy).toHaveBeenCalled();
 		});
 
+		it('should have a preview-style with renderer-function, which uses customContextRenderFunction', () => {
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			const stateMock = { feature: feature, context: null, geometry: geometry, pixelRatio: 1, customContextRenderFunction: () => { } };
+			const spy = spyOn(stateMock, 'customContextRenderFunction');
 
-		it('should create a base style with a text style ', () => {
-			const styles = createThumbnailStyleFunction('foo', 'bar', []);
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
 
-			expect(styles).toHaveSize(3);
-			const style = styles[0];
-			expect(style.getText().getText()).toEqual('  foo');
-			expect(style.getText().getTextAlign()).toBe('left');
-			expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
-			expect(style.getText().getStroke().getWidth()).toBe(2);
-			expect(style.getText().getFill().getColor()).toEqual([44, 90, 146, 1]);
+			expect(spy).toHaveBeenCalled();
 		});
 
-		describe('with a warnstyle', () => {
+		it('should have a preview-style with renderer-function, which skips rendering, while beingDragged=true', () => {
+			const state = { beingDragged: true };
+			const styles = createThumbnailStyleFunction('foo', () => state.beingDragged);
+			const stateMock = { feature: feature, context: null, geometry: geometry, pixelRatio: 1, customContextRenderFunction: () => { } };
+			const spy = spyOn(stateMock, 'customContextRenderFunction');
+			const renderStyle = styles[0];
 
-			it('should have a stroke style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+			expect(spy).not.toHaveBeenCalled();
 
-				const style = styles[1];
+			state.beingDragged = false;
 
-				expect(style.getStroke().getColor()).toEqual([255, 100, 100, 1]);
-				expect(style.getStroke().getWidth()).toBe(4);
-			});
-			it('should have a text style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar', []);
-
-				const style = styles[1];
-
-				expect(style.getText().getText()).toEqual('bar');
-				expect(style.getText().getTextAlign()).toBe('center');
-				expect(style.getText().getStroke().getColor()).toEqual([255, 255, 255, 0.8]);
-				expect(style.getText().getStroke().getWidth()).toBe(3);
-				expect(style.getText().getFill().getColor()).toEqual([250, 50, 50, 1]);
-			});
-
-			it('should have a geometry function ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
-
-				const style = styles[1];
-
-				expect(style.getGeometry()).toEqual(jasmine.any(Function));
-			});
-
-			it('should have a geometry function validating the extent ', () => {
-				const featureWithinOrEqualsStyleExtent = new Feature();
-				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
-
-				const featureIntersectingStyleExtent = new Feature();
-				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
-
-				const featureDisjoiningStyleExtent = new Feature();
-				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
-
-				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
-				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
-				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
-
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
-
-				const style = styles[1];
-				const geometryFunction = style.getGeometry();
-
-				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
-				expect(geometryFunction(featureIntersectingStyleExtent)).toBe(geometryIntersectingMock);
-				expect(geometryFunction(featureDisjoiningStyleExtent)).toBe(geometryDisjoiningMock);
-			});
+			renderStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+			expect(spy).toHaveBeenCalled();
 		});
 
-		describe('with a areaOfDistortionStyle', () => {
+		it('should use the basestyle for a feature in the printable area', () => {
+			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			let receivedStyle = null;
+			const stateMock = {
+				feature: new Feature(), context: null, geometry: new Point([0, 0]), pixelRatio: 1, customContextRenderFunction: (geometry, style) => {
+					receivedStyle = style;
+				}
+			};
+			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
 
-			it('should have a pattern as fill style ', () => {
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()(pixelCoordinates, stateMock);
 
-				const style = styles[2];
-
-				expect(style.getFill().getColor()).toEqual(jasmine.any(CanvasPattern));
-			});
-
-			it('should have a geometry function validating the extent and creating a overlapping polygon', () => {
-				const featureWithinOrEqualsStyleExtent = new Feature();
-				const geometryWithinOrEqualsMock = { getExtent: () => [0, 0, 1, 1] };
-
-				const featureIntersectingStyleExtent = new Feature();
-				const geometryIntersectingMock = { getExtent: () => [0, 0, 2, 2] };
-
-				const featureDisjoiningStyleExtent = new Feature();
-				const geometryDisjoiningMock = { getExtent: () => [2, 2, 3, 3] };
-
-				spyOn(featureWithinOrEqualsStyleExtent, 'getGeometry').and.callFake(() => geometryWithinOrEqualsMock);
-				spyOn(featureIntersectingStyleExtent, 'getGeometry').and.callFake(() => geometryIntersectingMock);
-				spyOn(featureDisjoiningStyleExtent, 'getGeometry').and.callFake(() => geometryDisjoiningMock);
-
-				const styles = createThumbnailStyleFunction('foo', 'bar', [0, 0, 1, 1]);
-
-				const style = styles[2];
-				const geometryFunction = style.getGeometry();
-
-
-				// we test only the creation of a polygon, not the specific coordinates due to usage of
-				// openlayers internal geometry functions for building intersections
-				expect(geometryFunction(featureWithinOrEqualsStyleExtent)).toBeUndefined();
-				expect(geometryFunction(featureIntersectingStyleExtent)).toEqual(jasmine.any(Polygon));
-				expect(geometryFunction(featureDisjoiningStyleExtent)).toEqual(jasmine.any(Polygon));
-			});
+			expect(spy).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Style));
+			expect(receivedStyle.getStroke().getColor()).toEqual([9, 157, 220, 0.5]);
+			expect(receivedStyle.getStroke().getWidth()).toBe(3);
 		});
 
+		it('should use the warnstyle for a feature out of the printable area', () => {
+			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
+			const styles = createThumbnailStyleFunction('foo', beingDraggedCallback);
+			let receivedStyle = null;
+			const stateMock = {
+				feature: new Feature({ 'inPrintableArea': false }), context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: (geometry, style) => {
+					receivedStyle = style;
+				}
+			};
+			const spy = spyOn(stateMock, 'customContextRenderFunction').and.callThrough();
 
+			const renderStyle = styles[0];
+			renderStyle.getRenderer()(pixelCoordinates, stateMock);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Style));
+			expect(receivedStyle.getStroke().getColor()).toEqual([255, 100, 100, 0.5]);
+			expect(receivedStyle.getStroke().getWidth()).toBe(3);
+		});
 	});
 
 	describe('nullStyleFunction', () => {
@@ -195,15 +132,7 @@ describe('mfp style utility functions', () => {
 
 	describe('createMapMaskFunction', () => {
 
-		const createFeature = (name) => {
-			const geometry = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
-			const feature = new Feature({ geometry: geometry });
-			const pageBuffer = geometry.clone();
-			feature.set('name', name);
-			feature.set('page_buffer', pageBuffer);
-
-			return feature;
-		};
+		const pixelCoordinatesCallBack = () => [[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]];
 
 		const createMapMock = () => {
 			return {
@@ -213,8 +142,7 @@ describe('mfp style utility functions', () => {
 
 		it('creates a function', () => {
 			const mapMock = {};
-			const feature = new Feature();
-			const renderFunction = createMapMaskFunction(mapMock, feature);
+			const renderFunction = createMapMaskFunction(mapMock, pixelCoordinatesCallBack);
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
 		});
@@ -229,65 +157,26 @@ describe('mfp style utility functions', () => {
 				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState, extent: [0, 0, 10, 10]
 			};
 		};
+		const getPostRenderEvent = (time, context) => new RenderEvent('postrender', transform, setupFrameState(time), context);
 
-		it('draws a innerPolygon with mfpBoundaryStyle', () => {
-			const expectedStrokeColor = 'rgba(9,157,220,1)';
-			const expectedStrokeWidth = 3;
-			const feature = createFeature('');
+		it('draws a mask', () => {
+			const expectedFillColor = 'rgba(0, 5, 25, 0.75)';
 			const mapMock = createMapMock();
 			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const strokeStylePropertySpy = spyOnProperty(context, 'strokeStyle', 'set').and.callThrough();
-			const strokeWidthPropertySpy = spyOnProperty(context, 'lineWidth', 'set').and.callThrough();
-
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(strokeStylePropertySpy).toHaveBeenCalledWith(expectedStrokeColor);
-			expect(strokeWidthPropertySpy).toHaveBeenCalledWith(expectedStrokeWidth);
-		});
-
-		it('draws a outerPolygon with maskFeatureStyle', () => {
-			const expectedFillColor = 'rgba(0,0,0,0.4)';
-			const feature = createFeature('');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
 
 			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const mapSizeForMaskSpy = spyOn(mapMock, 'getSize').and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
+			const moveToSpy = spyOn(context, 'moveTo').and.callThrough();
 
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
+			const renderFunction = createMapMaskFunction(mapMock, pixelCoordinatesCallBack);
+			renderFunction(getPostRenderEvent(0, context));
 
 			expect(renderFunction).toEqual(jasmine.any(Function));
 			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(mapSizeForMaskSpy).toHaveBeenCalled();
+
+			// for outer drawn polygon
+			expect(moveToSpy).toHaveBeenCalledWith(0, 0);
+			// for inner drawn polygon
+			expect(moveToSpy).toHaveBeenCalledWith(5, 5);
 		});
-
-		it('draws a pagePolygon with mfpPageStyle', () => {
-			const expectedFillColor = 'rgba(255,255,255,0.4)';
-			const feature = createFeature('');
-			const mapMock = createMapMock();
-			const context = get2dContext();
-			spyOn(context, 'measureText').and.callFake(() => 10);
-
-			const fillStylePropertySpy = spyOnProperty(context, 'fillStyle', 'set').and.callThrough();
-			const featurePropertySpy = spyOn(feature, 'get').withArgs(jasmine.any(String)).and.callThrough();
-			const getPostRenderEvent = (time) => new RenderEvent('postrender', transform, setupFrameState(time), context);
-
-			const renderFunction = createMapMaskFunction(mapMock, feature);
-			renderFunction(getPostRenderEvent(0));
-
-			expect(renderFunction).toEqual(jasmine.any(Function));
-			expect(fillStylePropertySpy).toHaveBeenCalledWith(expectedFillColor);
-			expect(featurePropertySpy).toHaveBeenCalledWith('page_buffer');
-		});
-
 	});
 });
