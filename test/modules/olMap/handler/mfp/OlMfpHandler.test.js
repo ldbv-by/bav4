@@ -388,7 +388,7 @@ describe('OlMfpHandler', () => {
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
-			expect(warnOnceSpy).toHaveBeenCalledWith(jasmine.objectContaining({ '_$litType$': jasmine.anything() }));
+			expect(warnOnceSpy).toHaveBeenCalledWith(jasmine.any(String));
 		});
 
 		it('warns NOT if preview is in print area', async () => {
@@ -437,7 +437,7 @@ describe('OlMfpHandler', () => {
 			expect(onChangeNotificationSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('warns with a TemplateResult', async () => {
+		it('warns with a i18n message', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			const store = setup();
@@ -451,9 +451,7 @@ describe('OlMfpHandler', () => {
 			setBeingDragged(false);
 			await TestUtils.timeout(previewDelayTime + 10);
 
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			const contentElement = TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content);
-			expect(contentElement.innerText).toBe('olMap_handler_mfp_distortion_warning');
+			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_distortion_warning');
 		});
 
 	});

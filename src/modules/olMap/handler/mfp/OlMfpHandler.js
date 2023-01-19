@@ -13,8 +13,6 @@ import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 import { isNumber } from '../../../../utils/checks';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
-import distorsionSvg from './assets/distorsion.svg';
-import { html } from 'lit-html';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -192,8 +190,7 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview(center);
 				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
 				if (!inPrintableArea) {
-					const content = html`<ba-icon .icon='${distorsionSvg}'></ba-icon>${translate('olMap_handler_mfp_distortion_warning')}`;
-					this._warnOnce(content);
+					this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
 				}
 				this._previewDelayTimeoutId = null;
 			}, timeOut);
