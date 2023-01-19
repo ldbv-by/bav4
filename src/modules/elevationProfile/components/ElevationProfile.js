@@ -11,6 +11,8 @@ const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
 const Enrich_Profile_Data = 'enrich_profile_data';
 
+const Update_Media = 'update_media';
+
 /**
  * different types of slope
  * @enum
@@ -31,7 +33,9 @@ export class ElevationProfile extends MvuElement {
 			data: null,
 			selectedAttribute: null,
 			darkSchema: null,
-			distUnit: null
+			distUnit: null,
+			portrait: false,
+			minWidth: false
 		});
 		this._chart = null;
 		this._altitudeProfileAttributeTypes = [];
@@ -62,7 +66,7 @@ export class ElevationProfile extends MvuElement {
 	 */
 	onInitialize() {
 		this.style.width = '100%';
-		this.style.height = '14em';
+		// this.style.height = '20em';
 
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -72,6 +76,7 @@ export class ElevationProfile extends MvuElement {
 			(state) => state.elevationProfile.coordinates,
 			(coordinates) => this._getAltitudeProfile(coordinates)
 		);
+		this.observe(state => state.media, data => this.signal(Update_Media, data), true);
 	}
 
 	/**
@@ -88,6 +93,12 @@ export class ElevationProfile extends MvuElement {
 
 			case Update_Selected_Attribute:
 				return { ...model, selectedAttribute: data };
+			case Update_Media:
+				return {
+					...model,
+					portrait: data.portrait,
+					minWidth: data.minWidth
+				};
 		}
 	}
 
@@ -102,6 +113,9 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
+
+		const { portrait, minWidth } = model;
+
 		const translate = (key) => this._translationService.translate(key);
 
 		if (!model.profile) {
@@ -121,33 +135,55 @@ export class ElevationProfile extends MvuElement {
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
+		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
+
+		const getMinWidthClass = () => (minWidth) ? 'is-desktop' : 'is-tablet';
+
 		return html`
 			<style>
 				${css}
 			</style>
-
-			<div class="chart-container" style="position: relative; height:100%; ">
-				<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
-
-				<div class="flex" id="route-altitude-chart-footer">
-					<span id="route-elevation-chart-footer-sumUp">${translate('elevationProfile_sumUp')}: ${sumUp}</span>
-					<span id="route-elevation-chart-footer-sumDown">${translate('elevationProfile_sumDown')}: ${sumDown}</span>
-					<span id="route-elevation-chart-footer-verticalHeight">${translate('elevationProfile_verticalHeight')}: ${verticalHeight}</span>
-					<span id="route-elevation-chart-footer-highestPoint">${translate('elevationProfile_highestPoint')}: ${highestPoint}</span>
-					<span id="route-elevation-chart-footer-lowestPoint">${translate('elevationProfile_lowestPoint')}: ${lowestPoint}</span>
-					<span id="route-elevation-chart-footer-linearDistance">${translate('elevationProfile_linearDistance')}: ${linearDistance}</span>
-					<span>
-						<select id="attrs" @change=${onChange}>
-							${model.profile.attrs.map((attr) => html`
-									<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
-										${translate('elevationProfile_' + attr.id)}
-									</option>
-								`)}
-						</select>
-					</span>
+			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
+				<span class="profile__options">
+					<select id="attrs" @change=${onChange}>
+						${model.profile.attrs.map((attr) => html`
+								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
+									${translate('elevationProfile_' + attr.id)}
+								</option>
+							`)}
+					</select>
+				</span>
+				<div class="chart-container" style="">
+					<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
+				</div>
+				<div class="profile__data" id="route-altitude-chart-footer" >
+					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
+						<div class="profile__icon up"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp"> ${sumUp} m</div>
+					</div>
+					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
+						<div class="profile__icon down"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown" > ${sumDown} m</div>
+					</div>
+					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
+						<div class="profile__icon highest"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint" >${highestPoint} m</div>
+					</div>
+					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
+						<div class="profile__icon lowest"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint" >${lowestPoint} m</div>
+					</div>
+					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
+						<div class="profile__icon height"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight" >${verticalHeight} m</div>
+					</div>
+					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
+						<div class="profile__icon distance"></div>
+						<div class="profile__text" id="route-elevation-chart-footer-linearDistance" >${linearDistance} m</div>
+					</div>
 				</div>
 			</div>
-		`;
+	`;
 	}
 
 	_enritchAltsArrayWithAttributeData(attribute, profile) {
@@ -444,11 +480,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get SLOPE_FLAT_COLOR_DARK() {
-		return '#66eeff';
+		return 'lime';
 	}
 
 	static get SLOPE_FLAT_COLOR_LIGHT() {
-		return '#eeff66';
+		return 'green';
 	}
 
 	static get SLOPE_FLAT_COLOR() {
@@ -459,11 +495,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get SLOPE_STEEP_COLOR_DARK() {
-		return '#ee4444';
+		return 'red';
 	}
 
 	static get SLOPE_STEEP_COLOR_LIGHT() {
-		return '#4444ee';
+		return 'red';
 	}
 
 	static get SLOPE_STEEP_COLOR() {
@@ -474,11 +510,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get BACKGROUND_COLOR_DARK() {
-		return '#888888';
+		return 'rgb(38, 74, 89)';
 	}
 
 	static get BACKGROUND_COLOR_LIGHT() {
-		return '#ddddff';
+		return '#e3eef4';
 	}
 
 	static get BACKGROUND_COLOR() {
@@ -489,11 +525,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get BORDER_COLOR_DARK() {
-		return '#886644';
+		return 'rgb(9, 157, 220)';
 	}
 
 	static get BORDER_COLOR_LIGHT() {
-		return '#AA2266';
+		return '#2c5a93';
 	}
 
 	static get BORDER_COLOR() {

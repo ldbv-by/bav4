@@ -1,10 +1,154 @@
-.profile {
+/* .profile {
 	margin: 0.1em;
+} */
+
+
+.profile.is-portrait{
+	height:20em
 }
 
-.flex {
-	display: flex;
+.profile.is-landscape {
+	height:15em
+}
 
-	align-items: center;
-	justify-content: space-between;
+.is-portrait .chart-container{
+	position: relative;
+	 height:14em;
+	 width:100%; 
+	 display: inline-block 
+}
+.is-landscape  .chart-container{
+	position: relative;
+	 height:14em;
+	 width:89%; 
+	 display: inline-block 
+}
+
+.is-portrait .profile__data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;    
+    position: relative;
+}
+.is-landscape .profile__data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    display: inline-block;
+    width: 11%;
+    position: relative;
+	float:right;
+}
+
+/* ___________	neu	_________________ */
+
+.profile__options{
+    width: 7em;
+    display: block;
+}
+
+.is-portrait  .profile__box{
+    height: 4em;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px dotted var(--header-background-color);
+    width: 100%;
+}
+.is-landscape  .profile__box{
+    height: 4em;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px dotted var(--header-background-color);
+    width: 100%;
+    width: 50%;
+	float: left;
+}
+
+.profile__box:first-child {
+	border-left: 0;
+}
+
+.profile__icon{
+    height: 2em;
+    min-width: 2em;
+	background: var(--primary-color);
+	display: block;
+	margin: auto;
+}
+
+.profile__text{
+    font-weight: bold;
+    text-align: center;
+    margin-top: .5em;
+	margin: 0;
+	font-size:.9rem;
+	color: var(--text1);
+	cursor: pointer;
+}
+
+.data-container{
+	position:relative;
+	position: absolute;
+	display: flex;
+	flex-wrap: wrap;
+	width:10%;
+	right:0;
+	top:0;
+	margin-top:2em;
+}
+
+.is-tablet .profile__text{
+	font-size:.8rem;
+}
+
+.is-tablet .profile__icon{
+	height: 1.5em;
+    min-width: 1.5em;
+}
+
+.is-portrait.is-tablet .profile__text{
+	font-size:1rem;
+}
+.is-portrait.is-tablet .profile__icon{
+	height: 2em;
+    min-width: 2em;
+}
+
+
+.highest{
+	mask: url('assets/chevron-up.svg');
+	-webkit-mask: url('assets/chevron-up.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.lowest{
+	mask: url('assets/chevron-down.svg');
+	-webkit-mask: url('assets/chevron-down.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.up{
+	mask: url('assets/arrow-down-right.svg');
+	-webkit-mask: url('assets/arrow-up-right.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.down{
+	mask: url('assets/arrow-down-right.svg');
+	-webkit-mask: url('assets/arrow-down-right.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.height{
+	mask: url('assets/arrow-down-up.svg');
+	-webkit-mask: url('assets/arrow-down-up.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.distance{
+	mask: url('assets/arrow-left-right.svg');
+	-webkit-mask: url('assets/arrow-left-right.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
 }
