@@ -88,7 +88,8 @@ describe('mfp style utility functions', () => {
 			renderStyle.getRenderer()(pixelCoordinates, renderState);
 
 			expect(spy).toHaveBeenCalled();
-			expect(renderState.context.strokeStyle).toBe('rgba(255, 100, 100, 0.5)');
+			expect(renderState.context.strokeStyle).toBe('rgba(255, 50, 50, 0.8)');
+			expect(renderState.context.lineWidth).toBe(5);
 		});
 	});
 

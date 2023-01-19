@@ -11,22 +11,23 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 		[...pixelCoordinates].slice(1).forEach(c => context.lineTo(c[0], c[1]));
 		context.closePath();
 
-		context.lineWidth = 3;
-		context.strokeStyle = style;
+		context.lineWidth = style.lineWidth;
+		context.strokeStyle = style.strokeStyle;
 		context.stroke();
 	};
 
 	const renderStyle = new Style({
 		renderer: (coordinates, state) => {
 			const beingDragged = beingDraggedCallback();
-
-
 			if (!beingDragged) {
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
-				const strokeStyle = inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(255, 100, 100, 0.5)';
+				const style = {
+					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(255, 50, 50, 0.8)',
+					lineWidth: inPrintableArea ? 3 : 5
+				};
 
 				const pixelCoordinates = isPolygonArray(coordinates) ? coordinates[0] : coordinates;
-				drawBoundary(state.context, pixelCoordinates, strokeStyle);
+				drawBoundary(state.context, pixelCoordinates, style);
 			}
 		}
 	});
