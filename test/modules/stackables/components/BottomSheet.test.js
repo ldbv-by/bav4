@@ -60,6 +60,7 @@ describe('BottomSheet', () => {
 
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 		});
 
 		it('displays the bottom sheet content from a lit-html template-result', async () => {
@@ -69,6 +70,7 @@ describe('BottomSheet', () => {
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 		});
 	});
 
@@ -143,6 +145,21 @@ describe('BottomSheet', () => {
 
 			toggle();
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(1);
+		});
+
+		it('when close button clicked', async () => {
+			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+
+			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
+			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
+
+			expect(contentElement.innerText).toContain('FooBar');
+
+			closeButton.click();
+
+			expect(contentElement.innerText).toContain('FooBar');
+
 		});
 	});
 

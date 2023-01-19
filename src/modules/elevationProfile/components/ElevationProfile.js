@@ -159,11 +159,11 @@ export class ElevationProfile extends MvuElement {
 				<div class="profile__data" id="route-altitude-chart-footer" >
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp"> ${sumUp} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${sumUp} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown" > ${sumDown} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown" >${sumDown} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
