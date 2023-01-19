@@ -24,9 +24,6 @@ import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action
 import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
-import { isTemplateResult } from '../../../../../src/utils/checks';
-
-
 
 
 describe('OlMfpHandler', () => {
