@@ -175,7 +175,7 @@ describe('EnvironmentService', () => {
 		it('detects embedded flag via query parameter', () => {
 			let mockWindow = {
 				location: {
-					search: '?foo=bar'
+					pathname: '/foo/bar'
 				}
 			};
 			let instanceUnderTest = new EnvironmentService(mockWindow);
@@ -183,7 +183,25 @@ describe('EnvironmentService', () => {
 
 			mockWindow = {
 				location: {
-					search: '?embed=true'
+					pathname: '/embed'
+				}
+			};
+
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+
+			mockWindow = {
+				location: {
+					pathname: '/embed/'
+				}
+			};
+
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+
+			mockWindow = {
+				location: {
+					pathname: '/embed/index.html'
 				}
 			};
 

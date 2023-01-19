@@ -89,7 +89,7 @@ export class EnvironmentService {
 	 * @returns `true` if we are in embedded mode
 	 */
 	isEmbedded() {
-		return this.getUrlParams().get('embed') === 'true';
+		return /\/embed[/]?(index.html)?$/.test(this._window.location.pathname);
 	}
 
 	/**
