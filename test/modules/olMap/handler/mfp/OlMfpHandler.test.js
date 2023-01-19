@@ -421,6 +421,7 @@ describe('OlMfpHandler', () => {
 			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
+			warnOnceSpy.calls.reset();
 
 			setBeingDragged(true);
 
