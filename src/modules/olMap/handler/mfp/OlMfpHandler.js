@@ -165,7 +165,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const skipPreview = () => {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
-			this._mfpBoundaryFeature.set('inPrintableArea', false);
+			this._mfpBoundaryFeature.set('inPrintableArea', true);
 			this._mfpBoundaryFeature.setGeometry(center);
 		};
 		const createProjectedGeometry = () => {
