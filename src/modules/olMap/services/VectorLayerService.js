@@ -44,10 +44,12 @@ export const mapVectorSourceTypeToFormat = (sourceType) => {
 export class VectorLayerService {
 
 	_updateStyle(olFeature, olLayer, olMap) {
-		const { StyleService: styleService } = $injector.inject('StyleService');
+		const { StyleService: styleService, StoreService: storeService } = $injector.inject('StyleService', 'StoreService');
+		const { layers: { active } } = storeService.getStore().getState();
 		styleService.updateStyle(olFeature, olMap, {
 			visible: olLayer.getVisible(),
-			top: olMap.getLayers().item(olMap.getLayers().getLength() - 1) === olLayer,
+			// we check if the layer representing this olLayer is the topmost layer of all unhidden layers
+			top: active.filter(({ constraints: { hidden } }) => !hidden).pop().id === olLayer.get('id'),
 			opacity: olLayer.getOpacity()
 		});
 	}

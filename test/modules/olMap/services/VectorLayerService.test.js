@@ -7,8 +7,7 @@ import { Feature, Map } from 'ol';
 import { CollectionEvent } from 'ol/Collection';
 import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
-import { layersReducer } from '../../../../src/store/layers/layers.reducer';
-
+import { createDefaultLayer, layersReducer } from '../../../../src/store/layers/layers.reducer';
 
 describe('VectorLayerService', () => {
 
@@ -66,8 +65,8 @@ describe('VectorLayerService', () => {
 	describe('service methods', () => {
 
 		let instanceUnderTest;
-		beforeEach(() => {
-			TestUtils.setupStoreAndDi({}, {
+		const setup = (state = {}) => {
+			TestUtils.setupStoreAndDi(state, {
 				layers: layersReducer
 			});
 			$injector
@@ -75,11 +74,12 @@ describe('VectorLayerService', () => {
 				.registerSingleton('MapService', mapService)
 				.registerSingleton('StyleService', styleService);
 			instanceUnderTest = new VectorLayerService();
-		});
+		};
 
 		describe('createVectorLayer', () => {
 
 			it('returns an ol vector layer for an data based VectorGeoResource', () => {
+				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -104,6 +104,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an data based VectorGeoResource containing optional properties', () => {
+				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -131,6 +132,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an URL based VectorGeoResource', () => {
+				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -154,6 +156,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('returns an ol vector layer for an URL based VectorGeoResource containing optional properties', () => {
+				setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const geoResourceLabel = 'geoResourceLabel';
@@ -184,6 +187,7 @@ describe('VectorLayerService', () => {
 		describe('_vectorSourceForData', () => {
 
 			it('builds an olVectorSource for an internal VectorGeoResource', async () => {
+				setup();
 				const sourceSrid = 4326;
 				const expectedSrid = 3857;
 				const kmlName = '';
@@ -203,6 +207,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('builds an olVectorSource for an internal VectorGeoresource of type EWKT', () => {
+				setup();
 				const sourceSrid = 4326;
 				const expectedSrid = 3857;
 				const geoResourceLabel = 'geoResourceLabel';
@@ -218,6 +223,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('filters out features without a geometry', () => {
+				setup();
 				const sourceSrid = 4326;
 				const expectedSrid = 3857;
 				const geoResourceLabel = 'geoResourceLabel';
@@ -236,6 +242,7 @@ describe('VectorLayerService', () => {
 			describe('KML VectorGeoresource has no label', () => {
 
 				it('updates the label of an internal VectorGeoresource and calls the propertyChanged action', async () => {
+					setup();
 					const id = 'someId';
 					const srid = 3857;
 					const kmlName = 'kmlName';
@@ -254,6 +261,7 @@ describe('VectorLayerService', () => {
 		describe('_vectorSourceForUrl', () => {
 
 			it('builds an olVectorSource for an external VectorGeoresource', () => {
+				setup();
 				const url = 'https://some.url';
 				spyOn(urlService, 'proxifyInstant').withArgs(url).and.returnValue('https://proxy.url?' + url);
 				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML).setUrl(url);
@@ -271,7 +279,7 @@ describe('VectorLayerService', () => {
 		describe('_registerEvents', () => {
 
 			it('adds four listeners', () => {
-
+				setup();
 				const { addFeatureListenerKey, removeFeatureListenerKey, clearFeaturesListenerKey, addLayerListenerKey }
 					= instanceUnderTest._registerStyleEventListeners(new VectorSource(), new VectorLayer(), new Map());
 
@@ -281,11 +289,19 @@ describe('VectorLayerService', () => {
 				expect(addLayerListenerKey).toBeDefined();
 			});
 
-
 			it('calls StyleService#addStyle on "addFeature"', () => {
+				const id = 'id';
+				const state = {
+					layers: {
+						active: [
+							{ ...createDefaultLayer(id) }
+						]
+					}
+				};
+				setup(state);
 				const olMap = new Map();
 				const olSource = new VectorSource();
-				const olLayer = new VectorLayer();
+				const olLayer = new VectorLayer({ id: id });
 				const olFeature = new Feature();
 				const styleServiceSpy = spyOn(styleService, 'addStyle');
 				instanceUnderTest._registerStyleEventListeners(olSource, olLayer, olMap);
@@ -296,6 +312,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('calls StyleService#updateStyle on "addFeature" when layer is attached', () => {
+				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olFeature = new Feature();
@@ -311,6 +328,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('calls StyleService#removeStyle on "removeFeature"', () => {
+				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olFeature = new Feature();
@@ -325,6 +343,7 @@ describe('VectorLayerService', () => {
 
 
 			it('calls StyleService#removeStyle on "clearFeatures"', () => {
+				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
 				const olSource = new VectorSource({ features: [olFeature] });
@@ -338,6 +357,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('calls _updateStyle on "addLayer"', () => {
+				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
 				const olSource = new VectorSource({ features: [olFeature] });
@@ -351,6 +371,7 @@ describe('VectorLayerService', () => {
 			});
 
 			it('does not call _updateStyle when other layers are added', () => {
+				setup();
 				const olMap = new Map();
 				const olFeature = new Feature();
 				const olSource = new VectorSource({ features: [olFeature] });
@@ -367,12 +388,46 @@ describe('VectorLayerService', () => {
 
 		describe('_updateStyle', () => {
 
-			it('does nothing', () => {
+			it('calls #updateStyle of the underlying StyleService', () => {
+				const id = 'id';
+				const state = {
+					layers: {
+						active: [
+							{ ...createDefaultLayer(id) },
+							{ ...createDefaultLayer('otherLayer') } //topmost layer
+						]
+					}
+				};
+				setup(state);
 				const updateProperties = { visible: false, top: false, opacity: .5 };
 				const olMap = new Map();
 				const olFeature = new Feature();
 				const olSource = new VectorSource();
-				const olLayer = new VectorLayer({ source: olSource, visible: updateProperties.visible, opacity: updateProperties.opacity });
+				const olLayer = new VectorLayer({ id: id, source: olSource, visible: updateProperties.visible, opacity: updateProperties.opacity });
+				const styleServiceSpy = spyOn(styleService, 'updateStyle');
+
+				instanceUnderTest._updateStyle(olFeature, olLayer, olMap);
+
+				expect(styleServiceSpy).toHaveBeenCalledWith(olFeature, olMap, updateProperties);
+			});
+
+			it('calls #updateStyle of the underlying StyleService ignoring hidden layers', () => {
+				const id = 'id';
+				const state = {
+					layers: {
+						active: [
+							{ ...createDefaultLayer('otherLayer') },
+							{ ...createDefaultLayer(id) },
+							{ ...createDefaultLayer('hiddenLayer'), constraints: { hidden: true } } //topmost layer is a hidden layer
+						]
+					}
+				};
+				setup(state);
+				const updateProperties = { visible: false, top: true, opacity: .5 };
+				const olMap = new Map();
+				const olFeature = new Feature();
+				const olSource = new VectorSource();
+				const olLayer = new VectorLayer({ id: id, source: olSource, visible: updateProperties.visible, opacity: updateProperties.opacity });
 				const styleServiceSpy = spyOn(styleService, 'updateStyle');
 
 				instanceUnderTest._updateStyle(olFeature, olLayer, olMap);
@@ -384,6 +439,7 @@ describe('VectorLayerService', () => {
 		describe('_applyStyles', () => {
 
 			it('returns the olLayer ', () => {
+				setup();
 				const olMap = new Map();
 				const olSource = new VectorSource();
 				const olLayer = new VectorLayer({ source: olSource });
@@ -396,6 +452,7 @@ describe('VectorLayerService', () => {
 			describe('when feature that does not needs a specific styling', () => {
 
 				it('does nothing', () => {
+					setup();
 					const olMap = new Map();
 					const olFeature = new Feature();
 					const olSource = new VectorSource();
@@ -415,6 +472,7 @@ describe('VectorLayerService', () => {
 			describe('checks if a feature needs a specific styling', () => {
 
 				it('adds a style and registers style event listeners', () => {
+					setup();
 					const olMap = new Map();
 					const olFeature0 = new Feature();
 					const olFeature1 = new Feature();
@@ -435,6 +493,7 @@ describe('VectorLayerService', () => {
 				});
 
 				it('does NOT add a style and does NOT registers style event listeners', () => {
+					setup();
 					const olMap = new Map();
 					const olFeature0 = new Feature();
 					const olFeature1 = new Feature();
@@ -453,6 +512,7 @@ describe('VectorLayerService', () => {
 				});
 
 				it('does NOT apply style to features when they don\'t need them', () => {
+					setup();
 					const olMap = new Map();
 					const olFeature0 = new Feature();
 					const olFeature1 = new Feature();
