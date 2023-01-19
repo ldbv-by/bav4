@@ -95,28 +95,14 @@ export const _parseBvvAttributionDefinition = (definition) => {
 	if (Array.isArray(definition.extendedAttributions)) {
 		return definition
 			.extendedAttributions
-			.map(extAtt => {
-				//supplement each attribution with basic attribution values if needed
-				return {
-					copyright: {
-						label: extAtt.copyright ?? definition?.attribution?.copyright ?? null,
-						url: extAtt.href ?? definition?.attribution?.href ?? null
-					},
+			.map(extAtt =>
+				({
+					copyright: extAtt.copyright ?? definition?.attribution?.copyright ?? null,
 					description: extAtt.description ?? definition?.attribution?.description ?? null
-				};
-			});
+				})
+			);
 	}
-	else if (definition.attribution) {
-		const { description, copyright, href } = definition.attribution;
-		return [{
-			copyright: {
-				label: copyright,
-				url: href
-			},
-			description: description
-		}];
-	}
-	return null;
+	return definition.attribution ?? null;
 };
 
 /**
