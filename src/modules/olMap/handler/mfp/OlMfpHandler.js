@@ -13,6 +13,7 @@ import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 import { isNumber } from '../../../../utils/checks';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import distorsionSvg from './assets/distorsion.svg';
 import { html } from 'lit-html';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -164,7 +165,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const skipPreview = () => {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
-			this._mfpBoundaryFeature.set('inPrintableArea', true);
+			this._mfpBoundaryFeature.set('inPrintableArea', false);
 			this._mfpBoundaryFeature.setGeometry(center);
 		};
 		const createProjectedGeometry = () => {
@@ -191,7 +192,7 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview(center);
 				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
 				if (!inPrintableArea) {
-					const content = html`${translate('olMap_handler_mfp_distortion_warning')} <a href='https://www.ldbv.bayern.de/hilfe-v4.html#koordinatensyseme' target='_blank'>${translate('olMap_handler_mfp_distortion_more_info')}</a>`;
+					const content = html`<ba-icon .icon='${distorsionSvg}'></ba-icon>${translate('olMap_handler_mfp_distortion_warning')}`;
 					this._warnOnce(content);
 				}
 				this._previewDelayTimeoutId = null;
