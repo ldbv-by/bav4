@@ -61,7 +61,7 @@ export class BottomSheet extends MvuElement {
 		<style>${css}</style>
 		<div class='bottom-sheet ${getOverlayClass()}' data-test-id>
         	${content}
-			<ba-icon id="close-icon" data-test-id class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
+			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>` : nothing;
 	}
 
