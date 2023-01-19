@@ -24,6 +24,7 @@ import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action
 import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
+import { isTemplateResult } from '../../../../../src/utils/checks';
 
 
 
@@ -387,7 +388,7 @@ describe('OlMfpHandler', () => {
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
-			expect(warnOnceSpy).toHaveBeenCalled();
+			expect(warnOnceSpy).toHaveBeenCalledWith(jasmine.objectContaining({ '_$litType$': jasmine.anything() }));
 		});
 
 		it('warns NOT if preview is in print area', async () => {
@@ -421,24 +422,38 @@ describe('OlMfpHandler', () => {
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
 
-			expect(handler._alreadyWarned).toBeFalse();
+			setBeingDragged(true);
+
+			setBeingDragged(false);
+			await TestUtils.timeout(previewDelayTime + 10);
 
 			setBeingDragged(true);
 
 			setBeingDragged(false);
 			await TestUtils.timeout(previewDelayTime + 10);
 
-			expect(handler._alreadyWarned).toBeTrue();
-			setBeingDragged(true);
-
-			setBeingDragged(false);
-			await TestUtils.timeout(previewDelayTime + 10);
-
-			expect(handler._alreadyWarned).toBeTrue();
 			expect(warnOnceSpy).toHaveBeenCalledTimes(2);
 			expect(onChangeNotificationSpy).toHaveBeenCalledTimes(1);
 		});
 
+		it('warns with a TemplateResult', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			const store = setup();
+			const handler = new OlMfpHandler();
+			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+
+			setBeingDragged(true);
+
+			setBeingDragged(false);
+			await TestUtils.timeout(previewDelayTime + 10);
+
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			const contentElement = TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content);
+			expect(contentElement.innerText).toBe('olMap_handler_mfp_distortion_warning');
+		});
 
 	});
 
