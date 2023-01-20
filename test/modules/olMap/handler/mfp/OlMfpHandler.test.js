@@ -126,6 +126,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._mfpLayer).toBeNull();
 		expect(handler._map).toBeNull();
 		expect(handler._pageSize).toBeNull();
+		expect(handler._alreadyWarned).toBeFalse();
 	});
 
 	describe('when activated over olMap', () => {
@@ -454,16 +455,24 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when deactivate', () => {
-		it('unregisters observer', () => {
+		it('unregisters observer amd reset session state', async () => {
+			const previewDelayTime = 0;
 			const map = setupMap();
 			setup();
 
 			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
+			// wait for first delayedPreview after activation
+			await TestUtils.timeout(handler._previewDelayTime + 10);
 			const spyOnUnregister = spyOn(handler, '_unregister').withArgs(handler._registeredObservers).and.callThrough();
 			handler.deactivate(map);
 
 			expect(handler._mfpLayer).toBeNull();
+			expect(handler._visibleViewport).toBeNull();
+			expect(handler._map).toBeNull();
+			expect(handler._alreadyWarned).toBeFalse();
+			expect(handler._listeners).toEqual([]);
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
 	});
