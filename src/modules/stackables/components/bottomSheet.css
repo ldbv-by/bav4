@@ -55,12 +55,11 @@
 	background: var(--primary-bg-color);
 	font-weight: bold;
 	cursor: pointer;
-	position: relative;
 	display: block;
 	padding: .7em;
 	position: absolute;
-	right:0;
-	top:0;
+	right: 0;
+	top: 0;
 }
 .tool-container__close-button:hover {
 	background: var(--header-background-color);

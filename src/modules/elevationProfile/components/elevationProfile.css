@@ -1,113 +1,111 @@
-.profile.is-portrait{
-	height:20em
+.profile.is-portrait {
+	height: 20em;
 }
 .profile.is-landscape {
-	height:15em
+	height: 15em;
 }
-.is-portrait .chart-container{
+.is-portrait .chart-container {
 	position: relative;
-	 height:14em;
-	 width:100%; 
-	 display: inline-block 
+	height: 14em;
+	width: 100%; 
+	display: inline-block; 
 }
-.is-landscape  .chart-container{
+.is-landscape  .chart-container {
 	position: relative;
-	 height:14em;
-	 width:89%; 
-	 display: inline-block 
+	height: 14em;
+	width: 89%; 
+	display: inline-block; 
 }
 .is-portrait .profile__data {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;    
-    position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;    
+	position: relative;
 }
 .is-landscape .profile__data {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    display: inline-block;
-    width: 11%;
-    position: relative;
-	float:right;
+	align-items: center;
+	justify-content: space-between;
+	display: inline-block;
+	width: 11%;
+	position: relative;
+	float: right;
 }
-.profile__options{
-    width: 7em;
-    display: block;
+.profile__options {
+	width: 7em;
+	display: block;
 }
 .profile__box:first-child {
 	border-left: 0;
 }
-.is-portrait  .profile__box{
-    height: 4em;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px dotted var(--header-background-color);
-    width: 100%;
+.is-portrait  .profile__box {
+	height: 4em;
+	display: flex;
+	flex-direction: column;
+	border-left: 1px dotted var(--header-background-color);
+	width: 100%;
 }
-.is-landscape  .profile__box{
-    height: 4em;
-    display: flex;
-    flex-direction: column;
-    border-left: 1px dotted var(--header-background-color);
-    width: 100%;
-    width: 50%;
+.is-landscape  .profile__box {
+	height: 4em;
+	display: flex;
+	flex-direction: column;
+	border-left: 1px dotted var(--header-background-color);
+	width: 100%;
+	width: 50%;
 	float: left;
 }
-.profile__text{
-    font-weight: bold;
-    text-align: center;
-    margin-top: .5em;
+.profile__text {
+	font-weight: bold;
+	text-align: center;
 	margin: 0;
-	font-size:.9rem;
+	font-size: .9rem;
 	color: var(--text1);
 	cursor: pointer;
 }
-.is-tablet .profile__text{
-	font-size:.8rem;
+.is-tablet .profile__text {
+	font-size: .8rem;
 }
-.is-portrait.is-tablet .profile__text{
-	font-size:1rem;
+.is-portrait.is-tablet .profile__text {
+	font-size: 1rem;
 }
-.highest{
+.highest {
 	mask: url('assets/chevron-up.svg');
 	-webkit-mask: url('assets/chevron-up.svg');
 }
-.lowest{
+.lowest {
 	mask: url('assets/chevron-down.svg');
 	-webkit-mask: url('assets/chevron-down.svg');
 }
-.up{
+.up {
 	mask: url('assets/arrow-down-right.svg');
 	-webkit-mask: url('assets/arrow-up-right.svg');
 }
-.down{
+.down {
 	mask: url('assets/arrow-down-right.svg');
 	-webkit-mask: url('assets/arrow-down-right.svg');
 }
-.height{
+.height {
 	mask: url('assets/arrow-down-up.svg');
 	-webkit-mask: url('assets/arrow-down-up.svg');
 }
-.distance{
+.distance {
 	mask: url('assets/arrow-left-right.svg');
 	-webkit-mask: url('assets/arrow-left-right.svg');
 }
-.profile__icon{
-    height: 2em;
-    min-width: 2em;
+.profile__icon {
+	height: 2em;
+	min-width: 2em;
 	background: var(--primary-color);
 	display: block;
 	margin: auto;
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.is-portrait.is-tablet .profile__icon{
-	height: 2em;
-    min-width: 2em;
-}
-.is-tablet .profile__icon{
+.is-tablet .profile__icon {
 	height: 1.5em;
-    min-width: 1.5em;
+	min-width: 1.5em;
+}
+.is-portrait.is-tablet .profile__icon {
+	height: 2em;
+	min-width: 2em;
 }
