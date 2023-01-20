@@ -6,8 +6,14 @@
 </head>
 
 <body>
-    <iframe id="wrapper" src="/embed/index.html" width="100%" height="600" style="border:0;" allowfullscreen="" loading="lazy"
+    <iframe id="wrapper" width="100%" height="600" style="border:0;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"></iframe>
 </body>
+<script>
+    const baseUrl = '/embed/index.html';
+    const search = window.location.search;
+    const iframe = document.getElementById('wrapper');
+    iframe.src = `${baseUrl}${search}`;
+</script>
 
 </html>
