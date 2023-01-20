@@ -21,7 +21,7 @@ describe('mfp style utility functions', () => {
 
 		const geometry = new Polygon(pixelCoordinates);
 		const feature = new Feature({ geometry: geometry });
-		const defaultContextStub = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => {}, strokeStyle: 'foo', beginPath: () => { }, closePath: () => { }, moveTo: () => { }, lineTo: () => { } };
+		const defaultContextStub = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => { }, strokeStyle: 'foo', beginPath: () => { }, closePath: () => { }, moveTo: () => { }, lineTo: () => { } };
 		const defaultRenderState = { feature: feature, context: defaultContextStub, geometry: geometry };
 		const getRenderState = (state = {}) => {
 			return { ...defaultRenderState, ...state };
@@ -88,7 +88,7 @@ describe('mfp style utility functions', () => {
 			renderStyle.getRenderer()(pixelCoordinates, renderState);
 
 			expect(spy).toHaveBeenCalled();
-			expect(renderState.context.strokeStyle).toBe('rgba(255, 50, 50, 0.8)');
+			expect(renderState.context.strokeStyle).toBe('rgba(231, 79, 13, 0.8)');
 			expect(renderState.context.lineWidth).toBe(5);
 		});
 	});

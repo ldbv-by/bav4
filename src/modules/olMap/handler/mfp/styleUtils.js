@@ -22,7 +22,7 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 			if (!beingDragged) {
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
 				const style = {
-					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(255, 50, 50, 0.8)',
+					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(231, 79, 13, 0.8)',
 					lineWidth: inPrintableArea ? 3 : 5
 				};
 
