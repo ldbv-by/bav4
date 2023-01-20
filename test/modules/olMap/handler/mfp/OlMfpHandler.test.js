@@ -468,17 +468,6 @@ describe('OlMfpHandler', () => {
 		});
 	});
 
-	describe('_getPageLabel', () => {
-
-		it('creates a pageLabel from mfpSettings', () => {
-			setup();
-			const classUnderTest = new OlMfpHandler();
-
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42 })).toBe('olMap_handler_mfp_id_foo 1:42');
-			expect(classUnderTest._getPageLabel({ id: 'foo', scale: 42.21 })).toBe('olMap_handler_mfp_id_foo 1:42');
-		});
-	});
-
 	describe('_getOptimalScale', () => {
 		const mapSize = [200, 200];
 

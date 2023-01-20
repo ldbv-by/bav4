@@ -104,9 +104,7 @@ export class OlMfpHandler extends OlLayerHandler {
 				this._updateMfpPreview(this._getVisibleCenterPoint());
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.position.center, () => {
-				this._updateMfpPreview(this._getVisibleCenterPoint());
-			}),
+			observe(store, state => state.position.center, () => this._updateMfpPreview(this._getVisibleCenterPoint())),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
 				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
@@ -140,11 +138,9 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
-		const label = this._getPageLabel(mfpSettings);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
 
 		// init/update mfpBoundaryFeature
-		this._mfpBoundaryFeature.set('name', label);
 		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(() => this._getBeingDragged()));
 
 		const toGeographicSize = (size) => {
@@ -255,14 +251,6 @@ export class OlMfpHandler extends OlLayerHandler {
 	_getLocales() {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
 		return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
-	}
-
-	_getPageLabel(mfpSettings) {
-		const translate = (key) => this._translationService.translate(key);
-		const { id, scale } = mfpSettings;
-		const layout = translate(`olMap_handler_mfp_id_${id}`);
-		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-		return `${layout} 1:${formattedScale}`;
 	}
 
 	_getAverageDeviationFromEquator(smercCoordinate) {
