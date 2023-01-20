@@ -1,4 +1,5 @@
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString } from 'ol/geom';
+import { isNumber } from '../../../utils/checks';
 
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
@@ -47,6 +48,31 @@ export const getPolygonFrom = (extent) => {
 		[minx, miny],
 		[minx, maxy]
 	]]);
+};
+
+
+/**
+ * Creates a bounding box from a coordinate and size object
+ * (with height- and width-property)
+ * @param {Coordinate} centerCoordinate
+ * @param {Object} size the size object with a height- and a width-property
+ * @returns {Array<Number>} the bounding box array in the form of [minX, minY, maxX, maxY]
+ */
+export const getBoundingBoxFrom = (centerCoordinate, size) => {
+	if (!centerCoordinate || !size) {
+		return undefined;
+	}
+
+	if (!isNumber(size.width) || !isNumber(size.height)) {
+		return undefined;
+	}
+
+	return [
+		centerCoordinate[0] - (size.width / 2), // minX
+		centerCoordinate[1] - (size.height / 2), // minY
+		centerCoordinate[0] + (size.width / 2), // maxX
+		centerCoordinate[1] + (size.height / 2) // maxY
+	];
 };
 
 /**

@@ -8,10 +8,9 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { getAzimuthFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
+import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
-import { isNumber } from '../../../../utils/checks';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
@@ -193,24 +192,6 @@ export class OlMfpHandler extends OlLayerHandler {
 		}
 	}
 
-	// todo: refactor to olGeometryUtils
-	_getBoundingBoxFrom(centerCoordinate, size) {
-		if (!centerCoordinate || !size) {
-			return undefined;
-		}
-
-		if (!isNumber(size.width) || !isNumber(size.height)) {
-			return undefined;
-		}
-
-		return [
-			centerCoordinate[0] - (size.width / 2), // minX
-			centerCoordinate[1] - (size.height / 2), // minY
-			centerCoordinate[0] + (size.width / 2), // maxX
-			centerCoordinate[1] + (size.height / 2) // maxY
-		];
-	}
-
 	_getPixelCoordinates() {
 		const resolution = this._map.getView().getResolution();
 		const centerPixel = this._getVisibleCenterPixel();
@@ -221,14 +202,14 @@ export class OlMfpHandler extends OlLayerHandler {
 			return { width: toPixel(size.width), height: toPixel(size.height) };
 		};
 		const pixelSize = toPixelSize(this._pageSize);
-		const mfpBoundingBox = this._getBoundingBoxFrom(centerPixel, pixelSize);
+		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
 	}
 
 	_createPagePolygon(pageSize, center) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
-		const geodeticBoundingBox = this._getBoundingBoxFrom(geodeticCenter.getCoordinates(), pageSize);
+		const geodeticBoundingBox = getBoundingBoxFrom(geodeticCenter.getCoordinates(), pageSize);
 
 		return getPolygonFrom(geodeticBoundingBox);
 	}

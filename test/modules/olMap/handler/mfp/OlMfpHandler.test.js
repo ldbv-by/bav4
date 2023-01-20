@@ -564,28 +564,6 @@ describe('OlMfpHandler', () => {
 		});
 	});
 
-	describe('_getBoundingBoxFrom', () => {
-		it('creates a boundingbox', () => {
-			setup();
-			const classUnderTest = new OlMfpHandler();
-
-
-			expect(classUnderTest._getBoundingBoxFrom([10, 0], { width: 4, height: 4 })).toEqual([8, -2, 12, 2]);
-			expect(classUnderTest._getBoundingBoxFrom([42, 42], { width: 5, height: 5 })).toEqual([39.5, 39.5, 44.5, 44.5]);
-
-			expect(classUnderTest._getBoundingBoxFrom(null, { width: 4, height: 4 })).toBeUndefined();
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], null)).toBeUndefined();
-
-			expect(classUnderTest._getBoundingBoxFrom(undefined, { width: 4, height: 4 })).toBeUndefined();
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], undefined)).toBeUndefined();
-
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], { width: 'foo', height: 4 })).toBeUndefined();
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], { width: null, height: 4 })).toBeUndefined();
-			expect(classUnderTest._getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
-		});
-	});
-
 	describe('_createPagePolygon', () => {
 		it('creates a polygon', () => {
 			const pageSize = { width: 20, height: 20 };
