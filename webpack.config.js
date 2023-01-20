@@ -13,7 +13,8 @@ module.exports = {
 	mode: 'development',
 	entry: {
 		config: './src/assets/config.js',
-		bundle: './src/main.js'
+		bundle: './src/main.js',
+		embed: './src/embed.js'
 	},
 	output: {
 		path: path.resolve(__dirname, 'dist'),
@@ -43,7 +44,18 @@ module.exports = {
 	plugins: [
 		new HtmlWebpackPlugin({
 			template: 'src/index.html',
-			templateParameters: templateParameters
+			templateParameters: templateParameters,
+			chunks: ['config', 'bundle']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'embed/index.html',
+			template: 'src/embed.html',
+			templateParameters: templateParameters,
+			chunks: ['config', 'embed']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'embed/wrapper/index.html',
+			template: 'src/embedWrapper.html'
 		}),
 		new CopyPlugin({
 			patterns: [
