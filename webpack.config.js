@@ -55,7 +55,8 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			filename: 'embed/wrapper/index.html',
-			template: 'src/embedWrapper.html'
+			template: 'src/embedWrapper.html',
+			chunks: []
 		}),
 		new CopyPlugin({
 			patterns: [
