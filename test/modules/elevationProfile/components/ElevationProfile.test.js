@@ -174,7 +174,9 @@ describe('ElevationProfile', () => {
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
-				darkSchema: false
+				darkSchema: false,
+				portrait: false,
+				minWidth: false
 			},
 			...state
 		};
@@ -643,4 +645,91 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
 		});
 	});
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					portrait: false
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					portrait: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+
+		});
+
+		it('layouts for desktop', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					minWidth: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+		});
+
+		it('layouts for tablet', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					minWidth: false
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+		});
+
+	});
+
+
 });
