@@ -172,7 +172,7 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('embedded', () => {
-		it('detects embedded flag via query parameter', () => {
+		it('detects embedded modus', () => {
 			let mockWindow = {
 				location: {
 					pathname: '/foo/bar'
@@ -183,10 +183,33 @@ describe('EnvironmentService', () => {
 
 			mockWindow = {
 				location: {
+					pathname: '/'
+				}
+			};
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeFalse();
+
+			mockWindow = {
+				location: {
+					pathname: '/index.html'
+				}
+			};
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeFalse();
+
+			mockWindow = {
+				location: {
+					pathname: '/embed.html'
+				}
+			};
+			instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isEmbedded()).toBeTrue();
+
+			mockWindow = {
+				location: {
 					pathname: '/embed'
 				}
 			};
-
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 
@@ -195,7 +218,6 @@ describe('EnvironmentService', () => {
 					pathname: '/embed/'
 				}
 			};
-
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 
@@ -204,7 +226,6 @@ describe('EnvironmentService', () => {
 					pathname: '/embed/index.html'
 				}
 			};
-
 			instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isEmbedded()).toBeTrue();
 		});
