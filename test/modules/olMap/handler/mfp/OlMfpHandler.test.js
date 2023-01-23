@@ -125,6 +125,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._previewDelayTime).toBe(1500);
 		expect(handler._mfpLayer).toBeNull();
 		expect(handler._map).toBeNull();
+		expect(handler._mapListener).toBeNull();
 		expect(handler._pageSize).toBeNull();
 		expect(handler._alreadyWarned).toBeFalse();
 	});
@@ -166,7 +167,7 @@ describe('OlMfpHandler', () => {
 			expect(restoreContextSpy).toHaveBeenCalled();
 		});
 
-		it('registers observer', () => {
+		it('registers observer and mapListeners', () => {
 			const map = setupMap();
 			setup();
 
@@ -175,6 +176,7 @@ describe('OlMfpHandler', () => {
 
 			expect(actualLayer).toBeTruthy();
 			expect(handler._registeredObservers).toHaveSize(7);
+			expect(handler._mapListener).toEqual(jasmine.any(Object));
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -474,7 +476,7 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when deactivate', () => {
-		it('unregisters observer amd reset session state', async () => {
+		it('unregisters observer and reset session state', async () => {
 			const previewDelayTime = 0;
 			const map = setupMap();
 			setup();
@@ -490,8 +492,8 @@ describe('OlMfpHandler', () => {
 			expect(handler._mfpLayer).toBeNull();
 			expect(handler._visibleViewport).toBeNull();
 			expect(handler._map).toBeNull();
+			expect(handler._mapListener).toBeNull();
 			expect(handler._alreadyWarned).toBeFalse();
-			expect(handler._listeners).toEqual([]);
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
 	});

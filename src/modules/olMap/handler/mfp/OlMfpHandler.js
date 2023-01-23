@@ -37,6 +37,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpService = mfpService;
 		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
+		this._mapListener = null;
 		this._mfpBoundaryFeature = new Feature();
 		this._forceRenderFeature = new Feature();
 		this._map = null;
@@ -92,6 +93,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
 		this._unregister(this._registeredObservers);
 		unByKey(this._mapListener);
+		this._mapListener = null;
 		this._mfpLayer = null;
 		this._map = null;
 		this._visibleViewport = null;
