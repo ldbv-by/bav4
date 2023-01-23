@@ -260,7 +260,7 @@ describe('OlMfpHandler', () => {
 			expect(handler._previewDelayTimeoutId).toBeNull();
 		});
 
-		it('updates internal beingDragged state immediately after store changes by app', async () => {
+		it('updates internal beingDragged state immediately after movestart store is changed by app', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			setup();
@@ -287,7 +287,7 @@ describe('OlMfpHandler', () => {
 			expect(handler._previewDelayTimeoutId).toBe(42);
 		});
 
-		it('updates internal beingDragged state immediately after store changes by app', async () => {
+		it('updates internal beingDragged state immediately after liveZoom store is changed by app', async () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			setup();

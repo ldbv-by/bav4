@@ -103,9 +103,8 @@ export class OlMfpHandler extends OlLayerHandler {
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.center, () => this._updateMfpPreview(this._getVisibleCenterPoint())),
-			observe(store, state => state.position.liveZoom, () => {
-				this._beingDragged = true;
-			}),
+			// zoom is always initialized by the application and the internal beingDragged-state must be set accordingly
+			observe(store, state => state.position.liveZoom, () => this._beingDragged = true),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
 				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
