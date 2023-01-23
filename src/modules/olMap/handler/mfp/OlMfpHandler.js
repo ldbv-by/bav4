@@ -8,16 +8,15 @@ import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
 import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
-import { getAzimuthFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
+import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
-import { isNumber } from '../../../../utils/checks';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
-const Locales_Fallback = 'en';
 const Default_Preview_Delay_Time = 1500;
 
 /**
@@ -46,6 +45,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._beingDragged = false;
 		this._previewDelayTime = Default_Preview_Delay_Time;
 		this._previewDelayTimeoutId = null;
+		this._alreadyWarned = false;
 	}
 
 	/**
@@ -65,8 +65,12 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, () => this._getPixelCoordinates()));
 			this._registeredObservers = this._register(this._storeService.getStore());
+			// Initialize boundaryFeature with centerpoint to get a first valid
+			// feature-geometry for the postrender-event. The postrender-event is
+			// not fired, if there is no geometry at all.
+			this._mfpBoundaryFeature.setGeometry(new Point(this._map.getView().getCenter()));
 			this._updateMfpPage(mfpSettings);
-			this._updateMfpPreview();
+			this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
 		}
 
 		return this._mfpLayer;
@@ -84,6 +88,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpLayer = null;
 		this._map = null;
 		this._visibleViewport = null;
+		this._alreadyWarned = false;
 	}
 
 	_register(store) {
@@ -94,10 +99,12 @@ export class OlMfpHandler extends OlLayerHandler {
 		return [
 			observe(store, state => state.mfp.current, (current) => {
 				this._updateMfpPage(current);
-				this._updateMfpPreview();
+				this._updateMfpPreview(this._getVisibleCenterPoint());
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.position.center, () => this._updateMfpPreview()),
+			observe(store, state => state.position.center, () => this._updateMfpPreview(this._getVisibleCenterPoint())),
+			// zoom is always initialized by the application and the internal beingDragged-state must be set accordingly
+			observe(store, state => state.position.liveZoom, () => this._beingDragged = true),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
 				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
@@ -106,12 +113,13 @@ export class OlMfpHandler extends OlLayerHandler {
 				if (!this._previewDelayTimeoutId) {
 					this._beingDragged = true;
 				}
-
 			}),
-			observe(store, state => state.map.moveEnd, () => this._delayedUpdateMfpPreview()),
+			observe(store, state => state.map.moveEnd, () => {
+				this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
+			}),
 			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
 				const clearPreview = () => {
-					// forcing the used renderfunction to skip the drawing of the geometry
+					// forcing the used render function to skip the drawing of the geometry
 					this._beingDragged = beingDragged;
 					if (this._previewDelayTimeoutId) {
 						clearTimeout(this._previewDelayTimeoutId);
@@ -119,7 +127,9 @@ export class OlMfpHandler extends OlLayerHandler {
 					}
 				};
 
-				const action = beingDragged ? clearPreview : () => this._delayedUpdateMfpPreview();
+				const action = beingDragged ? clearPreview : () => {
+					this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
+				};
 				action();
 			})
 		];
@@ -132,14 +142,10 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_updateMfpPage(mfpSettings) {
 		const { id, scale } = mfpSettings;
-		const translate = (key) => this._translationService.translate(key);
-
-		const label = this._getPageLabel(mfpSettings);
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
 
 		// init/update mfpBoundaryFeature
-		this._mfpBoundaryFeature.set('name', label);
-		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(translate('olMap_handler_mfp_distortion_warning'), () => this._getBeingDragged()));
+		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(() => this._getBeingDragged()));
 
 		const toGeographicSize = (size) => {
 			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
@@ -149,11 +155,15 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._pageSize = toGeographicSize(layoutSize);
 	}
 
-	_updateMfpPreview() {
-		const center = this._getVisibleCenterPoint();
+	_updateMfpPreview(center) {
+		if (!center) {
+			return;
+		}
+
 		const skipPreview = () => {
 			// HINT: In standalone-mode is the map- and the mfp-projection identical
 			// and a projected geometry not needed.
+			this._mfpBoundaryFeature.set('inPrintableArea', true);
 			this._mfpBoundaryFeature.setGeometry(center);
 		};
 		const createProjectedGeometry = () => {
@@ -171,33 +181,23 @@ export class OlMfpHandler extends OlLayerHandler {
 		updateAction();
 	}
 
-	_delayedUpdateMfpPreview() {
+	_delayedUpdateMfpPreview(center) {
 		const timeOut = this._previewDelayTime;
-		if (!this._previewDelayTimeoutId) {
-			this._previewDelayTimeoutId = setTimeout(() => {
-				this._beingDragged = false;
-				this._updateMfpPreview();
-				this._previewDelayTimeoutId = null;
-			}, timeOut);
+		const translate = (key) => this._translationService.translate(key);
+		if (this._previewDelayTimeoutId) {
+			clearTimeout(this._previewDelayTimeoutId);
+			this._previewDelayTimeoutId = null;
 		}
-	}
+		this._previewDelayTimeoutId = setTimeout(() => {
+			this._beingDragged = false;
+			this._updateMfpPreview(center);
+			const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
+			if (!inPrintableArea) {
+				this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
+			}
+			this._previewDelayTimeoutId = null;
+		}, timeOut);
 
-	// todo: refactor to olGeometryUtils
-	_getBoundingBoxFrom(centerCoordinate, size) {
-		if (!centerCoordinate || !size) {
-			return undefined;
-		}
-
-		if (!isNumber(size.width) || !isNumber(size.height)) {
-			return undefined;
-		}
-
-		return [
-			centerCoordinate[0] - (size.width / 2), // minX
-			centerCoordinate[1] - (size.height / 2), // minY
-			centerCoordinate[0] + (size.width / 2), // maxX
-			centerCoordinate[1] + (size.height / 2) // maxY
-		];
 	}
 
 	_getPixelCoordinates() {
@@ -210,14 +210,14 @@ export class OlMfpHandler extends OlLayerHandler {
 			return { width: toPixel(size.width), height: toPixel(size.height) };
 		};
 		const pixelSize = toPixelSize(this._pageSize);
-		const mfpBoundingBox = this._getBoundingBoxFrom(centerPixel, pixelSize);
+		const mfpBoundingBox = getBoundingBoxFrom(centerPixel, pixelSize);
 
 		return getPolygonFrom(mfpBoundingBox).getCoordinates()[0].reverse();
 	}
 
 	_createPagePolygon(pageSize, center) {
 		const geodeticCenter = center.clone().transform(this._mapProjection, this._getMfpProjection());
-		const geodeticBoundingBox = this._getBoundingBoxFrom(geodeticCenter.getCoordinates(), pageSize);
+		const geodeticBoundingBox = getBoundingBoxFrom(geodeticCenter.getCoordinates(), pageSize);
 
 		return getPolygonFrom(geodeticBoundingBox);
 	}
@@ -235,19 +235,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getBeingDragged() {
 		return this._beingDragged;
-	}
-
-	_getLocales() {
-		const { ConfigService: configService } = $injector.inject('ConfigService');
-		return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
-	}
-
-	_getPageLabel(mfpSettings) {
-		const translate = (key) => this._translationService.translate(key);
-		const { id, scale } = mfpSettings;
-		const layout = translate(`olMap_handler_mfp_id_${id}`);
-		const formattedScale = scale.toLocaleString(this._getLocales(), { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-		return `${layout} 1:${formattedScale}`;
 	}
 
 	_getAverageDeviationFromEquator(smercCoordinate) {
@@ -319,6 +306,13 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getMfpProjection() {
 		return `EPSG:${this._mfpService.getCapabilities().srid}`;
+	}
+
+	_warnOnce(warnText) {
+		if (!this._alreadyWarned) {
+			emitNotification(warnText, LevelTypes.WARN);
+			this._alreadyWarned = true;
+		}
 	}
 
 	async _encodeMap() {

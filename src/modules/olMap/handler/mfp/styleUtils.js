@@ -1,62 +1,33 @@
-import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
+import { Style } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
-import { toContext } from 'ol/render';
 
-const fontSizePX = 70;
+export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 
-export const createThumbnailStyleFunction = (warnLabel, beingDraggedCallback) => {
-	const getCanvasContextRenderFunction = (state) => {
-		const renderContext = toContext(state.context, { pixelRatio: 1 });
-		return (geometry, style) => {
-			renderContext.setStyle(style);
-			renderContext.drawGeometry(geometry);
-		};
+	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
+
+	const drawBoundary = (context, pixelCoordinates, style) => {
+		context.beginPath();
+		context.moveTo(pixelCoordinates[0][0], pixelCoordinates[0][1]);
+		[...pixelCoordinates].slice(1).forEach(c => context.lineTo(c[0], c[1]));
+		context.closePath();
+
+		context.lineWidth = style.lineWidth;
+		context.strokeStyle = style.strokeStyle;
+		context.stroke();
 	};
 
-	const baseStyle = new Style({
-		stroke: new Stroke(
-			{
-				color: [9, 157, 220, 0.5],
-				width: 3
-			})
-	});
-
-	const warnStyle = new Style({
-		stroke: new Stroke(
-			{
-				color: [255, 100, 100, 0.5],
-				width: 3
-			}),
-		text: new TextStyle(
-			{
-				text: warnLabel,
-				textAlign: 'center',
-
-				font: `bold ${fontSizePX / 4}px sans-serif`,
-				stroke: new Stroke({
-					color: [255, 255, 255, 0.8],
-					width: 3
-				}),
-				fill: new Fill({
-					color: [250, 50, 50, 1]
-				}),
-				scale: 1,
-				offsetY: 15,
-				overflow: false
-			})
-	});
-
 	const renderStyle = new Style({
-		renderer: (pixelCoordinates, state) => {
-			const getContextRenderFunction = (state) => state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+		renderer: (coordinates, state) => {
 			const beingDragged = beingDraggedCallback();
 			if (!beingDragged) {
-				const geometry = state.geometry.clone();
-				geometry.setCoordinates(pixelCoordinates);
 				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
+				const style = {
+					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(231, 79, 13, 0.8)',
+					lineWidth: inPrintableArea ? 3 : 5
+				};
 
-				const contextRenderFunction = getContextRenderFunction(state);
-				contextRenderFunction(geometry, inPrintableArea ? baseStyle : warnStyle);
+				const pixelCoordinates = isPolygonArray(coordinates) ? coordinates[0] : coordinates;
+				drawBoundary(state.context, pixelCoordinates, style);
 			}
 		}
 	});
