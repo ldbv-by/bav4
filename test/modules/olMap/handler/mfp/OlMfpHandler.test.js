@@ -333,13 +333,15 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 			handler._previewDelayTimeoutId = 42;
 			const updateSpy = spyOn(handler, '_delayedUpdateMfpPreview').and.callThrough();
+			const clearTimeoutSpy = spyOn(global, 'clearTimeout').withArgs(handler._previewDelayTimeoutId).and.callFake(() => { });
 
 			setMapMoveEnd();
 			setBeingMoved(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
 			expect(handler._beingDragged).toBeFalse();
-			expect(updateSpy).toHaveBeenCalled();
+			expect(updateSpy).toHaveBeenCalledTimes(1);
+			expect(clearTimeoutSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('synchronizes mfpPreview after store changes', async () => {

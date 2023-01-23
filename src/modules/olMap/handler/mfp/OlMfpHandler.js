@@ -17,7 +17,6 @@ const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
 const Units_Ratio = 39.37; // inches per meter
 const Map_View_Margin = 50;
-const Locales_Fallback = 'en';
 const Default_Preview_Delay_Time = 1500;
 
 /**
@@ -179,17 +178,20 @@ export class OlMfpHandler extends OlLayerHandler {
 	_delayedUpdateMfpPreview(center) {
 		const timeOut = this._previewDelayTime;
 		const translate = (key) => this._translationService.translate(key);
-		if (!this._previewDelayTimeoutId) {
-			this._previewDelayTimeoutId = setTimeout(() => {
-				this._beingDragged = false;
-				this._updateMfpPreview(center);
-				const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
-				if (!inPrintableArea) {
-					this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
-				}
-				this._previewDelayTimeoutId = null;
-			}, timeOut);
+		if (this._previewDelayTimeoutId) {
+			clearTimeout(this._previewDelayTimeoutId);
+			this._previewDelayTimeoutId = null;
 		}
+		this._previewDelayTimeoutId = setTimeout(() => {
+			this._beingDragged = false;
+			this._updateMfpPreview(center);
+			const inPrintableArea = this._mfpBoundaryFeature.get('inPrintableArea');
+			if (!inPrintableArea) {
+				this._warnOnce(translate('olMap_handler_mfp_distortion_warning'));
+			}
+			this._previewDelayTimeoutId = null;
+		}, timeOut);
+
 	}
 
 	_getPixelCoordinates() {
@@ -227,11 +229,6 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getBeingDragged() {
 		return this._beingDragged;
-	}
-
-	_getLocales() {
-		const { ConfigService: configService } = $injector.inject('ConfigService');
-		return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
 	}
 
 	_getAverageDeviationFromEquator(smercCoordinate) {
