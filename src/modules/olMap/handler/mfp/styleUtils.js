@@ -1,4 +1,4 @@
-import { Style } from 'ol/style';
+import { Style, Fill, Circle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
@@ -34,6 +34,15 @@ export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 
 	return [renderStyle];
 };
+
+export const forceRenderStyle = new Style({
+	image: new Circle({
+		fill: new Fill({
+			color: [255, 128, 0, 0]
+		}),
+		radius: 1
+	})
+});
 
 export const nullStyleFunction = () => [new Style({})];
 

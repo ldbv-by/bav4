@@ -6,12 +6,13 @@ import { OlLayerHandler } from '../OlLayerHandler';
 import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import { Feature } from 'ol';
-import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction } from './styleUtils';
+import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction, forceRenderStyle } from './styleUtils';
 import { MFP_LAYER_ID } from '../../../../plugins/ExportMfpPlugin';
 import { getAzimuthFrom, getBoundingBoxFrom, getPolygonFrom } from '../../utils/olGeometryUtils';
 import { toLonLat } from 'ol/proj';
 import { equals, getIntersection } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { unByKey } from 'ol/Observable';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -37,6 +38,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._encoder = mfp3Encoder;
 		this._mfpLayer = null;
 		this._mfpBoundaryFeature = new Feature();
+		this._forceRenderFeature = new Feature();
 		this._map = null;
 		this._registeredObservers = [];
 		this._pageSize = null;
@@ -55,7 +57,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._map = olMap;
 		if (this._mfpLayer === null) {
-			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature] });
+			const source = new VectorSource({ wrapX: false, features: [this._mfpBoundaryFeature, this._forceRenderFeature] });
 			this._mfpLayer = new VectorLayer({
 				source: source
 			});
@@ -65,10 +67,15 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._mfpLayer.on('prerender', (event) => event.context.save());
 			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, () => this._getPixelCoordinates()));
 			this._registeredObservers = this._register(this._storeService.getStore());
-			// Initialize boundaryFeature with centerpoint to get a first valid
+
+			// Initialize forceRenderFeature with centerpoint to get a first valid
 			// feature-geometry for the postrender-event. The postrender-event is
 			// not fired, if there is no geometry at all.
-			this._mfpBoundaryFeature.setGeometry(new Point(this._map.getView().getCenter()));
+			this._forceRenderFeature.setGeometry(new Point(this._map.getView().getCenter()));
+			this._forceRenderFeature.setStyle(forceRenderStyle);
+			this._mapListener = this._map.on('precompose', () => this._updateForceRenderFeature());
+
+
 			this._updateMfpPage(mfpSettings);
 			this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
 		}
@@ -84,7 +91,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
 		this._unregister(this._registeredObservers);
-		this._listeners = [];
+		unByKey(this._mapListener);
 		this._mfpLayer = null;
 		this._map = null;
 		this._visibleViewport = null;
@@ -153,6 +160,17 @@ export class OlMfpHandler extends OlLayerHandler {
 		};
 
 		this._pageSize = toGeographicSize(layoutSize);
+	}
+
+	_updateForceRenderFeature() {
+		if (!this._map) {
+			return;
+		}
+		const center = this._map.getView().getCenter();
+		const currentCenter = this._forceRenderFeature.getGeometry().getCoordinates();
+		if (center[0] !== currentCenter[0] && center[1] !== currentCenter[1]) {
+			this._forceRenderFeature.setGeometry(new Point(this._map.getView().getCenter()));
+		}
 	}
 
 	_updateMfpPreview(center) {
