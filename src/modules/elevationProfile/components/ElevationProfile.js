@@ -6,10 +6,14 @@ import { $injector } from '../../../injection';
 
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
+import { createUniqueId } from '../../../utils/numberUtils';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
 const Enrich_Profile_Data = 'enrich_profile_data';
+
+export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 
 /**
  * different types of slope
@@ -355,7 +359,6 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
-		console.log('🚀 ~ altitudeData', altitudeData);
 		const translate = (key) => this._translationService.translate(key);
 		const config = {
 			type: 'line',
@@ -408,19 +411,16 @@ export class ElevationProfile extends MvuElement {
 						intersect: false,
 						callbacks: {
 							title: (tooltipItems) => {
-								console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ tooltipItems', tooltipItems);
-								const { parsed } = tooltipItems[0];
-								console.log('🚀 ~ file: ProfileN.js ~ line 1727 ~ parsed', parsed);
+								// console.log('🚀 ~ file: ElevationProfile.js:410 ~ tooltipItems', tooltipItems);
 
+								const { parsed } = tooltipItems[0];
 								const index = altitudeData.labels.indexOf(parsed.x);
-								console.log('🚀 ~ file: ElevationProfile.js:416 ~ ElevationProfile ~ _getChartConfig ~ index', index);
 
 								// const found = altitudeData.elevations.find(element => {
 								//     return element.dist === parsed.x;
 								// });
 								if (index > -1) {
 									const found = altitudeData.elevations[index];
-									console.log('🚀 ~ found', found);
 									this.setCoordinates([found.e, found.n]);
 								}
 
@@ -444,9 +444,15 @@ export class ElevationProfile extends MvuElement {
 		return config;
 	}
 
+
 	setCoordinates(coordinates) {
 		// TODO NK action??
-		console.log(coordinates);
+		// console.log(coordinates);
+		removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+		addHighlightFeatures({
+			id: TEMPORARY_FEATURE_HIGHLIGHT_ID,
+			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
+		});
 	}
 
 	_updateChart(labels, data) {

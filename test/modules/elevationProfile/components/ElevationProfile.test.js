@@ -6,6 +6,8 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 import { TestUtils } from '../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
+// import {  ChartData} from 'chart.js/auto';
+// import { Chart } from 'chart.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -634,4 +636,77 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.BORDER_COLOR).toBe('#AA2266');
 		});
 	});
+
+
+	describe('when mouse xxx  ', () => {
+
+		fit('should call _updateChart() and update the view', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			//act
+			// const target = element.shadowRoot.querySelector('.altitudeprofile');
+			const target = element.shadowRoot.querySelectorAll('.chart-container canvas')[0];
+			// console.log('🚀 ~ target', target);
+
+			const chart = element._chart;
+
+			// console.log('🚀 ~ chart', chart);
+
+
+			// trigger mousemove event
+			chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
+				clientX: 50,
+				clientY: 50
+			}));
+
+			// check if tooltip is displayed with correct value
+			const tooltip = element.shadowRoot.querySelector('.chartjs-tooltip');
+			console.log('🚀 ~ file: ElevationProfile.test.js:677 ~ fit ~ tooltip.innerText', tooltip.innerText);
+			expect(tooltip.innerText).toEqual('10');
+		});
+	});
+
+	describe('Chart hover test', () => {
+		let chart;
+
+		beforeEach(() => {
+			// initialize chart
+			chart = new Chart(document.getElementById('chart'), {
+				type: 'line',
+				data: {
+					labels: ['January', 'February', 'March'],
+					datasets: [{
+						label: 'Sales',
+						data: [10, 20, 30]
+					}]
+				}
+			});
+		});
+
+		it('should display data value on hover', () => {
+			console.log('🚀 ~ file: ElevationProfile.test.js:691 ~ fit ~ chart', chart);
+			// trigger mousemove event
+			chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
+				clientX: 50,
+				clientY: 50
+			}));
+
+			// check if tooltip is displayed with correct value
+			const tooltip = document.querySelector('.chartjs-tooltip');
+			expect(tooltip.innerText).toEqual('10');
+		});
+	});
+
+
 });
