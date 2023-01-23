@@ -48,7 +48,7 @@ module.exports = {
 			chunks: ['config', 'bundle']
 		}),
 		new HtmlWebpackPlugin({
-			filename: 'embed/index.html',
+			filename: 'embed.html',
 			template: 'src/embed.html',
 			templateParameters: templateParameters,
 			chunks: ['config', 'embed']
