@@ -16,7 +16,7 @@ import { TestUtils } from '../../../../test-utils';
 import { register } from 'ol/proj/proj4';
 import { Polygon, Point } from 'ol/geom';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
-import { changeCenter } from '../../../../../src/store/position/position.action';
+import { changeCenter, changeLiveZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
 import RenderEvent from 'ol/render/Event';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
@@ -174,7 +174,7 @@ describe('OlMfpHandler', () => {
 			const actualLayer = handler.activate(map);
 
 			expect(actualLayer).toBeTruthy();
-			expect(handler._registeredObservers).toHaveSize(6);
+			expect(handler._registeredObservers).toHaveSize(7);
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -285,6 +285,23 @@ describe('OlMfpHandler', () => {
 
 			expect(handler._beingDragged).toBeFalse();
 			expect(handler._previewDelayTimeoutId).toBe(42);
+		});
+
+		it('updates internal beingDragged state immediately after store changes by app', async () => {
+			const map = setupMap();
+			const previewDelayTime = 0;
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler._previewDelayTime = previewDelayTime;
+			handler.activate(map);
+			// wait for first delayedPreview after activation
+			await TestUtils.timeout(previewDelayTime + 10);
+			changeLiveZoom();
+
+			expect(handler._beingDragged).toBeTrue();
+			expect(handler._previewDelayTimeoutId).toBeNull();
+
 		});
 
 		it('updates delayed mfpPreview after store changes by user interaction', async () => {
