@@ -433,11 +433,11 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
 			handler._previewDelayTime = previewDelayTime;
+			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => { });
 			handler.activate(map);
 
 			setBeingDragged(true);
 
-			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callFake(() => { });
 			setBeingDragged(false);
 
 			await TestUtils.timeout(previewDelayTime + 10);
@@ -467,12 +467,15 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			const store = setup();
-			const notificationSpy = jasmine.createSpy('notification').withArgs(jasmine.objectContaining({ _payload:	jasmine.objectContaining({ content: 'olMap_handler_mfp_distortion_warning' }) }), jasmine.anything()).and.callFake(() => {});
+			const notificationSpy = jasmine.createSpy('notification').withArgs(
+				jasmine.objectContaining({ _payload: jasmine.objectContaining({ content: 'olMap_handler_mfp_distortion_warning' }) }),
+				jasmine.anything()
+			).and
+				.callFake(() => {});
 			observe(store, (state) => state.notifications.latest, notificationSpy);
 			const handler = new OlMfpHandler();
 			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
 			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
-
 
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
@@ -492,24 +495,6 @@ describe('OlMfpHandler', () => {
 			expect(warnOnceSpy).toHaveBeenCalledTimes(2);
 			expect(notificationSpy).toHaveBeenCalledTimes(1);
 		});
-
-		it('warns with a i18n message', async () => {
-			const map = setupMap();
-			const previewDelayTime = 0;
-			const store = setup();
-			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
-			handler._previewDelayTime = previewDelayTime;
-			handler.activate(map);
-
-			setBeingDragged(true);
-
-			setBeingDragged(false);
-			await TestUtils.timeout(previewDelayTime + 10);
-
-			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_distortion_warning');
-		});
-
 	});
 
 	describe('when deactivate', () => {
