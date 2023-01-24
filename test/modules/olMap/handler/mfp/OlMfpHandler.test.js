@@ -14,7 +14,7 @@ import { TestUtils } from '../../../../test-utils';
 
 
 import { register } from 'ol/proj/proj4';
-import { Polygon, Point } from 'ol/geom';
+import { Polygon, Point, Geometry } from 'ol/geom';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
@@ -24,6 +24,7 @@ import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action
 import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
+import { simulateMapEvent } from '../../mapTestUtils';
 
 
 describe('OlMfpHandler', () => {
@@ -243,6 +244,39 @@ describe('OlMfpHandler', () => {
 			changeCenter(center);
 
 			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates forceRenderFeature on map.precompose changes', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+			handler._forceRenderFeature.setGeometry(new Point([0, 0]));
+			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
+			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').withArgs(jasmine.any(Geometry)).and.callThrough();
+			simulateMapEvent(map, 'precompose');
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(geometrySpy).toHaveBeenCalled();
+		});
+
+		it('skips unnecessary updates to forceRenderFeature on map.precompose changes', () => {
+			// map and view is init with the initialCenter
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+			handler._forceRenderFeature.setGeometry(new Point(initialCenter));
+
+			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
+			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').and.callThrough();
+			// the center of the map is still initialCenter
+			simulateMapEvent(map, 'precompose');
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(geometrySpy).not.toHaveBeenCalled();
 		});
 
 		it('updates internal beingDragged state immediately after store changes by user interaction with the map', async () => {

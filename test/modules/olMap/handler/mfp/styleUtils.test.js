@@ -5,7 +5,8 @@ import { get as getProjection } from 'ol/proj';
 import RenderEvent from 'ol/render/Event';
 
 import { Style } from 'ol/style';
-import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
+import CircleStyle from 'ol/style/Circle';
+import { nullStyleFunction, createThumbnailStyleFunction, createMapMaskFunction, forceRenderStyle } from '../../../../../src/modules/olMap/handler/mfp/styleUtils';
 
 describe('mfp style utility functions', () => {
 
@@ -78,7 +79,7 @@ describe('mfp style utility functions', () => {
 			expect(renderState.context.strokeStyle).toBe('rgba(9, 157, 220, 0.5)');
 		});
 
-		it('should use the warnstyle for a feature out of the printable area', () => {
+		it('should use the warnStyle for a feature out of the printable area', () => {
 			const pixelCoordinates = [[[5, 5], [6, 5], [6, 6], [5, 6], [5, 5]]];
 			const renderState = getRenderState({ feature: new Feature({ 'inPrintableArea': false }) });
 			const spy = spyOn(renderState.context, 'beginPath').and.callThrough();
@@ -110,6 +111,15 @@ describe('mfp style utility functions', () => {
 			expect(styles[0].getFill()).toBeNull();
 			expect(styles[0].getImage()).toBeNull();
 			expect(styles[0].getText()).toBeNull();
+		});
+	});
+
+	describe('forceRenderStyle', () => {
+
+		it('have a transparent imageStyle', () => {
+			expect(forceRenderStyle.getImage()).toEqual(jasmine.any(CircleStyle));
+			expect(forceRenderStyle.getImage().getRadius()).toBe(1);
+			expect(forceRenderStyle.getImage().getFill().getColor()).toEqual([255, 128, 0, 0]);
 		});
 	});
 

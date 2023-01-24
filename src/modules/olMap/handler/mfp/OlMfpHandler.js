@@ -112,7 +112,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			}),
 			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
 			observe(store, state => state.position.center, () => this._updateMfpPreview(this._getVisibleCenterPoint())),
-			// zoom is always initialized by the application and the internal beingDragged-state must be set accordingly
+			// zoom-animation is always initialized by the application and the internal beingDragged-state must be set accordingly
 			observe(store, state => state.position.liveZoom, () => this._beingDragged = true),
 			observe(store, state => state.map.moveStart, () => {
 				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
@@ -165,12 +165,10 @@ export class OlMfpHandler extends OlLayerHandler {
 	}
 
 	_updateForceRenderFeature() {
-		if (!this._map) {
-			return;
-		}
 		const center = this._map.getView().getCenter();
 		const currentCenter = this._forceRenderFeature.getGeometry().getCoordinates();
-		if (center[0] !== currentCenter[0] && center[1] !== currentCenter[1]) {
+
+		if (center[0] !== currentCenter[0] || center[1] !== currentCenter[1]) {
 			this._forceRenderFeature.setGeometry(new Point(this._map.getView().getCenter()));
 		}
 	}
