@@ -60,6 +60,7 @@ export class OlMap extends MvuElement {
 		this._geoResourceService = georesourceService;
 		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
 		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler]]);
+		this._unsubscribers = [];
 	}
 
 	/**
@@ -89,9 +90,11 @@ export class OlMap extends MvuElement {
 	 */
 	onInitialize() {
 		//observe global state (position, active layers, orientation)
-		this.observe(state => state.position, data => this.signal(Update_Position, data));
-		this.observe(state => state.layers.active, data => this.signal(Update_Layers, data));
-		this.observe(state => state.media.portrait, () => this._map.updateSize(), false);
+		this._unsubscribers = [
+			this.observe(state => state.position, data => this.signal(Update_Position, data)),
+			this.observe(state => state.layers.active, data => this.signal(Update_Layers, data)),
+			this.observe(state => state.media.portrait, () => this._map.updateSize(), false)
+		];
 
 		const { zoom, center, rotation } = this.getModel();
 
@@ -208,6 +211,10 @@ export class OlMap extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
+		while (this._unsubscribers.length > 0) {
+			this._unsubscribers.shift()();
+		}
+		this._map?.setTarget(null);
 		this._map = null;
 		this._view = null;
 	}
