@@ -10,7 +10,7 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				iframe_non_embedded_hint: 'Die BayernAtlas IFrame API muss über ein iframe -Element eingebunden werden.'
+				iframe_non_embedded_hint: 'Die BayernAtlas IFrame API muss über ein iframe-Element eingebunden werden.'
 			};
 
 		default:
