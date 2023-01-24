@@ -467,14 +467,15 @@ describe('OlMfpHandler', () => {
 			const map = setupMap();
 			const previewDelayTime = 0;
 			const store = setup();
-			const onChangeNotificationSpy = jasmine.createSpy();
-			observe(store, (state) => state.notifications.latest, onChangeNotificationSpy);
+			const notificationSpy = jasmine.createSpy('notification').withArgs(jasmine.objectContaining({ _payload:	jasmine.objectContaining({ content: 'olMap_handler_mfp_distortion_warning' }) }), jasmine.anything()).and.callFake(() => {});
+			observe(store, (state) => state.notifications.latest, notificationSpy);
 			const handler = new OlMfpHandler();
 			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
 			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
+
+
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
-			onChangeNotificationSpy.calls.reset();
 			warnOnceSpy.calls.reset();
 
 			setBeingDragged(true);
@@ -488,7 +489,7 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout(previewDelayTime + 10);
 
 			expect(warnOnceSpy).toHaveBeenCalledTimes(2);
-			expect(onChangeNotificationSpy).toHaveBeenCalledTimes(1);
+			expect(notificationSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('warns with a i18n message', async () => {
