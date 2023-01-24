@@ -476,6 +476,7 @@ describe('OlMfpHandler', () => {
 
 			handler._previewDelayTime = previewDelayTime;
 			handler.activate(map);
+			notificationSpy.calls.reset();
 			warnOnceSpy.calls.reset();
 
 			setBeingDragged(true);
