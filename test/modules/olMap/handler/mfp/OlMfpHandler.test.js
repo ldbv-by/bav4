@@ -467,7 +467,7 @@ describe('OlMfpHandler', () => {
 			const warnText = 'FooBarBaz_WarnText';
 
 			const store = setup();
-			const notificationSpy = jasmine.createSpy('notification').withArgs(jasmine.objectContaining({ _payload:	jasmine.objectContaining({ content: warnText }) }), jasmine.anything()).and.callFake(() => {});
+			const notificationSpy = jasmine.createSpy('notification').and.callFake(() => {});
 			observe(store, (state) => state.notifications.latest, notificationSpy);
 			const handler = new OlMfpHandler();
 			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
@@ -475,8 +475,9 @@ describe('OlMfpHandler', () => {
 			handler._warnOnce(warnText);
 			handler._warnOnce(warnText);
 			handler._warnOnce(warnText);
+
 			expect(warnOnceSpy).toHaveBeenCalledTimes(3);
-			expect(notificationSpy).toHaveBeenCalledTimes(1);
+			expect(notificationSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ _payload:	jasmine.objectContaining({ content: warnText }) }), jasmine.anything());
 		});
 
 		it('warns with a i18n message', async () => {
