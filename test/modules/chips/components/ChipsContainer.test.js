@@ -14,6 +14,8 @@ window.customElements.define(ChipsContainer.tag, ChipsContainer);
 
 describe('ChipsContainer', () => {
 
+	const animationTimeout = 200;
+
 	const chipsConfiguration1 = [{
 		'id': 'ID1',
 		'title': 'Permanent',
@@ -349,7 +351,7 @@ describe('ChipsContainer', () => {
 
 			// let's make the scroll buttons visible by minimizing the containers width
 			container.style.width = '1px';
-			await TestUtils.timeout(100 /** give the browser some time */);
+			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 
 			expect(container.classList.contains('show')).toBeTrue();
 			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
@@ -461,20 +463,20 @@ describe('ChipsContainer', () => {
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 			// let's make the scroll buttons visible by minimizing the containers width
 			container.style.width = '1px';
-			await TestUtils.timeout(100 /** give the browser some time */);
+			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 			expect(container.classList.contains('show')).toBeTrue();
 			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
 
 			// scroll right
 			scrollButton[1].click();
-			await TestUtils.timeout(100 /** give the browser some time */);
+			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 
 			const scrolledInPx = container.scrollLeft;
 			expect(scrolledInPx).toBeGreaterThan(0);
 
 			// scroll left
 			scrollButton[0].click();
-			await TestUtils.timeout(100 /** give the browser some time */);
+			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 
 			expect(container.scrollLeft).toBeLessThan(scrolledInPx);
 		});
