@@ -14,7 +14,7 @@ import { TestUtils } from '../../../../test-utils';
 
 
 import { register } from 'ol/proj/proj4';
-import { Polygon, Point } from 'ol/geom';
+import { Polygon, Point, Geometry } from 'ol/geom';
 import { requestJob, setCurrent } from '../../../../../src/store/mfp/mfp.action';
 import { changeCenter, changeLiveZoom } from '../../../../../src/store/position/position.action';
 import proj4 from 'proj4';
@@ -24,6 +24,7 @@ import { setBeingDragged } from '../../../../../src/store/pointer/pointer.action
 import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMoveEnd } from '../../../../../src/store/map/map.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
+import { simulateMapEvent } from '../../mapTestUtils';
 
 
 describe('OlMfpHandler', () => {
@@ -125,6 +126,7 @@ describe('OlMfpHandler', () => {
 		expect(handler._previewDelayTime).toBe(1500);
 		expect(handler._mfpLayer).toBeNull();
 		expect(handler._map).toBeNull();
+		expect(handler._mapListener).toBeNull();
 		expect(handler._pageSize).toBeNull();
 		expect(handler._alreadyWarned).toBeFalse();
 	});
@@ -166,7 +168,7 @@ describe('OlMfpHandler', () => {
 			expect(restoreContextSpy).toHaveBeenCalled();
 		});
 
-		it('registers observer', () => {
+		it('registers observer and mapListeners', () => {
 			const map = setupMap();
 			setup();
 
@@ -175,6 +177,7 @@ describe('OlMfpHandler', () => {
 
 			expect(actualLayer).toBeTruthy();
 			expect(handler._registeredObservers).toHaveSize(7);
+			expect(handler._mapListener).toEqual(jasmine.any(Object));
 		});
 
 		it('initializing mfpBoundaryFeature only once', () => {
@@ -241,6 +244,39 @@ describe('OlMfpHandler', () => {
 			changeCenter(center);
 
 			expect(updateSpy).toHaveBeenCalled();
+		});
+
+		it('updates forceRenderFeature on map.precompose changes', () => {
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+			handler._forceRenderFeature.setGeometry(new Point([0, 0]));
+			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
+			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').withArgs(jasmine.any(Geometry)).and.callThrough();
+			simulateMapEvent(map, 'precompose');
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(geometrySpy).toHaveBeenCalled();
+		});
+
+		it('skips unnecessary updates to forceRenderFeature on map.precompose changes', () => {
+			// map and view is init with the initialCenter
+			const map = setupMap();
+			setup();
+
+			const handler = new OlMfpHandler();
+			handler.activate(map);
+			handler._forceRenderFeature.setGeometry(new Point(initialCenter));
+
+			const updateSpy = spyOn(handler, '_updateForceRenderFeature').and.callThrough();
+			const geometrySpy = spyOn(handler._forceRenderFeature, 'setGeometry').and.callThrough();
+			// the center of the map is still initialCenter
+			simulateMapEvent(map, 'precompose');
+
+			expect(updateSpy).toHaveBeenCalled();
+			expect(geometrySpy).not.toHaveBeenCalled();
 		});
 
 		it('updates internal beingDragged state immediately after store changes by user interaction with the map', async () => {
@@ -428,30 +464,20 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('warns only ONCE', async () => {
-			const map = setupMap();
-			const previewDelayTime = 0;
+			const warnText = 'FooBarBaz_WarnText';
+
 			const store = setup();
-			const onChangeNotificationSpy = jasmine.createSpy();
-			observe(store, (state) => state.notifications.latest, onChangeNotificationSpy);
+			const notificationSpy = jasmine.createSpy('notification').and.callFake(() => {});
+			observe(store, (state) => state.notifications.latest, notificationSpy);
 			const handler = new OlMfpHandler();
-			spyOn(handler, '_updateMfpPreview').and.callFake(() => handler._mfpBoundaryFeature.set('inPrintableArea', false));
 			const warnOnceSpy = spyOn(handler, '_warnOnce').and.callThrough();
-			handler._previewDelayTime = previewDelayTime;
-			handler.activate(map);
-			warnOnceSpy.calls.reset();
 
-			setBeingDragged(true);
+			handler._warnOnce(warnText);
+			handler._warnOnce(warnText);
+			handler._warnOnce(warnText);
 
-			setBeingDragged(false);
-			await TestUtils.timeout(previewDelayTime + 10);
-
-			setBeingDragged(true);
-
-			setBeingDragged(false);
-			await TestUtils.timeout(previewDelayTime + 10);
-
-			expect(warnOnceSpy).toHaveBeenCalledTimes(2);
-			expect(onChangeNotificationSpy).toHaveBeenCalledTimes(1);
+			expect(warnOnceSpy).toHaveBeenCalledTimes(3);
+			expect(notificationSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ _payload:	jasmine.objectContaining({ content: warnText }) }), jasmine.anything());
 		});
 
 		it('warns with a i18n message', async () => {
@@ -474,7 +500,7 @@ describe('OlMfpHandler', () => {
 	});
 
 	describe('when deactivate', () => {
-		it('unregisters observer amd reset session state', async () => {
+		it('unregisters observer and reset session state', async () => {
 			const previewDelayTime = 0;
 			const map = setupMap();
 			setup();
@@ -490,8 +516,8 @@ describe('OlMfpHandler', () => {
 			expect(handler._mfpLayer).toBeNull();
 			expect(handler._visibleViewport).toBeNull();
 			expect(handler._map).toBeNull();
+			expect(handler._mapListener).toBeNull();
 			expect(handler._alreadyWarned).toBeFalse();
-			expect(handler._listeners).toEqual([]);
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
 	});
