@@ -7,14 +7,14 @@ describe('i18n for iframe module', () => {
 
 		const map = provide('de');
 
-		expect(map.iframe_non_embedded_hint).toBe('Die BayernAtlas IFrame API muss über ein iframe-Element eingebunden werden.');
+		expect(map.iframe_non_embedded_hint).toBe('Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.iframe_non_embedded_hint).toBe('The BayernAtlas Embed API must be used in an iframe.');
+		expect(map.iframe_non_embedded_hint).toBe('The BayernAtlas Iframe API must be used in an iframe.');
 	});
 
 	it('have the expected amount of translations', () => {
