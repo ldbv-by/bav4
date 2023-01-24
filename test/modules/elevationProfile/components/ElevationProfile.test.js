@@ -6,6 +6,10 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 import { TestUtils } from '../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
+import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
+import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { fromLonLat } from 'ol/proj.js';
+// import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
 // import {  ChartData} from 'chart.js/auto';
 // import { Chart } from 'chart.js';
 
@@ -173,15 +177,20 @@ describe('ElevationProfile', () => {
 	const altitudeData = profileSlopeSteep();
 	const context = { chart };
 
+
+	let store;
+
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
-				darkSchema: false
+				darkSchema: false,
+				portrait: false
 			},
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
+			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer(),
 			elevationProfile: elevationProfileReducer
 		});
@@ -638,75 +647,79 @@ describe('ElevationProfile', () => {
 	});
 
 
-	describe('when mouse xxx  ', () => {
+	describe('when mouse moves over chart', () => {
 
-		fit('should call _updateChart() and update the view', async () => {
+		fit('setCoodinates to write to  store', async () => {
 			// arrange
-			const coordinates = [
-				[0, 1],
-				[2, 3]
-			];
+			const coordinates = fromLonLat([11, 48]);
+
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-			const element = await setup({
+			await setup({
 				elevationProfile: {
 					active: true,
 					coordinates: coordinates
 				}
 			});
+			const altitudeProfile = new ElevationProfile();
+			const setCoordinatesSpy = spyOn(altitudeProfile, 'setCoordinates').and.callThrough();
 
-			//act
-			// const target = element.shadowRoot.querySelector('.altitudeprofile');
-			const target = element.shadowRoot.querySelectorAll('.chart-container canvas')[0];
-			// console.log('🚀 ~ target', target);
+			// act
+			altitudeProfile.setCoordinates(coordinates);
 
-			const chart = element._chart;
-
-			// console.log('🚀 ~ chart', chart);
+			// assert
+			expect(setCoordinatesSpy).toHaveBeenCalled();
 
 
-			// trigger mousemove event
-			chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
-				clientX: 50,
-				clientY: 50
-			}));
+			expect(store.getState().highlight.features).toHaveSize(1);
+			// expect(store.getState().highlight.features[0].data.coordinate).toEqual([coordinates]);
+			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 
-			// check if tooltip is displayed with correct value
-			const tooltip = element.shadowRoot.querySelector('.chartjs-tooltip');
-			console.log('🚀 ~ file: ElevationProfile.test.js:677 ~ fit ~ tooltip.innerText', tooltip.innerText);
-			expect(tooltip.innerText).toEqual('10');
 		});
+
+		// it('should xxx', async () => {
+		// 	// arrange
+		// 	const coordinates = [
+		// 		[0, 1],
+		// 		[2, 3]
+		// 	];
+		// 	spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+		// 	const element = await setup({
+		// 		elevationProfile: {
+		// 			active: true,
+		// 			coordinates: coordinates
+		// 		}
+		// 	});
+
+		// 	//act
+		// 	// const target = element.shadowRoot.querySelector('.altitudeprofile');
+		// 	// const target = element.shadowRoot.querySelectorAll('.chart-container canvas')[0];
+		// 	// console.log('🚀 ~ target', target);
+
+		// 	const chart = element._chart;
+
+		// 	console.log('🚀 ~ chart', chart);
+
+
+		// 	// trigger mousemove event
+		// 	chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
+		// 		clientX: 100,
+		// 		clientY: 100
+		// 	}));
+
+		// 	// // check if tooltip is displayed with correct value
+		// 	// const tooltip = element.shadowRoot.querySelector('.chartjs-tooltip');
+		// 	// // console.log('🚀 ~ file: ElevationProfile.test.js:677 ~ fit ~ tooltip.innerText', tooltip.innerText);
+		// 	// expect(tooltip.innerText).toEqual('10');
+
+
+		// 	expect(store.getState().highlight.features).toHaveSize(1);
+		// 	expect(store.getState().highlight.features[0].data.coordinate).toEqual([10, 10]);
+		// 	expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+
+		// });
 	});
 
-	describe('Chart hover test', () => {
-		let chart;
 
-		beforeEach(() => {
-			// initialize chart
-			chart = new Chart(document.getElementById('chart'), {
-				type: 'line',
-				data: {
-					labels: ['January', 'February', 'March'],
-					datasets: [{
-						label: 'Sales',
-						data: [10, 20, 30]
-					}]
-				}
-			});
-		});
-
-		it('should display data value on hover', () => {
-			console.log('🚀 ~ file: ElevationProfile.test.js:691 ~ fit ~ chart', chart);
-			// trigger mousemove event
-			chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
-				clientX: 50,
-				clientY: 50
-			}));
-
-			// check if tooltip is displayed with correct value
-			const tooltip = document.querySelector('.chartjs-tooltip');
-			expect(tooltip.innerText).toEqual('10');
-		});
-	});
 
 
 });

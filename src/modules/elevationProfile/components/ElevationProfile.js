@@ -411,14 +411,8 @@ export class ElevationProfile extends MvuElement {
 						intersect: false,
 						callbacks: {
 							title: (tooltipItems) => {
-								// console.log('🚀 ~ file: ElevationProfile.js:410 ~ tooltipItems', tooltipItems);
-
 								const { parsed } = tooltipItems[0];
 								const index = altitudeData.labels.indexOf(parsed.x);
-
-								// const found = altitudeData.elevations.find(element => {
-								//     return element.dist === parsed.x;
-								// });
 								if (index > -1) {
 									const found = altitudeData.elevations[index];
 									this.setCoordinates([found.e, found.n]);
@@ -429,13 +423,6 @@ export class ElevationProfile extends MvuElement {
 							label: (tooltipItem) => {
 								return 'Elevation: ' + tooltipItem.raw + 'm test test';
 							}
-							// ,
-							// labelPointStyle: function () {
-							// 	return {
-							// 		pointStyle: 'triangle',
-							// 		rotation: 0
-							// 	};
-							// }
 						}
 					}
 				}
