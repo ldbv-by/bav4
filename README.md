@@ -101,9 +101,9 @@ To enable the showcase component, the `SOFTWARE_INFO` property must be set.
 
 | Path | |
 |----|----|
-| `"/"` and `"/index.html"` | Serves the default page |
-| `"/embed.html"` | Serves a page that can be embedded via an iframe   |
-| `"/embed/wrapper"` | Serves a wrapper page for `/embed.html`. Useful for dev and testing purposes (passes its query parameters to `/embed.html`)|
+| `/` and `/index.html` | Serves the default page |
+| `/embed.html` | Serves a page that can be embedded via an iframe   |
+| `/embed/wrapper` | Serves a wrapper page for `/embed.html`. Useful for dev and testing purposes (passes its query parameters to `/embed.html`)|
 
 ## Structure
 
