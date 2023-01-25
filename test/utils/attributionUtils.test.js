@@ -6,8 +6,8 @@ describe('attributionUtils', () => {
 
 	describe('getUniqueCopyrightList', () => {
 
-		it('should return an unique array of copyright objects', () => {
-			const geoResources = [
+		const getGeoResources = () => {
+			return [
 				new XyzGeoResource('geoResourceId0', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`)),
 				//array of copyright
 				new XyzGeoResource('geoResourceId1', '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
@@ -24,12 +24,22 @@ describe('attributionUtils', () => {
 				new XyzGeoResource('geoResourceId4', '', '').setAttributionProvider(() => ({ copyright: null })),
 				new XyzGeoResource('geoResourceId5', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`))
 			];
+		};
 
-			const copyrights = getUniqueCopyrights(geoResources, 5);
+		it('should return an unique array of copyright objects', () => {
+			const copyrights = getUniqueCopyrights(getGeoResources(), 5);
 
 			expect(copyrights).toHaveSize(2);
 			expect(copyrights[0].label).toBe('bar_5');
 			expect(copyrights[1].label).toBe('foo_5');
+		});
+
+		it('should return an unique array of copyright objects when no zoomLevel is provided', () => {
+			const copyrights = getUniqueCopyrights(getGeoResources());
+
+			expect(copyrights).toHaveSize(2);
+			expect(copyrights[0].label).toBe('bar_0');
+			expect(copyrights[1].label).toBe('foo_0');
 		});
 
 		it('should return an empy array when no GeoResouces are provided', () => {

@@ -4,7 +4,7 @@
  * @param {number} [zoomLevel=0] zoomLevel
  * @returns unique array of Copyright objects
  */
-export const getUniqueCopyrights = (geoResources = [], zoomLevel) => {
+export const getUniqueCopyrights = (geoResources = [], zoomLevel = 0) => {
 
 	const availableCopyrights = geoResources
 		.map(g => g.getAttribution(zoomLevel))
