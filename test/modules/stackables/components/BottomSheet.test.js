@@ -6,11 +6,13 @@ import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { toggle } from '../../../../src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
-
+	let store = null;
 	const setup = async (content, state = {}) => {
 
 		const initialState = {
@@ -23,7 +25,7 @@ describe('BottomSheet', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), bottomSheet: bottomSheetReducer });
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
 		element.content = content;
@@ -153,12 +155,14 @@ describe('BottomSheet', () => {
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
+			openBottomSheet(true);
 
+			expect(store.getState().bottomSheet.data).not.toBeNull();
 			expect(contentElement.innerText).toContain('FooBar');
 
 			closeButton.click();
 
-			expect(contentElement.innerText).toContain('FooBar');
+			expect(store.getState().bottomSheet.data).toBeNull();
 
 		});
 	});
