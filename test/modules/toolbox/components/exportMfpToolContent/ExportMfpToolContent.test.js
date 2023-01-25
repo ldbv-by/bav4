@@ -2,9 +2,11 @@ import { $injector } from '../../../../../src/injection';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
+import { setIsPortrait } from '../../../../../src/store/media/media.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { startJob } from '../../../../../src/store/mfp/mfp.action';
 import { mfpReducer } from '../../../../../src/store/mfp/mfp.reducer';
+import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../../test-utils';
 
@@ -38,7 +40,8 @@ describe('ExportMfpToolContent', () => {
 		const state = {
 			mfp: mfpState,
 			media: {
-				portrait: false
+				portrait: false,
+				observeResponsiveParameter: true
 			}
 		};
 
@@ -75,7 +78,8 @@ describe('ExportMfpToolContent', () => {
 				id: null,
 				scale: null,
 				showGrid: false,
-				isJobStarted: false
+				isJobStarted: false,
+				isPortrait: false
 			});
 		});
 	});
@@ -396,5 +400,21 @@ describe('ExportMfpToolContent', () => {
 			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
 
+	});
+
+	describe('when orientation changes', () => {
+
+		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
+
+			setIsPortrait(true);
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeTrue();
+
+			setIsPortrait(false);
+
+			expect(element.shadowRoot.querySelectorAll(`[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.ba-tool-container').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
+		});
 	});
 });
