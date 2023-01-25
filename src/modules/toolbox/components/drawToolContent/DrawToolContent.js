@@ -574,7 +574,10 @@ export class DrawToolContent extends AbstractToolContent {
 				<div class="tool-container__form">
 				${getStyleTemplate(drawingType, drawingStyle)}
 				</div>				            			
-				<div class='sub-text'>${subText}</div>
+				<div class='sub-text'>
+					${subText}
+					<ba-assist-chips></'ba-assist-chips>
+				</div>
 				<div class="ba-tool-container__actions">                         				
 				${buttons}
 				</div> 
