@@ -1,6 +1,8 @@
 import { html, nothing } from 'lit-html';
 import css from './bottomSheet.css';
 import { MvuElement } from '../../MvuElement';
+import { closeBottomSheet } from '../../../store/bottomSheet/bottomSheet.action';
+import closeIcon from './assets/x-square.svg';
 
 const Update = 'update';
 const Update_Main_Menu = 'update_main_menu';
@@ -53,10 +55,13 @@ export class BottomSheet extends MvuElement {
 
 		const getOverlayClass = () => (open && !portrait) ? 'is-open' : '';
 
+		const onDismiss = () => closeBottomSheet();
+
 		return content ? html`
 		<style>${css}</style>
 		<div class='bottom-sheet ${getOverlayClass()}' data-test-id>
         	${content}
+			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>` : nothing;
 	}
 
