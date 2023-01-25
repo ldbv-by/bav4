@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom, getAzimuthFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom, getAzimuthFrom, getBoundingBoxFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -489,6 +489,24 @@ describe('getPolygonFrom', () => {
 		expect(getPolygonFrom('foo ')).toBeNull();
 
 		expect(getPolygonFrom({})).toBeNull();
+	});
+});
+
+describe('getBoundingBoxFrom', () => {
+	it('creates a boundingbox', () => {
+		expect(getBoundingBoxFrom([10, 0], { width: 4, height: 4 })).toEqual([8, -2, 12, 2]);
+		expect(getBoundingBoxFrom([42, 42], { width: 5, height: 5 })).toEqual([39.5, 39.5, 44.5, 44.5]);
+
+		expect(getBoundingBoxFrom(null, { width: 4, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], null)).toBeUndefined();
+
+		expect(getBoundingBoxFrom(undefined, { width: 4, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], undefined)).toBeUndefined();
+
+		expect(getBoundingBoxFrom([10, 10], { width: 'foo', height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: null, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
 	});
 });
 

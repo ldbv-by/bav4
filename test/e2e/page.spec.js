@@ -12,10 +12,9 @@ test.describe('page', () => {
 
 	test.describe('when loaded', () => {
 
-		test('should contain correct lang attribute', async ({ page }) => {
-			const lang = await page.getAttribute('html', 'lang');
-
-			expect(lang).toBe(templateParameters.lang);
+		test('html tag should contain correct attributes', async ({ page }) => {
+			expect(await page.$(`html[lang='${templateParameters.lang}']`)).toBeTruthy();
+			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
 
 		test('should contain favicon related link tag', async ({ page }) => {
@@ -30,10 +29,6 @@ test.describe('page', () => {
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#fcfdfd');
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'name')).toBe('theme-color');
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2e3538');
-		});
-
-		test('should contain correct translate attribute', async ({ page }) => {
-			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
 
 		test('should contain google specific translate meta tag', async ({ page }) => {

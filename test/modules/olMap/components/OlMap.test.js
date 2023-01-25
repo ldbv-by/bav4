@@ -260,6 +260,21 @@ describe('OlMap', () => {
 		});
 	});
 
+	describe('when disconnected', () => {
+
+		it('removes all observers and resets the map', async () => {
+			const element = await setup();
+			const spy = spyOn(element._map, 'setTarget');
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._unsubscribers).toHaveSize(0);
+			expect(element._map).toBeNull();
+			expect(element._view).toBeNull();
+			expect(spy).toHaveBeenCalledWith(null);
+		});
+	});
+
 	describe('when orientation changes', () => {
 
 		it('updates the map size', async () => {
