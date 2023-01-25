@@ -12,7 +12,9 @@ import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.a
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
-	let store = null;
+
+	let store;
+
 	const setup = async (content, state = {}) => {
 
 		const initialState = {

@@ -66,7 +66,6 @@ export class ElevationProfile extends MvuElement {
 	 */
 	onInitialize() {
 		this.style.width = '100%';
-		// this.style.height = '20em';
 
 		this.observe(
 			(state) => state.media.darkSchema,
@@ -186,7 +185,7 @@ export class ElevationProfile extends MvuElement {
 	`;
 	}
 
-	_enritchAltsArrayWithAttributeData(attribute, profile) {
+	_enrichAltsArrayWithAttributeData(attribute, profile) {
 		const attributeName = attribute.id;
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
@@ -205,7 +204,7 @@ export class ElevationProfile extends MvuElement {
 		profile.chartData = profile.elevations.map((alt) => alt.z);
 
 		profile.attrs.forEach((attr) => {
-			this._enritchAltsArrayWithAttributeData(attr, profile);
+			this._enrichAltsArrayWithAttributeData(attr, profile);
 		});
 		// add alt(itude) to attribute select
 		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
