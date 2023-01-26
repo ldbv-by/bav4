@@ -137,6 +137,7 @@ describe('BvvMfp3Encoder', () => {
 			const encodingProperties = getProperties({ ...defaultProperties, targetSRID: '25832' });
 
 			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
 
 			await encoder.encode(mapMock, encodingProperties);
@@ -148,6 +149,7 @@ describe('BvvMfp3Encoder', () => {
 		it('requests a ShortUrl and QrCode from urlService', async () => {
 			const encoder = new BvvMfp3Encoder();
 			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			const shortenerSpy = spyOn(encoder, '_generateShortUrl').and.resolveTo('foo');
 			const qrCodeSpy = spyOn(encoder, '_generateQrCode').withArgs('foo').and.returnValue('bar');
 
@@ -161,6 +163,7 @@ describe('BvvMfp3Encoder', () => {
 			const expectedScale = 1000;
 			const encodingProperties = getProperties({ ...defaultProperties, showGrid: true, scale: expectedScale });
 			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
 			const gridSpy = spyOn(encoder, '_encodeGridLayer').withArgs(expectedScale).and.callThrough();
 
@@ -184,6 +187,7 @@ describe('BvvMfp3Encoder', () => {
 			const pageCenter = new Point(fromLonLat([11.57245, 48.14021]));
 			const mapCenterSpy = spyOn(viewMock, 'getCenter').and.callThrough();
 			const encoder = new BvvMfp3Encoder();
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 
 			const actualSpec = await encoder.encode(mapMock, getProperties({ pageCenter: pageCenter }));
 
@@ -195,7 +199,7 @@ describe('BvvMfp3Encoder', () => {
 		it('uses the provided pageExtent for the specs', async () => {
 			const mapExtentSpy = spyOn(viewMock, 'calculateExtent').and.callThrough();
 			const encoder = new BvvMfp3Encoder();
-
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			await encoder.encode(mapMock, getProperties({ pageExtent: [0, 0, 42, 21] }));
 
 			expect(mapExtentSpy).not.toHaveBeenCalled();
@@ -215,6 +219,7 @@ describe('BvvMfp3Encoder', () => {
 			const encoder = new BvvMfp3Encoder();
 			const groupLayer = new LayerGroup('foo');
 			const layerMock = { get: () => 'foo' };
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			spyOn(groupLayer, 'getLayers').and.callFake(() => {
 				return { getArray: () => [layerMock, layerMock, layerMock] };
 			});
@@ -260,7 +265,7 @@ describe('BvvMfp3Encoder', () => {
 			const encodingSpy = spyOn(encoder, '_encodeOverlays').and.callFake(() => {
 				return {};
 			});
-
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			await encoder.encode(mapMock, getProperties());
 
 			expect(encodingSpy).toHaveBeenCalled();
@@ -283,6 +288,7 @@ describe('BvvMfp3Encoder', () => {
 			const encoder = new BvvMfp3Encoder();
 			const invisibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => false };
 			const visibleLayerMock = { get: () => 'foo', getExtent: () => [20, 20, 50, 50], getVisible: () => true };
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
 			});
@@ -300,6 +306,8 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(mapMock, 'getLayers').and.callFake(() => {
 				return { getArray: () => [invisibleLayerMock, visibleLayerMock] };
 			});
+
+			spyOn(encoder, '_getCopyrights').and.callFake(() => [{}]);
 			const encodingSpy = spyOn(encoder, '_encode').and.callFake(() => layerSpecMock);
 
 			await encoder.encode(mapMock, getProperties());
@@ -353,7 +361,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Foo CopyRight,Bar CopyRight',
+					dataOwner: 'Bar CopyRight,Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
@@ -396,7 +404,7 @@ describe('BvvMfp3Encoder', () => {
 						dpi: jasmine.any(Number),
 						rotation: null
 					},
-					dataOwner: 'Foo CopyRight,Bar CopyRight,Baz CopyRight',
+					dataOwner: 'Baz CopyRight,Bar CopyRight,Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
 				}
@@ -473,8 +481,7 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: jasmine.any(Object)
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
 			});
 		});
 
@@ -505,8 +512,7 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: jasmine.any(Object)
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
 			});
 		});
 
@@ -537,8 +543,7 @@ describe('BvvMfp3Encoder', () => {
 				requestEncoding: 'REST',
 				matrixSet: 'EPSG:25832',
 				matrices: jasmine.any(Object),
-				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}',
-				attribution: jasmine.any(Object)
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
 			});
 		});
 
@@ -569,9 +574,7 @@ describe('BvvMfp3Encoder', () => {
 			const wmsLayerMock = { get: () => 'foo', getSource: () => sourceMock, getOpacity: () => 1 };
 
 			const wmsGeoResourceMock = {
-				id: 'foo', format: 'image/png', getAttribution: () => {
-					return { copyright: { label: 'Foo CopyRight' } };
-				}, importedByUser: false
+				id: 'foo', format: 'image/png', importedByUser: false
 			};
 			const encoder = setup();
 			const actualSpec = encoder._encodeWMS(wmsLayerMock, wmsGeoResourceMock);
@@ -584,8 +587,7 @@ describe('BvvMfp3Encoder', () => {
 				baseURL: 'https://some.url/to/wms',
 				layers: ['foo', 'bar'],
 				styles: ['baz'],
-				customParams: { transparent: true },
-				attribution: { copyright: { label: 'Foo CopyRight' } }
+				customParams: { transparent: true }
 			});
 		});
 
@@ -720,9 +722,7 @@ describe('BvvMfp3Encoder', () => {
 
 			const getGeoResourceMock = () => {
 				return {
-					id: 'foo', getAttribution: () => {
-						return { copyright: { label: 'Foo CopyRight' } };
-					}, importedByUser: false
+					id: 'foo', importedByUser: false
 				};
 			};
 
@@ -743,7 +743,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -779,7 +778,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -833,7 +831,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -886,7 +883,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -939,7 +935,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -987,7 +982,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1042,7 +1036,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1097,7 +1090,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1136,7 +1128,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1189,7 +1180,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1246,7 +1236,6 @@ describe('BvvMfp3Encoder', () => {
 						opacity: 1,
 						type: 'geojson',
 						name: 'foo',
-						attribution: { copyright: { label: 'Foo CopyRight' } },
 						geoJson: {
 							features: [{
 								type: 'Feature',
@@ -1360,7 +1349,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1408,7 +1396,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1461,7 +1448,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [jasmine.any(Object), jasmine.any(Object), jasmine.any(Object)],
 						type: 'FeatureCollection'
@@ -1514,7 +1500,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1560,7 +1545,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1606,7 +1590,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1672,7 +1655,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',
@@ -1738,7 +1720,6 @@ describe('BvvMfp3Encoder', () => {
 					opacity: 1,
 					type: 'geojson',
 					name: 'foo',
-					attribution: { copyright: { label: 'Foo CopyRight' } },
 					geoJson: {
 						features: [{
 							type: 'Feature',

@@ -15,6 +15,8 @@ import { Circle, LineString, MultiLineString, MultiPoint, MultiPolygon, Polygon 
 import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
+import { getUniqueCopyrights } from '../../../utils/attributionUtils';
+import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -104,29 +106,19 @@ export class BvvMfp3Encoder {
 		this._pageExtent = this._mfpProperties.pageExtent
 			? this._mfpProperties.pageExtent
 			: getDefaultMapExtent();
-
-		const encodedLayers = olMap.getLayers().getArray()
+		const encodableLayers = olMap.getLayers().getArray()
 			.filter(layer => {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
-			})
-			.flatMap(l => this._encode(l))
-			.reduce((layerSpecs, encodedLayer) => {
-				// todo: extract to method
-				const { attribution, ...restSpec } = encodedLayer;
-				const getLabels = (attribution) => Array.isArray(attribution) ? attribution?.map(a => a.copyright.label) : [attribution?.copyright?.label];
+			});
+		const encodedLayers = encodableLayers.map(l => this._encode(l));
 
-				return {
-					specs: [...layerSpecs.specs, restSpec],
-					dataOwners: attribution ? [...layerSpecs.dataOwners, ...getLabels(attribution)] : [...layerSpecs.dataOwners]
-				};
-			}, { specs: [], dataOwners: [], thirdPartyDataOwners: [] });
-
+		const copyRights = this._getCopyrights(encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.specs.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -138,7 +130,7 @@ export class BvvMfp3Encoder {
 					rotation: this._mfpProperties.rotation,
 					layers: layers
 				},
-				dataOwner: encodedLayers.dataOwners.length !== 0 ? Array.from(new Set(encodedLayers.dataOwners)).join(',') : '',
+				dataOwner: Array.from(new Set(copyRights.map(c => c.label))).join(','),
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -147,6 +139,20 @@ export class BvvMfp3Encoder {
 
 	_initStyleId() {
 		this._encodingStyleId = 0;
+	}
+
+	_getCopyrights(encodableLayers) {
+		const getZoomLevel = () => {
+			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
+			const resolutions = new AdvWmtsTileGrid().getResolutions();
+
+			const result = resolutions.reduce((accumulator, resolution, index, array) => {
+				const nextBestResolution = array[index + 1] ?? Number.NEGATIVE_INFINITY;
+				return resolution >= pageResolution && pageResolution >= nextBestResolution ? index : null;
+			});
+			return result;
+		};
+		return getUniqueCopyrights(encodableLayers.map(l => this._geoResourceService.byId(l.get('geoResourceId'))), getZoomLevel());
 	}
 
 	_encode(layer) {
@@ -161,7 +167,7 @@ export class BvvMfp3Encoder {
 		}
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.VECTOR:
-				return this._encodeVector(layer, geoResource);
+				return this._encodeVector(layer);
 			case GeoResourceTypes.XYZ:
 			case GeoResourceTypes.WMTS:
 				return this._encodeWMTS(layer, geoResource);
@@ -227,8 +233,7 @@ export class BvvMfp3Encoder {
 				layer: layer,
 				requestEncoding: requestEncoding,
 				matrices: BvvMfp3Encoder.buildMatrixSets(tileGrid),
-				matrixSet: tileMatrixSet,
-				attribution: wmtsGeoResource.getAttribution()
+				matrixSet: tileMatrixSet
 			};
 		};
 
@@ -261,12 +266,11 @@ export class BvvMfp3Encoder {
 			name: wmsGeoResource.id,
 			opacity: olLayer.getOpacity(),
 			styles: styles,
-			customParams: defaultCustomParams,
-			attribution: wmsGeoResource.getAttribution()
+			customParams: defaultCustomParams
 		};
 	}
 
-	_encodeVector(olVectorLayer, geoResource) {
+	_encodeVector(olVectorLayer) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
 		const groupBy = (elementsToGroup, groupByFunction) => elementsToGroup.reduce((group, element) => {
@@ -337,8 +341,7 @@ export class BvvMfp3Encoder {
 			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
 			name: olVectorLayer.get('id'),
 			style: styleObjectFrom(Array.from(styleCache.values())),
-			opacity: olVectorLayer.getOpacity(),
-			attribution: geoResource.getAttribution()
+			opacity: olVectorLayer.getOpacity()
 		};
 	}
 
