@@ -106,8 +106,11 @@ export class MeasureToolContent extends AbstractToolContent {
 						</ba-icon>
 						</span>			
 					</div>
-					<div class='sub-text'>${subText}</div>
 				</div>	
+				<div class='sub-text'>
+				${subText}
+				<ba-assist-chips></'ba-assist-chips>
+				</div>
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					
             	</div>	  

@@ -1,12 +1,12 @@
 .chips__container {
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
-	/* padding: 1.2em .8em;	 */
+	flex-wrap:wrap;
 }
 .chips__button {
 	background: var(--primary-bg-color);
 	border: 1px solid var(--text2);
-	margin: .8em .5em 0 0;
+	margin: .5em .5em .5em 0;
 	display: flex;
 	margin-left: 0;
 	z-index: calc(var(--z-header) + 20);
