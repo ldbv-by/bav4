@@ -517,6 +517,7 @@ describe('OlMfpHandler', () => {
 			expect(handler._visibleViewport).toBeNull();
 			expect(handler._map).toBeNull();
 			expect(handler._mapListener).toBeNull();
+			expect(handler._mfpBoundaryFeature.getGeometry()).toBeNull();
 			expect(handler._alreadyWarned).toBeFalse();
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});

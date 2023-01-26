@@ -91,6 +91,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
+		this._mfpBoundaryFeature.setGeometry(null);
 		this._unregister(this._registeredObservers);
 		unByKey(this._mapListener);
 		this._mapListener = null;
