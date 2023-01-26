@@ -5,7 +5,9 @@
 }
 .chips__button {
 	background: var(--primary-bg-color);
+	/* background: var(--header-background-color); */
 	border: 1px solid var(--text2);
+	/* border: 1px solid var(--header-background-color); */
 	margin: .5em .5em .5em 0;
 	display: flex;
 	margin-left: 0;

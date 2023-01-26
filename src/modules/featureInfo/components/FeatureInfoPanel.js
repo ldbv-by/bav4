@@ -86,10 +86,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		<div>
 			<div class="container  ${getOrientationClass()}">
 			<ul class="ba-list">	
-				<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">			
+				<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header" style="margin-bottom:2em;">			
 					<span class="ba-list-item__pre" style='position:relative;left:-1em;'>													
 							<ba-icon .icon='${arrowLeftShortIcon}' .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>	 											
-					</span>
+					</span>					
 					<span class="ba-list-item__text vertical-center">
 						<span class="ba-list-item__main-text" style='position:relative;left:-1em;'>	
 							${translate('featureInfo_header')}
@@ -101,7 +101,8 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					<span class="print ba-icon-button ba-list-item__after vertical-center separator">														
 						<ba-icon .icon='${printerIcon}' .size=${1.5} ></ba-icon>												
 					</span>
-				</li>	
+					<ba-assist-chips .type='${'pointinfo'}' style='position: absolute;top: 3.8em;left: 1em;'></ba-assist-chips>
+				</li>						
 				${featureInfoData.map((item) => html`
 					<li class="ba-section">
 						<button class="ba-list-item ba-list-item__header" @mouseenter=${() => onMouseEnter(item.geometry)} @mouseleave=${() => onMouseLeave(item.geometry)}>
