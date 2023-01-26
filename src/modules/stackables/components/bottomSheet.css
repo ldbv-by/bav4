@@ -45,3 +45,22 @@
 		transform: translateY(200%);
 	}
 }
+
+.tool-container__close-button {
+	margin: 0;
+	width: 3em;
+	height: 3em;
+	border-radius: 1.5em;
+	border: 0;
+	background: var(--primary-bg-color);
+	font-weight: bold;
+	cursor: pointer;
+	display: block;
+	padding: .7em;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.tool-container__close-button:hover {
+	background: var(--header-background-color);
+}

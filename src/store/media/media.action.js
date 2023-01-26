@@ -16,12 +16,12 @@ const getStore = () => {
  * @param {boolean} isPortait
  * @function
  */
-export const setIsPortrait = (isPortait) => {
+export const setIsPortrait = (isPortrait) => {
 	const { media: { observeResponsiveParameter } } = getStore().getState();
 	if (observeResponsiveParameter) {
 		getStore().dispatch({
 			type: ORIENTATION_CHANGED,
-			payload: isPortait
+			payload: isPortrait
 		});
 	}
 };
