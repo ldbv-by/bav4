@@ -49,6 +49,7 @@ export class AttributionInfo extends MvuElement {
 
 		const geoResources = activeLayers
 			.filter(l => l.visible)
+			.filter(({ constraints: { hidden } }) => !hidden)
 			.map(l => this._georesourceService.byId(l.geoResourceId));
 
 		return getUniqueCopyrights(geoResources, zoomLevel);
