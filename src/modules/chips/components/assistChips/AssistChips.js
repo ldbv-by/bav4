@@ -97,7 +97,7 @@ export class AssistChips extends MvuElement {
 			</div>	
 		` ;
 		}
-		else if (type === 'poointinfo') {
+		else if (type === 'pointinfo') {
 			return html`
 			<style>${css}</style>	
 			<div id='assistchips' class=" chips__container">  			

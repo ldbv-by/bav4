@@ -48,7 +48,7 @@ export class GeoResourceInfoPanel extends MvuElement {
 		if (geoResourceInfo) {
 			return html`
 			<style>${css}</style>
-			<div>${geoResourceInfo.title}</div>
+			<div>${geoResourceInfo.title}  <ba-assist-chips .type='${'pointinfo'}' style='position: absolute;margin-top: -2.2em;z-index: 9999;'></ba-assist-chips></div>
 			<div class='${getOrientationClass()}'>${unsafeHTML(`${geoResourceInfo.content}`)}</div>
 			`;
 		}
