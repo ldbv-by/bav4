@@ -47,11 +47,16 @@ describe('AttributionInfo', () => {
 					case '1':
 						// layer is not visisble
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
+					case '2':
+						// layer is  hidden
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`hidden${zoomLevel}`));
+
 				}
 			});
 			const layer = [
 				{ ...createDefaultLayerProperties(), id: 'id0', geoResourceId: '0' },
-				{ ...createDefaultLayerProperties(), id: 'id1', geoResourceId: '1', visible: false }
+				{ ...createDefaultLayerProperties(), id: 'id1', geoResourceId: '1', visible: false },
+				{ ...createDefaultLayerProperties(), id: 'id2', geoResourceId: '2', constraints: { hidden: true } }
 			];
 
 			const element = await setup();

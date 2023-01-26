@@ -22,7 +22,9 @@ describe('attributionUtils', () => {
 				new XyzGeoResource('geoResourceId3', '', '').setAttributionProvider(() => null),
 				// copyright is null
 				new XyzGeoResource('geoResourceId4', '', '').setAttributionProvider(() => ({ copyright: null })),
-				new XyzGeoResource('geoResourceId5', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`))
+				new XyzGeoResource('geoResourceId5', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`)),
+				null, // should be also handled
+				undefined // should be also handled
 			];
 		};
 
