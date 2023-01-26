@@ -7,14 +7,14 @@
 export const getUniqueCopyrights = (geoResources = [], zoomLevel = 0) => {
 
 	const availableCopyrights = geoResources
-		.map(g => g.getAttribution(zoomLevel))
-	//remove null/undefined
+		.map(g => g/* let's be defensive here*/?.getAttribution(zoomLevel))
+		//remove null/undefined
 		.filter(attr => !!attr)
 		.flat()
 		.reverse()
 		.map(attr => Array.isArray(attr.copyright) ? attr.copyright : [attr?.copyright]) // copyright property may be an array or null
 		.flat()
-	//remove null/undefined
+		//remove null/undefined
 		.filter(copyr => !!copyr);
 
 	//make array unique by label
