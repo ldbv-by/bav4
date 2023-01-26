@@ -3,6 +3,7 @@ import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './attributionInfo.css';
 import { MvuElement } from '../../../MvuElement';
+import { getUniqueCopyrights } from '../../../../utils/attributionUtils';
 
 const Update_Open_Property = 'update_open_property';
 const Update_ActiveLayers_Property = 'update_activeLayers_property';
@@ -46,25 +47,11 @@ export class AttributionInfo extends MvuElement {
 
 	_getCopyrights(activeLayers, zoomLevel) {
 
-		const availableCopyrights = activeLayers
+		const geoResources = activeLayers
 			.filter(l => l.visible)
-			.map(l => this._georesourceService.byId(l.geoResourceId)?.getAttribution(zoomLevel))
-			//remove null/undefined
-			.filter(attr => !!attr)
-			.flat()
-			.reverse()
-			.map(attr => Array.isArray(attr.copyright) ? attr.copyright : [attr?.copyright]) // copyright property may be an array or null
-			.flat()
-			//remove null/undefined
-			.filter(copyr => !!copyr);
+			.map(l => this._georesourceService.byId(l.geoResourceId));
 
-		//make array unique by label
-		const uniqueCopyrights = availableCopyrights
-			.filter((copyr, index) => {
-				return availableCopyrights.findIndex(item => item.label === copyr.label) === index;
-			});
-
-		return uniqueCopyrights;
+		return getUniqueCopyrights(geoResources, zoomLevel);
 	}
 
 	/**
