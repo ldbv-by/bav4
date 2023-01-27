@@ -16,6 +16,8 @@ import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/at
  * @typedef {Object} ImportWmsOptions
  * @property {SourceType} [sourceType] the source type
  * @property {boolean} [isAuthenticated] Whether or not the wms needs a authentication.
+ * @property {Array<String>} [layers] Desired subset of layers. Other available layers will be excluded.
+ * @property {Array<String>} [ids] Desired ids of the created WmsGeoResources. Only in combination with `layers`. If not set, ids will be created automatically.
  */
 
 /**
@@ -43,7 +45,9 @@ export class ImportWmsService {
 	_newDefaultImportWmsOptions() {
 		return {
 			isAuthenticated: false,
-			sourceType: new SourceType(SourceTypeName.WMS, '1.1.1')
+			sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
+			layers: [],
+			ids: []
 		};
 	}
 
