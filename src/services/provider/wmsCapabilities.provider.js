@@ -29,7 +29,8 @@ export const _determinePreferredFormat = (arr) => {
  * @implements wmsCapabilitiesProvider
  * @returns {Array<WmsGeoResource>}
  */
-export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
+export const bvvCapabilitiesProvider = async (url, options) => {
+	const { isAuthenticated } = options;
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
@@ -41,7 +42,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
 	};
 
-	const toWmsGeoResource = (layer, capabilities, isAuthenticated = false) => {
+	const toWmsGeoResource = (layer, capabilities, isAuthenticated) => {
 		const format = _determinePreferredFormat(capabilities.formatsGetMap);
 		return format.length > 0
 			? new WmsGeoResource(
