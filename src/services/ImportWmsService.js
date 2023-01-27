@@ -5,6 +5,13 @@ import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
 
 /**
+ * An async function that provides an array of {@link WmsGeoResource}s.
+ *
+ * @async
+ * @typedef {function():(Array<WmsGeoResource>)} wmsCapabilitiesProvider
+ */
+
+/**
  *
  * @typedef {Object} ImportWmsOptions
  * @property {SourceType} [sourceType] the source type

@@ -25,7 +25,10 @@ export const _determinePreferredFormat = (arr) => {
 	return sorted;
 };
 
-
+/**
+ * @implements wmsCapabilitiesProvider
+ * @returns {Array<WmsGeoResource>}
+ */
 export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
