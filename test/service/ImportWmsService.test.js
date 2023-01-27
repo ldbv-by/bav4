@@ -49,7 +49,7 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms';
 			const options = getOptions();
 			const resultMock = [];
-			const providerSpy = jasmine.createSpy('provider').withArgs(url, options.sourceType, options.isAuthenticated).and.resolveTo(resultMock);
+			const providerSpy = jasmine.createSpy('provider').withArgs(url, options).and.resolveTo(resultMock);
 			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 
@@ -84,7 +84,12 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms';
 
 			const resultMock = [];
-			const providerSpy = jasmine.createSpy('provider').withArgs(url, jasmine.any(SourceType), false).and.resolveTo(resultMock);
+			const providerSpy = jasmine.createSpy('provider').withArgs(url, {
+				// the default options
+				isAuthenticated: false,
+				sourceType: new SourceType(SourceTypeName.WMS, '1.1.1')
+			})
+				.and.resolveTo(resultMock);
 			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(providerSpy);
 

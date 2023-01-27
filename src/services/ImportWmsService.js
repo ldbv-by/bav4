@@ -8,7 +8,7 @@ import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/at
  * An async function that provides an array of {@link WmsGeoResource}s.
  *
  * @async
- * @typedef {function():(Array<WmsGeoResource>)} wmsCapabilitiesProvider
+ * @typedef {function(ImportWmsOptions):(Array<WmsGeoResource>)} wmsCapabilitiesProvider
  */
 
 /**
@@ -55,8 +55,8 @@ export class ImportWmsService {
 	 * @throws Will pass through the error of the provider
 	 */
 	async forUrl(url, options = {}) {
-		const { isAuthenticated, sourceType } = { ...this._newDefaultImportWmsOptions(), ...options };
-		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), sourceType, isAuthenticated);
+		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
+		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), completeOptions);
 		return geoResources
 			.map(gr => gr.setImportedByUser(true))
 			.map(gr => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
