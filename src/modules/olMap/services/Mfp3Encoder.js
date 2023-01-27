@@ -111,7 +111,7 @@ export class BvvMfp3Encoder {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
-		const encodedLayers = encodableLayers.map(l => this._encode(l));
+		const encodedLayers = encodableLayers.flatMap(l => this._encode(l));
 		const copyRights = this._getCopyrights(encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
@@ -153,7 +153,7 @@ export class BvvMfp3Encoder {
 			});
 			return result;
 		};
-		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => this._geoResourceService.byId(l.get('id'))), getZoomLevel());
+		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => this._geoResourceService.byId(l.get('geoResourceId'))), getZoomLevel());
 	}
 
 	_encode(layer) {
@@ -161,8 +161,7 @@ export class BvvMfp3Encoder {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer);
 		}
-		const geoResourceId = layer.get('geoResourceId') ?? layer.get('id');
-		const geoResource = this._geoResourceService.byId(geoResourceId);
+		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
 			return false;
 		}

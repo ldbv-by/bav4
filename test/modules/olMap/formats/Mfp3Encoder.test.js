@@ -2051,4 +2051,14 @@ describe('BvvMfp3Encoder', () => {
 			expect(actualGridLayerSpec.spacing).toEqual([expectedSpacing, expectedSpacing]);
 		});
 	});
+
+	describe('adjustDistance', () => {
+		const dpi = 72;
+		it('adjusts only valid distances', () => {
+
+			expect(BvvMfp3Encoder.adjustDistance(null, dpi)).toBeNull();
+			expect(BvvMfp3Encoder.adjustDistance(100, dpi)).toBe(125);
+		});
+
+	});
 });
