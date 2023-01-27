@@ -42,27 +42,33 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
 	};
 
-	const toWmsGeoResource = (layer, capabilities, isAuthenticated) => {
+	const toWmsGeoResource = (layer, capabilities) => {
 		const format = _determinePreferredFormat(capabilities.formatsGetMap);
+
+		// we filter unwanted layers out
+		if (options.layers.length && !options.layers.includes(layer.name)) {
+			return null;
+		}
+
 		return format.length > 0
 			? new WmsGeoResource(
-				createUniqueId().toString(),
+				options.ids[options.layers.indexOf(layer.name)]/** if we have an id defined for this layer */ ?? createUniqueId().toString(),
 				layer.title,
 				`${capabilities.onlineResourceGetMap}`,
 				`${layer.name}`,
 				format[0])
-				.setAuthenticationType(getAuthenticationType(isAuthenticated))
+				.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 				.setQueryable(layer.queryable)
 				.setExtraParams(getExtraParams(capabilities))
 			: null;
 	};
 
 	const readCapabilities = (capabilities) => {
-		const {	MapService: mapService } = $injector.inject('MapService');
+		const { MapService: mapService } = $injector.inject('MapService');
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers
 			?.filter((l) => containsSRID(l, mapService.getSrid()))
-			.map((layer) => toWmsGeoResource(layer, capabilities, isAuthenticated))
+			.map((layer) => toWmsGeoResource(layer, capabilities))
 			.filter(l => !!l); // toWmsGeoResource may return null
 	};
 
@@ -71,7 +77,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 			throw new Error(`Import of WMS failed. Credential for '${url}' not found.`);
 		};
 
-		const {	BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
+		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
 		const credential = baaCredentialService.get(url);
 		return credential ? { username: credential.username, password: credential.password } : failed();
 	};
