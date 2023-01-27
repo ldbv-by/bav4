@@ -11,7 +11,7 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'More...',
 				header_tab_misc_title: 'Additional settings and information',
 				header_close_button_title: 'Close menu',
-				header_logo_badge: '4.0',
+				header_logo_badge: 'Beta',
 				header_search_placeholder: 'Search'
 			};
 
@@ -25,7 +25,7 @@ export const provide = (lang) => {
 				header_tab_misc_button: 'Mehr...',
 				header_tab_misc_title: 'Weitere Einstellungen und Informationen',
 				header_close_button_title: 'Menü schließen',
-				header_logo_badge: '4.0',
+				header_logo_badge: 'Beta',
 				header_search_placeholder: 'Suchen'
 			};
 
