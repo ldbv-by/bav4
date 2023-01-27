@@ -112,7 +112,6 @@ export class BvvMfp3Encoder {
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
 		const encodedLayers = encodableLayers.map(l => this._encode(l));
-
 		const copyRights = this._getCopyrights(encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
@@ -142,6 +141,8 @@ export class BvvMfp3Encoder {
 	}
 
 	_getCopyrights(encodableLayers) {
+		const resolveGroupLayers = (layers) => layers.flatMap(layer => layer instanceof LayerGroup ? layer.getLayers().getArray() : layer);
+
 		const getZoomLevel = () => {
 			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 			const resolutions = new AdvWmtsTileGrid().getResolutions();
@@ -152,7 +153,7 @@ export class BvvMfp3Encoder {
 			});
 			return result;
 		};
-		return getUniqueCopyrights(encodableLayers.map(l => this._geoResourceService.byId(l.get('geoResourceId'))), getZoomLevel());
+		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => this._geoResourceService.byId(l.get('id'))), getZoomLevel());
 	}
 
 	_encode(layer) {
@@ -160,8 +161,8 @@ export class BvvMfp3Encoder {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer);
 		}
-
-		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
+		const geoResourceId = layer.get('geoResourceId') ?? layer.get('id');
+		const geoResource = this._geoResourceService.byId(geoResourceId);
 		if (!geoResource) {
 			return false;
 		}
