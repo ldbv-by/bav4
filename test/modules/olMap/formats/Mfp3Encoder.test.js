@@ -1074,6 +1074,60 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 
+			it('writes a point feature with feature style (text) and alignment (bottom)', () => {
+				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
+				featureWithStyle.setStyle(getTextStyle('left', 'bottom'));
+				const vectorSource = new VectorSource({ wrapX: false, features: [featureWithStyle] });
+				const vectorLayer = new VectorLayer({ id: 'foo', source: vectorSource, style: null });
+				spyOn(vectorLayer, 'getExtent').and.callFake(() => [20, 20, 50, 50]);
+				const geoResourceMock = getGeoResourceMock();
+				spyOn(geoResourceServiceMock, 'byId').and.callFake(() => geoResourceMock);
+				const encoder = setup();
+				encoder._pageExtent = [20, 20, 50, 50];
+				const actualSpec = encoder._encodeVector(vectorLayer, geoResourceMock);
+
+				expect(actualSpec).toEqual({
+					opacity: 1,
+					type: 'geojson',
+					name: 'foo',
+					geoJson: {
+						features: [{
+							type: 'Feature',
+							geometry: {
+								type: 'Point',
+								coordinates: jasmine.any(Array)
+							},
+							properties: {
+								_gx_style: 0
+							}
+						}],
+						type: 'FeatureCollection'
+					},
+					style: {
+						version: '2',
+						'[_gx_style = 0]': {
+							symbolizers: [{
+								type: 'text',
+								zIndex: 0,
+								rotation: 0,
+								fillOpacity: 0.4,
+								fillColor: '#ffffff',
+								strokeOpacity: 0,
+								graphicWidth: 56.25,
+								graphicHeight: 56.25,
+								pointRadius: 5,
+								label: 'FooBarBaz',
+								labelAlign: 'lb',
+								fontColor: '#000000',
+								fontFamily: 'SANS-SERIF',
+								fontSize: 10,
+								fontWeight: 'normal'
+							}]
+						}
+					}
+				});
+			});
+
 			it('writes a point feature with feature style (text & symbol) with two symbolizers', () => {
 				const featureWithStyle = new Feature({ geometry: new Point([30, 30]) });
 				featureWithStyle.setStyle(getTextAndImageStyle('left', 'top'));
@@ -2055,7 +2109,6 @@ describe('BvvMfp3Encoder', () => {
 	describe('adjustDistance', () => {
 		const dpi = 72;
 		it('adjusts only valid distances', () => {
-
 			expect(BvvMfp3Encoder.adjustDistance(null, dpi)).toBeNull();
 			expect(BvvMfp3Encoder.adjustDistance(100, dpi)).toBe(125);
 		});
