@@ -159,7 +159,7 @@ export const loadBvvGeoResourceById = id => {
 
 /**
  * Loader for URL-based ID: An URL-based ID must match the following pattern:
- * `{SourceType}`||{Url}||{extraParam0}||{extraParam1}
+ * `{sourceType}`||{label}||{url}||{extraParam0}||{extraParam1}
  * @function
  * @implements geoResourceByIdProvider
  * @returns {GeoResourceFuture|null}
@@ -168,7 +168,7 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 
 	const parts = urlBasedAsId.split('||');
 
-	if (parts.length > 1 && isHttpUrl(parts[1]) && parts[0] /**type*/ in SourceTypeName) {
+	if (parts.length > 2 && isHttpUrl(parts[2]) && parts[0] /**type*/ in SourceTypeName) {
 		const {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService
@@ -177,22 +177,32 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 
 		const loader = async () => {
 
-			const url = parts[1];
+			const label = parts[1];
+			const url = parts[2];
 			const { status, sourceType } = await sourceTypeService.forUrl(url);
 
 			if (status === SourceTypeResultStatus.OK) {
-				switch (sourceType.name) {
-					case SourceTypeName.GEOJSON:
-					case SourceTypeName.GPX:
-					case SourceTypeName.KML:
-					case SourceTypeName.EWKT: {
-						return await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
+				const getGeoResource = async (sourceType) => {
+
+					switch (sourceType.name) {
+						case SourceTypeName.GEOJSON:
+						case SourceTypeName.GPX:
+						case SourceTypeName.KML:
+						case SourceTypeName.EWKT: {
+							return await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
 							// we get a GeoResourceFuture, so we have to wait until it is resolved
-							.get();
+								.get();
+						}
+						default:
+							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
 					}
-					default:
-						throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
+				};
+
+				const geoResource = await getGeoResource(sourceType);
+				if (label.length > 0) {
+					geoResource.setLabel(label);
 				}
+				return geoResource;
 			}
 			throw new Error(`SourceTypeService returns status=${Object.keys(SourceTypeResultStatus).find(key => SourceTypeResultStatus[key] === status)} for ${url}`);
 		};
