@@ -168,7 +168,7 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 
 	const parts = urlBasedAsId.split('||');
 
-	if (parts.length > 2 && isHttpUrl(parts[2]) && parts[0] /**type*/ in SourceTypeName) {
+	if (parts.length && isHttpUrl(parts[0])) {
 		const {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
@@ -178,8 +178,7 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 
 		const loader = async () => {
 
-			const label = parts[1];
-			const url = parts[2];
+			const url = parts[0];
 			const { status, sourceType } = await sourceTypeService.forUrl(url);
 
 			if (status === SourceTypeResultStatus.OK) {
@@ -190,31 +189,30 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 						case SourceTypeName.GPX:
 						case SourceTypeName.KML:
 						case SourceTypeName.EWKT: {
-							return await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
+							const label = parts[1];
+							const geoResource = await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
 								// we get a GeoResourceFuture, so we have to wait until it is resolved
 								.get();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
 						case SourceTypeName.WMS: {
 							const throwWmsImportError = () => {
 								throw new Error(`Unsupported WMS: '${url}'`);
 							};
-							const layer = parts[3];
-							if (layer) {
-								const geoResources = await importWmsService.forUrl(url, { sourceType: sourceType, layers: [layer], ids: [urlBasedAsId] });
-								return geoResources[0] ?? throwWmsImportError();
-							}
-							throw new Error(`Layer parameter is missing for '${url}'`);
+							const layer = parts[1]; // when we have no layer argument, we return the first returned WmsGeoResource
+							const label = parts[2];
+							const importWmsOptions = layer
+								? { sourceType: sourceType, layers: [layer], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, layers: [], ids: [urlBasedAsId] };
+							const geoResources = await importWmsService.forUrl(url, importWmsOptions);
+							const geoResource = geoResources[0] ?? throwWmsImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
 						}
 						default:
 							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
 					}
 				};
-
-				const geoResource = await getGeoResource(sourceType);
-				if (label.length > 0) {
-					geoResource.setLabel(label);
-				}
-				return geoResource;
+				return getGeoResource(sourceType);
 			}
 			throw new Error(`SourceTypeService returns status=${Object.keys(SourceTypeResultStatus).find(key => SourceTypeResultStatus[key] === status)} for ${url}`);
 		};
