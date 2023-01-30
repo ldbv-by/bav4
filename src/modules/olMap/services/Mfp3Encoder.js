@@ -145,13 +145,13 @@ export class BvvMfp3Encoder {
 
 		const getZoomLevel = () => {
 			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
-			const resolutions = new AdvWmtsTileGrid().getResolutions();
 
+			const resolutions = new AdvWmtsTileGrid().getResolutions();
 			const result = resolutions.reduce((accumulator, resolution, index, array) => {
 				const nextBestResolution = array[index + 1] ?? Number.NEGATIVE_INFINITY;
-				return resolution >= pageResolution && pageResolution >= nextBestResolution ? index : null;
-			});
-			return result;
+				return resolution >= pageResolution && pageResolution >= nextBestResolution ? index : accumulator;
+			}, null);
+			return result ?? 0;
 		};
 		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => this._geoResourceService.byId(l.get('geoResourceId'))), getZoomLevel());
 	}

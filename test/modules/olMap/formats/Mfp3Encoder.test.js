@@ -96,6 +96,25 @@ describe('BvvMfp3Encoder', () => {
 		encoder._mfpProjection = 'EPSG:25832';
 		return encoder;
 	};
+
+	class TestGeoResource extends GeoResource {
+		constructor(type, label) {
+			super(`test_${label}`);
+			this._type = type;
+		}
+
+		/**
+		* @override
+		*/
+		getType() {
+			return this._type;
+		}
+
+		get url() {
+			return '';
+		}
+	}
+
 	describe('constructor', () => {
 		it('initialize with default properties', () => {
 			const classUnderTest = new BvvMfp3Encoder();
@@ -112,26 +131,6 @@ describe('BvvMfp3Encoder', () => {
 		const getProperties = (initProperties = {}) => {
 			return { ...defaultProperties, ...initProperties };
 		};
-
-
-
-		class TestGeoResource extends GeoResource {
-			constructor(type, label) {
-				super(`test_${label}`);
-				this._type = type;
-			}
-
-			/**
-			* @override
-			*/
-			getType() {
-				return this._type;
-			}
-
-			get url() {
-				return '';
-			}
-		}
 
 		it('encodes with TargetSRID as mfpProjection', async () => {
 			const encodingProperties = getProperties({ ...defaultProperties, targetSRID: '25832' });
@@ -1998,6 +1997,67 @@ describe('BvvMfp3Encoder', () => {
 			expect(encoder._encodeGeometryType('123')).toBe('123');
 			expect(encoder._encodeGeometryType('AbC')).toBe('abc');
 		});
+	});
+
+	describe('_getCopyrights', () => {
+		it('finds a zoomlevel for the specified scale property', () => {
+			const encodingProperties = { scale: 1000 };
+			const classUnderTest = setup(encodingProperties);
+			const layersMock = [
+				{ get: () => 'foo' },
+				{ get: () => 'foo' }
+			];
+			const geoResource = new TestGeoResource(null, 'something', 'something');
+			const attribution = {
+				copyright: { label: 'foo' }
+			};
+			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
+
+			classUnderTest._getCopyrights(layersMock);
+
+			expect(spy).toHaveBeenCalledWith(13);
+		});
+
+		it('finds a minimum zoomlevel for the smallest scale', () => {
+			const encodingProperties = { scale: 42 };
+			const classUnderTest = setup(encodingProperties);
+			const layersMock = [
+				{ get: () => 'foo' },
+				{ get: () => 'foo' }
+			];
+			const geoResource = new TestGeoResource(null, 'something', 'something');
+			const attribution = {
+				copyright: { label: 'foo' }
+			};
+			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
+
+			classUnderTest._getCopyrights(layersMock);
+
+			expect(spy).toHaveBeenCalledWith(jasmine.any(Number));
+		});
+
+
+		it('finds the maximum zoomlevel for the biggest scale', () => {
+			const encodingProperties = { scale: 2 * 10 * 1000 * 1000 };
+			const classUnderTest = setup(encodingProperties);
+			const layersMock = [
+				{ get: () => 'foo' },
+				{ get: () => 'foo' }
+			];
+			const geoResource = new TestGeoResource(null, 'something', 'something');
+			const attribution = {
+				copyright: { label: 'foo' }
+			};
+			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
+
+			classUnderTest._getCopyrights(layersMock);
+
+			expect(spy).toHaveBeenCalledWith(0);
+		});
+
 	});
 
 	describe('_generateShortUrl', () => {
