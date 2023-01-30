@@ -45,11 +45,6 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 	const toWmsGeoResource = (layer, capabilities, index) => {
 		const format = _determinePreferredFormat(capabilities.formatsGetMap);
 
-		// we filter unwanted layers out
-		if (options.layers.length && !options.layers.includes(layer.name)) {
-			return null;
-		}
-
 		return format.length > 0
 			? new WmsGeoResource(
 				options.ids[index] ?? createUniqueId().toString(),
@@ -68,6 +63,8 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers
 			?.filter((l) => containsSRID(l, mapService.getSrid()))
+			// we filter unwanted layers (if defined by WmsImportOptions)
+			.filter(layer => (options.layers.length) ? options.layers.includes(layer.name) : true)
 			.map((layer, index) => toWmsGeoResource(layer, capabilities, index))
 			.filter(l => !!l); // toWmsGeoResource may return null
 	};

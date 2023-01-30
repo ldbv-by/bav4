@@ -262,7 +262,7 @@ describe('bvvCapabilitiesProvider', () => {
 	});
 
 	it('returns just a subset of all available WmsGeoResources filtered by layer name', async () => {
-		const layerName = 'layer0';
+		const layerName = 'layer1';
 		const url = 'https://some.url/wms';
 		const sourceType = new SourceType(SourceTypeName.WMS, '42');
 		const responseMock = {
@@ -279,10 +279,10 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(wmsGeoResources).toHaveSize(1);
 		expect(wmsGeoResources[0]).toEqual(jasmine.objectContaining({
 			id: jasmine.stringMatching(/^\d*$/),
-			label: 'Layer 0',
+			label: 'Layer 1',
 			url: 'https://online.resource/GetMap?',
 			format: 'image/png',
-			queryable: true,
+			queryable: false,
 			authenticationType: null,
 			layers: layerName
 		}));
