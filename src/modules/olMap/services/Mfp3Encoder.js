@@ -16,7 +16,6 @@ import LayerGroup from 'ol/layer/Group';
 import { WMTS } from 'ol/source';
 import { getPolygonFrom } from '../utils/olGeometryUtils';
 import { getUniqueCopyrights } from '../../../utils/attributionUtils';
-import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 
 const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
@@ -112,7 +111,7 @@ export class BvvMfp3Encoder {
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
 		const encodedLayers = encodableLayers.flatMap(l => this._encode(l));
-		const copyRights = this._getCopyrights(encodableLayers);
+		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
@@ -140,23 +139,31 @@ export class BvvMfp3Encoder {
 		this._encodingStyleId = 0;
 	}
 
-	_getCopyrights(encodableLayers) {
+	_getCopyrights(map, encodableLayers) {
 		const resolveGroupLayers = (layers) => layers.flatMap(layer => layer instanceof LayerGroup ? layer.getLayers().getArray() : layer);
 		const useSubstitutionOptional = (geoResource) => {
+			if (!geoResource) {
+				return geoResource;
+			}
 			const { grSubstitutions } = this._mfpService.getCapabilities();
 			return Object.hasOwn(grSubstitutions, geoResource.id) ? this._geoResourceService.byId(grSubstitutions[geoResource.id]) : geoResource;
 		};
-		const getZoomLevel = () => {
+
+		const getZoomLevel = (map) => {
+			// HINT: The zoom level depending attributions for the bvv specific substitution geoResources(UTM) are already mapped to the
+			// corresponding smerc zoom level. We just have to request the zoom level from the olMap.
+			// There is no need to lookup in the AdvWmtsTileGrid resolutions.
 			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
-			const resolutions = new AdvWmtsTileGrid().getResolutions();
-			const result = resolutions.reduce((accumulator, resolution, index, array) => {
-				const nextBestResolution = array[index + 1] ?? Number.NEGATIVE_INFINITY;
-				return resolution >= pageResolution && pageResolution >= nextBestResolution ? index : accumulator;
-			}, null);
-			return result ?? 0;
+			return map.getView().getZoomForResolution(pageResolution);
 		};
-		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => useSubstitutionOptional(this._geoResourceService.byId(l.get('geoResourceId')))), getZoomLevel());
+
+		const geoResources = resolveGroupLayers(encodableLayers)
+			.flatMap(
+				l => useSubstitutionOptional(this._geoResourceService.byId(l.get('geoResourceId')))
+			);
+
+		return getUniqueCopyrights(geoResources, getZoomLevel(map));
 	}
 
 	_encode(layer) {

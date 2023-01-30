@@ -27,7 +27,7 @@ import { MeasurementOverlayTypes } from '../../../../src/modules/olMap/component
 
 describe('BvvMfp3Encoder', () => {
 
-	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10 };
+	const viewMock = { getCenter: () => [50, 50], calculateExtent: () => [0, 0, 100, 100], getResolution: () => 10, getZoomForResolution: () => 21 };
 	const mapMock = {
 		getSize: () => [100, 100],
 		getCoordinateFromPixel: (p) => p,
@@ -2000,9 +2000,13 @@ describe('BvvMfp3Encoder', () => {
 	});
 
 	describe('_getCopyrights', () => {
-		it('finds a zoomlevel for the specified scale property', () => {
+		const zoomLevel = 42;
+		const viewMock = { getZoomForResolution: () => zoomLevel };
+		const mapMock = { getView: () => viewMock };
+		it('requests the zoomlevel for the specified scale property', () => {
 			const encodingProperties = { scale: 1000 };
 			const classUnderTest = setup(encodingProperties);
+
 			const layersMock = [
 				{ get: () => 'foo' },
 				{ get: () => 'foo' }
@@ -2011,51 +2015,14 @@ describe('BvvMfp3Encoder', () => {
 			const attribution = {
 				copyright: { label: 'foo' }
 			};
-			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			const attributionSpy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			const zoomForResolutionSpy = spyOn(viewMock, 'getZoomForResolution').and.callThrough();
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
 
-			classUnderTest._getCopyrights(layersMock);
+			classUnderTest._getCopyrights(mapMock, layersMock);
 
-			expect(spy).toHaveBeenCalledWith(13);
-		});
-
-		it('finds a minimum zoomlevel for the smallest scale', () => {
-			const encodingProperties = { scale: 42 };
-			const classUnderTest = setup(encodingProperties);
-			const layersMock = [
-				{ get: () => 'foo' },
-				{ get: () => 'foo' }
-			];
-			const geoResource = new TestGeoResource(null, 'something', 'something');
-			const attribution = {
-				copyright: { label: 'foo' }
-			};
-			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
-
-			classUnderTest._getCopyrights(layersMock);
-
-			expect(spy).toHaveBeenCalledWith(jasmine.any(Number));
-		});
-
-
-		it('finds the maximum zoomlevel for the biggest scale', () => {
-			const encodingProperties = { scale: 2 * 10 * 1000 * 1000 };
-			const classUnderTest = setup(encodingProperties);
-			const layersMock = [
-				{ get: () => 'foo' },
-				{ get: () => 'foo' }
-			];
-			const geoResource = new TestGeoResource(null, 'something', 'something');
-			const attribution = {
-				copyright: { label: 'foo' }
-			};
-			const spy = spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
-
-			classUnderTest._getCopyrights(layersMock);
-
-			expect(spy).toHaveBeenCalledWith(0);
+			expect(attributionSpy).toHaveBeenCalledWith(zoomLevel);
+			expect(zoomForResolutionSpy).toHaveBeenCalled();
 		});
 
 		it('resolves a layergroup', () => {
@@ -2075,7 +2042,7 @@ describe('BvvMfp3Encoder', () => {
 			spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
 			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
 
-			classUnderTest._getCopyrights([groupLayer]);
+			classUnderTest._getCopyrights(mapMock, [groupLayer]);
 
 			expect(spy).toHaveBeenCalled();
 		});
@@ -2084,7 +2051,8 @@ describe('BvvMfp3Encoder', () => {
 			const encodingProperties = { scale: 1000 };
 			const classUnderTest = setup(encodingProperties);
 			const layersMock = [
-				{ get: () => 'test_xyz' }
+				{ get: () => 'test_xyz' },
+				{ get: () => 'no_geoResource' }
 			];
 			const geoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz', 'something');
 			const substitutionGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz_substitution', 'something');
@@ -2092,9 +2060,17 @@ describe('BvvMfp3Encoder', () => {
 				copyright: { label: 'foo' }
 			};
 			spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
-			const spy = spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => id === 'test_xyz' ? geoResource : substitutionGeoResource);
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				if (id === 'test_xyz') {
+					return geoResource;
+				}
+				if (id === 'no_geoResource') {
+					return null;
+				}
+				return substitutionGeoResource;
+			});
 
-			classUnderTest._getCopyrights(layersMock);
+			classUnderTest._getCopyrights(mapMock, layersMock);
 
 			expect(spy).toHaveBeenCalledWith('test_xyz');
 			expect(spy).toHaveBeenCalledWith('wmts_print');
