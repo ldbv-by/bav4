@@ -142,7 +142,10 @@ export class BvvMfp3Encoder {
 
 	_getCopyrights(encodableLayers) {
 		const resolveGroupLayers = (layers) => layers.flatMap(layer => layer instanceof LayerGroup ? layer.getLayers().getArray() : layer);
-
+		const useSubstitutionOptional = (geoResource) => {
+			const { grSubstitutions } = this._mfpService.getCapabilities();
+			return Object.hasOwn(grSubstitutions, geoResource.id) ? this._geoResourceService.byId(grSubstitutions[geoResource.id]) : geoResource;
+		};
 		const getZoomLevel = () => {
 			const pageResolution = this._mfpProperties.scale / UnitsRatio / PointsPerInch;
 
@@ -153,7 +156,7 @@ export class BvvMfp3Encoder {
 			}, null);
 			return result ?? 0;
 		};
-		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => this._geoResourceService.byId(l.get('geoResourceId'))), getZoomLevel());
+		return getUniqueCopyrights(resolveGroupLayers(encodableLayers).flatMap(l => useSubstitutionOptional(this._geoResourceService.byId(l.get('geoResourceId')))), getZoomLevel());
 	}
 
 	_encode(layer) {

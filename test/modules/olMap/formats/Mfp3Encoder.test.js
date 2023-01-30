@@ -247,7 +247,7 @@ describe('BvvMfp3Encoder', () => {
 		});
 
 		it('encodes a WMTS layer', async () => {
-			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
+			spyOn(geoResourceServiceMock, 'byId').and.callFake(() => new TestGeoResource(GeoResourceTypes.XYZ, 'xyz'));
 			const encoder = new BvvMfp3Encoder();
 			const encodingSpy = spyOn(encoder, '_encodeWMTS').and.callFake(() => {
 				return {};
@@ -2078,6 +2078,26 @@ describe('BvvMfp3Encoder', () => {
 			classUnderTest._getCopyrights([groupLayer]);
 
 			expect(spy).toHaveBeenCalled();
+		});
+
+		it('replace wmts geoResource with the related substitution', () => {
+			const encodingProperties = { scale: 1000 };
+			const classUnderTest = setup(encodingProperties);
+			const layersMock = [
+				{ get: () => 'test_xyz' }
+			];
+			const geoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz', 'something');
+			const substitutionGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz_substitution', 'something');
+			const attribution = {
+				copyright: { label: 'foo' }
+			};
+			spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => id === 'test_xyz' ? geoResource : substitutionGeoResource);
+
+			classUnderTest._getCopyrights(layersMock);
+
+			expect(spy).toHaveBeenCalledWith('test_xyz');
+			expect(spy).toHaveBeenCalledWith('wmts_print');
 		});
 
 	});
