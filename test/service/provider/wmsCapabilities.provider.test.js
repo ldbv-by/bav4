@@ -261,6 +261,69 @@ describe('bvvCapabilitiesProvider', () => {
 		}));
 	});
 
+	it('returns just a subset of all available WmsGeoResources filtered by layer name', async () => {
+		const layerName = 'layer0';
+		const url = 'https://some.url/wms';
+		const sourceType = new SourceType(SourceTypeName.WMS, '42');
+		const responseMock = {
+			ok: true, status: 200, json: () => {
+				return Default_Capabilities_Result;
+			}
+		};
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
+
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [], layers: [layerName] });
+
+		expect(wmsGeoResources).toHaveSize(1);
+		expect(wmsGeoResources[0]).toEqual(jasmine.objectContaining({
+			id: jasmine.stringMatching(/^\d*$/),
+			label: 'Layer 0',
+			url: 'https://online.resource/GetMap?',
+			format: 'image/png',
+			queryable: true,
+			authenticationType: null,
+			layers: layerName
+		}));
+
+	});
+
+	it('returns WmsGeoResource with custom ids', async () => {
+		const layerId0 = 'myLayerId0';
+		const layerId1 = 'myLayerId1';
+		const url = 'https://some.url/wms';
+		const sourceType = new SourceType(SourceTypeName.WMS, '42');
+		const responseMock = {
+			ok: true, status: 200, json: () => {
+				return Default_Capabilities_Result;
+			}
+		};
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue('BACKEND_URL/');
+		spyOn(httpService, 'post').withArgs('BACKEND_URL/wms/getCapabilities', JSON.stringify({ url: url }), MediaType.JSON).and.resolveTo(responseMock);
+
+
+		const wmsGeoResources = await bvvCapabilitiesProvider(url, { sourceType: sourceType, isAuthenticated: false, ids: [layerId0, layerId1], layers: [] });
+
+		expect(wmsGeoResources).toHaveSize(2);
+		expect(wmsGeoResources[0]).toEqual(jasmine.objectContaining({
+			id: layerId0,
+			label: 'Layer 0',
+			url: 'https://online.resource/GetMap?',
+			format: 'image/png',
+			queryable: true,
+			authenticationType: null
+		}));
+		expect(wmsGeoResources[1]).toEqual(jasmine.objectContaining({
+			id: layerId1,
+			label: 'Layer 1',
+			url: 'https://online.resource/GetMap?',
+			format: 'image/png',
+			queryable: false,
+			authenticationType: null
+		}));
+	});
+
 	it('recognize extraParams from layers', async () => {
 		const url = 'https://some.url/wms';
 		const username = 'foo';

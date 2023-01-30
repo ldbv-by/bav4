@@ -42,7 +42,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
 	};
 
-	const toWmsGeoResource = (layer, capabilities) => {
+	const toWmsGeoResource = (layer, capabilities, index) => {
 		const format = _determinePreferredFormat(capabilities.formatsGetMap);
 
 		// we filter unwanted layers out
@@ -52,7 +52,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 
 		return format.length > 0
 			? new WmsGeoResource(
-				options.ids[options.layers.indexOf(layer.name)]/** if we have an id defined for this layer */ ?? createUniqueId().toString(),
+				options.ids[index] ?? createUniqueId().toString(),
 				layer.title,
 				`${capabilities.onlineResourceGetMap}`,
 				`${layer.name}`,
@@ -68,7 +68,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers
 			?.filter((l) => containsSRID(l, mapService.getSrid()))
-			.map((layer) => toWmsGeoResource(layer, capabilities))
+			.map((layer, index) => toWmsGeoResource(layer, capabilities, index))
 			.filter(l => !!l); // toWmsGeoResource may return null
 	};
 
