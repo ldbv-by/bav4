@@ -159,14 +159,17 @@ describe('ExportMfpPlugin', () => {
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
 				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
-				const mockWindow = { location: null };
+				const mockWindow = { open: () => {}, focus: () => {} };
+				const windowOpenSpy = spyOn(mockWindow, 'open').and.returnValue(mockWindow);
+				const windowFocusSpy = spyOn(mockWindow, 'focus');
 				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 
 				startJob(spec);
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
-				expect(mockWindow.location).toBe(url);
+				expect(windowOpenSpy).toHaveBeenCalledWith(url, '_blank');
+				expect(windowFocusSpy).toHaveBeenCalled();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 
