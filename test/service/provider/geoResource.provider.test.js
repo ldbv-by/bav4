@@ -1,4 +1,4 @@
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../../src/domain/geoResources';
+import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../src/domain/geoResources';
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
@@ -21,6 +21,9 @@ describe('GeoResource provider', () => {
 	const importVectorDataService = {
 		async forUrl() { }
 	};
+	const importWmsService = {
+		async forUrl() { }
+	};
 
 	beforeAll(() => {
 		TestUtils.setupStoreAndDi();
@@ -29,7 +32,8 @@ describe('GeoResource provider', () => {
 			.registerSingleton('HttpService', httpService)
 			.registerSingleton('GeoResourceService', geoResourceService)
 			.registerSingleton('SourceTypeService', sourceTypeService)
-			.registerSingleton('ImportVectorDataService', importVectorDataService);
+			.registerSingleton('ImportVectorDataService', importVectorDataService)
+			.registerSingleton('ImportWmsService', importWmsService);
 	});
 
 	const basicAttribution = {
@@ -429,104 +433,163 @@ describe('GeoResource provider', () => {
 
 	describe('loadGeoResourceByUrlBasedId', () => {
 
-		it('loads a GEOJSON GeoResource', async () => {
-			const label = 'label';
-			const url = 'http://foo.bar';
-			const sourceType = new SourceType(SourceTypeName.GEOJSON);
-			const geoResourceId = `GEOJSON||${label}||${url}`;
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+		describe('Vector resources', () => {
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
-			const resolvedGeoResource = await future.get();
+			it('loads a GEOJSON GeoResource', async () => {
+				const label = 'label';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.GEOJSON);
+				const geoResourceId = `GEOJSON||${label}||${url}`;
+				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+					.and.returnValue(geoResourceFuture);
 
-			expect(future.id).toBe(geoResourceId);
-			expect(future.label).toBe('');
-			expect(resolvedGeoResource).toEqual(geoResource);
-			expect(resolvedGeoResource.id).toBe(geoResourceId);
-			expect(resolvedGeoResource.label).toBe(label);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(importVectorDataServiceSpy).toHaveBeenCalled();
-			expect(geoResourceServiceSpy).toHaveBeenCalled();
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads a KML GeoResource', async () => {
+				const label = 'label';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				const geoResourceId = `KML||${label}||${url}`;
+				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+					.and.returnValue(geoResourceFuture);
+
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads a GPX GeoResource', async () => {
+				const label = 'label';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				const geoResourceId = `GPX||${label}||${url}`;
+				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GPX);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+					.and.returnValue(geoResourceFuture);
+
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads a EWKT GeoResource', async () => {
+				const label = 'label';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.KML);
+				const geoResourceId = `EWKT||${label}||${url}`;
+				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+					.and.returnValue(geoResourceFuture);
+
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importVectorDataServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
 		});
 
-		it('loads a KML GeoResource', async () => {
-			const label = 'label';
-			const url = 'http://foo.bar';
-			const sourceType = new SourceType(SourceTypeName.KML);
-			const geoResourceId = `KML||${label}||${url}`;
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+		describe('WMS resource', () => {
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
-			const resolvedGeoResource = await future.get();
+			it('loads a GEOJSON GeoResource', async () => {
+				const label = 'label';
+				const layer = 'layer';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
+				const geoResourceId = `WMS||${label}||${url}||${layer}`;
+				const geoResource = new WmsGeoResource(geoResourceId, 'label', url, layer, 'image/png');
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId] })
+					.and.returnValue([geoResource]);
 
-			expect(future.id).toBe(geoResourceId);
-			expect(future.label).toBe('');
-			expect(resolvedGeoResource).toEqual(geoResource);
-			expect(resolvedGeoResource.id).toBe(geoResourceId);
-			expect(resolvedGeoResource.label).toBe(label);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(importVectorDataServiceSpy).toHaveBeenCalled();
-			expect(geoResourceServiceSpy).toHaveBeenCalled();
-		});
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const resolvedGeoResource = await future.get();
 
-		it('loads a GPX GeoResource', async () => {
-			const label = 'label';
-			const url = 'http://foo.bar';
-			const sourceType = new SourceType(SourceTypeName.KML);
-			const geoResourceId = `GPX||${label}||${url}`;
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GPX);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
-			const resolvedGeoResource = await future.get();
+			it('throws an error when layer is missing', async () => {
+				const label = 'label';
+				const url = 'http://foo.bar';
+				const geoResourceId = `WMS||${label}||${url}`;
+				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
+				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 
-			expect(future.id).toBe(geoResourceId);
-			expect(future.label).toBe('');
-			expect(resolvedGeoResource).toEqual(geoResource);
-			expect(resolvedGeoResource.id).toBe(geoResourceId);
-			expect(resolvedGeoResource.label).toBe(label);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(importVectorDataServiceSpy).toHaveBeenCalled();
-			expect(geoResourceServiceSpy).toHaveBeenCalled();
-		});
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
 
-		it('loads a EWKT GeoResource', async () => {
-			const label = 'label';
-			const url = 'http://foo.bar';
-			const sourceType = new SourceType(SourceTypeName.KML);
-			const geoResourceId = `EWKT||${label}||${url}`;
-			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
-			const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+				await expectAsync(future.get()).toBeRejectedWithError('Layer parameter is missing for \'http://foo.bar\'');
+			});
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
-			const resolvedGeoResource = await future.get();
+			it('throws an error when no WmsGeoResouce was created', async () => {
+				const label = 'label';
+				const layer = 'layer';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
+				const geoResourceId = `WMS||${label}||${url}||${layer}`;
+				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId] })
+					.and.returnValue([]);
 
-			expect(future.id).toBe(geoResourceId);
-			expect(future.label).toBe('');
-			expect(resolvedGeoResource).toEqual(geoResource);
-			expect(resolvedGeoResource.id).toBe(geoResourceId);
-			expect(resolvedGeoResource.label).toBe(label);
-			expect(sourceTypeServiceSpy).toHaveBeenCalled();
-			expect(importVectorDataServiceSpy).toHaveBeenCalled();
-			expect(geoResourceServiceSpy).toHaveBeenCalled();
+				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+
+				await expectAsync(future.get()).toBeRejectedWithError('Unsupported WMS: \'http://foo.bar\'');
+			});
 		});
 
 		it('does not overwrite label when not provided', async () => {

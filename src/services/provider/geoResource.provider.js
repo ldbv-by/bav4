@@ -171,9 +171,10 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 	if (parts.length > 2 && isHttpUrl(parts[2]) && parts[0] /**type*/ in SourceTypeName) {
 		const {
 			SourceTypeService: sourceTypeService,
-			ImportVectorDataService: importVectorDataService
+			ImportVectorDataService: importVectorDataService,
+			ImportWmsService: importWmsService
 		}
-			= $injector.inject('SourceTypeService', 'ImportVectorDataService');
+			= $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
 
 		const loader = async () => {
 
@@ -190,8 +191,19 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 						case SourceTypeName.KML:
 						case SourceTypeName.EWKT: {
 							return await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
-							// we get a GeoResourceFuture, so we have to wait until it is resolved
+								// we get a GeoResourceFuture, so we have to wait until it is resolved
 								.get();
+						}
+						case SourceTypeName.WMS: {
+							const throwWmsImportError = () => {
+								throw new Error(`Unsupported WMS: '${url}'`);
+							};
+							const layer = parts[3];
+							if (layer) {
+								const geoResources = await importWmsService.forUrl(url, { sourceType: sourceType, layers: [layer], ids: [urlBasedAsId] });
+								return geoResources[0] ?? throwWmsImportError();
+							}
+							throw new Error(`Layer parameter is missing for '${url}'`);
 						}
 						default:
 							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
