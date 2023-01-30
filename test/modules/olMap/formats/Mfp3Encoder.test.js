@@ -2058,6 +2058,28 @@ describe('BvvMfp3Encoder', () => {
 			expect(spy).toHaveBeenCalledWith(0);
 		});
 
+		it('resolves a layergroup', () => {
+			const encodingProperties = { scale: 1000 };
+			const classUnderTest = setup(encodingProperties);
+			const groupLayer = new LayerGroup('foo');
+			const layersMock = [
+				{ get: () => 'foo' },
+				{ get: () => 'foo' }
+			];
+			const spy = spyOn(groupLayer, 'getLayers').and.callFake(() => {
+				return { getArray: () => layersMock };
+			});
+
+			const geoResource = new TestGeoResource(null, 'something', 'something');
+			const attribution = { copyright: { label: 'foo' } };
+			spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			spyOn(geoResourceServiceMock, 'byId').withArgs('foo').and.callFake(() => geoResource);
+
+			classUnderTest._getCopyrights([groupLayer]);
+
+			expect(spy).toHaveBeenCalled();
+		});
+
 	});
 
 	describe('_generateShortUrl', () => {
