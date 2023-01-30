@@ -16,8 +16,8 @@ import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/at
  * @typedef {Object} ImportWmsOptions
  * @property {SourceType} [sourceType] the source type
  * @property {boolean} [isAuthenticated] Whether or not the wms needs a authentication.
- * @property {Array<String>} [layers] Desired subset of layers. Other available layers will be excluded.
- * @property {Array<String>} [ids] Desired ids of the created WmsGeoResources. Only in combination with `layers`. If not set, ids will be created automatically.
+ * @property {Array<String>} [layers] Return only WmsGeoResources matching the given layer names.
+ * @property {Array<String>} [ids] Desired ids of the created WmsGeoResources. If not set, ids will be created automatically.
  */
 
 /**
