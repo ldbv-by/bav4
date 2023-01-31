@@ -50,7 +50,6 @@ export class ElevationProfile extends MvuElement {
 		this._configService = configService;
 		this._elevationService = elevationService;
 
-		this._enableTooltip = true;
 		this._drawSelectedAreaBorder = false;
 		this._mouseIsDown = false;
 		this._firstLeft = 0;
@@ -365,11 +364,46 @@ export class ElevationProfile extends MvuElement {
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
 			plugins: [
 				{
+					id: 'terminateXXX',
+					beforeEvent(chart, args) {
+						const event = args.event;
+						if (!event) {
+							return;
+						}
+						// const { ctx, tooltip, chartArea } = chart;
+
+						if (event.type === 'mouseout') {
+							removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+
+							// setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
+							return;
+						}
+					}
+				},
+				{
 					id: 'shortenLeftEndOfScale',
 					beforeInit: (chart) => {
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
 					}
+
+					// },
+					// {
+					// 	id: 'drawVerticalLineAtMousePosition',
+					// 	afterTooltipDraw(chart, args) {
+					// 		// console.log('🚀 ~ file: ElevationProfile.js:377 ~ ElevationProfile ~ afterTooltipDraw ~ args', args);
+					// 		const tooltip = args.tooltip;
+					// 		const x = tooltip.caretX;
+					// 		const { scales, ctx } = chart;
+
+					// 		const yScale = scales.y;
+					// 		ctx.beginPath();
+					// 		chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+					// 		chart.ctx.strokeStyle = '#ff0000';
+					// 		chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+					// 		chart.ctx.stroke();
+					// 		// }
+					// 	}
 				}
 			],
 			options: {
