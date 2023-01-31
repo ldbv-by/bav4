@@ -3,6 +3,7 @@ import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './attributionInfo.css';
 import { MvuElement } from '../../../MvuElement';
+import { getUniqueCopyrights } from '../../../../utils/attributionUtils';
 
 const Update_Open_Property = 'update_open_property';
 const Update_ActiveLayers_Property = 'update_activeLayers_property';
@@ -44,18 +45,14 @@ export class AttributionInfo extends MvuElement {
 		}
 	}
 
-	_getAttributions(activeLayers, zoomLevel) {
-		const rawAttributions = activeLayers
-			.filter(l => l.visible)
-			.map(l => this._georesourceService.byId(l.geoResourceId)?.getAttribution(zoomLevel))
-			//remove null 'attr'
-			.filter(attr => !!attr)
-			.flat()
-			.reverse();
+	_getCopyrights(activeLayers, zoomLevel) {
 
-		// make attributions unique by 'label'
-		const labels = rawAttributions.map(a => a?.copyright?.label); //attr.copyright.label should be guaranteed
-		return rawAttributions.filter(({ copyright: { label } }, index) => !labels.includes(label, index + 1));
+		const geoResources = activeLayers
+			.filter(({ visible }) => visible)
+			.filter(({ constraints: { hidden } }) => !hidden)
+			.map(l => this._georesourceService.byId(l.geoResourceId));
+
+		return getUniqueCopyrights(geoResources, zoomLevel);
 	}
 
 	/**
@@ -66,8 +63,7 @@ export class AttributionInfo extends MvuElement {
 		const { activeLayers, zoomLevel, open } = model;
 
 		const attributionTemplates =
-			this._getAttributions(activeLayers, zoomLevel)
-				.flatMap(attribution => Array.isArray(attribution.copyright) ? attribution.copyright : [attribution.copyright]) // copyright field could also be an array
+			this._getCopyrights(activeLayers, zoomLevel)
 				.map((copyright, index, array) => {
 					const separator = index === array.length - 1 ? '' : ',';
 					return copyright.url

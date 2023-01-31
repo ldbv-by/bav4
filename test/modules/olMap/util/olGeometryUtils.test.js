@@ -1,4 +1,4 @@
-import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
+import { getGeometryLength, getArea, canShowAzimuthCircle, getCoordinateAt, getAzimuth, isVertexOfGeometry, getPartitionDelta, isValidGeometry, moveParallel, calculatePartitionResidualOfSegments, getStats, getPolygonFrom, getAzimuthFrom, getBoundingBoxFrom } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -149,6 +149,27 @@ describe('getAzimuth', () => {
 
 			expect(getAzimuth(twoPointLineString)).toBe(270);
 		});
+	});
+});
+
+describe('getAzimuthFrom', () => {
+
+	it('calculates the intermediate azimuth for a convex quadrilateral polygon', () => {
+
+		const nonUniformQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -2], [0, 10]]]);
+		const squaredQuadrangle = new Polygon([[[0, 10], [10, 9], [10, 0], [0, -1], [0, 10]]]);
+		const lineString = new LineString([[0, 10], [10, 9], [10, 0]]);
+		const point = new Point([0, 10]);
+
+		expect(getAzimuthFrom(nonUniformQuadrangle)).toBeCloseTo(0.048863, 4);
+		expect(getAzimuthFrom(squaredQuadrangle)).toBeCloseTo(0.0, 5);
+
+		expect(getAzimuthFrom(lineString)).toBeNull();
+		expect(getAzimuthFrom(point)).toBeNull();
+
+		expect(getAzimuthFrom(null)).toBeNull();
+		expect(getAzimuthFrom(undefined)).toBeNull();
+
 	});
 });
 
@@ -453,6 +474,39 @@ describe('getPolygonFrom', () => {
 
 	it('creates a polygon from an extent', () => {
 		expect(getPolygonFrom([0, 0, 1, 1]).getCoordinates()).toEqual([[[0, 1], [1, 1], [1, 0], [0, 0], [0, 1]]]);
+	});
+
+	it('does NOT create anything from invalid input', () => {
+		expect(getPolygonFrom(undefined)).toBeNull();
+		expect(getPolygonFrom(null)).toBeNull();
+
+		expect(getPolygonFrom([])).toBeNull();
+		expect(getPolygonFrom([0])).toBeNull();
+		expect(getPolygonFrom([0, 1])).toBeNull();
+		expect(getPolygonFrom([0, 1, 2])).toBeNull();
+		expect(getPolygonFrom([0, 1, 2, 3, 4])).toBeNull();
+
+		expect(getPolygonFrom('foo ')).toBeNull();
+
+		expect(getPolygonFrom({})).toBeNull();
+	});
+});
+
+describe('getBoundingBoxFrom', () => {
+	it('creates a boundingbox', () => {
+		expect(getBoundingBoxFrom([10, 0], { width: 4, height: 4 })).toEqual([8, -2, 12, 2]);
+		expect(getBoundingBoxFrom([42, 42], { width: 5, height: 5 })).toEqual([39.5, 39.5, 44.5, 44.5]);
+
+		expect(getBoundingBoxFrom(null, { width: 4, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], null)).toBeUndefined();
+
+		expect(getBoundingBoxFrom(undefined, { width: 4, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], undefined)).toBeUndefined();
+
+		expect(getBoundingBoxFrom([10, 10], { width: 'foo', height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: null, height: 4 })).toBeUndefined();
+		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
 	});
 });
 

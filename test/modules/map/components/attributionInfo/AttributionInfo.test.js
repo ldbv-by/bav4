@@ -17,8 +17,8 @@ describe('AttributionInfo', () => {
 		byId: () => { }
 	};
 	const mapServiceMock = {
-		getMinZoomLevel: () => {},
-		getMaxZoomLevel: () => {}
+		getMinZoomLevel: () => { },
+		getMaxZoomLevel: () => { }
 	};
 
 	const setup = (state) => {
@@ -35,7 +35,7 @@ describe('AttributionInfo', () => {
 	};
 
 
-	describe('_getAttributions', () => {
+	describe('_getCopyrights', () => {
 
 		it('return a set of valid attributions', async () => {
 
@@ -43,33 +43,27 @@ describe('AttributionInfo', () => {
 				switch (geoResourceId) {
 					case '0':
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+
 					case '1':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
-					case '2':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`)]);
-					case '3':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider(() => null);
-					case '4':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`bar_${zoomLevel}`));
-					case '5':
+						// layer is not visisble
 						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
+					case '2':
+						// layer is  hidden
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`hidden${zoomLevel}`));
+
 				}
 			});
 			const layer = [
 				{ ...createDefaultLayerProperties(), id: 'id0', geoResourceId: '0' },
-				{ ...createDefaultLayerProperties(), id: 'id1', geoResourceId: '1' },
-				{ ...createDefaultLayerProperties(), id: 'id2', geoResourceId: '2' },
-				{ ...createDefaultLayerProperties(), id: 'id3', geoResourceId: '3' },
-				{ ...createDefaultLayerProperties(), id: 'id4', geoResourceId: '4' },
-				{ ...createDefaultLayerProperties(), id: 'id5', geoResourceId: '5', visible: false }
+				{ ...createDefaultLayerProperties(), id: 'id1', geoResourceId: '1', visible: false },
+				{ ...createDefaultLayerProperties(), id: 'id2', geoResourceId: '2', constraints: { hidden: true } }
 			];
 
 			const element = await setup();
-			const attributions = element._getAttributions(layer, 5);
+			const copyrights = element._getCopyrights(layer, 5);
 
-			expect(attributions).toHaveSize(2);
-			expect(attributions[0].copyright.label).toBe('bar_5');
-			expect(attributions[1].copyright.label).toBe('foo_5');
+			expect(copyrights).toHaveSize(1);
+			expect(copyrights[0].label).toBe('foo_5');
 		});
 	});
 

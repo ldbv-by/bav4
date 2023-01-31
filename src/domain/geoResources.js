@@ -3,9 +3,9 @@ import { getDefaultAttribution } from '../services/provider/attribution.provider
 
 /**
  * Attribution data of a GeoResource.
- * It contains at least a copyright label.
+ * Usually it contains at least a copyright label.
  * @typedef Attribution
- * @property {Copyright|Array<Copyright>} copyright
+ * @property {Copyright|Array<Copyright>|null} copyright
  * @property {string} [description] description
  */
 
@@ -151,7 +151,7 @@ export class GeoResource {
 
 	/**
 	 * Sets the attribution for this GeoResource.
-	 * @param {Attribution|string|null} attribution
+	 * @param {Attribution|Array<Attribution>|string|null} attribution
 	 * @returns `this` for chaining
 	 */
 	setAttribution(attribution) {

@@ -14,11 +14,13 @@ describe('NonEmbeddedHint', () => {
 		$injector.registerSingleton('EnvironmentService', {
 			getWindow: () => window,
 			isEmbedded: () => embed
-		});
+		})
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(NonEmbeddedHint.tag);
 	};
 
 	describe('when initialized', () => {
+
 		it('does nothing when embedded version is not requested', async () => {
 
 			await setup({ embed: false, window: {} });
@@ -34,9 +36,9 @@ describe('NonEmbeddedHint', () => {
 				}
 			};
 
-			await setup({ embed: true, window: mockWindow });
+			const element = await setup({ embed: true, window: mockWindow });
 
-			expect(document.body.innerHTML).toBe('<ba-nonembedded-hint></ba-nonembedded-hint>');
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders the hint when embedded version is NOT requested within an iframe', async () => {
@@ -49,7 +51,7 @@ describe('NonEmbeddedHint', () => {
 
 			await setup({ embed: true, window: mockWindow });
 
-			expect(document.body.textContent).toBe('The embedded version must be used in an iframe.');
+			expect(document.body.textContent).toBe('iframe_non_embedded_hint');
 		});
 	});
 });

@@ -6,10 +6,14 @@ import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { toggle } from '../../../../src/store/mainMenu/mainMenu.action';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
+import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
+import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
+
+	let store;
 
 	const setup = async (content, state = {}) => {
 
@@ -23,7 +27,7 @@ describe('BottomSheet', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), bottomSheet: bottomSheetReducer });
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
 		element.content = content;
@@ -60,6 +64,7 @@ describe('BottomSheet', () => {
 
 			expect(contentElement.innerText).toContain('FooBar');
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 		});
 
 		it('displays the bottom sheet content from a lit-html template-result', async () => {
@@ -69,6 +74,7 @@ describe('BottomSheet', () => {
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
 
 			expect(contentElement.innerText).toMatch(/FooBarBaz[\r\n]?/);
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 		});
 	});
 
@@ -143,6 +149,23 @@ describe('BottomSheet', () => {
 
 			toggle();
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(1);
+		});
+
+		it('when close button clicked', async () => {
+			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
+
+			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
+			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
+			openBottomSheet(true);
+
+			expect(store.getState().bottomSheet.data).not.toBeNull();
+			expect(contentElement.innerText).toContain('FooBar');
+
+			closeButton.click();
+
+			expect(store.getState().bottomSheet.data).toBeNull();
+
 		});
 	});
 

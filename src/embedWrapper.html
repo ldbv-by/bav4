@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+
+<head>
+    <title>Bav4 Embed Wrapper</title>
+</head>
+
+<body>
+    <iframe id="wrapper" width="100%" height="600" style="border:0;" allowfullscreen="" loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"></iframe>
+</body>
+<script>
+    const baseUrl = '../embed.html';
+    const search = window.location.search;
+    const iframe = document.getElementById('wrapper');
+    iframe.src = `${baseUrl}${search}`;
+</script>
+
+</html>

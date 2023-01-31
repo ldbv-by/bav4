@@ -1,4 +1,5 @@
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString } from 'ol/geom';
+import { isNumber } from '../../../utils/checks';
 
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
@@ -47,6 +48,31 @@ export const getPolygonFrom = (extent) => {
 		[minx, miny],
 		[minx, maxy]
 	]]);
+};
+
+
+/**
+ * Creates a bounding box from a coordinate and size object
+ * (with height- and width-property)
+ * @param {Coordinate} centerCoordinate
+ * @param {Object} size the size object with a height- and a width-property
+ * @returns {Array<Number>} the bounding box array in the form of [minX, minY, maxX, maxY]
+ */
+export const getBoundingBoxFrom = (centerCoordinate, size) => {
+	if (!centerCoordinate || !size) {
+		return undefined;
+	}
+
+	if (!isNumber(size.width) || !isNumber(size.height)) {
+		return undefined;
+	}
+
+	return [
+		centerCoordinate[0] - (size.width / 2), // minX
+		centerCoordinate[1] - (size.height / 2), // minY
+		centerCoordinate[0] + (size.width / 2), // maxX
+		centerCoordinate[1] + (size.height / 2) // maxY
+	];
 };
 
 /**
@@ -153,6 +179,26 @@ export const getAzimuth = (geometry) => {
 	const factor = x > 0 ? 1 : -1;
 
 	return (360 + (factor * rad * 180 / Math.PI)) % 360;
+};
+
+/**
+ * Calculates the median azimuth-angle of a convex quadrilateral (polygon).
+ * The first and the third segment are defined as the top- and bottom-segment,
+ * which are used to calculate the azimuth-angle
+ * @param {Polygon} polygon the polygon, with shape-properties of a convex quadrilateral
+ * @returns {number} the azimuth-angle in radian
+ */
+export const getAzimuthFrom = (polygon) => {
+	if (!polygon || polygon.getType() !== 'Polygon') {
+		return null;
+	}
+	const coordinates = polygon.getCoordinates()[0];
+	const getAngle = (fromPoint, toPoint) => Math.atan2(toPoint[1] - fromPoint[1], toPoint[0] - fromPoint[0]);
+	const topAngle = getAngle(coordinates[0], coordinates[1]);
+	const bottomAngle = getAngle(coordinates[3], coordinates[2]);
+
+	const angle = (topAngle + bottomAngle) / 2;
+	return angle;
 };
 
 

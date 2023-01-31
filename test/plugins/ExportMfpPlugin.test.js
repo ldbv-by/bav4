@@ -9,7 +9,6 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
-import { changeRotation } from '../../src/store/position/position.action.js';
 
 
 
@@ -126,25 +125,6 @@ describe('ExportMfpPlugin', () => {
 
 			expect(store.getState().mfp.active).toBeFalse();
 		});
-
-		it('restores the map rotation', async () => {
-			const initialRotation = .5;
-			const store = setup({
-				position: {
-					rotation: initialRotation
-				}
-			});
-			const instanceUnderTest = new ExportMfpPlugin();
-			instanceUnderTest._initialized = true;
-			await instanceUnderTest.register(store);
-
-			setCurrentTool(ToolId.EXPORT);
-			await TestUtils.timeout();
-			changeRotation(1);
-			setCurrentTool('foo');
-
-			expect(store.getState().position.rotation).toBe(initialRotation);
-		});
 	});
 
 	describe('when active property changes', () => {
@@ -179,14 +159,17 @@ describe('ExportMfpPlugin', () => {
 				const spec = { foo: 'bar' };
 				const url = 'http://foo.bar';
 				spyOn(mfpService, 'createJob').withArgs(spec).and.resolveTo(url);
-				const mockWindow = { location: null };
+				const mockWindow = { open: () => {}, focus: () => {} };
+				const windowOpenSpy = spyOn(mockWindow, 'open').and.returnValue(mockWindow);
+				const windowFocusSpy = spyOn(mockWindow, 'focus');
 				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 
 				startJob(spec);
 
 				expect(store.getState().mfp.jobSpec.payload).not.toBeNull();
 				await TestUtils.timeout();
-				expect(mockWindow.location).toBe(url);
+				expect(windowOpenSpy).toHaveBeenCalledWith(url, '_blank');
+				expect(windowFocusSpy).toHaveBeenCalled();
 				expect(store.getState().mfp.jobSpec.payload).toBeNull();
 			});
 

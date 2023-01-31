@@ -12,10 +12,9 @@ test.describe('page', () => {
 
 	test.describe('when loaded', () => {
 
-		test('should contain correct lang attribute', async ({ page }) => {
-			const lang = await page.getAttribute('html', 'lang');
-
-			expect(lang).toBe(templateParameters.lang);
+		test('html tag should contain correct attributes', async ({ page }) => {
+			expect(await page.$(`html[lang='${templateParameters.lang}']`)).toBeTruthy();
+			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
 
 		test('should contain favicon related link tag', async ({ page }) => {
@@ -30,10 +29,6 @@ test.describe('page', () => {
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: light)\']', 'content')).toBe('#fcfdfd');
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'name')).toBe('theme-color');
 			expect(await page.getAttribute('head > meta[media=\'(prefers-color-scheme: dark)\']', 'content')).toBe('#2e3538');
-		});
-
-		test('should contain correct translate attribute', async ({ page }) => {
-			expect(await page.$('html[translate=\'no\']')).toBeTruthy();
 		});
 
 		test('should contain google specific translate meta tag', async ({ page }) => {
@@ -69,57 +64,21 @@ test.describe('page', () => {
 
 		test('should contain 14 top level ba-components', async ({ page }) => {
 			expect(await page.locator('body > *').count()).toBe(14);
-		});
 
-		test('should contain a <ba-header> component', async ({ page }) => {
 			expect(await page.locator('ba-header').count()).toBe(1);
-		});
-
-		test('should contain a <ba-main-menu> component', async ({ page }) => {
-			expect(await page.locator('ba-main-menu').count()).toBe(1);
-		});
-		test('should contain a <ba-ol-map> component', async ({ page }) => {
-			expect(await page.locator('ba-ol-map').count()).toBe(1);
-		});
-
-		test('should contain a <ba-map-button-container> component', async ({ page }) => {
-			expect(await page.locator('ba-map-button-container').count()).toBe(1);
-		});
-
-		test('should contain a <ba-tool-bar> component', async ({ page }) => {
-			expect(await page.locator('ba-tool-bar').count()).toBe(1);
-		});
-
-		test('should contain a <ba-footer> component', async ({ page }) => {
-			expect(await page.locator('ba-footer').count()).toBe(1);
-		});
-
-		test('should contain a <ba-tool-container> component', async ({ page }) => {
-			expect(await page.locator('ba-tool-container').count()).toBe(1);
-		});
-
-		test('should contain a <ba-nonembedded-hint> component', async ({ page }) => {
-			expect(await page.locator('ba-nonembedded-hint').count()).toBe(1);
-		});
-
-		test('should contain a <ba-theme-provider> component', async ({ page }) => {
-			expect(await page.locator('ba-theme-provider').count()).toBe(1);
-		});
-
-		test('should contain a <ba-modal> component', async ({ page }) => {
-			expect(await page.locator('ba-modal').count()).toBe(1);
-		});
-
-		test('should contain a <ba-notification-panel> component', async ({ page }) => {
-			expect(await page.locator('ba-notification-panel').count()).toBe(1);
-		});
-
-		test('should contain a <ba-map-context-menu> component', async ({ page }) => {
-			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
-		});
-
-		test('should contain a <ba-dnd-import-panel> component', async ({ page }) => {
 			expect(await page.locator('ba-dnd-import-panel').count()).toBe(1);
+			expect(await page.locator('ba-main-menu').count()).toBe(1);
+			expect(await page.locator('ba-ol-map').count()).toBe(1);
+			expect(await page.locator('ba-chips').count()).toBe(1);
+			expect(await page.locator('ba-map-button-container').count()).toBe(1);
+			expect(await page.locator('ba-tool-bar').count()).toBe(1);
+			expect(await page.locator('ba-tool-container').count()).toBe(1);
+			expect(await page.locator('ba-footer').count()).toBe(1);
+			expect(await page.locator('ba-nonembedded-hint').count()).toBe(1);
+			expect(await page.locator('ba-theme-provider').count()).toBe(1);
+			expect(await page.locator('ba-notification-panel').count()).toBe(1);
+			expect(await page.locator('ba-modal').count()).toBe(1);
+			expect(await page.locator('ba-map-context-menu').count()).toBe(1);
 		});
 	});
 });

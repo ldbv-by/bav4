@@ -1,211 +1,93 @@
-import { Style, Stroke, Fill, Text as TextStyle } from 'ol/style';
-import { getVectorContext } from 'ol/render';
+import { Style, Fill, Circle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
-import { Polygon } from 'ol/geom';
 
-import { FIELD_NAME_PAGE_BUFFER } from './OlMfpHandler';
-import { getPolygonFrom } from '../../utils/olGeometryUtils';
-import { equals, getIntersection } from 'ol/extent';
+export const createThumbnailStyleFunction = (beingDraggedCallback) => {
 
-const fontSizePX = 70;
-export const createAreaPattern = () => {
-	// Create a pattern
-	const patternCanvas = document.createElement('canvas');
-	const patternContext = patternCanvas.getContext('2d');
+	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
 
-	// Give the pattern a width and height of 50
-	patternCanvas.width = 50;
-	patternCanvas.height = 50;
+	const drawBoundary = (context, pixelCoordinates, style) => {
+		context.beginPath();
+		context.moveTo(pixelCoordinates[0][0], pixelCoordinates[0][1]);
+		[...pixelCoordinates].slice(1).forEach(c => context.lineTo(c[0], c[1]));
+		context.closePath();
 
-	// Give the pattern a background color and draw a line
-	patternContext.fillStyle = 'rgba(204, 204, 204, 0.33)';
-	patternContext.strokeStyle = 'rgba(100, 100, 100, 0.2)';
-	patternContext.lineWidth = 15;
-	patternContext.lineCap = 'square';
-	// Shadow
-	patternContext.shadowColor = 'rgba(100, 100, 100, 1)';
-	patternContext.shadowBlur = 3;
-	patternContext.beginPath();
-	patternContext.moveTo(-50, 0);
-	patternContext.lineTo(0, 50);
-	patternContext.stroke();
-	patternContext.beginPath();
-	patternContext.moveTo(0, 0);
-	patternContext.lineTo(50, 50);
-	patternContext.stroke();
-	patternContext.beginPath();
-	patternContext.moveTo(50, 0);
-	patternContext.lineTo(100, 50);
-	patternContext.stroke();
+		context.lineWidth = style.lineWidth;
+		context.strokeStyle = style.strokeStyle;
+		context.stroke();
+	};
 
-	// Create our primary canvas and fill it with the pattern
-	const canvas = document.createElement('canvas');
-	const ctx = canvas.getContext('2d');
-	const pattern = ctx.createPattern(patternCanvas, 'repeat');
-	return pattern;
-};
-export const mfpTextStyleFunction = (label, index = 0, globalOffset = 1) => {
+	const renderStyle = new Style({
+		renderer: (coordinates, state) => {
+			const beingDragged = beingDraggedCallback();
+			if (!beingDragged) {
+				const inPrintableArea = state.feature.get('inPrintableArea') ?? true;
+				const style = {
+					strokeStyle: inPrintableArea ? 'rgba(9, 157, 220, 0.5)' : 'rgba(231, 79, 13, 0.8)',
+					lineWidth: inPrintableArea ? 3 : 5
+				};
 
-	return new Style({
-		text: new TextStyle({
-			text: label,
-			font: `normal ${fontSizePX}px sans-serif`,
-			stroke: new Stroke({
-				color: [0, 0, 0, 0.5],
-				width: 2
-			}),
-			fill: new Fill({
-				color: [80, 80, 80, 0.3]
-			}),
-			scale: 1,
-			offsetY: fontSizePX * index - (globalOffset / 2) * fontSizePX,
-			overflow: false,
-			placement: 'point',
-			baseline: 'hanging'
-		})
+				const pixelCoordinates = isPolygonArray(coordinates) ? coordinates[0] : coordinates;
+				drawBoundary(state.context, pixelCoordinates, style);
+			}
+		}
 	});
+
+	return [renderStyle];
 };
 
-export const mfpBoundaryStyleFunction = () => new Style({
-	stroke: new Stroke({
-		color: [9, 157, 220, 1],
-		width: 3
-	})
-});
-
-export const mfpPageStyleFunction = () => new Style({
-	fill: new Fill({
-		color: [255, 255, 255, 0.4]
-	})
-});
-
-export const createThumbnailStyleFunction = (label, warnLabel, validExtent) => {
-
-	const baseStyle = new Style({
-		stroke: new Stroke(
-			{
-				color: [9, 157, 220, 0.3],
-				width: 3
-			}),
-		text: new TextStyle(
-			{
-				text: '  ' + label.replace('\n', ' '),
-				textAlign: 'left',
-				font: `bold ${fontSizePX / 4}px sans-serif`,
-				stroke: new Stroke({
-					color: [255, 255, 255, 0.8],
-					width: 2
-				}),
-				fill: new Fill({
-					color: [44, 90, 146, 1]
-				}),
-				scale: 1,
-				offsetY: 15,
-				overflow: false,
-				placement: 'line',
-				baseline: 'hanging'
-			})
-	});
-
-	const warnStyle = new Style({
-		geometry: (feature) => {
-			const extent = feature.getGeometry().getExtent();
-			const intersect = getIntersection(extent, validExtent);
-			if (!equals(intersect, extent)) {
-				return feature.getGeometry();
-			}
-		},
-		stroke: new Stroke(
-			{
-				color: [255, 100, 100, 1],
-				width: 4
-			}),
-		text: new TextStyle(
-			{
-				text: warnLabel,
-				textAlign: 'center',
-
-				font: `bold ${fontSizePX / 4}px sans-serif`,
-				stroke: new Stroke({
-					color: [255, 255, 255, 0.8],
-					width: 3
-				}),
-				fill: new Fill({
-					color: [250, 50, 50, 1]
-				}),
-				scale: 1,
-				offsetY: 15,
-				overflow: false
-			})
-	});
-	const pattern = createAreaPattern();
-	const areaOfDistortionStyle = new Style({
-		geometry: (feature) => {
-			const extent = feature.getGeometry().getExtent();
-			const intersect = getIntersection(extent, validExtent);
-			if (!equals(intersect, extent)) {
-				const outer = getPolygonFrom(extent);
-				outer.appendLinearRing(getPolygonFrom(intersect));
-				return outer;
-			}
-		},
+export const forceRenderStyle = new Style({
+	image: new Circle({
 		fill: new Fill({
-			color: pattern
-		})
-	});
-	return [
-		baseStyle,
-		warnStyle,
-		areaOfDistortionStyle
-	];
-};
+			color: [255, 128, 0, 0]
+		}),
+		radius: 1
+	})
+});
 
 export const nullStyleFunction = () => [new Style({})];
 
-export const maskFeatureStyleFunction = () => {
+export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
-	const fill = new Fill({
-		color: [0, 0, 0, 0.4]
-	});
-	const maskStyle = new Style({
-		fill: fill
-	});
+	const getMask = (map, pixelCoordinates) => {
+		const size = map.getSize();
+		const width = size[0] * DEVICE_PIXEL_RATIO;
+		const height = size[1] * DEVICE_PIXEL_RATIO;
+		const outerPixelPolygon = [
+			[0, 0],
+			[width, 0],
+			[width, height],
+			[0, height],
+			[0, 0]];
 
-	return maskStyle;
-};
+		return [outerPixelPolygon, pixelCoordinates.map(c => [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO])];
+	};
 
-const getMaskGeometry = (map, innerGeometry) => {
-	const size = map.getSize();
-	const width = size[0] * DEVICE_PIXEL_RATIO;
-	const height = size[1] * DEVICE_PIXEL_RATIO;
-	const outerPixels = [[0, 0], [width, 0], [width, height], [0, height], [0, 0]];
-	const mask = new Polygon([outerPixels.map(p => map.getCoordinateFromPixel(p))]);
-	mask.appendLinearRing(innerGeometry.getLinearRing(0));
+	const drawMask = (ctx, mask) => {
+		const outer = mask[0];
+		const inner = mask[1];
+		ctx.beginPath();
 
-	return mask;
-};
+		// outside -> clockwise
+		ctx.moveTo(outer[0][0], outer[0][1]);
+		outer.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
 
-export const createMapMaskFunction = (map, feature) => {
-	const innerStyle = mfpBoundaryStyleFunction();
-	const outerStyle = maskFeatureStyleFunction();
-	const pageStyle = mfpPageStyleFunction();
+		// inside -> counter-clockwise
+		ctx.moveTo(inner[0][0], inner[0][1]);
+		[...inner].reverse().slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		ctx.closePath();
+
+		ctx.fillStyle = 'rgba(0, 5, 25, 0.75)';
+		ctx.fill();
+	};
 
 	const renderMask = (event) => {
-		const pageBuffer = feature.get(FIELD_NAME_PAGE_BUFFER).clone();
+		const pixelCoordinates = getPixelCoordinatesCallback();
+		const pixelMask = getMask(map, pixelCoordinates);
+		const ctx = event.context;
+		drawMask(ctx, pixelMask);
 
-		const innerPolygon = feature.getGeometry();
-		const mask = getMaskGeometry(map, innerPolygon);
-		const vectorContext = getVectorContext(event);
-
-		vectorContext.setStyle(innerStyle);
-		vectorContext.drawGeometry(innerPolygon);
-
-		vectorContext.setStyle(outerStyle);
-		vectorContext.drawGeometry(mask);
-
-		pageBuffer.appendLinearRing(innerPolygon.getLinearRing(0));
-		vectorContext.setStyle(pageStyle);
-		vectorContext.drawGeometry(pageBuffer);
+		ctx.restore();
 	};
 	return renderMask;
 };

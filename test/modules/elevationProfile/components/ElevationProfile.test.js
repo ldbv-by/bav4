@@ -184,7 +184,8 @@ describe('ElevationProfile', () => {
 		const initialState = {
 			media: {
 				darkSchema: false,
-				portrait: false
+				portrait: false,
+				minWidth: false
 			},
 			...state
 		};
@@ -207,14 +208,14 @@ describe('ElevationProfile', () => {
 	describe('class', () => {
 		it('defines constant values', async () => {
 			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('#66eeff');
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('#eeff66');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('#ee4444');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('#4444ee');
-			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('#888888');
-			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#ddddff');
-			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('#886644');
-			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('lime');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('green');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('red');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('red');
+			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('rgb(38, 74, 89)');
+			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
+			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
+			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#2c5a93');
 		});
 	});
 
@@ -226,7 +227,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
-			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null, distUnit: null });
+			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null, distUnit: null, portrait: false, minWidth: false });
 		});
 	});
 
@@ -270,20 +271,29 @@ describe('ElevationProfile', () => {
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__data')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.profile__box')).toHaveSize(6);
+			const profile__box = element.shadowRoot.querySelectorAll('.profile__box');
 			const attrs = element.shadowRoot.getElementById('attrs');
 			expect(attrs.value).toBe('alt');
+			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe('elevationProfile_sumUp: ' + sumUp);
+			expect(sumUpElement.innerText).toBe(sumUp + ' m');
+			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe('elevationProfile_sumDown: ' + sumDown);
+			expect(sumDownElement.innerText).toBe(sumDown + ' m');
+			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
-			expect(verticalHeightElement.innerText).toBe('elevationProfile_verticalHeight: ' + verticalHeight);
+			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
+			expect(profile__box[3].title).toBe('elevationProfile_lowestPoint');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
-			expect(highestPointElement.innerText).toBe('elevationProfile_highestPoint: ' + highestPoint);
+			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
+			expect(profile__box[4].title).toBe('elevationProfile_verticalHeight');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
-			expect(lowestPointElement.innerText).toBe('elevationProfile_lowestPoint: ' + lowestPoint);
+			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
+			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
-			expect(linearDistanceElement.innerText).toBe('elevationProfile_linearDistance: ' + linearDistance);
+			expect(linearDistanceElement.innerText).toBe(linearDistance + ' m');
 		});
 	});
 
@@ -311,7 +321,7 @@ describe('ElevationProfile', () => {
 			const value = element._getBackground(chart, altitudeData);
 
 			// assert
-			expect(value).toBe('#ddddff');
+			expect(value).toBe('#e3eef4');
 		});
 	});
 
@@ -405,7 +415,7 @@ describe('ElevationProfile', () => {
 			const value = element._getBorder(context, altitudeData);
 
 			// assert
-			expect(value).toBe('#AA2266');
+			expect(value).toBe('#2c5a93');
 		});
 	});
 
@@ -623,10 +633,10 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(true);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#66eeff');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#ee4444');
-			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#888888');
-			expect(ElevationProfile.BORDER_COLOR).toBe('#886644');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('lime');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
+			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
 		});
 	});
 
@@ -639,10 +649,10 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(false);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('#eeff66');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('#4444ee');
-			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#ddddff');
-			expect(ElevationProfile.BORDER_COLOR).toBe('#AA2266');
+			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('green');
+			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
+			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
+			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
 		});
 	});
 
@@ -763,6 +773,87 @@ describe('ElevationProfile', () => {
 	});
 
 
+
+	describe('responsive layout ', () => {
+
+		it('layouts for landscape', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					portrait: false
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					portrait: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+
+		});
+
+		it('layouts for desktop', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					minWidth: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+		});
+
+		it('layouts for tablet', async () => {
+
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					minWidth: false
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+		});
+
+	});
 
 
 });

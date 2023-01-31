@@ -5,7 +5,6 @@ import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.ac
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { changeRotation } from '../store/position/position.action';
 
 /**
  * Id of the layer used for mfp export visualization.
@@ -35,7 +34,6 @@ export class ExportMfpPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const { MfpService: mfpService, EnvironmentService: environmentService } = $injector.inject('MfpService', 'EnvironmentService');
-		let mapRotation = store.getState().position.rotation;
 
 		const lazyInitialize = async () => {
 
@@ -56,17 +54,15 @@ export class ExportMfpPlugin extends BaPlugin {
 			return true;
 		};
 
-		const onToolChanged = async (toolId, state) => {
+		const onToolChanged = async (toolId) => {
 
 			if (toolId !== ToolId.EXPORT) {
-				changeRotation(mapRotation);
 				deactivate();
 			}
 			else {
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
-						mapRotation = state.position.rotation;
 						activate();
 					});
 				}
@@ -87,7 +83,7 @@ export class ExportMfpPlugin extends BaPlugin {
 				try {
 					const url = await mfpService.createJob(spec);
 					if (url) {
-						environmentService.getWindow().location = url;
+						environmentService.getWindow().open(url, '_blank').focus();
 					}
 				}
 				catch (ex) {
