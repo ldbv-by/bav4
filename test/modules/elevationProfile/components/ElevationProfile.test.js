@@ -786,6 +786,10 @@ describe('ElevationProfile', () => {
 			const element = await setup({
 				media: {
 					portrait: false
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
 				}
 			});
 			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
