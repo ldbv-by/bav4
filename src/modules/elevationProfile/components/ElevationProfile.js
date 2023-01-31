@@ -398,17 +398,12 @@ export class ElevationProfile extends MvuElement {
 				{
 					id: 'terminateXXX',
 					beforeEvent(chart, args) {
-						const event = args.event;
-						if (!event) {
-							return;
-						}
-						// const { ctx, tooltip, chartArea } = chart;
-
-						if (event.type === 'mouseout') {
-							removeHighlightFeaturesById(Update_Media);
-
-							// setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
-							return;
+						/**
+						 * We look for the ChartEvents 'native' property
+						 * See https://www.chartjs.org/docs/latest/api/interfaces/ChartEvent.html
+						 */
+						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
+							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
 					}
 				},
@@ -444,13 +439,15 @@ export class ElevationProfile extends MvuElement {
 				maintainAspectRatio: false,
 
 				scales: {
-					x: { type: 'linear',
+					x: {
+						type: 'linear',
 						title: {
 							display: true,
 							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
 						}
 					},
-					y: { type: 'linear', beginAtZero: false,
+					y: {
+						type: 'linear', beginAtZero: false,
 						title: {
 							display: true,
 							text: translate('elevationProfile_alt') + ' [m]'
@@ -463,7 +460,7 @@ export class ElevationProfile extends MvuElement {
 						grid: { drawOnChartArea: false }
 					}
 				},
-				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove', 'hover'],
+				events: ['pointermove', 'pointerup', 'mouseout'],
 				plugins: {
 					title: {
 						align: 'end',
@@ -501,9 +498,9 @@ export class ElevationProfile extends MvuElement {
 	setCoordinates(coordinates) {
 		// TODO NK action??
 		// console.log(coordinates);
-		removeHighlightFeaturesById(Update_Media);
+		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		addHighlightFeatures({
-			id: Update_Media,
+			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
 			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
 		});
 	}
@@ -601,6 +598,10 @@ export class ElevationProfile extends MvuElement {
 			return ElevationProfile.BORDER_COLOR_DARK;
 		}
 		return ElevationProfile.BORDER_COLOR_LIGHT;
+	}
+
+	static get HIGHLIGHT_FEATURE_ID() {
+		return '#elevationProfileHighlightFeatureId';
 	}
 
 	static get tag() {
