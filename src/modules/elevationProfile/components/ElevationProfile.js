@@ -397,7 +397,7 @@ export class ElevationProfile extends MvuElement {
 						grid: { drawOnChartArea: false }
 					}
 				},
-				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
+				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove', 'hover'],
 				plugins: {
 					title: {
 						align: 'end',

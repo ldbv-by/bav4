@@ -648,8 +648,7 @@ describe('ElevationProfile', () => {
 
 
 	describe('when mouse moves over chart', () => {
-
-		fit('setCoodinates to write to  store', async () => {
+		it('setCoodinates writes to store', async () => {
 			// arrange
 			const coordinates = fromLonLat([11, 48]);
 
@@ -669,9 +668,8 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(setCoordinatesSpy).toHaveBeenCalled();
 
-
 			expect(store.getState().highlight.features).toHaveSize(1);
-			// expect(store.getState().highlight.features[0].data.coordinate).toEqual([coordinates]);
+			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinates);
 			expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 
 		});
@@ -710,6 +708,51 @@ describe('ElevationProfile', () => {
 		// 	// const tooltip = element.shadowRoot.querySelector('.chartjs-tooltip');
 		// 	// // console.log('🚀 ~ file: ElevationProfile.test.js:677 ~ fit ~ tooltip.innerText', tooltip.innerText);
 		// 	// expect(tooltip.innerText).toEqual('10');
+
+
+		// 	expect(store.getState().highlight.features).toHaveSize(1);
+		// 	expect(store.getState().highlight.features[0].data.coordinate).toEqual([10, 10]);
+		// 	expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+
+		// });
+
+		// fit('should change state on hover', async () => {
+
+		// 	// arrange
+		// 	const coordinates = [
+		// 		[0, 1],
+		// 		[2, 3]
+		// 	];
+		// 	spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+		// 	const element = await setup({
+		// 		elevationProfile: {
+		// 			active: true,
+		// 			coordinates: coordinates
+		// 		}
+		// 	});
+
+		// 	//act
+		// 	// const target = element.shadowRoot.querySelector('.altitudeprofile');
+		// 	// const target = element.shadowRoot.querySelectorAll('.chart-container canvas')[0];
+		// 	// console.log('🚀 ~ target', target);
+
+		// 	const chart = element._chart;
+
+		// 	// hover over the first data point
+		// 	await chart.canvas.dispatchEvent(new MouseEvent('hover'));
+
+		// 	// trigger mousemove event
+		// 	chart.canvas.dispatchEvent(new MouseEvent('mousemove', {
+		// 		clientX: 100,
+		// 		clientY: 100
+		// 	}));
+
+		// 	// assert
+
+		// 	// check if tooltip is displayed with correct value
+		// 	// const tooltip = await element.waitForSelector('.chartjs-tooltip');
+		// 	// const text = await tooltip.innerText();
+		// 	// expect(text).toEqual('10');
 
 
 		// 	expect(store.getState().highlight.features).toHaveSize(1);
