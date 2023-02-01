@@ -158,8 +158,14 @@ export const loadBvvGeoResourceById = id => {
 };
 
 /**
- * Loader for URL-based ID: An URL-based ID must match the following pattern:
- * `{sourceType}`||{label}||{url}||{extraParam0}||{extraParam1}
+ * Loader for URL-based ID: An URL-based ID must basically match the following pattern:
+ * `{url}||{extraParam1}||extraParam1.
+ *
+ * In detail:
+ *
+ * KML,GPX,GEOJSON,EWKT: `{url}||[{label}]`
+ *
+ * WMS: `{url}||{layer}||[{label}]`
  * @function
  * @implements geoResourceByIdProvider
  * @returns {GeoResourceFuture|null}
