@@ -5,10 +5,19 @@ import { bvvCapabilitiesProvider } from './provider/wmsCapabilities.provider';
 import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
 
 /**
+ * An async function that provides an array of {@link WmsGeoResource}s.
+ *
+ * @async
+ * @typedef {function(ImportWmsOptions):(Array<WmsGeoResource>)} wmsCapabilitiesProvider
+ */
+
+/**
  *
  * @typedef {Object} ImportWmsOptions
  * @property {SourceType} [sourceType] the source type
  * @property {boolean} [isAuthenticated] Whether or not the wms needs a authentication.
+ * @property {Array<String>} [layers] Return only WmsGeoResources matching the given layer names.
+ * @property {Array<String>} [ids] Desired ids of the created WmsGeoResources. If not set, ids will be created automatically.
  */
 
 /**
@@ -36,7 +45,9 @@ export class ImportWmsService {
 	_newDefaultImportWmsOptions() {
 		return {
 			isAuthenticated: false,
-			sourceType: new SourceType(SourceTypeName.WMS, '1.1.1')
+			sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
+			layers: [],
+			ids: []
 		};
 	}
 
@@ -48,8 +59,8 @@ export class ImportWmsService {
 	 * @throws Will pass through the error of the provider
 	 */
 	async forUrl(url, options = {}) {
-		const { isAuthenticated, sourceType } = { ...this._newDefaultImportWmsOptions(), ...options };
-		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), sourceType, isAuthenticated);
+		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
+		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), completeOptions);
 		return geoResources
 			.map(gr => gr.setImportedByUser(true))
 			.map(gr => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))

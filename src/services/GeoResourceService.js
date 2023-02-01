@@ -15,7 +15,7 @@
 import { $injector } from '../injection';
 import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
-import { loadBvvGeoResourceById, loadBvvGeoResources } from './provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadGeoResourceByUrlBasedId } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
 
 export const FALLBACK_GEORESOURCE_ID_0 = 'tpo';
@@ -44,7 +44,7 @@ export class GeoResourceService {
 	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
 	 * @param {georesourceByIdProvider} [georesourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
 	 */
-	constructor(provider = loadBvvGeoResources, byIdProvider = [loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
+	constructor(provider = loadBvvGeoResources, byIdProvider = [loadGeoResourceByUrlBasedId, loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;
 		this._georesources = null;

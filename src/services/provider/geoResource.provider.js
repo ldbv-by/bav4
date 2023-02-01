@@ -2,7 +2,9 @@
  * @module service/provider
  */
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, VectorSourceType, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
+import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
+import { isHttpUrl } from '../../utils/checks';
 import { getBvvAttribution } from './attribution.provider';
 
 /**
@@ -153,4 +155,74 @@ export const loadBvvGeoResourceById = id => {
 	};
 
 	return new GeoResourceFuture(id, loader);
+};
+
+/**
+ * Loader for URL-based ID: An URL-based ID must basically match the following pattern:
+ * `{url}||{extraParam1}||extraParam1.
+ *
+ * In detail:
+ *
+ * KML,GPX,GEOJSON,EWKT: `{url}||[{label}]`
+ *
+ * WMS: `{url}||{layer}||[{label}]`
+ * @function
+ * @implements geoResourceByIdProvider
+ * @returns {GeoResourceFuture|null}
+ */
+export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
+
+	const parts = urlBasedAsId.split('||');
+
+	if (parts.length && isHttpUrl(parts[0])) {
+		const {
+			SourceTypeService: sourceTypeService,
+			ImportVectorDataService: importVectorDataService,
+			ImportWmsService: importWmsService
+		}
+			= $injector.inject('SourceTypeService', 'ImportVectorDataService', 'ImportWmsService');
+
+		const loader = async () => {
+
+			const url = parts[0];
+			const { status, sourceType } = await sourceTypeService.forUrl(url);
+
+			if (status === SourceTypeResultStatus.OK) {
+				const getGeoResource = async (sourceType) => {
+
+					switch (sourceType.name) {
+						case SourceTypeName.GEOJSON:
+						case SourceTypeName.GPX:
+						case SourceTypeName.KML:
+						case SourceTypeName.EWKT: {
+							const label = parts[1];
+							const geoResource = await importVectorDataService.forUrl(url, { sourceType: sourceType, id: urlBasedAsId })
+								// we get a GeoResourceFuture, so we have to wait until it is resolved
+								.get();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
+						case SourceTypeName.WMS: {
+							const throwWmsImportError = () => {
+								throw new Error(`Unsupported WMS: '${url}'`);
+							};
+							const layer = parts[1]; // when we have no layer argument, we return the first returned WmsGeoResource
+							const label = parts[2];
+							const importWmsOptions = layer
+								? { sourceType: sourceType, layers: [layer], ids: [urlBasedAsId] }
+								: { sourceType: sourceType, layers: [], ids: [urlBasedAsId] };
+							const geoResources = await importWmsService.forUrl(url, importWmsOptions);
+							const geoResource = geoResources[0] ?? throwWmsImportError();
+							return label?.length ? geoResource.setLabel(label) : geoResource;
+						}
+						default:
+							throw new Error(`Unsupported source type '${Object.keys(sourceType.name)[0]}'`);
+					}
+				};
+				return getGeoResource(sourceType);
+			}
+			throw new Error(`SourceTypeService returns status=${Object.keys(SourceTypeResultStatus).find(key => SourceTypeResultStatus[key] === status)} for ${url}`);
+		};
+		return new GeoResourceFuture(urlBasedAsId, loader);
+	}
+	return null;
 };

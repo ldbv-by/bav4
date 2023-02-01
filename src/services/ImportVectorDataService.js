@@ -47,7 +47,7 @@ export class ImportVectorDataService {
 	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
 	* @param {string} url
 	* @param {ImportVectorDataOptions} [options]
-	* @returns VectorGeoresource  or `null` when given source type is not supported
+	* @returns GeoResourceFuture or `null` when given source type is not supported
 	*/
 	forUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
