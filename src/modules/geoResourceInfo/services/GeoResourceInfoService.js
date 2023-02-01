@@ -3,10 +3,17 @@ import { $injector } from '../../../injection';
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '../../../services/GeoResourceService';
 
 /**
+ * An async function that returns a {@link GeoResourceInfoResult}.
+ * @async
+ * @param {string} id Id of the requested GeoResource
+ * @typedef {function(id) : (GeoResourceInfoResult|null)} geoResourceInfoProvider
+ */
+
+/**
  * Service for managing {@link GeoResourceInfoResult}s.
- *
  * @class
  * @author costa_gi
+ * @author taulinger
  */
 export class GeoResourceInfoService {
 

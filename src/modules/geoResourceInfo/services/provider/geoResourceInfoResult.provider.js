@@ -5,6 +5,8 @@ import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
 
 /**
  * Uses the BVV endpoint to load GeoResourceInfoResult.
+ * @implements geoResourceInfoProvider
+ * @async
  * @function
  * @returns {Promise<GeoResourceInfoResult>}
  */
