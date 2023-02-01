@@ -206,6 +206,8 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
 			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#2c5a93');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR_DARK).toBe('rgb(240, 243, 244)');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT).toBe('rgb(92, 106, 112)');
 		});
 	});
 
@@ -425,7 +427,6 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when attribute changes several times', () => {
-
 		it('should call _updateChart() and update the view', async () => {
 			// arrange
 			const coordinates = [
@@ -488,7 +489,6 @@ describe('ElevationProfile', () => {
 
 	describe('when coordinates (slice-of-state) changes (from some coordinates)', () => {
 		it('calls _getAltitudeProfile with new coordinates', async () => {
-
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -627,6 +627,7 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(240, 243, 244)');
 		});
 	});
 
@@ -643,6 +644,7 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');
 		});
 	});
 
@@ -728,8 +730,5 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 		});
-
 	});
-
-
 });

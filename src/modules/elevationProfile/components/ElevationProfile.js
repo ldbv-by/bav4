@@ -409,16 +409,25 @@ export class ElevationProfile extends MvuElement {
 				maintainAspectRatio: false,
 
 				scales: {
-					x: { type: 'linear',
+					x: {
+						type: 'linear',
 						title: {
 							display: true,
 							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
+						},
+						ticks: {
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						}
 					},
-					y: { type: 'linear', beginAtZero: false,
+					y: {
+						type: 'linear',
+						beginAtZero: false,
 						title: {
 							display: true,
 							text: translate('elevationProfile_alt') + ' [m]'
+						},
+						ticks: {
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						}
 					}, // HINT: UX decision
 					y1: {
@@ -460,6 +469,8 @@ export class ElevationProfile extends MvuElement {
 			return;
 		}
 		if (this._chart && this._chart.data && this._chart.data.datasets.length > 0) {
+			this._chart.options.scales.x.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.y.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
 			this._updateChart(labels, data);
 			return;
 		}
@@ -506,6 +517,21 @@ export class ElevationProfile extends MvuElement {
 			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
 		}
 		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
+	}
+
+	static get DEFAULT_TEXT_COLOR_DARK() {
+		return 'rgb(240, 243, 244)';
+	}
+
+	static get DEFAULT_TEXT_COLOR_LIGHT() {
+		return 'rgb(92, 106, 112)';
+	}
+
+	static get DEFAULT_TEXT_COLOR() {
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.DEFAULT_TEXT_COLOR_DARK;
+		}
+		return ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT;
 	}
 
 	static get BACKGROUND_COLOR_DARK() {
