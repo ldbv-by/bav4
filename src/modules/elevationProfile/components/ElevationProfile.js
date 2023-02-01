@@ -396,7 +396,7 @@ export class ElevationProfile extends MvuElement {
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
 			plugins: [
 				{
-					id: 'terminateXXX',
+					id: 'terminateHighlightFeatures',
 					beforeEvent(chart, args) {
 						/**
 						 * We look for the ChartEvents 'native' property
@@ -414,23 +414,22 @@ export class ElevationProfile extends MvuElement {
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
 					}
 
-					// },
-					// {
-					// 	id: 'drawVerticalLineAtMousePosition',
-					// 	afterTooltipDraw(chart, args) {
-					// 		// console.log('🚀 ~ file: ElevationProfile.js:377 ~ ElevationProfile ~ afterTooltipDraw ~ args', args);
-					// 		const tooltip = args.tooltip;
-					// 		const x = tooltip.caretX;
-					// 		const { scales, ctx } = chart;
+				},
+				{
+					id: 'drawVerticalLineAtMousePosition',
+					afterTooltipDraw(chart, args) {
+						const tooltip = args.tooltip;
+						const x = tooltip.caretX;
+						const { scales, ctx } = chart;
 
-					// 		const yScale = scales.y;
-					// 		ctx.beginPath();
-					// 		chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
-					// 		chart.ctx.strokeStyle = '#ff0000';
-					// 		chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
-					// 		chart.ctx.stroke();
-					// 		// }
-					// 	}
+						const yScale = scales.y;
+						ctx.beginPath();
+						chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+						chart.ctx.strokeStyle = '#ff0000';
+						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+						chart.ctx.stroke();
+						// }
+					}
 				}
 			],
 			options: {
@@ -484,7 +483,7 @@ export class ElevationProfile extends MvuElement {
 								return 'Distance: ' + tooltipItems[0].label + 'm';
 							},
 							label: (tooltipItem) => {
-								return 'Elevation: ' + tooltipItem.raw + 'm test test';
+								return 'Elevation: ' + tooltipItem.raw + 'm';
 							}
 						}
 					}
@@ -496,8 +495,6 @@ export class ElevationProfile extends MvuElement {
 
 
 	setCoordinates(coordinates) {
-		// TODO NK action??
-		// console.log(coordinates);
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		addHighlightFeatures({
 			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
