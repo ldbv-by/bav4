@@ -9,9 +9,6 @@ import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { fromLonLat } from 'ol/proj.js';
-// import { highlightReducer } from '../../../../../../../src/store/highlight/highlight.reducer';
-// import {  ChartData} from 'chart.js/auto';
-// import { Chart } from 'chart.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
