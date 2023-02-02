@@ -427,12 +427,7 @@ export class ElevationProfile extends MvuElement {
 							display: true,
 							text: translate('elevationProfile_alt') + ' [m]'
 						}
-					}, // HINT: UX decision
-					y1: {
-						type: 'linear',
-						display: true,
-						position: 'right',
-						grid: { drawOnChartArea: false }
+
 					}
 				},
 				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
