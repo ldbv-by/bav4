@@ -34,7 +34,7 @@ export class AbstractAssistChip extends MvuElement {
 		return this.isVisible() ? html`<style>${css}</style>	
         <button class='chips__button' @click=${this.onClick} >
             ${this.getIcon()}
-            <span class='chips__button-text>${this.getLabel()}</span>
+            <span class='chips__button-text'>${this.getLabel()}</span>
         </button>` : nothing;
 	}
 
