@@ -9,8 +9,6 @@ const Update_Selected_Ids = 'update_selected_ids';
  *
  * @class
  * @author thiloSchlemmer
- * @author taulinger
- * @author alsturm
  */
 export class ProfileChip extends AbstractAssistChip {
 	constructor() {
@@ -23,6 +21,9 @@ export class ProfileChip extends AbstractAssistChip {
 
 
 	onInitialize() {
+		// todo: observe the profile store, to get a reliable and context-free
+		// information about features, which are profile-candidates (LineString, Polygon)
+		// and which are not (Point, MultiLineString, MultiPolygon)
 		this.observe(state => state.measurement.selection, (ids) => this.signal(Update_Selected_Ids, ids));
 	}
 
@@ -47,7 +48,6 @@ export class ProfileChip extends AbstractAssistChip {
 		const translate = (key) => this._translationService.translate(key);
 		return translate('chips_assist_chip_profile');
 	}
-
 
 	/**
      * @override
