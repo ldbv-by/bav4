@@ -1,9 +1,10 @@
 import { $injector } from '../../../../injection';
+import { openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import profileSvg from './assets/profile.svg';
 
 
-const Update_Selected_Ids = 'update_selected_ids';
+const Update_Profile_Coordinates = 'update_selected_ids';
 
 /**
  *
@@ -13,7 +14,7 @@ const Update_Selected_Ids = 'update_selected_ids';
 export class ProfileChip extends AbstractAssistChip {
 	constructor() {
 		super({
-			selectedIds: []
+			profileCoordinates: []
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
@@ -21,16 +22,13 @@ export class ProfileChip extends AbstractAssistChip {
 
 
 	onInitialize() {
-		// todo: observe the profile store, to get a reliable and context-free
-		// information about features, which are profile-candidates (LineString, Polygon)
-		// and which are not (Point, MultiLineString, MultiPolygon)
-		this.observe(state => state.measurement.selection, (ids) => this.signal(Update_Selected_Ids, ids));
+		this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Selected_Ids:
-				return { ...model, selectedIds: data };
+			case Update_Profile_Coordinates:
+				return { ...model, profileCoordinates: data };
 		}
 	}
 
@@ -53,15 +51,16 @@ export class ProfileChip extends AbstractAssistChip {
      * @override
      */
 	isVisible() {
-		const { selectedIds } = this.getModel();
-		return selectedIds.length === 1;
+		const { profileCoordinates } = this.getModel();
+		return profileCoordinates.length > 1;
 	}
 
 	/**
      * @override
      */
 	onClick() {
-		console.warn('onClick-handler is not yet implemented');
+		const { profileCoordinates } = this.getModel();
+		openProfile(profileCoordinates);
 	}
 
 	static get tag() {
