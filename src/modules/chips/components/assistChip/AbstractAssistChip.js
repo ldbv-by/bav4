@@ -32,7 +32,7 @@ export class AbstractAssistChip extends MvuElement {
      */
 	createView(/*eslint-disable no-unused-vars */model) {
 		return this.isVisible() ? html`<style>${css}</style>	
-        <button class='chips__button' @click=${this.onClick} >
+        <button class='chips__button' @click=${() => this.onClick()} >
             ${this.getIcon()}
             <span class='chips__button-text'>${this.getLabel()}</span>
         </button>` : nothing;
