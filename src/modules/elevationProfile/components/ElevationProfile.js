@@ -111,6 +111,13 @@ export class ElevationProfile extends MvuElement {
 	/**
 	 * @override
 	 */
+	onDisconnect() {
+		this._chart?.destroy();
+	}
+
+	/**
+	 * @override
+	 */
 	createView(model) {
 
 		const { portrait, minWidth } = model;
