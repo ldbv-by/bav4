@@ -27,7 +27,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_sumUp).toBe('Ascent');
 		expect(map.elevationProfile_sumDown).toBe('Descent');
 		expect(map.elevationProfile_alt).toBe('Elevation');
-		expect(map.elevationProfile_surface).toBe('surface');
+		expect(map.elevationProfile_surface).toBe('Surface');
 		expect(map.elevationProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
 		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
 		expect(map.elevationProfile_verticalHeight).toBe('Vertical Height');

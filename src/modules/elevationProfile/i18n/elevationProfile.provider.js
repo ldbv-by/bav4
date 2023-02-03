@@ -7,7 +7,7 @@ export const provide = (lang) => {
 				elevationProfile_sumUp: 'Ascent',
 				elevationProfile_sumDown: 'Descent',
 				elevationProfile_alt: 'Elevation',
-				elevationProfile_surface: 'surface',
+				elevationProfile_surface: 'Surface',
 				elevationProfile_elevation_reference_system: 'DGM 25 / DHHN2016',
 				elevationProfile_elevation_profile: 'Elevation Profile',
 				elevationProfile_verticalHeight: 'Vertical Height',
