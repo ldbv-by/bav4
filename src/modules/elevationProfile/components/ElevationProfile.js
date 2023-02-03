@@ -466,6 +466,25 @@ export class ElevationProfile extends MvuElement {
 			ctx.fillRect(firstLeft, top, secondLeft - firstLeft, bottom);
 			ctx.restore();
 		};
+
+
+		const getCoordinate = (tooltip, coordinate) =>	{
+			console.log('🚀 ~ file: ElevationProfile.js:472 ~ ElevationProfile ~ getCoordinate ');
+			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
+				console.log('🚀 ~ getCoordinate ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
+				console.log('🚀 ~ getCoordinate ~ altitudeData.labels', altitudeData.labels);
+				const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
+				// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
+				if (index > -1) {
+					const found = altitudeData.elevations[index];
+					// console.log('🚀 ~ file: ElevationProfile.js:507 ~ ElevationProfile ~ beforeEvent ~ found', found);
+					coordinate = [found.e, found.n];
+					// console.log('🚀 ~ file: ElevationProfile.js:509 ~ ElevationProfile ~ beforeEvent ~ coordinate', coordinate);
+				}
+			}
+			return coordinate;
+		};
+
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -497,25 +516,15 @@ export class ElevationProfile extends MvuElement {
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
-						if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
-							// console.log('🚀 ~ beforeEvent ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
-							// console.log('🚀 ~ beforeEvent ~ altitudeData', altitudeData);
-							const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
-							// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
-							if (index > -1) {
-								const found = altitudeData.elevations[index];
-								// console.log('🚀 ~ file: ElevationProfile.js:507 ~ ElevationProfile ~ beforeEvent ~ found', found);
-								coordinate = [found.e, found.n];
-								// console.log('🚀 ~ file: ElevationProfile.js:509 ~ ElevationProfile ~ beforeEvent ~ coordinate', coordinate);
-							}
-						}
 
 						if (event.type === 'mousedown') {
-							console.log('🚀 ~ beforeEvent ~ event.type', event.type);
+							console.log('🚀 ~ file: ElevationProfile.js:520 ~ ElevationProfile ~ beforeEvent ~ event.type', event.type);
+							coordinate = getCoordinate(tooltip, coordinate);
+
 							console.log('🚀 ~ beforeEvent ~ coordinate', coordinate);
+
 							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
 							this._currentExtent = coordinate;
-							console.log('🚀 ~ file: ElevationProfile.js:518 ~ ElevationProfile ~ beforeEvent ~ this._currentExtent', this._currentExtent);
 							return;
 						}
 						if (!mouseIsDown) {
@@ -529,22 +538,23 @@ export class ElevationProfile extends MvuElement {
 						}
 
 						if (event.type === 'mouseup' || event.type === 'mouseout') {
+							// coordinate = getCoordinate(tooltip, coordinate);
 							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
-							this._currentExtent = [...this._currentExtent, ...coordinate];
+							// this._currentExtent = [...this._currentExtent, ...coordinate];
 
-							if (this._currentExtent[0] > this._currentExtent[2]) {
-								const extent0 = this._currentExtent[0];
-								this._currentExtent[0] = this._currentExtent[2];
-								this._currentExtent[2] = extent0;
-							}
-							if (this._currentExtent[1] > this._currentExtent[3]) {
-								const extent1 = this._currentExtent[1];
-								this._currentExtent[1] = this._currentExtent[3];
-								this._currentExtent[3] = extent1;
-							}
+							// if (this._currentExtent[0] > this._currentExtent[2]) {
+							// 	const extent0 = this._currentExtent[0];
+							// 	this._currentExtent[0] = this._currentExtent[2];
+							// 	this._currentExtent[2] = extent0;
+							// }
+							// if (this._currentExtent[1] > this._currentExtent[3]) {
+							// 	const extent1 = this._currentExtent[1];
+							// 	this._currentExtent[1] = this._currentExtent[3];
+							// 	this._currentExtent[3] = extent1;
+							// }
 
-							console.log('🚀 ~ beforeEvent ~ this._currentExtent', this._currentExtent);
-							fitMap(this._currentExtent);
+							// console.log('🚀 ~ beforeEvent ~ this._currentExtent', this._currentExtent);
+							// fitMap(this._currentExtent);
 
 							return;
 						}
@@ -643,6 +653,7 @@ export class ElevationProfile extends MvuElement {
 			}
 		};
 		return config;
+
 	}
 
 	setCoordinates(coordinates) {
