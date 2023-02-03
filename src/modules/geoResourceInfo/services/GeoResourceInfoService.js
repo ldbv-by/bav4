@@ -17,7 +17,10 @@ import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1 } from '../../../s
  */
 export class GeoResourceInfoService {
 
-	constructor(provider = loadBvvGeoResourceInfo) {
+	/**
+	 * @param {provider} [provider=loadBvvGeoResources]
+	 */
+	constructor(provider = [loadBvvGeoResourceInfo]) {
 		this._provider = provider;
 		this._geoResourceInfoResults = new Map();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
@@ -28,14 +31,19 @@ export class GeoResourceInfoService {
 	* Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrived from backend.
 	* @public
 	* @param {string} geoResourceId Id of the desired {@link GeoResourceInfoResult}
-	* @returns {GeoResourceInfoResult | null }
+	* @returns {GeoResourceInfoResult | null}
 	* @throws Will throw an error if the provider result is wrong and pass it to the view.
 	*/
 	async byId(geoResourceId) {
 		if (!this._geoResourceInfoResults.get(geoResourceId)) {
 			try {
-				this._geoResourceInfoResult = await this._provider(geoResourceId);
-				this._geoResourceInfoResults.set(geoResourceId, this._geoResourceInfoResult);
+				for (const provider of this._provider) {
+					const geoResourceInfoResult = await provider(geoResourceId);
+					if (geoResourceInfoResult) {
+						this._geoResourceInfoResults.set(geoResourceId, this._geoResourceInfoResult);
+						return geoResourceInfoResult;
+					}
+				}
 			}
 			catch (e) {
 				if (this._environmentService.isStandalone()) {
@@ -48,7 +56,7 @@ export class GeoResourceInfoService {
 				}
 			}
 		}
-		return this._geoResourceInfoResults.get(geoResourceId);
+		return this._geoResourceInfoResults.get(geoResourceId) ?? null;
 	}
 
 	/**

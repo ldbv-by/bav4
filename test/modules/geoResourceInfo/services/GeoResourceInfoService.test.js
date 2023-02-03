@@ -20,23 +20,22 @@ describe('GeoResourceInfoService', () => {
 
 		const geoResourceInfoService = new GeoResourceInfoService();
 
-		expect(geoResourceInfoService._provider).toEqual(loadBvvGeoResourceInfo);
+		expect(geoResourceInfoService._provider).toEqual([loadBvvGeoResourceInfo]);
 	});
 
 	it('initializes the service with custom provider', async () => {
 		const customProvider = async () => { };
-		const instanceUnderTest = new GeoResourceInfoService(customProvider);
+		const instanceUnderTest = new GeoResourceInfoService([customProvider]);
 		expect(instanceUnderTest._provider).toBeDefined();
-		expect(instanceUnderTest._provider).toEqual(customProvider);
+		expect(instanceUnderTest._provider).toEqual([customProvider]);
 	});
-
 
 	it('should return a GeoResourceInfoResult with html content', async () => {
 
 		const loadMockBvvGeoResourceInfo = async () => {
 			return new GeoResourceInfoResult('<b>content</b>');
 		};
-		const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
 		const geoResourceInfoResult = await geoResourceInfoSerice.byId(geoResourceId);
 
@@ -49,7 +48,7 @@ describe('GeoResourceInfoService', () => {
 		const loadMockBvvGeoResourceInfo = async () => {
 			return null;
 		};
-		const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
 		const result = await geoResourceInfoSerice.byId(geoResourceId);
 		expect(result).toBeNull();
@@ -61,7 +60,7 @@ describe('GeoResourceInfoService', () => {
 		const loadMockBvvGeoResourceInfo = async () => {
 			return Promise.reject(new Error(providerErrMsg));
 		};
-		const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
 		try {
 			await geoResourceInfoSerice.byId(geoResourceId);
@@ -99,7 +98,7 @@ describe('GeoResourceInfoService', () => {
 				return Promise.reject(new Error(providerErrMsg));
 			};
 			const warnSpy = spyOn(console, 'warn');
-			const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			const geoResourceInfoResult = await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
 
 
@@ -116,7 +115,7 @@ describe('GeoResourceInfoService', () => {
 				return Promise.reject(new Error(providerErrMsg));
 			};
 			const warnSpy = spyOn(console, 'warn');
-			const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			const geoResourceInfoResult = await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_1);
 
 
@@ -131,7 +130,7 @@ describe('GeoResourceInfoService', () => {
 			const loadMockBvvGeoResourceInfo = async () => {
 				return Promise.reject(new Error(providerErrMsg));
 			};
-			const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
 			try {
 				await geoResourceInfoSerice.byId(geoResourceId);
@@ -158,7 +157,7 @@ describe('GeoResourceInfoService', () => {
 			const loadMockBvvGeoResourceInfo = async () => {
 				return new GeoResourceInfoResult('<div><content/div>');
 			};
-			const geoResourceInfoSerice = new GeoResourceInfoService(loadMockBvvGeoResourceInfo);
+			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 			geoResourceInfoSerice._geoResourceInfoResults.set(FALLBACK_GEORESOURCE_ID_1, null);
 
 			const geoResourceInfoResult = await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
