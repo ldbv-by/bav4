@@ -11,7 +11,7 @@ const Update_Profile_Coordinates = 'update_selected_ids';
  * @class
  * @author thiloSchlemmer
  */
-export class ProfileChip extends AbstractAssistChip {
+export class ElevationProfileChip extends AbstractAssistChip {
 	constructor() {
 		super({
 			profileCoordinates: []
@@ -33,31 +33,31 @@ export class ProfileChip extends AbstractAssistChip {
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	getIcon() {
 		return profileSvg;
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('chips_assist_chip_profile');
+		return translate('chips_assist_chip_elevation_profile');
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	isVisible() {
 		const { profileCoordinates } = this.getModel();
 		return profileCoordinates.length > 1;
 	}
 
 	/**
-     * @override
-     */
+	 * @override
+	 */
 	onClick() {
 		const { profileCoordinates } = this.getModel();
 		openProfile(profileCoordinates);

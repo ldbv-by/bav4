@@ -7,14 +7,14 @@ describe('i18n for chips module', () => {
 
 		const map = provide('de');
 
-		expect(map.chips_assist_chip_profile).toBe('Geländeprofil');
+		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
 	});
 
 	it('provides translation for en', () => {
 
 		const map = provide('en');
 
-		expect(map.chips_assist_chip_profile).toBe('Elevationprofile');
+		expect(map.chips_assist_chip_elevation_profile).toBe('Elevationprofile');
 	});
 
 	it('have the expected amount of translations', () => {

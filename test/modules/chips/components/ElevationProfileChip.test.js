@@ -1,24 +1,26 @@
 import { $injector } from '../../../../src/injection';
-import { ProfileChip } from '../../../../src/modules/chips/components/assistChip/ProfileChip';
+import { ElevationProfileChip } from '../../../../src/modules/chips/components/assistChip/ElevationProfileChip';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(ProfileChip.tag, ProfileChip);
+window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
-describe('ProfileChip', () => {
-	const defaultState = { elevationProfile: {
-		active: false,
-		coordinates: []
-	} };
+describe('ElevationProfileChip', () => {
+	const defaultState = {
+		elevationProfile: {
+			active: false,
+			coordinates: []
+		}
+	};
 
 	let store;
 
 	const setup = async (state = defaultState) => {
-		store = TestUtils.setupStoreAndDi(state, {	elevationProfile: elevationProfileReducer });
+		store = TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-		const element = await TestUtils.render(ProfileChip.tag);
+		const element = await TestUtils.render(ElevationProfileChip.tag);
 
 		return element;
 	};
@@ -37,11 +39,11 @@ describe('ProfileChip', () => {
 		});
 
 		it('renders the view', async () => {
-			const state = { elevationProfile: {	active: false, coordinates: coordinates } };
+			const state = { elevationProfile: { active: false, coordinates: coordinates } };
 			const element = await setup(state);
 
 			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
-			expect(buttonText.innerText).toBe('chips_assist_chip_profile');
+			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
 		});
 
 		it('renders nothing when no coordinates for elevationProfile exists', async () => {
@@ -65,7 +67,7 @@ describe('ProfileChip', () => {
 		});
 
 		it('changes store on click', async () => {
-			const state = { elevationProfile: {	active: false, coordinates: coordinates } };
+			const state = { elevationProfile: { active: false, coordinates: coordinates } };
 			const element = await setup(state);
 			const button = element.shadowRoot.querySelector('button');
 
