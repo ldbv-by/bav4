@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { ElevationProfileChip } from '../../../../src/modules/chips/components/assistChip/ElevationProfileChip';
+import { ElevationProfileChip } from '../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../test-utils';
