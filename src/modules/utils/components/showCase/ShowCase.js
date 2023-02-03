@@ -157,6 +157,7 @@ export class ShowCase extends BaElement {
 				closeProfile();
 			}
 			else {
+				closeModal();
 				openProfile([[1328315.0062647895, 6089975.78297438], [1310581.6157026286, 6045336.558455837]]);
 			}
 		};
