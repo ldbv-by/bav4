@@ -64,7 +64,7 @@ export class ElevationService {
 	}
 
 	/**
-	 * Returns a profile for an array of two more coordinates
+	 * Returns a profile for an array of two or more coordinates
 	 * @param {Array<Coordinate>} coordinates3857
 	 * @returns the profile
 	 */
