@@ -491,29 +491,37 @@ export class ElevationProfile extends MvuElement {
 						if (!event) {
 							return;
 						}
-						if (event.type !== 'mousemove') {
-							console.log('🚀 ~ beforeEvent ~ event', event);
-						}
+						// if (event.type !== 'mousemove') {
+						// 	console.log('🚀 ~ beforeEvent ~ event', event);
+						// }
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
 						if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
+							// console.log('🚀 ~ beforeEvent ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
+							// console.log('🚀 ~ beforeEvent ~ altitudeData', altitudeData);
 							const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
+							// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
 							if (index > -1) {
 								const found = altitudeData.elevations[index];
+								// console.log('🚀 ~ file: ElevationProfile.js:507 ~ ElevationProfile ~ beforeEvent ~ found', found);
 								coordinate = [found.e, found.n];
+								// console.log('🚀 ~ file: ElevationProfile.js:509 ~ ElevationProfile ~ beforeEvent ~ coordinate', coordinate);
 							}
 						}
 
-						if (event.type === 'mousedown') { // pointerdown geht nicht
+						if (event.type === 'mousedown') {
+							console.log('🚀 ~ beforeEvent ~ event.type', event.type);
+							console.log('🚀 ~ beforeEvent ~ coordinate', coordinate);
 							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
 							this._currentExtent = coordinate;
+							console.log('🚀 ~ file: ElevationProfile.js:518 ~ ElevationProfile ~ beforeEvent ~ this._currentExtent', this._currentExtent);
 							return;
 						}
 						if (!mouseIsDown) {
 							return;
 						}
-						if (event.type === 'mousemove') { // pointermove geht nicht
+						if (event.type === 'mousemove') {
 							setMousemoveProps(tooltip.caretX);
 							_drawSelectionRect(ctx);
 
@@ -535,7 +543,8 @@ export class ElevationProfile extends MvuElement {
 								this._currentExtent[3] = extent1;
 							}
 
-							// fitMap(this._currentExtent);
+							console.log('🚀 ~ beforeEvent ~ this._currentExtent', this._currentExtent);
+							fitMap(this._currentExtent);
 
 							return;
 						}
@@ -592,37 +601,36 @@ export class ElevationProfile extends MvuElement {
 				// events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
 
 
-				onTouchStart: function (evt) {
-					const activePoint = this._chart.getElementAtEvent(evt)[0];
-					if (activePoint) {
-						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-						const datasetIndex = activePoint._datasetIndex;
-						const index = activePoint._index;
-						const value = this._chart.data.datasets[datasetIndex].data[index];
-						console.log('Touch start: ' + value);
-					}
-				},
-				onTouchMove: function (evt) {
-					const activePoint = this._chart.getElementAtEvent(evt)[0];
-					if (activePoint) {
-						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-						const datasetIndex = activePoint._datasetIndex;
-						const index = activePoint._index;
-						const value = this._chart.data.datasets[datasetIndex].data[index];
-						console.log('Touch move: ' + value);
-					}
-				},
-				onTouchEnd: function (evt) {
-					const activePoint = this._chart.getElementAtEvent(evt)[0];
-					if (activePoint) {
-						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-						const datasetIndex = activePoint._datasetIndex;
-						const index = activePoint._index;
-						const value = this._chart.data.datasets[datasetIndex].data[index];
-						console.log('Touch end: ' + value);
-					}
-
-				},
+				// onTouchStart: function (evt) {
+				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
+				// 	if (activePoint) {
+				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+				// 		const datasetIndex = activePoint._datasetIndex;
+				// 		const index = activePoint._index;
+				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
+				// 		console.log('Touch start: ' + value);
+				// 	}
+				// },
+				// onTouchMove: function (evt) {
+				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
+				// 	if (activePoint) {
+				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+				// 		const datasetIndex = activePoint._datasetIndex;
+				// 		const index = activePoint._index;
+				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
+				// 		console.log('Touch move: ' + value);
+				// 	}
+				// },
+				// onTouchEnd: function (evt) {
+				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
+				// 	if (activePoint) {
+				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+				// 		const datasetIndex = activePoint._datasetIndex;
+				// 		const index = activePoint._index;
+				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
+				// 		console.log('Touch end: ' + value);
+				// 	}
+				// },
 				plugins: {
 					title: {
 						align: 'end',
