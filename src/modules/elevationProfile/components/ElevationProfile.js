@@ -449,7 +449,8 @@ export class ElevationProfile extends MvuElement {
 						type: 'linear',
 						title: {
 							display: true,
-							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
+							text: translate('elevationProfile_distance') + ' [' + distUnit + ']',
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						},
 						ticks: {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
@@ -460,7 +461,8 @@ export class ElevationProfile extends MvuElement {
 						beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('elevationProfile_alt') + ' [m]'
+							text: translate('elevationProfile_alt') + ' [m]',
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						},
 						ticks: {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
@@ -473,7 +475,8 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('elevationProfile_elevation_reference_system')
+						text: translate('elevationProfile_elevation_reference_system'),
+						color: ElevationProfile.DEFAULT_TEXT_COLOR
 					},
 					legend: { display: false },
 					tooltip: {
@@ -529,7 +532,12 @@ export class ElevationProfile extends MvuElement {
 		}
 		if (this._chart && this._chart.data && this._chart.data.datasets.length > 0) {
 			this._chart.options.scales.x.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.x.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
 			this._chart.options.scales.y.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.y.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+
+			this._chart.options.plugins.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+
 			this._updateChart(labels, data);
 			return;
 		}
