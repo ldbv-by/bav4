@@ -6,6 +6,7 @@ import { $injector } from '../../../injection';
 
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -50,7 +51,6 @@ export class ElevationProfile extends MvuElement {
 		this._configService = configService;
 		this._elevationService = elevationService;
 
-		this._enableTooltip = true;
 		this._drawSelectedAreaBorder = false;
 		this._mouseIsDown = false;
 		this._firstLeft = 0;
@@ -106,6 +106,13 @@ export class ElevationProfile extends MvuElement {
 	 */
 	onAfterRender() {
 		this._updateOrCreateChart();
+	}
+
+	/**
+	 * @override
+	 */
+	onDisconnect() {
+		this._chart?.destroy();
 	}
 
 	/**
@@ -396,10 +403,39 @@ export class ElevationProfile extends MvuElement {
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
 			plugins: [
 				{
+					id: 'terminateHighlightFeatures',
+					beforeEvent(chart, args) {
+						/**
+						 * We look for the ChartEvents 'native' property
+						 * See https://www.chartjs.org/docs/latest/api/interfaces/ChartEvent.html
+						 */
+						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
+							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+						}
+					}
+				},
+				{
 					id: 'shortenLeftEndOfScale',
 					beforeInit: (chart) => {
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
+					}
+
+				},
+				{
+					id: 'drawVerticalLineAtMousePosition',
+					afterTooltipDraw(chart, args) {
+						const tooltip = args.tooltip;
+						const x = tooltip.caretX;
+						const { scales, ctx } = chart;
+
+						const yScale = scales.y;
+						ctx.beginPath();
+						chart.ctx.moveTo(x, yScale.getPixelForValue(yScale.max, 0));
+						chart.ctx.strokeStyle = '#ff0000';
+						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
+						chart.ctx.stroke();
+						// }
 					}
 				}
 			],
@@ -409,39 +445,64 @@ export class ElevationProfile extends MvuElement {
 				maintainAspectRatio: false,
 
 				scales: {
-					x: { type: 'linear',
+					x: {
+						type: 'linear',
 						title: {
 							display: true,
 							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
 						}
 					},
-					y: { type: 'linear', beginAtZero: false,
+					y: {
+						type: 'linear', beginAtZero: false,
 						title: {
 							display: true,
 							text: translate('elevationProfile_alt') + ' [m]'
 						}
-					}, // HINT: UX decision
-					y1: {
-						type: 'linear',
-						display: true,
-						position: 'right',
-						grid: { drawOnChartArea: false }
+
 					}
 				},
-				events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
+				events: ['pointermove', 'pointerup', 'mouseout'],
 				plugins: {
 					title: {
 						align: 'end',
 						display: true,
 						text: translate('elevationProfile_elevation_reference_system')
 					},
-					legend: { display: false }
+					legend: { display: false },
+					tooltip: {
+						displayColors: false,
+						mode: 'index',
+						intersect: false,
+						callbacks: {
+							title: (tooltipItems) => {
+								const { parsed } = tooltipItems[0];
+								const index = altitudeData.labels.indexOf(parsed.x);
+								if (index > -1) {
+									const found = altitudeData.elevations[index];
+									this.setCoordinates([found.e, found.n]);
+								}
+
+								return 'Distance: ' + tooltipItems[0].label + 'm';
+							},
+							label: (tooltipItem) => {
+								return 'Elevation: ' + tooltipItem.raw + 'm';
+							}
+						}
+					}
 				}
 			}
 		};
 		return config;
 	}
 
+
+	setCoordinates(coordinates) {
+		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+		addHighlightFeatures({
+			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
+			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
+		});
+	}
 
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
@@ -536,6 +597,10 @@ export class ElevationProfile extends MvuElement {
 			return ElevationProfile.BORDER_COLOR_DARK;
 		}
 		return ElevationProfile.BORDER_COLOR_LIGHT;
+	}
+
+	static get HIGHLIGHT_FEATURE_ID() {
+		return '#elevationProfileHighlightFeatureId';
 	}
 
 	static get tag() {

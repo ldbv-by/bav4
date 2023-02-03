@@ -25,8 +25,12 @@ export const _determinePreferredFormat = (arr) => {
 	return sorted;
 };
 
-
-export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) => {
+/**
+ * @implements wmsCapabilitiesProvider
+ * @returns {Array<WmsGeoResource>}
+ */
+export const bvvCapabilitiesProvider = async (url, options) => {
+	const { isAuthenticated } = options;
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
@@ -38,27 +42,30 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 		return isBaaAuthenticated ? GeoResourceAuthenticationType.BAA : null;
 	};
 
-	const toWmsGeoResource = (layer, capabilities, isAuthenticated = false) => {
+	const toWmsGeoResource = (layer, capabilities, index) => {
 		const format = _determinePreferredFormat(capabilities.formatsGetMap);
+
 		return format.length > 0
 			? new WmsGeoResource(
-				createUniqueId().toString(),
+				options.ids[index] ?? createUniqueId().toString(),
 				layer.title,
 				`${capabilities.onlineResourceGetMap}`,
 				`${layer.name}`,
 				format[0])
-				.setAuthenticationType(getAuthenticationType(isAuthenticated))
+				.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 				.setQueryable(layer.queryable)
 				.setExtraParams(getExtraParams(capabilities))
 			: null;
 	};
 
 	const readCapabilities = (capabilities) => {
-		const {	MapService: mapService } = $injector.inject('MapService');
+		const { MapService: mapService } = $injector.inject('MapService');
 		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
 		return capabilities.layers
 			?.filter((l) => containsSRID(l, mapService.getSrid()))
-			.map((layer) => toWmsGeoResource(layer, capabilities, isAuthenticated))
+			// we filter unwanted layers (if defined by WmsImportOptions)
+			.filter(layer => (options.layers.length) ? options.layers.includes(layer.name) : true)
+			.map((layer, index) => toWmsGeoResource(layer, capabilities, index))
 			.filter(l => !!l); // toWmsGeoResource may return null
 	};
 
@@ -67,7 +74,7 @@ export const bvvCapabilitiesProvider = async (url, sourceType, isAuthenticated) 
 			throw new Error(`Import of WMS failed. Credential for '${url}' not found.`);
 		};
 
-		const {	BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
+		const { BaaCredentialService: baaCredentialService } = $injector.inject('BaaCredentialService');
 		const credential = baaCredentialService.get(url);
 		return credential ? { username: credential.username, password: credential.password } : failed();
 	};

@@ -6,6 +6,9 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 import { TestUtils } from '../../../test-utils.js';
 import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
+import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
+import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { fromLonLat } from 'ol/proj.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -149,27 +152,30 @@ describe('ElevationProfile', () => {
 	};
 
 	const coordinateServiceMock = {
-		stringify() {},
-		toLonLat() {}
+		stringify() { },
+		toLonLat() { }
 	};
 
 	const elevationServiceMock = {
-		getProfile() {}
+		getProfile() { }
 	};
 
 	const configService = {
-		getValueAsPath: () => {}
+		getValueAsPath: () => { }
 	};
 
 	const chart = {
 		ctx: {
 			createLinearGradient: () => {
-				return { addColorStop: () => {} };
+				return { addColorStop: () => { } };
 			}
 		}, chartArea: { left: 0, right: 100, width: 200 }
-	} ;
+	};
 	const altitudeData = profileSlopeSteep();
 	const context = { chart };
+
+
+	let store;
 
 	const setup = (state = {}) => {
 		const initialState = {
@@ -181,7 +187,8 @@ describe('ElevationProfile', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
+			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer(),
 			elevationProfile: elevationProfileReducer
 		});
@@ -206,6 +213,7 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
 			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#2c5a93');
+			expect(ElevationProfile.HIGHLIGHT_FEATURE_ID).toBe('#elevationProfileHighlightFeatureId');
 		});
 	});
 
@@ -425,7 +433,6 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when attribute changes several times', () => {
-
 		it('should call _updateChart() and update the view', async () => {
 			// arrange
 			const coordinates = [
@@ -646,6 +653,101 @@ describe('ElevationProfile', () => {
 		});
 	});
 
+
+	describe('events', () => {
+
+		const chartJsTimeoutInMs = 100;
+
+		describe('on pointermove', () => {
+
+			it('places a highlight feature within the store', async () => {
+				// arrange
+				const coordinates = fromLonLat([11, 48]);
+
+				spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+				const element = await setup({
+					elevationProfile: {
+						active: true,
+						coordinates: coordinates
+					}
+				});
+				const setCoordinatesSpy = spyOn(element, 'setCoordinates').and.callThrough();
+				const chart = element.shadowRoot.querySelector('#route-altitude-chart');
+
+				const event = new PointerEvent('pointermove', {
+					clientX: 100,
+					clientY: 100
+				});
+
+				// act
+				chart.dispatchEvent(event);
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+				// assert
+				expect(setCoordinatesSpy).toHaveBeenCalled();
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].id).toBe(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].data.coordinate).toHaveSize(2);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+			});
+		});
+
+		describe('on mouseout', () => {
+
+			it('removes the highlight feature from the store', async () => {
+				// arrange
+				const coordinates = fromLonLat([11, 48]);
+
+				spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+				const element = await setup({
+					elevationProfile: {
+						active: true,
+						coordinates: coordinates
+					},
+					highlight: {
+						features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
+					}
+				});
+				const chart = element.shadowRoot.querySelector('#route-altitude-chart');
+
+				// act
+				chart.dispatchEvent(new Event('mouseout'));
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+				// assert
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+
+		describe('on pointerup', () => {
+
+			it('removes the highlight feature from the store', async () => {
+				// arrange
+				const coordinates = fromLonLat([11, 48]);
+
+				spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+				const element = await setup({
+					elevationProfile: {
+						active: true,
+						coordinates: coordinates
+					},
+					highlight: {
+						features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
+					}
+				});
+				const chart = element.shadowRoot.querySelector('#route-altitude-chart');
+
+				// act
+				chart.dispatchEvent(new PointerEvent('pointerup'));
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+				// assert
+				expect(store.getState().highlight.features).toHaveSize(0);
+			});
+		});
+
+	});
+
 	describe('responsive layout ', () => {
 
 		it('layouts for landscape', async () => {
@@ -731,5 +833,29 @@ describe('ElevationProfile', () => {
 
 	});
 
+	describe('when disconnected', () => {
+		it('destroys chart', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
 
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const onDisconnectSpy = spyOn(element, 'onDisconnect').and.callThrough();
+
+			//act
+			element.onDisconnect(); // we have to call onDisconnect manually
+
+			// assert
+			expect(onDisconnectSpy).toHaveBeenCalled();
+		});
+	});
 });
