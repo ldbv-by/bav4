@@ -140,24 +140,24 @@ export class MeasureToolContent extends AbstractToolContent {
 		const getStartNew = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed ?
 				nothing :
-				getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset(), restartsvg);
+				getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset());
 		};
 
 		const getFinish = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed ?
-				getButton('finish', translate('toolbox_drawTool_finish'), () => finish(), checklgsvg) :
+				getButton('finish', translate('toolbox_drawTool_finish'), () => finish()) :
 				nothing;
 		};
 
 		const getRemovePoint = () => {
 			return mode === 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove(), undosvg) :
+				getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove()) :
 				nothing;
 		};
 
 		const getRemoveMeasure = () => {
 			return mode !== 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove(), trashsvg) :
+				getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) :
 				nothing;
 		};
 
