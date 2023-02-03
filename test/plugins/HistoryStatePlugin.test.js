@@ -130,6 +130,30 @@ describe('HistoryState', () => {
 		expect(historySpy).toHaveBeenCalledWith(null, '', expectedEncodedState);
 	});
 
+	it('does nothing when encoded state has\'nt changed', async () => {
+		const expectedEncodedState = 'foo';
+		const mockHistory = { replaceState: () => { } };
+		const historySpy = spyOn(mockHistory, 'replaceState');
+		const mockWindow = { history: mockHistory };
+		spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
+		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const store = setup();
+		const instanceUnderTest = new HistoryStatePlugin();
+		await instanceUnderTest.register(store);
+		await TestUtils.timeout(0);
+
+		// Let's trigger one observer multiple times
+		changeCenter([1, 1]);
+		changeCenter([1, 2]);
+		changeCenter([1, 3]);
+		changeCenter([1, 4]);
+
+		// But as we always return the same encoded state from the ShareService
+		// the history API should be called only once
+		expect(historySpy).toHaveBeenCalledOnceWith(null, '', expectedEncodedState);
+	});
+
 	it('does nothing when we are in \'embed\' mode', async () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		const store = setup();
