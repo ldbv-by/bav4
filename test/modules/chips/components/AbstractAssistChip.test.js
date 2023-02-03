@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { AbstractAssistChip } from '../../../../src/modules/chips/components/assistChip/AbstractAssistChip';
+import { AbstractAssistChip } from '../../../../src/modules/chips/components/assistChips/AbstractAssistChip';
 import { TestUtils } from '../../../test-utils';
 
 class AssistChipImpl extends AbstractAssistChip {
@@ -129,7 +129,7 @@ describe('AbstractAssistChip', () => {
 		it('calls onClick method on click on the chip', async () => {
 			const element = await TestUtils.render(AssistChipImpl.tag);
 			const button = element.shadowRoot.querySelector('.chips__button');
-			const warnSpy = spyOn(console, 'warn').and.callFake(() => {});
+			const warnSpy = spyOn(console, 'warn').and.callFake(() => { });
 
 			button.click();
 

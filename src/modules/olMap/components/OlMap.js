@@ -346,7 +346,7 @@ export class OlMap extends MvuElement {
 				const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
 				const padding = eventLike.payload.options.useVisibleViewport
 					? [viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0], viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
-					viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
+						viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
 					: OlMap.DEFAULT_PADDING_PX;
 				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
 			}
