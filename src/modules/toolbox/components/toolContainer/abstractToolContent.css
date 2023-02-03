@@ -4,6 +4,8 @@
 .ba-tool-container__title {
 	padding: .8em 1.5em;
 	font-weight: bold;   
+	/* font-size:1.5rem;
+	padding-left:.9em; */
 }
 .ba-tool-container__content {
 	padding: .8em 1.5em;
@@ -22,6 +24,7 @@
 	border-right: none;
 }
 .sub-text {
+	display:none;
 	/* text-align: center; */
 	font-size: .8em;
 	padding:  .8em 1.2em;

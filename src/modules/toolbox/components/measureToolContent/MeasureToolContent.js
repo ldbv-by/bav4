@@ -80,8 +80,8 @@ export class MeasureToolContent extends AbstractToolContent {
         <style>${css}</style>
             <div class="ba-tool-container" >
                	<div class="ba-tool-container__title">  	    
-					${translate('toolbox_measureTool_header')}                   
-               	</div>  
+					${translate('toolbox_measureTool_header')}                   							   
+               	</div>
 				<div class="ba-tool-container__content">	
 					<div class='tool-container__text-item'>
 						<span>
@@ -108,8 +108,10 @@ export class MeasureToolContent extends AbstractToolContent {
 					</div>
 				</div>	
 				<div class='sub-text'>
-				${subText}
-				<ba-assist-chips></'ba-assist-chips>
+				${subText}	
+				</div>
+				<div  style='padding: 0 1.2em .8em;border-bottom:1px solid var(--header-background-color);'>
+					<ba-assist-chips ></'ba-assist-chips>  		
 				</div>
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					
@@ -127,34 +129,35 @@ export class MeasureToolContent extends AbstractToolContent {
 		const finishAllowed = (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) && mode === 'draw';
 		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
 
-		const getButton = (id, title, onClick) => {
+		const getButton = (id, title, onClick, icon) => {
 			return html`<ba-button id=${id} data-test-id
 								class="tool-container__button" 
 								.label=${title}
+								.icon=${icon}
 								@click=${onClick}></ba-button>`;
 		};
 
 		const getStartNew = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed ?
 				nothing :
-				getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset());
+				getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset(), restartsvg);
 		};
 
 		const getFinish = () => {
 			return startNewCompliantModes.includes(mode) && finishAllowed ?
-				getButton('finish', translate('toolbox_drawTool_finish'), () => finish()) :
+				getButton('finish', translate('toolbox_drawTool_finish'), () => finish(), checklgsvg) :
 				nothing;
 		};
 
 		const getRemovePoint = () => {
 			return mode === 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove()) :
+				getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove(), undosvg) :
 				nothing;
 		};
 
 		const getRemoveMeasure = () => {
 			return mode !== 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) :
+				getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove(), trashsvg) :
 				nothing;
 		};
 
@@ -163,7 +166,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		};
 
 
-		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}${getShare()}`;
+		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}`;
 	}
 
 	_getSubText(state) {
@@ -199,3 +202,9 @@ export class MeasureToolContent extends AbstractToolContent {
 		return 'ba-tool-measure-content';
 	}
 }
+
+
+{/* <div class="ba-tool-container__title" style='border-bottom: 1px solid var(--header-background-color);margin-bottom: 2em;padding-bottom: 2em;'>
+${translate('toolbox_measureTool_header')}
+<ba-assist-chips style='position: absolute;left: 1.2em;top: 2.7em;'></'ba-assist-chips>
+</div> */}

@@ -101,7 +101,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 					<span class="print ba-icon-button ba-list-item__after vertical-center separator">														
 						<ba-icon .icon='${printerIcon}' .size=${1.5} ></ba-icon>												
 					</span>
-					<ba-assist-chips .type='${'pointinfo'}' style='position: absolute;top: 3.8em;left: 1em;'></ba-assist-chips>
+					<ba-assist-chips .type='${'pointinfo'}' style='position: absolute;top: 3.6em;left: 1.2em;'></ba-assist-chips>
 				</li>						
 				${featureInfoData.map((item) => html`
 					<li class="ba-section">
