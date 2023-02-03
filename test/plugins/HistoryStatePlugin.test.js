@@ -149,8 +149,8 @@ describe('HistoryState', () => {
 		changeCenter([1, 3]);
 		changeCenter([1, 4]);
 
-		// But as we always return the same encoded state from the ShareService
-		// the history API should be called only once
+		// We always return the same encoded state from the ShareService,
+		// so the history API should be called only once
 		expect(historySpy).toHaveBeenCalledOnceWith(null, '', expectedEncodedState);
 	});
 
