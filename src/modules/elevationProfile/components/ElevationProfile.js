@@ -477,7 +477,7 @@ export class ElevationProfile extends MvuElement {
 						 * We look for the ChartEvents 'native' property
 						 * See https://www.chartjs.org/docs/latest/api/interfaces/ChartEvent.html
 						 */
-						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
+						if (args?.event?.native && ['mouseout'].includes(args.event.native.type)) {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
 					}
@@ -490,6 +490,9 @@ export class ElevationProfile extends MvuElement {
 						const event = args.event;
 						if (!event) {
 							return;
+						}
+						if (event.type !== 'mousemove') {
+							console.log('🚀 ~ beforeEvent ~ event', event);
 						}
 						const { ctx, tooltip, chartArea } = chart;
 
@@ -532,7 +535,7 @@ export class ElevationProfile extends MvuElement {
 								this._currentExtent[3] = extent1;
 							}
 
-							fitMap(this._currentExtent);
+							// fitMap(this._currentExtent);
 
 							return;
 						}
@@ -585,9 +588,41 @@ export class ElevationProfile extends MvuElement {
 
 					}
 				},
-				events: ['pointermove', 'pointerup', 'mousedown', 'mousemove', 'mouseup', 'mouseout'],
+				events: ['touchstart', 'touchmove', 'touchend', 'mouseout', 'mousedown', 'mousemove', 'mouseup'], //
 				// events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
 
+
+				onTouchStart: function (evt) {
+					const activePoint = this._chart.getElementAtEvent(evt)[0];
+					if (activePoint) {
+						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+						const datasetIndex = activePoint._datasetIndex;
+						const index = activePoint._index;
+						const value = this._chart.data.datasets[datasetIndex].data[index];
+						console.log('Touch start: ' + value);
+					}
+				},
+				onTouchMove: function (evt) {
+					const activePoint = this._chart.getElementAtEvent(evt)[0];
+					if (activePoint) {
+						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+						const datasetIndex = activePoint._datasetIndex;
+						const index = activePoint._index;
+						const value = this._chart.data.datasets[datasetIndex].data[index];
+						console.log('Touch move: ' + value);
+					}
+				},
+				onTouchEnd: function (evt) {
+					const activePoint = this._chart.getElementAtEvent(evt)[0];
+					if (activePoint) {
+						this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
+						const datasetIndex = activePoint._datasetIndex;
+						const index = activePoint._index;
+						const value = this._chart.data.datasets[datasetIndex].data[index];
+						console.log('Touch end: ' + value);
+					}
+
+				},
 				plugins: {
 					title: {
 						align: 'end',
@@ -609,7 +644,6 @@ export class ElevationProfile extends MvuElement {
 			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
 		});
 	}
-
 
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
