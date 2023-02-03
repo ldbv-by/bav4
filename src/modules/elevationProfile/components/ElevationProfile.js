@@ -6,6 +6,8 @@ import { $injector } from '../../../injection';
 
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
+
+import { fit as fitMap } from '../../../store/position/position.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 
 const Update_Schema = 'update_schema';
@@ -57,6 +59,7 @@ export class ElevationProfile extends MvuElement {
 		this._secondLeft = 0;
 		this._top = 0;
 		this._bottom = 0;
+		this._currentExtent = [];
 
 		this._initSurfaceTypes();
 	}
@@ -92,6 +95,7 @@ export class ElevationProfile extends MvuElement {
 
 			case Update_Selected_Attribute:
 				return { ...model, selectedAttribute: data };
+
 			case Update_Media:
 				return {
 					...model,
@@ -342,7 +346,6 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-
 	_getSlopeGradient(chart, altitudeData) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
@@ -398,6 +401,71 @@ export class ElevationProfile extends MvuElement {
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
+		const tooltipOptions = {
+			displayColors: false,
+			mode: 'index',
+			intersect: false,
+			callbacks: {
+				title: (tooltipItems) => {
+					const { parsed } = tooltipItems[0];
+					const index = altitudeData.labels.indexOf(parsed.x);
+					if (index > -1) {
+						const found = altitudeData.elevations[index];
+						this.setCoordinates([found.e, found.n]);
+					}
+
+					return 'Distance: ' + tooltipItems[0].label + 'm';
+				},
+				label: (tooltipItem) => {
+					return 'Elevation: ' + tooltipItem.raw + 'm';
+				}
+			}
+		};
+		const selectedAreaBorderPlugin = {
+			id: 'selectedAreaBorder',
+			afterDraw(chart) { // , args, options
+				const { drawSelectedAreaBorder } = getSelectionProps();
+				if (!drawSelectedAreaBorder) {
+					return;
+				}
+				const { ctx } = chart;
+				_drawSelectionRect(ctx);
+			}
+		};
+		const getSelectionProps = () => {
+			return { mouseIsDown: this._mouseIsDown,
+				top: this._top,
+				bottom: this._bottom,
+				firstLeft: this._firstLeft,
+				secondLeft: this._secondLeft,
+				drawSelectedAreaBorder: this._drawSelectedAreaBorder,
+				enableToolTip: this._enableTooltip
+			};
+		};
+		const setMousedownProps = (mouseIsDown, top, bottom, firstLeft, enableToolTip) => {
+			this._mouseIsDown = mouseIsDown;
+			this._top = top;
+			this._bottom = bottom;
+			this._firstLeft = firstLeft;
+			this._enableTooltip = enableToolTip;
+		};
+		const setMousemoveProps = (secondLeft) => {
+			this._secondLeft = secondLeft;
+		};
+		const setMouseupOrMouseoutProps = (mouseIsDown, secondLeft, drawSelectedAreaBorder, enableToolTip) => {
+			this._mouseIsDown = mouseIsDown;
+			this._secondLeft = secondLeft;
+			this._drawSelectedAreaBorder = drawSelectedAreaBorder;
+			this._enableTooltip = enableToolTip;
+		};
+		const _drawSelectionRect = (ctx) => {
+			const { firstLeft, secondLeft, top, bottom } = getSelectionProps();
+
+			ctx.save();
+			ctx.fillStyle = '#aaaacc40';
+			ctx.fillRect(firstLeft, top, secondLeft - firstLeft, bottom);
+			ctx.restore();
+		};
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -411,6 +479,62 @@ export class ElevationProfile extends MvuElement {
 						 */
 						if (args?.event?.native && ['mouseout', 'pointerup'].includes(args.event.native.type)) {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+						}
+					}
+				},
+				selectedAreaBorderPlugin,
+				{
+					id: 'areaSelect',
+					beforeEvent(chart, args) {
+						const { mouseIsDown } = getSelectionProps();
+						const event = args.event;
+						if (!event) {
+							return;
+						}
+						const { ctx, tooltip, chartArea } = chart;
+
+						let coordinate = [];
+						if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
+							const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
+							if (index > -1) {
+								const found = altitudeData.elevations[index];
+								coordinate = [found.e, found.n];
+							}
+						}
+
+						if (event.type === 'mousedown') { // pointerdown geht nicht
+							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
+							this._currentExtent = coordinate;
+							return;
+						}
+						if (!mouseIsDown) {
+							return;
+						}
+						if (event.type === 'mousemove') { // pointermove geht nicht
+							setMousemoveProps(tooltip.caretX);
+							_drawSelectionRect(ctx);
+
+							return;
+						}
+
+						if (event.type === 'mouseup' || event.type === 'mouseout') {
+							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
+							this._currentExtent = [...this._currentExtent, ...coordinate];
+
+							if (this._currentExtent[0] > this._currentExtent[2]) {
+								const extent0 = this._currentExtent[0];
+								this._currentExtent[0] = this._currentExtent[2];
+								this._currentExtent[2] = extent0;
+							}
+							if (this._currentExtent[1] > this._currentExtent[3]) {
+								const extent1 = this._currentExtent[1];
+								this._currentExtent[1] = this._currentExtent[3];
+								this._currentExtent[3] = extent1;
+							}
+
+							fitMap(this._currentExtent);
+
+							return;
 						}
 					}
 				},
@@ -435,7 +559,6 @@ export class ElevationProfile extends MvuElement {
 						chart.ctx.strokeStyle = '#ff0000';
 						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 						chart.ctx.stroke();
-						// }
 					}
 				}
 			],
@@ -453,7 +576,8 @@ export class ElevationProfile extends MvuElement {
 						}
 					},
 					y: {
-						type: 'linear', beginAtZero: false,
+						type: 'linear',
+						beginAtZero: false,
 						title: {
 							display: true,
 							text: translate('elevationProfile_alt') + ' [m]'
@@ -461,7 +585,9 @@ export class ElevationProfile extends MvuElement {
 
 					}
 				},
-				events: ['pointermove', 'pointerup', 'mouseout'],
+				events: ['pointermove', 'pointerup', 'mousedown', 'mousemove', 'mouseup', 'mouseout'],
+				// events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
+
 				plugins: {
 					title: {
 						align: 'end',
@@ -469,32 +595,12 @@ export class ElevationProfile extends MvuElement {
 						text: translate('elevationProfile_elevation_reference_system')
 					},
 					legend: { display: false },
-					tooltip: {
-						displayColors: false,
-						mode: 'index',
-						intersect: false,
-						callbacks: {
-							title: (tooltipItems) => {
-								const { parsed } = tooltipItems[0];
-								const index = altitudeData.labels.indexOf(parsed.x);
-								if (index > -1) {
-									const found = altitudeData.elevations[index];
-									this.setCoordinates([found.e, found.n]);
-								}
-
-								return 'Distance: ' + tooltipItems[0].label + 'm';
-							},
-							label: (tooltipItem) => {
-								return 'Elevation: ' + tooltipItem.raw + 'm';
-							}
-						}
-					}
+					tooltip: tooltipOptions
 				}
 			}
 		};
 		return config;
 	}
-
 
 	setCoordinates(coordinates) {
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
@@ -503,6 +609,7 @@ export class ElevationProfile extends MvuElement {
 			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
 		});
 	}
+
 
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
