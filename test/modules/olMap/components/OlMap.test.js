@@ -1340,7 +1340,7 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('elevationprofile handler', () => {
+	describe('elevationProfile handler', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
