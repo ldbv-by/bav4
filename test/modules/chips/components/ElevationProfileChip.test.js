@@ -16,11 +16,11 @@ describe('ElevationProfileChip', () => {
 
 	let store;
 
-	const setup = async (state = defaultState) => {
+	const setup = async (state = defaultState, attributes = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { elevationProfile: elevationProfileReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-		const element = await TestUtils.render(ElevationProfileChip.tag);
+		const element = await TestUtils.render(ElevationProfileChip.tag, attributes);
 
 		return element;
 	};
@@ -44,6 +44,32 @@ describe('ElevationProfileChip', () => {
 
 			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
 			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+		});
+
+		it('renders the view with local coordinates', async () => {
+			const element = await setup(defaultState);
+
+			element.coordinates = [[2, 0], [1, 0]];
+
+			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
+			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+		});
+
+
+		it('renders the view only with local coordinates', async () => {
+			const element = await setup(defaultState);
+
+			element.coordinates = [[2, 0], [1, 0]];
+
+			updateCoordinates([]);
+
+			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
+			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+
+			element.coordinates = [[]];
+			updateCoordinates([[2, 0], [1, 0]]);
+
+			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 
 		it('renders nothing when no coordinates for elevationProfile exists', async () => {

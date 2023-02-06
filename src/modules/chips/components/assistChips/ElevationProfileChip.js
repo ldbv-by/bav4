@@ -4,7 +4,8 @@ import { AbstractAssistChip } from './AbstractAssistChip';
 import profileSvg from './assets/profile.svg';
 
 
-const Update_Profile_Coordinates = 'update_selected_ids';
+const Update_Profile_Coordinates = 'update_profile_coordinates';
+
 
 /**
  *
@@ -18,11 +19,12 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+		this._unsubscribeFromStore = null;
 	}
 
 
 	onInitialize() {
-		this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
+		this._unsubscribeFromStore = this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
 	}
 
 	update(type, data, model) {
@@ -52,7 +54,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	 */
 	isVisible() {
 		const { profileCoordinates } = this.getModel();
-		return profileCoordinates.length > 1;
+		return profileCoordinates?.length > 1;
 	}
 
 	/**
@@ -60,10 +62,24 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	 */
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		openProfile(profileCoordinates);
+		if (profileCoordinates) {
+			openProfile(profileCoordinates);
+		}
 	}
 
 	static get tag() {
 		return 'ba-profile-chip';
+	}
+
+	set coordinates(value) {
+		this.signal(Update_Profile_Coordinates, value);
+		if (this._unsubscribeFromStore) {
+			this._unsubscribeFromStore();
+		}
+	}
+
+	get coordinates() {
+		const { profileCoordinates } = this.getModel();
+		return profileCoordinates;
 	}
 }
