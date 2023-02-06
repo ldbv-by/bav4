@@ -470,30 +470,12 @@ export class ElevationProfile extends MvuElement {
 
 
 		const getCoordinate = (tooltip) =>	{
-			// console.log('🚀 ~ getCoordinat e ');
 			let coordinate = [];
 			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
-				// console.log('🚀 ~ getCoordinat e ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
-				// console.log('🚀 ~ getCoordinat e ~ altitudeData.labels', altitudeData.labels);
 				const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
-				// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
 				if (index > -1) {
 					const found = altitudeData.elevations[index];
-					// console.log('🚀🚀 ~ getCoordinat e ~ found', found);
 					coordinate = [found.e, found.n];
-					// console.log('🚀🚀 ~ getCoordinat e ~ coordinate', coordinate);
-				}
-				else {
-					console.log('🚀 ~ getCoordinat e ------ no value found ------');
-				}
-			}
-			else {
-				console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ tooltip', tooltip);
-				if (tooltip?.dataPoints) {
-					console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ dataPoints', dataPoints);
-				}
-				if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed) {
-					console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ parsed', parsed);
 				}
 			}
 			return coordinate;
@@ -510,38 +492,46 @@ export class ElevationProfile extends MvuElement {
 						 * We look for the ChartEvents 'native' property
 						 * See https://www.chartjs.org/docs/latest/api/interfaces/ChartEvent.html
 						 */
-						if (args?.event?.native && ['mouseout'].includes(args.event.native.type)) {
+						if (args?.event?.native && ['pointerout'].includes(args.event.native.type)) {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
 					}
 				},
 				selectedAreaBorderPlugin,
 				{
+					// hm - tricky (buggy?)
+					// - wenn ich nur mit pointer* native events arbeite funktionieren
+					// die touch - Auswertungen nicht richtig
+					// wenn ich die touch* native events dazunehme, scheine ich alles 'zu fangen', was ich benötige
+					// ich will dann aber nicht native.type überwachen, da ich dann auch touch (und pen und ???) überwachen muss
+					// - normalerweise hat man combies wie
+					// 'native pointerdown, event mousedown' und danach 'native touchstart , event mousedown'
+					//  oder
+					// 'native pointerup, event mouseup' und danach 'native touchend , event mouseup'
+					// aber manchmal kommt aber ein einsamer 'native touchend, event mouseup'
 					id: 'areaSelect',
 					beforeEvent(chart, args) {
 						const { mouseIsDown } = getSelectionProps();
 						const event = args?.event;
-						const native = args?.event?.native;
 						if (!event) {
 							return;
 						}
-						if (native.type !== 'touchmove' && native.type !== 'pointermove') {
-							console.log('🚀 ~ native (', native.type, ')', native);
-							console.log('🚀 ~ event (', event.type, ')', event);
+						const native = args.event.native;
+						if (!native) {
+							return;
 						}
+						// if (native.type !== 'touchmove' && native.type !== 'pointermove') {
+						// 	console.log('🚀 ~ native (', native.type, ') - event (', event.type, ')');
+						// }
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
 
-						if (event.type === 'mousedown' || native.type === 'pointerdown') {
-							console.log('🚀 ~ -- 1 -- event.type:', event.type, ' - native.type:', native.type);
+						if (event.type === 'mousedown') {
 							coordinate = getCoordinate(tooltip);
-
-							console.log('🚀 ~  -- 2 --  ~ coordinate', coordinate);
 
 							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
 							this._currentExtent = coordinate;
-							console.log('🚀 ~  -- 3 --  ~ this._currentExtent', this._currentExtent);
 							return;
 						}
 						if (!mouseIsDown) {
@@ -554,27 +544,34 @@ export class ElevationProfile extends MvuElement {
 							return;
 						}
 
-						if (event.type === 'mouseup' || event.type === 'mouseout') {
-							console.log('🚀 ~  -- 4 -- ~ mouseup ~ this._currentExtent', this._currentExtent);
-							// coordinate = getCoordinate(tooltip);
+						if (event.type === 'mouseup' || native.type === 'mouseout') {
+							coordinate = getCoordinate(tooltip);
 							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
-							// this._currentExtent = [...this._currentExtent, ...coordinate];
+							this._currentExtent = [...this._currentExtent, ...coordinate];
 
-							// if (this._currentExtent[0] > this._currentExtent[2]) {
-							// 	const extent0 = this._currentExtent[0];
-							// 	this._currentExtent[0] = this._currentExtent[2];
-							// 	this._currentExtent[2] = extent0;
-							// }
-							// if (this._currentExtent[1] > this._currentExtent[3]) {
-							// 	const extent1 = this._currentExtent[1];
-							// 	this._currentExtent[1] = this._currentExtent[3];
-							// 	this._currentExtent[3] = extent1;
-							// }
+							if (this._currentExtent.length === 4) {
 
-							// console.log('🚀 ~ beforeEvent ~ this._currentExtent', this._currentExtent);
-							// fitMap(this._currentExtent);
+								if (this._currentExtent[0] > this._currentExtent[2]) {
+									const extent0 = this._currentExtent[0];
+									this._currentExtent[0] = this._currentExtent[2];
+									this._currentExtent[2] = extent0;
+								}
+								if (this._currentExtent[1] > this._currentExtent[3]) {
+									const extent1 = this._currentExtent[1];
+									this._currentExtent[1] = this._currentExtent[3];
+									this._currentExtent[3] = extent1;
+								}
 
-							return;
+								// todo lösung thomas abwarten
+								const coordDiff1 = Math.abs(this._currentExtent[0] - this._currentExtent[2]);
+								const coordDiff2 = Math.abs(this._currentExtent[1] - this._currentExtent[3]);
+
+								if (coordDiff1 > 500 && coordDiff2 > 500) {
+									fitMap(this._currentExtent);
+								}
+
+								return;
+							}
 						}
 					}
 				},
@@ -625,40 +622,10 @@ export class ElevationProfile extends MvuElement {
 
 					}
 				},
-				events: ['pointerdown', 'pointermove', 'pointerup', 'touchstart', 'touchmove', 'touchend', 'mouseout', 'mousedown', 'mousemove', 'mouseup'], //
-				// events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
+				events: ['pointerdown', 'pointermove', 'pointerup', 'pointerout', 'touchstart', 'touchmove', 'touchend'],
+				// , 'mouseout', 'mousedown', 'mousemove', 'mouseup'
+				// , 'pointerover', 'pointerenter', 'pointercancel', 'pointerleave', 'gotpointercapture', 'lostpointercapture'
 
-
-				// onTouchStart: function (evt) {
-				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
-				// 	if (activePoint) {
-				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-				// 		const datasetIndex = activePoint._datasetIndex;
-				// 		const index = activePoint._index;
-				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
-				// 		console.log('Touch start: ' + value);
-				// 	}
-				// },
-				// onTouchMove: function (evt) {
-				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
-				// 	if (activePoint) {
-				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-				// 		const datasetIndex = activePoint._datasetIndex;
-				// 		const index = activePoint._index;
-				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
-				// 		console.log('Touch move: ' + value);
-				// 	}
-				// },
-				// onTouchEnd: function (evt) {
-				// 	const activePoint = this._chart.getElementAtEvent(evt)[0];
-				// 	if (activePoint) {
-				// 		this._chart.options.elements.rectangle.backgroundColor = 'rgba(0,255,0,0.5)';
-				// 		const datasetIndex = activePoint._datasetIndex;
-				// 		const index = activePoint._index;
-				// 		const value = this._chart.data.datasets[datasetIndex].data[index];
-				// 		console.log('Touch end: ' + value);
-				// 	}
-				// },
 				plugins: {
 					title: {
 						align: 'end',
