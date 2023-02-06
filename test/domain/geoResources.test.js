@@ -167,7 +167,6 @@ describe('GeoResource', () => {
 				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
 				expect(georesource.authenticationType).toBeNull();
-				expect(georesource.importedByUser).toBeFalse();
 				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
 				expect(georesource._queryable).toBeTrue();
 				expect(georesource._exportable).toBeTrue();
@@ -185,7 +184,6 @@ describe('GeoResource', () => {
 					.setLabel('some label')
 					.setAttribution('some attribution')
 					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
-					.setImportedByUser(true)
 					.setQueryable(false)
 					.setExportable(false);
 
@@ -197,7 +195,6 @@ describe('GeoResource', () => {
 				expect(georesource.label).toBe('some label');
 				expect(georesource.attribution).toBe('some attribution');
 				expect(georesource.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
-				expect(georesource.importedByUser).toBeTrue();
 				expect(georesource.queryable).toBeFalse();
 				expect(georesource.exportable).toBeFalse();
 			});

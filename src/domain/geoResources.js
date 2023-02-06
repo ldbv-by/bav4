@@ -64,7 +64,6 @@ export class GeoResource {
 		this._attribution = null;
 		this._attributionProvider = getDefaultAttribution;
 		this._authenticationType = null;
-		this._importedByUser = false;
 		this._queryable = true;
 		this._exportable = true;
 	}
@@ -110,10 +109,6 @@ export class GeoResource {
 
 	get authenticationType() {
 		return this._authenticationType;
-	}
-
-	get importedByUser() {
-		return this._importedByUser;
 	}
 
 	get queryable() {
@@ -171,11 +166,6 @@ export class GeoResource {
 
 	setAuthenticationType(type) {
 		this._authenticationType = type;
-		return this;
-	}
-
-	setImportedByUser(userImported) {
-		this._importedByUser = userImported;
 		return this;
 	}
 
