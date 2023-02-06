@@ -38,7 +38,7 @@ export class HistoryStatePlugin extends BaPlugin {
 	_updateHistory() {
 		const encodedState = this._shareService.encodeState();
 		if (this._currentEncodedState !== encodedState) {
-			this._environmentService.getWindow().history.replaceState(null, '', this._shareService.encodeState());
+			this._environmentService.getWindow().history.replaceState(null, '', encodedState);
 			this._currentEncodedState = encodedState;
 		}
 	}
