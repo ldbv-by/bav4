@@ -54,7 +54,7 @@ describe('GeoResourceInfoService', () => {
 		expect(result).toBeNull();
 	});
 
-	it('should throw error when backend provides unknown respone', async () => {
+	it('should throw an error when backend provides unknown response', async () => {
 
 		const providerErrMsg = 'GeoResourceInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
 		const loadMockBvvGeoResourceInfo = async () => {
@@ -62,13 +62,7 @@ describe('GeoResourceInfoService', () => {
 		};
 		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-		try {
-			await geoResourceInfoSerice.byId(geoResourceId);
-			throw new Error('Promise should not be resolved');
-		}
-		catch (err) {
-			expect(err.message).toBe('Could not load geoResourceInfoResult from provider: ' + providerErrMsg);
-		}
+		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError('Could not load a GeoResourceInfoResult from provider: ' + providerErrMsg);
 	});
 
 	describe('GeoResourceInfoResult', () => {
@@ -90,7 +84,7 @@ describe('GeoResourceInfoService', () => {
 
 	describe('provider cannot fulfill', () => {
 
-		it('loads fallback atkis when we are in standalone mode', async () => {
+		it('loads fallback when we are in standalone mode', async () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(true);
 
 			const providerErrMsg = 'GeoResourceInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
@@ -102,26 +96,9 @@ describe('GeoResourceInfoService', () => {
 			const geoResourceInfoResult = await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
 
 
-			expect(geoResourceInfoResult.content).toBe('This is a fallback georesourceinfo');
+			expect(geoResourceInfoResult.content).toBe(`This is a fallback GeoResourceInfoResult for '${FALLBACK_GEORESOURCE_ID_0}'`);
 			expect(geoResourceInfoResult.title).toBe(FALLBACK_GEORESOURCE_ID_0);
-			expect(warnSpy).toHaveBeenCalledWith('georesourceinfo could not be fetched from backend. Using fallback georesourceinfo');
-		});
-
-		it('loads fallback atkis_sw when we are in standalone mode', async () => {
-			spyOn(environmentService, 'isStandalone').and.returnValue(true);
-
-			const providerErrMsg = 'GeoResourceInfo for \'914c9263-5312-453e-b3eb-5104db1bf788\' could not be loaded';
-			const loadMockBvvGeoResourceInfo = async () => {
-				return Promise.reject(new Error(providerErrMsg));
-			};
-			const warnSpy = spyOn(console, 'warn');
-			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
-			const geoResourceInfoResult = await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_1);
-
-
-			expect(geoResourceInfoResult.content).toBe('This is a fallback georesourceinfo');
-			expect(geoResourceInfoResult.title).toBe(FALLBACK_GEORESOURCE_ID_1);
-			expect(warnSpy).toHaveBeenCalledWith('georesourceinfo could not be fetched from backend. Using fallback georesourceinfo');
+			expect(warnSpy).toHaveBeenCalledWith('GeoResourceInfo could not be fetched from backend. Using a fallback GeoResourceInfo.');
 		});
 
 		it('logs an error when we are NOT in standalone mode', async () => {
@@ -132,13 +109,7 @@ describe('GeoResourceInfoService', () => {
 			};
 			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-			try {
-				await geoResourceInfoSerice.byId(geoResourceId);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (err) {
-				expect(err.message).toBe('Could not load geoResourceInfoResult from provider: ' + providerErrMsg);
-			}
+			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError('Could not load a GeoResourceInfoResult from provider: ' + providerErrMsg);
 		});
 
 		it('just provides geoResourceInfoResult when geoResourceId already available in locale cache', async () => {
