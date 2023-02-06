@@ -61,10 +61,6 @@ export class ElevationProfile extends MvuElement {
 		this._bottom = 0;
 		this._currentExtent = [];
 
-
-		this._firstMove = true;
-
-
 		this._initSurfaceTypes();
 	}
 
@@ -121,6 +117,7 @@ export class ElevationProfile extends MvuElement {
 	 */
 	onDisconnect() {
 		this._chart?.destroy();
+		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 	}
 
 	/**
@@ -473,7 +470,8 @@ export class ElevationProfile extends MvuElement {
 
 
 		const getCoordinate = (tooltip) =>	{
-			console.log('🚀 ~ getCoordinat e ');
+			// console.log('🚀 ~ getCoordinat e ');
+			let coordinate = [];
 			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
 				// console.log('🚀 ~ getCoordinat e ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
 				// console.log('🚀 ~ getCoordinat e ~ altitudeData.labels', altitudeData.labels);
@@ -481,9 +479,9 @@ export class ElevationProfile extends MvuElement {
 				// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
 				if (index > -1) {
 					const found = altitudeData.elevations[index];
-					console.log('🚀🚀 ~ getCoordinat e ~ found', found);
+					// console.log('🚀🚀 ~ getCoordinat e ~ found', found);
 					coordinate = [found.e, found.n];
-					console.log('🚀🚀 ~ getCoordinat e ~ coordinate', coordinate);
+					// console.log('🚀🚀 ~ getCoordinat e ~ coordinate', coordinate);
 				}
 				else {
 					console.log('🚀 ~ getCoordinat e ------ no value found ------');
@@ -522,19 +520,21 @@ export class ElevationProfile extends MvuElement {
 					id: 'areaSelect',
 					beforeEvent(chart, args) {
 						const { mouseIsDown } = getSelectionProps();
-						const event = args.event;
+						const event = args?.event;
+						const native = args?.event?.native;
 						if (!event) {
 							return;
 						}
-						// if (event.type !== 'mousemove') {
-						// 	console.log('🚀 ~ beforeEvent ~ event', event);
-						// }
+						if (native.type !== 'touchmove' && native.type !== 'pointermove') {
+							console.log('🚀 ~ native (', native.type, ')', native);
+							console.log('🚀 ~ event (', event.type, ')', event);
+						}
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
 
-						if (event.type === 'mousedown') {
-							console.log('🚀 ~ -- 1 -- mousedown');
+						if (event.type === 'mousedown' || native.type === 'pointerdown') {
+							console.log('🚀 ~ -- 1 -- event.type:', event.type, ' - native.type:', native.type);
 							coordinate = getCoordinate(tooltip);
 
 							console.log('🚀 ~  -- 2 --  ~ coordinate', coordinate);
@@ -548,20 +548,6 @@ export class ElevationProfile extends MvuElement {
 							return;
 						}
 						if (event.type === 'mousemove') {
-
-							if (this._firstMove) {
-
-								this._firstMove = false;
-
-								console.log('🚀 ~ -- mousemove - 1 -- mousedown');
-								coordinate = getCoordinate(tooltip);
-
-								console.log('🚀 ~  -- mousemove - 2 --  ~ coordinate', coordinate);
-
-								setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
-								this._currentExtent = coordinate;
-								console.log('🚀 ~  -- mousemove - 3 --  ~ this._currentExtent', this._currentExtent);
-							}
 							setMousemoveProps(tooltip.caretX);
 							_drawSelectionRect(ctx);
 
@@ -639,7 +625,7 @@ export class ElevationProfile extends MvuElement {
 
 					}
 				},
-				events: ['touchstart', 'touchmove', 'touchend', 'mouseout', 'mousedown', 'mousemove', 'mouseup'], //
+				events: ['pointerdown', 'pointermove', 'pointerup', 'touchstart', 'touchmove', 'touchend', 'mouseout', 'mousedown', 'mousemove', 'mouseup'], //
 				// events: ['mousemove', 'mousedown', 'mouseup', 'mouseout', 'click', 'touchstart', 'touchmove'],
 
 
