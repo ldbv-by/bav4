@@ -54,7 +54,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	 */
 	isVisible() {
 		const { profileCoordinates } = this.getModel();
-		return profileCoordinates?.length > 1;
+		return profileCoordinates.length > 1;
 	}
 
 	/**
@@ -62,9 +62,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	 */
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		if (profileCoordinates) {
-			openProfile(profileCoordinates);
-		}
+		openProfile(profileCoordinates);
 	}
 
 	static get tag() {
@@ -75,11 +73,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		this.signal(Update_Profile_Coordinates, value);
 		if (this._unsubscribeFromStore) {
 			this._unsubscribeFromStore();
+			this._unsubscribeFromStore = null;
 		}
-	}
-
-	get coordinates() {
-		const { profileCoordinates } = this.getModel();
-		return profileCoordinates;
 	}
 }

@@ -48,28 +48,32 @@ describe('ElevationProfileChip', () => {
 
 		it('renders the view with local coordinates', async () => {
 			const element = await setup(defaultState);
-
+			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 			element.coordinates = [[2, 0], [1, 0]];
 
 			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
 			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
 
 
 		it('renders the view only with local coordinates', async () => {
 			const element = await setup(defaultState);
-
+			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 			element.coordinates = [[2, 0], [1, 0]];
 
 			updateCoordinates([]);
 
 			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
 			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+			expect(unsubscribeSpy).toHaveBeenCalled();
+			unsubscribeSpy.calls.reset();
 
-			element.coordinates = [[]];
+			element.coordinates = [];
 			updateCoordinates([[2, 0], [1, 0]]);
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(unsubscribeSpy).not.toHaveBeenCalled();
 		});
 
 		it('renders nothing when no coordinates for elevationProfile exists', async () => {
