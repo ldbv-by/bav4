@@ -1,4 +1,4 @@
-import { Feature, View, Map, Observable } from 'ol';
+import { Feature, View, Map } from 'ol';
 import { click } from 'ol/events/condition';
 import { LinearRing, LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { Modify, Select } from 'ol/interaction';
