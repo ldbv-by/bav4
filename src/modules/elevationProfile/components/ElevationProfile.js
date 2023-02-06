@@ -61,6 +61,10 @@ export class ElevationProfile extends MvuElement {
 		this._bottom = 0;
 		this._currentExtent = [];
 
+
+		this._firstMove = true;
+
+
 		this._initSurfaceTypes();
 	}
 
@@ -468,18 +472,30 @@ export class ElevationProfile extends MvuElement {
 		};
 
 
-		const getCoordinate = (tooltip, coordinate) =>	{
-			console.log('🚀 ~ file: ElevationProfile.js:472 ~ ElevationProfile ~ getCoordinate ');
+		const getCoordinate = (tooltip) =>	{
+			console.log('🚀 ~ getCoordinat e ');
 			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
-				console.log('🚀 ~ getCoordinate ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
-				console.log('🚀 ~ getCoordinate ~ altitudeData.labels', altitudeData.labels);
+				// console.log('🚀 ~ getCoordinat e ~ tooltip.dataPoints[0].parsed.x', tooltip.dataPoints[0].parsed.x);
+				// console.log('🚀 ~ getCoordinat e ~ altitudeData.labels', altitudeData.labels);
 				const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
 				// console.log('🚀 ~ file: ElevationProfile.js:504 ~ ElevationProfile ~ beforeEvent ~ index', index);
 				if (index > -1) {
 					const found = altitudeData.elevations[index];
-					// console.log('🚀 ~ file: ElevationProfile.js:507 ~ ElevationProfile ~ beforeEvent ~ found', found);
+					console.log('🚀🚀 ~ getCoordinat e ~ found', found);
 					coordinate = [found.e, found.n];
-					// console.log('🚀 ~ file: ElevationProfile.js:509 ~ ElevationProfile ~ beforeEvent ~ coordinate', coordinate);
+					console.log('🚀🚀 ~ getCoordinat e ~ coordinate', coordinate);
+				}
+				else {
+					console.log('🚀 ~ getCoordinat e ------ no value found ------');
+				}
+			}
+			else {
+				console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ tooltip', tooltip);
+				if (tooltip?.dataPoints) {
+					console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ dataPoints', dataPoints);
+				}
+				if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed) {
+					console.log('🚀 ~ getCoordinat e ------ no value found ------ ~ parsed', parsed);
 				}
 			}
 			return coordinate;
@@ -518,19 +534,34 @@ export class ElevationProfile extends MvuElement {
 						let coordinate = [];
 
 						if (event.type === 'mousedown') {
-							console.log('🚀 ~ file: ElevationProfile.js:520 ~ ElevationProfile ~ beforeEvent ~ event.type', event.type);
-							coordinate = getCoordinate(tooltip, coordinate);
+							console.log('🚀 ~ -- 1 -- mousedown');
+							coordinate = getCoordinate(tooltip);
 
-							console.log('🚀 ~ beforeEvent ~ coordinate', coordinate);
+							console.log('🚀 ~  -- 2 --  ~ coordinate', coordinate);
 
 							setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
 							this._currentExtent = coordinate;
+							console.log('🚀 ~  -- 3 --  ~ this._currentExtent', this._currentExtent);
 							return;
 						}
 						if (!mouseIsDown) {
 							return;
 						}
 						if (event.type === 'mousemove') {
+
+							if (this._firstMove) {
+
+								this._firstMove = false;
+
+								console.log('🚀 ~ -- mousemove - 1 -- mousedown');
+								coordinate = getCoordinate(tooltip);
+
+								console.log('🚀 ~  -- mousemove - 2 --  ~ coordinate', coordinate);
+
+								setMousedownProps(true, chartArea.top, chartArea.height, tooltip.caretX, false);
+								this._currentExtent = coordinate;
+								console.log('🚀 ~  -- mousemove - 3 --  ~ this._currentExtent', this._currentExtent);
+							}
 							setMousemoveProps(tooltip.caretX);
 							_drawSelectionRect(ctx);
 
@@ -538,7 +569,8 @@ export class ElevationProfile extends MvuElement {
 						}
 
 						if (event.type === 'mouseup' || event.type === 'mouseout') {
-							// coordinate = getCoordinate(tooltip, coordinate);
+							console.log('🚀 ~  -- 4 -- ~ mouseup ~ this._currentExtent', this._currentExtent);
+							// coordinate = getCoordinate(tooltip);
 							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
 							// this._currentExtent = [...this._currentExtent, ...coordinate];
 
