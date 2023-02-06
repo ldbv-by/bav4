@@ -15,9 +15,9 @@ export class ElevationProfileHandler extends OlMapHandler {
 	}
 
 	/**
-     *
-     * @override
-     */
+	 *
+	 * @override
+	 */
 	register(map) {
 		const interactions = map.getInteractions();
 		interactions.on('add', (e) => {
