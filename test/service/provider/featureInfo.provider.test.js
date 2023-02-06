@@ -126,13 +126,7 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
 
-			try {
-				await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (ex) {
-				expect(ex.message).toBe('FeatureInfoResult could not be retrieved');
-			}
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
 		});
 
 		it('returns Null when no content is available', async () => {
@@ -184,15 +178,9 @@ describe('FeatureInfoResult provider', () => {
 					new Response(null, { status: 500 })
 				);
 
-			try {
-				await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (ex) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(ex.message).toBe('FeatureInfoResult could not be retrieved');
-			}
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
 		it('throws an exception when GeoResourceService cannot fulfill', async () => {
@@ -202,13 +190,7 @@ describe('FeatureInfoResult provider', () => {
 			const mapResolution = 5;
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
-			try {
-				await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
-				throw new Error('Promise should not be resolved');
-			}
-			catch (ex) {
-				expect(ex.message).toBe('FeatureInfoResult could not be retrieved');
-			}
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
 		});
 	});
 });
