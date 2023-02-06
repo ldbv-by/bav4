@@ -51,10 +51,10 @@ export class ElevationProfileHandler extends OlMapHandler {
 				if (geometry instanceof LineString) {
 					return geometry.getCoordinates();
 				}
-				else if (geometry instanceof LinearRing) {
-					return geometry.getCoordinates();
+				if (geometry instanceof LinearRing) {
+					return geometry.getCoordinates()[0];
 				}
-				else if (geometry instanceof Polygon) {
+				if (geometry instanceof Polygon) {
 					return geometry.getCoordinates(false)[0];
 				}
 			}
@@ -65,8 +65,9 @@ export class ElevationProfileHandler extends OlMapHandler {
 	}
 
 	_updateListener(select) {
-		if (this._listener) {
-			unByKey(this._listener);
+		if (this._listeners.length > 0) {
+			this._listeners.forEach(listener => unByKey(listener));
+			this._listeners = [];
 		}
 		if (select) {
 			this._listeners.push(select.getFeatures().on('add', (e) => this._updateCoordinates(e)));
