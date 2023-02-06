@@ -67,45 +67,6 @@ describe('FeatureInfoResult provider', () => {
 			expect(featureInfoResult.title).toBe(title);
 		});
 
-		it('loads a FeatureInfoResult for a user imported WmsGeoResource', async () => {
-
-			const backendUrl = 'https://backend.url/';
-			const geoResourceId = 'geoResourceId';
-			const geoResourceUrl = 'url';
-			const geoResourceLayer = 'layer';
-			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '').setImportedByUser(true);
-			const coordinate3857 = [38, 57];
-			const mapResolution = 5;
-			const content = 'content';
-			const title = 'title';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
-			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
-			const expectedRequestPayload = JSON.stringify({
-				id: `${geoResourceUrl}||${geoResourceLayer}`,
-				easting: coordinate3857[0], northing: coordinate3857[1],
-				srid: 3857,
-				resolution: mapResolution
-			});
-			const featureInfoResultPayload = { title: title, content: 'content' };
-			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
-				.and.resolveTo(
-					new Response(
-						JSON.stringify(
-							featureInfoResultPayload
-						)
-					)
-				);
-
-			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
-
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(featureInfoResult.content).toBe(content);
-			expect(featureInfoResult.title).toBe(title);
-		});
-
 		it('loads a FeatureInfoResult for a user imported BAA restricted WmsGeoResource', async () => {
 
 			const backendUrl = 'https://backend.url/';
@@ -117,7 +78,6 @@ describe('FeatureInfoResult provider', () => {
 				password: 'p'
 			};
 			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '')
-				.setImportedByUser(true)
 				.setAuthenticationType(GeoResourceAuthenticationType.BAA);
 			const coordinate3857 = [38, 57];
 			const mapResolution = 5;
@@ -127,7 +87,7 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(credential);
 			const expectedRequestPayload = JSON.stringify({
-				id: `${geoResourceUrl}||${geoResourceLayer}`,
+				id: geoResourceId,
 				easting: coordinate3857[0], northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution,
@@ -152,6 +112,92 @@ describe('FeatureInfoResult provider', () => {
 			expect(featureInfoResult.content).toBe(content);
 			expect(featureInfoResult.title).toBe(title);
 		});
+
+		// it('loads a FeatureInfoResult for a user imported WmsGeoResource', async () => {
+
+		// 	const backendUrl = 'https://backend.url/';
+		// 	const geoResourceId = 'geoResourceId';
+		// 	const geoResourceUrl = 'url';
+		// 	const geoResourceLayer = 'layer';
+		// 	const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '').setImportedByUser(true);
+		// 	const coordinate3857 = [38, 57];
+		// 	const mapResolution = 5;
+		// 	const content = 'content';
+		// 	const title = 'title';
+		// 	const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		// 	spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+		// 	spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
+		// 	const expectedRequestPayload = JSON.stringify({
+		// 		id: `${geoResourceUrl}||${geoResourceLayer}`,
+		// 		easting: coordinate3857[0], northing: coordinate3857[1],
+		// 		srid: 3857,
+		// 		resolution: mapResolution
+		// 	});
+		// 	const featureInfoResultPayload = { title: title, content: 'content' };
+		// 	const httpServiceSpy = spyOn(httpService, 'post')
+		// 		.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+		// 		.and.resolveTo(
+		// 			new Response(
+		// 				JSON.stringify(
+		// 					featureInfoResultPayload
+		// 				)
+		// 			)
+		// 		);
+
+		// 	const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+
+		// 	expect(configServiceSpy).toHaveBeenCalled();
+		// 	expect(httpServiceSpy).toHaveBeenCalled();
+		// 	expect(featureInfoResult.content).toBe(content);
+		// 	expect(featureInfoResult.title).toBe(title);
+		// });
+
+		// it('loads a FeatureInfoResult for a user imported BAA restricted WmsGeoResource', async () => {
+
+		// 	const backendUrl = 'https://backend.url/';
+		// 	const geoResourceId = 'geoResourceId';
+		// 	const geoResourceUrl = 'url';
+		// 	const geoResourceLayer = 'layer';
+		// 	const credential = {
+		// 		username: 'u',
+		// 		password: 'p'
+		// 	};
+		// 	const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '')
+		// 		.setImportedByUser(true)
+		// 		.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+		// 	const coordinate3857 = [38, 57];
+		// 	const mapResolution = 5;
+		// 	const content = 'content';
+		// 	const title = 'title';
+		// 	const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		// 	spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+		// 	spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(credential);
+		// 	const expectedRequestPayload = JSON.stringify({
+		// 		id: `${geoResourceUrl}||${geoResourceLayer}`,
+		// 		easting: coordinate3857[0], northing: coordinate3857[1],
+		// 		srid: 3857,
+		// 		resolution: mapResolution,
+		// 		username: credential.username,
+		// 		password: credential.password
+		// 	});
+		// 	const featureInfoResultPayload = { title: title, content: 'content' };
+		// 	const httpServiceSpy = spyOn(httpService, 'post')
+		// 		.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+		// 		.and.resolveTo(
+		// 			new Response(
+		// 				JSON.stringify(
+		// 					featureInfoResultPayload
+		// 				)
+		// 			)
+		// 		);
+
+		// 	const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
+
+		// 	expect(configServiceSpy).toHaveBeenCalled();
+		// 	expect(httpServiceSpy).toHaveBeenCalled();
+		// 	expect(featureInfoResult.content).toBe(content);
+		// 	expect(featureInfoResult.title).toBe(title);
+		// });
 
 		it('throws an error when BaaCredentialService cannot fulfill', async () => {
 

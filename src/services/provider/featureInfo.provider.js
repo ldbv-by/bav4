@@ -40,17 +40,6 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 	if (geoResource) {
 
-		const determineId = geoResource => {
-			if (geoResource.importedByUser) {
-
-				switch (geoResource.getType()) {
-					case GeoResourceTypes.WMS:
-						return `${geoResource.url}||${geoResource.layers}`;
-				}
-			}
-			return geoResource.id;
-		};
-
 		const determineCredential = geoResource => {
 			return geoResource.authenticationType === GeoResourceAuthenticationType.BAA
 				? baaCredentialService.get(geoResource.url) ?? throwError()
@@ -58,7 +47,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 		};
 
 		const requestPayload = { ...{
-			id: determineId(geoResource),
+			id: geoResource.id,
 			easting: coordinate3857[0], northing: coordinate3857[1],
 			srid: 3857,
 			resolution: mapResolution
