@@ -1,5 +1,6 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
+import { isHttpUrl } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -185,6 +186,13 @@ export class GeoResource {
 	 */
 	hasLabel() {
 		return !!this._label;
+	}
+
+	/**
+	 * Checks if this GeoResource denotes an imported resource.
+	 */
+	isImported() {
+		return isHttpUrl(this.id.split('||')[0]);
 	}
 
 	/**
