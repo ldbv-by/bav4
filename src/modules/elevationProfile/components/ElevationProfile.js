@@ -449,14 +449,23 @@ export class ElevationProfile extends MvuElement {
 						type: 'linear',
 						title: {
 							display: true,
-							text: translate('elevationProfile_distance') + ' [' + distUnit + ']'
+							text: translate('elevationProfile_distance') + ' [' + distUnit + ']',
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
+						},
+						ticks: {
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						}
 					},
 					y: {
-						type: 'linear', beginAtZero: false,
+						type: 'linear',
+						beginAtZero: false,
 						title: {
 							display: true,
-							text: translate('elevationProfile_alt') + ' [m]'
+							text: translate('elevationProfile_alt') + ' [m]',
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
+						},
+						ticks: {
+							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						}
 
 					}
@@ -466,7 +475,8 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('elevationProfile_elevation_reference_system')
+						text: translate('elevationProfile_elevation_reference_system'),
+						color: ElevationProfile.DEFAULT_TEXT_COLOR
 					},
 					legend: { display: false },
 					tooltip: {
@@ -521,6 +531,13 @@ export class ElevationProfile extends MvuElement {
 			return;
 		}
 		if (this._chart && this._chart.data && this._chart.data.datasets.length > 0) {
+			this._chart.options.scales.x.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.x.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.y.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+			this._chart.options.scales.y.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+
+			this._chart.options.plugins.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+
 			this._updateChart(labels, data);
 			return;
 		}
@@ -567,6 +584,21 @@ export class ElevationProfile extends MvuElement {
 			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
 		}
 		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
+	}
+
+	static get DEFAULT_TEXT_COLOR_DARK() {
+		return 'rgb(240, 243, 244)';
+	}
+
+	static get DEFAULT_TEXT_COLOR_LIGHT() {
+		return 'rgb(92, 106, 112)';
+	}
+
+	static get DEFAULT_TEXT_COLOR() {
+		if (ElevationProfile.IS_DARK) {
+			return ElevationProfile.DEFAULT_TEXT_COLOR_DARK;
+		}
+		return ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT;
 	}
 
 	static get BACKGROUND_COLOR_DARK() {

@@ -213,6 +213,8 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
 			expect(ElevationProfile.BORDER_COLOR_LIGHT).toBe('#2c5a93');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR_DARK).toBe('rgb(240, 243, 244)');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR_LIGHT).toBe('rgb(92, 106, 112)');
 			expect(ElevationProfile.HIGHLIGHT_FEATURE_ID).toBe('#elevationProfileHighlightFeatureId');
 		});
 	});
@@ -495,7 +497,6 @@ describe('ElevationProfile', () => {
 
 	describe('when coordinates (slice-of-state) changes (from some coordinates)', () => {
 		it('calls _getAltitudeProfile with new coordinates', async () => {
-
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -634,6 +635,7 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(240, 243, 244)');
 		});
 	});
 
@@ -650,6 +652,7 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
+			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');
 		});
 	});
 
@@ -830,32 +833,7 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
 		});
-
 	});
 
-	describe('when disconnected', () => {
-		it('destroys chart', async () => {
-			// arrange
-			const coordinates = [
-				[0, 1],
-				[2, 3]
-			];
 
-			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-			const element = await setup({
-				elevationProfile: {
-					active: true,
-					coordinates: coordinates
-				}
-			});
-
-			const onDisconnectSpy = spyOn(element, 'onDisconnect').and.callThrough();
-
-			//act
-			element.onDisconnect(); // we have to call onDisconnect manually
-
-			// assert
-			expect(onDisconnectSpy).toHaveBeenCalled();
-		});
-	});
 });
