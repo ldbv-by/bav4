@@ -13,6 +13,7 @@ export class HistoryStatePlugin extends BaPlugin {
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');
 		this._environmentService = environmentService;
 		this._shareService = shareService;
+		this._currentEncodedState = null;
 	}
 
 	/**
@@ -35,6 +36,10 @@ export class HistoryStatePlugin extends BaPlugin {
 	}
 
 	_updateHistory() {
-		this._environmentService.getWindow().history.replaceState(null, '', this._shareService.encodeState());
+		const encodedState = this._shareService.encodeState();
+		if (this._currentEncodedState !== encodedState) {
+			this._environmentService.getWindow().history.replaceState(null, '', encodedState);
+			this._currentEncodedState = encodedState;
+		}
 	}
 }

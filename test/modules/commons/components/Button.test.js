@@ -22,6 +22,7 @@ describe('Button', () => {
 			expect(element.disabled).toBeFalse();
 			expect(element.label).toBe('label');
 			expect(element.type).toBe('secondary');
+			expect(element.icon).toBeNull;
 		});
 
 		it('renders the view', async () => {
@@ -32,6 +33,9 @@ describe('Button', () => {
 			const button = element.shadowRoot.querySelector('button');
 			expect(button.classList.contains('secondary')).toBeTrue();
 			expect(button.classList.contains('disabled')).toBeFalse();
+			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.children.length).toBe(0);
+			expect(element.shadowRoot.styleSheets.length).toBe(2);
 			expect(button.innerText).toBe('label');
 		});
 
@@ -96,6 +100,36 @@ describe('Button', () => {
 			expect(button.classList.contains('secondary')).toBeFalse();
 			expect(button.classList.contains('primary')).toBeFalse();
 			expect(button.classList.contains('loading')).toBeTrue();
+		});
+	});
+
+	describe('when property\'icon\' changes', () => {
+
+		it('updates the view', async () => {
+
+			const element = await TestUtils.render(Button.tag);
+			const button = element.shadowRoot.querySelector('button');
+
+
+			expect(button.classList.contains('iconbutton')).toBeFalse();
+			expect(button.children.length).toBe(0);
+			expect(element.shadowRoot.styleSheets.length).toBe(2);
+
+			element.icon = 'foo';
+
+			expect(button.classList.contains('iconbutton')).toBeTrue();
+			expect(button.children.length).toBe(1);
+			expect(element.shadowRoot.styleSheets.length).toBe(3);
+			expect(button.children[0].classList.contains('icon')).toBeTrue();
+			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("foo');
+
+			element.icon = 'bar';
+
+			expect(button.classList.contains('iconbutton')).toBeTrue();
+			expect(button.children.length).toBe(1);
+			expect(element.shadowRoot.styleSheets.length).toBe(3);
+			expect(button.children[0].classList.contains('icon')).toBeTrue();
+			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("bar');
 		});
 	});
 

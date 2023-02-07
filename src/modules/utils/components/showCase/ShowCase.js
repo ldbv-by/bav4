@@ -157,6 +157,7 @@ export class ShowCase extends BaElement {
 				closeProfile();
 			}
 			else {
+				closeModal();
 				openProfile([[1328315.0062647895, 6089975.78297438], [1310581.6157026286, 6045336.558455837]]);
 			}
 		};
@@ -269,12 +270,21 @@ export class ShowCase extends BaElement {
 			<div class='section' >
 
 			<h3>ba-buttons</h3>
-			<div class='example row'>		
-			<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
-			<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
-			<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
-			<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
-			<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
+			<div class='example'>		
+				<div class='row'>		
+				<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
+				<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
+				<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
+				<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
+				<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
+				</div>
+				<div class='row'style='margin-top:2em'>		
+				<ba-button id='button0' .label=${'primary style'} .icon=${arrowUpSvg} .type=${'primary'} @click=${onClick0}></ba-button>
+				<ba-button id='button1' .label=${'secondary style'} .icon=${arrowUpSvg} @click=${onClick1}></ba-button>
+				<ba-button id='button2' .label=${'disabled'} .icon=${arrowUpSvg} .type=${'primary'} .disabled=${true} ></ba-button>
+				<ba-button id='button3' .label=${'disabled'} .icon=${arrowUpSvg} .disabled=${true}></ba-button>
+				<ba-button id='button3' .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
+				</div>
 			</div>
 
 			<h3>ba-icons</h3>
@@ -370,4 +380,3 @@ export class ShowCase extends BaElement {
 		return 'ba-showcase';
 	}
 }
-
