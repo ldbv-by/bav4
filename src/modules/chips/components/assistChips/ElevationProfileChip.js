@@ -20,16 +20,17 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._unsubscribeFromStore = null;
+		this._usePropertyValue = false;
 	}
 
 	onInitialize() {
-		this._unsubscribeFromStore = this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
+		this._unsubscribeFromStore = this._usePropertyValue ? null : this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Profile_Coordinates:
-				return { ...model, profileCoordinates: data };
+				return { ...model, profileCoordinates: [...data] };
 		}
 	}
 
@@ -69,10 +70,11 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	}
 
 	set coordinates(value) {
-		this.signal(Update_Profile_Coordinates, value);
 		if (this._unsubscribeFromStore) {
 			this._unsubscribeFromStore();
 			this._unsubscribeFromStore = null;
 		}
+		this._usePropertyValue = true;
+		this.signal(Update_Profile_Coordinates, value);
 	}
 }
