@@ -31,9 +31,25 @@ export class AbstractAssistChip extends MvuElement {
      * @override
      */
 	createView(/*eslint-disable no-unused-vars */model) {
-		return this.isVisible() ? html`<style>${css}</style>	
+		const icon = this.getIcon();
+		const iconClass = `.chips__icon {
+			background: var(--secondary-color);
+			height: 1.5em;
+			width: 1.5em;
+			position: relative;
+			top: -.1em;		
+			mask-size:cover;
+			mask : url("${icon}");			
+			-webkit-mask-image : url("${icon}");			
+		}` ;
+
+		return this.isVisible() ? html`
+		<style>
+		${iconClass}
+			${css}
+		</style>	
         <button class='chips__button' @click=${() => this.onClick()} >
-            ${this.getIcon()}
+			<span class='chips__icon'></span >            
             <span class='chips__button-text'>${this.getLabel()}</span>
         </button>` : nothing;
 	}

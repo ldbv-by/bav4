@@ -22,13 +22,6 @@
 .chips__button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
 }
-.chips__button svg {
-	fill: var(--secondary-color);
-	height: 1.5em;
-	width: 1.5em;
-	position: relative;
-	top: -.1em;
-}
 .chips__button-text {
 	color: var(--text1);
 	font-weight: bold;
