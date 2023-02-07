@@ -25,12 +25,9 @@ describe('ElevationProfileChip', () => {
 		return element;
 	};
 
-
-
 	describe('when initialized', () => {
 		const coordinates = [[42, 21], [0, 0]];
 		it('contains default values in the model', async () => {
-
 			const element = await setup();
 
 			const { profileCoordinates } = element.getModel();
@@ -48,6 +45,7 @@ describe('ElevationProfileChip', () => {
 
 		it('renders the view with local coordinates', async () => {
 			const element = await setup(defaultState);
+
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 			element.coordinates = [[2, 0], [1, 0]];
 
