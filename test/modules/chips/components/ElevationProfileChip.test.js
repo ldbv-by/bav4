@@ -116,7 +116,6 @@ describe('ElevationProfileChip', () => {
 			const state = { elevationProfile: { active: false, coordinates: [] } };
 			const element = await setup(state);
 
-
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
@@ -131,7 +130,6 @@ describe('ElevationProfileChip', () => {
 		it('changes store on click with local coordinates without z-value', async () => {
 			const state = { elevationProfile: { active: false, coordinates: [] } };
 			const element = await setup(state);
-
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
