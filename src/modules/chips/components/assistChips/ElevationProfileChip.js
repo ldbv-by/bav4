@@ -62,7 +62,8 @@ export class ElevationProfileChip extends AbstractAssistChip {
 	 */
 	onClick() {
 		const { profileCoordinates } = this.getModel();
-		openProfile(profileCoordinates);
+		const forceTo2D = (coordinates) => coordinates.map(c => c.slice(0, 2));
+		openProfile(forceTo2D(profileCoordinates));
 	}
 
 	static get tag() {
