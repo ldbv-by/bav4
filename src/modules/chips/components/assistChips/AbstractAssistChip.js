@@ -33,7 +33,6 @@ export class AbstractAssistChip extends MvuElement {
 	createView(/*eslint-disable no-unused-vars */model) {
 		const icon = this.getIcon();
 		const iconClass = `.chips__icon {
-			background: var(--secondary-color);
 			height: 1.5em;
 			width: 1.5em;
 			position: relative;
@@ -41,6 +40,7 @@ export class AbstractAssistChip extends MvuElement {
 			mask-size:cover;
 			mask : url("${icon}");			
 			-webkit-mask-image : url("${icon}");			
+			background: var(--secondary-color);
 		}` ;
 
 		return this.isVisible() ? html`

@@ -22,7 +22,6 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		this._unsubscribeFromStore = null;
 	}
 
-
 	onInitialize() {
 		this._unsubscribeFromStore = this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
 	}

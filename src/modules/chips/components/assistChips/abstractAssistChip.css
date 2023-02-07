@@ -1,8 +1,3 @@
-.chips__container {
-	display: flex;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
-	flex-wrap: wrap;
-}
 .chips__button {
 	background: var(--primary-bg-color);
 	/* background: var(--header-background-color); */
