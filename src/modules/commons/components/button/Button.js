@@ -75,6 +75,8 @@ export class Button extends MvuElement {
 		const iconClass = `.icon {
 			mask : url("${icon}");
 			-webkit-mask-image : url("${icon}");
+			mask-size: cover;
+			-webkit-mask-size: cover;
 		}`;
 
 		const getIconStyle = () => {
