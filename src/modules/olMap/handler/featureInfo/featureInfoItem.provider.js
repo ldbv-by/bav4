@@ -1,9 +1,11 @@
 import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
-import { getStats } from '../../utils/olGeometryUtils';
+import { getLineString, getStats } from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+
+
 
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
@@ -18,10 +20,10 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	}
 	const { MapService: mapService, SecurityService: securityService, GeoResourceService: geoResourceService } = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
 	const stats = getStats(olFeature.getGeometry(), { fromProjection: 'EPSG:' + mapService.getSrid(), toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid() });
-
+	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
-		const geometryContent = html`<ba-geometry-info .statistics=${stats}></ba-geometry-info>`;
+		const geometryContent = html`<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip><ba-geometry-info .statistics=${stats}></ba-geometry-info>`;
 
 		return descContent ? html`${unsafeHTML(securityService.sanitizeHtml(descContent))}${geometryContent}` : html`${geometryContent}`;
 	};
