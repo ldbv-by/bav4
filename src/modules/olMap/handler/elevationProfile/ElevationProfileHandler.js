@@ -1,8 +1,8 @@
-import { Point, LinearRing, LineString, Polygon } from 'ol/geom';
 import { Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
+import { getLineString } from '../../utils/olGeometryUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
 export class ElevationProfileHandler extends OlMapHandler {
@@ -43,20 +43,8 @@ export class ElevationProfileHandler extends OlMapHandler {
 
 			if (featureCount === 1) {
 				const selectedFeature = selectedFeatures.getArray()[0];
-
-				const geometry = selectedFeature.getGeometry();
-				if (geometry instanceof Point) {
-					return empty;
-				}
-				if (geometry instanceof LineString) {
-					return geometry.getCoordinates();
-				}
-				if (geometry instanceof LinearRing) {
-					return geometry.getCoordinates()[0];
-				}
-				if (geometry instanceof Polygon) {
-					return geometry.getCoordinates(false)[0];
-				}
+				const geometry = getLineString(selectedFeature.getGeometry());
+				return geometry ? geometry.getCoordinates() : empty;
 			}
 			return empty;
 		};
