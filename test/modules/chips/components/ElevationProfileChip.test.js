@@ -111,5 +111,37 @@ describe('ElevationProfileChip', () => {
 
 			expect(store.getState().elevationProfile.active).toBeTrue();
 		});
+
+		it('changes store on click with local coordinates', async () => {
+			const state = { elevationProfile: { active: false, coordinates: [] } };
+			const element = await setup(state);
+
+
+			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+
+			element.coordinates = [[2, 0], [1, 0]];
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 0], [1, 0]]);
+		});
+
+		it('changes store on click with local coordinates without z-value', async () => {
+			const state = { elevationProfile: { active: false, coordinates: [] } };
+			const element = await setup(state);
+
+
+			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+
+			element.coordinates = [[2, 0, 3], [1, 0, 1]];
+			const button = element.shadowRoot.querySelector('button');
+			button.click();
+
+			expect(store.getState().elevationProfile.active).toBeTrue();
+			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 0], [1, 0]]);
+		});
 	});
 });
