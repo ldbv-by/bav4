@@ -836,4 +836,29 @@ describe('ElevationProfile', () => {
 	});
 
 
+	describe('when disconnected', () => {
+		it('destroys chart', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const onDisconnectSpy = spyOn(element, 'onDisconnect').and.callThrough();
+
+			//act
+			element.onDisconnect(); // we have to call onDisconnect manually
+
+			// assert
+			expect(onDisconnectSpy).toHaveBeenCalled();
+		});
+	});
 });
