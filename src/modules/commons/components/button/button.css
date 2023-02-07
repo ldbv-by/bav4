@@ -77,3 +77,36 @@
 		transform: translateX(-1.75rem);
 	}
 }
+.icon {
+	height: 1em;
+	width: 1em;
+	display: flex;
+	font-size: 1.7rem;
+	-webkit-mask-size: cover;
+	position: absolute;
+	left: .4em;
+	top: .3em;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);  
+}
+.primary .icon {
+	background: var(--text3);
+}
+.loading .icon {
+	background: var(--text3);
+}
+.secondary .icon {
+	background: var(--primary-color);
+}
+.primary.disabled .icon {
+	background: var(--text1);
+}
+.secondary.disabled .icon {
+	background: var(--text1) !important;
+}
+.iconbutton {
+	padding-left: 3em;
+	position: relative;
+}
+.secondary:hover .icon ,  .secondary:focus .icon {
+	background: var(--text3);
+}
