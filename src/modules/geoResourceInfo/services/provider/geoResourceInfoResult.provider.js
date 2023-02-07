@@ -48,11 +48,11 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	// only WmsGeoResources are currenly supported as imported GeoResources
-	if (geoResource.isImported() && !(geoResource instanceof WmsGeoResource)) {
+	// only WmsGeoResources are currenly supported as external GeoResources
+	if (geoResource.isExternal() && !(geoResource instanceof WmsGeoResource)) {
 		return null;
 	}
-	const loadGeoResourceInfo = geoResource.isImported() ? loadExternal : loadInternal;
+	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;
 
 	const result = await loadGeoResourceInfo(geoResource);
 	switch (result.status) {
