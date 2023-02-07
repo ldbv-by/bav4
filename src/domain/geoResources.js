@@ -189,9 +189,10 @@ export class GeoResource {
 	}
 
 	/**
-	 * Checks if this GeoResource denotes an imported resource.
+	 * Checks if this GeoResource has an HTTP based id
+	 * which means it denotes an (imported) external resource.
 	 */
-	isImported() {
+	isExternal() {
 		return isHttpUrl(this.id.split('||')[0]);
 	}
 

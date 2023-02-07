@@ -87,9 +87,9 @@ describe('GeoResource', () => {
 
 			it('provides a check for detecting an imported GeoResource ', () => {
 
-				expect(new GeoResourceImpl('id').isImported()).toBeFalse();
-				expect(new GeoResourceImpl('https://foo.bar', null).isImported()).toBeTrue();
-				expect(new GeoResourceImpl('https://foo.bar||some ||thing', null).isImported()).toBeTrue();
+				expect(new GeoResourceImpl('id').isExternal()).toBeFalse();
+				expect(new GeoResourceImpl('https://foo.bar', null).isExternal()).toBeTrue();
+				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBeTrue();
 			});
 
 			it('sets the attribution provider', () => {
