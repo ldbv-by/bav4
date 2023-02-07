@@ -9,6 +9,7 @@ import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../../test-utils';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(ImportToolContent.tag, ImportToolContent);
 
@@ -70,6 +71,7 @@ describe('ImportToolContent', () => {
 
 			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
 			expect(window.getComputedStyle(dragDropPreview).display).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
 		it('layouts for touch devices', async () => {
@@ -84,6 +86,7 @@ describe('ImportToolContent', () => {
 
 			const dragDropPreview = element.shadowRoot.querySelector('.drag-drop-preview');
 			expect(window.getComputedStyle(dragDropPreview).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.tool-container__button')[0].hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 	});
 
