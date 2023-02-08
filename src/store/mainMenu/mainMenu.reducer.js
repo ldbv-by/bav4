@@ -36,6 +36,7 @@ export const createNoInitialStateMainMenuReducer = () => {
 
 /**
  * Provides a media reducer which initial state is beeing obtained from the window object.
+ * @deprecated
  * @param {Window} _window
  * @returns media reducer
  */
@@ -46,6 +47,26 @@ export const createMainMenuReducer = (_window = window) => {
 		 * @property {boolean}
 		 */
 		open: _window.matchMedia(ORIENTATION_MEDIA_QUERY).matches ? false : true,
+		/**
+		 * @property {number}
+		 */
+		tab: null
+	};
+
+	return (state = initialState, action) => mainMenuReducer(state, action);
+};
+
+/**
+ * Provides a media reducer containing a static initial state.
+ * @returns media reducer
+ */
+export const createMainMenuReducerWithDefaultValues = () => {
+
+	const initialState = {
+		/**
+		 * @property {boolean}
+		 */
+		open: false,
 		/**
 		 * @property {number}
 		 */

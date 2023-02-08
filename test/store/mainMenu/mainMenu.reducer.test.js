@@ -1,5 +1,5 @@
 import { TestUtils } from '../../test-utils.js';
-import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
+import { createMainMenuReducer, createMainMenuReducerWithDefaultValues, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
 import { open, close, toggle, setTab, TabId } from '../../../src/store/mainMenu/mainMenu.action';
 
 
@@ -42,6 +42,19 @@ describe('mainMenuReducer', () => {
 				const store = setup(createMainMenuReducer());
 
 				expect(store.getState().mainMenu.open).toMatch(/true|false/);
+				expect(store.getState().mainMenu.tab).toBeNull();
+			});
+		});
+	});
+
+	describe('createMainMenuReducerWithDefaultValues', () => {
+
+		describe('returns a reducer function', () => {
+
+			it('initiales the store with default values', () => {
+				const store = setup(createMainMenuReducerWithDefaultValues());
+
+				expect(store.getState().mainMenu.open).toBeFalse();
 				expect(store.getState().mainMenu.tab).toBeNull();
 			});
 		});
