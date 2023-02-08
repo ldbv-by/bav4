@@ -14,7 +14,6 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
-import { updateCoordinates } from '../../../../../src/store/elevationProfile/elevationProfile.action';
 
 window.customElements.define(Icon.tag, Icon);
 window.customElements.define(IconSelect.tag, IconSelect);
