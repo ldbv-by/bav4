@@ -160,6 +160,8 @@ ba-checkbox:focus {
 .chips__container {
 	display: flex;
 	justify-content: center;
+	padding: 1em 0 1em;
+	border-bottom: 1px solid var(--header-background-color);
 }
 
 .attribute-container {
