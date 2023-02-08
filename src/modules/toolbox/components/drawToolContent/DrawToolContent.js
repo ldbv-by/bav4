@@ -578,7 +578,7 @@ export class DrawToolContent extends AbstractToolContent {
 					${subText}
 				</div>
 				<div  style='padding: 1em 0 1em;border-bottom:1px solid var(--header-background-color);'>
-					<ba-assist-chips ></'ba-assist-chips>  		
+					<ba-assist-chips ></ba-assist-chips>  		
 				</div>
 				<div class="ba-tool-container__actions">                         				
 				${buttons}
