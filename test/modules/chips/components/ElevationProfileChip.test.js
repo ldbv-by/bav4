@@ -55,7 +55,7 @@ describe('ElevationProfileChip', () => {
 		});
 
 
-		it('renders the view only with local coordinates', async () => {
+		it('renders the view only with local coordinates, the store does not interfere with changes', async () => {
 			const element = await setup(defaultState);
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 
@@ -72,12 +72,6 @@ describe('ElevationProfileChip', () => {
 			updateCoordinates([[2, 0], [1, 0]]);
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
-			expect(unsubscribeSpy).not.toHaveBeenCalled();
-
-			// case 2: the property is set before the element is initialized
-			// force a reinitialize
-			element.onInitialize();
-			expect(element._unsubscribeFromStore).toBeNull();
 		});
 
 		it('renders nothing when no coordinates for elevationProfile exists', async () => {
