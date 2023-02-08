@@ -20,14 +20,14 @@ describe('GeoResourceInfoService', () => {
 
 		const geoResourceInfoService = new GeoResourceInfoService();
 
-		expect(geoResourceInfoService._provider).toEqual([loadBvvGeoResourceInfo]);
+		expect(geoResourceInfoService._providers).toEqual([loadBvvGeoResourceInfo]);
 	});
 
 	it('initializes the service with custom provider', async () => {
 		const customProvider = async () => { };
 		const instanceUnderTest = new GeoResourceInfoService([customProvider]);
-		expect(instanceUnderTest._provider).toBeDefined();
-		expect(instanceUnderTest._provider).toEqual([customProvider]);
+		expect(instanceUnderTest._providers).toBeDefined();
+		expect(instanceUnderTest._providers).toEqual([customProvider]);
 	});
 
 	it('should return a GeoResourceInfoResult with html content', async () => {

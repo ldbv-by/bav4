@@ -17,10 +17,10 @@ import { $injector } from '../../../injection';
 export class GeoResourceInfoService {
 
 	/**
-	 * @param {provider} [provider=loadBvvGeoResources]
+	 * @param {provider} [providers=loadBvvGeoResources]
 	 */
-	constructor(provider = [loadBvvGeoResourceInfo]) {
-		this._provider = provider;
+	constructor(providers = [loadBvvGeoResourceInfo]) {
+		this._providers = providers;
 		this._geoResourceInfoResults = new Map();
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
@@ -41,7 +41,7 @@ export class GeoResourceInfoService {
 
 		if (!this._geoResourceInfoResults.get(geoResourceId)) {
 			try {
-				for (const provider of this._provider) {
+				for (const provider of this._providers) {
 					const geoResourceInfoResult = await provider(geoResourceId);
 					if (geoResourceInfoResult) {
 						this._geoResourceInfoResults.set(geoResourceId, this._geoResourceInfoResult);
