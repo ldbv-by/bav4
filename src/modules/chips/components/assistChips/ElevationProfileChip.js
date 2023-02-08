@@ -19,7 +19,7 @@ export class ElevationProfileChip extends AbstractAssistChip {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._unsubscribeFromStore = this._usePropertyValue ? null : this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
+		this._unsubscribeFromStore = this.observe(state => state.elevationProfile.coordinates, (coordinates) => this.signal(Update_Profile_Coordinates, coordinates));
 	}
 
 	update(type, data, model) {
