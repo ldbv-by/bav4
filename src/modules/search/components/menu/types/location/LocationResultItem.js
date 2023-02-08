@@ -83,13 +83,15 @@ export class LocationResultItem extends MvuElement {
 				//close the main menu
 				closeMainMenu();
 			}
+
+			this.shadowRoot.getElementById('testtemp').classList.add('active');
 		};
 
 		if (locationSearchResult) {
 
 			return html`
 				<style>${css}</style>
-                <li class="ba-list-item" tabindex="0"
+                <li id='testtemp' class="ba-list-item" tabindex="0"
 					@click=${() => onClick(locationSearchResult)} 
 					@mouseenter=${() => onMouseEnter(locationSearchResult)} 
 					@mouseleave=${() => onMouseLeave(locationSearchResult)}>
@@ -98,8 +100,12 @@ export class LocationResultItem extends MvuElement {
 						</span>
 					</span>
 					<span class="ba-list-item__text ">
-					${unsafeHTML(locationSearchResult.labelFormatted)}
+					${unsafeHTML(locationSearchResult.labelFormatted)}		
+					<div class='assistchips' style='margin:1em 0 0 0' >			
+						<ba-assist-chips .type=${'search'}  style='margin:1em 0;'></ba-assist-chips>					
+					<div>			
 					</span>
+					
 				</li>
             `;
 		}

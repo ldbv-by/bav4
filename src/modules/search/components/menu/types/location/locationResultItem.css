@@ -45,7 +45,7 @@
 	margin-right: .5em;
 }
 .ba-list-item:hover .ba-list-item__icon {
-	background: var(--primary-color);
+	background: var(--secondary-color);
 }
 .ba-list-item__text {
 	flex-grow: 1;
@@ -56,4 +56,17 @@ path {
 }
 svg {
 	fill: red;
+}
+.assistchips {
+	display: none;
+}
+.active {
+	background: var(--header-background-color);
+
+}
+.active .ba-list-item__icon {
+	background: var(--primary-color) !important;
+}
+.active .assistchips {
+	display: block;
 }

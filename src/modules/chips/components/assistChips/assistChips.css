@@ -1,7 +1,7 @@
 .chips__container {
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);  
-	flex-wrap:wrap;
+	flex-wrap: wrap;
 }
 .chips__button {
 	background: var(--primary-bg-color);
@@ -17,7 +17,7 @@
 	cursor: pointer;
 	text-decoration: none;
 	flex-shrink: 0;
-	font-size:.75rem;
+	font-size: .75rem;
 }
 .chips__button:focus {
 	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
@@ -34,7 +34,7 @@
 	font-weight: bold;
 	margin: auto .5em;
 }
-.chips__button:hover{
+.chips__button:hover {
 	border: 1px solid var(--secondary-color);
 }
 .chips__button:hover .chips__button-text {

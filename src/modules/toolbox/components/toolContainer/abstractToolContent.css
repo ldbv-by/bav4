@@ -24,9 +24,9 @@
 	border-right: none;
 }
 .sub-text {
-	display:none;
+	display: none;
 	/* text-align: center; */
 	font-size: .8em;
-	padding:  .8em 1.2em;
+	padding: .8em 1.2em;
 	border-bottom: 1px solid var(--header-background-color);
 }
