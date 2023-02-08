@@ -563,9 +563,8 @@ export class DrawToolContent extends AbstractToolContent {
         <style>${css}</style>
             <div class="ba-tool-container">
                 <div class="ba-tool-container__item ba-tool-menu__draw">  
-					<div class="ba-tool-container__title" style='border-bottom: 1px solid var(--header-background-color);margin-bottom: 1em;padding-bottom: 2em;'>
-						${translate('toolbox_drawTool_header')}         
-						<ba-assist-chips style='position: absolute;left: 1.2em;top: 2.7em;'></'ba-assist-chips>  		           
+					<div class="ba-tool-container__title">
+						${translate('toolbox_drawTool_header')}         						         
 					</div>      
 					<div class="ba-tool-container__content">                						     				
 						<div class="tool-container__buttons">                                    
@@ -577,6 +576,9 @@ export class DrawToolContent extends AbstractToolContent {
 				</div>				            			
 				<div class='sub-text'>
 					${subText}
+				</div>
+				<div  style='padding: 1em 0 1em;border-bottom:1px solid var(--header-background-color);'>
+					<ba-assist-chips ></'ba-assist-chips>  		
 				</div>
 				<div class="ba-tool-container__actions">                         				
 				${buttons}
