@@ -178,6 +178,7 @@ export class BvvMfp3Encoder {
 		switch (geoResource.getType()) {
 			case GeoResourceTypes.VECTOR:
 				return this._encodeVector(layer);
+			case GeoResourceTypes.VT: // VectorTiles are currently not supported by MFP but can be replaced by a WMTS substitution
 			case GeoResourceTypes.XYZ:
 			case GeoResourceTypes.WMTS:
 				return this._encodeWMTS(layer, geoResource);
