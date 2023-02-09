@@ -187,7 +187,7 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 			const url = parts[0];
 			const { status, sourceType } = await sourceTypeService.forUrl(url);
 
-			if (status === SourceTypeResultStatus.OK) {
+			if (status === SourceTypeResultStatus.OK || status === SourceTypeResultStatus.BAA_AUTHENTICATED) {
 				const getGeoResource = async (sourceType) => {
 
 					switch (sourceType.name) {
@@ -210,6 +210,7 @@ export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
 							const importWmsOptions = layer
 								? { sourceType: sourceType, layers: [layer], ids: [urlBasedAsId] }
 								: { sourceType: sourceType, layers: [], ids: [urlBasedAsId] };
+							importWmsOptions.isAuthenticated = (status === SourceTypeResultStatus.BAA_AUTHENTICATED);
 							const geoResources = await importWmsService.forUrl(url, importWmsOptions);
 							const geoResource = geoResources[0] ?? throwWmsImportError();
 							return label?.length ? geoResource.setLabel(label) : geoResource;
