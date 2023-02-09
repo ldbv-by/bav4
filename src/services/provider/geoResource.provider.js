@@ -158,7 +158,7 @@ export const loadBvvGeoResourceById = id => {
 };
 
 /**
- * Loader for URL-based ID: An URL-based ID must basically match the following pattern:
+ * Loader for external URL-based ID: An URL-based ID must basically match the following pattern:
  * `{url}||{extraParam1}||extraParam1.
  *
  * In detail:
@@ -170,7 +170,7 @@ export const loadBvvGeoResourceById = id => {
  * @implements geoResourceByIdProvider
  * @returns {GeoResourceFuture|null}
  */
-export const loadGeoResourceByUrlBasedId = urlBasedAsId => {
+export const loadExternalGeoResource = urlBasedAsId => {
 
 	const parts = urlBasedAsId.split('||');
 
