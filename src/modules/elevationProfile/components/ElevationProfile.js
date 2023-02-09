@@ -69,17 +69,17 @@ export class ElevationProfile extends MvuElement {
 	onInitialize() {
 		this.style.width = '100%';
 
-		// this._unsubscribers = [
-		this.observe(
-			(state) => state.media.darkSchema,
-			(darkSchema) => this.signal(Update_Schema, darkSchema)
-		);
-		// ,
-		this.observe(
-			(state) => state.elevationProfile.coordinates,
-			(coordinates) => this._getAltitudeProfile(coordinates)
-		);
-		// ];
+		this._unsubscribers = [
+			this.observe(
+				(state) => state.media.darkSchema,
+				(darkSchema) => this.signal(Update_Schema, darkSchema)
+			),
+			this.observe(
+				(state) => state.elevationProfile.coordinates,
+				(coordinates) => this._getAltitudeProfile(coordinates)
+			),
+			this.observe(state => state.media, data => this.signal(Update_Media, data), true)
+		];
 	}
 
 	/**
@@ -116,9 +116,7 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		console.log('🚀 ~ this._chart', this._chart.canvas);
-		// this._chart?.destroy();
-		console.log('🚀 ~ file: ElevationProfile.js:123 ~ ElevationProfile ~ onDisconnect ~ this._chart', this._chart);
+		this._chart?.destroy();
 		while (this._unsubscribers.length > 0) {
 			this._unsubscribers.shift()();
 		}

@@ -837,7 +837,7 @@ describe('ElevationProfile', () => {
 
 
 	describe('when disconnected', () => {
-		it('removes all observers and destroys the chart', async () => {
+		fit('removes all observers and destroys the chart', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -862,6 +862,9 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(onDisconnectSpy).toHaveBeenCalled();
 			expect(element._unsubscribers).toHaveSize(0);
+
+			expect(chart).toEqual('<canvas class="altitudeprofile" id="route-altitude-chart" style="display: block; box-sizing: border-box; height: 224px; width: 1190px;" width="1190" height="224">');
+
 		});
 	});
 });
