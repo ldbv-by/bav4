@@ -134,6 +134,22 @@ describe('ElevationProfileHandler', () => {
 			expect(handler._listeners).toHaveSize(0);
 		});
 
+		it('resets store when select interaction is removed', () => {
+			store = setup({ ...defaultState, coordinates: [[0, 0][1, 1]] });
+			const lineString = new LineString([[2, 2], [3, 3]]);
+			const feature = new Feature({ geometry: lineString });
+			const map = getSelectableMapWith([feature]);
+			const select = new Select({ condition: click });
+			const handler = new ElevationProfileHandler();
+			handler.register(map);
+
+			map.addInteraction(select);
+			select.getFeatures().push(feature);
+			map.removeInteraction(select);
+
+			expect(store.getState().elevationProfile.coordinates).toEqual([]);
+		});
+
 		it('does NOT removes listener for non-select events', () => {
 			store = setup({ ...defaultState, coordinates: [[0, 0][1, 1]] });
 			const map = setupMap();
@@ -221,6 +237,7 @@ describe('ElevationProfileHandler', () => {
 			expect(updateCoordinatesSpy).toHaveBeenCalled();
 			expect(store.getState().elevationProfile.coordinates).toEqual([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]);
 		});
+
 		it('changes the elevationProfile store for Polygon geometry', () => {
 			store = setup({ ...defaultState, coordinates: [[0, 0][1, 1]] });
 			const polygon = new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]);
