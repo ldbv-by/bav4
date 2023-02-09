@@ -221,7 +221,6 @@ input[color] {
 	transform: scale(.6);
 }
 
-
 .color-input input {
 	height: 6em;
 	position: relative;
@@ -229,7 +228,6 @@ input[color] {
 	left: -1em;
 	width: 6em;
 }
-
 
 .sub-header {
 	display: flex;

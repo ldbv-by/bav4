@@ -14,7 +14,6 @@ import { MvuElement } from '../../../MvuElement';
 export class AbstractAssistChip extends MvuElement {
 
 	/**
-	 *
 	 * @param {object} model initial Model of this component
 	 */
 	constructor(model = {}) {

@@ -16,7 +16,6 @@ export class ElevationProfileHandler extends OlMapHandler {
 	}
 
 	/**
-	 *
 	 * @override
 	 */
 	register(map) {
