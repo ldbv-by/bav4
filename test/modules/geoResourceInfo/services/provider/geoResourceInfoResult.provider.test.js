@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
-import { GeoResourceAuthenticationType } from '../../../../../src/domain/geoResources';
+import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/domain/geoResources';
 import { MediaType } from '../../../../../src/services/HttpService';
 
 describe('GeoResourceInfo provider', () => {
@@ -30,10 +30,10 @@ describe('GeoResourceInfo provider', () => {
 			.registerSingleton('BaaCredentialService', baaCredentialService);
 	});
 
-	it('should load a internal GeoResourceInfo', async () => {
+	it('should load a GeoResourceInfo', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -50,66 +50,67 @@ describe('GeoResourceInfo provider', () => {
 		expect(result.content).toBe('<b>hello</b>');
 	});
 
-	it('should load a external GeoResourceInfo', async () => {
+	it('should load a GeoResourceInfo for an imported WmsGeoResource', async () => {
 
-		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true });
+		const geoResourceId = 'http://some.url||foo';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
-		const expectedPayLoad = '{"url":"http://some.url/","layers":["foo"]}';
+		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"]}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post').withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON).and.returnValue(Promise.resolve(
 			new Response('<b>hello</b>', { status: 200 })
 		));
 
-		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
+		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(result).toBeTruthy();
-		expect(result.content.length > 0).toBeTrue();
 		expect(result.content).toBe('<b>hello</b>');
 	});
 
-	it('should load a external GeoResourceInfo from a BAA-authenticated georesource', async () => {
+	it('should load a GeoResourceInfo for an imported and BAA-authenticated WmsGeoResource', async () => {
 
-		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
-		const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs('http://some.url/').and.returnValue({ username: 'username', password: 'password' });
+		const geoResourceId = 'http://some.url||foo';
+		const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', 'http://some.url', 'layer', 'format').setAuthenticationType(GeoResourceAuthenticationType.BAA);
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+		const baaCredentialServiceSpy = spyOn(baaCredentialService, 'get').withArgs('http://some.url').and.returnValue({ username: 'username', password: 'password' });
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/external/wms';
-		const expectedPayLoad = '{"url":"http://some.url/","layers":["foo"],"username":"username","password":"password"}';
+		const expectedPayLoad = '{"url":"http://some.url","layers":["layer"],"username":"username","password":"password"}';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'post').withArgs(expectedArgs0, expectedPayLoad, MediaType.JSON).and.returnValue(Promise.resolve(
 			new Response('<b>hello</b>', { status: 200 })
 		));
 
-		const result = await loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788');
+		const result = await loadBvvGeoResourceInfo(geoResourceId);
 
 		expect(configServiceSpy).toHaveBeenCalled();
 		expect(httpServiceSpy).toHaveBeenCalled();
 		expect(baaCredentialServiceSpy).toHaveBeenCalled();
 		expect(result).toBeTruthy();
-		expect(result.content.length > 0).toBeTrue();
 		expect(result.content).toBe('<b>hello</b>');
 	});
 
 	it('should throw an error a external BAA-authenticated georesource with missing credential', async () => {
 
-		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId, layers: 'foo', url: 'http://some.url/', importedByUser: true, authenticationType: GeoResourceAuthenticationType.BAA });
-		spyOn(baaCredentialService, 'get').withArgs('http://some.url/').and.returnValue(null);
+		const geoResourceId = 'http://some.url||foo';
+		const url = 'http://some.url';
+		const wmsGeoResource = new WmsGeoResource(geoResourceId, 'label', url, 'layer', 'format').setAuthenticationType(GeoResourceAuthenticationType.BAA);
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
+		spyOn(baaCredentialService, 'get').withArgs('http://some.url').and.returnValue(null);
 		const backendUrl = 'https://backend.url/';
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 
-		await expectAsync(loadBvvGeoResourceInfo('914c9263-5312-453e-b3eb-5104db1bf788')).toBeRejectedWithError('No credential available for GeoResource with id \'914c9263-5312-453e-b3eb-5104db1bf788\' and url \'http://some.url/\'');
+		await expectAsync(loadBvvGeoResourceInfo(geoResourceId)).toBeRejectedWithError(`No credential available for GeoResource with id '${geoResourceId}' and url '${url}'`);
 
 	});
 
 	it('should return null when backend provides empty payload', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -127,7 +128,7 @@ describe('GeoResourceInfo provider', () => {
 	it('should reject when backend request cannot be fulfilled', async () => {
 
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue({ id: geoResourceId });
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -146,5 +147,15 @@ describe('GeoResourceInfo provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(err.message).toBe(errorMessage);
 		}
+	});
+
+	it('should return NULL for an unsupported imported GeoResource', async () => {
+
+		const geoResourceId = 'http://some.url||foo';
+		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new VectorGeoResource(geoResourceId, 'label', VectorSourceType.KML));
+
+		const result = await loadBvvGeoResourceInfo(geoResourceId);
+
+		expect(result).toBeNull();
 	});
 });

@@ -457,28 +457,53 @@ describe('ChipsContainer', () => {
 	});
 
 	describe('when scroll buttons are clicked', () => {
+		const greaterThan = (number) => {
+			return {
+				asymmetricMatch: function (compareTo) {
+					return compareTo > number;
+				},
+
+				jasmineToString: function () {
+					return '<greater then: ' + number + '>';
+				}
+			};
+		};
+
+		const lessThan = (number) => {
+			return {
+				asymmetricMatch: function (compareTo) {
+					return compareTo < number;
+				},
+
+				jasmineToString: function () {
+					return '<greater then: ' + number + '>';
+				}
+			};
+		};
 
 		it('scrolls the container in the right and in the left direction', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			const container = element.shadowRoot.querySelectorAll('#chipscontainer')[0];
 			// let's make the scroll buttons visible by minimizing the containers width
 			container.style.width = '1px';
+
+			// fake the property and use a spy to observe the relative left/right changes
+			const scrollLeftSpy = spyOnProperty(container, 'scrollLeft', 'set').and.callThrough();
+			spyOnProperty(container, 'scrollLeft', 'get').and.returnValue(0);
+
 			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 			expect(container.classList.contains('show')).toBeTrue();
 			const scrollButton = element.shadowRoot.querySelectorAll('.chips__scroll-button');
-
 			// scroll right
 			scrollButton[1].click();
-			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 
-			const scrolledInPx = container.scrollLeft;
-			expect(scrolledInPx).toBeGreaterThan(0);
+			expect(scrollLeftSpy).toHaveBeenCalledWith(greaterThan(0));
+			scrollLeftSpy.calls.reset();
 
 			// scroll left
 			scrollButton[0].click();
-			await TestUtils.timeout(animationTimeout /** give the browser some time */);
 
-			expect(container.scrollLeft).toBeLessThan(scrolledInPx);
+			expect(scrollLeftSpy).toHaveBeenCalledWith(lessThan(0));
 		});
 	});
 
