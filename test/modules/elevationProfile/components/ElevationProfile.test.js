@@ -860,19 +860,26 @@ describe('ElevationProfile', () => {
 	});
 	it('removes highlghts', async () => {
 		// arrange
-		const coordinates = [
-			[0, 1],
-			[2, 3]
-		];
+		const coordinates = fromLonLat([11, 48]);
 
+		spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 		const element = await setup({
 			elevationProfile: {
 				active: true,
 				coordinates: coordinates
 			}
 		});
+		const chart = element.shadowRoot.querySelector('#route-altitude-chart');
+
+		const event = new PointerEvent('pointermove', {
+			clientX: 100,
+			clientY: 100
+		});
 
 		//act
+		chart.dispatchEvent(event);
+		const chartJsTimeoutInMs = 100;
+		await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
 		element.onDisconnect(); // we have to call onDisconnect manually
 
 		// assert
