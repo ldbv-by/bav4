@@ -858,4 +858,24 @@ describe('ElevationProfile', () => {
 			expect(element._unsubscribers).toHaveSize(0);
 		});
 	});
+	it('removes highlghts', async () => {
+		// arrange
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+
+		const element = await setup({
+			elevationProfile: {
+				active: true,
+				coordinates: coordinates
+			}
+		});
+
+		//act
+		element.onDisconnect(); // we have to call onDisconnect manually
+
+		// assert
+		expect(store.getState().highlight.features).toHaveSize(0);
+	});
 });
