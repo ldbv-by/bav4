@@ -857,7 +857,7 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-	it('removes highlghts', async () => {
+	it('removes an existing highlight feature', async () => {
 		// arrange
 		const coordinates = fromLonLat([11, 48]);
 		spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
