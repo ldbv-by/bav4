@@ -836,4 +836,26 @@ describe('ElevationProfile', () => {
 	});
 
 
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			//act
+			element.onDisconnect(); // we have to call onDisconnect manually
+
+			// assert
+			expect(element._unsubscribers).toHaveSize(0);
+		});
+	});
 });
