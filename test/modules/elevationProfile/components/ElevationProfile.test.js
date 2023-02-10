@@ -852,11 +852,9 @@ describe('ElevationProfile', () => {
 			});
 
 			//act
-			const onDisconnectSpy = spyOn(element, 'onDisconnect').and.callThrough();
 			element.onDisconnect(); // we have to call onDisconnect manually
 
 			// assert
-			expect(onDisconnectSpy).toHaveBeenCalled();
 			expect(element._unsubscribers).toHaveSize(0);
 		});
 	});
