@@ -117,6 +117,7 @@ export class ElevationProfile extends MvuElement {
 	 */
 	onDisconnect() {
 		this._chart?.destroy();
+		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		while (this._unsubscribers.length > 0) {
 			this._unsubscribers.shift()();
 		}

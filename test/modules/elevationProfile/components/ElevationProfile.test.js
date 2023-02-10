@@ -835,7 +835,6 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-
 	describe('when disconnected', () => {
 		it('removes all observers', async () => {
 			// arrange
@@ -843,7 +842,6 @@ describe('ElevationProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -857,5 +855,26 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(element._unsubscribers).toHaveSize(0);
 		});
+	});
+
+	it('removes an existing highlight feature', async () => {
+		// arrange
+		const coordinates = fromLonLat([11, 48]);
+		spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+		const element = await setup({
+			elevationProfile: {
+				active: true,
+				coordinates: coordinates
+			},
+			highlight: {
+				features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
+			}
+		});
+
+		//act
+		element.onDisconnect(); // we have to call onDisconnect manually
+
+		// assert
+		expect(store.getState().highlight.features).toHaveSize(0);
 	});
 });
