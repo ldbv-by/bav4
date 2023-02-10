@@ -844,7 +844,6 @@ describe('ElevationProfile', () => {
 				[2, 3]
 			];
 
-			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
 				elevationProfile: {
 					active: true,
