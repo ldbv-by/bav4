@@ -2,7 +2,7 @@
   "name": "bav4-nomigration",
   "dependencies": {
     "@geoblocks/ol-maplibre-layer": "0.0.5",
-    "chart.js": "4.2.0",
+    "chart.js": "4.2.1",
     "dompurify": "2.4.3",
     "lit-html": "2.6.1",
     "ol": "7.2.2",
