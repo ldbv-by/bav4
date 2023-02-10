@@ -835,7 +835,6 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-
 	describe('when disconnected', () => {
 		it('removes all observers', async () => {
 			// arrange
@@ -843,7 +842,6 @@ describe('ElevationProfile', () => {
 				[0, 1],
 				[2, 3]
 			];
-
 			const element = await setup({
 				elevationProfile: {
 					active: true,
@@ -858,28 +856,22 @@ describe('ElevationProfile', () => {
 			expect(element._unsubscribers).toHaveSize(0);
 		});
 	});
+
 	it('removes highlghts', async () => {
 		// arrange
 		const coordinates = fromLonLat([11, 48]);
-
 		spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 		const element = await setup({
 			elevationProfile: {
 				active: true,
 				coordinates: coordinates
+			},
+			highlight: {
+				features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
 			}
-		});
-		const chart = element.shadowRoot.querySelector('#route-altitude-chart');
-
-		const event = new PointerEvent('pointermove', {
-			clientX: 100,
-			clientY: 100
 		});
 
 		//act
-		chart.dispatchEvent(event);
-		const chartJsTimeoutInMs = 100;
-		await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
 		element.onDisconnect(); // we have to call onDisconnect manually
 
 		// assert
