@@ -1,13 +1,20 @@
 import { ElevationProfilePlugin } from '../../src/plugins/ElevationProfilePlugin';
 import { closeProfile, openProfile } from '../../src/store/elevationProfile/elevationProfile.action';
-import { elevationProfileReducer } from '../../src/store/elevationProfile/elevationProfile.reducer';
-import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer';
+import { elevationProfileReducer, initialState as elevationProfileInitialState } from '../../src/store/elevationProfile/elevationProfile.reducer';
+import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { TestUtils } from '../test-utils';
+import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action';
 
 describe('ElevationProfilePlugin', () => {
 
 	const setup = (state) => {
-		const store = TestUtils.setupStoreAndDi(state, {
+		const initialState = {
+			elevationProfile: elevationProfileInitialState,
+			bottomSheet: bottomSheetInitialState,
+			...state
+		};
+
+		const store = TestUtils.setupStoreAndDi(initialState, {
 			elevationProfile: elevationProfileReducer,
 			bottomSheet: bottomSheetReducer
 		});
@@ -29,6 +36,28 @@ describe('ElevationProfilePlugin', () => {
 			closeProfile();
 
 			expect(store.getState().bottomSheet.data).toBeNull();
+		});
+	});
+
+	describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
+
+		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true
+				},
+				bottomSheet: {
+					active: true
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			closeBottomSheet();
+
+			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
 		});
 	});
 });
