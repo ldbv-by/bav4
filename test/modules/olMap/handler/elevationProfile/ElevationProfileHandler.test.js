@@ -351,6 +351,25 @@ describe('ElevationProfileHandler', () => {
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 		});
 
+		it('changes the elevationProfile store for selected 3D LineString geometry', () => {
+			store = setup({ ...defaultState, coordinates: [[0, 0][1, 1]] });
+			const lineString = new LineString([[2, 2, 2], [3, 3, 3]]);
+			const feature = new Feature({ geometry: lineString });
+			const map = getSelectableMapWith([feature]);
+			const select = new Select({ condition: click });
+			const handler = new ElevationProfileHandler();
+			const updateCoordinatesSpy = spyOn(handler, '_updateSelectCoordinates').and.callThrough();
+
+
+			handler.register(map);
+			map.addInteraction(select);
+
+			select.getFeatures().push(feature);
+
+			expect(updateCoordinatesSpy).toHaveBeenCalled();
+			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 2], [3, 3]]);
+		});
+
 		it('changes the elevationProfile store for deselect', () => {
 			store = setup({ ...defaultState, coordinates: [[0, 0][1, 1]] });
 			const lineString = new LineString([[2, 2], [3, 3]]);

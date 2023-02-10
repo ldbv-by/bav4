@@ -44,11 +44,12 @@ export class ElevationProfileHandler extends OlMapHandler {
 
 	_getCoordinates(features) {
 		const featureCount = features.getLength();
+		const force2D = (coordinates) => coordinates.map(c => c.slice(0, 2));
 
 		if (featureCount === 1) {
 			const feature = features.getArray()[0];
 			const geometry = getLineString(feature.getGeometry());
-			return geometry ? geometry.getCoordinates() : Empty_Elevation_Profile_Coordinates;
+			return geometry ? force2D(geometry.getCoordinates()) : Empty_Elevation_Profile_Coordinates;
 		}
 		return Empty_Elevation_Profile_Coordinates;
 	}
