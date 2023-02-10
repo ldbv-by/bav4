@@ -77,7 +77,6 @@ describe('ImportWmsService', () => {
 
 			expect(result).toHaveSize(3);
 			result.forEach(gr => {
-				expect(gr.importedByUser).toBeTrue();
 				expect(gr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(gr)]);
 				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
 			});

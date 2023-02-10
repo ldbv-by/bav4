@@ -1,10 +1,12 @@
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../services/HttpService';
-import { GeoResourceAuthenticationType } from '../../../../domain/geoResources';
+import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
 
 /**
  * Uses the BVV endpoint to load GeoResourceInfoResult.
+ * @implements geoResourceInfoProvider
+ * @async
  * @function
  * @returns {Promise<GeoResourceInfoResult>}
  */
@@ -20,6 +22,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const loadExternal = async (geoResource) => {
+
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/wms`;
 
 		const getPayload = geoResource => {
@@ -45,7 +48,11 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	const loadGeoResourceInfo = geoResource.importedByUser ? loadExternal : loadInternal;
+	// only WmsGeoResources are currenly supported as external GeoResources
+	if (geoResource.isExternal() && !(geoResource instanceof WmsGeoResource)) {
+		return null;
+	}
+	const loadGeoResourceInfo = geoResource.isExternal() ? loadExternal : loadInternal;
 
 	const result = await loadGeoResourceInfo(geoResource);
 	switch (result.status) {
