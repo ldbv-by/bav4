@@ -1,8 +1,9 @@
-import { Select } from 'ol/interaction';
+import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { getLineString } from '../../utils/olGeometryUtils';
+import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
 const Empty_Elevation_Profile_Coordinates = [];
@@ -12,7 +13,7 @@ export class ElevationProfileHandler extends OlMapHandler {
 
 		const { StoreService: storeService } = $injector.inject('StoreService');
 		this._storeService = storeService;
-		this._listeners = [];
+		this._mapListeners = { select: [], modify: [] };
 	}
 
 	/**
@@ -22,45 +23,65 @@ export class ElevationProfileHandler extends OlMapHandler {
 		const interactions = map.getInteractions();
 		interactions.on('add', (e) => {
 			if (e.element instanceof Select) {
-				this._updateListener(e.element);
+				this._updateListener(InteractionStateType.SELECT, e.element);
+			}
+
+			if (e.element instanceof Modify) {
+				this._updateListener(InteractionStateType.MODIFY, e.element);
 			}
 		});
 
 		interactions.on('remove', (e) => {
 			if (e.element instanceof Select) {
-				this._updateListener(null);
+				this._updateListener(InteractionStateType.SELECT, null);
+			}
+			if (e.element instanceof Modify) {
+				this._updateListener(InteractionStateType.MODIFY, null);
 			}
 		});
 
 	}
 
-	_updateCoordinates(event) {
+	_getCoordinates(features) {
+		const featureCount = features.getLength();
+
+		if (featureCount === 1) {
+			const feature = features.getArray()[0];
+			const geometry = getLineString(feature.getGeometry());
+			return geometry ? geometry.getCoordinates() : Empty_Elevation_Profile_Coordinates;
+		}
+		return Empty_Elevation_Profile_Coordinates;
+	}
+
+	_updateSelectCoordinates(event) {
 		const selectedFeatures = event.target;
-
-		const getCoordinates = (features) => {
-			const featureCount = features.getLength();
-
-			if (featureCount === 1) {
-				const selectedFeature = selectedFeatures.getArray()[0];
-				const geometry = getLineString(selectedFeature.getGeometry());
-				return geometry ? geometry.getCoordinates() : Empty_Elevation_Profile_Coordinates;
-			}
-			return Empty_Elevation_Profile_Coordinates;
-		};
-		const coordinates = getCoordinates(selectedFeatures);
+		const coordinates = this._getCoordinates(selectedFeatures);
 		updateCoordinates(coordinates);
 	}
 
-	_updateListener(select) {
+	_updateModifyCoordinates(event) {
+		const modifiedFeatures = event.features;
+		const coordinates = this._getCoordinates(modifiedFeatures);
+		updateCoordinates(coordinates);
+	}
 
-		if (this._listeners.length > 0) {
-			this._listeners.forEach(listener => unByKey(listener));
-			this._listeners = [];
+	_updateListener(type, interaction) {
+		const listeners = this._mapListeners[type];
+		if (listeners.length > 0) {
+			listeners.forEach(listener => unByKey(listener));
+			this._mapListeners[type] = [];
 			updateCoordinates(Empty_Elevation_Profile_Coordinates);
 		}
-		if (select) {
-			this._listeners.push(select.getFeatures().on('add', (e) => this._updateCoordinates(e)));
-			this._listeners.push(select.getFeatures().on('remove', (e) => this._updateCoordinates(e)));
+		if (interaction) {
+			switch (type) {
+				case InteractionStateType.SELECT:
+					listeners.push(interaction.getFeatures().on('add', (e) => this._updateSelectCoordinates(e)));
+					listeners.push(interaction.getFeatures().on('remove', (e) => this._updateSelectCoordinates(e)));
+					break;
+				case InteractionStateType.MODIFY:
+					listeners.push(interaction.on('modifyend', (e) => this._updateModifyCoordinates(e)));
+					break;
+			}
 		}
 	}
 }
