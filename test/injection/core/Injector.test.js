@@ -61,17 +61,19 @@ describe('Injector', () => {
 		});
 	});
 
-	describe('ready', () => {
+	describe('ready and isReady', () => {
 
 		it('sets a flag and calls the listeners', () => {
 
 			const spy = jasmine.createSpy();
 			$injector.onReady(spy);
 
+			expect($injector.isReady()).toBeFalse();
+
 			$injector.ready();
 
-			expect($injector._ready).toBeTrue();
 			expect(spy).toHaveBeenCalledTimes(1);
+			expect($injector.isReady()).toBeTrue();
 		});
 
 		it('warns when already set ready', () => {

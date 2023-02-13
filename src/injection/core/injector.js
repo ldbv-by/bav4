@@ -14,6 +14,7 @@ export class Injector {
 		this._dependencies = [];
 		this._listeners = [];
 		this.id = 'injector_' + Math.random().toString(36).substr(2, 9);
+		this._ready = false;
 		return this;
 	}
 
@@ -105,6 +106,13 @@ export class Injector {
 		else {
 			console.warn('Injector already marked as ready!');
 		}
+	}
+
+	/**
+	 * @returns `true` if the injector is marked as ready
+	 */
+	isReady() {
+		return this._ready;
 	}
 
 	/**
