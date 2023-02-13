@@ -84,4 +84,36 @@ describe('Injector', () => {
 			expect(warnSpy).toHaveBeenCalledOnceWith('Injector already marked as ready!');
 		});
 	});
+
+	describe('getScope', () => {
+
+		it('returns the scope of a dependency', () => {
+
+			const instanceHttp = () => {
+				this.get = 'I\'m a http service.';
+			};
+			$injector
+				.register('HttpService', instanceHttp)
+				.registerSingleton('RouterService', { get: 'I\'m a router.' });
+
+			expect($injector.getScope('HttpService')).toBe('PerLookup');
+			expect($injector.getScope('RouterService')).toBe('Singleton');
+			expect($injector.getScope('Foo')).toBeNull();
+		});
+	});
+
+	describe('count', () => {
+
+		it('returns the count of registered dependencies', () => {
+
+			const instanceHttp = () => {
+				this.get = 'I\'m a http service.';
+			};
+			$injector
+				.register('HttpService', instanceHttp)
+				.registerSingleton('RouterService', { get: 'I\'m a router.' });
+
+			expect($injector.count()).toBe(2);
+		});
+	});
 });

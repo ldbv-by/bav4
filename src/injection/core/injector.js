@@ -28,7 +28,7 @@ export class Injector {
 	}
 
 	/**
-	 * Register a new dependency for injection.
+	 * Registers a dependency in the `PerLookup` scope.
 	 * @param  {string} keyOrPOJO   Key of the dependency, javascript object with multiple dependencies defined.
 	 * @param  {object} object 		The dependency object.
 	 * @return {Injector} 			The Injector instance.
@@ -38,7 +38,7 @@ export class Injector {
 	}
 
 	/**
-	 * Register a new singleton dependency.
+	 * Registers a dependency in the `Singleton` scope.
 	 *
 	 * @param {any} keyOrPOJO	Key of the dependency, javascript object with multiple dependencies defined.
 	 * @param {any} object		The dependency object.
@@ -106,6 +106,27 @@ export class Injector {
 			console.warn('Injector already marked as ready!');
 		}
 	}
+
+	/**
+	 * Returns the scope of a registered dependency or `null` when not registered
+	 * @param {string} key
+	 * @returns `Singleton` or `PerLookup` or `null`
+	 */
+	getScope(key) {
+		if (this._dependencies[key]) {
+			return this._dependencies[key].singleton ? 'Singleton' : 'PerLookup';
+		}
+		return null;
+	}
+
+	/**
+	 *
+	 * @returns the number of registered candidates.
+	 */
+	count() {
+		return Object.keys(this._dependencies).length;
+	}
+
 }
 
 /*
