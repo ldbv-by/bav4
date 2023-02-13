@@ -71,7 +71,7 @@ $injector
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
-	.register('SourceTypeService', SourceTypeService)
+	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
 	.registerSingleton('SecurityService', new SecurityService())
 	.registerSingleton('BaaCredentialService', new BaaCredentialService())
