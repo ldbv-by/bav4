@@ -1,4 +1,5 @@
 import { isHttpUrl, isString } from '../utils/checks';
+import { PromiseQueue } from '../utils/PromiseQueue';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
 
@@ -21,6 +22,7 @@ export class SourceTypeService {
 		this._urlSourceTypeProvider = urlSourceTypeProvider;
 		this._dataSourceTypeProvider = dataSourceTypeProvider;
 		this._mediaSourceTypeProvider = mediaSourceTypeProvider;
+		this._promiseQueue = new PromiseQueue();
 	}
 
 	/**
@@ -33,7 +35,7 @@ export class SourceTypeService {
 		if (!isHttpUrl(url)) {
 			throw new TypeError('Parameter <url> must represent an Http URL');
 		}
-		return await this._urlSourceTypeProvider(url);
+		return await this._promiseQueue.add(() => this._urlSourceTypeProvider(url));
 	}
 
 	/**
