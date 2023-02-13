@@ -15,6 +15,7 @@ module.exports = {
 		sourceType: 'module'
 	},
 	rules: {
+		"no-mixed-spaces-and-tabs": 0, // disable rule
 		'space-infix-ops': ['error', { 'int32Hint': false }],
 		'no-console': ['error', { allow: ['warn', 'error'] }],
 		'import/no-default-export': ['error'],
