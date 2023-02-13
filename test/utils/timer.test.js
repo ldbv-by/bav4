@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { debounced, throttled } from '../../src/utils/timer.js';
+import { debounced, throttled, sleep } from '../../src/utils/timer.js';
 
 describe('Unit test functions from asyncs.js', () => {
 
@@ -46,4 +46,14 @@ describe('Unit test functions from asyncs.js', () => {
 
 		expect(myFunction).toHaveBeenCalledTimes(2);
 	});
+
+
+	it('delays an execution', async () => {
+		const date = Date.now();
+
+		await sleep(100);
+
+		expect((Date.now() - date) > 80).toBeTrue();
+	});
+
 });
