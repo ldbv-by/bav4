@@ -122,7 +122,7 @@ export class Injector {
 	 */
 	getScope(key) {
 		if (this._dependencies[key]) {
-			return this._dependencies[key].singleton ? 'Singleton' : 'PerLookup';
+			return this._dependencies[key].singleton ? Injector.SCOPE_SINGLETON : Injector.SCOPE_PERLOOKUP;
 		}
 		return null;
 	}
@@ -135,6 +135,13 @@ export class Injector {
 		return Object.keys(this._dependencies).length;
 	}
 
+	static get SCOPE_SINGLETON() {
+		return 'Singleton';
+	}
+
+	static get SCOPE_PERLOOKUP() {
+		return 'PerLookup';
+	}
 }
 
 /*
