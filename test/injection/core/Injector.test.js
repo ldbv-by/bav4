@@ -98,8 +98,8 @@ describe('Injector', () => {
 				.register('HttpService', instanceHttp)
 				.registerSingleton('RouterService', { get: 'I\'m a router.' });
 
-			expect($injector.getScope('HttpService')).toBe('PerLookup');
-			expect($injector.getScope('RouterService')).toBe('Singleton');
+			expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
+			expect($injector.getScope('RouterService')).toBe(Injector.SCOPE_SINGLETON);
 			expect($injector.getScope('Foo')).toBeNull();
 		});
 	});
@@ -116,6 +116,15 @@ describe('Injector', () => {
 				.registerSingleton('RouterService', { get: 'I\'m a router.' });
 
 			expect($injector.count()).toBe(2);
+		});
+	});
+
+	describe('static getter', () => {
+
+		it('returns the SCOPE_PERLOOKUP and the SCOPE_SINGLETON keys', () => {
+
+			expect(Injector.SCOPE_PERLOOKUP).toBe('PerLookup');
+			expect(Injector.SCOPE_SINGLETON).toBe('Singleton');
 		});
 	});
 });
