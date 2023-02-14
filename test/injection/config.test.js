@@ -32,7 +32,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('GeoResourceInfoService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ImportVectorDataService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ImportWmsService')).toBe(Injector.SCOPE_PERLOOKUP);
-		expect($injector.getScope('SourceTypeService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('SourceTypeService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('Mfp3Encoder')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('SecurityService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('BaaCredentialService')).toBe(Injector.SCOPE_SINGLETON);
