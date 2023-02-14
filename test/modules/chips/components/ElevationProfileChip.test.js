@@ -3,6 +3,8 @@ import { ElevationProfileChip } from '../../../../src/modules/chips/components/a
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer';
 import { TestUtils } from '../../../test-utils';
+import profileSvg from '../../../../src/modules/chips/components/assistChips/assets/profile.svg';
+
 
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
@@ -25,6 +27,24 @@ describe('ElevationProfileChip', () => {
 		return element;
 	};
 
+	describe('when instantiated', () => {
+
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new ElevationProfileChip().getModel();
+
+			expect(model).toEqual({ profileCoordinates: [] });
+		});
+
+		it('properly implements abstract methods', async () => {
+			await setup();
+			const instanceUnderTest = new ElevationProfileChip();
+
+			expect(instanceUnderTest.getLabel()).toBe('chips_assist_chip_elevation_profile');
+			expect(instanceUnderTest.getIcon()).toBe(profileSvg);
+		});
+	});
+
 	describe('when initialized', () => {
 		const coordinates = [[42, 21], [0, 0]];
 		it('contains default values in the model', async () => {
@@ -39,8 +59,7 @@ describe('ElevationProfileChip', () => {
 			const state = { elevationProfile: { active: false, coordinates: coordinates } };
 			const element = await setup(state);
 
-			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
-			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+			expect(element.shadowRoot.childElementCount).toBeGreaterThan(0);
 		});
 
 		it('renders the view with local coordinates', async () => {
@@ -134,6 +153,18 @@ describe('ElevationProfileChip', () => {
 
 			expect(store.getState().elevationProfile.active).toBeTrue();
 			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 0], [1, 0]]);
+		});
+	});
+
+	describe('when disconnected', () => {
+
+		it('removes all observers', async () => {
+			const element = await setup();
+			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
 	});
 });
