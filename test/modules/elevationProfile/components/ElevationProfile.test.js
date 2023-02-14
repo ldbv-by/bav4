@@ -194,6 +194,7 @@ describe('ElevationProfile', () => {
 		});
 
 		$injector
+			.registerSingleton('MapService')
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)

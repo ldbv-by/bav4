@@ -44,11 +44,13 @@ export class ElevationProfile extends MvuElement {
 		this._altitudeProfileAttributeTypes = [];
 
 		const {
+			MapService: mapService,
 			ConfigService: configService,
 			ElevationService: elevationService,
 			TranslationService: translationService
-		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService');
+		} = $injector.inject('MapService', 'ConfigService', 'ElevationService', 'TranslationService');
 
+		this._mapService = mapService;
 		this._translationService = translationService;
 		this._configService = configService;
 		this._elevationService = elevationService;
@@ -429,6 +431,32 @@ export class ElevationProfile extends MvuElement {
 				}
 			}
 		};
+		const fit = (currentExtent) => { 
+			if (currentExtent.length !== 4) {
+				return;
+			}
+
+			if (currentExtent[0] > currentExtent[2]) {
+				const extent0 = currentExtent[0];
+				currentExtent[0] = currentExtent[2];
+				currentExtent[2] = extent0;
+			}
+			if (currentExtent[1] > currentExtent[3]) {
+				const extent1 = currentExtent[1];
+				currentExtent[1] = currentExtent[3];
+				currentExtent[3] = extent1;
+			}
+
+			const maxZoom = this._mapService.getMaxZoomLevel()
+			const coordDiff1 = Math.abs(currentExtent[0] - currentExtent[2]);
+			const coordDiff2 = Math.abs(currentExtent[1] - currentExtent[3]);
+
+			if (coordDiff1 < 500 || coordDiff2 < 500) {
+				return;
+			}
+
+			fitMap(currentExtent, { zoom: maxZoom, });
+		};
 		const selectedAreaBorderPlugin = {
 			id: 'selectedAreaBorder',
 			afterDraw(chart) { // , args, options
@@ -474,9 +502,7 @@ export class ElevationProfile extends MvuElement {
 			ctx.fillRect(firstLeft, top, secondLeft - firstLeft, bottom);
 			ctx.restore();
 		};
-
-
-		const getCoordinate = (tooltip) =>	{
+		const getCoordinate = (tooltip) =>{
 			let coordinate = [];
 			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
 				const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
@@ -487,7 +513,6 @@ export class ElevationProfile extends MvuElement {
 			}
 			return coordinate;
 		};
-
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -499,7 +524,7 @@ export class ElevationProfile extends MvuElement {
 						 * We look for the ChartEvents 'native' property
 						 * See https://www.chartjs.org/docs/latest/api/interfaces/ChartEvent.html
 						 */
-						if (args?.event?.native && ['pointerout'].includes(args.event.native.type)) {
+						if (args?.event?.native && args.event.native.type === 'pointerout') {
 							removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 						}
 					}
@@ -527,13 +552,9 @@ export class ElevationProfile extends MvuElement {
 						if (!native) {
 							return;
 						}
-						// if (native.type !== 'touchmove' && native.type !== 'pointermove') {
-						// 	console.log('🚀 ~ native (', native.type, ') - event (', event.type, ')');
-						// }
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
-
 						if (event.type === 'mousedown') {
 							coordinate = getCoordinate(tooltip);
 
@@ -550,35 +571,12 @@ export class ElevationProfile extends MvuElement {
 
 							return;
 						}
-
 						if (event.type === 'mouseup' || native.type === 'mouseout') {
 							coordinate = getCoordinate(tooltip);
 							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
 							this._currentExtent = [...this._currentExtent, ...coordinate];
 
-							if (this._currentExtent.length === 4) {
-
-								if (this._currentExtent[0] > this._currentExtent[2]) {
-									const extent0 = this._currentExtent[0];
-									this._currentExtent[0] = this._currentExtent[2];
-									this._currentExtent[2] = extent0;
-								}
-								if (this._currentExtent[1] > this._currentExtent[3]) {
-									const extent1 = this._currentExtent[1];
-									this._currentExtent[1] = this._currentExtent[3];
-									this._currentExtent[3] = extent1;
-								}
-
-								// todo lösung thomas abwarten
-								const coordDiff1 = Math.abs(this._currentExtent[0] - this._currentExtent[2]);
-								const coordDiff2 = Math.abs(this._currentExtent[1] - this._currentExtent[3]);
-
-								if (coordDiff1 > 500 && coordDiff2 > 500) {
-									fitMap(this._currentExtent);
-								}
-
-								return;
-							}
+							fit(this._currentExtent);
 						}
 					}
 				},
