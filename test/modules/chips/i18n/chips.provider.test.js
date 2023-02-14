@@ -14,7 +14,7 @@ describe('i18n for chips module', () => {
 
 		const map = provide('en');
 
-		expect(map.chips_assist_chip_elevation_profile).toBe('Elevationprofile');
+		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
 	});
 
 	it('have the expected amount of translations', () => {
