@@ -95,7 +95,7 @@ export class Injector {
 	}
 
 	/**
-	 * Marks this injector as ready.
+	 * Marks this Injector as ready.
 	 * This means all dependencies are registered and resolvable.
 	 */
 	ready() {
@@ -109,7 +109,7 @@ export class Injector {
 	}
 
 	/**
-	 * @returns `true` if the injector is marked as ready
+	 * @returns `true` if the Injector is marked as ready
 	 */
 	isReady() {
 		return this._ready;
@@ -129,7 +129,7 @@ export class Injector {
 
 	/**
 	 *
-	 * @returns the number of registered candidates.
+	 * @returns the number of registered dependencies.
 	 */
 	count() {
 		return Object.keys(this._dependencies).length;
