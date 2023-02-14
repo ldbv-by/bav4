@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { sleep } from '../utils/sleep';
+import { sleep } from '../utils/timer';
 import { getMfpCapabilities, postMfpSpec } from './provider/mfp.provider';
 
 /**
