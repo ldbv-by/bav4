@@ -109,6 +109,14 @@ describe('AbstractAssistChip', () => {
 
 	});
 
+	describe('when instantiated', () => {
+
+		it('takes the model from its child class', async () => {
+			const model = new AssistChipImpl().getModel();
+
+			expect(model).toEqual({ foo: 'bar' });
+		});
+	});
 
 	describe('when initialized', () => {
 
