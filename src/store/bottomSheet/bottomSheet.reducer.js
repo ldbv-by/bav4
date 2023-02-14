@@ -4,7 +4,11 @@ export const initialState = {
 	/**
 	 * @property {object|null}
 	 */
-	data: null
+	data: null,
+	/**
+	 * @property {boolean}
+	 */
+	active: false
 };
 
 export const bottomSheetReducer = (state = initialState, action) => {
@@ -13,7 +17,8 @@ export const bottomSheetReducer = (state = initialState, action) => {
 		case BOTTOM_SHEET_CHANGED: {
 			return {
 				...state,
-				data: payload
+				data: payload,
+				active: !!payload
 			};
 		}
 	}

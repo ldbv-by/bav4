@@ -2,7 +2,7 @@ import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource 
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadGeoResourceByUrlBasedId, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadExternalGeoResource, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
 import { TestUtils } from '../../test-utils';
 
 describe('GeoResource provider', () => {
@@ -430,7 +430,7 @@ describe('GeoResource provider', () => {
 
 	});
 
-	describe('loadGeoResourceByUrlBasedId', () => {
+	describe('loadExternalGeoResource', () => {
 
 		describe('Vector Url', () => {
 
@@ -446,7 +446,7 @@ describe('GeoResource provider', () => {
 				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -471,7 +471,7 @@ describe('GeoResource provider', () => {
 				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -496,7 +496,7 @@ describe('GeoResource provider', () => {
 				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -521,7 +521,7 @@ describe('GeoResource provider', () => {
 				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -546,7 +546,7 @@ describe('GeoResource provider', () => {
 				spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -569,10 +569,35 @@ describe('GeoResource provider', () => {
 				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId] })
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource]);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
+				const resolvedGeoResource = await future.get();
+
+				expect(future.id).toBe(geoResourceId);
+				expect(future.label).toBe('');
+				expect(resolvedGeoResource).toEqual(geoResource);
+				expect(resolvedGeoResource.id).toBe(geoResourceId);
+				expect(resolvedGeoResource.label).toBe(label);
+				expect(sourceTypeServiceSpy).toHaveBeenCalled();
+				expect(importWmsServiceSpy).toHaveBeenCalled();
+				expect(geoResourceServiceSpy).toHaveBeenCalled();
+			});
+
+			it('loads an authenticated WMS GeoResource', async () => {
+				const label = 'label';
+				const layer = 'layer';
+				const url = 'http://foo.bar';
+				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
+				const geoResourceId = `${url}||${layer}`;
+				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: true })
+					.and.returnValue([geoResource]);
+
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -595,10 +620,10 @@ describe('GeoResource provider', () => {
 				const geoResource1 = new WmsGeoResource('otherGeoResourceId', label, url, 'otherLayer', 'image/png');
 				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [], ids: [geoResourceId] })
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource0, geoResource1]);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -620,10 +645,10 @@ describe('GeoResource provider', () => {
 				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, layer, 'image/png');
 				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId] })
+				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource]);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
@@ -640,10 +665,10 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}||${layer}`;
 				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId] })
+				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([]);
 
-				const future = loadGeoResourceByUrlBasedId(geoResourceId);
+				const future = loadExternalGeoResource(geoResourceId);
 
 				await expectAsync(future.get()).toBeRejectedWithError('Unsupported WMS: \'http://foo.bar\'');
 			});
@@ -660,7 +685,7 @@ describe('GeoResource provider', () => {
 			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 				.and.returnValue(geoResourceFuture);
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
+			const future = loadExternalGeoResource(geoResourceId);
 
 			await expectAsync(future.get()).toBeRejectedWithError('Unsupported source type \'FOO\'');
 		});
@@ -676,7 +701,7 @@ describe('GeoResource provider', () => {
 			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
 				.and.returnValue(geoResourceFuture);
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
+			const future = loadExternalGeoResource(geoResourceId);
 
 			await expectAsync(future.get()).toBeRejectedWithError('SourceTypeService returns status=OTHER for http://foo.bar');
 		});
@@ -685,7 +710,7 @@ describe('GeoResource provider', () => {
 			const url = 'foo.bar';
 			const geoResourceId = `${url}`;
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
+			const future = loadExternalGeoResource(geoResourceId);
 
 			expect(future).toBeNull();
 		});
@@ -693,7 +718,7 @@ describe('GeoResource provider', () => {
 		it('returns NULL when id does not contain a URL', async () => {
 			const geoResourceId = 'some';
 
-			const future = loadGeoResourceByUrlBasedId(geoResourceId);
+			const future = loadExternalGeoResource(geoResourceId);
 
 			expect(future).toBeNull();
 		});

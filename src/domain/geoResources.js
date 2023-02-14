@@ -1,5 +1,6 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
+import { isHttpUrl } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -64,7 +65,6 @@ export class GeoResource {
 		this._attribution = null;
 		this._attributionProvider = getDefaultAttribution;
 		this._authenticationType = null;
-		this._importedByUser = false;
 		this._queryable = true;
 		this._exportable = true;
 	}
@@ -110,10 +110,6 @@ export class GeoResource {
 
 	get authenticationType() {
 		return this._authenticationType;
-	}
-
-	get importedByUser() {
-		return this._importedByUser;
 	}
 
 	get queryable() {
@@ -174,11 +170,6 @@ export class GeoResource {
 		return this;
 	}
 
-	setImportedByUser(userImported) {
-		this._importedByUser = userImported;
-		return this;
-	}
-
 	setQueryable(queryable) {
 		this._queryable = queryable;
 		return this;
@@ -195,6 +186,14 @@ export class GeoResource {
 	 */
 	hasLabel() {
 		return !!this._label;
+	}
+
+	/**
+	 * Checks if this GeoResource has an HTTP based id
+	 * which means it denotes an (imported) external resource.
+	 */
+	isExternal() {
+		return isHttpUrl(this.id.split('||')[0]);
 	}
 
 	/**

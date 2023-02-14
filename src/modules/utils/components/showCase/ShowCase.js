@@ -7,12 +7,12 @@ import { activate as activateMeasurement, deactivate as deactivateMeasurement } 
 import { addLayer } from '../../../../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { closeModal, openModal } from '../../../../store/modal/modal.action';
-import { sleep } from '../../../../utils/sleep';
 import css from './showCase.css';
 import { observe } from '../../../../utils/storeUtils';
 import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
+import { sleep } from '../../../../utils/timer';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -270,12 +270,21 @@ export class ShowCase extends BaElement {
 			<div class='section' >
 
 			<h3>ba-buttons</h3>
-			<div class='example row'>		
-			<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
-			<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
-			<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
-			<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
-			<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
+			<div class='example'>		
+				<div class='row'>		
+				<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
+				<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
+				<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
+				<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
+				<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
+				</div>
+				<div class='row'style='margin-top:2em'>		
+				<ba-button id='button0' .label=${'primary style'} .icon=${arrowUpSvg} .type=${'primary'} @click=${onClick0}></ba-button>
+				<ba-button id='button1' .label=${'secondary style'} .icon=${arrowUpSvg} @click=${onClick1}></ba-button>
+				<ba-button id='button2' .label=${'disabled'} .icon=${arrowUpSvg} .type=${'primary'} .disabled=${true} ></ba-button>
+				<ba-button id='button3' .label=${'disabled'} .icon=${arrowUpSvg} .disabled=${true}></ba-button>
+				<ba-button id='button3' .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
+				</div>
 			</div>
 
 			<h3>ba-icons</h3>
@@ -371,4 +380,3 @@ export class ShowCase extends BaElement {
 		return 'ba-showcase';
 	}
 }
-

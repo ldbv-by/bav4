@@ -1,7 +1,6 @@
 
 import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
-import { sleep } from '../../../../../src/utils/sleep';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../src/modules/olMap/handler/highlight/assets/location.svg';
 import tempLocationIcon from '../../../../../src/modules/olMap/handler/highlight//assets/temporaryLocation.svg';
@@ -11,6 +10,7 @@ import VectorSource from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import RenderEvent from 'ol/render/Event';
 import Point from 'ol/geom/Point';
+import { sleep } from '../../../../../src/utils/timer';
 
 
 describe('styleUtils', () => {

@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, FALLBACK_GEORESOURCE_LABEL_2, FALLBACK_GEORESOURCE_LABEL_3, GeoResourceService } from '../../src/services/GeoResourceService';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadGeoResourceByUrlBasedId } from '../../src/services/provider/geoResource.provider';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadExternalGeoResource } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
@@ -56,7 +56,7 @@ describe('GeoResourceService', () => {
 			setup(); // provide required infrastructure
 			const instanceUnderTest = new GeoResourceService();
 			expect(instanceUnderTest._provider).toEqual(loadBvvGeoResources);
-			expect(instanceUnderTest._byIdProvider).toEqual([loadGeoResourceByUrlBasedId, loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
+			expect(instanceUnderTest._byIdProvider).toEqual([loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]);
 		});
 
 		it('initializes the service with custom provider', async () => {

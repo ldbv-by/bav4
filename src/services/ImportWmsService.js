@@ -62,7 +62,6 @@ export class ImportWmsService {
 		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
 		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), completeOptions);
 		return geoResources
-			.map(gr => gr.setImportedByUser(true))
 			.map(gr => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
 			.map(gr => this._geoResourceService.addOrReplace(gr));
 	}
