@@ -431,7 +431,7 @@ export class ElevationProfile extends MvuElement {
 				}
 			}
 		};
-		const fit = (currentExtent) => { 
+		const fit = (currentExtent) => {
 			if (currentExtent.length !== 4) {
 				return;
 			}
@@ -447,7 +447,7 @@ export class ElevationProfile extends MvuElement {
 				currentExtent[3] = extent1;
 			}
 
-			const maxZoom = this._mapService.getMaxZoomLevel()
+			const maxZoom = this._mapService.getMaxZoomLevel();
 			const coordDiff1 = Math.abs(currentExtent[0] - currentExtent[2]);
 			const coordDiff2 = Math.abs(currentExtent[1] - currentExtent[3]);
 
@@ -455,7 +455,7 @@ export class ElevationProfile extends MvuElement {
 				return;
 			}
 
-			fitMap(currentExtent, { zoom: maxZoom, });
+			fitMap(currentExtent, { zoom: maxZoom });
 		};
 		const selectedAreaBorderPlugin = {
 			id: 'selectedAreaBorder',
@@ -502,9 +502,9 @@ export class ElevationProfile extends MvuElement {
 			ctx.fillRect(firstLeft, top, secondLeft - firstLeft, bottom);
 			ctx.restore();
 		};
-		const getCoordinate = (tooltip) =>{
+		const getCoordinate = (tooltip) => {
 			let coordinate = [];
-			if (tooltip?.dataPoints?.length > 0 && tooltip?.dataPoints[0].parsed?.x) {
+			if (tooltip?.dataPoints?.length > 0) {
 				const index = altitudeData.labels.indexOf(tooltip.dataPoints[0].parsed.x);
 				if (index > -1) {
 					const found = altitudeData.elevations[index];
@@ -545,13 +545,7 @@ export class ElevationProfile extends MvuElement {
 					beforeEvent(chart, args) {
 						const { mouseIsDown } = getSelectionProps();
 						const event = args?.event;
-						if (!event) {
-							return;
-						}
-						const native = args.event.native;
-						if (!native) {
-							return;
-						}
+						// const native = args.event.native;
 						const { ctx, tooltip, chartArea } = chart;
 
 						let coordinate = [];
@@ -571,13 +565,15 @@ export class ElevationProfile extends MvuElement {
 
 							return;
 						}
-						if (event.type === 'mouseup' || native.type === 'mouseout') {
-							coordinate = getCoordinate(tooltip);
-							setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
-							this._currentExtent = [...this._currentExtent, ...coordinate];
 
-							fit(this._currentExtent);
-						}
+						// if (event.type === 'mouseup' || event.type === 'mouseout' ||
+						// 	native.type === 'pointerup' || native.type === 'pointerout') {
+						coordinate = getCoordinate(tooltip);
+						setMouseupOrMouseoutProps (false, tooltip.caretX, true, true);
+						this._currentExtent = [...this._currentExtent, ...coordinate];
+
+						fit(this._currentExtent);
+						// }
 					}
 				},
 				{

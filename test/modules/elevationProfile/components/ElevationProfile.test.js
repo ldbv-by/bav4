@@ -657,10 +657,71 @@ describe('ElevationProfile', () => {
 		});
 	});
 
-
 	describe('events', () => {
 
 		const chartJsTimeoutInMs = 100;
+
+		describe('after selecting some space', () => {
+
+			it('XXXX places a highlight feature within the store', async () => {
+				// arrange
+				const coordinates = fromLonLat([11, 48]);
+
+				spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+				const element = await setup({
+					elevationProfile: {
+						active: true,
+						coordinates: coordinates
+					}
+				});
+				const setCoordinatesSpy = spyOn(element, 'setCoordinates').and.callThrough();
+				const chart = element.shadowRoot.querySelector('#route-altitude-chart');
+
+				// act
+
+				// move
+				const justMoveEvent = new PointerEvent('pointermove', {
+					clientX: 100,
+					clientY: 100
+				});
+				chart.dispatchEvent(justMoveEvent);
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+
+				// down
+				const event = new PointerEvent('pointerdown', {
+					clientX: 100,
+					clientY: 100
+				});
+				chart.dispatchEvent(event);
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+				// move
+				const secondEvent = new PointerEvent('pointermove', {
+					clientX: 200,
+					clientY: 200
+				});
+				chart.dispatchEvent(secondEvent);
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+
+				// up
+				const thirdEvent = new PointerEvent('pointerup', {
+					clientX: 200,
+					clientY: 200
+				});
+				chart.dispatchEvent(thirdEvent);
+				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+
+				// assert
+				expect(setCoordinatesSpy).toHaveBeenCalled();
+				expect(store.getState().highlight.features).toHaveSize(1);
+				expect(store.getState().highlight.features[0].id).toBe(ElevationProfile.HIGHLIGHT_FEATURE_ID);
+				expect(store.getState().highlight.features[0].data.coordinate).toHaveSize(2);
+				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
+			});
+		});
+
 
 		describe('on pointermove', () => {
 
@@ -696,7 +757,7 @@ describe('ElevationProfile', () => {
 			});
 		});
 
-		describe('on mouseout', () => {
+		describe('on pointerout', () => {
 
 			it('removes the highlight feature from the store', async () => {
 				// arrange
@@ -715,7 +776,7 @@ describe('ElevationProfile', () => {
 				const chart = element.shadowRoot.querySelector('#route-altitude-chart');
 
 				// act
-				chart.dispatchEvent(new Event('mouseout'));
+				chart.dispatchEvent(new Event('pointerout'));
 				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
 
 				// assert
