@@ -61,17 +61,19 @@ describe('Injector', () => {
 		});
 	});
 
-	describe('ready', () => {
+	describe('ready and isReady', () => {
 
 		it('sets a flag and calls the listeners', () => {
 
 			const spy = jasmine.createSpy();
 			$injector.onReady(spy);
 
+			expect($injector.isReady()).toBeFalse();
+
 			$injector.ready();
 
-			expect($injector._ready).toBeTrue();
 			expect(spy).toHaveBeenCalledTimes(1);
+			expect($injector.isReady()).toBeTrue();
 		});
 
 		it('warns when already set ready', () => {
@@ -82,6 +84,47 @@ describe('Injector', () => {
 			$injector.ready();
 
 			expect(warnSpy).toHaveBeenCalledOnceWith('Injector already marked as ready!');
+		});
+	});
+
+	describe('getScope', () => {
+
+		it('returns the scope of a dependency', () => {
+
+			const instanceHttp = () => {
+				this.get = 'I\'m a http service.';
+			};
+			$injector
+				.register('HttpService', instanceHttp)
+				.registerSingleton('RouterService', { get: 'I\'m a router.' });
+
+			expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
+			expect($injector.getScope('RouterService')).toBe(Injector.SCOPE_SINGLETON);
+			expect($injector.getScope('Foo')).toBeNull();
+		});
+	});
+
+	describe('count', () => {
+
+		it('returns the count of registered dependencies', () => {
+
+			const instanceHttp = () => {
+				this.get = 'I\'m a http service.';
+			};
+			$injector
+				.register('HttpService', instanceHttp)
+				.registerSingleton('RouterService', { get: 'I\'m a router.' });
+
+			expect($injector.count()).toBe(2);
+		});
+	});
+
+	describe('static getter', () => {
+
+		it('returns the SCOPE_PERLOOKUP and the SCOPE_SINGLETON keys', () => {
+
+			expect(Injector.SCOPE_PERLOOKUP).toBe('PerLookup');
+			expect(Injector.SCOPE_SINGLETON).toBe('Singleton');
 		});
 	});
 });

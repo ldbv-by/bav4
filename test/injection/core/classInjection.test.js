@@ -14,11 +14,11 @@ const instance = new classTest();
 
 //tests
 describe('ES6 Class Injection', () => {
-	it('Has http service', () => {
+	it('has http service', () => {
 		expect(instance.http).toBe(http);
 	});
 
-	it('Has router service', () => {
+	it('has router service', () => {
 		expect(instance.router).toBe(router);
 	});
 });
