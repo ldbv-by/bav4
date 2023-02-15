@@ -96,8 +96,9 @@ To enable the showcase component, the `SOFTWARE_INFO` property must be set.
 | Other | |
 |----|----|
 | `npm run lint` | Lints and fixes js and css files |
+| `npm run prettier` | Formats all code files |
+| `npm run es-check` | Checks if js files use only allowed es-version language features |
 | `npm run doc` | Generates jsdoc files (see:  `./docs`) |
-| `npm run es-check` | Checks if source files use only allowed es-version language features|
 | `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
 
 ### Available Pages
