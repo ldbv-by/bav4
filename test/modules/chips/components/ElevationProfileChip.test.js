@@ -27,6 +27,8 @@ describe('ElevationProfileChip', () => {
 		return element;
 	};
 
+	const coordinates = [[42, 21], [0, 0]];
+
 	describe('when instantiated', () => {
 
 		it('has a model containing default values', async () => {
@@ -37,16 +39,15 @@ describe('ElevationProfileChip', () => {
 		});
 
 		it('properly implements abstract methods', async () => {
-			await setup();
-			const instanceUnderTest = new ElevationProfileChip();
+			const element = await setup();
 
-			expect(instanceUnderTest.getLabel()).toBe('chips_assist_chip_elevation_profile');
-			expect(instanceUnderTest.getIcon()).toBe(profileSvg);
+			expect(element.getLabel()).toBe('chips_assist_chip_elevation_profile');
+			expect(element.getIcon()).toBe(profileSvg);
 		});
 	});
 
 	describe('when initialized', () => {
-		const coordinates = [[42, 21], [0, 0]];
+
 		it('contains default values in the model', async () => {
 			const element = await setup();
 
@@ -59,7 +60,7 @@ describe('ElevationProfileChip', () => {
 			const state = { elevationProfile: { active: false, coordinates: coordinates } };
 			const element = await setup(state);
 
-			expect(element.shadowRoot.childElementCount).toBeGreaterThan(0);
+			expect(element.isVisible()).toBeTrue();
 		});
 
 		it('renders the view with local coordinates', async () => {
@@ -68,11 +69,9 @@ describe('ElevationProfileChip', () => {
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 			element.coordinates = [[2, 0], [1, 0]];
 
-			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
-			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+			expect(element.isVisible()).toBeTrue();
 			expect(unsubscribeSpy).toHaveBeenCalled();
 		});
-
 
 		it('renders the view only with local coordinates, the store does not interfere with changes', async () => {
 			const element = await setup(defaultState);
@@ -82,36 +81,41 @@ describe('ElevationProfileChip', () => {
 			element.coordinates = [[2, 0], [1, 0]];
 			updateCoordinates([]);
 
-			const buttonText = element.shadowRoot.querySelector('.chips__button-text');
-			expect(buttonText.innerText).toBe('chips_assist_chip_elevation_profile');
+			expect(element.isVisible()).toBeTrue();
 			expect(unsubscribeSpy).toHaveBeenCalled();
 			unsubscribeSpy.calls.reset();
 
 			element.coordinates = [];
 			updateCoordinates([[2, 0], [1, 0]]);
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.isVisible()).toBeFalse();
 		});
 
 		it('renders nothing when no coordinates for elevationProfile exists', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.isVisible()).toBeFalse();
 		});
+	});
 
-		it('changes rendering on changes in store', async () => {
+	describe('when observed slice-of-state changes', () => {
+
+		it('changes visibility accroding to changes in store', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.isVisible()).toBeFalse();
 
 			updateCoordinates(coordinates);
 
-			expect(element.shadowRoot.childElementCount).toBe(3);
+			expect(element.isVisible()).toBeTrue();
 
 			updateCoordinates([]);
 
-			expect(element.shadowRoot.childElementCount).toBe(0);
+			expect(element.isVisible()).toBeFalse();
 		});
+	});
+
+	describe('when chip is clicked', () => {
 
 		it('changes store on click', async () => {
 			const state = { elevationProfile: { active: false, coordinates: coordinates } };
