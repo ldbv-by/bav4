@@ -262,12 +262,40 @@ describe('ElevationProfile', () => {
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
 			expect(chart).not.toBeNull();
+			// config
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
-			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
-			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
-			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
+			expect(config.options.animation.duration).toBe(2000);
+			expect(config.options.maintainAspectRatio).toBe(false);
+			expect(config.options.events).toEqual(['pointermove', 'pointerup', 'mouseout']);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
+			// config.options.scales.x
+			expect(config.options.scales.x.type).toBe('linear');
+			expect(config.options.scales.x.title.display).toBe(true);
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
+			expect(config.options.scales.x.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.x.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.scales.y
+			expect(config.options.scales.y.type).toBe('linear');
+			expect(config.options.scales.y.title.display).toBe(true);
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
+			expect(config.options.scales.y.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.y.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.plugins.title
+			expect(config.options.plugins.title.align).toBe('end');
+			expect(config.options.plugins.title.display).toBe(true);
+			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
+			expect(config.options.plugins.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.plugins.legend
+			expect(config.options.plugins.legend.display).toBe(false);
+			// config.options.plugins.tooltip
+			expect(config.options.plugins.tooltip.displayColors).toBe(false);
+			expect(config.options.plugins.tooltip.mode).toBe('index');
+			expect(config.options.plugins.tooltip.intersect).toBe(false);
+			expect(config.options.plugins.tooltip.callbacks.title).toEqual(jasmine.any(Function));
+			expect(config.options.plugins.tooltip.callbacks.label).toEqual(jasmine.any(Function));
+			// expect(config.options.plugins.tooltip.callbacks.title).toBe(Function);
+
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
@@ -294,6 +322,87 @@ describe('ElevationProfile', () => {
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistance + ' m');
+		});
+	});
+
+	describe('when tooltip callback "title" is called', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+		it('returns a valid distance', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const config = element._chart.config;
+			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
+
+			// act
+			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
+
+			// assert
+			expect(titleRet).toBe('Distance: 10m');
+		});
+
+		it('calls setCoordinates() with valid coordinates', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const config = element._chart.config;
+			const setCoordinatesSpy = spyOn(element, 'setCoordinates');
+			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
+
+			// act
+			config.options.plugins.tooltip.callbacks.title(tooltipItems);
+
+			// assert
+			expect(setCoordinatesSpy).toHaveBeenCalled();
+			expect(setCoordinatesSpy).toHaveBeenCalledWith([41, 51]);
+		});
+	});
+
+	describe('when tooltip callback "label" is called', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+		it('returns a valid elevation', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const config = element._chart.config;
+			const tooltipItem = { raw: 123 };
+
+			// act
+			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+
+			// assert
+			expect(labelRet).toBe('Elevation: 123m');
 		});
 	});
 
@@ -655,7 +764,6 @@ describe('ElevationProfile', () => {
 			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');
 		});
 	});
-
 
 	describe('events', () => {
 

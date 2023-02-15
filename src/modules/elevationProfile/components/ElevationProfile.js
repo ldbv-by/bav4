@@ -450,7 +450,7 @@ export class ElevationProfile extends MvuElement {
 			options: {
 				responsive: true,
 				animation: { // HINT: UX decision - only (animation: true) == (duration: 1000)
-					duration: 2000,
+					duration: 2000
 				},
 				maintainAspectRatio: false,
 
@@ -514,7 +514,6 @@ export class ElevationProfile extends MvuElement {
 		};
 		return config;
 	}
-
 
 	setCoordinates(coordinates) {
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
