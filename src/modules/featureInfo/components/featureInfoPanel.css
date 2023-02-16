@@ -115,19 +115,18 @@ img {
 	color: var(--primary-color) .3;
 }
 
-.content{
+.content {
 	margin: 0 0 1em 0;
 }
 
 .chips__container {
 	display: flex;
-    justify-content: flex-start;
-    flex-flow: wrap;
+	justify-content: flex-start;
+	flex-flow: wrap;
 	gap: .5em .8em;
 	padding: 1em 0;
-    border-bottom: 1px solid var(--header-background-color);
+	border-bottom: 1px solid var(--header-background-color);
 }
-
 
 /* just for grundsteuer release, should be removed later */
 .grundsteuer p {

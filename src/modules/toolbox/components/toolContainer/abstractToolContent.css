@@ -26,6 +26,6 @@
 	font-size: .8em;
 	margin: 1.5em;
 }
-.sub-text:empty{
-	display:none;
+.sub-text:empty {
+	display: none;
 }

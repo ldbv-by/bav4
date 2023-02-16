@@ -3,14 +3,14 @@
 }
 
 .stats-content {
-    padding: .3em 0;
-    display: flex;
-    justify-content: flex-start;
+	padding: .3em 0;
+	display: flex;
+	justify-content: flex-start;
 	flex-grow: 4;
 }
 
 .stats-content span {
-    min-width: 7em;
+	min-width: 7em;
 	flex-grow: unset;
 }
 

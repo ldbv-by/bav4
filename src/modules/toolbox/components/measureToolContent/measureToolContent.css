@@ -8,9 +8,9 @@
 .chips__container {
 	display: flex;
 	justify-content: center;
-	flex-flow:wrap;
+	flex-flow: wrap;
 	gap: .5em .8em;
-	padding: 1em .8em;
+	padding: 0 1em .8em;
 	border-bottom: 1px solid var(--header-background-color);
 }
 
