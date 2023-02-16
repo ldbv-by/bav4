@@ -10,8 +10,7 @@ import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
-const Enrich_Profile_Data = 'enrich_profile_data';
-const Load_Empty_Profile = 'load_empty_profile';
+const Update_Profile_Data = 'update_profile_data';
 
 const Update_Media = 'update_media';
 
@@ -24,7 +23,12 @@ export const SlopeType = Object.freeze({
 	STEEP: 'steep'
 });
 
-const NoProfileData = { labels: [], chartData: [], elevations: [], attrs: [{ id: 'alt' }], distUnit: 'm',
+const EmptyProfileData = {
+	labels: [],
+	chartData: [],
+	elevations: [],
+	attrs: [{ id: 'alt' }],
+	distUnit: 'm',
 	stats: {
 		sumUp: 0,
 		sumDown: 0,
@@ -98,11 +102,7 @@ export class ElevationProfile extends MvuElement {
 	 */
 	update(type, data, model) {
 		switch (type) {
-			case Load_Empty_Profile:
-				return { ...model, profile: data, labels: data.labels, data: data.chartData, distUnit: data.distUnit };
-
-			case Enrich_Profile_Data:
-				this._enrichProfileData(data);
+			case Update_Profile_Data:
 				return { ...model, profile: data, labels: data.labels, data: data.chartData, distUnit: data.distUnit };
 
 			case Update_Schema:
@@ -411,7 +411,8 @@ export class ElevationProfile extends MvuElement {
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
-				this.signal(Enrich_Profile_Data, profile);
+				this._enrichProfileData(profile);
+				this.signal(Update_Profile_Data, profile);
 			}
 			catch (e) {
 				console.warn(e.message);
@@ -420,7 +421,7 @@ export class ElevationProfile extends MvuElement {
 			}
 		}
 		else {
-			this.signal(Load_Empty_Profile, NoProfileData);
+			this.signal(Update_Profile_Data, EmptyProfileData);
 		}
 	}
 
