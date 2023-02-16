@@ -408,7 +408,7 @@ export class ElevationProfile extends MvuElement {
 	 * @private
 	 */
 	async _getAltitudeProfile(coordinates) {
-		if (Array.isArray(coordinates) && coordinates.length === 2) {
+		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
 				this.signal(Enrich_Profile_Data, profile);
