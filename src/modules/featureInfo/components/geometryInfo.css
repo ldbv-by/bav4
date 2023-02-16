@@ -1,17 +1,17 @@
 .stats-container {
-	display: flex;
+	margin: 0;
 }
 
 .stats-content {
-	padding: 0.3em 0.5em .3em 0;
-	font-size: .9rem;
-	margin-top: 1.5em;
+    padding: .3em 0;
+    display: flex;
+    justify-content: flex-start;
+	flex-grow: 4;
 }
 
 .stats-content span {
-	/* font-weight: bold; */
-	opacity: .8;
-	margin-right: .5em;
+    min-width: 7em;
+	flex-grow: unset;
 }
 
 .stats-polygon-length {

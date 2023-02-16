@@ -18,7 +18,7 @@
 }
 
 .collapse-content {
-	padding: .8em 1em; 
+	padding: 0 1.2em; 
 }
 
 .featureinfo-header {
@@ -114,6 +114,20 @@ img {
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
 	color: var(--primary-color) .3;
 }
+
+.content{
+	margin: 0 0 1em 0;
+}
+
+.chips__container {
+	display: flex;
+    justify-content: flex-start;
+    flex-flow: wrap;
+	gap: .5em .8em;
+	padding: 1em 0;
+    border-bottom: 1px solid var(--header-background-color);
+}
+
 
 /* just for grundsteuer release, should be removed later */
 .grundsteuer p {
