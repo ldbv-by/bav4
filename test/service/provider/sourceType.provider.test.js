@@ -457,8 +457,15 @@ describe('sourceType provider', () => {
 		});
 
 		it('tries to detect the source type for GeoJSON sources', () => {
+			expect(defaultDataSourceTypeProvider(JSON.stringify(42)))
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
 			expect(defaultDataSourceTypeProvider(JSON.stringify({ type: 'foo' })))
-				.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326)));
+				.toEqual(new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE));
+			['FeatureCollection', 'Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon']
+				.forEach(type => {
+					expect(defaultDataSourceTypeProvider(JSON.stringify({ type })))
+						.toEqual(new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326)));
+				});
 		});
 
 		it('tries to detect the source type for EWKT sources', () => {

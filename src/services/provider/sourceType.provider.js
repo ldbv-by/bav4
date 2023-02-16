@@ -175,8 +175,12 @@ export const defaultDataSourceTypeProvider = (data) => {
 		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.EWKT, null, ewkt.srid));
 	}
 	try {
-		JSON.parse(data);
-		return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326));
+		// According to the GeoJSON specification (RFC 7946)
+		const validGeoJsonTypes = ['FeatureCollection', 'Point', 'LineString', 'Polygon', 'MultiPoint', 'MultiLineString', 'MultiPolygon'];
+		const parsedData = JSON.parse(data);
+		if (validGeoJsonTypes.includes(parsedData.type)) {
+			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326));
+		}
 	}
 	catch {
 		// Nothing todo here
