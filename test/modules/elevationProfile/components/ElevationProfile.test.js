@@ -232,12 +232,19 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders nothing when no profile is available', async () => {
+		it('renders empty profile, if no coordinates are provided', async () => {
 			// arrange
 			const element = await setup();
+			const chart = element._chart;
+			const config = chart.config;
+			const datasetZero = config.data.datasets[0];
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(0);
+			expect(element.shadowRoot.children.length).toBe(3);
+			expect(datasetZero.data).toEqual([]);
+			expect(config.data.labels).toEqual([]);
+			expect(config.options.scales.y.suggestedMin).toBe(200);
+			expect(config.options.scales.y.suggestedMax).toBe(500);
 		});
 
 		it('renders the view when a profile is available', async () => {
@@ -256,11 +263,11 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-
-			// assert
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
+
+			// assert
 			expect(chart).not.toBeNull();
 			// config
 			expect(config.type).toBe('line');
