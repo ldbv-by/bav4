@@ -272,7 +272,8 @@ describe('ElevationProfile', () => {
 			// config
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
-			expect(config.options.animation.duration).toBe(2000);
+			expect(config.options.animation.duration).toBe(600);
+			expect(config.options.animation.delay).toBe(300);
 			expect(config.options.maintainAspectRatio).toBe(false);
 			expect(config.options.events).toEqual(['pointermove', 'pointerup', 'mouseout']);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
