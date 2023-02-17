@@ -550,7 +550,7 @@ export class ElevationProfile extends MvuElement {
 	_updateChart(labels, data) {
 		this._chart.data.labels = labels;
 		this._chart.data.datasets[0].data = data;
-		this._chart.update();
+		this._chart.update('resize');
 	}
 
 	_createChart(profile, newDataLabels, newDataData, distUnit) {

@@ -565,7 +565,8 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
+			const updateChartMethodSpy = spyOn(element, '_updateChart').and.callThrough();
+			const updateChartJsSpy = spyOn(element._chart, 'update').and.callThrough();
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'surface';
@@ -574,7 +575,8 @@ describe('ElevationProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 
 			// assert
-			expect(updateChartSpy).toHaveBeenCalled();
+			expect(updateChartMethodSpy).toHaveBeenCalled();
+			expect(updateChartJsSpy).toHaveBeenCalledWith('resize');
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
