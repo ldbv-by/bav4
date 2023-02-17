@@ -470,7 +470,7 @@ export class ElevationProfile extends MvuElement {
 			],
 			options: {
 				responsive: true,
-				animation: { // HINT: UX decision - only (animation: true) == (duration: 1000)
+				animation: {
 					duration: 600,
 					delay: 300
 				},
