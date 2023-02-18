@@ -63,13 +63,27 @@ describe('ElevationService', () => {
 			});
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(`Could not load elevation from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(`Could not load an elevation from provider: ${message}`);
 		});
 
 		it('rejects when argument is not a coordinate', async () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError('Parameter \'coordinate3857\' must be a coordinate');
+		});
+
+		describe('in standalone mode', () => {
+
+			it('provides a mocked elevation', async () => {
+				const warnSpy = spyOn(console, 'warn');
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const instanceUnderTest = setup();
+
+				const result = await instanceUnderTest.getElevation([0, 0]);
+
+				expect(result).toBeGreaterThanOrEqual(500);
+				expect(warnSpy).toHaveBeenCalledWith('Could not fetch an elevation from backend. Returning a mocked value ...');
+			});
 		});
 	});
 
@@ -135,7 +149,7 @@ describe('ElevationService', () => {
 					linearDistance: 0
 				});
 				expect(attrs).toHaveSize(0);
-				expect(warnSpy).toHaveBeenCalledWith('Elevation profile could not be fetched from backend. Returning a mocked elevation profile ...');
+				expect(warnSpy).toHaveBeenCalledWith('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 			});
 		});
 	});

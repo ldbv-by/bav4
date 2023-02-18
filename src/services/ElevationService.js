@@ -66,7 +66,11 @@ export class ElevationService {
 			return await this._elevationProvider(coordinate3857);
 		}
 		catch (e) {
-			throw new Error('Could not load elevation from provider: ' + e.message);
+			if (this._environmentService.isStandalone()) {
+				console.warn('Could not fetch an elevation from backend. Returning a mocked value ...');
+				return this._createMockElevation();
+			}
+			throw new Error('Could not load an elevation from provider: ' + e.message);
 		}
 	}
 
@@ -90,14 +94,15 @@ export class ElevationService {
 		}
 		catch (e) {
 			if (this._environmentService.isStandalone()) {
-				console.warn('Elevation profile could not be fetched from backend. Returning a mocked elevation profile ...');
+				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 				return this._createMockElevationProfile(coordinates3857);
 			}
-			else {
-
-				throw new Error('Could not load an elevation profile from provider: ' + e.message);
-			}
+			throw new Error('Could not load an elevation profile from provider: ' + e.message);
 		}
+	}
+
+	_createMockElevation() {
+		return Math.round(500 + Math.random() * 100);
 	}
 
 	_createMockElevationProfile(coordinates3857) {
