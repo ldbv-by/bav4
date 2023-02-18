@@ -23,10 +23,10 @@ import { $injector } from '../injection';
  * @typedef {Object} ProfileStats
  * @property {number} sumUp cumulated positive elevation difference (in meter)
  * @property {number} sumDown cumulated negative elevation difference (in meter)
- * @property {number} verticalHeight
- * @property {number} highestPoint
- * @property {number} lowestPoint
- * @property {number} linearDistance
+ * @property {number} verticalHeight difference between highest and lowest point
+ * @property {number} highestPoint highest point
+ * @property {number} lowestPoint lowest point
+ * @property {number} linearDistance linear distance (from start to end)
  */
 
 /**
