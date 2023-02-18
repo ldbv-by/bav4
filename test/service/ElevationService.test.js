@@ -1,12 +1,23 @@
+import { $injector } from '../../src/injection';
 import { ElevationService } from '../../src/services/ElevationService';
 import { loadBvvElevation } from '../../src/services/provider/elevation.provider';
 import { getBvvProfile } from '../../src/services/provider/profile.provider';
 
 describe('ElevationService', () => {
 
+	const environmentService = {
+		isStandalone: () => false
+	};
+
 	const setup = (elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) => {
+		$injector
+			.registerSingleton('EnvironmentService', environmentService);
 		return new ElevationService(elevationProvider, profileProvider);
 	};
+
+	afterEach(() => {
+		$injector.reset();
+	});
 
 	describe('constructor', () => {
 
@@ -23,6 +34,7 @@ describe('ElevationService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
+			setup();
 			const instanceUnderTest = new ElevationService();
 
 			expect(instanceUnderTest._elevationProvider).toEqual(loadBvvElevation);
@@ -82,7 +94,7 @@ describe('ElevationService', () => {
 			});
 			const mockCoordinates = [[0, 1], [2, 3]];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load profile from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load an elevation profile from provider: ${message}`);
 		});
 
 		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {
@@ -96,6 +108,35 @@ describe('ElevationService', () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(instanceUnderTest.getProfile([[0, 1], 'foo'])).toBeRejectedWithError('Parameter \'coordinates3857\' contains invalid coordinates');
+		});
+
+		describe('in standalone mode', () => {
+
+			it('provides a mocked profile', async () => {
+				const warnSpy = spyOn(console, 'warn');
+				spyOn(environmentService, 'isStandalone').and.returnValue(true);
+				const instanceUnderTest = setup();
+				const mockCoordinates = [[0, 1], [2, 3], [4, 5]];
+
+				const { elevations, stats, attrs } = await instanceUnderTest.getProfile(mockCoordinates);
+
+				expect(elevations).toHaveSize(3);
+				elevations.forEach((el, i) => {
+					expect(el.dist).toBeGreaterThanOrEqual(0);
+					expect(el.z).toBeGreaterThan(500);
+					expect([el.e, el.n]).toEqual(mockCoordinates[i]);
+				});
+				expect(stats).toEqual({
+					sumUp: 0,
+					sumDown: 0,
+					verticalHeight: 0,
+					highestPoint: 0,
+					lowestPoint: 0,
+					linearDistance: 0
+				});
+				expect(attrs).toHaveSize(0);
+				expect(warnSpy).toHaveBeenCalledWith('Elevation profile could not be fetched from backend. Returning a mocked elevation profile ...');
+			});
 		});
 	});
 });

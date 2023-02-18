@@ -1,13 +1,14 @@
 import { loadBvvElevation } from './provider/elevation.provider';
 import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
+import { $injector } from '../injection';
 
 
 /**
  * @typedef {Object} Profile
  * @property {Array<Elevation>} elevations elevations objects of this profile
- * @property {ProfileStats} stats  stats objects of this profile
- * @property {Array<ProfileAttribute>} attrs available attributes of this profile
+ * @property {ProfileStats} stats  [stats] objects of this profile
+ * @property {Array<ProfileAttribute>} attrs available attributes of this profile (may be empty)
  */
 
 /**
@@ -22,6 +23,10 @@ import { getBvvProfile } from './provider/profile.provider';
  * @typedef {Object} ProfileStats
  * @property {number} sumUp cumulated positive elevation difference (in meter)
  * @property {number} sumDown cumulated negative elevation difference (in meter)
+ * @property {number} verticalHeight
+ * @property {number} highestPoint
+ * @property {number} lowestPoint
+ * @property {number} linearDistance
  */
 
 /**
@@ -43,6 +48,8 @@ export class ElevationService {
 	constructor(elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) {
 		this._elevationProvider = elevationProvider;
 		this._profileProvider = profileProvider;
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
 	/**
@@ -82,7 +89,37 @@ export class ElevationService {
 			return await this._profileProvider(coordinates3857);
 		}
 		catch (e) {
-			throw new Error('Could not load profile from provider: ' + e.message);
+			if (this._environmentService.isStandalone()) {
+				console.warn('Elevation profile could not be fetched from backend. Returning a mocked elevation profile ...');
+				return this._createMockElevationProfile(coordinates3857);
+			}
+			else {
+
+				throw new Error('Could not load an elevation profile from provider: ' + e.message);
+			}
 		}
+	}
+
+	_createMockElevationProfile(coordinates3857) {
+
+		const profileStats = {
+			sumUp: 0,
+			sumDown: 0,
+			verticalHeight: 0,
+			highestPoint: 0,
+			lowestPoint: 0,
+			linearDistance: 0
+		};
+		const elevations = coordinates3857.map((c, index) => ({
+			dist: index * 100,
+			z: 500 + Math.random() * 100,
+			e: c[0],
+			n: c[1]
+		}));
+		return {
+			elevations,
+			stats: profileStats,
+			attrs: []
+		};
 	}
 }
