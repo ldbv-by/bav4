@@ -172,8 +172,6 @@ describe('ElevationProfile', () => {
 		}, chartArea: { left: 0, right: 100, width: 200 }
 	};
 	const altitudeData = profileSlopeSteep();
-	const context = { chart };
-
 
 	let store;
 
@@ -470,7 +468,7 @@ describe('ElevationProfile', () => {
 			expect(slopeGradientSpy).toHaveBeenCalled();
 		});
 
-		it('returns a gradient that ends in steep ', async () => {// todo check
+		it('returns a gradient that ends in steep ', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -527,9 +525,10 @@ describe('ElevationProfile', () => {
 		it('returns a valid bordercolor for "selectedAttribute alt"', async () => {
 			// arrange
 			const element = await setup();
+			const chart = element._chart;
 
 			// act
-			const value = element._getBorder(context, altitudeData);
+			const value = element._getBorder(chart, altitudeData);
 
 			// assert
 			expect(value).toBe('#2c5a93');
@@ -552,7 +551,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when attribute changes several times', () => {
-		it('should call _updateChart() and update the view', async () => {
+		it('should update the view', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -565,7 +564,6 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'surface';
@@ -574,7 +572,6 @@ describe('ElevationProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 
 			// assert
-			expect(updateChartSpy).toHaveBeenCalled();
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];

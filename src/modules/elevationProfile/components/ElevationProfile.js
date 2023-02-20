@@ -290,27 +290,31 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getBackground(chart, altitudeData) {
-		const selectedAttribute = this.getModel().selectedAttribute;
-		switch (selectedAttribute) {
-			case 'surface':
-				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
+		if (chart.chartArea) {
+			const selectedAttribute = this.getModel().selectedAttribute;
+			switch (selectedAttribute) {
+				case 'surface':
+					return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
-			default:
-				return ElevationProfile.BACKGROUND_COLOR;
+				default:
+					return ElevationProfile.BACKGROUND_COLOR;
+			}
 		}
 	}
 
 	_getBorder(chart, altitudeData) {
-		const selectedAttribute = this.getModel().selectedAttribute;
-		switch (selectedAttribute) {
-			case 'slope':
-				return this._getSlopeGradient(chart, altitudeData);
+		if (chart.chartArea) {
+			const selectedAttribute = this.getModel().selectedAttribute;
+			switch (selectedAttribute) {
+				case 'slope':
+					return this._getSlopeGradient(chart, altitudeData);
 
-			case 'surface':
-				return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
+				case 'surface':
+					return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
 
-			default:
-				return ElevationProfile.BORDER_COLOR;
+				default:
+					return ElevationProfile.BORDER_COLOR;
+			}
 		}
 	}
 
@@ -547,12 +551,6 @@ export class ElevationProfile extends MvuElement {
 		});
 	}
 
-	_updateChart(labels, data) {
-		this._chart.data.labels = labels;
-		this._chart.data.datasets[0].data = data;
-		this._chart.update();
-	}
-
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
@@ -563,16 +561,10 @@ export class ElevationProfile extends MvuElement {
 		if (profile === null) {
 			return;
 		}
-		if (this._chart && this._chart.data && this._chart.data.datasets.length > 0) {
-			this._chart.options.scales.x.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
-			this._chart.options.scales.x.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
-			this._chart.options.scales.y.ticks.color = ElevationProfile.DEFAULT_TEXT_COLOR;
-			this._chart.options.scales.y.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
+		if (this._chart != null) {
+			removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 
-			this._chart.options.plugins.title.color = ElevationProfile.DEFAULT_TEXT_COLOR;
-
-			this._updateChart(labels, data);
-			return;
+			this._chart.destroy();
 		}
 		this._createChart(profile, labels, data, distUnit);
 	}
