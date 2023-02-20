@@ -20,11 +20,11 @@ export class BottomSheet extends MvuElement {
 			open: false,
 			portrait: false
 		});
-	}
 
-	onInitialize() {
-		this.observe(state => state.mainMenu, data => this.signal(Update_Main_Menu, data), true);
-		this.observe(state => state.media, data => this.signal(Update_Media, data), true);
+		this._subscriptions = [
+			this.observe(state => state.mainMenu, data => this.signal(Update_Main_Menu, data), true),
+			this.observe(state => state.media, data => this.signal(Update_Media, data), true)
+		];
 	}
 
 	update(type, data, model) {
@@ -63,6 +63,14 @@ export class BottomSheet extends MvuElement {
         	${content}
 			<ba-icon id="close-icon" class='tool-container__close-button' .icon='${closeIcon}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${onDismiss}>
 		</div>` : nothing;
+	}
+
+
+	/**
+	 * @override
+	 */
+	onDisconnect() {
+		this._subscriptions.forEach(unsubscribe => unsubscribe());
 	}
 
 	static get tag() {
