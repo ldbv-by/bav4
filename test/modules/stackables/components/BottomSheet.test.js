@@ -155,6 +155,7 @@ describe('BottomSheet', () => {
 			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
+			expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
 			openBottomSheet(true);
@@ -164,6 +165,8 @@ describe('BottomSheet', () => {
 
 			closeButton.click();
 
+			expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(1);
+			contentElement.dispatchEvent(new Event('animationend'));
 			expect(store.getState().bottomSheet.data).toBeNull();
 
 		});

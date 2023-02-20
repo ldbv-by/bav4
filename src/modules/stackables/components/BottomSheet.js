@@ -55,7 +55,14 @@ export class BottomSheet extends MvuElement {
 
 		const getOverlayClass = () => (open && !portrait) ? 'is-open' : '';
 
-		const onDismiss = () => closeBottomSheet();
+		const onDismiss = () => {
+			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
+			elementModal.classList.add('hide');
+			elementModal.addEventListener('animationend', () => {
+				closeBottomSheet();
+			});
+		};
+
 
 		return content ? html`
 		<style>${css}</style>
