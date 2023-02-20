@@ -2,15 +2,22 @@
     padding-left: 0.3em;
 }
 
+.iframe__embed_string{
+    display: flex;
+    align-content: space-evenly;
+}
+ 
 .iframe___content{
-    border:0
+    border:0;
+    display: flex;
+    align-content: center;
 }
 
-.iframe__placeholder {
-    background-color: gray;
+.iframe__controls{
+    padding: 0.3em;
+    display: flex;
+    align-content: space-evenly;
 }
 
-.iframe__disclaimer {
-    padding: .3em;
-}
+
 

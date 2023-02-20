@@ -5,16 +5,18 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				iframe_non_embedded_hint: 'The BayernAtlas Iframe API must be used in an iframe.',
-				iframe_embed_disclaimer_title: 'Disclaimer',
-				iframe_embed_disclaimer_text: 'You can embed the map in your website or blog. By embedding this map you agree to the terms of use.'
+				iframe_generator_width: 'Width',
+				iframe_generator_height: 'Height',
+				iframe_copy_icon: 'Copy to clipboard'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				iframe_non_embedded_hint: 'Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.',
-				iframe_embed_disclaimer_title: 'Nutzungsbedingungen',
-				iframe_embed_disclaimer_text: 'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den Nutzungsbedingungen zu.'
+				iframe_generator_width: 'Breite',
+				iframe_generator_height: 'Höhe',
+				iframe_copy_icon: 'In die Zwischenablage kopieren'
 			};
 
 		default:
