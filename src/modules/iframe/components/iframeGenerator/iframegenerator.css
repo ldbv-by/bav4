@@ -1,0 +1,16 @@
+.iframe__body {
+    padding-left: 0.3em;
+}
+
+.iframe___content{
+    border:0
+}
+
+.iframe__placeholder {
+    background-color: gray;
+}
+
+.iframe__disclaimer {
+    padding: .3em;
+}
+
