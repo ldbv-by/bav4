@@ -562,8 +562,6 @@ export class ElevationProfile extends MvuElement {
 			return;
 		}
 		if (this._chart != null) {
-			removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
-
 			this._chart.destroy();
 		}
 		this._createChart(profile, labels, data, distUnit);
