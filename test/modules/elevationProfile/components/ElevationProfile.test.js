@@ -564,6 +564,8 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
+			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
+
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'surface';
@@ -575,6 +577,7 @@ describe('ElevationProfile', () => {
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
+			expect(destroyChartJsSpy).toHaveBeenCalled();
 			expect(chart).not.toBeNull();
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
