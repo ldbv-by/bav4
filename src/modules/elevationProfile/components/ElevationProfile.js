@@ -218,7 +218,10 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
+		console.log('🚀 ~ file: ElevationProfile.js:221 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ attribute:', attribute);
+		console.log('🚀 ~ file: ElevationProfile.js:221 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ profile:', profile);
 		const attributeName = attribute.id;
+		console.log('🚀 ~ file: ElevationProfile.js:224 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ attributeName:', attributeName);
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
 				profile.elevations[index][attributeName] = from_to_value[2];
@@ -243,14 +246,17 @@ export class ElevationProfile extends MvuElement {
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
-		profile.elevations.forEach((alt) => {
+		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
-				newLabels.push(alt.dist / 1000);
+				newLabels.push(elevation.dist / 1000);
 			}
 			else {
-				newLabels.push(alt.dist);
+				newLabels.push(elevation.dist);
 			}
+			// create alt entry in elevations
+			elevation.alt = elevation.z;
 		});
+		console.log('🚀 ~ file: ElevationProfile.js:259 ~ ElevationProfile ~ profile.elevations.forEach ~ profile.elevations:', profile.elevations);
 		profile.labels = newLabels;
 		return;
 	}
@@ -532,15 +538,23 @@ export class ElevationProfile extends MvuElement {
 								const index = altitudeData.labels.indexOf(parsed.x);
 								if (index > -1) {
 									const found = altitudeData.elevations[index];
-									console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ altitudeData:', altitudeData);
-									console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ found:', found);
+									// console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ altitudeData:', altitudeData);
+									// console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ found:', found);
 									this.setCoordinates([found.e, found.n]);
 								}
 
 								return 'Distance: ' + tooltipItems[0].label + 'm';
 							},
 							label: (tooltipItem) => {
-								return 'Elevation: ' + tooltipItem.raw + 'm';
+
+								// 	${model.profile.attrs.map((attr) => html`
+								// 	<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
+								// 		${translate('elevationProfile_' + attr.id)}
+								// 	</option>
+								// `)}
+								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
+								return selectedAttributeTranslation;
+								// return 'Elevation: ' + tooltipItem.raw + 'm';
 							}
 						}
 					}
