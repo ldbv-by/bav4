@@ -300,6 +300,7 @@ export class ElevationProfile extends MvuElement {
 					return ElevationProfile.BACKGROUND_COLOR;
 			}
 		}
+		return ElevationProfile.BACKGROUND_COLOR;
 	}
 
 	_getBorder(chart, altitudeData) {
@@ -316,6 +317,7 @@ export class ElevationProfile extends MvuElement {
 					return ElevationProfile.BORDER_COLOR;
 			}
 		}
+		return ElevationProfile.BORDER_COLOR;
 	}
 
 	_addAttributeType(attributeType) {
