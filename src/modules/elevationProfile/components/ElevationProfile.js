@@ -529,8 +529,7 @@ export class ElevationProfile extends MvuElement {
 								const elevationEntry = getElevationEntry(tooltipItem);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
-								return 'Distance: ' + tooltipItem.label + 'm';
-
+								return translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm';
 							},
 							label: (tooltipItem) => {
 								const selectedAttribute = this.getModel().selectedAttribute;
@@ -538,7 +537,7 @@ export class ElevationProfile extends MvuElement {
 								const elevationEntry = getElevationEntry(tooltipItem);
 								const attributeValue = elevationEntry[selectedAttribute];
 
-								return selectedAttributeTranslation + ' ' + attributeValue;
+								return selectedAttributeTranslation + ': ' + attributeValue;
 							}
 						}
 					}
