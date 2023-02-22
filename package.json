@@ -1,5 +1,5 @@
 {
-  "name": "bav4-nomigration",
+  "name": "bav4",
   "dependencies": {
     "@geoblocks/ol-maplibre-layer": "0.0.5",
     "chart.js": "4.2.1",
