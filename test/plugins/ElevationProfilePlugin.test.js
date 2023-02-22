@@ -4,6 +4,10 @@ import { elevationProfileReducer, initialState as elevationProfileInitialState }
 import { bottomSheetReducer, initialState as bottomSheetInitialState } from '../../src/store/bottomSheet/bottomSheet.reducer';
 import { TestUtils } from '../test-utils';
 import { closeBottomSheet } from '../../src/store/bottomSheet/bottomSheet.action';
+import { drawReducer, initialState as drawInitialState } from '../../src/store/draw/draw.reducer';
+import { measurementReducer, initialState as measurementInitialState } from '../../src/store/measurement/measurement.reducer';
+import { deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
+import { deactivate as deactivateMeasurement } from '../../src/store/measurement/measurement.action';
 
 describe('ElevationProfilePlugin', () => {
 
@@ -11,12 +15,16 @@ describe('ElevationProfilePlugin', () => {
 		const initialState = {
 			elevationProfile: elevationProfileInitialState,
 			bottomSheet: bottomSheetInitialState,
+			draw: drawInitialState,
+			measurement: measurementInitialState,
 			...state
 		};
 
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			elevationProfile: elevationProfileReducer,
-			bottomSheet: bottomSheetReducer
+			bottomSheet: bottomSheetReducer,
+			draw: drawReducer,
+			measurement: measurementReducer
 		});
 		return store;
 	};
@@ -55,6 +63,50 @@ describe('ElevationProfilePlugin', () => {
 			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
 
 			closeBottomSheet();
+
+			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when property `active` of slice-of-state `draw` changes', () => {
+
+		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true
+				},
+				draw: {
+					active: true
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			deactivateDraw();
+
+			expect(store.getState().elevationProfile.active).toBeFalse();
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when property `active` of slice-of-state `measurement` changes', () => {
+
+		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true
+				},
+				measurement: {
+					active: true
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			await instanceUnderTest.register(store);
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+
+			deactivateMeasurement();
 
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
