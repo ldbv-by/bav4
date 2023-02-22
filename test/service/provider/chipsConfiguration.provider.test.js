@@ -9,7 +9,7 @@ describe('Chips configuration provider', () => {
 			{
 				'id': 'gh',
 				'title': 'Fork me',
-				'href': 'https://github.com/ldbv-by/bav4-nomigration/',
+				'href': 'https://github.com/ldbv-by/bav4/',
 				'permanent': true,
 				'target': 'external',
 				'observer': {
