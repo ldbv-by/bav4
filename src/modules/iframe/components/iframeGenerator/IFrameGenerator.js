@@ -71,7 +71,8 @@ export class IFrameGenerator extends MvuElement {
 		const currentWidth = autoWidth ? Auto_Width : width;
 
 		return html`
-		<style>${css}</style>
+		<style>${css}</style>		
+        <div class='iframe__body'>${this._getIFrameContent(currentWidth, height)}</div>
 		<div class='iframe__controls'>
 			<div class='iframe__toggle'>
 				<span class='iframe__toggle_text'>${translate('iframe_generator_toggle')}</span>
@@ -86,11 +87,19 @@ export class IFrameGenerator extends MvuElement {
 				<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
 			</div>
         </div>
-        <div class='iframe__body'>${this._getIFrameContent(currentWidth, height)}</div>
+		<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
         `;
 	}
 
 	_getIFrameContent(width, height) {
+		const previewUrl = this._getEmbeddedEncodedState();
+		return html`
+		<div class="iframe___content">
+			<iframe src=${previewUrl} width=${width} height=${height} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+		</div>`;
+	}
+
+	_getEmbedContent(width, height) {
 		const translate = (key) => this._translationService.translate(key);
 		const previewUrl = this._getEmbeddedEncodedState();
 
@@ -103,9 +112,6 @@ export class IFrameGenerator extends MvuElement {
 			<input value=${embedString} readonly></input>
 			<ba-icon class='iframe__copy' .icon='${clipboardIcon}' .title=${translate('iframe_copy_icon')} .size=${2} @click=${onCopyHTMLToClipBoard}>
 			</ba-icon>
-		</div>
-		<div class="iframe___content">
-			<iframe src=${previewUrl} width=${width} height=${height} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 		</div>`;
 	}
 
