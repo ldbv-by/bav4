@@ -143,8 +143,6 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		console.log('🚀 ~ file: ElevationProfile.js:145 ~ ElevationProfile ~ createView ~ model.selectedAttribute:', model.selectedAttribute);
-
 		const { portrait, minWidth } = model;
 
 		const translate = (key) => this._translationService.translate(key);
@@ -218,10 +216,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
-		console.log('🚀 ~ file: ElevationProfile.js:221 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ attribute:', attribute);
-		console.log('🚀 ~ file: ElevationProfile.js:221 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ profile:', profile);
 		const attributeName = attribute.id;
-		console.log('🚀 ~ file: ElevationProfile.js:224 ~ ElevationProfile ~ _enrichAltsArrayWithAttributeData ~ attributeName:', attributeName);
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
 				profile.elevations[index][attributeName] = from_to_value[2];
@@ -256,7 +251,6 @@ export class ElevationProfile extends MvuElement {
 			// create alt entry in elevations
 			elevation.alt = elevation.z;
 		});
-		console.log('🚀 ~ file: ElevationProfile.js:259 ~ ElevationProfile ~ profile.elevations.forEach ~ profile.elevations:', profile.elevations);
 		profile.labels = newLabels;
 		return;
 	}
@@ -476,7 +470,6 @@ export class ElevationProfile extends MvuElement {
 						chart.ctx.strokeStyle = '#ff0000';
 						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 						chart.ctx.stroke();
-						// }
 					}
 				}
 			],
@@ -542,12 +535,10 @@ export class ElevationProfile extends MvuElement {
 							label: (tooltipItem) => {
 								const selectedAttribute = this.getModel().selectedAttribute;
 								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
-								console.log('🚀 ~ file: ElevationProfile.js:557 ~ ElevationProfile ~ _getChartConfig ~ selectedAttributeTranslation:', selectedAttributeTranslation);
 								const elevationEntry = getElevationEntry(tooltipItem);
 								const attributeValue = elevationEntry[selectedAttribute];
 
 								return selectedAttributeTranslation + ' ' + attributeValue;
-								// return 'Elevation: ' + tooltipItem.raw + 'm';
 							}
 						}
 					}
