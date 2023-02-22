@@ -435,13 +435,10 @@ export class ElevationProfile extends MvuElement {
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
-
-
-		// const { profile, labels, data, distUnit } = this.getModel();
-		const selectedAttribute = this.getModel().selectedAttribute;
-		console.log('🚀 ~ file: ElevationProfile.js:435 ~ ElevationProfile ~ _getChartConfig ~ selectedAttribute:', selectedAttribute);
-
-
+		const getElevationEntry = (tooltipItem) => {
+			const index = altitudeData.labels.indexOf(tooltipItem.parsed.x);
+			return altitudeData.elevations[index];
+		};
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -534,26 +531,22 @@ export class ElevationProfile extends MvuElement {
 						intersect: false,
 						callbacks: {
 							title: (tooltipItems) => {
-								const { parsed } = tooltipItems[0];
-								const index = altitudeData.labels.indexOf(parsed.x);
-								if (index > -1) {
-									const found = altitudeData.elevations[index];
-									// console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ altitudeData:', altitudeData);
-									// console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ found:', found);
-									this.setCoordinates([found.e, found.n]);
-								}
+								const tooltipItem = tooltipItems[0];
+								// set highlight feature
+								const elevationEntry = getElevationEntry(tooltipItem);
+								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
-								return 'Distance: ' + tooltipItems[0].label + 'm';
+								return 'Distance: ' + tooltipItem.label + 'm';
+
 							},
 							label: (tooltipItem) => {
-
-								// 	${model.profile.attrs.map((attr) => html`
-								// 	<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
-								// 		${translate('elevationProfile_' + attr.id)}
-								// 	</option>
-								// `)}
+								const selectedAttribute = this.getModel().selectedAttribute;
 								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
-								return selectedAttributeTranslation;
+								console.log('🚀 ~ file: ElevationProfile.js:557 ~ ElevationProfile ~ _getChartConfig ~ selectedAttributeTranslation:', selectedAttributeTranslation);
+								const elevationEntry = getElevationEntry(tooltipItem);
+								const attributeValue = elevationEntry[selectedAttribute];
+
+								return selectedAttributeTranslation + ' ' + attributeValue;
 								// return 'Elevation: ' + tooltipItem.raw + 'm';
 							}
 						}
