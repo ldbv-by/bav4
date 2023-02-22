@@ -40,7 +40,7 @@ export const updateCoordinates = (coordinates) => {
 };
 
 /**
- * Closes the profile component and rests the coordinates.
+ * Closes the profile component and resets the coordinates.
  * @function
  */
 export const closeProfile = () => {
