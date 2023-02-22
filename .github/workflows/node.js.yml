@@ -24,6 +24,7 @@ jobs:
       run: |
         npm audit --only=prod --audit-level=moderate
         npm run lint
+        npm run prettier:check
         npm run es-check
         npm run doc
         
