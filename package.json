@@ -22,7 +22,6 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "fucazu-minami": "1.1.7",
     "html-webpack-plugin": "5.5.0",
     "jasmine": "4.5.0",
     "jsdoc": "4.0.2",
