@@ -41,11 +41,13 @@ describe('SourceTypeService', () => {
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, sourceTypeResultMock);
 			const providerSpy = jasmine.createSpy().withArgs(url).and.resolveTo(result);
 			const instanceUnderTest = setup(providerSpy);
+			const promiseQueueSpy = spyOn(instanceUnderTest._promiseQueue, 'add').and.callThrough();
 
 			const sourceTypeServiceResult = await instanceUnderTest.forUrl(url);
 
 			expect(sourceTypeServiceResult)
 				.toEqual(result);
+			expect(promiseQueueSpy).toHaveBeenCalled();
 		});
 
 		it('throws an exception when <url> is not a string', async () => {
