@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
+import { Default_Selected_Attribute, ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
@@ -227,7 +227,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
-			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: null, darkSchema: null, distUnit: null, portrait: false, minWidth: false });
+			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: Default_Selected_Attribute, darkSchema: null, distUnit: null, portrait: false, minWidth: false });
 		});
 	});
 

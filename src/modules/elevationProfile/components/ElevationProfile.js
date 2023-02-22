@@ -22,6 +22,7 @@ export const SlopeType = Object.freeze({
 	FLAT: 'flat',
 	STEEP: 'steep'
 });
+export const Default_Selected_Attribute = 'alt';
 
 const EmptyProfileData = {
 	labels: [],
@@ -47,7 +48,7 @@ export class ElevationProfile extends MvuElement {
 			profile: null,
 			labels: null,
 			data: null,
-			selectedAttribute: null,
+			selectedAttribute: Default_Selected_Attribute,
 			darkSchema: null,
 			distUnit: null,
 			portrait: false,
@@ -142,6 +143,7 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
+		console.log('🚀 ~ file: ElevationProfile.js:145 ~ ElevationProfile ~ createView ~ model.selectedAttribute:', model.selectedAttribute);
 
 		const { portrait, minWidth } = model;
 
@@ -427,6 +429,13 @@ export class ElevationProfile extends MvuElement {
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
+
+
+		// const { profile, labels, data, distUnit } = this.getModel();
+		const selectedAttribute = this.getModel().selectedAttribute;
+		console.log('🚀 ~ file: ElevationProfile.js:435 ~ ElevationProfile ~ _getChartConfig ~ selectedAttribute:', selectedAttribute);
+
+
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -523,6 +532,8 @@ export class ElevationProfile extends MvuElement {
 								const index = altitudeData.labels.indexOf(parsed.x);
 								if (index > -1) {
 									const found = altitudeData.elevations[index];
+									console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ altitudeData:', altitudeData);
+									console.log('🚀 ~ file: ElevationProfile.js:533 ~ ElevationProfile ~ _getChartConfig ~ found:', found);
 									this.setCoordinates([found.e, found.n]);
 								}
 
