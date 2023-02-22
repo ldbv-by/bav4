@@ -72,7 +72,7 @@ export class IFrameGenerator extends MvuElement {
 
 		return html`
 		<style>${css}</style>		
-        <div class='iframe__body'>${this._getIFrameContent(currentWidth, height)}</div>
+        <div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
 		<div class='iframe__controls'>
 			<div class='iframe__toggle'>
 				<span class='iframe__toggle_text'>${translate('iframe_generator_toggle')}</span>
