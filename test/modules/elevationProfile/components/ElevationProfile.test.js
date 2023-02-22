@@ -357,7 +357,7 @@ describe('ElevationProfile', () => {
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('Distance: 10m');
+			expect(titleRet).toBe('elevationProfile_distance: 10m');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
@@ -404,13 +404,13 @@ describe('ElevationProfile', () => {
 				}
 			});
 			const config = element._chart.config;
-			const tooltipItem = { raw: 123 };
+			const tooltipItem = { parsed: { x: 3 } };
 
 			// act
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('Elevation: 123m');
+			expect(labelRet).toBe('elevationProfile_alt: 30');
 		});
 	});
 
