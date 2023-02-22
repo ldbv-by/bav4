@@ -8,7 +8,8 @@ export const provide = (lang) => {
 				iframe_generator_width: 'Width',
 				iframe_generator_height: 'Height',
 				iframe_copy_icon: 'Copy to clipboard',
-				iframe_embed_clipboard_success: 'The HTML code was copied to clipboard'
+				iframe_embed_clipboard_success: 'The HTML code was copied to clipboard',
+				iframe_generator_toggle: 'Auto Width'
 			};
 
 		case 'de':
@@ -18,7 +19,8 @@ export const provide = (lang) => {
 				iframe_generator_width: 'Breite',
 				iframe_generator_height: 'Höhe',
 				iframe_copy_icon: 'In die Zwischenablage kopieren',
-				iframe_embed_clipboard_success: 'Der HTML-code wurde in die Zwischenablage kopiert'
+				iframe_embed_clipboard_success: 'Der HTML-code wurde in die Zwischenablage kopiert',
+				iframe_generator_toggle: 'Auto Width'
 			};
 
 		default:

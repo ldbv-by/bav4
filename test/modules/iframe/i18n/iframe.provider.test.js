@@ -12,6 +12,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_height).toBe('Höhe');
 		expect(map.iframe_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.iframe_embed_clipboard_success).toBe('Der HTML-code wurde in die Zwischenablage kopiert');
+		expect(map.iframe_generator_toggle).toBe('Auto Width');
 	});
 
 	it('provides translation for en', () => {
@@ -23,10 +24,11 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_height).toBe('Height');
 		expect(map.iframe_copy_icon).toBe('Copy to clipboard');
 		expect(map.iframe_embed_clipboard_success).toBe('The HTML code was copied to clipboard');
+		expect(map.iframe_generator_toggle).toBe('Auto Width');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 5;
+		const expectedSize = 6;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

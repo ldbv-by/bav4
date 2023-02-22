@@ -1,10 +1,12 @@
 import { $injector } from '../../../../src/injection';
+import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
 import { IFrameGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IFrameGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(IFrameGenerator.tag, IFrameGenerator);
+window.customElements.define(Toggle.tag, Toggle);
 
 describe('IFrameGenerator', () => {
 	let store;
@@ -45,7 +47,8 @@ describe('IFrameGenerator', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
-				size: ['400px', '300px']
+				size: ['400px', '300px'],
+				autoWidth: false
 			});
 		});
 	});
@@ -131,6 +134,20 @@ describe('IFrameGenerator', () => {
 
 			expect(inputElement.value).toBe('<iframe src=https://myhost/app/embed.html?param=foo width=\'42px\' height=\'420px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
 			expect(iframeElement.height).toBe('420px');
+		});
+
+		it('toggles auto width', async () => {
+			const element = await setup();
+
+			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
+			const inputElement = element.shadowRoot.querySelector('.iframe__embed_string input');
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+			expect(inputElement.value).toBe('<iframe src=https://myhost/app/embed.html?param=foo width=\'400px\' height=\'300px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
+
+			toggle.click();
+
+			expect(inputElement.value).toBe('<iframe src=https://myhost/app/embed.html?param=foo width=\'100%\' height=\'300px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
+			expect(iframeElement.width).toBe('100%');
 		});
 	});
 });
