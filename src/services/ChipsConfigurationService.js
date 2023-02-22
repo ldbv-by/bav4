@@ -49,7 +49,7 @@ export class ChipsConfigurationService {
 			{
 				'id': 'gh',
 				'title': 'Fork me', // required
-				'href': 'https://github.com/ldbv-by/bav4-nomigration/', // required
+				'href': 'https://github.com/ldbv-by/bav4/', // required
 				'permanent': true, // required
 				'target': 'external', // required ["modal", "external"]
 				'observer': { // required [object, null]

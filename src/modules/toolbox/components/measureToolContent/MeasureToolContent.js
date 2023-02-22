@@ -107,10 +107,10 @@ export class MeasureToolContent extends AbstractToolContent {
 						</span>			
 					</div>
 					<div class='sub-text'>${subText}</div>	
-					<div class='chips__container'> 
-						<ba-profile-chip></ba-profile-chip>
-					</div>				
 				</div>	
+				<div class='chips__container'> 
+					<ba-profile-chip></ba-profile-chip>
+				</div>				
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					
             	</div>	  
