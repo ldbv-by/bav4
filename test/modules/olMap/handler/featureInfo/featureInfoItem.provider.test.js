@@ -103,7 +103,7 @@ describe('FeatureInfo provider', () => {
 					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
-				expect(target.innerText).toBe('description');
+				expect(target.querySelector('.content').innerText).toBe('description');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
@@ -119,7 +119,7 @@ describe('FeatureInfo provider', () => {
 					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
-				expect(target.innerText).toBe('desc');
+				expect(target.querySelector('.content').innerText).toBe('desc');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 			});
