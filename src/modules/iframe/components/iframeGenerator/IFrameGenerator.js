@@ -60,17 +60,17 @@ export class IFrameGenerator extends MvuElement {
 		const [width, height] = size;
 
 		const onChangeWidth = (event) => {
-			this.signal(Update_Size_Width, event.target.value);
+			this.signal(Update_Size_Width, parseInt(event.target.value));
 		};
 		const onChangeHeight = (event) => {
-			this.signal(Update_Size_Height, event.target.value);
+			this.signal(Update_Size_Height, parseInt(event.target.value));
 		};
 
 		const onChangeSliderWidth = (event) => {
-			this.signal(Update_Size_Width, event.target.value);
+			this.signal(Update_Size_Width, parseInt(event.target.value));
 		};
 		const onChangeSliderHeight = (event) => {
-			this.signal(Update_Size_Height, event.target.value);
+			this.signal(Update_Size_Height, parseInt(event.target.value));
 		};
 
 		const onToggleAutoWidth = (event) => {
@@ -78,7 +78,6 @@ export class IFrameGenerator extends MvuElement {
 		};
 
 		const currentWidth = autoWidth ? Auto_Width : width;
-
 		return html`
 		<style>${css}</style>		
         <div class='container'>
