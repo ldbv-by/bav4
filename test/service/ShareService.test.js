@@ -252,7 +252,7 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState();
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/?`)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -274,13 +274,33 @@ describe('ShareService', () => {
 				const encoded = instanceUnderTest.encodeState(extraParam);
 				const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/?`)).toBeTrue();
 				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
 				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 				expect(queryParams.get('foo')).toBe('bar');
 				expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+			});
+
+			it('encodes a state object to url appending optional path parameters', () => {
+				setup();
+				const mockWindow = { location: location };
+				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+				const instanceUnderTest = new ShareService();
+				const pathParameters = ['foo', 'bar'];
+				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+
+				const encoded = instanceUnderTest.encodeState({}, pathParameters);
+				const queryParams = new URLSearchParams(new URL(encoded).search);
+
+				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/foo/bar/?`)).toBeTrue();
+				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
 			});
 		});
 	});

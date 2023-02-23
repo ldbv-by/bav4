@@ -39,11 +39,12 @@ export class ShareService {
 
 	/**
 	 * Encodes the current state to a URL.
-	 * @param {object} extraParams Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
+	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
+	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
 	 * @returns {string} url
 	 */
-	encodeState(extraParams = {}) {
+	encodeState(extraParams = {}, pathParameters = []) {
 		const extractedState = this._mergeExtraParams(
 			{
 				...this._extractPosition(),
@@ -55,7 +56,8 @@ export class ShareService {
 
 		const searchParams = new URLSearchParams(extractedState);
 		const location = this._environmentService.getWindow().location;
-		return `${location.protocol}//${location.host}${location.pathname}` + '?' + decodeURIComponent(searchParams.toString());
+		const mergedPathParameters = [...location.pathname.split('/'), ...pathParameters];
+		return `${location.protocol}//${location.host}${mergedPathParameters.join('/')}/` + '?' + decodeURIComponent(searchParams.toString());
 	}
 
 	/**
