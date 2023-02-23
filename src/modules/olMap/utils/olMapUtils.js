@@ -1,13 +1,10 @@
 export const updateOlLayer = (olLayer, layer) => {
-
 	olLayer.setVisible(layer.visible);
 	olLayer.setOpacity(layer.opacity);
 	return olLayer;
 };
 
-
 export const toOlLayerFromHandler = (id, handler, map) => {
-
 	const olLayer = handler.activate(map);
 
 	if (olLayer) {
@@ -25,8 +22,7 @@ export const toOlLayerFromHandler = (id, handler, map) => {
  *  Will be called wenn the pointerup event occurs before the amount of time has passed to handle it as a long-press event.
  * @param {number} [delay] amount of time in ms after which a long-press event will be fired (default=300)
  */
-export const registerLongPressListener = (map, longPressCallback, shortPressCallback = () => { }, delay = 300) => {
-
+export const registerLongPressListener = (map, longPressCallback, shortPressCallback = () => {}, delay = 300) => {
 	let timeoutID;
 	const reset = () => {
 		window.clearTimeout(timeoutID);
@@ -63,7 +59,12 @@ export const registerLongPressListener = (map, longPressCallback, shortPressCall
  */
 export const getLayerById = (map, id) => {
 	if (map && id) {
-		return map.getLayers().getArray().find(olLayer => olLayer.get('id') === id) ?? null;
+		return (
+			map
+				.getLayers()
+				.getArray()
+				.find((olLayer) => olLayer.get('id') === id) ?? null
+		);
 	}
 	return null;
 };

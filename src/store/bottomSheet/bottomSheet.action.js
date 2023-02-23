@@ -16,7 +16,6 @@ const getStore = () => {
  * @function
  */
 export const openBottomSheet = (content) => {
-
 	getStore().dispatch({
 		type: BOTTOM_SHEET_CHANGED,
 		payload: content
@@ -33,4 +32,3 @@ export const closeBottomSheet = () => {
 		payload: null
 	});
 };
-

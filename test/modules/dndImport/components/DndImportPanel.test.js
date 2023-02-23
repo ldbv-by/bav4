@@ -10,19 +10,17 @@ import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
 
-
 window.customElements.define(DndImportPanel.tag, DndImportPanel);
 
 describe('DndImportPanel', () => {
 	let store;
 
 	const sourceTypeService = {
-		forUrl() { },
-		forData() { },
-		forBlob() { }
+		forUrl() {},
+		forData() {},
+		forBlob() {}
 	};
 	const setup = (state) => {
-
 		const initialState = {
 			media: {
 				portrait: false
@@ -45,15 +43,11 @@ describe('DndImportPanel', () => {
 			media: createNoInitialStateMediaReducer(),
 			search: searchReducer
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SourceTypeService', sourceTypeService);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SourceTypeService', sourceTypeService);
 		return TestUtils.render(DndImportPanel.tag);
 	};
 
-
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new DndImportPanel().getModel();
@@ -66,16 +60,13 @@ describe('DndImportPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('has a dropzone', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('#dropzone')).toBeTruthy();
 		});
 
 		it('dropzone is hidden', async () => {
-
 			const element = await setup();
 			const dropzone = element.shadowRoot.querySelector('#dropzone');
 			expect(dropzone.style.getPropertyValue('display')).toBe('');
@@ -86,10 +77,15 @@ describe('DndImportPanel', () => {
 		const defaultDataTransferMock = {
 			files: [],
 			types: [],
-			getData: () => { }
+			getData: () => {}
 		};
-		const simulateDragDropEvent = (type, dataTransfer, eventSource = document, preventDefaultFunction = () => { }, stopPropagationFunction = () => { }) => {
-
+		const simulateDragDropEvent = (
+			type,
+			dataTransfer,
+			eventSource = document,
+			preventDefaultFunction = () => {},
+			stopPropagationFunction = () => {}
+		) => {
 			const eventType = type;
 			const event = new Event(eventType);
 			event.preventDefault = preventDefaultFunction;
@@ -100,13 +96,11 @@ describe('DndImportPanel', () => {
 		};
 
 		describe('on dragenter', () => {
-
 			it('prevents default-handling and stops propagation', async () => {
 				const preventDefaultSpy = jasmine.createSpy('preventDefault');
 				const stopPropagationSpy = jasmine.createSpy('stopPropagation');
 				const dataTransferMock = { ...defaultDataTransferMock, types: ['some'] };
 				const element = await setup();
-
 
 				simulateDragDropEvent('dragenter', dataTransferMock, document, preventDefaultSpy, stopPropagationSpy);
 
@@ -210,9 +204,7 @@ describe('DndImportPanel', () => {
 
 				expect(element.getModel().dropzoneContent).toBeNull();
 				expect(element.getModel().isActive).toBeFalse();
-
 			});
-
 		});
 
 		describe('on drop', () => {
@@ -355,7 +347,6 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest).toBeNull();
 			});
 
-
 			it('updates the import-store with a dropped text-file', async () => {
 				const textFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.TEXT_PLAIN);
 				const sourceTypeKml = new SourceType(SourceTypeName.KML);
@@ -373,7 +364,6 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest.payload.sourceType).toBe(sourceTypeKml);
 				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
-
 
 			it('updates the import-store with a dropped kml-file', async () => {
 				const kmlFileMock = TestUtils.newBlob('<kml>foo</kml>', MediaType.KML);
@@ -407,7 +397,6 @@ describe('DndImportPanel', () => {
 				expect(store.getState().import.latest.payload.url).toBeNull();
 			});
 
-
 			it('updates the import-store with a dropped geojson-file', async () => {
 				const geoJSONFileMock = TestUtils.newBlob('{type:foo}', MediaType.GeoJSON);
 				const sourceTypeGeoJSON = new SourceType(SourceTypeName.GEOJSON);
@@ -426,7 +415,8 @@ describe('DndImportPanel', () => {
 
 			it('emits a notification for a unreadable dropped file', async () => {
 				const fileMock = {
-					type: MediaType.KML, text: () => {
+					type: MediaType.KML,
+					text: () => {
 						throw new Error('some');
 					}
 				};
@@ -471,7 +461,6 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				expect(store.getState().notifications.latest).toBeNull();
 				expect(store.getState().import.latest).toBeNull();
-
 			});
 
 			it('emits a notification for a dropped but empty file', async () => {

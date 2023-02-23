@@ -4,18 +4,16 @@ import { Topic } from '../../domain/topic';
  * @returns {Array} with topics loaded from backend
  */
 export const loadBvvTopics = async () => {
-
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'topics';
-
 
 	const result = await httpService.get(`${url}`);
 
 	if (result.ok) {
 		const topics = [];
 		const payload = await result.json();
-		payload.forEach(definition => {
+		payload.forEach((definition) => {
 			let topic = null;
 			topic = new Topic(
 				definition.id,
@@ -25,12 +23,12 @@ export const loadBvvTopics = async () => {
 				definition.defaultBaseGeoR,
 				definition.activatedGeoRs,
 				definition.selectedGeoRs,
-				definition.style);
+				definition.style
+			);
 			//at least the id, label, description and baseLayers properties should be set
 			if (topic.id && topic.label && topic.description && topic.baseGeoRs) {
 				topics.push(topic);
-			}
-			else {
+			} else {
 				console.warn('Could not create topic');
 			}
 		});

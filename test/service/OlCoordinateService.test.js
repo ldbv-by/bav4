@@ -7,21 +7,18 @@ import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoord
 import { $injector } from '../../src/injection';
 
 describe('OlCoordinateService', () => {
-
 	const projectionServiceMock = {
-		getProjections() { }
+		getProjections() {}
 	};
 
 	beforeAll(() => {
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
-		$injector
-			.registerSingleton('ProjectionService', projectionServiceMock);
+		$injector.registerSingleton('ProjectionService', projectionServiceMock);
 	});
 
 	describe('constructor', () => {
-
 		it('initializes the service', async () => {
 			const stringifyCoordsProvider = jasmine.createSpy();
 
@@ -36,25 +33,20 @@ describe('OlCoordinateService', () => {
 		});
 	});
 
-
 	describe('methods', () => {
 		let instanceUnderTest;
 
 		beforeEach(() => {
-
 			spyOn(projectionServiceMock, 'getProjections').and.returnValue([4326, 3857, 25832, 25833]);
 			const stringifyCoordsProvider = () => {
-				return coordinate => coordinate[0] + ', ' + coordinate[1];
+				return (coordinate) => coordinate[0] + ', ' + coordinate[1];
 			};
 
 			instanceUnderTest = new OlCoordinateService(stringifyCoordsProvider);
 		});
 
-
 		describe('transforms coordinates', () => {
-
 			describe('with default projection', () => {
-
 				it('from EPSG:4326 to EPSG:3857', () => {
 					const initialCooord4326 = [11.57245, 48.14021];
 					const coord3857 = fromLonLat(initialCooord4326);
@@ -77,7 +69,6 @@ describe('OlCoordinateService', () => {
 			});
 
 			describe('with custom projection', () => {
-
 				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
 					const coord25832 = [1288239.2412306187, 6130212.561641981];
 					const coord25833 = instanceUnderTest.transform(coord25832, 25832, 25833);
@@ -91,14 +82,12 @@ describe('OlCoordinateService', () => {
 
 					expect(() => {
 						instanceUnderTest.transform(coord25832, 25832, 25834);
-					})
-						.toThrowError(/Unsupported SRID: 25834/);
+					}).toThrowError(/Unsupported SRID: 25834/);
 				});
 			});
 		});
 
 		describe('transforms extents', () => {
-
 			it('from EPSG:4326 to EPSG:3857', () => {
 				const initialExtent4326 = [11.57245, 48.14021, 11.67245, 48.24021];
 				const extent3857 = transformExtent(initialExtent4326, 'EPSG:4326', 'EPSG:3857');
@@ -124,7 +113,6 @@ describe('OlCoordinateService', () => {
 			});
 
 			describe('with custom projection', () => {
-
 				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
 					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
 					const extent25833 = instanceUnderTest.transformExtent(extent25832, 25832, 25833);
@@ -138,14 +126,12 @@ describe('OlCoordinateService', () => {
 
 					expect(() => {
 						instanceUnderTest.transformExtent(extent25832, 25832, 25834);
-					})
-						.toThrowError(/Unsupported SRID: 25834/);
+					}).toThrowError(/Unsupported SRID: 25834/);
 				});
 			});
 		});
 
 		describe('stringifiy', () => {
-
 			it('stringifies with the default provider lon/lat coordinates', () => {
 				const initialCooord4326 = [11.57245, 48.14021];
 
@@ -156,7 +142,6 @@ describe('OlCoordinateService', () => {
 		});
 
 		describe('buffer', () => {
-
 			it('increases an extent by the provided value', () => {
 				const extent = [10, 10, 20, 20];
 

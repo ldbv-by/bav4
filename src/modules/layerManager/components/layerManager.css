@@ -1,22 +1,20 @@
 .layermanager {
 	padding: 0 0 2em 0;
-   
 }
 
 .title {
 	font-weight: bold;
-	padding: .8em 1.5em;
+	padding: 0.8em 1.5em;
 }
 
 ul {
 	display: flex;
 	flex-direction: column-reverse;
-	list-style: none;    
+	list-style: none;
 }
 
 li {
 	flex: 0 0 auto;
-    
 }
 
 .overflow-container {
@@ -30,14 +28,14 @@ li {
 	font-weight: bold;
 	color: rgba(0, 0, 0, 0.3);
 	font-size: 3rem;
-	opacity: .5;
-	padding: 0 .5em;
+	opacity: 0.5;
+	padding: 0 0.5em;
 }
 
 .placeholder-active {
 	height: 1.2em;
 	box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
-	transition: all .5s ease;
+	transition: all 0.5s ease;
 }
 .over {
 	background-color: var(--primary-color);
@@ -53,11 +51,10 @@ li {
 
 .layermanager__actions {
 	display: flex;
-	justify-content: flex-start; 
-	font-size: .9em;
+	justify-content: flex-start;
+	font-size: 0.9em;
 }
 
 .layermanager__expandOrCollapse {
-	padding-left: .8em;
-
+	padding-left: 0.8em;
 }

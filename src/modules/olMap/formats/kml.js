@@ -6,7 +6,6 @@ import { KML } from 'ol/format';
 import { $injector } from '../../../injection';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 
-
 export const KML_PROJECTION_LIKE = 'EPSG:4326';
 
 const tryRectifyingLineString = (polygonCandidate) => {
@@ -44,8 +43,7 @@ export const toKmlStyleProperties = (style) => {
 };
 
 const sanitizeStyle = (styles) => {
-
-	const style = styles[0] ? styles[0].clone() : (styles && !Array.isArray(styles) ? styles.clone() : new Style());
+	const style = styles[0] ? styles[0].clone() : styles && !Array.isArray(styles) ? styles.clone() : new Style();
 
 	const kmlStyleProperties = toKmlStyleProperties(style);
 
@@ -67,9 +65,11 @@ const sanitizeStyle = (styles) => {
 export const create = (layer, projection) => {
 	let kmlString;
 	const kmlFeatures = [];
-	layer.getSource().getFeatures()
-		.filter(f => f.getGeometry().getType() !== 'Circle')
-		.forEach(f => {
+	layer
+		.getSource()
+		.getFeatures()
+		.filter((f) => f.getGeometry().getType() !== 'Circle')
+		.forEach((f) => {
 			const clone = f.clone();
 			clone.setId(f.getId());
 			clone.getGeometry().setProperties(f.getGeometry().getProperties());
@@ -107,10 +107,8 @@ export const create = (layer, projection) => {
 		if (layer.label) {
 			kmlString = kmlString.replace(/<Document>/, '<Document><name>' + layer.label + '</name>');
 		}
-
 	}
 	return kmlString;
-
 };
 
 export const readFeatures = (kmlString) => {

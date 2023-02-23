@@ -11,7 +11,6 @@ import closeIcon from './assets/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
 import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
 
-
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
 /**
@@ -20,7 +19,6 @@ const Update_ToolId = 'update_tooId';
  * @author taulinger
  */
 export class ToolContainer extends MvuElement {
-
 	constructor() {
 		super({
 			isPortrait: false,
@@ -28,16 +26,14 @@ export class ToolContainer extends MvuElement {
 			toolId: null
 		});
 
-		const {
-			EnvironmentService: environmentService,
-			TranslationService: translationService
-		}
-			= $injector.inject('EnvironmentService', 'TranslationService');
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 	}
-
 
 	/**
 	 * @override
@@ -55,8 +51,14 @@ export class ToolContainer extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.tools.current, current => this.signal(Update_ToolId, current));
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+		);
+		this.observe(
+			(state) => state.tools.current,
+			(current) => this.signal(Update_ToolId, current)
+		);
 	}
 
 	/**
@@ -94,7 +96,8 @@ export class ToolContainer extends MvuElement {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
-		return toolId ? html`
+		return toolId
+			? html`
 			<style>${css}</style>		
 			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  	
 			<div class="tool-container"> 			
@@ -106,8 +109,8 @@ export class ToolContainer extends MvuElement {
 				</div>		
 			</div>		
 			</div>		
-		` : nothing;
-
+		`
+			: nothing;
 	}
 
 	isRenderingSkipped() {

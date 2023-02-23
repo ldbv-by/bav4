@@ -13,7 +13,6 @@ const Update_Menu_Type = 'update_menu_type';
 const Update_Menu_Items = 'update_menu_items';
 const Update_Anchor_Position = 'update_last_anchor_position';
 
-
 /**
  * @typedef {Object} MenuOption
  * @property {string} label the label of the menu item
@@ -23,7 +22,6 @@ const Update_Anchor_Position = 'update_last_anchor_position';
  * @property {boolean} [disabled] whether or not the menu item is enabled
  * @property {boolean} [isDivider] whether or not the menu item stands for a divider
  */
-
 
 const DefaultMenuOption = { label: null, icon: null, action: null, disabled: false, isDivider: false };
 
@@ -39,13 +37,12 @@ export const MenuTypes = Object.freeze({
  *
  * Properties:
  * - `items`
-  * - `type`
+ * - `type`
  *
  * @class
  * @author thiloSchlemmer
  */
 export class OverflowMenu extends MvuElement {
-
 	constructor() {
 		super({
 			type: MenuTypes.MEATBALL,
@@ -68,7 +65,8 @@ export class OverflowMenu extends MvuElement {
 				return { ...model, type: data };
 			case Update_Menu_Items:
 				return {
-					...model, menuItems: data.map(i => {
+					...model,
+					menuItems: data.map((i) => {
 						return { ...DefaultMenuOption, ...i };
 					})
 				};
@@ -76,7 +74,6 @@ export class OverflowMenu extends MvuElement {
 				return { ...model, anchorPosition: data };
 		}
 	}
-
 
 	/**
 	 * @override
@@ -87,8 +84,7 @@ export class OverflowMenu extends MvuElement {
 			if (isCollapsed) {
 				this._registerDocumentListener('pointerdown');
 				this._registerDocumentListener('pointerup');
-			}
-			else {
+			} else {
 				this._deregisterDocumentListener('pointerdown');
 				this._deregisterDocumentListener('pointerup');
 			}
@@ -117,19 +113,18 @@ export class OverflowMenu extends MvuElement {
 		if (environmentService.isTouch()) {
 			if (isCollapsed) {
 				closeBottomSheet();
-			}
-			else {
+			} else {
 				openBottomSheet(this._getItems(menuItems));
 			}
 			return nothing;
 		}
 
 		/**
-		* Correct positioning of the menu is (analog to the context menu) a bit tricky, because we don't know
-		* (and can't calculate) the dimensions of the menu and its content child before rendering.
-		* Therefore we translate the element after rendering by a css transformation. We have to take the
-		* size of the web component itself into account as a offset vor the calculated anchor-position.
-		*/
+		 * Correct positioning of the menu is (analog to the context menu) a bit tricky, because we don't know
+		 * (and can't calculate) the dimensions of the menu and its content child before rendering.
+		 * Therefore we translate the element after rendering by a css transformation. We have to take the
+		 * size of the web component itself into account as a offset vor the calculated anchor-position.
+		 */
 		const sector = anchorPosition ? this._calculateSector(anchorPosition.absolute) : 0;
 
 		const getVector = () => {
@@ -141,7 +136,7 @@ export class OverflowMenu extends MvuElement {
 
 		const getAnchor = () => {
 			//consider css offset of this web component
-			const offset = 35;//px
+			const offset = 35; //px
 			const vector = getVector();
 			return {
 				'--anchor-x': vector.x * (anchorPosition.relative[0] + offset) + 'px',
@@ -162,7 +157,6 @@ export class OverflowMenu extends MvuElement {
 		return html`<div class='menu__container ${classMap(classes)}' style=${styleMap(style)}'>
              ${isCollapsed ? '' : this._getItems(menuItems)} 
              </div>`;
-
 	}
 
 	_registerDocumentListener(type) {
@@ -196,8 +190,8 @@ export class OverflowMenu extends MvuElement {
 	}
 
 	_calculateSector(coordinate) {
-		const widthBorder = window.innerWidth * .66;
-		const heightBorder = window.innerHeight * .66;
+		const widthBorder = window.innerWidth * 0.66;
+		const heightBorder = window.innerHeight * 0.66;
 
 		//window sector the click event occurred:
 		//0-1
@@ -205,11 +199,9 @@ export class OverflowMenu extends MvuElement {
 
 		if (coordinate[0] <= widthBorder && coordinate[1] <= heightBorder) {
 			return 0;
-		}
-		else if (coordinate[0] > widthBorder && coordinate[1] <= heightBorder) {
+		} else if (coordinate[0] > widthBorder && coordinate[1] <= heightBorder) {
 			return 1;
-		}
-		else if (coordinate[0] > widthBorder && coordinate[1] > heightBorder) {
+		} else if (coordinate[0] > widthBorder && coordinate[1] > heightBorder) {
 			return 2;
 		}
 		return 3;
@@ -224,11 +216,10 @@ export class OverflowMenu extends MvuElement {
 				const createIcon = () => {
 					const iconClassName = `menuitem__icon_${id}`;
 					const iconClass = `.${iconClassName} { mask : url(${icon});-webkit-mask-image : url(${icon});mask-size:cover;-webkit-mask-size:cover;}`;
-					return html`
-					<style>
-					${iconClass}
-					</style>
-					<div class='menuitem__icon ${iconClassName}' ></div>`;
+					return html` <style>
+							${iconClass}
+						</style>
+						<div class="menuitem__icon ${iconClassName}"></div>`;
 				};
 				const createPlaceholder = () => html`<div></div>`;
 				return icon ? createIcon() : createPlaceholder();
@@ -257,15 +248,23 @@ export class OverflowMenu extends MvuElement {
 			const classes = {
 				touch: environmentService.isTouch()
 			};
-			return html`            			
-			<button id=${menuitemId} data-test-id class='menuitem ${classMap(classes)}' ?disabled=${disabled} @pointerdown=${onPointerDown} @click=${onClick} @pointerup=${onPointerUp}>
+			return html` <button
+				id=${menuitemId}
+				data-test-id
+				class="menuitem ${classMap(classes)}"
+				?disabled=${disabled}
+				@pointerdown=${onPointerDown}
+				@click=${onClick}
+				@pointerup=${onPointerUp}
+			>
 				${getIcon(customId ? customId : id)}
 				<div class="menuitem__text">${label}</div>
 			</button>`;
 		};
 
-		return html`<style>${itemcss}
-		</style>${menuItems.map((menuItem, index) => toHtml(menuItem, index))}`;
+		return html`<style>
+				${itemcss}</style
+			>${menuItems.map((menuItem, index) => toHtml(menuItem, index))}`;
 	}
 
 	/**

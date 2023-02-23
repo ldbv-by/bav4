@@ -1,5 +1,11 @@
-
-import { createAnimation, highlightAnimatedCoordinateFeatureStyleFunction, highlightCoordinateFeatureStyleFunction, highlightGeometryFeatureStyleFunction, highlightTemporaryCoordinateFeatureStyleFunction, highlightTemporaryGeometryFeatureStyleFunction } from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
+import {
+	createAnimation,
+	highlightAnimatedCoordinateFeatureStyleFunction,
+	highlightCoordinateFeatureStyleFunction,
+	highlightGeometryFeatureStyleFunction,
+	highlightTemporaryCoordinateFeatureStyleFunction,
+	highlightTemporaryGeometryFeatureStyleFunction
+} from '../../../../../src/modules/olMap/handler/highlight/styleUtils';
 import { Fill, Icon, Stroke, Style } from 'ol/style';
 import CircleStyle from 'ol/style/Circle';
 import locationIcon from '../../../../../src/modules/olMap/handler/highlight/assets/location.svg';
@@ -12,11 +18,8 @@ import RenderEvent from 'ol/render/Event';
 import Point from 'ol/geom/Point';
 import { sleep } from '../../../../../src/utils/timer';
 
-
 describe('styleUtils', () => {
-
 	describe('highlightCoordinateStyleFunction', () => {
-
 		it('should return a style function', () => {
 			const style = new Style({
 				image: new Icon({
@@ -33,7 +36,6 @@ describe('styleUtils', () => {
 	});
 
 	describe('highlightCoordinateTemporaryFeatureStyleFunction', () => {
-
 		it('should return a style function', () => {
 			const style = new Style({
 				image: new Icon({
@@ -51,9 +53,7 @@ describe('styleUtils', () => {
 	});
 
 	describe('highlightGeometryFeatureStyleFunction', () => {
-
 		it('should return a style function', () => {
-
 			const selectStroke = new Stroke({
 				color: [255, 128, 0, 1],
 				width: 3
@@ -79,9 +79,7 @@ describe('styleUtils', () => {
 	});
 
 	describe('highlightTemporaryGeometryFeatureStyleFunction', () => {
-
 		it('should return a style function', () => {
-
 			const hlStroke = new Stroke({
 				color: [255, 128, 0, 1],
 				width: 6
@@ -108,15 +106,11 @@ describe('styleUtils', () => {
 	});
 
 	describe('highlightAnimatedCoordinateFeatureStyleFunction', () => {
-
 		it('should return a style function', () => {
-
-			const selectStroke = new Stroke(
-				{
-					color: [255, 255, 255, 1],
-					width: 2
-				}
-			);
+			const selectStroke = new Stroke({
+				color: [255, 255, 255, 1],
+				width: 2
+			});
 			const selectFill = new Fill({
 				color: [9, 157, 221, 1]
 			});
@@ -140,7 +134,9 @@ describe('styleUtils', () => {
 		const transform = [1, 0, 0, 1, 0, 0];
 		const projection = getProjection('EPSG:3857');
 		const viewState = {
-			projection: projection, resolution: 1, rotation: 0
+			projection: projection,
+			resolution: 1,
+			rotation: 0
 		};
 
 		const get2dContext = () => {
@@ -156,7 +152,6 @@ describe('styleUtils', () => {
 					zoom: 1
 				})
 			});
-
 		};
 		const setupLayer = (map, feature) => {
 			const source = new VectorSource({
@@ -172,7 +167,10 @@ describe('styleUtils', () => {
 
 		const setupFrameState = (time) => {
 			return {
-				time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+				time: +time,
+				coordinateToPixelTransform: transform,
+				viewHints: [],
+				viewState: viewState
 			};
 		};
 
@@ -186,7 +184,7 @@ describe('styleUtils', () => {
 		it('should create animation function', () => {
 			const feature = getFeature();
 			const map = setupMap();
-			const endCallback = () => { };
+			const endCallback = () => {};
 
 			const functionUnderTest = createAnimation(map, feature, endCallback);
 
@@ -198,7 +196,7 @@ describe('styleUtils', () => {
 			const map = setupMap();
 			const layer = setupLayer(map, feature);
 			const earlyEvent = getPostRenderEvent(Date.now() - 1000);
-			const endCallback = () => { };
+			const endCallback = () => {};
 
 			const functionUnderTest = createAnimation(map, feature, endCallback);
 			layer.on('postrender', functionUnderTest);

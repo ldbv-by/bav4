@@ -23,16 +23,14 @@ export const LOG_LIFECYLE_ATTRIBUTE_NAME = 'data-log-lifecycle';
  * @param {MvuElement|BaElement} element
  */
 export const generateTestIds = (element) => {
-
 	/**
 	 * We cannot use a service here, it's a low-level function for MvuElements, other services than the store service are not available.
 	 * So we use a global window property for switching on id generation.
 	 */
 	if (window.ba_enableTestIds) {
-
 		/**
-		* Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
-		*/
+		 * Let's traverse the DOM and search for all parent MvuElement, also detect the child of each MvuElement
+		 */
 		const pathElements = [];
 		let currentParent = element.parentNode;
 		let currentMvuElement = element;
@@ -60,24 +58,21 @@ export const generateTestIds = (element) => {
 		}
 
 		//Provide all child elements (except for MvuElements) with test ids if requested
-		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)]
-			.forEach(el => {
-				// MvuElement/BaElement instances are handled on their own
-				if (!(el instanceof BaElement || el instanceof MvuElement)) {
-
-					//priority: id -> css-classes
-					const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
-					if (qualifier) {
-						el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${qualifier.replace(' ', '-')}`);
-					}
-					else {
-						console.warn(`No data-test-id qualifier found for: ${basePath} -> ${el.tagName.toLocaleLowerCase()}. Please add either an id or a class attribute.`);
-					}
+		[...element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)].forEach((el) => {
+			// MvuElement/BaElement instances are handled on their own
+			if (!(el instanceof BaElement || el instanceof MvuElement)) {
+				//priority: id -> css-classes
+				const qualifier = el.getAttribute('id') ?? el.getAttribute('class');
+				if (qualifier) {
+					el.setAttribute(TEST_ID_ATTRIBUTE_NAME, `${basePath}_${qualifier.replace(' ', '-')}`);
+				} else {
+					console.warn(
+						`No data-test-id qualifier found for: ${basePath} -> ${el.tagName.toLocaleLowerCase()}. Please add either an id or a class attribute.`
+					);
 				}
-			});
+			}
+		});
 	}
-
-
 };
 
 /**
@@ -88,10 +83,9 @@ export const generateTestIds = (element) => {
  * @param {Function} callback callback function
  */
 export const forEachByAttribute = (element, attribute, callback) => {
+	const checkShadowDOM = (el) => el.shadowRoot ?? el;
 
-	const checkShadowDOM = el => el.shadowRoot ?? el;
-
-	checkShadowDOM(element).childNodes.forEach(el => {
+	checkShadowDOM(element).childNodes.forEach((el) => {
 		if (el.hasAttribute && el.hasAttribute(attribute)) {
 			callback(el);
 		}
@@ -107,9 +101,8 @@ export const forEachByAttribute = (element, attribute, callback) => {
  * @returns array
  */
 export const findAllByAttribute = (element, attribute) => {
-
 	const elements = [];
-	forEachByAttribute(element, attribute, el => elements.push(el));
+	forEachByAttribute(element, attribute, (el) => elements.push(el));
 	return elements;
 };
 

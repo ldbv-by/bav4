@@ -1,4 +1,3 @@
-
 import { DrawToolContent } from './DrawToolContent';
 
 if (!window.customElements.get(DrawToolContent.tag)) {

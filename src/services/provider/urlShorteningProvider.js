@@ -9,8 +9,6 @@ import { $injector } from '../../injection';
  * @typedef {function(string) : (Promise<string>)} shortUrlProvider
  */
 
-
-
 /**
  * Uses the BVV service to return a short url.
  * @function

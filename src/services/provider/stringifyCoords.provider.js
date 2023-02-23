@@ -10,7 +10,6 @@ import { $injector } from '../../injection';
  * @typedef {function():(function(Coordinate) : (string))} stringifyCoordProvider
  */
 
-
 /**
  * @function
  * @param {number} srid
@@ -49,11 +48,10 @@ const createStringUTM = (srid, digits) => {
 	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 
 	return (coordinate) => {
-		const zoneNumber = (srid === 25832) ? '32' : '33';
+		const zoneNumber = srid === 25832 ? '32' : '33';
 		const zoneBand = determineUtmZoneBand(coordinateService.transform(coordinate, srid, 4326));
 
-		const coord = createStringXY(digits)(coordinate).
-			replace(/\B(?=(\d{3})+(?!\d))/g, '');
+		const coord = createStringXY(digits)(coordinate).replace(/\B(?=(\d{3})+(?!\d))/g, '');
 		return zoneNumber + zoneBand + ' ' + coord;
 	};
 };
@@ -61,8 +59,7 @@ const createStringUTM = (srid, digits) => {
 const determineUtmZoneBand = (coord4326) => {
 	if (coord4326[1] < 54 && coord4326[1] >= 48) {
 		return 'U';
-	}
-	else if (coord4326[1] < 48 && coord4326[1] >= 42) {
+	} else if (coord4326[1] < 48 && coord4326[1] >= 42) {
 		return 'T';
 	}
 	return '';

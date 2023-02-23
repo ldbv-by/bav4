@@ -15,13 +15,11 @@ const Update_Label = 'update_label';
  * @author thiloSchlemmer
  */
 export class Spinner extends MvuElement {
-
 	constructor() {
 		super({
 			label: null
 		});
-		const { TranslationService: translationService }
-			= $injector.inject('TranslationService');
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
 
 		this._translationService = translationService;
 	}
@@ -31,7 +29,6 @@ export class Spinner extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Label:
 				return { ...model, label: data };
@@ -48,8 +45,10 @@ export class Spinner extends MvuElement {
 		const currentLabel = label ? label : translate('spinner_text');
 
 		return html`
-		 <style>${css}</style> 
-		 	<span class="loading">${currentLabel}</span>		
+			<style>
+				${css}
+			</style>
+			<span class="loading">${currentLabel}</span>
 		`;
 	}
 

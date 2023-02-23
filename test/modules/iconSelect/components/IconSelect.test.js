@@ -8,32 +8,25 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 window.customElements.define(IconSelect.tag, IconSelect);
 
 describe('IconSelect', () => {
-
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [] };
 
 	const setup = (state = {}, attributes = {}) => {
-
 		const initialState = {
 			media: {
 				portrait: false
 			},
 			...state
-
 		};
 
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('IconService', iconServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('IconService', iconServiceMock);
 		return TestUtils.render(IconSelect.tag, attributes);
 	};
 
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const state = {
 				media: {
 					portrait: false
@@ -49,7 +42,6 @@ describe('IconSelect', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const state = {
 				media: {
 					portrait: false
@@ -66,11 +58,9 @@ describe('IconSelect', () => {
 			expect(element.shadowRoot.querySelector('.ba_catalog_container').childElementCount).toBe(1);
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#symbol-icon').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
-
 		});
 
 		it('check portrait', async () => {
-
 			const state = {
 				media: {
 					portrait: false
@@ -83,7 +73,6 @@ describe('IconSelect', () => {
 		});
 
 		it('check landscape', async () => {
-
 			const state = {
 				media: {
 					portrait: true
@@ -96,10 +85,8 @@ describe('IconSelect', () => {
 		});
 	});
 
-	describe('when property\'title\' changes', () => {
-
+	describe("when property'title' changes", () => {
 		it('updates the view', async () => {
-
 			const state = {
 				media: {
 					portrait: false
@@ -120,10 +107,8 @@ describe('IconSelect', () => {
 		});
 	});
 
-	describe('when property\'color\' changes', () => {
-
+	describe("when property'color' changes", () => {
 		it('updates the view', async () => {
-
 			const state = {
 				media: {
 					portrait: false
@@ -139,12 +124,9 @@ describe('IconSelect', () => {
 		});
 	});
 
-
-	describe('when property\'icons\' changes', () => {
-
+	describe("when property'icons' changes", () => {
 		it('updates the view', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-				new IconResult('bar', '42')]));
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const state = {
 				media: {
 					portrait: false
@@ -159,8 +141,7 @@ describe('IconSelect', () => {
 
 	describe('when icon-button is clicked', () => {
 		it('expands and collapse the container', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-				new IconResult('bar', '42')]));
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 			const state = {
 				media: {
 					portrait: false
@@ -181,8 +162,7 @@ describe('IconSelect', () => {
 
 	describe('when icon is selected (event handling) ', () => {
 		it('calls the onSelect callback via property callback', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-				new IconResult('bar', '42')]));
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 
 			const state = {
 				media: {
@@ -202,8 +182,7 @@ describe('IconSelect', () => {
 		});
 
 		it('calls the onSelect callback via attribute callback', async () => {
-			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'),
-				new IconResult('bar', '42')]));
+			spyOn(iconServiceMock, 'all').and.returnValue(Promise.resolve([new IconResult('foo', '42'), new IconResult('bar', '42')]));
 
 			spyOn(window, 'alert');
 
@@ -212,7 +191,7 @@ describe('IconSelect', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state, { onSelect: 'alert(\'called\')' });
+			const element = await setup(state, { onSelect: "alert('called')" });
 			const iconButton = element.shadowRoot.querySelector('.iconselect__toggle-button');
 			iconButton.click();
 

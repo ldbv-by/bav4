@@ -6,14 +6,12 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
 
 describe('GeometryInfo', () => {
-
 	const coordinateServiceMock = {
-		stringify() { },
-		toLonLat() { }
+		stringify() {},
+		toLonLat() {}
 	};
 
 	const setup = () => {
-
 		TestUtils.setupStoreAndDi();
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
@@ -31,9 +29,7 @@ describe('GeometryInfo', () => {
 	};
 
 	describe('class', () => {
-
 		it('inherits from MvuElement', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof MvuElement).toBeTrue();
@@ -41,7 +37,6 @@ describe('GeometryInfo', () => {
 	});
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new GeometryInfo().getModel();
@@ -58,7 +53,6 @@ describe('GeometryInfo', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing for default stats (empty)', async () => {
 			const emptyStats = EMPTY_GEOMETRY_STATISTICS;
 
@@ -93,9 +87,7 @@ describe('GeometryInfo', () => {
 			expect(element.shadowRoot.querySelector('.stats-line-length')).toBeTruthy();
 		});
 
-
 		it('renders the items with polygon stats', async () => {
-
 			const element = await setup();
 			element.statistics = { coordinate: null, azimuth: null, length: 42, area: 42 };
 
@@ -104,9 +96,7 @@ describe('GeometryInfo', () => {
 			expect(element.shadowRoot.querySelector('.stats-polygon-area')).toBeTruthy();
 		});
 
-
 		it('renders the items with smallest polygon stats', async () => {
-
 			const element = await setup();
 			element.statistics = { coordinate: null, azimuth: null, length: 0.001, area: 0 };
 

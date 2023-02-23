@@ -11,7 +11,6 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
 /**
  * @typedef {Object} FeatureInfo
  * @property {string} title The Title of this FeatureInfo
@@ -33,14 +32,12 @@ export const FeatureInfoGeometryTypes = Object.freeze({
 	GEOJSON: 0
 });
 
-
 /**
-  * Adds (appends) a single or an array of {@link FeatureInfo} items
-  * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
-  * @function
-  */
+ * Adds (appends) a single or an array of {@link FeatureInfo} items
+ * @param {Array.<FeatureInfo>|FeatureInfo} featureInfo
+ * @function
+ */
 export const addFeatureInfoItems = (featureInfo) => {
-
 	const featureInfoAsArray = Array.isArray(featureInfo) ? [...featureInfo] : [featureInfo];
 
 	getStore().dispatch({
@@ -55,7 +52,6 @@ export const addFeatureInfoItems = (featureInfo) => {
  * @function
  */
 export const startRequest = (coordinate) => {
-
 	getStore().dispatch({
 		type: FEATURE_INFO_REQUEST_START,
 		payload: new EventLike(coordinate)
@@ -68,7 +64,6 @@ export const startRequest = (coordinate) => {
  * @function
  */
 export const abortOrReset = () => {
-
 	getStore().dispatch({
 		type: FEATURE_INFO_REQUEST_ABORT,
 		payload: new EventLike()
@@ -81,7 +76,6 @@ export const abortOrReset = () => {
  * @function
  */
 export const registerQuery = (id) => {
-
 	getStore().dispatch({
 		type: QUERY_REGISTERED,
 		payload: id
@@ -94,7 +88,6 @@ export const registerQuery = (id) => {
  * @function
  */
 export const resolveQuery = (id) => {
-
 	getStore().dispatch({
 		type: QUERY_RESOLVED,
 		payload: id

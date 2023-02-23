@@ -19,7 +19,6 @@ const Update_FirstStepsContentSource = 'update_firstStepsContentSource';
  * @author thiloSchlemmer
  */
 export class FirstSteps extends MvuElement {
-
 	constructor() {
 		super({
 			isPortrait: false,
@@ -29,16 +28,14 @@ export class FirstSteps extends MvuElement {
 			firstStepsContentSource: null
 		});
 
-		const {
-			EnvironmentService: environmentService,
-			TranslationService: translationService
-		}
-			= $injector.inject('EnvironmentService', 'TranslationService');
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 	}
-
 
 	/**
 	 * @override
@@ -62,8 +59,14 @@ export class FirstSteps extends MvuElement {
 	onInitialize() {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
 
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.mainMenu, mainMenu => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab }));
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+		);
+		this.observe(
+			(state) => state.mainMenu,
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
+		);
 
 		this.signal(Update_HasBeenVisible, this._environmentService.getUrlParams().get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) === 'true');
 		this.signal(Update_FirstStepsContentSource, configService.getValue('FIRST_STEPS_CONTENT_URL', null));
@@ -75,7 +78,6 @@ export class FirstSteps extends MvuElement {
 	createView(model) {
 		const { isPortrait, hasMinWidth, isOpen, hasBeenVisible, firstStepsContentSource } = model;
 
-
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -85,18 +87,22 @@ export class FirstSteps extends MvuElement {
 		};
 
 		const getOverlayClass = () => {
-			return (isOpen && !isPortrait) ? 'is-open' : '';
+			return isOpen && !isPortrait ? 'is-open' : '';
 		};
 
 		const translate = (key) => this._translationService.translate(key);
 
-
 		const openModalFirstSteps = () => {
-			openModal(translate('help_firstSteps_notification_first_steps'), html`<style>${css}</style><iframe title=${translate('help_firstSteps_notification_first_steps')} src=${firstStepsContentSource} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe`);
+			openModal(
+				translate('help_firstSteps_notification_first_steps'),
+				html`<style>${css}</style><iframe title=${translate(
+					'help_firstSteps_notification_first_steps'
+				)} src=${firstStepsContentSource} allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"></iframe`
+			);
 		};
 
 		const openModalShowCase = () => {
-			openModal('Showcase', html`<ba-showcase>`);
+			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
 		};
 
 		const showNotification = () => {
@@ -108,21 +114,22 @@ export class FirstSteps extends MvuElement {
 				const onClose = () => {
 					closeBottomSheet();
 				};
-				return html`
-						<style>${css}</style>	
-						<div class='first_steps__notification'>					
-							<div class='first_steps__notification-section'>
-								<i class='first_steps__notification-icon'></i>
-								<div>
-									<div class='first_steps__notification-primary-text' >${translate('help_firstSteps_notification_header')}</div>
-									<div class='first_steps__notification-secondary-text' >${translate('help_firstSteps_notification_text')}</div>
-								</div>
+				return html` <style>
+						${css}
+					</style>
+					<div class="first_steps__notification">
+						<div class="first_steps__notification-section">
+							<i class="first_steps__notification-icon"></i>
+							<div>
+								<div class="first_steps__notification-primary-text">${translate('help_firstSteps_notification_header')}</div>
+								<div class="first_steps__notification-secondary-text">${translate('help_firstSteps_notification_text')}</div>
 							</div>
-							<div class='first_steps__notification-section space-evenly'>							
-								<ba-button id='closeButton' .label=${translate('help_firstSteps_notification_close')} @click=${onClose}></ba-button>
-								<ba-button id='firstSteps' .label=${translate('help_firstSteps_notification_first_steps')} @click=${onOpen}></ba-button>								
-							</div>
-						</div>`;
+						</div>
+						<div class="first_steps__notification-section space-evenly">
+							<ba-button id="closeButton" .label=${translate('help_firstSteps_notification_close')} @click=${onClose}></ba-button>
+							<ba-button id="firstSteps" .label=${translate('help_firstSteps_notification_first_steps')} @click=${onOpen}></ba-button>
+						</div>
+					</div>`;
 			};
 			openBottomSheet(getContent());
 		};
@@ -134,16 +141,16 @@ export class FirstSteps extends MvuElement {
 		}
 
 		return html`
-			<style>${css}</style>		
-			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">  			
-				<button class='first_steps__button ${getOverlayClass()}'  @click=${contentAvailable ? openModalFirstSteps : openModalShowCase} >				
-					<i class='first_steps__button-icon'></i>
-					<span class="first_steps__button-text">${translate('help_firstSteps_button')}</span>					
-				</button>		
-			</div>		
-
-		` ;
-
+			<style>
+				${css}
+			</style>
+			<div class=" ${getOrientationClass()} ${getMinWidthClass()}">
+				<button class="first_steps__button ${getOverlayClass()}" @click=${contentAvailable ? openModalFirstSteps : openModalShowCase}>
+					<i class="first_steps__button-icon"></i>
+					<span class="first_steps__button-text">${translate('help_firstSteps_button')}</span>
+				</button>
+			</div>
+		`;
 	}
 
 	isRenderingSkipped() {

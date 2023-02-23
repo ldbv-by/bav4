@@ -6,19 +6,19 @@ import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer
 
 window.customElements.define(CoordinateSelect.tag, CoordinateSelect);
 
-
 describe('CoordinateSelect', () => {
-
 	const coordinateServiceMock = {
-		stringify() { },
-		toLonLat() { },
-		transform() { }
-
+		stringify() {},
+		toLonLat() {},
+		transform() {}
 	};
 
 	const mapServiceMock = {
 		getSridDefinitionsForView: () => {
-			return [{ label: 'TEST', code: 99999 }, { label: 'WGS84', code: 1111 }];
+			return [
+				{ label: 'TEST', code: 99999 },
+				{ label: 'WGS84', code: 1111 }
+			];
 		},
 		getSrid: () => {
 			return 3857;
@@ -36,19 +36,13 @@ describe('CoordinateSelect', () => {
 
 		TestUtils.setupStoreAndDi(state, { pointer: pointerReducer });
 
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-		$injector
-			.registerSingleton('CoordinateService', coordinateServiceMock);
-		$injector
-			.registerSingleton('MapService', mapServiceMock);
-		$injector
-			.registerSingleton('EnvironmentService', { isTouch: () => touch });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('CoordinateService', coordinateServiceMock);
+		$injector.registerSingleton('MapService', mapServiceMock);
+		$injector.registerSingleton('EnvironmentService', { isTouch: () => touch });
 
 		return TestUtils.render(CoordinateSelect.tag);
 	};
-
-
 
 	describe('when initialized', () => {
 		it('renders nothing when pointer position equals null', async () => {
@@ -128,17 +122,14 @@ describe('CoordinateSelect', () => {
 			expect(element.shadowRoot.innerHTML.includes('stringified coordinate')).toBeTruthy();
 			expect(transformMock).toHaveBeenCalledWith(testCoordinate, 3857, 99999);
 			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 99999);
-
 		});
 	});
 
 	describe('on touch devices', () => {
-		it('doesn\'t show select and label', async () => {
-
+		it("doesn't show select and label", async () => {
 			const element = await setup({ touch: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
-
 		});
 	});
 });

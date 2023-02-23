@@ -3,18 +3,13 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Toggle.tag, Toggle);
 
-
 describe('Toggle', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
-
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(Toggle.tag);
 
 			//model
@@ -24,7 +19,6 @@ describe('Toggle', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(Toggle.tag, {}, '<span>some</span>');
 
 			//view
@@ -43,10 +37,8 @@ describe('Toggle', () => {
 		});
 	});
 
-	describe('when property\'disabled\' changes', () => {
-
+	describe("when property'disabled' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Toggle.tag);
 			const input = element.shadowRoot.querySelector('input');
 
@@ -62,10 +54,8 @@ describe('Toggle', () => {
 		});
 	});
 
-	describe('when property\'checked\' changes', () => {
-
+	describe("when property'checked' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Toggle.tag);
 			const input = element.shadowRoot.querySelector('input');
 
@@ -81,10 +71,8 @@ describe('Toggle', () => {
 		});
 	});
 
-	describe('when property\'title\' changes', () => {
-
+	describe("when property'title' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Toggle.tag);
 			const label = element.shadowRoot.querySelector('label');
 
@@ -97,11 +85,8 @@ describe('Toggle', () => {
 	});
 
 	describe('event handling', () => {
-
 		describe('on click', () => {
-
 			it('calls the onToggle callback via property callback', async () => {
-
 				const element = await TestUtils.render(Toggle.tag);
 				element.onToggle = jasmine.createSpy();
 
@@ -112,9 +97,8 @@ describe('Toggle', () => {
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Toggle.tag, { onToggle: "alert('called')" });
 
 				element.click();
 
@@ -123,9 +107,8 @@ describe('Toggle', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Toggle.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Toggle.tag, { onToggle: "alert('called')" });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 

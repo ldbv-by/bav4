@@ -1,6 +1,9 @@
 import { createDefaultLayer, layersReducer } from '../../../../../../../src/store/layers/layers.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../../src/store/mainMenu/mainMenu.reducer';
-import { GeoResourceResultItem, LOADING_PREVIEW_DELAY_MS } from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
+import {
+	GeoResourceResultItem,
+	LOADING_PREVIEW_DELAY_MS
+} from '../../../../../../../src/modules/search/components/menu/types/geoResource/GeoResourceResultItem';
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
@@ -12,25 +15,20 @@ import { GeoResourceFuture } from '../../../../../../../src/domain/geoResources'
 
 window.customElements.define(GeoResourceResultItem.tag, GeoResourceResultItem);
 
-
 describe('LAYER_ADDING_DELAY_MS', () => {
-
 	it('exports a const defining amount of time waiting before adding a layer', async () => {
-
 		expect(LOADING_PREVIEW_DELAY_MS).toBe(500);
 	});
 });
 
 describe('GeoResourceResultItem', () => {
-
 	const geoResourceService = {
-		byId: () => { },
-		addOrReplace: () => { }
+		byId: () => {},
+		addOrReplace: () => {}
 	};
 
 	let store;
 	const setup = (state = {}) => {
-
 		const initialState = {
 			media: {
 				portrait: false
@@ -45,22 +43,18 @@ describe('GeoResourceResultItem', () => {
 			position: positionReducer
 		});
 
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceService);
+		$injector.registerSingleton('GeoResourceService', geoResourceService);
 
 		return TestUtils.render(GeoResourceResultItem.tag);
 	};
 
 	describe('static methods', () => {
-
 		it('generates an id for a temporary layer', async () => {
-
 			expect(GeoResourceResultItem._tmpLayerId('foo')).toBe('tmp_GeoResourceResultItem_foo');
 		});
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
 
@@ -78,7 +72,6 @@ describe('GeoResourceResultItem', () => {
 	});
 
 	describe('events', () => {
-
 		beforeEach(() => {
 			jasmine.clock().install();
 		});
@@ -88,7 +81,6 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('on mouse enter', () => {
-
 			it('adds a preview layer', async () => {
 				const geoResourceId = 'geoResourceId';
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
@@ -108,7 +100,6 @@ describe('GeoResourceResultItem', () => {
 				expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 				expect(element.shadowRoot.querySelectorAll(Spinner.tag)).toHaveSize(0);
 				expect(target.classList.contains('loading')).toBeFalse();
-
 			});
 
 			it('shows and hides a loading hint for a GeoResourceFuture', async () => {
@@ -140,7 +131,6 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('on mouse leave', () => {
-
 			it('removes the preview layer', async () => {
 				const geoResourceId = 'geoResourceId';
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
@@ -177,12 +167,10 @@ describe('GeoResourceResultItem', () => {
 		});
 
 		describe('on click', () => {
-
 			const geoResourceId = 'geoResourceId';
 			// const layerId = 'layerId';
 
 			const setupOnClickTests = async (portraitOrientation) => {
-
 				const previewLayer = createDefaultLayer(GeoResourceResultItem._tmpLayerId(geoResourceId), geoResourceId);
 				const data = new GeoResourceSearchResult(geoResourceId, 'label', 'labelFormatted');
 				const element = await setup({

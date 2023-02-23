@@ -13,22 +13,19 @@ import { TabId } from '../../src/store/mainMenu/mainMenu.action';
 import { positionReducer } from '../../src/store/position/position.reducer';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
-
 	it('exports a const defining amount of time waiting before adding a layer', async () => {
-
 		expect(LAYER_ADDING_DELAY_MS).toBe(500);
 	});
 });
 
 describe('ImportPlugin', () => {
-
 	const importVectorDataServiceMock = {
-		forUrl: async () => { },
-		forData: () => { }
+		forUrl: async () => {},
+		forData: () => {}
 	};
 
 	const translationServiceMock = {
-		register() { },
+		register() {},
 		translate: (key) => key
 	};
 
@@ -54,7 +51,6 @@ describe('ImportPlugin', () => {
 	};
 
 	describe('when import.url property changes', () => {
-
 		it('calls the ImportVectorDataService for vector-url', async () => {
 			const store = setup();
 			const sourceType = new SourceType(SourceTypeName.KML);
@@ -66,13 +62,14 @@ describe('ImportPlugin', () => {
 
 			await TestUtils.timeout();
 			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
-
 		});
 
 		it('adds a layer and set the correct MainMenu tab index', async () => {
 			const store = setup();
 			const geoResourceFutureMock = {
-				id: 'idFoo', label: 'labelBar', onReject: () => { }
+				id: 'idFoo',
+				label: 'labelBar',
+				onReject: () => {}
 			};
 			const sourceType = new SourceType(SourceTypeName.KML);
 			const spy = spyOn(importVectorDataServiceMock, 'forUrl').and.callFake(() => geoResourceFutureMock);
@@ -119,11 +116,12 @@ describe('ImportPlugin', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
-
 		it('emits a notification when GeoResourceFuture rejects', async () => {
 			const store = setup();
 			const geoResourceFutureMock = {
-				id: 'idFoo', label: 'labelBar', onReject: (f) => {
+				id: 'idFoo',
+				label: 'labelBar',
+				onReject: (f) => {
 					f();
 				}
 			};
@@ -142,7 +140,6 @@ describe('ImportPlugin', () => {
 	});
 
 	describe('when import.data property changes', () => {
-
 		it('calls the ImportVectorDataService', async () => {
 			const store = setup();
 			const spy = spyOn(importVectorDataServiceMock, 'forData');

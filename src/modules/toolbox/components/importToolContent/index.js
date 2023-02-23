@@ -1,4 +1,3 @@
-
 import { ImportToolContent } from './ImportToolContent';
 
 if (!window.customElements.get(ImportToolContent.tag)) {

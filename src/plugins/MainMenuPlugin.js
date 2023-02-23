@@ -4,13 +4,11 @@ import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 
-
 /**
  * @class
  * @author taulinger
  */
 export class MainMenuPlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		this._previousTab = null;
@@ -18,16 +16,15 @@ export class MainMenuPlugin extends BaPlugin {
 	}
 
 	_init() {
-		const { EnvironmentService: environmentService }
-			= $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		// check if we have a query parameter defining the tab id
 		const tabId = TabId.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));
 		if (tabId) {
 			setTab(tabId);
-		}
-		else { // set default tab id
+		} else {
+			// set default tab id
 			setTab(TabId.TOPICS);
 		}
 	}
@@ -43,16 +40,16 @@ export class MainMenuPlugin extends BaPlugin {
 		this._previousTab = store.getState().mainMenu.tab;
 
 		const onFeatureInfoQueryingChanged = (querying, state) => {
-			const { featureInfo: { current } } = state;
+			const {
+				featureInfo: { current }
+			} = state;
 			if (!querying) {
-
 				if (current.length === 0) {
 					if (!this._open) {
 						close();
 					}
 					setTab(this._previousTab);
-				}
-				else {
+				} else {
 					setTab(TabId.FEATUREINFO);
 					open();
 				}
@@ -60,7 +57,6 @@ export class MainMenuPlugin extends BaPlugin {
 		};
 
 		const onFeatureInfoAbortedChanged = () => {
-
 			if (!this._open) {
 				close();
 			}
@@ -68,7 +64,6 @@ export class MainMenuPlugin extends BaPlugin {
 		};
 
 		const onQueryChanged = ({ payload }) => {
-
 			if (payload) {
 				setTab(TabId.SEARCH);
 				open();
@@ -78,15 +73,14 @@ export class MainMenuPlugin extends BaPlugin {
 		const onTabChanged = (tab, state) => {
 			if (tab === TabId.FEATUREINFO) {
 				this._open = state.mainMenu.open;
-			}
-			else {
+			} else {
 				this._previousTab = tab;
 			}
 		};
 
-		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChanged);
-		observe(store, state => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
-		observe(store, state => state.search.query, onQueryChanged, false);
-		observe(store, store => store.mainMenu.tab, onTabChanged, false);
+		observe(store, (state) => state.featureInfo.querying, onFeatureInfoQueryingChanged);
+		observe(store, (state) => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
+		observe(store, (state) => state.search.query, onQueryChanged, false);
+		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
 	}
 }

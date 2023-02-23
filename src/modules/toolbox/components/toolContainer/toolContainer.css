@@ -1,15 +1,15 @@
 .tool-container {
 	top: 0;
-	right: 0;           
-	position: fixed;    
-	z-index: calc(var(--z-toolbox) + 20);    
+	right: 0;
+	position: fixed;
+	z-index: calc(var(--z-toolbox) + 20);
 	background-color: var(--primary-bg-color);
 	max-width: 27em;
-	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);   
+	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 .tool-container__tools-nav {
 	position: absolute;
-	top: 0;   
+	top: 0;
 	right: 0;
 	padding: 0;
 }
@@ -24,22 +24,22 @@
 	cursor: pointer;
 	position: relative;
 	display: block;
-	padding: .7em;
+	padding: 0.7em;
 }
 .tool-container__close-button:hover {
 	background: var(--header-background-color);
 }
 .tool-container__content {
-	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);  
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 	display: none;
 }
 .is-portrait .tool-container {
 	bottom: 0;
-	right: 0;           
-	left: 0;           
+	right: 0;
+	left: 0;
 	width: 100%;
 	top: unset;
-	position: fixed;    
+	position: fixed;
 	background-color: var(--primary-bg-color);
 	max-width: unset;
 }
@@ -51,9 +51,8 @@
 	display: inline-block;
 	position: relative;
 	top: -1em;
-
 }
-  
+
 .close-icon::before {
 	position: absolute;
 	content: '';

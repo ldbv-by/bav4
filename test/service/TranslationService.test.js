@@ -1,17 +1,14 @@
 import { TranslationService } from '../../src/services/TranslationService';
 import { $injector } from '../../src/injection';
 
-
 describe('TranslationService', () => {
-
 	let instanceUnderTest;
 	const configService = {
-		getValue: () => { }
+		getValue: () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('ConfigService', configService);
 	});
 
 	beforeEach(() => {
@@ -24,8 +21,8 @@ describe('TranslationService', () => {
 
 		instanceUnderTest.register('testProvider', () => {
 			return {
-				'key0': 'value0',
-				'key1': 'value1'
+				key0: 'value0',
+				key1: 'value1'
 			};
 		});
 
@@ -39,14 +36,12 @@ describe('TranslationService', () => {
 
 		instanceUnderTest.register('testProvider', (lang) => {
 			return lang === 'de'
-				?
-				{
-					'key0': 'value0_de'
-				}
-				:
-				{
-					'key0': 'value0_en'
-				};
+				? {
+						key0: 'value0_de'
+				  }
+				: {
+						key0: 'value0_en'
+				  };
 		});
 
 		expect(instanceUnderTest.translate('key0')).toBe('value0_en');
@@ -61,16 +56,17 @@ describe('TranslationService', () => {
 
 		instanceUnderTest.register('testProvider', () => {
 			return {
-				'key0': 'value0'
+				key0: 'value0'
 			};
 		});
 
-		expect(() => instanceUnderTest.register('testProvider', () => {
-			return {
-				'key0': 'value0'
-			};
-		}))
-			.toThrowError(/Provider testProvider already registered/);
+		expect(() =>
+			instanceUnderTest.register('testProvider', () => {
+				return {
+					key0: 'value0'
+				};
+			})
+		).toThrowError(/Provider testProvider already registered/);
 	});
 
 	it('throws an error when a key is already registered', () => {
@@ -78,25 +74,23 @@ describe('TranslationService', () => {
 
 		instanceUnderTest.register('testProvider0', () => {
 			return {
-				'key0': 'value0',
-				'key1': 'value1'
+				key0: 'value0',
+				key1: 'value1'
 			};
 		});
 
 		expect(() => {
 			instanceUnderTest.register('testProvider1', () => {
 				return {
-					'key0': 'value0'
+					key0: 'value0'
 				};
 			});
-		})
-			.toThrowError(/Key key0 already registered/);
+		}).toThrowError(/Key key0 already registered/);
 	});
 
 	it('provides the requested key when unknown and logs a warn statement', () => {
 		spyOn(configService, 'getValue').and.returnValue('de');
 		const warnSpy = spyOn(console, 'warn');
-
 
 		expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 		expect(warnSpy).toHaveBeenCalled();

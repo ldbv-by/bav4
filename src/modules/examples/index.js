@@ -10,4 +10,3 @@ if (!window.customElements.get(MvuListItem.tag)) {
 if (!window.customElements.get(MvuList.tag)) {
 	window.customElements.define(MvuList.tag, MvuList);
 }
-

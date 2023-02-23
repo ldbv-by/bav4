@@ -4,14 +4,12 @@ import { bvvProxifyUrlProvider } from './provider/proxifyUrl.provider';
 import { bvvQrCodeProvider } from './provider/qrCodeUrlProvider';
 import { shortenBvvUrls } from './provider/urlShorteningProvider';
 
-
 /**
  * Utility service for URLs/resources.
  * @class
  * @author taulinger
  */
 export class UrlService {
-
 	/**
 	 *
 	 * @param {shortUrlProvider} [urlShorteningProvider=shortenBvvUrls]
@@ -26,26 +24,26 @@ export class UrlService {
 	}
 
 	/**
-	* Proxifies a URL.
-	* @param {string} url URL
-	* @returns {string} proxified URL
-	*/
+	 * Proxifies a URL.
+	 * @param {string} url URL
+	 * @returns {string} proxified URL
+	 */
 	proxifyInstant(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError('Parameter \'url\' must represent a URL');
+			throw new TypeError("Parameter 'url' must represent a URL");
 		}
 		return this._proxifyUrlProvider(url);
 	}
 
 	/**
-	* Proxifies a URL when needed.
-	* @param {string} url URL
-	* @public
-	* @returns {Promise<string>|Promise.reject} proxified URL
-	*/
+	 * Proxifies a URL when needed.
+	 * @param {string} url URL
+	 * @public
+	 * @returns {Promise<string>|Promise.reject} proxified URL
+	 */
 	async proxify(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError('Parameter \'url\' must represent a URL');
+			throw new TypeError("Parameter 'url' must represent a URL");
 		}
 		const corsEnabled = await this.isCorsEnabled(url);
 		if (corsEnabled) {
@@ -55,14 +53,14 @@ export class UrlService {
 	}
 
 	/**
-	* Tests if the remote resource enables CORS by using a head request
-	* @param {string} url URL
-	* @public
-	* @returns {Promise<boolean>|Promise.reject} `true`, if cors is enabled
-	*/
+	 * Tests if the remote resource enables CORS by using a head request
+	 * @param {string} url URL
+	 * @public
+	 * @returns {Promise<boolean>|Promise.reject} `true`, if cors is enabled
+	 */
 	async isCorsEnabled(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError('Parameter \'url\' must represent a URL');
+			throw new TypeError("Parameter 'url' must represent a URL");
 		}
 
 		const result = await this._httpService.head(url, {
@@ -81,7 +79,7 @@ export class UrlService {
 	 */
 	async shorten(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError('Parameter \'url\' must represent a URL');
+			throw new TypeError("Parameter 'url' must represent a URL");
 		}
 		return this._urlShorteningProvider(url);
 	}
@@ -94,7 +92,7 @@ export class UrlService {
 	 */
 	qrCode(url) {
 		if (!isHttpUrl(url)) {
-			throw new TypeError('Parameter \'url\' must represent a URL');
+			throw new TypeError("Parameter 'url' must represent a URL");
 		}
 		return this._qrCodeUrlProvider(url);
 	}

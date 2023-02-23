@@ -3,16 +3,16 @@
 	display: flex;
 }
 
-.row>*,
-.icons>* {
-	margin: 0 .5em;
+.row > *,
+.icons > * {
+	margin: 0 0.5em;
 }
 
 p,
 ul,
 h2,
 h3 {
-	padding: .8em 0;
+	padding: 0.8em 0;
 }
 
 h2 {
@@ -20,7 +20,7 @@ h2 {
 }
 
 h3 {
-	font-size: .8rem;
+	font-size: 0.8rem;
 	margin-top: 1em;
 	color: var(--text2);
 }
@@ -31,7 +31,7 @@ li {
 
 li:before {
 	content: '-';
-	margin-right: .5em;
+	margin-right: 0.5em;
 	color: var(--primary-color);
 }
 

@@ -5,21 +5,19 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Icon.tag, Icon);
 
-
 describe('Icon', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 
 			expect(element.disabled).toBeFalse();
-			expect(element.icon).toBe('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=');
+			expect(element.icon).toBe(
+				'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4='
+			);
 			expect(element.title).toBe('');
 			expect(element.size).toBe(2);
 			expect(element.color).toBe('var(--primary-color)');
@@ -27,7 +25,6 @@ describe('Icon', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 
 			const anchor = element.shadowRoot.querySelector('.anchor');
@@ -49,8 +46,7 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'icon\' changes', () => {
-
+	describe("when property'icon' changes", () => {
 		it('updates the view', async () => {
 			const fakeBase64Svg = 'data:image/svg+xml;base64,foo';
 			const element = await TestUtils.render(Icon.tag);
@@ -61,10 +57,8 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'size\' changes', () => {
-
+	describe("when property'size' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 			const anchor = element.shadowRoot.querySelector('.anchor');
 
@@ -74,10 +68,8 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'color\' changes', () => {
-
+	describe("when property'color' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 
 			element.color = 'var(--foo)';
@@ -86,10 +78,8 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'color_hover\' changes', () => {
-
+	describe("when property'color_hover' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 
 			element.color_hover = 'var(--foo)';
@@ -103,10 +93,8 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'title\' changes', () => {
-
+	describe("when property'title' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 			const span = element.shadowRoot.querySelector('.icon.icon-custom');
 
@@ -120,10 +108,8 @@ describe('Icon', () => {
 		});
 	});
 
-	describe('when property\'disabled\' changes', () => {
-
+	describe("when property'disabled' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 
 			element.size = 5;
@@ -133,9 +119,7 @@ describe('Icon', () => {
 	});
 
 	describe('when clicked', () => {
-
 		it('calls the onClick callback via property binding', async () => {
-
 			const element = await TestUtils.render(Icon.tag);
 			element.onClick = jasmine.createSpy();
 			const icon = element.shadowRoot.querySelector('button');
@@ -146,9 +130,8 @@ describe('Icon', () => {
 		});
 
 		it('calls the onClick callback via attribute binding', async () => {
-
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Icon.tag, { onClick: 'alert(\'called\')' });
+			const element = await TestUtils.render(Icon.tag, { onClick: "alert('called')" });
 
 			element.click();
 
@@ -157,7 +140,7 @@ describe('Icon', () => {
 
 		it('does nothing when disabled', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Icon.tag, { onClick: 'alert(\'called\')' });
+			const element = await TestUtils.render(Icon.tag, { onClick: "alert('called')" });
 			element.disabled = true;
 			element.onClick = jasmine.createSpy();
 			const anchor = element.shadowRoot.querySelector('.anchor');
@@ -167,6 +150,5 @@ describe('Icon', () => {
 			expect(element.onClick).not.toHaveBeenCalled();
 			expect(window.alert).not.toHaveBeenCalledWith('called');
 		});
-
 	});
 });

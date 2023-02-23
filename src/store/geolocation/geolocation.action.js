@@ -5,12 +5,10 @@
 import { ACTIVE_CHANGED, DENIED_CHANGED, TRACKING_CHANGED, ACCURACY_CHANGED, POSITION_CHANGED } from './geolocation.reducer';
 import { $injector } from '../../injection';
 
-
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
 };
-
 
 /**
  * Activates the geolocation functionality.

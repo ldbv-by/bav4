@@ -2,7 +2,6 @@ import { html, nothing } from 'lit-html';
 import css from './abstractAssistChip.css';
 import { MvuElement } from '../../../MvuElement';
 
-
 /**
  *
  * @abstract
@@ -12,12 +11,10 @@ import { MvuElement } from '../../../MvuElement';
  * @author alsturm
  */
 export class AbstractAssistChip extends MvuElement {
-
 	/**
 	 * @param {object} model initial Model of this component
 	 */
 	constructor(model = {}) {
-
 		super(model);
 
 		if (this.constructor === AbstractAssistChip) {
@@ -29,7 +26,7 @@ export class AbstractAssistChip extends MvuElement {
 	/**
 	 * @override
 	 */
-	createView(/*eslint-disable no-unused-vars */model) {
+	createView(/*eslint-disable no-unused-vars */ model) {
 		const icon = this.getIcon();
 		const iconClass = `.chips__icon {
 			height: 1.5em;
@@ -41,17 +38,18 @@ export class AbstractAssistChip extends MvuElement {
 			-webkit-mask-image : url("${icon}");			
 			-webkit-mask-size:cover;
 			background: var(--secondary-color);
-		}` ;
+		}`;
 
-		return this.isVisible() ? html`
-		<style>
-		${iconClass}
-			${css}
-		</style>	
-        <button class='chips__button' @click=${() => this.onClick()} >
-			<span class='chips__icon'></span >            
-            <span class='chips__button-text'>${this.getLabel()}</span>
-        </button>` : nothing;
+		return this.isVisible()
+			? html` <style>
+						${iconClass}
+							${css}
+					</style>
+					<button class="chips__button" @click=${() => this.onClick()}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${this.getLabel()}</span>
+					</button>`
+			: nothing;
 	}
 
 	/**
@@ -75,7 +73,6 @@ export class AbstractAssistChip extends MvuElement {
 		// The child has not implemented this method.
 		throw new Error('Please implement abstract method #getLabel or do not call super.getLabel from child.');
 	}
-
 
 	/**
 	 * Whether or not the chip is visible

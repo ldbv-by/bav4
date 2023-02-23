@@ -4,19 +4,14 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Spinner.tag, Spinner);
 
-
 describe('Spinner', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 	});
 
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(Spinner.tag);
 
 			//model
@@ -24,7 +19,6 @@ describe('Spinner', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(Spinner.tag);
 
 			expect(element.shadowRoot.querySelector('.loading').innerText).toBe('spinner_text');
@@ -35,10 +29,8 @@ describe('Spinner', () => {
 		});
 	});
 
-	describe('when property\'label\' changes', () => {
-
+	describe("when property'label' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Spinner.tag);
 			const label = element.shadowRoot.querySelector('.loading');
 

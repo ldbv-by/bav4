@@ -3,18 +3,13 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Checkbox.tag, Checkbox);
 
-
 describe('Checkbox', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
-
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(Checkbox.tag);
 
 			//model
@@ -24,7 +19,6 @@ describe('Checkbox', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(Checkbox.tag, {}, '<span>some</span>');
 
 			//view
@@ -43,10 +37,8 @@ describe('Checkbox', () => {
 		});
 	});
 
-	describe('when property\'disabled\' changes', () => {
-
+	describe("when property'disabled' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
 
@@ -62,10 +54,8 @@ describe('Checkbox', () => {
 		});
 	});
 
-	describe('when property\'checked\' changes', () => {
-
+	describe("when property'checked' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Checkbox.tag);
 			const input = element.shadowRoot.querySelector('input');
 
@@ -81,10 +71,8 @@ describe('Checkbox', () => {
 		});
 	});
 
-	describe('when property\'title\' changes', () => {
-
+	describe("when property'title' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Checkbox.tag);
 			const label = element.shadowRoot.querySelector('label');
 
@@ -96,13 +84,9 @@ describe('Checkbox', () => {
 		});
 	});
 
-
 	describe('event handling', () => {
-
 		describe('on click', () => {
-
 			it('calls the onToggle callback via property callback', async () => {
-
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
 
@@ -113,9 +97,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
 
 				element.click();
 
@@ -124,9 +107,8 @@ describe('Checkbox', () => {
 			});
 
 			it('does nothing when disabled', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
@@ -139,26 +121,25 @@ describe('Checkbox', () => {
 		});
 
 		describe('on keyboad ENTER', () => {
-
 			const event = new KeyboardEvent('keydown', {
 				key: 'Enter'
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
-
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
 
-				element.dispatchEvent(new KeyboardEvent('keydown', {
-					key: 'F12'
-				}));
+				element.dispatchEvent(
+					new KeyboardEvent('keydown', {
+						key: 'F12'
+					})
+				);
 
 				expect(element.onToggle).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
 			});
 
 			it('calls the onToggle callback via property binding', async () => {
-
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
 
@@ -169,9 +150,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute binding', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
 				element.onToggle = jasmine.createSpy();
 
 				element.dispatchEvent(event);
@@ -193,26 +173,25 @@ describe('Checkbox', () => {
 		});
 
 		describe('on keyboad SPACE', () => {
-
 			const event = new KeyboardEvent('keydown', {
 				key: ' '
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
-
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
 
-				element.dispatchEvent(new KeyboardEvent('keydown', {
-					key: 'F12'
-				}));
+				element.dispatchEvent(
+					new KeyboardEvent('keydown', {
+						key: 'F12'
+					})
+				);
 
 				expect(element.onToggle).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
 			});
 
 			it('calls the onToggle callback via property callback', async () => {
-
 				const element = await TestUtils.render(Checkbox.tag);
 				element.onToggle = jasmine.createSpy();
 
@@ -223,9 +202,8 @@ describe('Checkbox', () => {
 			});
 
 			it('calls the onToggle callback via attribute callback', async () => {
-
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: 'alert(\'called\')' });
+				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
 				element.onToggle = jasmine.createSpy();
 
 				element.dispatchEvent(event);
@@ -245,6 +223,5 @@ describe('Checkbox', () => {
 				expect(element.checked).toBeFalse();
 			});
 		});
-
 	});
 });

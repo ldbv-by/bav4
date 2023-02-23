@@ -9,13 +9,8 @@ import { isCoordinate, isNumber } from '../utils/checks';
  * @author taulinger
  */
 export class PositionPlugin extends BaPlugin {
-
 	_setPositionFromQueryParams(queryParams) {
-
-		const {
-			CoordinateService: coordinateService,
-			MapService: mapService
-		} = $injector.inject('CoordinateService', 'MapService');
+		const { CoordinateService: coordinateService, MapService: mapService } = $injector.inject('CoordinateService', 'MapService');
 
 		const detectSrid = (center) => {
 			const isWGS84Coordinate = Math.abs(center[0]) <= 180 && Math.abs(center[1]) <= 90;
@@ -26,7 +21,7 @@ export class PositionPlugin extends BaPlugin {
 			if (centerValue) {
 				const center = centerValue.split(',');
 				if (center.length === 2 && isFinite(center[0]) && isFinite(center[1])) {
-					const coordinate = center.map(v => parseFloat(v));
+					const coordinate = center.map((v) => parseFloat(v));
 					return coordinateService.transform(coordinate, detectSrid(coordinate), mapService.getSrid());
 				}
 			}
@@ -52,14 +47,11 @@ export class PositionPlugin extends BaPlugin {
 		const zoom = parseZoom(queryParams.get(QueryParameters.ZOOM));
 		const rotation = parseRotation(queryParams.get(QueryParameters.ROTATION));
 
-
 		if (isCoordinate(center) && isNumber(zoom)) {
 			changeZoomCenterAndRotation({ zoom: zoom, center: center, rotation: isNumber(rotation) ? rotation : 0 });
-		}
-		else if (isCoordinate(center) && !isNumber(zoom)) {
+		} else if (isCoordinate(center) && !isNumber(zoom)) {
 			changeCenterAndRotation({ center, rotation: isNumber(rotation) ? rotation : 0 });
-		}
-		else if (!isCoordinate(center) && isNumber(zoom)) {
+		} else if (!isCoordinate(center) && isNumber(zoom)) {
 			changeZoomAndRotation({ zoom: zoom, rotation: isNumber(rotation) ? rotation : 0 });
 		}
 		//fallback
@@ -69,9 +61,7 @@ export class PositionPlugin extends BaPlugin {
 	}
 
 	_setPositionFromConfig() {
-		const {
-			MapService: mapService
-		} = $injector.inject('MapService');
+		const { MapService: mapService } = $injector.inject('MapService');
 
 		setTimeout(() => {
 			fit(mapService.getDefaultMapExtent(), { useVisibleViewport: false });
@@ -79,9 +69,7 @@ export class PositionPlugin extends BaPlugin {
 	}
 
 	_init() {
-
-		const { EnvironmentService: environmentService }
-			= $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 

@@ -3,20 +3,16 @@ import { $injector } from '../../src/injection';
 import { EnvironmentService } from '../../src/services/EnvironmentService';
 
 describe('EnvironmentService', () => {
-
 	const configService = {
-		getValue: () => { }
+		getValue: () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('ConfigService', configService);
 	});
 
 	describe('window object', () => {
-
 		it('provides the global window object', () => {
-
 			const mockWindow = {
 				location: {
 					search: '?foo=bar'
@@ -28,7 +24,6 @@ describe('EnvironmentService', () => {
 		});
 
 		it('provides the global window object from default param', () => {
-
 			const instanceUnderTest = new EnvironmentService();
 
 			expect(instanceUnderTest.getWindow()).toBeDefined();
@@ -36,9 +31,7 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('url parameter', () => {
-
 		it('provides current url parameter', () => {
-
 			const mockWindow = {
 				location: {
 					search: '?foo=true'
@@ -52,7 +45,6 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('touch ability', () => {
-
 		it('detects touch ability', () => {
 			const mockWindow = {
 				navigator: {}
@@ -106,7 +98,6 @@ describe('EnvironmentService', () => {
 			const mockWindow = {
 				navigator: {},
 				orientation: 'something'
-
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 			expect(instanceUnderTest.isTouch()).toBeTrue();
@@ -232,7 +223,6 @@ describe('EnvironmentService', () => {
 	});
 
 	describe('isStandalone', () => {
-
 		it('returns `false` when BACKEND_URL config param is available', () => {
 			const instanceUnderTest = new EnvironmentService();
 			spyOn(configService, 'getValue').withArgs('BACKEND_URL', false).and.returnValue('foo');

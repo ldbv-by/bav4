@@ -1,4 +1,3 @@
-
 /**
  * Loop through an objects own properties and execute an action.
  * Action function will be provided the current key and the property assign to that key.

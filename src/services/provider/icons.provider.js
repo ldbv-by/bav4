@@ -2,11 +2,11 @@ import { $injector } from '../../injection';
 import { IconResult } from '../IconService';
 
 /**
-  * A function that returns a promise with a Array of IconResults.
-  *
-  * @typedef {Function} iconProvider
-  * @returns {(Promise<Array<IconResult>>)}
-  */
+ * A function that returns a promise with a Array of IconResults.
+ *
+ * @typedef {Function} iconProvider
+ * @returns {(Promise<Array<IconResult>>)}
+ */
 
 /**
  *  Uses the BVV services to load icons
@@ -21,17 +21,16 @@ export const loadBvvIcons = async () => {
 		const payload = await result.json();
 
 		const matcher = (id) => {
-			return (idOrUrl) => idOrUrl === id || !!(idOrUrl?.endsWith(`/${id}.png`));
+			return (idOrUrl) => idOrUrl === id || !!idOrUrl?.endsWith(`/${id}.png`);
 		};
 
 		const urlFactoryFunction = (id) => {
 			return (color) => `${url}/${color[0]},${color[1]},${color[2]}/${id}.png`;
 		};
 
-		payload.forEach(bvvIcon => {
+		payload.forEach((bvvIcon) => {
 			const { id, svg } = bvvIcon;
 			icons.push(new IconResult(id, svg, matcher(id), urlFactoryFunction(id)));
-
 		});
 
 		if (icons.length === 0) {

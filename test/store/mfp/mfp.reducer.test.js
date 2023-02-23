@@ -4,7 +4,6 @@ import { EventLike } from '../../../src/utils/storeUtils';
 import { TestUtils } from '../../test-utils';
 
 describe('mfpReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			mfp: mfpReducer

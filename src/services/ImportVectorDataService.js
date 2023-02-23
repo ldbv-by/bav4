@@ -2,7 +2,10 @@ import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';
 import { SourceType, SourceTypeName } from './../domain/sourceType';
-import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionProviderForGeoResourceImportedByUrl } from './provider/attribution.provider';
+import {
+	getAttributionForLocallyImportedOrCreatedGeoResource,
+	getAttributionProviderForGeoResourceImportedByUrl
+} from './provider/attribution.provider';
 
 /**
  *
@@ -12,18 +15,19 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionPro
  * @property {SourceType|VectorSourceType} [sourceType] the source type. Can be either a SourceType or a VectorSourceType instance. If not set it will be tried to detect it
  */
 
-
 /**
-* Service for importing data. Usually returns a {@link GeoResource}.
-* @class
-* @author taulinger
-*/
+ * Service for importing data. Usually returns a {@link GeoResource}.
+ * @class
+ * @author taulinger
+ */
 export class ImportVectorDataService {
-
 	constructor() {
-		const { HttpService: httpService, GeoResourceService: geoResourceService, UrlService: urlService,
-			SourceTypeService: sourceTypeService }
-			= $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'SourceTypeService');
+		const {
+			HttpService: httpService,
+			GeoResourceService: geoResourceService,
+			UrlService: urlService,
+			SourceTypeService: sourceTypeService
+		} = $injector.inject('HttpService', 'GeoResourceService', 'UrlService', 'SourceTypeService');
 		this._httpService = httpService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
@@ -31,9 +35,9 @@ export class ImportVectorDataService {
 	}
 
 	/**
-	* Returns default vector data import options.
-	* @returns ImportVectorDataOptions
-	*/
+	 * Returns default vector data import options.
+	 * @returns ImportVectorDataOptions
+	 */
 	_newDefaultImportVectorDataOptions() {
 		return {
 			id: createUniqueId().toString(),
@@ -43,12 +47,12 @@ export class ImportVectorDataService {
 	}
 
 	/**
-	* Imports vector data from a URL and returns a {@link GeoResourceFuture}.
-	* The GeoResourceFuture is registered on the {@link GeoResourceService}.
-	* @param {string} url
-	* @param {ImportVectorDataOptions} [options]
-	* @returns GeoResourceFuture or `null` when given source type is not supported
-	*/
+	 * Imports vector data from a URL and returns a {@link GeoResourceFuture}.
+	 * The GeoResourceFuture is registered on the {@link GeoResourceService}.
+	 * @param {string} url
+	 * @param {ImportVectorDataOptions} [options]
+	 * @returns GeoResourceFuture or `null` when given source type is not supported
+	 */
 	forUrl(url, options = {}) {
 		const { id, label, sourceType } = { ...this._newDefaultImportVectorDataOptions(), ...options };
 
@@ -58,8 +62,7 @@ export class ImportVectorDataService {
 			return null;
 		}
 
-		const loader = async id => {
-
+		const loader = async (id) => {
 			const proxyfiedUrl = this._urlService.proxifyInstant(url);
 			const result = await this._httpService.get(proxyfiedUrl, { timeout: 5000 });
 
@@ -112,11 +115,9 @@ export class ImportVectorDataService {
 	 * Maps a {@link SourceType} to a {@link VectorSourceType}
 	 */
 	_mapSourceTypeToVectorSourceType(sourceType) {
-
 		if (sourceType) {
 			// is it a SourceType instance?
 			if (sourceType instanceof SourceType) {
-
 				switch (sourceType.name) {
 					case SourceTypeName.KML:
 						return VectorSourceType.KML;
@@ -132,11 +133,14 @@ export class ImportVectorDataService {
 				}
 			}
 			// is it a VectorSourceType enum value?
-			else if (Object.entries(VectorSourceType).map(arr => arr[1]).includes(sourceType)) {
+			else if (
+				Object.entries(VectorSourceType)
+					.map((arr) => arr[1])
+					.includes(sourceType)
+			) {
 				return sourceType;
 			}
 		}
 		return null;
 	}
 }
-

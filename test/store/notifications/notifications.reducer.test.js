@@ -2,7 +2,6 @@ import { TestUtils } from '../../test-utils';
 import { notificationReducer } from '../../../src/store/notifications/notifications.reducer';
 import { emitNotification, LevelTypes } from '../../../src/store/notifications/notifications.action';
 
-
 describe('notificationReducer', () => {
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
@@ -15,7 +14,7 @@ describe('notificationReducer', () => {
 		expect(store.getState().notifications.latest).toBeNull();
 	});
 
-	it('sets the \'notification\' property', () => {
+	it("sets the 'notification' property", () => {
 		const store = setup();
 		const notification = {
 			content: 'foo',

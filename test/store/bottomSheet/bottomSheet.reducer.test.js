@@ -2,9 +2,7 @@ import { openBottomSheet, closeBottomSheet } from '../../../src/store/bottomShee
 import { bottomSheetReducer } from '../../../src/store/bottomSheet/bottomSheet.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('modalReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			bottomSheet: bottomSheetReducer

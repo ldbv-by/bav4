@@ -5,7 +5,6 @@ import { changeCenter, fit } from '../store/position/position.action';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from '../plugins/BaPlugin';
 
-
 /**
  * Id of the layer used for geolocation visualization
  * @class
@@ -14,7 +13,6 @@ import { BaPlugin } from '../plugins/BaPlugin';
 export const GEOLOCATION_LAYER_ID = 'geolocation_layer';
 
 export class GeolocationPlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		this._firstTimeActivatingGeolocation = true;
@@ -53,11 +51,7 @@ export class GeolocationPlugin extends BaPlugin {
 
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		const extent3857 = [...positionEpsg3857, ...positionEpsg3857];
-		const geodeticExtent = coordinateService.transformExtent(
-			extent3857,
-			mapService.getSrid(),
-			mapService.getDefaultGeodeticSrid()
-		);
+		const geodeticExtent = coordinateService.transformExtent(extent3857, mapService.getSrid(), mapService.getDefaultGeodeticSrid());
 		const extent = coordinateService.transformExtent(
 			coordinateService.buffer(geodeticExtent, position.coords.accuracy),
 			mapService.getDefaultGeodeticSrid(),
@@ -67,10 +61,7 @@ export class GeolocationPlugin extends BaPlugin {
 	}
 
 	_handlePositionAndUpdateStore(position) {
-		const {
-			StoreService: storeService
-		}
-			= $injector.inject('StoreService');
+		const { StoreService: storeService } = $injector.inject('StoreService');
 
 		//if geolocation was previously denied, we reset the flag
 		if (storeService.getStore().getState().geolocation.denied) {
@@ -115,26 +106,27 @@ export class GeolocationPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-
 		const onGeolocationActivityChange = (active) => {
-
 			if (active) {
 				this._activate();
 				addLayer(GEOLOCATION_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-			}
-			else {
+			} else {
 				this._deactivate();
 				removeLayer(GEOLOCATION_LAYER_ID);
 			}
 		};
 
-		observe(store, state => state.geolocation.active, onGeolocationActivityChange);
+		observe(store, (state) => state.geolocation.active, onGeolocationActivityChange);
 
 		//disable tracking when map is dragged  by user
-		observe(store, state => state.pointer.beingDragged, (beingDragged, state) => {
-			if (state.geolocation.active && beingDragged) {
-				setTracking(false);
+		observe(
+			store,
+			(state) => state.pointer.beingDragged,
+			(beingDragged, state) => {
+				if (state.geolocation.active && beingDragged) {
+					setTracking(false);
+				}
 			}
-		});
+		);
 	}
 }

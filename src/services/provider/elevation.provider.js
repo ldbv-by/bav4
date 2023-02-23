@@ -3,7 +3,6 @@
  */
 import { $injector } from '../../injection';
 
-
 /**
  * A function that takes a coordinate and returns a promise with a number.
  *
@@ -17,11 +16,9 @@ import { $injector } from '../../injection';
  * @returns {number} elevation loaded from backend
  */
 export const loadBvvElevation = async (coordinate3857) => {
-
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'dem/elevation';
-
 
 	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
 

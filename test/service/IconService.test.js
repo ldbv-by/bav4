@@ -3,17 +3,14 @@ import { loadBvvIcons } from '../../src/services/provider/icons.provider';
 import { $injector } from '../../src/injection';
 import { getBvvIconColor } from '../../src/services/provider/iconColor.provider';
 
-
 describe('IconsService', () => {
-
 	const configServiceMock = {
-		getValue: () => { },
-		getValueAsPath: () => { }
+		getValue: () => {},
+		getValueAsPath: () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configServiceMock);
+		$injector.registerSingleton('ConfigService', configServiceMock);
 	});
 
 	const getMatcher = (id) => {
@@ -23,19 +20,14 @@ describe('IconsService', () => {
 	const iconResult2 = new IconResult('foo2', 'bar2', getMatcher('foo2'), () => 'http://some.url/foo2');
 	const markerIconResult = new IconResult('marker', 'marker', getMatcher('marker'), () => 'http://some.url/marker');
 	const loadMockIcons = async () => {
-		return [
-			iconResult1,
-			iconResult2
-		];
+		return [iconResult1, iconResult2];
 	};
-
 
 	const setup = (iconProvider = loadMockIcons) => {
 		return new IconService(iconProvider);
 	};
 
 	describe('initialization', () => {
-
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup();
 			expect(instanceUnderTest._icons).toBeNull();
@@ -53,7 +45,6 @@ describe('IconsService', () => {
 			expect(instanceUnderTest._iconColorProvider).toEqual(getBvvIconColor);
 		});
 
-
 		it('just provides the icons when already initialized', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._icons = [iconResult1];
@@ -64,34 +55,32 @@ describe('IconsService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-
 			it('logs an error when we are NOT in standalone mode', async () => {
-
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Icons could not be loaded');
 				});
 				const warnSpy = spyOn(console, 'warn');
-
 
 				const icons = await instanceUnderTest.all();
 				const defaultIcon = instanceUnderTest.getDefault();
 
 				expect(icons.length).toBe(5);
 				expect(icons[0]).toEqual(defaultIcon);
-				expect(icons).toEqual(jasmine.arrayContaining([
-					jasmine.objectContaining({ id: 'marker' }),
-					jasmine.objectContaining({ id: 'triangle-stroked' }),
-					jasmine.objectContaining({ id: 'triangle' }),
-					jasmine.objectContaining({ id: 'square-stroked' }),
-					jasmine.objectContaining({ id: 'square' })
-				]));
+				expect(icons).toEqual(
+					jasmine.arrayContaining([
+						jasmine.objectContaining({ id: 'marker' }),
+						jasmine.objectContaining({ id: 'triangle-stroked' }),
+						jasmine.objectContaining({ id: 'triangle' }),
+						jasmine.objectContaining({ id: 'square-stroked' }),
+						jasmine.objectContaining({ id: 'square' })
+					])
+				);
 				expect(warnSpy).toHaveBeenCalledWith('Icons could not be fetched from backend. Using fallback icons ...');
 			});
 		});
 	});
 
 	describe('all', () => {
-
 		it('provides all icons', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._icons = [iconResult1];
@@ -110,7 +99,6 @@ describe('IconsService', () => {
 			const icons = await instanceUnderTest.all();
 			expect(loadSpy).toHaveBeenCalled();
 			expect(icons.length).toBe(2);
-
 		});
 
 		it('arranges the icons with the default icon first', async () => {
@@ -171,7 +159,6 @@ describe('IconsService', () => {
 			expect(defaultIcon).toBeInstanceOf(IconResult);
 			expect(defaultIcon.id).toBe('marker');
 			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/marker');
-
 		});
 
 		it('provides a default icon, without url', async () => {
@@ -180,10 +167,8 @@ describe('IconsService', () => {
 			const warnSpy = spyOn(console, 'warn');
 			const defaultIcon = instanceUnderTest.getDefault();
 
-
 			expect(defaultIcon.getUrl([1, 2, 3])).toBeNull();
 			expect(warnSpy).toHaveBeenCalledWith('No backend-information available.');
-
 		});
 	});
 
@@ -198,13 +183,18 @@ describe('IconsService', () => {
 	});
 
 	describe('IconResult', () => {
-
 		const fromBase64 = (id, encodedString) => {
 			if (encodedString.startsWith('data:image/svg+xml;base64,')) {
 				const b64DecodeUnicode = (str) => {
-					return decodeURIComponent(window.atob(str).split('').map(function (c) {
-						return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-					}).join(''));
+					return decodeURIComponent(
+						window
+							.atob(str)
+							.split('')
+							.map(function (c) {
+								return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+							})
+							.join('')
+					);
 				};
 
 				return new IconResult(id, b64DecodeUnicode(encodedString.replace('data:image/svg+xml;base64,', '')));
@@ -220,7 +210,8 @@ describe('IconsService', () => {
 		});
 
 		it('creates a base64-encoded string and back', () => {
-			const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
+			const svg =
+				'<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(255,255,255)" class="bi bi-geo-alt-fill" viewBox="0 0 16 16"><!-- MIT License --><path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>';
 
 			const firstIconResult = new IconResult('foo', svg);
 			const base64String = firstIconResult.base64;
@@ -231,4 +222,3 @@ describe('IconsService', () => {
 		});
 	});
 });
-

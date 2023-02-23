@@ -10,9 +10,7 @@ import { EventLike } from '../../src/utils/storeUtils.js';
 import { searchReducer } from '../../src/store/search/search.reducer.js';
 import { setQuery } from '../../src/store/search/search.action.js';
 
-
 describe('MainMenuPlugin', () => {
-
 	const windowMock = {
 		location: {
 			get search() {
@@ -24,7 +22,6 @@ describe('MainMenuPlugin', () => {
 	const defaultTabId = TabId.TOPICS;
 
 	const setup = (state) => {
-
 		const initialState = {
 			mainMenu: {
 				open: false,
@@ -41,13 +38,11 @@ describe('MainMenuPlugin', () => {
 			featureInfo: featureInfoReducer,
 			search: searchReducer
 		});
-		$injector
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
 		return store;
 	};
 
 	describe('constructor', () => {
-
 		it('setups local state', () => {
 			setup();
 			const instanceUnderTest = new MainMenuPlugin();
@@ -58,9 +53,7 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('_init', () => {
-
 		describe('query parameter available', () => {
-
 			it('sets the requested tab id', async () => {
 				const queryParam = `${QueryParameters.MENU_ID}=3`;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
@@ -85,7 +78,6 @@ describe('MainMenuPlugin', () => {
 		});
 
 		describe('query parameter is NOT available', () => {
-
 			it('sets the default tab id', async () => {
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
@@ -98,7 +90,6 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('register', () => {
-
 		it('updates necessary local fields', async () => {
 			const store = setup({
 				mainMenu: {
@@ -107,7 +98,6 @@ describe('MainMenuPlugin', () => {
 			});
 			const instanceUnderTest = new MainMenuPlugin();
 			const initSpy = spyOn(instanceUnderTest, '_init').and.callThrough();
-
 
 			await instanceUnderTest.register(store);
 
@@ -131,7 +121,6 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when featureInfo.querying property changes', () => {
-
 		it('does nothing when query is running', async () => {
 			const queryId = 'foo';
 			const store = setup({
@@ -152,9 +141,7 @@ describe('MainMenuPlugin', () => {
 		});
 
 		describe('and we have FeatureInfo items', () => {
-
 			describe('and MainMenu is initially closed', () => {
-
 				it('opens the FeatureInfo panel', async () => {
 					const queryId = 'foo';
 					const store = setup({
@@ -176,9 +163,7 @@ describe('MainMenuPlugin', () => {
 			});
 
 			describe('and we have NO FeatureInfo items', () => {
-
 				describe('and MainMenu is initially closed', () => {
-
 					it('restores the previous panel and closes the menu', async () => {
 						const queryId = 'foo';
 						const store = setup({
@@ -202,7 +187,6 @@ describe('MainMenuPlugin', () => {
 				});
 
 				describe('and MainMenu is initially open', () => {
-
 					it('restores the previous panel', async () => {
 						const queryId = 'foo';
 						const store = setup({
@@ -229,9 +213,7 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when featureInfo.aborted property changes', () => {
-
 		describe('and MainMenu is initially closed', () => {
-
 			it('restores the previous panel', async () => {
 				const queryId = 'foo';
 				const store = setup({
@@ -255,7 +237,6 @@ describe('MainMenuPlugin', () => {
 		});
 
 		describe('and MainMenu is initially open', () => {
-
 			it('restores the previous panel', async () => {
 				const queryId = 'foo';
 				const store = setup({
@@ -280,7 +261,6 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when mainMenu.tabIndex changes', () => {
-
 		it('stores some properties', async () => {
 			const tabIndex = TabId.MAPS;
 			const store = setup({
@@ -303,7 +283,6 @@ describe('MainMenuPlugin', () => {
 	});
 
 	describe('when search.query property changes', () => {
-
 		it('opens the search panel', async () => {
 			const store = setup({
 				mainMenu: {

@@ -1,4 +1,3 @@
-
 /**
  * An async function that provides an array of {@link GeoResource}s.
  *
@@ -38,7 +37,6 @@ export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
  * @author taulinger
  */
 export class GeoResourceService {
-
 	/**
 	 *
 	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
@@ -62,22 +60,19 @@ export class GeoResourceService {
 	async init() {
 		if (!this._georesources) {
 			try {
-				this._georesources = (await this._provider()).map(gr => this._proxify(gr));
-			}
-			catch (e) {
+				this._georesources = (await this._provider()).map((gr) => this._proxify(gr));
+			} catch (e) {
 				this._georesources = [];
 				if (this._environmentService.isStandalone()) {
 					console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
 					this._georesources.push(...this._newFallbackGeoResources());
-				}
-				else {
+				} else {
 					console.error('GeoResources could not be fetched from backend.', e);
 				}
 			}
 		}
 		return this._georesources;
 	}
-
 
 	/**
 	 * Returns all available {@link GeoResource}.
@@ -106,7 +101,7 @@ export class GeoResourceService {
 		if (!id) {
 			return null;
 		}
-		const geoResource = this._georesources.find(georesource => georesource.id === id);
+		const geoResource = this._georesources.find((georesource) => georesource.id === id);
 		return geoResource || null;
 	}
 
@@ -141,14 +136,12 @@ export class GeoResourceService {
 	 * @returns the added or replaced  and observed GeoResource
 	 */
 	addOrReplace(geoResource) {
-
 		const observedGeoResource = this._proxify(geoResource);
-		const existingGeoR = this._georesources.find(_georesource => _georesource.id === geoResource.id);
+		const existingGeoR = this._georesources.find((_georesource) => _georesource.id === geoResource.id);
 		if (existingGeoR) {
 			const index = this._georesources.indexOf(existingGeoR);
 			this._georesources.splice(index, 1, observedGeoResource);
-		}
-		else {
+		} else {
 			this._georesources.push(observedGeoResource);
 		}
 		// update  slice-of-state 'layers'
@@ -160,42 +153,60 @@ export class GeoResourceService {
 	 * @private
 	 */
 	_newFallbackGeoResources() {
-
 		const topPlusOpenGeoResources = [
-			new XyzGeoResource(FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_LABEL_0, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'),
-			new XyzGeoResource(FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_LABEL_1, 'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png')
-		].map(gr => {
+			new XyzGeoResource(
+				FALLBACK_GEORESOURCE_ID_0,
+				FALLBACK_GEORESOURCE_LABEL_0,
+				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web/default/WEBMERCATOR/{z}/{y}/{x}.png'
+			),
+			new XyzGeoResource(
+				FALLBACK_GEORESOURCE_ID_1,
+				FALLBACK_GEORESOURCE_LABEL_1,
+				'http://sgx.geodatenzentrum.de/wmts_topplus_open/tile/1.0.0/web_grau/default/WEBMERCATOR/{z}/{y}/{x}.png'
+			)
+		].map((gr) => {
 			return gr.setAttribution({
 				description: 'TopPlusOpen',
 				copyright: [
 					{ label: 'Bundesamt für Kartographie und Geodäsie (2021)', url: 'http://www.bkg.bund.de/' },
 					{ label: 'Datenquellen', url: 'https://sg.geodatenzentrum.de/web_public/Datenquellen_TopPlus_Open.pdf' }
 				]
-			}
-			);
+			});
 		});
 
 		const baseMapDeVectorGeoResources = [
-			new VTGeoResource(FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_LABEL_2, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'),
-			new VTGeoResource(FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_3, 'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json')
-		].map(gr => {
+			new VTGeoResource(
+				FALLBACK_GEORESOURCE_ID_2,
+				FALLBACK_GEORESOURCE_LABEL_2,
+				'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_col.json'
+			),
+			new VTGeoResource(
+				FALLBACK_GEORESOURCE_ID_3,
+				FALLBACK_GEORESOURCE_LABEL_3,
+				'https://sgx.geodatenzentrum.de/gdz_basemapde_vektor/styles/bm_web_top.json'
+			)
+		].map((gr) => {
 			return gr.setAttribution({
 				description: 'basemap.de Web Vektor',
 				copyright: { label: 'basemap.de / BKG 08/2022', url: 'https://basemap.de/web-vektor/' }
 			});
 		});
 
-		return [...topPlusOpenGeoResources, ...baseMapDeVectorGeoResources].map(gr => this._proxify(gr));
+		return [...topPlusOpenGeoResources, ...baseMapDeVectorGeoResources].map((gr) => this._proxify(gr));
 	}
 
 	_proxify(geoResource) {
 		return geoResource[GeoResourceService.proxyIdentifier]
 			? geoResource // already proxified
-			: observable(geoResource, (key) => {
-				if (key === '_label') {
-					geoResourceChanged(geoResource.id);
-				}
-			}, GeoResourceService.proxyIdentifier);
+			: observable(
+					geoResource,
+					(key) => {
+						if (key === '_label') {
+							geoResourceChanged(geoResource.id);
+						}
+					},
+					GeoResourceService.proxyIdentifier
+			  );
 	}
 
 	static get proxyIdentifier() {

@@ -11,7 +11,6 @@ import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer
 import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer';
 
 describe('OlGeolocationHandler', () => {
-
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialState = {
 		active: false,
@@ -37,14 +36,14 @@ describe('OlGeolocationHandler', () => {
 				}),
 				new TileLayer({
 					source: new TileDebug()
-				})],
+				})
+			],
 			target: container,
 			view: new View({
 				center: initialCenter,
 				zoom: 1
 			})
 		});
-
 	};
 
 	it('instantiates the handler', () => {
@@ -76,11 +75,9 @@ describe('OlGeolocationHandler', () => {
 		});
 
 		describe('when geolocation-state changed', () => {
-
 			it('positions accuracy- and position-feature on position', () => {
 				const map = setupMap();
 				setup();
-
 
 				const handler = new OlGeolocationHandler();
 				handler.activate(map);
@@ -96,11 +93,9 @@ describe('OlGeolocationHandler', () => {
 				expect(handler._positionFeature.getGeometry().getCoordinates()).toEqual([38, 57]);
 			});
 
-
 			it('does NOT position accuracy- and position-feature with invalid position', () => {
 				const map = setupMap();
 				setup();
-
 
 				const handler = new OlGeolocationHandler();
 				handler.activate(map);
@@ -130,7 +125,6 @@ describe('OlGeolocationHandler', () => {
 				const map = setupMap();
 				setup();
 
-
 				const handler = new OlGeolocationHandler();
 				handler.activate(map);
 
@@ -159,7 +153,6 @@ describe('OlGeolocationHandler', () => {
 				const map = setupMap();
 				setup();
 
-
 				const handler = new OlGeolocationHandler();
 				const blinkSpy = spyOn(handler, '_blinkPosition');
 				handler.activate(map);
@@ -181,12 +174,10 @@ describe('OlGeolocationHandler', () => {
 			});
 		});
 		describe('when geolocation-request is denied', () => {
-
 			it('sets accuracy- and position-feature to default', () => {
 				const map = setupMap();
 				const state = { ...initialState, denied: true };
 				setup(state);
-
 
 				const handler = new OlGeolocationHandler();
 				handler.activate(map);
@@ -210,7 +201,6 @@ describe('OlGeolocationHandler', () => {
 				expect(positionStyle.getStroke()).toBeFalsy();
 				expect(positionStyle.getImage()).toBeFalsy();
 			});
-
 		});
 	});
 
@@ -223,16 +213,12 @@ describe('OlGeolocationHandler', () => {
 			handler.activate(map);
 			const spyOnUnregister = spyOn(handler, '_unregister');
 
-
 			handler.deactivate(map);
 
 			expect(handler._geolocationLayer).toBeNull();
 			expect(spyOnUnregister).toHaveBeenCalled();
 		});
-
-
 	});
-
 
 	describe('when toggle activate/deactivate', () => {
 		it('uses correct styles per state', () => {
@@ -253,7 +239,6 @@ describe('OlGeolocationHandler', () => {
 			expect(nullStyle.getStroke()).toBeNull();
 			expect(nullStyle.getImage()).toBeNull();
 
-
 			handler.activate(map);
 			const geolocationStyleFunction = positionFeature.getStyle();
 			const geolocationStyle = geolocationStyleFunction(positionFeature)[0];
@@ -262,7 +247,5 @@ describe('OlGeolocationHandler', () => {
 			expect(geolocationStyle.getStroke()).toBeTruthy();
 			expect(geolocationStyle.getImage()).toBeTruthy();
 		});
-
-
 	});
 });

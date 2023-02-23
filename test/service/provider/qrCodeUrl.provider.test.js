@@ -2,16 +2,13 @@ import { $injector } from '../../../src/injection';
 import { bvvQrCodeProvider } from '../../../src/services/provider/qrCodeUrlProvider';
 
 describe('QrCode provider', () => {
-
 	describe('Bvv QrCode provider', () => {
-
 		const configService = {
-			getValueAsPath: () => { }
+			getValueAsPath: () => {}
 		};
 
 		beforeAll(() => {
-			$injector
-				.registerSingleton('ConfigService', configService);
+			$injector.registerSingleton('ConfigService', configService);
 		});
 
 		it('returns a qrCode URL', () => {

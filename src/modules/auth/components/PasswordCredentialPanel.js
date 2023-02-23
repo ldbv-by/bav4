@@ -29,8 +29,8 @@ const Update_Authenticating = 'update_authenticating';
 /**
  * This callback is called after the authentication was successful.
  * @callback PasswordCredentialPanel~onCloseCallback
-  * @param {Credential} credential the valid credential.
-  * @param {Object} result the authentication-result.
+ * @param {Credential} credential the valid credential.
+ * @param {Object} result the authentication-result.
  */
 
 /**
@@ -104,16 +104,19 @@ export class PasswordCredentialPanel extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 		this._authenticate = () => false;
-		this._onClose = () => { };
+		this._onClose = () => {};
 	}
 
 	onInitialize() {
-		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+		this.observe(
+			(state) => state.media.portrait,
+			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
+		);
 	}
 
 	/**
-	* @override
-	*/
+	 * @override
+	 */
 	onAfterRender(firsttime) {
 		if (firsttime) {
 			const credential_username = this.shadowRoot.getElementById('credential_username');
@@ -121,9 +124,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		}
 	}
 
-
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_URL:
 				return { ...model, url: data };
@@ -163,7 +164,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const onEnterAuthenticate = (e) => {
-			const no_op = () => { };
+			const no_op = () => {};
 			const authenticate = () => {
 				this._tryAuthenticate(credential, url);
 			};
@@ -172,7 +173,9 @@ export class PasswordCredentialPanel extends MvuElement {
 		};
 
 		const getHeaderContent = (url) => {
-			return url ? html`<span class='title_url'>${translate('auth_passwordCredentialPanel_title')}</span><span class='value_url' title=${url} >${url}</span>` : nothing;
+			return url
+				? html`<span class="title_url">${translate('auth_passwordCredentialPanel_title')}</span><span class="value_url" title=${url}>${url}</span>`
+				: nothing;
 		};
 
 		const togglePassword = () => {
@@ -191,7 +194,9 @@ export class PasswordCredentialPanel extends MvuElement {
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input required="required"   type=${showPassword ? 'text' : 'password'} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
+					<input required="required"   type=${
+						showPassword ? 'text' : 'password'
+					} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
 				</div><i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
 			</div>
@@ -208,20 +213,25 @@ export class PasswordCredentialPanel extends MvuElement {
 
 		const getSubmitButton = () => {
 			const authenticate = () => this._tryAuthenticate(credential, url);
-			return html`<ba-button id='authenticate-credential-button'
-			class="credential_footer__button" .label=${translate('auth_passwordCredentialPanel_submit')} .type=${'primary'}                
-			@click=${authenticate} ></ba-button>`;
+			return html`<ba-button
+				id="authenticate-credential-button"
+				class="credential_footer__button"
+				.label=${translate('auth_passwordCredentialPanel_submit')}
+				.type=${'primary'}
+				@click=${authenticate}
+			></ba-button>`;
 		};
 
 		const getSpinnerButton = () => {
-			return html`<ba-button id='authenticating-button' class="credential_footer__button" 
-			.disabled=${true} 
-			.label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}>`} 
-			.type=${'primary'}              
+			return html`<ba-button
+				id="authenticating-button"
+				class="credential_footer__button"
+				.disabled=${true}
+				.label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}></ba-spinner>`}
+				.type=${'primary'}
 			></ba-button>`;
 		};
 		return authenticating ? getSpinnerButton() : getSubmitButton();
-
 	}
 
 	async _tryAuthenticate(credential, url) {
@@ -230,8 +240,7 @@ export class PasswordCredentialPanel extends MvuElement {
 		const result = await this._authenticate(credential, url);
 		if (result) {
 			this._onClose(credential, result);
-		}
-		else {
+		} else {
 			emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
 		}
 		this.signal(Update_Authenticating, false);

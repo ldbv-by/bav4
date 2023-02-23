@@ -6,7 +6,6 @@ import { MvuElement } from '../../../../../MvuElement';
 import { requestData } from '../resultPanelUtils';
 import css from './geoResourceResultsPanel.css';
 
-
 const Update_Collapsed = 'update_collapsed';
 const Update_AllShown = 'update_allShown';
 const Update_Results_AllShown = 'update_results_allShown';
@@ -18,16 +17,16 @@ const Update_Results_AllShown = 'update_results_allShown';
  * @author alsturm
  */
 export class GeoResourceResultsPanel extends MvuElement {
-
-
 	constructor() {
 		super({
 			results: [],
 			collapsed: false,
 			allShown: false
 		});
-		const { SearchResultService: searchResultService, TranslationService: translationService }
-			= $injector.inject('SearchResultService', 'TranslationService');
+		const { SearchResultService: searchResultService, TranslationService: translationService } = $injector.inject(
+			'SearchResultService',
+			'TranslationService'
+		);
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
@@ -44,24 +43,24 @@ export class GeoResourceResultsPanel extends MvuElement {
 		}
 	}
 
-
 	onInitialize() {
 		const searchResultProvider = (term) => this._searchResultService.geoResourcesByTerm(term);
 
 		//requestData call has to be debounced
-		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay,
-			async (term) => {
-				if (term) {
-					const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
-					const allShown = (results.length > GeoResourceResultsPanel.Default_Result_Item_Length) ? false : true;
-					this.signal(Update_Results_AllShown, { results, allShown });
-				}
-				else {
-					this.signal(Update_Results_AllShown, { results: [], allShown: false });
-				}
-			});
+		const requestGeoResourceDataAndUpdateViewHandler = debounced(GeoResourceResultsPanel.Debounce_Delay, async (term) => {
+			if (term) {
+				const results = await requestData(term, searchResultProvider, GeoResourceResultsPanel.Min_Query_Length);
+				const allShown = results.length > GeoResourceResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown });
+			} else {
+				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+			}
+		});
 
-		this.observe(state => state.search.query, query => requestGeoResourceDataAndUpdateViewHandler(query.payload));
+		this.observe(
+			(state) => state.search.query,
+			(query) => requestGeoResourceDataAndUpdateViewHandler(query.payload)
+		);
 	}
 
 	/**
@@ -98,27 +97,28 @@ export class GeoResourceResultsPanel extends MvuElement {
 		const indexEnd = allShown ? results.length : GeoResourceResultsPanel.Default_Result_Item_Length;
 
 		return html`
-        <style>${css}</style>
-		<div class="georesource-results-panel divider">
+			<style>
+				${css}
+			</style>
+			<div class="georesource-results-panel divider">
 				<button class="georesource-label" @click="${toggleCollapse}">
-					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>			
-					<a class='georesource-label__collapse'>
-						<i class='icon chevron ${classMap(iconCollapseClass)}'>
-						</i>
-					</a>   
+					<span class="georesource-label__text">${translate('search_menu_geoResourceResultsPanel_label')}</span>
+					<a class="georesource-label__collapse">
+						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
+					</a>
 				</button>
-				<div class="${classMap(bodyCollapseClass)}">	
-					<ul class="georesource-items">	
+				<div class="${classMap(bodyCollapseClass)}">
+					<ul class="georesource-items">
 						${results
-		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`)}
+							.slice(0, indexEnd)
+							.map(
+								(result) => html`<ba-search-content-panel-georesource-item data-test-id .data=${result}></<ba-search-content-panel-georesource-item>`
+							)}
 					</ul>
-					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
-					${translate('search_menu_showAll_label')}
-					</div>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
 				</div>
 			</div>
-        `;
+		`;
 	}
 
 	static get tag() {

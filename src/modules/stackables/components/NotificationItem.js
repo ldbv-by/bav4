@@ -32,7 +32,7 @@ export class NotificationItem extends MvuElement {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._onClose = () => { };
+		this._onClose = () => {};
 	}
 
 	update(type, data, model) {
@@ -61,22 +61,25 @@ export class NotificationItem extends MvuElement {
 		const getLevelText = (level) => {
 			switch (level) {
 				case LevelTypes.INFO:
-					return html`<div id="notification-info" data-test-id class='notification_level'>${translate('notifications_item_info')}</div>`;
+					return html`<div id="notification-info" data-test-id class="notification_level">${translate('notifications_item_info')}</div>`;
 				case LevelTypes.WARN:
-					return html`<div class='notification_level'>${translate('notifications_item_warn')}</div>`;
+					return html`<div class="notification_level">${translate('notifications_item_warn')}</div>`;
 				case LevelTypes.ERROR:
-					return html`<div class='notification_level'>${translate('notifications_item_error')}</div>`;
+					return html`<div class="notification_level">${translate('notifications_item_error')}</div>`;
 				default:
 					return html.nothing;
 			}
 		};
 
-		return notification.content ? html`
-			<style>${css}</style>
-			<div class='notification_item ${classMap(levelClass)}'>
-				${getLevelText(notification.level)}
-				<div class='notification_content'>${notification.content}</div>			
-			</div>` : nothing;
+		return notification.content
+			? html` <style>
+						${css}
+					</style>
+					<div class="notification_item ${classMap(levelClass)}">
+						${getLevelText(notification.level)}
+						<div class="notification_content">${notification.content}</div>
+					</div>`
+			: nothing;
 	}
 
 	_hide() {

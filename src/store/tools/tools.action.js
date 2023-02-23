@@ -22,8 +22,6 @@ export const ToolId = Object.freeze({
 	EXPORT: 'export'
 });
 
-
-
 /**
  * Sets the current active tool. A value of `null` will disable an currently active tool.
  * @param {string|null} toolId

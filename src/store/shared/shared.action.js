@@ -10,13 +10,11 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
 /**
  * Set the acknowledgement of the user for the Terms of Use.
-  * @function
+ * @function
  */
 export const acknowledgeTermsOfUse = () => {
-
 	getStore().dispatch({
 		type: TERMS_OF_USE_ACKNOWLEDGED_CHANGED,
 		payload: true

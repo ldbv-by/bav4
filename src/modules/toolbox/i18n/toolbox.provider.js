@@ -1,6 +1,5 @@
 export const provide = (lang) => {
 	switch (lang) {
-
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
@@ -52,7 +51,8 @@ export const provide = (lang) => {
 				toolbox_measureTool_delete_measure: 'Delete measure',
 				toolbox_measureTool_measure_active: 'Tap on the map to start measurement',
 				toolbox_measureTool_measure_draw: 'Tap on the map to continue drawing the line (double-tap to finish)',
-				toolbox_measureTool_measure_modify: 'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
+				toolbox_measureTool_measure_modify:
+					'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it',
 				toolbox_measureTool_measure_select: 'Select an existing measurement or start a new one',
 				toolbox_measureTool_share: 'Share',
 				toolbox_measureTool_share_api: 'Click to share',
@@ -119,7 +119,8 @@ export const provide = (lang) => {
 				toolbox_drawTool_cancel: 'Abbrechen',
 				toolbox_drawTool_delete_point: 'letzten Punkt löschen',
 				toolbox_drawTool_delete_drawing: 'Zeichnung löschen',
-				toolbox_drawTool_info: 'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.',
+				toolbox_drawTool_info:
+					'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.',
 				toolbox_drawTool_style_color: 'Farbe',
 				toolbox_drawTool_style_size: 'Größe',
 				toolbox_drawTool_style_size_small: 'Klein',
@@ -134,7 +135,8 @@ export const provide = (lang) => {
 				toolbox_drawTool_draw_init: 'Einen Zeichnungstyp auswählen, um die Zeichnung zu beginnen',
 				toolbox_drawTool_draw_active: 'In die Karte tippen, um die Zeichnung zu beginnen',
 				toolbox_drawTool_draw_draw: 'In die Karte tippen, um die Linie zu zeichnen (Doppelt tippen zum Beenden)',
-				toolbox_drawTool_draw_modify: 'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
+				toolbox_drawTool_draw_modify:
+					'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_drawTool_draw_select: 'Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen',
 				toolbox_measureTool_header: 'Messen',
 				toolbox_measureTool_measure: 'Messen',
@@ -144,7 +146,8 @@ export const provide = (lang) => {
 				toolbox_shareTool_header: 'Teilen',
 				toolbox_shareTool_embed: 'BayernAtlas-IFrame',
 				toolbox_shareTool_preview: 'Vorschau',
-				toolbox_shareTool_disclaimer: 'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.',
+				toolbox_shareTool_disclaimer:
+					'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.',
 				toolbox_shareTool_mail: 'Mail',
 				toolbox_shareTool_qr: 'QR-Code',
 				toolbox_shareTool_title: 'BayernAtlas - der Kartenviewer des Freistaates Bayern',
@@ -156,7 +159,8 @@ export const provide = (lang) => {
 				toolbox_measureTool_delete_measure: 'Messung löschen',
 				toolbox_measureTool_measure_active: 'In die Karte tippen, um die Messung zu beginnen',
 				toolbox_measureTool_measure_draw: 'In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)',
-				toolbox_measureTool_measure_modify: 'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
+				toolbox_measureTool_measure_modify:
+					'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen',
 				toolbox_measureTool_measure_select: 'Eine bestehende Messung auswählen oder eine neue Messung beginnen',
 				toolbox_measureTool_share: 'Teilen',
 				toolbox_measureTool_share_api: 'Klicken, um zu teilen',

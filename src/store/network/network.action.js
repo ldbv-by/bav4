@@ -10,12 +10,11 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
 /**
-  * Updates the fetching property.
-  * @function
-  * @param {boolean} fetching
-  */
+ * Updates the fetching property.
+ * @function
+ * @param {boolean} fetching
+ */
 export const setFetching = (fetching) => {
 	getStore().dispatch({
 		type: FETCHING_CHANGED,
@@ -24,10 +23,10 @@ export const setFetching = (fetching) => {
 };
 
 /**
-  * Updates the offline property.
-  * @function
-  * @param {boolean} offline
-  */
+ * Updates the offline property.
+ * @function
+ * @param {boolean} offline
+ */
 export const setOffline = (offline) => {
 	getStore().dispatch({
 		type: OFFLINE_CHANGED,

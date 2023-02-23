@@ -17,7 +17,9 @@ const getStore = () => {
  * @function
  */
 export const setIsPortrait = (isPortrait) => {
-	const { media: { observeResponsiveParameter } } = getStore().getState();
+	const {
+		media: { observeResponsiveParameter }
+	} = getStore().getState();
 	if (observeResponsiveParameter) {
 		getStore().dispatch({
 			type: ORIENTATION_CHANGED,
@@ -32,7 +34,9 @@ export const setIsPortrait = (isPortrait) => {
  * @function
  */
 export const setIsMinWidth = (isMinWidth) => {
-	const { media: { observeResponsiveParameter } } = getStore().getState();
+	const {
+		media: { observeResponsiveParameter }
+	} = getStore().getState();
 	if (observeResponsiveParameter) {
 		getStore().dispatch({
 			type: MIN_WIDTH_CHANGED,
@@ -58,19 +62,19 @@ export const setIsDarkSchema = (isDarkSchema) => {
  * @function
  */
 export const toggleSchema = () => {
-	const { media: { darkSchema } } = getStore().getState();
+	const {
+		media: { darkSchema }
+	} = getStore().getState();
 	getStore().dispatch({
 		type: COLOR_SCHEMA_CHANGED,
 		payload: !darkSchema
 	});
 };
 
-
 /**
  * @function
  */
 export const enableResponsiveParameterObservation = () => {
-
 	getStore().dispatch({
 		type: RESPONSIVE_PARAMETER_OBSERVATION_CHANGED,
 		payload: true
@@ -81,7 +85,6 @@ export const enableResponsiveParameterObservation = () => {
  * @function
  */
 export const disableResponsiveParameterObservation = () => {
-
 	getStore().dispatch({
 		type: RESPONSIVE_PARAMETER_OBSERVATION_CHANGED,
 		payload: false

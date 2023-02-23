@@ -1,11 +1,8 @@
 /* eslint-disable no-undef */
 import { createUniqueId, round } from '../../src/utils/numberUtils.js';
 
-
 describe('Unit test functions from numberUtils.js', () => {
-
 	describe('round(value, decimals)', () => {
-
 		const numberToRound = 123.456789;
 
 		it('rounds a number without decimal if not specified', () => {
@@ -42,7 +39,6 @@ describe('Unit test functions from numberUtils.js', () => {
 	});
 
 	describe('createUniqueId', () => {
-
 		it('creates a (pseudo) unique id', () => {
 			expect(createUniqueId()).toBeInstanceOf(Number);
 			expect(createUniqueId()).not.toBe(createUniqueId());

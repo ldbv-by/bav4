@@ -12,7 +12,6 @@ import { emitNotification, LevelTypes } from '../store/notifications/notificatio
  */
 export const MFP_LAYER_ID = 'mfp_layer';
 
-
 /**
  * This plugin observes the "tool" slice-of-state and sets the initial mfp slice-of-state.
  *
@@ -20,7 +19,6 @@ export const MFP_LAYER_ID = 'mfp_layer';
  * @author taulinger
  */
 export class ExportMfpPlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		this._initialized = false;
@@ -36,16 +34,14 @@ export class ExportMfpPlugin extends BaPlugin {
 		const { MfpService: mfpService, EnvironmentService: environmentService } = $injector.inject('MfpService', 'EnvironmentService');
 
 		const lazyInitialize = async () => {
-
 			if (!this._initialized) {
 				// let's set the initial mfp properties
 				try {
 					const { layouts } = await mfpService.init();
 					const { id, scales, dpis } = layouts[0];
 					setCurrent({ id: id, dpi: dpis[0], scale: scales[0] });
-					return this._initialized = true;
-				}
-				catch (ex) {
+					return (this._initialized = true);
+				} catch (ex) {
 					console.error('MfpCapabilities could not be fetched from backend', ex);
 					emitNotification(`${this._translationService.translate('global_mfpService_init_exception')}`, LevelTypes.ERROR);
 				}
@@ -55,11 +51,9 @@ export class ExportMfpPlugin extends BaPlugin {
 		};
 
 		const onToolChanged = async (toolId) => {
-
 			if (toolId !== ToolId.EXPORT) {
 				deactivate();
-			}
-			else {
+			} else {
 				if (await lazyInitialize()) {
 					// we activate the tool after another possible active tool was deactivated
 					setTimeout(() => {
@@ -72,8 +66,7 @@ export class ExportMfpPlugin extends BaPlugin {
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(MFP_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-			}
-			else {
+			} else {
 				removeLayer(MFP_LAYER_ID);
 			}
 		};
@@ -85,23 +78,19 @@ export class ExportMfpPlugin extends BaPlugin {
 					if (url) {
 						environmentService.getWindow().location = url;
 					}
-				}
-				catch (ex) {
+				} catch (ex) {
 					console.error('PDF generation was not successful.', ex);
 					emitNotification(`${this._translationService.translate('global_mfpService_createJob_exception')}`, LevelTypes.ERROR);
-				}
-				finally {
+				} finally {
 					cancelJob();
 				}
-
-			}
-			else {
+			} else {
 				mfpService.cancelJob();
 			}
 		};
 
-		observe(store, state => state.tools.current, onToolChanged);
-		observe(store, state => state.mfp.active, onChange);
-		observe(store, state => state.mfp.jobSpec, onJobSpecChanged);
+		observe(store, (state) => state.tools.current, onToolChanged);
+		observe(store, (state) => state.mfp.active, onChange);
+		observe(store, (state) => state.mfp.jobSpec, onJobSpecChanged);
 	}
 }

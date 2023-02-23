@@ -1,9 +1,6 @@
-
-
 export const IMPORT_ADDED = 'import/added';
 
 export const initialState = {
-
 	/**
 	 * @property {EventLike<ImportProperties>|null}
 	 */

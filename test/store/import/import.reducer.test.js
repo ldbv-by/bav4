@@ -4,7 +4,6 @@ import { importReducer } from '../../../src/store/import/import.reducer';
 import { TestUtils } from '../../test-utils';
 
 describe('importReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			import: importReducer
@@ -24,7 +23,6 @@ describe('importReducer', () => {
 		expect(store.getState().import.latest.payload.url).toBe('some');
 		expect(store.getState().import.latest.payload.sourceType).toBe(sourceType);
 		expect(store.getState().import.latest.payload.data).toBeNull();
-
 	});
 
 	it('updates the data property', () => {
@@ -36,5 +34,4 @@ describe('importReducer', () => {
 		expect(store.getState().import.latest.payload.sourceType).toBe(sourceType);
 		expect(store.getState().import.latest.payload.url).toBeNull();
 	});
-
 });

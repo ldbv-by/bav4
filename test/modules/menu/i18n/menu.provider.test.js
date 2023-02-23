@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/menu/i18n/menu.provider';
 
-
 describe('i18n for menu module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.menu_main_open_button).toBe('Menü öffnen');
@@ -24,12 +21,12 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_gp_header).toBe('Geoportal Bayern');
 		expect(map.menu_misc_content_panel_gp_text).toBe('Zentraler Zugang zu Geodaten und Geodatendiensten.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
-		expect(map.menu_misc_content_panel_ea_text).toBe('Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.');
-
+		expect(map.menu_misc_content_panel_ea_text).toBe(
+			'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.'
+		);
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.menu_main_open_button).toBe('Open Menu');
@@ -50,7 +47,6 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
-
 	});
 
 	it('have the expected amount of translations', () => {
@@ -65,7 +61,6 @@ describe('i18n for menu module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

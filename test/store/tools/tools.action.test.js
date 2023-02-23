@@ -1,7 +1,6 @@
 import { ToolId } from '../../../src/store/tools/tools.action';
 
 describe('toolAction', () => {
-
 	it('exports a ToolId enum', () => {
 		expect(Object.keys(ToolId).length).toBe(5);
 		expect(Object.isFrozen(ToolId)).toBeTrue();

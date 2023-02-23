@@ -5,7 +5,6 @@ import { InteractionSnapType, InteractionStateType } from '../../../../src/modul
 import { TestUtils } from '../../../test-utils.js';
 import { provide as measureProvide } from '../../../../src/modules/olMap/handler/measure/tooltipMessage.provider';
 
-
 TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('UnitsService', {
 	// eslint-disable-next-line no-unused-vars
@@ -20,7 +19,6 @@ $injector.registerSingleton('UnitsService', {
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 describe('HelpTooltip', () => {
-
 	it('ctor', () => {
 		const overlayManager = {};
 		const classUnderTest = new HelpTooltip(overlayManager);
@@ -47,7 +45,6 @@ describe('HelpTooltip', () => {
 		expect(classUnderTest._tooltipMessageProvideFunction()).toBeNull();
 	});
 
-
 	describe('on activate', () => {
 		it('creates a overlay', () => {
 			const addSpy = jasmine.createSpy();
@@ -62,7 +59,7 @@ describe('HelpTooltip', () => {
 	describe('on deactivate', () => {
 		it('removes the overlay', () => {
 			const removeSpy = jasmine.createSpy();
-			const mapMock = { addOverlay: () => { }, removeOverlay: removeSpy };
+			const mapMock = { addOverlay: () => {}, removeOverlay: removeSpy };
 			const classUnderTest = new HelpTooltip();
 
 			classUnderTest.activate(mapMock);
@@ -73,7 +70,7 @@ describe('HelpTooltip', () => {
 
 		it('does nothing, when overlay is null', () => {
 			const removeSpy = jasmine.createSpy();
-			const mapMock = { addOverlay: () => { }, removeOverlay: removeSpy };
+			const mapMock = { addOverlay: () => {}, removeOverlay: removeSpy };
 			const classUnderTest = new HelpTooltip();
 
 			classUnderTest.activate(mapMock);
@@ -84,7 +81,7 @@ describe('HelpTooltip', () => {
 		});
 	});
 	describe('when notified', () => {
-		const mapStub = { addOverlay: () => { } };
+		const mapStub = { addOverlay: () => {} };
 		const measureStateTemplate = {
 			type: null,
 			snap: null,
@@ -93,7 +90,7 @@ describe('HelpTooltip', () => {
 			dragging: false
 		};
 
-		it('with interactionstate \'active\' create overlay text', () => {
+		it("with interactionstate 'active' create overlay text", () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest._updateOverlay = jasmine.createSpy();
@@ -104,7 +101,7 @@ describe('HelpTooltip', () => {
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_start');
 		});
 
-		it('with interactionstate \'draw\' create overlay text', () => {
+		it("with interactionstate 'draw' create overlay text", () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest._updateOverlay = jasmine.createSpy();
@@ -115,12 +112,21 @@ describe('HelpTooltip', () => {
 			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT });
 			classUnderTest.notify({ ...measureStateTemplate, type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT });
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_continue_line');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point');
-			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point');
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+				jasmine.any(Array),
+				'olMap_handler_measure_continue_line<br/>olMap_handler_delete_last_point'
+			);
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+				jasmine.any(Array),
+				'olMap_handler_measure_snap_first_point<br/>olMap_handler_delete_last_point'
+			);
+			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(
+				jasmine.any(Array),
+				'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
+			);
 		});
 
-		it('with interactionstate \'modify\' create overlay text', () => {
+		it("with interactionstate 'modify' create overlay text", () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest._updateOverlay = jasmine.createSpy();
@@ -135,7 +141,7 @@ describe('HelpTooltip', () => {
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_modify_click_new_point');
 		});
 
-		it('with interactionstate \'overlay\' create overlay text', () => {
+		it("with interactionstate 'overlay' create overlay text", () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest._updateOverlay = jasmine.createSpy();
@@ -146,7 +152,7 @@ describe('HelpTooltip', () => {
 			expect(classUnderTest._updateOverlay).toHaveBeenCalledWith(jasmine.any(Array), 'olMap_handler_measure_modify_click_drag_overlay');
 		});
 
-		it('with interactionstate \'dragging\' hide overlay', () => {
+		it("with interactionstate 'dragging' hide overlay", () => {
 			const classUnderTest = new HelpTooltip();
 			classUnderTest.messageProvideFunction = measureProvide;
 			classUnderTest.activate(mapStub);

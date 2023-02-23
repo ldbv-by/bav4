@@ -3,7 +3,6 @@ import { chipsReducer } from '../../../src/store/chips/chips.reducer';
 import { TestUtils } from '../../test-utils.js';
 
 describe('chipsReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			chips: chipsReducer
@@ -15,7 +14,7 @@ describe('chipsReducer', () => {
 		expect(store.getState().chips.current).toEqual([]);
 	});
 
-	it('changes the \'current\' property', () => {
+	it("changes the 'current' property", () => {
 		const chips = [{ id: 'id' }];
 		const store = setup();
 

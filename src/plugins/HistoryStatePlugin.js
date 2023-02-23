@@ -7,7 +7,6 @@ import { BaPlugin } from './BaPlugin';
  * @author taulinger
  */
 export class HistoryStatePlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');
@@ -20,17 +19,15 @@ export class HistoryStatePlugin extends BaPlugin {
 	 * @override
 	 */
 	async register(store) {
-
 		if (!this._environmentService.isEmbedded()) {
-
 			const updateHistory = () => {
 				this._updateHistory();
 			};
 
-			observe(store, state => state.position.zoom, updateHistory);
-			observe(store, state => state.position.center, updateHistory);
-			observe(store, state => state.position.rotation, updateHistory);
-			observe(store, state => state.layers.active, updateHistory);
+			observe(store, (state) => state.position.zoom, updateHistory);
+			observe(store, (state) => state.position.center, updateHistory);
+			observe(store, (state) => state.position.rotation, updateHistory);
+			observe(store, (state) => state.layers.active, updateHistory);
 			setTimeout(updateHistory, 0);
 		}
 	}

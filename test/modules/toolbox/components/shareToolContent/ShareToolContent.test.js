@@ -13,22 +13,20 @@ describe('ShareToolContent', () => {
 	let store;
 
 	const urlServiceMock = {
-		shorten() { },
-		qrCode() { }
+		shorten() {},
+		qrCode() {}
 	};
 
 	const shareServiceMock = {
-		encodeState() { },
-		copyToClipboard() { }
+		encodeState() {},
+		copyToClipboard() {}
 	};
 
 	const setup = async (config = {}) => {
-
-		const { windowMock = { navigator: {}, open() { } } } = config;
+		const { windowMock = { navigator: {}, open() {} } } = config;
 		const { standalone = false } = config;
 
-		const state = {
-		};
+		const state = {};
 
 		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer });
 		$injector
@@ -43,9 +41,7 @@ describe('ShareToolContent', () => {
 	};
 
 	describe('methods', () => {
-
 		describe('_generateShortUrl', () => {
-
 			it('generates a short url', async () => {
 				const mockUrl = 'https://some.url';
 				const mockShortUrl = 'https://short/url';
@@ -73,14 +69,11 @@ describe('ShareToolContent', () => {
 		});
 	});
 	describe('share buttons', () => {
-
 		describe('shareApi available', () => {
-
 			it('renders UI elements', async () => {
 				const windowMock = {
-
 					navigator: {
-						share() { }
+						share() {}
 					}
 				};
 				const config = { windowMock };
@@ -93,7 +86,6 @@ describe('ShareToolContent', () => {
 			});
 
 			describe('on share button click', () => {
-
 				it('initializes share api button', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockShareData = {
@@ -101,9 +93,9 @@ describe('ShareToolContent', () => {
 						url: mockShortUrl
 					};
 					const windowMock = {
-						open() { },
+						open() {},
 						navigator: {
-							share() { }
+							share() {}
 						}
 					};
 					const windowShareSpy = spyOn(windowMock.navigator, 'share');
@@ -122,7 +114,7 @@ describe('ShareToolContent', () => {
 					const mockErrorMsg = 'something got wrong';
 					const windowMock = {
 						navigator: {
-							share() { }
+							share() {}
 						}
 					};
 					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new Error(mockErrorMsg)));
@@ -141,14 +133,10 @@ describe('ShareToolContent', () => {
 		});
 
 		describe('shareApi NOT available', () => {
-
 			describe('shortUrl service available', () => {
-
 				it('renders UI elements', async () => {
 					const windowMock = {
-
-						navigator: {
-						}
+						navigator: {}
 					};
 					const config = { windowMock };
 					const element = await setup(config);
@@ -161,16 +149,12 @@ describe('ShareToolContent', () => {
 					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[1].classList).toContain('mail');
 					expect(element.shadowRoot.querySelectorAll('.tool-container__icon')[2].classList).toContain('qr');
 				});
-
 			});
 
 			describe('shortUrl service NOT available', () => {
-
 				it('renders UI elements', async () => {
 					const windowMock = {
-
-						navigator: {
-						}
+						navigator: {}
 					};
 					const standalone = true;
 					const config = { windowMock, standalone };
@@ -186,11 +170,9 @@ describe('ShareToolContent', () => {
 			});
 
 			describe('on share button click', () => {
-
 				it('opens the modal', async () => {
 					const windowMock = {
-						navigator: {
-						}
+						navigator: {}
 					};
 					const config = { windowMock };
 					const element = await setup(config);
@@ -204,14 +186,13 @@ describe('ShareToolContent', () => {
 			});
 
 			describe('on mail and qr button click', () => {
-
 				it('opens a window', async () => {
 					const mockShortUrl = 'https://short.foo/url';
 					const mailUrl = 'mailto:?body=' + mockShortUrl;
 					const qrUrl = 'https://qrCode.foo?url=' + mockShortUrl;
 					const windowMock = {
 						navigator: {},
-						open() { }
+						open() {}
 					};
 					const config = { windowMock };
 					const windowOpenSpy = spyOn(windowMock, 'open');
@@ -235,7 +216,7 @@ describe('ShareToolContent', () => {
 					const mailUrl = 'mailto:?body=' + mockShortUrl;
 					const windowMock = {
 						navigator: {},
-						open() { }
+						open() {}
 					};
 					const config = { windowMock };
 					const windowOpenSpy = spyOn(windowMock, 'open').and.returnValue(null);
@@ -253,12 +234,8 @@ describe('ShareToolContent', () => {
 		});
 	});
 
-
-
 	describe('iframe container', () => {
-
 		it('renders UI elements', async () => {
-
 			const element = await setup();
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
@@ -276,7 +253,6 @@ describe('ShareToolContent', () => {
 		});
 
 		describe('on checkbox click', () => {
-
 			it('enables/disables the preview button', async () => {
 				const element = await setup();
 				const checkbox = element.shadowRoot.querySelector('ba-checkbox');

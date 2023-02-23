@@ -7,9 +7,7 @@ import { TestUtils } from '../../../test-utils.js';
 
 window.customElements.define(AutocompleteSearch.tag, AutocompleteSearch);
 
-
 describe('Button', () => {
-
 	const provider = async (term) => {
 		if (term === 'some') {
 			return [
@@ -30,10 +28,8 @@ describe('Button', () => {
 		jasmine.clock().uninstall();
 	});
 
-
 	describe('when initialized', () => {
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 
 			expect(element.shadowRoot.querySelector('.autocomplete')).toBeTruthy();
@@ -48,11 +44,8 @@ describe('Button', () => {
 		});
 	});
 
-
 	describe('on user input', () => {
-
 		it('shows three results', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = provider;
 			const input = element.shadowRoot.querySelector('input');
@@ -62,7 +55,6 @@ describe('Button', () => {
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
 
-
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(3);
@@ -70,7 +62,6 @@ describe('Button', () => {
 		});
 
 		it('shows no results when nothing retrieved from provider', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = provider;
 			const input = element.shadowRoot.querySelector('input');
@@ -80,7 +71,6 @@ describe('Button', () => {
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
 
-
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.shadowRoot.querySelector('#autocomplete-list').querySelectorAll('div').length).toBe(0);
@@ -88,7 +78,6 @@ describe('Button', () => {
 		});
 
 		it('does not call the provider when search term is empty', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = jasmine.createSpy();
 			const input = element.shadowRoot.querySelector('input');
@@ -98,7 +87,6 @@ describe('Button', () => {
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
 
-
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.provider).not.toHaveBeenCalled();
@@ -107,7 +95,6 @@ describe('Button', () => {
 		});
 
 		it('does not call the provider when length of search term < 2', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = jasmine.createSpy();
 			const input = element.shadowRoot.querySelector('input');
@@ -117,7 +104,6 @@ describe('Button', () => {
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
 
-
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				expect(element.provider).not.toHaveBeenCalled();
@@ -126,7 +112,6 @@ describe('Button', () => {
 		});
 
 		it('logs a warn statement no provider exists', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			const input = element.shadowRoot.querySelector('input');
 			const warnSpy = spyOn(console, 'warn');
@@ -135,7 +120,6 @@ describe('Button', () => {
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
-
 
 			//wait for elements
 			window.requestAnimationFrame(() => {
@@ -146,7 +130,6 @@ describe('Button', () => {
 	});
 
 	describe('on user click', () => {
-
 		it('calls the callback method', async () => {
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = provider;
@@ -158,7 +141,6 @@ describe('Button', () => {
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
 
-
 			//wait for elements
 			window.requestAnimationFrame(() => {
 				element.shadowRoot.querySelector('#autocomplete-list').querySelector('div').click();
@@ -168,9 +150,7 @@ describe('Button', () => {
 	});
 
 	describe('provider cannot fullfill', () => {
-
 		it('logs a warn statement', async () => {
-
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = () => Promise.reject('Something got wrong');
 			const input = element.shadowRoot.querySelector('input');
@@ -187,7 +167,6 @@ describe('Button', () => {
 	});
 
 	describe('on keydown', () => {
-
 		it('navigates through the list  and calls the callback method', async () => {
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = provider;
@@ -198,7 +177,6 @@ describe('Button', () => {
 			input.dispatchEvent(new Event('input'));
 			//AutocompleteSearch uses debounce from timer.js
 			jasmine.clock().tick(300);
-
 
 			//wait for elements
 			window.requestAnimationFrame(() => {

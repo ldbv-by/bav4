@@ -27,9 +27,12 @@ export const InteractionSnapType = Object.freeze({
  */
 export const getFeatureSnapOption = (interactionLayer, modifiedFeaturesOnly = false) => {
 	if (modifiedFeaturesOnly) {
-		return { hitTolerance: 10, layerFilter: itemLayer => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction) };
+		return {
+			hitTolerance: 10,
+			layerFilter: (itemLayer) => itemLayer === interactionLayer || (itemLayer.getStyle && itemLayer.getStyle() === modifyStyleFunction)
+		};
 	}
-	return { hitTolerance: 10, layerFilter: itemLayer => itemLayer === interactionLayer };
+	return { hitTolerance: 10, layerFilter: (itemLayer) => itemLayer === interactionLayer };
 };
 
 /**
@@ -55,7 +58,6 @@ export const getSelectOptions = (interactionLayer) => {
 	};
 };
 
-
 /**
  * Creates a standard optn-object for a openlayers modify-interaction, to make
  * all features in the defined feature-collection modifyable
@@ -66,13 +68,12 @@ export const getModifyOptions = (modifyableFeatures) => {
 	return {
 		features: modifyableFeatures,
 		style: modifyStyleFunction,
-		deleteCondition: event => {
-			const isDeletable = (noModifierKeys(event) && singleClick(event));
+		deleteCondition: (event) => {
+			const isDeletable = noModifierKeys(event) && singleClick(event);
 			return isDeletable;
 		}
 	};
 };
-
 
 /**
  * returns the InteractionSnapType for a possible feature on a defined pixel-position and in a defined layer
@@ -83,17 +84,20 @@ export const getModifyOptions = (modifyableFeatures) => {
  */
 export const getSnapState = (map, interactionLayer, pixel) => {
 	const featuresFromInteractionLayer = [];
-	const vertexFeature = map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-		if (layer === interactionLayer) {
-			featuresFromInteractionLayer.push(feature);
-		}
-		if (!layer && feature.get('features').length > 0) {
-			return feature;
-		}
-	}, getFeatureSnapOption(interactionLayer, true));
+	const vertexFeature = map.forEachFeatureAtPixel(
+		pixel,
+		(feature, layer) => {
+			if (layer === interactionLayer) {
+				featuresFromInteractionLayer.push(feature);
+			}
+			if (!layer && feature.get('features').length > 0) {
+				return feature;
+			}
+		},
+		getFeatureSnapOption(interactionLayer, true)
+	);
 
 	if (vertexFeature) {
-
 		const vertexGeometry = vertexFeature.getGeometry();
 		const snappedFeature = vertexFeature.get('features')[0];
 		const snappedGeometry = snappedFeature.getGeometry();
@@ -109,7 +113,6 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 	return null;
 };
 
-
 /**
  * returns a list of selectable features for a defined layer on a defined pixel-position
  * @param {Map} map
@@ -120,11 +123,15 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 export const getSelectableFeatures = (map, interactionLayer, pixel) => {
 	const features = [];
 
-	map.forEachFeatureAtPixel(pixel, (feature, layer) => {
-		if (layer === interactionLayer) {
-			features.push(feature);
-		}
-	}, getFeatureSnapOption(interactionLayer));
+	map.forEachFeatureAtPixel(
+		pixel,
+		(feature, layer) => {
+			if (layer === interactionLayer) {
+				features.push(feature);
+			}
+		},
+		getFeatureSnapOption(interactionLayer)
+	);
 
 	return features;
 };
@@ -136,8 +143,8 @@ export const getSelectableFeatures = (map, interactionLayer, pixel) => {
  * @param {Function} additionalAction a additional action before the removing of each feature takes place
  */
 export const removeSelectedFeatures = (selectedFeatures, interactionLayer, additionalAction) => {
-	const additionalRemoveAction = typeof (additionalAction) === 'function' ? additionalAction : () => { };
-	selectedFeatures.forEach(f => {
+	const additionalRemoveAction = typeof additionalAction === 'function' ? additionalAction : () => {};
+	selectedFeatures.forEach((f) => {
 		additionalRemoveAction(f);
 		if (interactionLayer.getSource().hasFeature(f)) {
 			interactionLayer.getSource().removeFeature(f);
@@ -153,4 +160,3 @@ export const getSnapTolerancePerDevice = () => {
 	}
 	return 4;
 };
-

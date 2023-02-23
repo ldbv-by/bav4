@@ -4,12 +4,29 @@ import { Feature } from 'ol';
 import { Style, Circle, Fill, Stroke, Text, Icon } from 'ol/style';
 import { $injector } from '../../../../src/injection';
 
-
 describe('kml', () => {
 	const projection = 'EPSG:3857';
 	const aPointFeature = new Feature({ geometry: new Point([0, 0]) });
-	const aPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
-	const aLineStringAsPolygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1]]]) });
+	const aPolygonFeature = new Feature({
+		geometry: new Polygon([
+			[
+				[0, 0],
+				[1, 0],
+				[1, 1],
+				[0, 1],
+				[0, 0]
+			]
+		])
+	});
+	const aLineStringAsPolygonFeature = new Feature({
+		geometry: new Polygon([
+			[
+				[0, 0],
+				[1, 0],
+				[1, 1]
+			]
+		])
+	});
 
 	const iconServiceMock = {
 		getIconResult: (idOrBase64) => {
@@ -183,7 +200,6 @@ describe('kml', () => {
 		});
 
 		it('reads and converts style-properties from layer', () => {
-
 			const features = [aPolygonFeature];
 			const layer = createLayerMock(features);
 			layer.getStyleFunction = getAStyleFunction;
@@ -211,7 +227,8 @@ describe('kml', () => {
 
 		it('reads and converts icon style-properties from feature', () => {
 			const color = [255, 42, 42];
-			const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+			const iconSrc =
+				'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
 			const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
 			aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
 			const features = [aPointFeature];
@@ -248,7 +265,8 @@ describe('kml', () => {
 		describe('when iconService fails to resolve icon to url', () => {
 			it('should use svg icon style-properties ', () => {
 				const color = [255, 42, 42];
-				const iconSrc = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
+				const iconSrc =
+					'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMiIgaGVpZ2h0PSIzMiIgZmlsbD0icmdiKDI1NSwyNTUsMjU1KSIgY2xhc3M9ImJpIGJpLWdlby1hbHQtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij48IS0tIE1JVCBMaWNlbnNlIC0tPjxwYXRoIGQ9Ik04IDE2czYtNS42ODYgNi0xMEE2IDYgMCAwIDAgMiA2YzAgNC4zMTQgNiAxMCA2IDEwem0wLTdhMyAzIDAgMSAxIDAtNiAzIDMgMCAwIDEgMCA2eiIvPjwvc3ZnPg==';
 				const expectedUrl = `backend.url/icon/${color}/${iconSrc.substr(iconSrc.length - 5)}`;
 				aPointFeature.setStyle(getAIconStyleFunction(color, iconSrc));
 				spyOn(iconServiceMock, 'getIconResult').and.callFake(() => {

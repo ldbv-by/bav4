@@ -5,7 +5,6 @@ import { forEachPropertyDoAction } from './utils';
  * @class
  */
 export class Injector {
-
 	/**
 	 * Create a new instance of the Injector.
 	 * @return {Injector} The new instance, to be chained if needed.
@@ -72,19 +71,17 @@ export class Injector {
 	inject(...names) {
 		const dependenciesToInject = {};
 		// _getArgumentNames(funct.toString())
-		names
-			.map(argName => {
-				const registered = this._dependencies[argName];
-				if (!registered) {
-					throw new Error('No registered instance found for ' + argName);
-				}
-				// const dependencyIsSingleton = registered.singleton;
-				dependenciesToInject[argName] = registered.singleton ? registered.dependency : new registered.dependency();
-			});
+		names.map((argName) => {
+			const registered = this._dependencies[argName];
+			if (!registered) {
+				throw new Error('No registered instance found for ' + argName);
+			}
+			// const dependencyIsSingleton = registered.singleton;
+			dependenciesToInject[argName] = registered.singleton ? registered.dependency : new registered.dependency();
+		});
 
 		return dependenciesToInject;
 	}
-
 
 	/**
 	 * Registers a callback function that will be invoked after the injector is marked as ready.
@@ -100,10 +97,9 @@ export class Injector {
 	 */
 	ready() {
 		if (!this._ready) {
-			this._listeners.forEach(listener => listener());
+			this._listeners.forEach((listener) => listener());
 			this._ready = true;
-		}
-		else {
+		} else {
 			console.warn('Injector already marked as ready!');
 		}
 	}
@@ -150,12 +146,8 @@ export class Injector {
  * const _getArgumentNames = functionString => _regExInsideParentheses.exec(functionString)[0].replace(_regExParenthesesAndSpaces, "").split(',');
  */
 const _register = (injector, keyOrPOJO, object, isSingleton = false) => {
-
-
-
 	// Called as one registration with key and object.
-	if (typeof (keyOrPOJO) === 'string') {
-
+	if (typeof keyOrPOJO === 'string') {
 		const key = keyOrPOJO;
 		if (injector._dependencies[key]) {
 			throw new Error('Instance already registered for ' + key);

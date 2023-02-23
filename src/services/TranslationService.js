@@ -6,7 +6,6 @@ import { $injector } from '../injection';
  * @author taulinger
  */
 export class TranslationService {
-
 	constructor() {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
 		this._language = configService.getValue('DEFAULT_LANG', 'en');
@@ -15,10 +14,9 @@ export class TranslationService {
 	}
 
 	/**
-	* @public
-	*/
+	 * @public
+	 */
 	register(name, provider) {
-
 		if (this._providers.has(name)) {
 			throw new Error('Provider ' + name + ' already registered');
 		}
@@ -27,24 +25,22 @@ export class TranslationService {
 	}
 
 	_load(provider) {
-		Object
-			.entries(provider(this._language))
-			.forEach(([key, value]) => {
-				if (this._translations.has(key)) {
-					throw new Error('Key ' + key + ' already registered');
-				}
-				this._translations.set(key, value);
-			});
+		Object.entries(provider(this._language)).forEach(([key, value]) => {
+			if (this._translations.has(key)) {
+				throw new Error('Key ' + key + ' already registered');
+			}
+			this._translations.set(key, value);
+		});
 	}
 
 	/**
-	* @public
-	*/
+	 * @public
+	 */
 	reload(lang) {
 		this._language = lang;
 		this._translations.clear();
 
-		this._providers.forEach(provider => {
+		this._providers.forEach((provider) => {
 			this._load(provider);
 		});
 	}

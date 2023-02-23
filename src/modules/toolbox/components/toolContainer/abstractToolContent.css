@@ -2,11 +2,11 @@
 	min-width: 26em;
 }
 .ba-tool-container__title {
-	padding: .8em 1.5em;
-	font-weight: bold;   
+	padding: 0.8em 1.5em;
+	font-weight: bold;
 }
 .ba-tool-container__content {
-	padding: .8em 1.5em;
+	padding: 0.8em 1.5em;
 }
 .ba-tool-container__actions {
 	display: flex;
@@ -23,7 +23,7 @@
 }
 .sub-text {
 	text-align: center;
-	font-size: .8em;
+	font-size: 0.8em;
 	margin: 1.5em;
 }
 .sub-text:empty {

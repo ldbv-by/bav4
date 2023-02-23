@@ -1,9 +1,20 @@
 import { getUid } from 'ol';
 import { $injector } from '../../../injection';
 import { rgbToHex } from '../../../utils/colors';
-import { markerStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, measureStyleFunction, nullStyleFunction, lineStyleFunction, polygonStyleFunction, textStyleFunction, markerScaleToKeyword, getStyleArray, geojsonStyleFunction, defaultStyleFunction } from '../utils/olStyleUtils';
-
-
+import {
+	markerStyleFunction,
+	highlightStyleFunction,
+	highlightTemporaryStyleFunction,
+	measureStyleFunction,
+	nullStyleFunction,
+	lineStyleFunction,
+	polygonStyleFunction,
+	textStyleFunction,
+	markerScaleToKeyword,
+	getStyleArray,
+	geojsonStyleFunction,
+	defaultStyleFunction
+} from '../utils/olStyleUtils';
 
 /**
  * @enum
@@ -32,7 +43,6 @@ const Default_Colors = [
 	[0, 128, 0, 0.8]
 ];
 
-
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
@@ -41,7 +51,6 @@ const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color'
  * @author thiloSchlemmer
  */
 export class StyleService {
-
 	/**
 	 *
 	 * @param {administrationProvider} [administrationProvider=loadBvvAdministration]
@@ -111,23 +120,21 @@ export class StyleService {
 	 */
 
 	/**
-	   * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
+	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
 	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
 	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the StyleService
 	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update
-	*/
+	 */
 	updateStyle(olFeature, olMap, properties, styleType = null) {
 		const usingStyleType = styleType ? styleType : this._detectStyleType(olFeature);
 		const { OverlayService: overlayService } = $injector.inject('OverlayService');
 		if (usingStyleType === StyleTypes.MEASURE) {
 			overlayService.update(olFeature, olMap, usingStyleType, properties);
 		}
-
 	}
-
 
 	/**
 	 * Removes overlays (added by OverlayStyle-classes) from the map and the feature
@@ -225,7 +232,6 @@ export class StyleService {
 	_addMarkerStyle(olFeature) {
 		const { IconService: iconService } = $injector.inject('IconService');
 
-
 		const getStyleOption = (feature) => {
 			const style = getStyleArray(feature)[0];
 			const symbolSrc = style.getImage().getSrc();
@@ -255,37 +261,36 @@ export class StyleService {
 	}
 
 	_detectStyleType(olFeature) {
-
 		const isStyleType = (type, candidate) => {
 			const regex = new RegExp('^' + type + '_');
-			return (regex.test(candidate));
+			return regex.test(candidate);
 		};
 		const isDrawingStyleType = (type, candidate) => {
 			const regex = new RegExp('^draw_' + type + '_');
-			return (regex.test(candidate));
+			return regex.test(candidate);
 		};
 
 		const getStyleTypeFromProperties = (olFeature) => {
 			const featurePropertyKeys = olFeature.getKeys();
-			const hasGeoJSONSimpleStyleProperties = featurePropertyKeys.some(k => GeoJSON_SimpleStyle_Keys.includes(k));
+			const hasGeoJSONSimpleStyleProperties = featurePropertyKeys.some((k) => GeoJSON_SimpleStyle_Keys.includes(k));
 
 			return hasGeoJSONSimpleStyleProperties ? StyleTypes.GEOJSON : null;
 		};
 
 		const getStyleTypeFromId = (olFeature) => {
 			const id = olFeature.getId();
-			const drawingType = Object.keys(StyleTypes).find(key => isDrawingStyleType(StyleTypes[key], id));
+			const drawingType = Object.keys(StyleTypes).find((key) => isDrawingStyleType(StyleTypes[key], id));
 			if (drawingType) {
 				return StyleTypes[drawingType];
 			}
-			const otherType = Object.keys(StyleTypes).find(key => isStyleType(StyleTypes[key], id));
+			const otherType = Object.keys(StyleTypes).find((key) => isStyleType(StyleTypes[key], id));
 			if (otherType) {
 				return StyleTypes[otherType];
 			}
 			return null;
 		};
 
-		const defaultOrNull = (olFeature) => olFeature.getStyle() === null ? StyleTypes.DEFAULT : null;
+		const defaultOrNull = (olFeature) => (olFeature.getStyle() === null ? StyleTypes.DEFAULT : null);
 
 		if (olFeature) {
 			for (const styleTypeFunction of [getStyleTypeFromId, getStyleTypeFromProperties, defaultOrNull]) {

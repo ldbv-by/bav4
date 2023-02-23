@@ -40,7 +40,6 @@ export const MeasurementOverlayTypes = {
  * @author thiloSchlemmer
  */
 export class MeasurementOverlay extends BaOverlay {
-
 	constructor() {
 		super();
 		const { UnitsService } = $injector.inject('UnitsService');
@@ -73,15 +72,14 @@ export class MeasurementOverlay extends BaOverlay {
 		};
 
 		return html`
-			<style>${css}</style>
-			<div class='ba-overlay ${classMap(classes)}'>
-				${content ? unsafeHTML(content) : nothing}
-			</div>
+			<style>
+				${css}
+			</style>
+			<div class="ba-overlay ${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
 		`;
 	}
 
 	_updatePosition() {
-
 		switch (this._type) {
 			case MeasurementOverlayTypes.AREA:
 				this._position = this.geometry.getInteriorPoint().getCoordinates().slice(0, -1);
@@ -100,7 +98,6 @@ export class MeasurementOverlay extends BaOverlay {
 	_getContent(type) {
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
-
 				if (this.geometry instanceof Polygon) {
 					return this._unitsService.formatArea(getArea(this._geometry, this._projectionHints), 2);
 				}
@@ -139,5 +136,4 @@ export class MeasurementOverlay extends BaOverlay {
 	static get tag() {
 		return 'ba-measure-overlay';
 	}
-
 }

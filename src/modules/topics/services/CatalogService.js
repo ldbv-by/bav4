@@ -1,15 +1,12 @@
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadFallbackCatalog, loadBvvCatalog } from './provider/catalog.provider';
 
-
 /**
  * Loads a catalog definition by a topic id.
  * @callback CatalogProvider
  * @param {String} topicId  Topic Id
  * @returns {Promise<Array<Object>>} Catalog definitions
  */
-
-
 
 /**
  * Service for loading catalog definitions.
@@ -18,7 +15,6 @@ import { loadFallbackCatalog, loadBvvCatalog } from './provider/catalog.provider
  * @author taulinger
  */
 export class CatalogService {
-
 	/**
 	 *
 	 * @param {CatalogProvider} [catalogProvider=loadBvvCatalog]
@@ -27,7 +23,6 @@ export class CatalogService {
 		this._provider = provider;
 		this._cache = new Map();
 	}
-
 
 	/**
 	 * Returns a catalog definition for an id.
@@ -42,9 +37,7 @@ export class CatalogService {
 				this._cache.set(topicId, catalog);
 			}
 			return this._cache.get(topicId);
-		}
-		catch (e) {
-
+		} catch (e) {
 			//do we have a fallback topic?
 			if (FALLBACK_TOPICS_IDS.includes(topicId)) {
 				return this._newFallbackCatalog(topicId);

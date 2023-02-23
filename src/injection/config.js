@@ -47,12 +47,11 @@ import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
 import { ElevationProfilePlugin } from '../plugins/ElevationProfilePlugin';
 import { ElevationService } from '../services/ElevationService';
 
-
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
 	.register('HttpService', NetworkStateSyncHttpService)
 	.registerSingleton('ConfigService', new ProcessEnvConfigService())
-	.registerSingleton('TranslationService', new TranslationService)
+	.registerSingleton('TranslationService', new TranslationService())
 	.register('CoordinateService', OlCoordinateService)
 	.register('EnvironmentService', EnvironmentService)
 	.register('MapService', MapService)
@@ -98,7 +97,5 @@ $injector
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
-
-
 
 export const init = true;

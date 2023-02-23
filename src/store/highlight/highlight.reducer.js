@@ -5,7 +5,6 @@ export const CLEAR_FEATURES = 'highlight/clear';
 export const REMOVE_FEATURE_BY_ID = 'highlight/remove/id';
 
 export const initialState = {
-
 	/**
 	 * @property {HighlightFeature|null}
 	 */
@@ -17,18 +16,17 @@ export const initialState = {
 };
 
 export const highlightReducer = (state = initialState, action) => {
-
-	const createIdIfMissing = features => features.map(f => {
-		if (!f.id) {
-			f.id = createUniqueId();
-		}
-		return f;
-	});
+	const createIdIfMissing = (features) =>
+		features.map((f) => {
+			if (!f.id) {
+				f.id = createUniqueId();
+			}
+			return f;
+		});
 
 	const { type, payload } = action;
 	switch (type) {
 		case FEATURE_ADD: {
-
 			const features = [...state.features, ...createIdIfMissing(payload)];
 			const active = !!features.length;
 
@@ -39,7 +37,6 @@ export const highlightReducer = (state = initialState, action) => {
 			};
 		}
 		case CLEAR_FEATURES: {
-
 			return {
 				...state,
 				features: [],
@@ -47,8 +44,7 @@ export const highlightReducer = (state = initialState, action) => {
 			};
 		}
 		case REMOVE_FEATURE_BY_ID: {
-
-			const features = state.features.filter(f => !payload.includes(f.id));
+			const features = state.features.filter((f) => !payload.includes(f.id));
 			const active = !!features.length;
 
 			return {

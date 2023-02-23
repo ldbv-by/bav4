@@ -14,7 +14,7 @@ describe('ShareDialogContent', () => {
 	const shareUrls = { adminId: 'https://v.bayern.de/adminId', fileId: 'https://v.bayern.de/fileId' };
 
 	const windowMock = {
-		matchMedia() { },
+		matchMedia() {},
 		navigator: () => {
 			return {
 				share() {
@@ -40,7 +40,8 @@ describe('ShareDialogContent', () => {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock,
 				isTouch: () => isTouch
-			}).registerSingleton('TranslationService', { translate: (key) => key })
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock);
 
 		return TestUtils.render(ShareDialogContent.tag);
@@ -97,7 +98,9 @@ describe('ShareDialogContent', () => {
 	});
 
 	it('uses the fileId url when toggle is false => default value', async () => {
-		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').withArgs(shareUrls.fileId).and.returnValue(() => Promise.resolve());
+		const copySpy = spyOn(shareServiceMock, 'copyToClipboard')
+			.withArgs(shareUrls.fileId)
+			.and.returnValue(() => Promise.resolve());
 		const element = await setup();
 		element.shareurls = shareUrls;
 		const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
@@ -108,7 +111,9 @@ describe('ShareDialogContent', () => {
 	});
 
 	it('uses the adminId url when toggle is switched to true', async () => {
-		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').withArgs(shareUrls.adminId).and.returnValue(() => Promise.resolve());
+		const copySpy = spyOn(shareServiceMock, 'copyToClipboard')
+			.withArgs(shareUrls.adminId)
+			.and.returnValue(() => Promise.resolve());
 		const element = await setup();
 		element.shareurls = shareUrls;
 

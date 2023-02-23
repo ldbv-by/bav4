@@ -1,13 +1,11 @@
 import { UrlService } from '../../src/services/UrlService';
 import { $injector } from '../../src/injection';
 
-
 describe('UrlService', () => {
-
 	let instanceUnderTest;
 
 	const httpService = {
-		head: async () => { }
+		head: async () => {}
 	};
 
 	beforeAll(() => {
@@ -18,7 +16,11 @@ describe('UrlService', () => {
 
 	beforeEach(() => {
 		//we use mocked urlShortening and proxifyUrl provides
-		instanceUnderTest = new UrlService(async () => 'https://much.shorter', (url) => 'https://proxified/' + url, (url) => 'https://qrcode/' + url);
+		instanceUnderTest = new UrlService(
+			async () => 'https://much.shorter',
+			(url) => 'https://proxified/' + url,
+			(url) => 'https://qrcode/' + url
+		);
 	});
 
 	describe('constructor', () => {
@@ -32,15 +34,18 @@ describe('UrlService', () => {
 	});
 
 	describe('cors availability', () => {
-
 		it('checks if cors is enabled (it is)', async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
 				timeout: 1500
 			};
-			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
-				ok: true
-			}));
+			const spy = spyOn(httpService, 'head')
+				.withArgs(expectedArgs0, expectedArgs1)
+				.and.returnValue(
+					Promise.resolve({
+						ok: true
+					})
+				);
 
 			const result = await instanceUnderTest.isCorsEnabled('https://some.url');
 
@@ -48,14 +53,18 @@ describe('UrlService', () => {
 			expect(result).toBeTrue();
 		});
 
-		it('checks if cors is enabled (it isn\'t)', async () => {
+		it("checks if cors is enabled (it isn't)", async () => {
 			const expectedArgs0 = 'https://some.url';
 			const expectedArgs1 = {
 				timeout: 1500
 			};
-			const spy = spyOn(httpService, 'head').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve({
-				ok: false
-			}));
+			const spy = spyOn(httpService, 'head')
+				.withArgs(expectedArgs0, expectedArgs1)
+				.and.returnValue(
+					Promise.resolve({
+						ok: false
+					})
+				);
 
 			const result = await instanceUnderTest.isCorsEnabled('https://some.url');
 
@@ -64,20 +73,17 @@ describe('UrlService', () => {
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-
 			try {
 				await instanceUnderTest.isCorsEnabled('foo');
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must represent a URL');
+				expect(error.message).toBe("Parameter 'url' must represent a URL");
 			}
 		});
 	});
 
 	describe('proxify urls', () => {
-
 		describe('instantly', () => {
 			it('proxyfies a url instantly', () => {
 				const url = 'https://some.url';
@@ -88,18 +94,18 @@ describe('UrlService', () => {
 			});
 
 			it('rejects when argument  represents not  an URL', () => {
-
 				expect(() => instanceUnderTest.proxifyInstant('foo')).toThrowError(TypeError, /Parameter 'url' must represent a URL/);
 			});
 		});
 
 		describe('on demand', () => {
-
 			it('proxyfies a url with cors check (needs proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(Promise.resolve({
-					ok: false
-				}));
+				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
+					Promise.resolve({
+						ok: false
+					})
+				);
 
 				const result = await instanceUnderTest.proxify(url);
 
@@ -109,9 +115,11 @@ describe('UrlService', () => {
 
 			it('proxyfies a url with cors check (does not need proxy)', async () => {
 				const url = 'https://some.url';
-				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(Promise.resolve({
-					ok: true
-				}));
+				const httpServiceSpy = spyOn(httpService, 'head').and.returnValue(
+					Promise.resolve({
+						ok: true
+					})
+				);
 
 				const result = await instanceUnderTest.proxify(url);
 
@@ -120,21 +128,18 @@ describe('UrlService', () => {
 			});
 
 			it('rejects when argument  represents not  an URL', async () => {
-
 				try {
 					await instanceUnderTest.proxify('foo');
 					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
+				} catch (error) {
 					expect(error).toEqual(jasmine.any(TypeError));
-					expect(error.message).toBe('Parameter \'url\' must represent a URL');
+					expect(error.message).toBe("Parameter 'url' must represent a URL");
 				}
 			});
 		});
 	});
 
 	describe('shortens urls', () => {
-
 		it('shortens urls by using a provider', async () => {
 			const url = 'https://some.url';
 
@@ -144,20 +149,17 @@ describe('UrlService', () => {
 		});
 
 		it('rejects when argument  represents not  an URL', async () => {
-
 			try {
 				await instanceUnderTest.shorten('foo');
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'url\' must represent a URL');
+				expect(error.message).toBe("Parameter 'url' must represent a URL");
 			}
 		});
 	});
 
 	describe('qrCode URL', () => {
-
 		it('returns qrCode URL by using a provider', () => {
 			const url = 'https://some.url';
 
@@ -167,15 +169,12 @@ describe('UrlService', () => {
 		});
 
 		it('throws an exception when argument  represents not  an URL', () => {
-
-			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, 'Parameter \'url\' must represent a URL');
+			expect(() => instanceUnderTest.qrCode('foo')).toThrowError(Error, "Parameter 'url' must represent a URL");
 		});
 	});
 
 	describe('originAndPathname', () => {
-
 		it('extracts the origin following by the pathname of an URL', () => {
-
 			expect(instanceUnderTest.originAndPathname('http://foo.bar')).toBe('http://foo.bar');
 			expect(instanceUnderTest.originAndPathname('http://foo.bar/?=')).toBe('http://foo.bar');
 			expect(instanceUnderTest.originAndPathname('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
@@ -188,15 +187,12 @@ describe('UrlService', () => {
 		});
 
 		it('throws a TypeError when parameter is not valid', () => {
-
 			expect(() => instanceUnderTest.originAndPathname('foo')).toThrowError(TypeError);
 		});
 	});
 
 	describe('origin', () => {
-
 		it('extracts the origin of an URL', () => {
-
 			expect(instanceUnderTest.origin('http://foo.bar')).toBe('http://foo.bar');
 			expect(instanceUnderTest.origin('http://foo.bar/?=')).toBe('http://foo.bar');
 			expect(instanceUnderTest.origin('http://foo.bar/?foo=bar')).toBe('http://foo.bar');
@@ -209,7 +205,6 @@ describe('UrlService', () => {
 		});
 
 		it('throws a TypeError when parameter is not valid', () => {
-
 			expect(() => instanceUnderTest.origin('foo')).toThrowError(TypeError);
 		});
 	});

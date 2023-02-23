@@ -16,7 +16,7 @@ window.customElements.define(Checkbox.tag, Checkbox);
 describe('ExportMfpToolContent', () => {
 	let store;
 	const windowMock = {
-		matchMedia() { }
+		matchMedia() {}
 	};
 
 	const mfpServiceMock = {
@@ -60,9 +60,7 @@ describe('ExportMfpToolContent', () => {
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractToolContent', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractToolContent).toBeTrue();
@@ -70,7 +68,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when instantiated', () => {
-
 		it('has a model with default values', async () => {
 			const element = await setup();
 			const model = element.getModel();
@@ -86,10 +83,15 @@ describe('ExportMfpToolContent', () => {
 
 	const scales = [42, 21, 1];
 	const dpis = [125, 200];
-	const capabilities = { grSubstitutions: {}, layouts: [{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } }, { id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }] };
+	const capabilities = {
+		grSubstitutions: {},
+		layouts: [
+			{ id: 'foo', scales: scales, dpis: dpis, mapSize: { width: 42, height: 21 } },
+			{ id: 'bar', scales: scales, dpis: dpis, mapSize: { width: 420, height: 210 } }
+		]
+	};
 
 	describe('when initialized', () => {
-
 		it('renders the view WITHOUT capabilities', async () => {
 			const element = await setup();
 
@@ -111,12 +113,10 @@ describe('ExportMfpToolContent', () => {
 
 			const subHeaderElements = element.shadowRoot.querySelectorAll('.tool-sub-header');
 			expect(subHeaderElements).toHaveSize(2);
-			expect([...subHeaderElements].map(e => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
-
+			expect([...subHeaderElements].map((e) => e.innerText)).toEqual(['toolbox_exportMfp_layout', 'toolbox_exportMfp_scale']);
 		});
 
 		it('requests once the capabilities from mfpService', async () => {
-
 			const capabilitiesSpy = spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -124,7 +124,6 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		it('creates select options from the capabilities', async () => {
-
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
@@ -134,7 +133,6 @@ describe('ExportMfpToolContent', () => {
 			const buttons = element.shadowRoot.querySelectorAll('.layout-button');
 			expect(buttons[0].classList.contains('active')).toBeTrue();
 			expect(buttons[1].classList.contains('active')).toBeFalse();
-
 		});
 
 		it('does NOT create select options, when capabilities are empty', async () => {
@@ -173,11 +171,9 @@ describe('ExportMfpToolContent', () => {
 
 			expect(layoutOptions[1].textContent).toMatch(/1:\d+/);
 		});
-
 	});
 
 	describe('when the user selects a layout(id)', () => {
-
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -193,7 +189,6 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		describe('and scale already specified', () => {
-
 			it('changes store', async () => {
 				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -209,13 +204,10 @@ describe('ExportMfpToolContent', () => {
 				expect(element.getModel().id).toEqual('bar');
 				expect(store.getState().mfp.current).toEqual({ id: 'bar', scale: 42, dpi: 125 });
 			});
-
 		});
-
 	});
 
 	describe('when the user selects a scale', () => {
-
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -230,7 +222,6 @@ describe('ExportMfpToolContent', () => {
 		});
 
 		describe('and layout(id) already specified', () => {
-
 			it('changes store, when a scale is selected and layout(id) already specified', async () => {
 				spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 				const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -249,7 +240,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user press the plus button', () => {
-
 		it('changes store, decrease the scale', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -290,7 +280,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user press the minus button', () => {
-
 		it('changes store, increase the scale', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -331,7 +320,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user clicks the submit-button', () => {
-
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -355,7 +343,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user clicks the cancel-button', () => {
-
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -383,7 +370,6 @@ describe('ExportMfpToolContent', () => {
 	});
 
 	describe('when the user toggles the showGrid-checkbox', () => {
-
 		it('changes store', async () => {
 			spyOn(mfpServiceMock, 'getCapabilities').and.returnValue(capabilities);
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
@@ -399,12 +385,10 @@ describe('ExportMfpToolContent', () => {
 
 			expect(store.getState().mfp.showGrid).toBeFalse();
 		});
-
 	});
 
 	describe('when orientation changes', () => {
-
-		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+		it("adds or removes 'data-register-for-viewport-calc' attribute", async () => {
 			const element = await setup({ ...mfpDefaultState, current: initialCurrent });
 
 			setIsPortrait(true);

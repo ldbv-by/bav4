@@ -2,9 +2,7 @@ import { TestUtils } from '../../test-utils.js';
 import { featureInfoReducer } from '../../../src/store/featureInfo/featureInfo.reducer';
 import { addFeatureInfoItems, startRequest, abortOrReset, registerQuery, resolveQuery } from '../../../src/store/featureInfo/featureInfo.action.js';
 
-
 describe('featureInfoReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			featureInfo: featureInfoReducer
@@ -26,15 +24,24 @@ describe('featureInfoReducer', () => {
 		addFeatureInfoItems({ title: 'title0', content: 'content0' });
 		addFeatureInfoItems({ title: 'title1', content: 'content1' });
 
-		expect(store.getState().featureInfo.current).toEqual([{ title: 'title1', content: 'content1' }, { title: 'title0', content: 'content0' }]);
+		expect(store.getState().featureInfo.current).toEqual([
+			{ title: 'title1', content: 'content1' },
+			{ title: 'title0', content: 'content0' }
+		]);
 	});
 
 	it('adds FeatureInfo items array as argument', () => {
 		const store = setup();
 
-		addFeatureInfoItems([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+		addFeatureInfoItems([
+			{ title: 'title0', content: 'content0' },
+			{ title: 'title1', content: 'content1' }
+		]);
 
-		expect(store.getState().featureInfo.current).toEqual([{ title: 'title0', content: 'content0' }, { title: 'title1', content: 'content1' }]);
+		expect(store.getState().featureInfo.current).toEqual([
+			{ title: 'title0', content: 'content0' },
+			{ title: 'title1', content: 'content1' }
+		]);
 	});
 
 	it('starts a FeatureInfo request', () => {

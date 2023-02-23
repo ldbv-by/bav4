@@ -11,7 +11,6 @@ import contentPanelCss from './abstractContentPanel.css';
  * @deprecated
  */
 export class AbstractContentPanel extends BaElement {
-
 	constructor() {
 		super();
 		if (this.constructor === AbstractContentPanel) {
@@ -21,14 +20,14 @@ export class AbstractContentPanel extends BaElement {
 	}
 
 	/**
-    * @override
-    */
+	 * @override
+	 */
 	defaultCss() {
 		return html`
-		${super.defaultCss()}
-		<style>
-		    ${contentPanelCss}
-		</style>
+			${super.defaultCss()}
+			<style>
+				${contentPanelCss}
+			</style>
 		`;
 	}
 }

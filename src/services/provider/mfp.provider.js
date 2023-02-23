@@ -19,14 +19,13 @@ import { HttpService, MediaType } from '../HttpService';
  * @returns {Array<BvvMfpCapabilities>}
  */
 export const getMfpCapabilities = async () => {
-
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = configService.getValueAsPath('BACKEND_URL') + 'print/info';
 	const result = await httpService.get(url);
 
 	switch (result.status) {
 		case 200:
-			return (await result.json());
+			return await result.json();
 		default:
 			throw new Error(`MfpCapabilties could not be loaded: Http-Status ${result.status}`);
 	}
@@ -42,16 +41,19 @@ export const postMfpSpec = async (spec, urlId, abortController) => {
 	const url = `${configService.getValueAsPath('BACKEND_URL')}print/create/${urlId}`;
 
 	try {
-
-		const result = await httpService.fetch(url, {
-			method: 'POST',
-			mode: HttpService.DEFAULT_REQUEST_MODE,
-			body: JSON.stringify(spec),
-			headers: {
-				'Content-Type': MediaType.JSON
+		const result = await httpService.fetch(
+			url,
+			{
+				method: 'POST',
+				mode: HttpService.DEFAULT_REQUEST_MODE,
+				body: JSON.stringify(spec),
+				headers: {
+					'Content-Type': MediaType.JSON
+				},
+				timeout: 20000
 			},
-			timeout: 20000
-		}, abortController);
+			abortController
+		);
 
 		switch (result.status) {
 			case 200: {
@@ -60,8 +62,7 @@ export const postMfpSpec = async (spec, urlId, abortController) => {
 			default:
 				throw new Error(`Mfp spec could not be posted: Http-Status ${result.status}`);
 		}
-	}
-	catch (ex) {
+	} catch (ex) {
 		// handle abort exception https://developer.mozilla.org/en-US/docs/Web/API/AbortController
 		if (ex instanceof DOMException) {
 			return null;

@@ -8,14 +8,12 @@ import { loadBvvFeatureInfo } from './provider/featureInfo.provider';
  * @author taulinger
  */
 export class FeatureInfoService {
-
 	/**
 	 * @param {featureInfoProvider} [featureInfoProvider=loadBvvFeatureInfo]
 	 */
 	constructor(featureInfoProvider = loadBvvFeatureInfo) {
 		this._featureInfoProvider = featureInfoProvider;
-		const { GeoResourceService: geoResourceService }
-			= $injector.inject('GeoResourceService');
+		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 		this._geoResourceService = geoResourceService;
 	}
 
@@ -28,12 +26,10 @@ export class FeatureInfoService {
 	 * @returns {FeatureInfoResult|null} The result or `null`
 	 */
 	async get(geoResourceId, coordinate, mapResolution) {
-
 		if (this.isQueryable(geoResourceId)) {
 			try {
 				return await this._featureInfoProvider(geoResourceId, coordinate, mapResolution);
-			}
-			catch (e) {
+			} catch (e) {
 				throw new Error(`Could not load a FeatureInfoResult from provider: ${e}`);
 			}
 		}
@@ -52,10 +48,9 @@ export class FeatureInfoService {
 }
 
 /**
-* @class
-*/
+ * @class
+ */
 export class FeatureInfoResult {
-
 	constructor(content, title = null) {
 		this._content = content;
 		this._title = title;

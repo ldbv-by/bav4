@@ -18,17 +18,12 @@ export const elevationProfileReducer = (state = initialState, action) => {
 
 	switch (type) {
 		case ELEVATION_PROFILE_ACTIVE_CHANGED: {
-			const { active, coordinates = [] } = payload;
-			return coordinates.length
-				? {
-					...state,
-					coordinates: [...coordinates],
-					active: active
-				}
-				: {
-					...state,
-					active: active
-				};
+			const { active, coordinates } = payload;
+			return {
+				...state,
+				coordinates: [...coordinates],
+				active: active
+			};
 		}
 		case ELEVATION_PROFILE_COORDINATES_CHANGED: {
 			return {

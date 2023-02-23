@@ -2,15 +2,13 @@ import { AdministrationService } from '../../src/services/AdministrationService'
 import { loadBvvAdministration } from '../../src/services/provider/administration.provider';
 
 describe('AdministrationService', () => {
-
 	const setup = (provider = loadBvvAdministration) => {
 		return new AdministrationService(provider);
 	};
 
 	describe('init', () => {
-
 		it('initializes the service with custom provider', async () => {
-			const customProvider = async () => { };
+			const customProvider = async () => {};
 			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._administrationProvider).toBeDefined();
 			expect(instanceUnderTest._administrationProvider).toEqual(customProvider);
@@ -36,7 +34,6 @@ describe('AdministrationService', () => {
 	});
 
 	describe('Error handling', () => {
-
 		it('rejects when backend is not available', async () => {
 			const instanceUnderTest = setup(async () => {
 				throw new Error('Administration Provider error');
@@ -47,8 +44,7 @@ describe('AdministrationService', () => {
 			try {
 				await instanceUnderTest.getAdministration(mockCoordinate);
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('Could not load administration from provider: Administration Provider error');
 			}
 		});
@@ -59,10 +55,9 @@ describe('AdministrationService', () => {
 			try {
 				await instanceUnderTest.getAdministration();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+				expect(error.message).toBe("Parameter 'coordinate3857' must be a coordinate");
 			}
 		});
 
@@ -72,10 +67,9 @@ describe('AdministrationService', () => {
 			try {
 				await instanceUnderTest.getAdministration('invalid input');
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe('Parameter \'coordinate3857\' must be a coordinate');
+				expect(error.message).toBe("Parameter 'coordinate3857' must be a coordinate");
 			}
 		});
 	});

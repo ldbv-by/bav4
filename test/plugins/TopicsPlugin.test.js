@@ -5,12 +5,10 @@ import { Topic } from '../../src/domain/topic';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 import { QueryParameters } from '../../src/domain/queryParameters';
 
-
 describe('TopicsPlugin', () => {
-
 	const topicsServiceMock = {
-		async init() { },
-		default() { },
+		async init() {},
+		default() {},
 		byId() {}
 	};
 	const windowMock = {
@@ -22,19 +20,15 @@ describe('TopicsPlugin', () => {
 	};
 
 	const setup = (state) => {
-
 		const store = TestUtils.setupStoreAndDi(state, {
 			topics: topicsReducer
 		});
-		$injector
-			.registerSingleton('TopicsService', topicsServiceMock)
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', { getWindow: () => windowMock });
 
 		return store;
 	};
 
 	describe('register', () => {
-
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
@@ -48,7 +42,6 @@ describe('TopicsPlugin', () => {
 	});
 
 	describe('_init', () => {
-
 		it('initializes the topics service and calls #_addTopicFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
@@ -82,11 +75,8 @@ describe('TopicsPlugin', () => {
 		});
 	});
 
-
 	describe('_addTopicFromConfig', () => {
-
 		it('initializes the topics service and update the store', async () => {
-
 			const store = setup();
 			const topicId = 'someId';
 			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
@@ -100,9 +90,7 @@ describe('TopicsPlugin', () => {
 	});
 
 	describe('_addTopicFromQueryParams', () => {
-
 		it('updates current topic', () => {
-
 			const store = setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
@@ -117,7 +105,6 @@ describe('TopicsPlugin', () => {
 		});
 
 		it('updates current topic by calling #_addTopicFromConfig as fallback', () => {
-
 			setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;

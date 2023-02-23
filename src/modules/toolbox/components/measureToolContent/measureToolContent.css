@@ -9,8 +9,8 @@
 	display: flex;
 	justify-content: center;
 	flex-flow: wrap;
-	gap: .5em .8em;
-	padding: 0 1em .8em;
+	gap: 0.5em 0.8em;
+	padding: 0 1em 0.8em;
 	border-bottom: 1px solid var(--header-background-color);
 }
 
@@ -22,16 +22,16 @@
 	font-size: 2.2em;
 	flex-grow: 1;
 	text-align: right;
-	margin-left: .5em;
-	margin-right: .5em;
-	line-height: .9;
+	margin-left: 0.5em;
+	margin-right: 0.5em;
+	line-height: 0.9;
 }
 
 .prime-text-unit {
 	font-size: 2.2em;
 	text-align: left;
 	width: 2.1em;
-	line-height: .9;
+	line-height: 0.9;
 }
 
 .area {

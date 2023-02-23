@@ -3,10 +3,7 @@ import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
 
-
-
 describe('measurementReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer
@@ -20,7 +17,6 @@ describe('measurementReducer', () => {
 		expect(store.getState().measurement.reset).toBeNull();
 		expect(store.getState().measurement.fileSaveResult).toBeNull();
 	});
-
 
 	it('updates the active property', () => {
 		const store = setup();

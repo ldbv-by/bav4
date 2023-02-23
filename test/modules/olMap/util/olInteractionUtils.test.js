@@ -3,7 +3,17 @@ import { Point } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import Style from 'ol/style/Style';
 import { $injector } from '../../../../src/injection';
-import { getFeatureSnapOption, getModifyOptions, getSelectableFeatures, getSelectOptions, getSnapState, getSnapTolerancePerDevice, InteractionSnapType, InteractionStateType, removeSelectedFeatures } from '../../../../src/modules/olMap/utils/olInteractionUtils';
+import {
+	getFeatureSnapOption,
+	getModifyOptions,
+	getSelectableFeatures,
+	getSelectOptions,
+	getSnapState,
+	getSnapTolerancePerDevice,
+	InteractionSnapType,
+	InteractionStateType,
+	removeSelectedFeatures
+} from '../../../../src/modules/olMap/utils/olInteractionUtils';
 import { modifyStyleFunction } from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { TestUtils } from '../../../test-utils';
 
@@ -13,14 +23,11 @@ const environmentService = {
 };
 beforeAll(() => {
 	TestUtils.setupStoreAndDi();
-	$injector
-		.registerSingleton('EnvironmentService', environmentService);
+	$injector.registerSingleton('EnvironmentService', environmentService);
 });
 
 describe('olInteractionUtils', () => {
-
 	describe('enum InteractionStateType', () => {
-
 		it('is an enum with a value', () => {
 			expect(Object.entries(InteractionStateType).length).toBe(5);
 			expect(Object.isFrozen(InteractionStateType)).toBeTrue();
@@ -33,7 +40,6 @@ describe('olInteractionUtils', () => {
 	});
 
 	describe('enum InteractionSnapType', () => {
-
 		it('is an enum with a value', () => {
 			expect(Object.entries(InteractionSnapType).length).toBe(5);
 			expect(Object.isFrozen(InteractionSnapType)).toBeTrue();
@@ -53,7 +59,6 @@ describe('olInteractionUtils', () => {
 			const option = getFeatureSnapOption(mockLayer);
 			expect(option.layerFilter(mockLayer)).toBeTrue();
 			expect(option.layerFilter(aDifferentLayer)).toBeFalse();
-
 		});
 
 		it('returns a object with a filter-function, which returns true for the defined (modified) layer', () => {
@@ -68,7 +73,6 @@ describe('olInteractionUtils', () => {
 			expect(option).toBeTruthy();
 			expect(option.layerFilter).toBeTruthy();
 			expect(option.layerFilter(aDifferentLayer)).toBeFalse();
-
 		});
 	});
 
@@ -82,7 +86,6 @@ describe('olInteractionUtils', () => {
 			expect(selectOptions.layers).toEqual(jasmine.any(Function));
 			expect(selectOptions.layers(mockLayer)).toBeTrue();
 			expect(selectOptions.layers(aDifferentLayer)).toBeFalse();
-
 		});
 
 		it('returns a object with a feature-filter, which returns true for the defined layer', () => {
@@ -94,13 +97,11 @@ describe('olInteractionUtils', () => {
 			const featureFilter = option.filter;
 			expect(featureFilter(featureStub, mockLayer)).toBe(featureStub);
 			expect(featureFilter(featureStub, aDifferentLayer)).toBeNull();
-
 		});
 	});
 
 	describe('when using getModifyOptions', () => {
-		it('returns a object with a delete-condition for \'singleClick and noModifierKeys\' ', () => {
-
+		it("returns a object with a delete-condition for 'singleClick and noModifierKeys' ", () => {
 			const featuresStub = {};
 
 			const modifyOptions = getModifyOptions(featuresStub);
@@ -112,7 +113,6 @@ describe('olInteractionUtils', () => {
 		});
 	});
 
-
 	describe('getSnapState', () => {
 		it('detects a snap on a edge', () => {
 			const pixel = {};
@@ -122,11 +122,13 @@ describe('olInteractionUtils', () => {
 					return new Point([0, 0]);
 				},
 				get: () => {
-					return [{
-						getGeometry: () => {
-							return new Point([1, 1]);
+					return [
+						{
+							getGeometry: () => {
+								return new Point([1, 1]);
+							}
 						}
-					}];
+					];
 				}
 			};
 			let count = 0;
@@ -143,7 +145,6 @@ describe('olInteractionUtils', () => {
 			expect(getSnapState(mapMock, mockLayer, pixel)).toBe(InteractionSnapType.EGDE);
 		});
 
-
 		it('detects a snap on a vertex', () => {
 			const pixel = {};
 			const mockLayer = {};
@@ -152,11 +153,13 @@ describe('olInteractionUtils', () => {
 					return new Point([0, 0]);
 				},
 				get: () => {
-					return [{
-						getGeometry: () => {
-							return new Point([0, 0]);
+					return [
+						{
+							getGeometry: () => {
+								return new Point([0, 0]);
+							}
 						}
-					}];
+					];
 				}
 			};
 			let count = 0;
@@ -181,11 +184,13 @@ describe('olInteractionUtils', () => {
 					return new Point([0, 0]);
 				},
 				get: () => {
-					return [{
-						getGeometry: () => {
-							return new Point([0, 0]);
+					return [
+						{
+							getGeometry: () => {
+								return new Point([0, 0]);
+							}
 						}
-					}];
+					];
 				}
 			};
 			let count = 0;
@@ -217,7 +222,6 @@ describe('olInteractionUtils', () => {
 			expect(getSelectableFeatures(mapMock, mockLayer, pixel)).toContain(mockFeature);
 		});
 
-
 		it('returns NOT a selectable feature', () => {
 			const pixel = {};
 			const mockLayer = {};
@@ -231,14 +235,13 @@ describe('olInteractionUtils', () => {
 
 			expect(getSelectableFeatures(mapMock, mockLayer, pixel)).toEqual([]);
 		});
-
 	});
 
 	describe('removeSelectedFeatures', () => {
 		it('removes features from layer', () => {
 			const mockSource = {
 				hasFeature: () => true,
-				removeFeature: () => { }
+				removeFeature: () => {}
 			};
 			const removeSpy = spyOn(mockSource, 'removeFeature');
 			const mockLayer = { getSource: () => mockSource };
@@ -252,9 +255,9 @@ describe('olInteractionUtils', () => {
 		it('before removing, calls additionalAction', () => {
 			const mockSource = {
 				hasFeature: () => true,
-				removeFeature: () => { }
+				removeFeature: () => {}
 			};
-			const mock = { additionalAction: () => { } };
+			const mock = { additionalAction: () => {} };
 			const removeSpy = spyOn(mockSource, 'removeFeature');
 			const additionalSpy = spyOn(mock, 'additionalAction');
 			const mockLayer = { getSource: () => mockSource };
@@ -268,7 +271,6 @@ describe('olInteractionUtils', () => {
 	});
 
 	describe('getSnapTolerancePerDevice', () => {
-
 		it('isTouch() resolves in higher snapTolerance', () => {
 			const environmentSpy = spyOn(environmentService, 'isTouch').and.returnValue(true);
 
@@ -282,7 +284,5 @@ describe('olInteractionUtils', () => {
 			expect(getSnapTolerancePerDevice()).toBe(4);
 			expect(environmentSpy).toHaveBeenCalled();
 		});
-
 	});
-
 });

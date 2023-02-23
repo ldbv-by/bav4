@@ -12,7 +12,6 @@ const Update_Label = 'Update_Label';
  * @author costa_gi
  */
 export class MvuListItem extends MvuElement {
-
 	constructor() {
 		super({
 			label: 'initial_label'
@@ -20,7 +19,6 @@ export class MvuListItem extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Label:
 				return { ...model, label: data };
@@ -39,12 +37,16 @@ export class MvuListItem extends MvuElement {
 		};
 
 		return html`
-			<style>${css}</style> 
-			<style>${topicItemCss}</style> 
-			<span class='ba-topic-label'>${label}</span>
-			<button class='ba-topic-button listItemBbutton' @click=${fireEvent}>remove</button>
+			<style>
+				${css}
+			</style>
+			<style>
+				${topicItemCss}
+			</style>
+			<span class="ba-topic-label">${label}</span>
+			<button class="ba-topic-button listItemBbutton" @click=${fireEvent}>remove</button>
 			<ba-button id="topic-item-button" class="button" .label="remove" @click=${fireEvent}></ba-button>
-			`;
+		`;
 	}
 
 	static get tag() {
@@ -52,8 +54,8 @@ export class MvuListItem extends MvuElement {
 	}
 
 	/**
-	* @property {string} label='' - Label of the component
-	*/
+	 * @property {string} label='' - Label of the component
+	 */
 	set label(value) {
 		this.signal(Update_Label, value);
 	}

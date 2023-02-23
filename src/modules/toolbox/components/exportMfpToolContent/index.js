@@ -1,4 +1,3 @@
-
 import { ExportMfpToolContent } from './ExportMfpToolContent';
 
 if (!window.customElements.get(ExportMfpToolContent.tag)) {

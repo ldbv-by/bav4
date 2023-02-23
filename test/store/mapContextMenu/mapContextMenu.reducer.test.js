@@ -2,10 +2,7 @@ import { TestUtils } from '../../test-utils.js';
 import { mapContextMenuReducer } from '../../../src/store/mapContextMenu/mapContextMenu.reducer';
 import { close, open } from '../../../src/store/mapContextMenu/mapContextMenu.action';
 
-
-
 describe('mapContextMenu', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			mapContextMenu: mapContextMenuReducer
@@ -18,8 +15,7 @@ describe('mapContextMenu', () => {
 		expect(store.getState().mapContextMenu.content).toBeNull();
 	});
 
-
-	it('updates the \'coordinate\' and \'data\' property', () => {
+	it("updates the 'coordinate' and 'data' property", () => {
 		const store = setup();
 
 		open([21, 42], 'content');

@@ -2,9 +2,7 @@ import { networkReducer } from '../../../src/store/network/network.reducer';
 import { setFetching, setOffline } from '../../../src/store/network/network.action';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('networkReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			network: networkReducer
@@ -18,7 +16,7 @@ describe('networkReducer', () => {
 		expect(store.getState().network.offline).toBeFalse();
 	});
 
-	it('changes the \'offline\' property', () => {
+	it("changes the 'offline' property", () => {
 		const store = setup();
 
 		setOffline(true);
@@ -30,7 +28,7 @@ describe('networkReducer', () => {
 		expect(store.getState().network.offline).toBeFalse();
 	});
 
-	it('changes the \'fetching\' property', () => {
+	it("changes the 'fetching' property", () => {
 		const store = setup();
 
 		setFetching(true);
@@ -62,4 +60,3 @@ describe('networkReducer', () => {
 		expect(store.getState().network.pendingRequests).toBe(1);
 	});
 });
-

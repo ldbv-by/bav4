@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/toolbox/i18n/toolbox.provider';
 
-
 describe('i18n for menu module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.toolbox_drawTool_header).toBe('Zeichnen');
@@ -18,7 +15,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_cancel).toBe('Abbrechen');
 		expect(map.toolbox_drawTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_drawTool_delete_drawing).toBe('Zeichnung löschen');
-		expect(map.toolbox_drawTool_info).toBe('Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.');
+		expect(map.toolbox_drawTool_info).toBe(
+			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den Nutzungsbedingungen zu.'
+		);
 		expect(map.toolbox_drawTool_style_color).toBe('Farbe');
 		expect(map.toolbox_drawTool_style_size).toBe('Größe');
 		expect(map.toolbox_drawTool_style_size_small).toBe('Klein');
@@ -31,7 +30,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_draw_init).toBe('Einen Zeichnungstyp auswählen, um die Zeichnung zu beginnen');
 		expect(map.toolbox_drawTool_draw_active).toBe('In die Karte tippen, um die Zeichnung zu beginnen');
 		expect(map.toolbox_drawTool_draw_draw).toBe('In die Karte tippen, um die Linie zu zeichnen (Doppelt tippen zum Beenden)');
-		expect(map.toolbox_drawTool_draw_modify).toBe('Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
+		expect(map.toolbox_drawTool_draw_modify).toBe(
+			'Tippe auf die Zeichnung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen'
+		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Eine bestehende Zeichnung auswählen oder eine neue Zeichnung beginnen');
 		expect(map.toolbox_measureTool_header).toBe('Messen');
 		expect(map.toolbox_measureTool_measure).toBe('Messen');
@@ -41,7 +42,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_header).toBe('Teilen');
 		expect(map.toolbox_shareTool_embed).toBe('BayernAtlas-IFrame');
 		expect(map.toolbox_shareTool_preview).toBe('Vorschau');
-		expect(map.toolbox_shareTool_disclaimer).toBe('Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.');
+		expect(map.toolbox_shareTool_disclaimer).toBe(
+			'Sie können die Karte in Ihre Website oder ein Blog einbetten. Mit dem Einbetten dieser Karte stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0"> Nutzungsbedingungen</a> zu.'
+		);
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
 		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
@@ -53,7 +56,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
 		expect(map.toolbox_measureTool_measure_active).toBe('In die Karte tippen, um die Messung zu beginnen');
 		expect(map.toolbox_measureTool_measure_draw).toBe('In die Karte tippen, um die Messlinie zu zeichnen (Doppelt tippen zum Beenden)');
-		expect(map.toolbox_measureTool_measure_modify).toBe('Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen');
+		expect(map.toolbox_measureTool_measure_modify).toBe(
+			'Tippe auf die Messung, um einen Punkt hinzuzufügen;</br> Punkt verschieben: tippen und ziehen;</br> Punkt löschen: auf Punkt tippen'
+		);
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
 		expect(map.toolbox_measureTool_share_api).toBe('Klicken, um zu teilen');
@@ -107,7 +112,6 @@ describe('i18n for menu module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.toolbox_drawTool_header).toBe('Draw');
@@ -134,7 +138,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_drawTool_draw_init).toBe('Select a drawing type to start drawing');
 		expect(map.toolbox_drawTool_draw_active).toBe('Tap on the map to start drawing');
 		expect(map.toolbox_drawTool_draw_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
-		expect(map.toolbox_drawTool_draw_modify).toBe('To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
+		expect(map.toolbox_drawTool_draw_modify).toBe(
+			'To add a point, tap on a drawing;</br> To move a point, press and drag it;</br> To delete a point, tap on it'
+		);
 		expect(map.toolbox_drawTool_draw_select).toBe('Select an existing drawing or start a new one');
 		expect(map.toolbox_measureTool_header).toBe('Measure');
 		expect(map.toolbox_measureTool_measure).toBe('Measure');
@@ -156,7 +162,9 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');
 		expect(map.toolbox_measureTool_measure_active).toBe('Tap on the map to start measurement');
 		expect(map.toolbox_measureTool_measure_draw).toBe('Tap on the map to continue drawing the line (double-tap to finish)');
-		expect(map.toolbox_measureTool_measure_modify).toBe('To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it');
+		expect(map.toolbox_measureTool_measure_modify).toBe(
+			'To add a point, tap on a measurement;</br> To move a point, press and drag it;</br> To delete a point, tap on it'
+		);
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
 		expect(map.toolbox_measureTool_share).toBe('Share');
 		expect(map.toolbox_measureTool_share_api).toBe('Click to share');
@@ -221,7 +229,6 @@ describe('i18n for menu module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

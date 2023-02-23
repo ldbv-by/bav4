@@ -8,7 +8,6 @@ import { loadBvvTopics } from './provider/topics.provider';
  * @author taulinger
  */
 export class TopicsService {
-
 	constructor(provider = loadBvvTopics) {
 		this._provider = provider;
 		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
@@ -28,14 +27,12 @@ export class TopicsService {
 		if (!this._topics) {
 			try {
 				this._topics = await this._provider();
-			}
-			catch (e) {
+			} catch (e) {
 				this._topics = [];
 				if (this._environmentService.isStandalone()) {
 					this._topics.push(...this._newFallbackTopics());
 					console.warn('Topics could not be fetched from backend. Using fallback topics ...');
-				}
-				else {
+				} else {
 					console.error('Topics could not be fetched from backend.', e);
 				}
 			}
@@ -44,10 +41,10 @@ export class TopicsService {
 	}
 
 	/**
-	* Returns all available {@link Topic}.
-	* @public
-	* @returns  {Array.<Topic>}
-	*/
+	 * Returns all available {@link Topic}.
+	 * @public
+	 * @returns  {Array.<Topic>}
+	 */
 	all() {
 		if (!this._topics) {
 			console.warn('TopicsService not yet initialized');
@@ -57,17 +54,17 @@ export class TopicsService {
 	}
 
 	/**
-	* Returns the corresponding  {@link Topic} for an id.
-	* @public
-	* @param {string} id Id of the desired {@link Topic}
-	* @returns {Topic | null}
-	*/
+	 * Returns the corresponding  {@link Topic} for an id.
+	 * @public
+	 * @param {string} id Id of the desired {@link Topic}
+	 * @returns {Topic | null}
+	 */
 	byId(id) {
 		if (!this._topics) {
 			console.warn('TopicsService not yet initialized');
 			return null;
 		}
-		return this._topics.find(topic => topic.id === id) || null;
+		return this._topics.find((topic) => topic.id === id) || null;
 	}
 
 	/**
@@ -84,7 +81,6 @@ export class TopicsService {
 	_newFallbackTopics() {
 		const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 		return [
-
 			new Topic(fallbackId0, 'Topic 1', 'This is a fallback topic...', [
 				//see fallback georesources in GeoResourceService
 				'tpo',

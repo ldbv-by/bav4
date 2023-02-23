@@ -1,22 +1,18 @@
 import { $injector } from '../../../../src/injection';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
 
-
 describe('imageLoadFunction.provider', () => {
-
 	describe('getBvvBaaImageLoadFunction', () => {
 		const configService = {
-			getValueAsPath: () => { }
+			getValueAsPath: () => {}
 		};
 
 		const httpService = {
-			get: async () => { }
+			get: async () => {}
 		};
 
 		beforeAll(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('HttpService', httpService);
+			$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 		});
 
 		const getFakeImageWrapperInstance = () => {
@@ -31,19 +27,22 @@ describe('imageLoadFunction.provider', () => {
 		};
 
 		it('provides a image load function that loads a image including Authorization header', async () => {
-			const base64ImageData = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
+			const base64ImageData =
+				'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=';
 			const fakeImageWrapper = getFakeImageWrapperInstance();
 			const src = 'http://foo.bar/something.png';
 			const backendUrl = 'https://backend.url/';
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const credential = { username: 'username', password: 'password' };
 			const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
-			spyOn(httpService, 'get').withArgs(expectedUrl, {
-				timeout: 10000,
-				headers: new Headers({
-					'Authorization': `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl, {
+					timeout: 10000,
+					headers: new Headers({
+						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+					})
 				})
-			}).and.resolveTo(new Response(base64ImageData));
+				.and.resolveTo(new Response(base64ImageData));
 			const imageLoadFunction = getBvvBaaImageLoadFunction(credential);
 
 			await imageLoadFunction(fakeImageWrapper, src);
@@ -58,12 +57,14 @@ describe('imageLoadFunction.provider', () => {
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const credential = { username: 'username', password: 'password' };
 			const expectedUrl = `${backendUrl}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
-			spyOn(httpService, 'get').withArgs(expectedUrl, {
-				timeout: 10000,
-				headers: new Headers({
-					'Authorization': `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl, {
+					timeout: 10000,
+					headers: new Headers({
+						Authorization: `Basic ${btoa(`${credential.username}:${credential.password}`)}`
+					})
 				})
-			}).and.resolveTo(new Response(null, { status: 404 }));
+				.and.resolveTo(new Response(null, { status: 404 }));
 			const errorSpy = spyOn(console, 'error');
 			const imageLoadFunction = getBvvBaaImageLoadFunction(credential);
 

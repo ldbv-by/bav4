@@ -5,19 +5,15 @@ import { positionReducer } from '../../../../../src/store/position/position.redu
 import { TestUtils } from '../../../../test-utils.js';
 window.customElements.define(MapInfo.tag, MapInfo);
 
-
 const setupStoreAndDi = (state) => {
 	TestUtils.setupStoreAndDi(state, { position: positionReducer });
 };
 
-
 describe('MapInfo', () => {
-
 	let element;
 
 	describe('when initialized', () => {
 		it('adds a div which shows theme toggle and coordinate select', async () => {
-
 			setupStoreAndDi({
 				position: {
 					zoom: 5,

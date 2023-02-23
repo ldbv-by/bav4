@@ -2,7 +2,6 @@ import { html } from 'lit-html';
 import { isCoordinate, isHttpUrl, isNumber, isObject, isPromise, isString, isTemplateResult, isTemplateResultOf } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
-
 	it('checks for an object', () => {
 		expect(isObject()).toBeFalse();
 		expect(isObject(null)).toBeFalse();
@@ -89,8 +88,8 @@ describe('provides checks for commons types', () => {
 		expect(isTemplateResultOf('some')).toBeFalse();
 		expect(isTemplateResultOf(5)).toBeFalse();
 
-		expect(isTemplateResultOf(html`<foo>`, 'foo')).toBeTrue();
-		expect(isTemplateResultOf(html`<foo>`, 'bar')).toBeFalse();
+		expect(isTemplateResultOf(html`<foo></foo>`, 'foo')).toBeTrue();
+		expect(isTemplateResultOf(html`<foo></foo>`, 'bar')).toBeFalse();
 	});
 
 	it('checks for a URL', () => {

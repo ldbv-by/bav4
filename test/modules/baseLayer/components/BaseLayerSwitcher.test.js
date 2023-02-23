@@ -9,23 +9,20 @@ import { XyzGeoResource } from '../../../../src/domain/geoResources';
 
 window.customElements.define(BaseLayerSwitcher.tag, BaseLayerSwitcher);
 
-
 describe('BaseLayerSwitcher', () => {
-
 	let store;
 
 	const geoResourceServiceMock = {
-		async init() { },
-		all() { },
-		byId() { }
+		async init() {},
+		all() {},
+		byId() {}
 	};
 	const topicsServiceMock = {
-		default() { },
-		byId() { }
+		default() {},
+		byId() {}
 	};
 
 	const setup = async (state = {}) => {
-
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer, topics: topicsReducer });
 
 		$injector
@@ -37,7 +34,6 @@ describe('BaseLayerSwitcher', () => {
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new BaseLayerSwitcher().getModel();
@@ -51,14 +47,12 @@ describe('BaseLayerSwitcher', () => {
 	});
 
 	describe('when initialized ', () => {
-
 		it('renders nothing when layers state not yet set ready', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('renders two buttons', async () => {
-
 			const topicsId = 'topicId';
 			const activeGeoResourceId = 'geoRsId1';
 			const activeLayer = createDefaultLayer(activeGeoResourceId);
@@ -97,9 +91,7 @@ describe('BaseLayerSwitcher', () => {
 	});
 
 	describe('when topic changed ', () => {
-
 		it('updates the view', async () => {
-
 			const topicsId = 'topicId';
 			const activeGeoResourceId = 'geoRsId1';
 			const activeLayer = createDefaultLayer(activeGeoResourceId);
@@ -134,13 +126,9 @@ describe('BaseLayerSwitcher', () => {
 	});
 
 	describe('when element clicked ', () => {
-
 		describe('and some layers are active ', () => {
-
 			describe('base layer on index=0', () => {
-
 				it('removes the current base layer on index=0 and adds the new layer on index=0', async () => {
-
 					const topicsId = 'topicId';
 					const geoResourceId0 = 'geoRsId0';
 					const geoResourceId1 = 'geoRsId1';
@@ -174,9 +162,7 @@ describe('BaseLayerSwitcher', () => {
 			});
 
 			describe('base layer on index > 0', () => {
-
 				it('adds the new layer on index=0', async () => {
-
 					const topicsId = 'topicId';
 					const geoResourceId0 = 'geoRsId0';
 					const geoResourceId1 = 'geoRsId1';
@@ -210,7 +196,6 @@ describe('BaseLayerSwitcher', () => {
 			});
 
 			it('does nothing when layer is already on map', async () => {
-
 				const topicsId = 'topicId';
 				const geoResourceId0 = 'geoRsId0';
 				const geoResourceId1 = 'geoRsId1';
@@ -243,9 +228,7 @@ describe('BaseLayerSwitcher', () => {
 		});
 
 		describe('and no layer is active ', () => {
-
 			it('adds the new layer on index 0', async () => {
-
 				const topicsId = 'topicId';
 				const geoResourceId0 = 'geoRsId0';
 				const state = {

@@ -9,13 +9,10 @@ import { TestUtils } from '../../../../../../test-utils.js';
 import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../../../../../../src/plugins/HighlightPlugin';
 window.customElements.define(LocationResultItem.tag, LocationResultItem);
 
-
 describe('LocationResultItem', () => {
-
 	let store;
 
 	const setup = (state = {}) => {
-
 		const initialState = {
 			media: {
 				portrait: false
@@ -34,15 +31,12 @@ describe('LocationResultItem', () => {
 	};
 
 	describe('static properties', () => {
-
 		it('_maxZoomValue', async () => {
-
 			expect(LocationResultItem._maxZoomLevel).toBe(19);
 		});
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
 
@@ -60,9 +54,7 @@ describe('LocationResultItem', () => {
 	});
 
 	describe('events', () => {
-
 		describe('on mouse enter', () => {
-
 			it('sets a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
 				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
@@ -80,7 +72,6 @@ describe('LocationResultItem', () => {
 		});
 
 		describe('on mouse leave', () => {
-
 			it('removes a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
 				const data = new LocationSearchResult('label', 'labelFormatted', coordinate);
@@ -91,7 +82,6 @@ describe('LocationResultItem', () => {
 				});
 				element.data = data;
 
-
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
@@ -100,13 +90,11 @@ describe('LocationResultItem', () => {
 		});
 
 		describe('on click', () => {
-
 			const previousCoordinate = [1, 2];
 			const coordinate = [21, 42];
 			const extent = [0, 1, 2, 3];
 
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
-
 				const data = new LocationSearchResult('label', 'labelFormatted', coordinate, extent);
 				const element = await setup({
 					highlight: {
@@ -126,9 +114,7 @@ describe('LocationResultItem', () => {
 				return element;
 			};
 
-
 			describe('result has NO extent', () => {
-
 				it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
 
@@ -150,12 +136,9 @@ describe('LocationResultItem', () => {
 					expect(store.getState().position.fitRequest.payload.extent).toEqual([...coordinate, ...coordinate]);
 					expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
 				});
-
-
 			});
 
 			describe('result has an extent', () => {
-
 				it('removes both an existing and temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
 					const element = await setupOnClickTests(false, extent);
 
@@ -174,7 +157,6 @@ describe('LocationResultItem', () => {
 					expect(store.getState().position.fitRequest.payload.extent).toEqual(extent);
 					expect(store.getState().position.fitRequest.payload.options.maxZoom).toBe(LocationResultItem._maxZoomLevel);
 				});
-
 			});
 
 			it('closes the main menu in portrait orientation', async () => {
