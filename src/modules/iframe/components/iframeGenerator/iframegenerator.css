@@ -1,67 +1,64 @@
 .iframe__preview {
-    display: flex;
-    padding-left: 0.3em;    
-    width: 600px;
-    height: 400px; 
-    border:1px solid var(--header-background-color);    
-    align-items: center;
-    justify-content: center;
-    overflow: scroll;
+	display: flex;
+	padding-left: 0.3em;
+	width: 600px;
+	height: 400px;
+	border: 1px solid var(--header-background-color);
+	align-items: center;
+	justify-content: center;
+	overflow: scroll;
 }
 
-.container{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    align-items: center;
+.container {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 }
 
-.iframe__embed_string{
-    display: flex;
-    align-content: space-evenly;
+.iframe__embed_string {
+	display: flex;
+	align-content: space-evenly;
 }
 
-.iframe__input{
-    display: flex;
-    align-items: baseline;
+.iframe__input {
+	display: flex;
+	align-items: baseline;
 }
 
-.iframe__content{
-    width:100%;
-    padding: 0.3em;
+.iframe__content {
+	width: 100%;
+	padding: 0.3em;
 }
 
-.fieldset{
-    padding-left: 1em;
+.fieldset {
+	padding-left: 1em;
 }
 
-iframe{
-    border:0;    
+iframe {
+	border: 0;
 }
 
 .iframe__section {
 	border-bottom: 1px solid var(--header-background-color);
 }
 
-.iframe__controls{
-    padding: 0.3em;
-    display: flex;
-    align-content: space-evenly;
+.iframe__controls {
+	padding: 0.3em;
+	display: flex;
+	align-content: space-evenly;
 }
 
 .iframe__code {
-    padding: 0.3em;
+	padding: 0.3em;
 }
 
-.iframe__toggle{
-    display: flex;
-    align-items: center;
-    padding-right: 0.3em;
+.iframe__toggle {
+	display: flex;
+	align-items: center;
+	padding-right: 0.3em;
 }
 
 #iframe_slider_width:disabled {
-    display: none;
+	display: none;
 }
-
-
-

@@ -182,7 +182,13 @@ export class ShareToolContent extends AbstractToolContent {
 					</ba-checkbox>
 				</div>
 				<div class="ba-tool-container__actions">
-					<ba-button class="preview_button" .type=${'primary'} .label=${translate('toolbox_shareTool_preview')} .disabled=${true} @click=${onPreview}></ba-button>
+					<ba-button
+						class="preview_button"
+						.type=${'primary'}
+						.label=${translate('toolbox_shareTool_preview')}
+						.disabled=${true}
+						@click=${onPreview}
+					></ba-button>
 				</div>
 			</div>
 		`;

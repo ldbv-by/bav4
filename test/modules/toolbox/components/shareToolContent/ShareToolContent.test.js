@@ -240,7 +240,6 @@ describe('ShareToolContent', () => {
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
 
-
 			expect(window.getComputedStyle(button).display).toBe('block');
 			const title = element.shadowRoot.querySelectorAll('.ba-tool-container__title');
 			expect(window.getComputedStyle(title[1]).display).toBe('block');

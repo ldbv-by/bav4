@@ -13,14 +13,15 @@ describe('IFrameGenerator', () => {
 
 	const shareServiceMock = {
 		encodeState: () => 'https://myhost/app/?param=foo',
-		copyToClipboard() { }
+		copyToClipboard() {}
 	};
 	// const baseLocation = `${location.protocol}//${location.host}${location.pathname}` + '?';
 	const mockWindow = {
 		location: {
 			protocol: 'https:',
 			host: 'myhost/',
-			pathname: 'app/' },
+			pathname: 'app/'
+		},
 		parent: {
 			location: 'iframe'
 		}
@@ -32,17 +33,15 @@ describe('IFrameGenerator', () => {
 	};
 
 	const setup = () => {
-
 		store = TestUtils.setupStoreAndDi({ notifications: { latest: null } }, { notifications: notificationReducer });
-		$injector.registerSingleton('EnvironmentService', environmentServiceMock)
+		$injector
+			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(IFrameGenerator.tag);
-
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model with default values', async () => {
 			const element = await setup();
 			const model = element.getModel();
@@ -54,7 +53,6 @@ describe('IFrameGenerator', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders iframe content', async () => {
 			const element = await setup();
 
@@ -76,9 +74,10 @@ describe('IFrameGenerator', () => {
 			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
 			buttonElement.click();
 
-			expect(clipboardSpy).toHaveBeenCalledWith('<iframe src=https://myhost/app/embed.html?param=foo width=\'400px\' height=\'300px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 		});
-
 
 		it('notifies about successfully copied to clipboard', async () => {
 			const element = await setup();
@@ -102,7 +101,6 @@ describe('IFrameGenerator', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('iframe_embed_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
-
 	});
 
 	describe('when input values for size changes', () => {
@@ -118,7 +116,9 @@ describe('IFrameGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('400px');
 			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith('<iframe src=https://myhost/app/embed.html?param=foo width=\'400px\' height=\'300px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 			clipboardSpy.calls.reset();
 
 			// changing width
@@ -127,7 +127,9 @@ describe('IFrameGenerator', () => {
 
 			expect(iframeElement.width).toBe('42px');
 			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith('<iframe src=https://myhost/app/embed.html?param=foo width=\'42px\' height=\'300px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 			clipboardSpy.calls.reset();
 
 			// changing height
@@ -136,8 +138,9 @@ describe('IFrameGenerator', () => {
 
 			expect(iframeElement.height).toBe('420px');
 			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith('<iframe src=https://myhost/app/embed.html?param=foo width=\'42px\' height=\'420px\' loading=\'lazy\' frameborder=\'0\' style=\'border:0\'></iframe>');
-
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 		});
 
 		it('toggles auto width', async () => {
