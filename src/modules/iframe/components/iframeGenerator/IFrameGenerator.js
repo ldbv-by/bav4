@@ -107,8 +107,9 @@ export class IFrameGenerator extends MvuElement {
 	_getIFrameContent(width, height) {
 		const previewUrl = this._getEmbeddedEncodedState();
 		return html`
+		<div class='iframe__content'>
 			<iframe src=${previewUrl} width=${width === Auto_Width ? Auto_Width : width + 'px' } height=${height + 'px'} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-		`;
+		</div>`;
 	}
 
 	_getEmbedContent(width, height) {
