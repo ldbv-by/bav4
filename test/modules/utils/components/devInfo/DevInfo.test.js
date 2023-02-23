@@ -55,7 +55,7 @@ describe('DevInfo', () => {
 
 			expect(store.getState().modal.data.title).toBe('Showcase');
 			//we expect a lit-html TemplateResult as content
-			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
+			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase></ba-showcase>');
 		});
 	});
 });
