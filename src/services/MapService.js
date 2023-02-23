@@ -4,23 +4,19 @@ import { findAllByAttribute, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } 
 import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
+/**
+ * A function that provides map releated meta data
+ * {@link MapDefinitions}
+ *
+ * @typedef {function():(MapDefinitions)} mapDefinitionProvider
+ */
 
 /**
-* A function that provides map releated meta data
-* {@link MapDefinitions}
-*
-* @typedef {function():(MapDefinitions)} mapDefinitionProvider
-*/
-
-
-/**
-* Service for managing map related meta data.
-* @class
-* @author taulinger
-*/
+ * Service for managing map related meta data.
+ * @class
+ * @author taulinger
+ */
 export class MapService {
-
-
 	/**
 	 *
 	 * @param {mapDefinitionProvider} [provider=getBvvMapDefinitions]
@@ -101,7 +97,7 @@ export class MapService {
 	 * @returns threshold value for rotating the map in radians.
 	 */
 	getMinimalRotation() {
-		return .3;
+		return 0.3;
 	}
 
 	/**
@@ -153,8 +149,9 @@ export class MapService {
 		const baseRectangle = mapElement.getBoundingClientRect();
 		return {
 			top: visibleRectangle.top - baseRectangle.top,
-			right:	baseRectangle.right - visibleRectangle.right,
+			right: baseRectangle.right - visibleRectangle.right,
 			bottom: baseRectangle.bottom - visibleRectangle.bottom,
-			left: visibleRectangle.left - baseRectangle.left };
+			left: visibleRectangle.left - baseRectangle.left
+		};
 	}
 }

@@ -16,20 +16,21 @@ import { GeoResourceTypes } from '../../domain/geoResources';
  * @returns {Attribution}
  */
 export const getBvvAttribution = (georesource, level = 0) => {
-
 	const { GeoResourceService: georesourceService } = $injector.inject('GeoResourceService');
 
 	// aggregated geoResources
 	if (georesource.getType() === GeoResourceTypes.AGGREGATE) {
-		return [...new Set(
-			georesource.geoResourceIds
-				.map(id => {
-					const grs = georesourceService.byId(id);
-					return grs ? grs.getAttribution(level) : null;
-				})
-				.filter(attr => !!attr)
-				.flatMap(attr => attr)
-		)];
+		return [
+			...new Set(
+				georesource.geoResourceIds
+					.map((id) => {
+						const grs = georesourceService.byId(id);
+						return grs ? grs.getAttribution(level) : null;
+					})
+					.filter((attr) => !!attr)
+					.flatMap((attr) => attr)
+			)
+		];
 	}
 
 	//all other
@@ -54,7 +55,9 @@ export const getBvvAttribution = (georesource, level = 0) => {
  */
 export const getDefaultAttribution = (georesource) => {
 	return georesource.attribution
-		? (isString(georesource.attribution) ? getMinimalAttribution(georesource.attribution) : georesource.attribution)
+		? isString(georesource.attribution)
+			? getMinimalAttribution(georesource.attribution)
+			: georesource.attribution
 		: getMinimalAttribution('');
 };
 
@@ -78,10 +81,8 @@ export const getAttributionForLocallyImportedOrCreatedGeoResource = (georesource
  * @returns a `function` which returns an attribution provider
  */
 export const getAttributionProviderForGeoResourceImportedByUrl = (url) => {
-
 	return (georesource) => {
-
-		const getCopyright = urlAsString => {
+		const getCopyright = (urlAsString) => {
 			const url = new URL(urlAsString);
 			return { label: url.hostname, url: `${url.protocol}//${url.hostname}` };
 		};

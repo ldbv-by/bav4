@@ -1,10 +1,7 @@
 import { firstStepsProvide } from '../../../../src/modules/help/i18n/firstSteps.provider';
 
-
 describe('i18n for coordinate select', () => {
-
 	it('provides translation for en', () => {
-
 		const map = firstStepsProvide('en');
 
 		expect(map.help_firstSteps_button).toBe('First steps');
@@ -16,7 +13,6 @@ describe('i18n for coordinate select', () => {
 	});
 
 	it('provides translation for de', () => {
-
 		const map = firstStepsProvide('de');
 
 		expect(map.help_firstSteps_button).toBe('Erste Schritte');
@@ -39,10 +35,8 @@ describe('i18n for coordinate select', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = firstStepsProvide('unknown');
 
 		expect(map).toEqual({});
 	});
-
 });

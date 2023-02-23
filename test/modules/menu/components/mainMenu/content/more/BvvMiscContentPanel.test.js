@@ -7,7 +7,6 @@ import { $injector } from '../../../../../../../src/injection';
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 
 describe('MiscContentPanel', () => {
-
 	const setup = () => {
 		TestUtils.setupStoreAndDi();
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
@@ -15,9 +14,7 @@ describe('MiscContentPanel', () => {
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractContentPanel', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
@@ -25,7 +22,6 @@ describe('MiscContentPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders the view', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelectorAll(ThemeToggle.tag)).toHaveSize(1);
@@ -51,7 +47,9 @@ describe('MiscContentPanel', () => {
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
-			expect(links[2].href).toEqual('https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf');
+			expect(links[2].href).toEqual(
+				'https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf'
+			);
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 

@@ -40,11 +40,10 @@ const getTextStyle = (text, color, scale) => {
 };
 
 const getTextScale = (sizeKeyword) => {
-	if (typeof (sizeKeyword) === 'number') {
+	if (typeof sizeKeyword === 'number') {
 		return sizeKeyword;
 	}
 	switch (sizeKeyword) {
-
 		case 'large':
 			return 2;
 		case 'medium':
@@ -55,9 +54,8 @@ const getTextScale = (sizeKeyword) => {
 	}
 };
 
-
 export const textScaleToKeyword = (scaleCandidate) => {
-	const scale = typeof (scaleCandidate) === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
+	const scale = typeof scaleCandidate === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
 
 	switch (scale) {
 		case 2:
@@ -71,7 +69,7 @@ export const textScaleToKeyword = (scaleCandidate) => {
 };
 
 const getMarkerScale = (sizeKeyword) => {
-	if (typeof (sizeKeyword) === 'number') {
+	if (typeof sizeKeyword === 'number') {
 		return sizeKeyword;
 	}
 	switch (sizeKeyword) {
@@ -86,7 +84,7 @@ const getMarkerScale = (sizeKeyword) => {
 };
 
 export const markerScaleToKeyword = (scaleCandidate) => {
-	const scale = typeof (scaleCandidate) === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
+	const scale = typeof scaleCandidate === 'number' ? scaleCandidate : getMarkerScale(scaleCandidate);
 
 	switch (scale) {
 		case 1:
@@ -98,7 +96,6 @@ export const markerScaleToKeyword = (scaleCandidate) => {
 			return 'small';
 	}
 };
-
 
 export const getMarkerSrc = (symbolSrc = null, symbolColor = '#ffffff') => {
 	if (symbolSrc != null && symbolSrc !== false) {
@@ -143,7 +140,7 @@ export const geojsonStyleFunction = (feature) => {
 		 * multigeometry as rgb-color string
 		 * @type {string}
 		 */
-		'stroke': '#555555',
+		stroke: '#555555',
 		/**
 		 * the opacity of the line component of a polygon, polyline, or
 		 * multigeometry
@@ -152,15 +149,15 @@ export const geojsonStyleFunction = (feature) => {
 		'stroke-opacity': 1.0,
 		/**
 		 * the width of the line component of a polygon, polyline, or multigeometry
-			 *@type {number}
-			 */
+		 *@type {number}
+		 */
 		'stroke-width': 3,
 		/**
 		 * the color of the interior of a polygon
 		 * as rgb-color string
 		 * @type {string}
 		 */
-		'fill': '#555555',
+		fill: '#555555',
 		/**
 		 * the opacity of the interior of a polygon.
 		 * @type {number}
@@ -169,7 +166,7 @@ export const geojsonStyleFunction = (feature) => {
 	};
 
 	const markerSizeToRadius = (markerSize) => {
-		if (typeof (markerSize) === 'number') {
+		if (typeof markerSize === 'number') {
 			return markerSize;
 		}
 		switch (markerSize) {
@@ -183,10 +180,9 @@ export const geojsonStyleFunction = (feature) => {
 		}
 	};
 
-
 	const getSimpleStylePropertiesFrom = (feature) => {
 		const simpleStyleProperties = {};
-		Object.keys(defaultStyleProperties).forEach(k => {
+		Object.keys(defaultStyleProperties).forEach((k) => {
 			const styleValue = feature.get(k);
 			if (styleValue) {
 				simpleStyleProperties[k] = styleValue;
@@ -198,47 +194,49 @@ export const geojsonStyleFunction = (feature) => {
 	const featureStyleProperties = feature ? getSimpleStylePropertiesFrom(feature) : {};
 	const geoJsonStyleProperties = { ...defaultStyleProperties, ...featureStyleProperties };
 
-	return [new Style({
-		image: new CircleStyle({
-			fill: new Fill({
-				color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
+	return [
+		new Style({
+			image: new CircleStyle({
+				fill: new Fill({
+					color: hexToRgb(geoJsonStyleProperties['marker-color']).concat([1])
+				}),
+				radius: markerSizeToRadius(geoJsonStyleProperties['marker-size'])
 			}),
-			radius: markerSizeToRadius(geoJsonStyleProperties['marker-size'])
-		}),
-		stroke: new Stroke({
-			color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
-			width: geoJsonStyleProperties['stroke-width']
-		}),
-		fill: new Fill({
-			color: hexToRgb(geoJsonStyleProperties['fill']).concat([geoJsonStyleProperties['fill-opacity']])
+			stroke: new Stroke({
+				color: hexToRgb(geoJsonStyleProperties['stroke']).concat([geoJsonStyleProperties['stroke-opacity']]),
+				width: geoJsonStyleProperties['stroke-width']
+			}),
+			fill: new Fill({
+				color: hexToRgb(geoJsonStyleProperties['fill']).concat([geoJsonStyleProperties['fill-opacity']])
+			})
 		})
-	})
 	];
-
 };
 
-export const highlightStyleFunction = () => [new Style({
-	image: new Icon({
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: locationIcon
+export const highlightStyleFunction = () => [
+	new Style({
+		image: new Icon({
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: locationIcon
+		})
 	})
-})];
+];
 
-
-export const highlightTemporaryStyleFunction = () => [new Style({
-	image: new Icon({
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: tempLocationIcon
+export const highlightTemporaryStyleFunction = () => [
+	new Style({
+		image: new Icon({
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: tempLocationIcon
+		})
 	})
-})];
+];
 
 export const markerStyleFunction = (styleOption = { symbolSrc: false, color: false, scale: false, text: false }) => {
 	const markerColor = styleOption.color ? styleOption.color : '#ff0000';
-
 
 	const rasterIconOptions = {
 		anchor: [0.5, 1],
@@ -257,12 +255,18 @@ export const markerStyleFunction = (styleOption = { symbolSrc: false, color: fal
 		scale: getMarkerScale(styleOption.scale)
 	};
 
-	const iconOptions = styleOption.symbolSrc ? (getAssetSource(styleOption.symbolSrc) === AssetSourceType.LOCAL ? svgIconOptions : rasterIconOptions) : svgIconOptions;
+	const iconOptions = styleOption.symbolSrc
+		? getAssetSource(styleOption.symbolSrc) === AssetSourceType.LOCAL
+			? svgIconOptions
+			: rasterIconOptions
+		: svgIconOptions;
 
-	return [new Style({
-		image: new Icon(iconOptions),
-		text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale)) : null
-	})];
+	return [
+		new Style({
+			image: new Icon(iconOptions),
+			text: styleOption.text ? getTextStyle(styleOption.text, markerColor, getTextScale(styleOption.scale)) : null
+		})
+	];
 };
 
 export const textStyleFunction = (styleOption = { color: false, scale: false, text: false }) => {
@@ -271,9 +275,11 @@ export const textStyleFunction = (styleOption = { color: false, scale: false, te
 
 	const textScale = getTextScale(styleOption.scale);
 
-	return [new Style({
-		text: getTextStyle(textContent, strokeColor, textScale)
-	})];
+	return [
+		new Style({
+			text: getTextStyle(textContent, strokeColor, textScale)
+		})
+	];
 };
 
 export const lineStyleFunction = (styleOption = { color: false, text: false }) => {
@@ -283,12 +289,13 @@ export const lineStyleFunction = (styleOption = { color: false, text: false }) =
 	// ...
 	// text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
 	// ...
-	return [new Style({
-		stroke: new Stroke({
-			color: strokeColor.concat([1]),
-			width: strokeWidth
+	return [
+		new Style({
+			stroke: new Stroke({
+				color: strokeColor.concat([1]),
+				width: strokeWidth
+			})
 		})
-	})
 	];
 };
 export const polygonStyleFunction = (styleOption = { color: false, text: false }) => {
@@ -298,17 +305,18 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 	// ...
 	// text: styleOption.text ? getTextStyle(styleOption.text, styleOption.color ? styleOption.color : '#ff0000', getTextScale(styleOption.scale)) : null
 	// ...
-	return [new Style({
-		stroke: new Stroke({
-			color: strokeColor.concat([1]),
-			width: strokeWidth
-		}),
-		fill: new Fill({
-			color: strokeColor.concat([0.4])
+	return [
+		new Style({
+			stroke: new Stroke({
+				color: strokeColor.concat([1]),
+				width: strokeWidth
+			}),
+			fill: new Fill({
+				color: strokeColor.concat([0.4])
+			})
 		})
-	})];
+	];
 };
-
 
 const getRulerStyle = () => {
 	const getCanvasContextRenderFunction = (state) => {
@@ -320,7 +328,8 @@ const getRulerStyle = () => {
 	};
 	return new Style({
 		renderer: (pixelCoordinates, state) => {
-			const getContextRenderFunction = (state) => state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
+			const getContextRenderFunction = (state) =>
+				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
 			renderRulerSegments(pixelCoordinates, state, getContextRenderFunction(state));
 		}
 	});
@@ -349,7 +358,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 			width: 8 * pixelRatio,
 			lineCap: 'butt',
 			lineDash: [3 * pixelRatio, (partitionTickDistance - 3) * pixelRatio],
-			lineDashOffset: 3 * pixelRatio + (partitionTickDistance * residual)
+			lineDashOffset: 3 * pixelRatio + partitionTickDistance * residual
 		});
 	};
 
@@ -358,8 +367,8 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 			color: Red_Color.concat([1]),
 			width: 5 * pixelRatio,
 			lineCap: 'butt',
-			lineDash: [2 * pixelRatio, ((partitionTickDistance / 5) - 2) * pixelRatio],
-			lineDashOffset: 2 * pixelRatio + (partitionTickDistance * residual)
+			lineDash: [2 * pixelRatio, (partitionTickDistance / 5 - 2) * pixelRatio],
+			lineDashOffset: 2 * pixelRatio + partitionTickDistance * residual
 		});
 	};
 
@@ -405,9 +414,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	segmentCoordinates.every((coordinate, index, coordinates) => {
 		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
 	});
-
 };
-
 
 /**
  * StyleFunction for measurement-feature
@@ -418,7 +425,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
  * @returns {Array<Style>} the measurement styles for the specified feature
  */
 export const measureStyleFunction = (feature, resolution) => {
-
 	const stroke = new Stroke({
 		color: Red_Color.concat([1]),
 		width: 3
@@ -430,7 +436,8 @@ export const measureStyleFunction = (feature, resolution) => {
 				color: Red_Color.concat([1]),
 				lineDash: [8],
 				width: 2
-			}), fill: new Fill({
+			}),
+			fill: new Fill({
 				color: Red_Color.concat([0.4])
 			})
 		});
@@ -438,8 +445,7 @@ export const measureStyleFunction = (feature, resolution) => {
 	const styles = [
 		new Style({
 			stroke: stroke,
-			geometry: feature => {
-
+			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
 					const coords = feature.getGeometry().getCoordinates();
 					const radius = getGeometryLength(feature.getGeometry());
@@ -449,7 +455,8 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle() : getFallbackStyle()];
+		resolution ? getRulerStyle() : getFallbackStyle()
+	];
 	return styles;
 };
 
@@ -461,54 +468,55 @@ export const modifyStyleFunction = (feature) => {
 	const currentFeature = feature ? getParentFeature(feature) : null;
 	const color = currentFeature ? getColorFrom(currentFeature) : Red_Color;
 
-	return [new Style({
-		image: new CircleStyle({
-			radius: 6,
-			stroke: new Stroke({
-				color: White_Color,
-				width: 3
-			}),
-			fill: new Fill({
-				color: color
+	return [
+		new Style({
+			image: new CircleStyle({
+				radius: 6,
+				stroke: new Stroke({
+					color: White_Color,
+					width: 3
+				}),
+				fill: new Fill({
+					color: color
+				})
 			})
 		})
-	})];
+	];
 };
 
 export const selectStyleFunction = () => {
-	const getAppendableVertexStyle = (color) => new Style({
-		image: new CircleStyle({
-			radius: 5,
-			stroke: new Stroke({
-				color: White_Color,
-				width: 3
+	const getAppendableVertexStyle = (color) =>
+		new Style({
+			image: new CircleStyle({
+				radius: 5,
+				stroke: new Stroke({
+					color: White_Color,
+					width: 3
+				}),
+				fill: new Fill({
+					color: color
+				})
 			}),
-			fill: new Fill({
-				color: color
-			})
-		}),
-		geometry: (feature) => {
-			const getCoordinates = (geometry) => {
-				if (geometry instanceof LineString) {
-					return feature.getGeometry().getCoordinates();
+			geometry: (feature) => {
+				const getCoordinates = (geometry) => {
+					if (geometry instanceof LineString) {
+						return feature.getGeometry().getCoordinates();
+					}
+
+					if (geometry instanceof Polygon) {
+						return feature.getGeometry().getCoordinates()[0];
+					}
+				};
+
+				const coordinates = getCoordinates(feature.getGeometry());
+				if (coordinates) {
+					return new MultiPoint(coordinates);
 				}
 
-				if (geometry instanceof Polygon) {
-					return feature.getGeometry().getCoordinates()[0];
-				}
-			};
-
-			const coordinates = getCoordinates(feature.getGeometry());
-			if (coordinates) {
-				return new MultiPoint(coordinates);
-			}
-
-			return feature.getGeometry();
-
-		},
-		zIndex: Z_Point - 1
-	});
-
+				return feature.getGeometry();
+			},
+			zIndex: Z_Point - 1
+		});
 
 	return (feature, resolution) => {
 		const colorFromFeature = getColorFrom(feature);
@@ -542,34 +550,42 @@ export const defaultStyleFunction = (color) => {
 		switch (geometryType) {
 			case 'Point':
 			case 'MultiPoint':
-				return [new Style({
-					image: new CircleStyle({
-						fill: fill,
-						radius: 5,
-						stoke: getColoredStroke(1)
+				return [
+					new Style({
+						image: new CircleStyle({
+							fill: fill,
+							radius: 5,
+							stoke: getColoredStroke(1)
+						})
 					})
-				})];
+				];
 			case 'LineString':
 			case 'MultiLineString':
-				return [new Style({
-					stroke: getColoredStroke(3)
-				})];
+				return [
+					new Style({
+						stroke: getColoredStroke(3)
+					})
+				];
 			case 'Polygon':
 			case 'MultiPolygon':
-				return [new Style({
-					fill: fill,
-					stroke: getColoredStroke(2)
-				})];
-			case 'GeometryCollection':
-				return [new Style({
-					image: new CircleStyle({
+				return [
+					new Style({
 						fill: fill,
-						radius: 5,
-						stoke: getColoredStroke(1)
-					}),
-					fill: fill,
-					stroke: getColoredStroke(2)
-				})];
+						stroke: getColoredStroke(2)
+					})
+				];
+			case 'GeometryCollection':
+				return [
+					new Style({
+						image: new CircleStyle({
+							fill: fill,
+							radius: 5,
+							stoke: getColoredStroke(1)
+						}),
+						fill: fill,
+						stroke: getColoredStroke(2)
+					})
+				];
 		}
 	};
 };
@@ -589,8 +605,7 @@ export const createSketchStyleFunction = (styleFunction) => {
 		let styles;
 		if (feature.getGeometry().getType() === 'Polygon') {
 			styles = [sketchPolygon];
-		}
-		else if (feature.getGeometry().getType() === 'Point') {
+		} else if (feature.getGeometry().getType() === 'Point') {
 			const fill = new Fill({
 				color: Red_Color.concat([0.4])
 			});
@@ -604,8 +619,7 @@ export const createSketchStyleFunction = (styleFunction) => {
 				zIndex: Z_Point
 			});
 			styles = [sketchCircle];
-		}
-		else {
+		} else {
 			styles = styleFunction(feature, resolution);
 		}
 
@@ -630,7 +644,8 @@ export const getColorFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = getStyleArray(feature); feature.getStyle();
+	const styles = getStyleArray(feature);
+	feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const stroke = style?.getStroke();
@@ -640,7 +655,6 @@ export const getColorFrom = (feature) => {
 		if (stroke) {
 			return rgbToHex(stroke.getColor());
 		}
-
 
 		if (image) {
 			// first try to get the tint-color
@@ -655,12 +669,10 @@ export const getColorFrom = (feature) => {
 		if (text) {
 			return rgbToHex(text.getFill().getColor());
 		}
-
 	}
 
 	return null;
 };
-
 
 /**
  * extracts the symbolSrc-value or null from a feature
@@ -671,7 +683,8 @@ export const getSymbolFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = getStyleArray(feature); feature.getStyle();
+	const styles = getStyleArray(feature);
+	feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const image = style.getImage();
@@ -692,7 +705,8 @@ export const getTextFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = getStyleArray(feature); feature.getStyle();
+	const styles = getStyleArray(feature);
+	feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const textStyle = style.getText();
@@ -714,7 +728,8 @@ export const getSizeFrom = (feature) => {
 	if (feature == null) {
 		return null;
 	}
-	const styles = getStyleArray(feature); feature.getStyle();
+	const styles = getStyleArray(feature);
+	feature.getStyle();
 	if (styles) {
 		const style = styles[0];
 		const image = style?.getImage();
@@ -754,13 +769,10 @@ export const getDrawingTypeFrom = (feature) => {
 	return null;
 };
 
-
 export const getStyleArray = (feature) => {
-
-	const toArray = (arrayCandidate) => Array.isArray(arrayCandidate) ? arrayCandidate : [arrayCandidate];
+	const toArray = (arrayCandidate) => (Array.isArray(arrayCandidate) ? arrayCandidate : [arrayCandidate]);
 	const applyStyleFunction = (styleFunction, feature) => toArray(styleFunction(feature));
-	const getArray = (styles) => typeof (styles) === 'function' ? applyStyleFunction(styles, feature) : toArray(styles);
-
+	const getArray = (styles) => (typeof styles === 'function' ? applyStyleFunction(styles, feature) : toArray(styles));
 
 	return feature.getStyle() ? getArray(feature.getStyle()) : null;
 };

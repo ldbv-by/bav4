@@ -1,7 +1,6 @@
 import { domPurifySanitizeHtml } from '../../../src/services/provider/sanitizeHtml.provider';
 
 describe('DOMPurify sanitize HTML provider', () => {
-
 	it('sanitize a HTML string', () => {
 		// examples from https://github.com/cure53/DOMPurify/blob/main/README.md
 		// partially modified for our for our usecase
@@ -17,11 +16,16 @@ describe('DOMPurify sanitize HTML provider', () => {
 		expect(domPurifySanitizeHtml('<div><math><mi//xlink:href="data:x,<script>alert(4)</script></div>">')).toBe('<div></div>');
 
 		// any HTML form elements not allowed
-		expect(domPurifySanitizeHtml('<p>abc<div onclick=alert(0)><form onsubmit=alert(1)><input onfocus=alert(2) name=parentNode>123</form></div></p>')).toBe('<p>abc</p><div>123</div><p></p>');
+		expect(
+			domPurifySanitizeHtml('<p>abc<div onclick=alert(0)><form onsubmit=alert(1)><input onfocus=alert(2) name=parentNode>123</form></div></p>')
+		).toBe('<p>abc</p><div>123</div><p></p>');
 
 		// any HTML style (as element or inline) not allowed
 		expect(domPurifySanitizeHtml('<style>*{color: red}</style>')).toBe('');
-		expect(domPurifySanitizeHtml('<div id="33"><a style="pointer-events:none;position:absolute;"><a style="position:absolute;" onclick="alert(33);">XXX</a></a></div>')).toBe('<div id="33"><a></a><a>XXX</a></div>');
+		expect(
+			domPurifySanitizeHtml(
+				'<div id="33"><a style="pointer-events:none;position:absolute;"><a style="position:absolute;" onclick="alert(33);">XXX</a></a></div>'
+			)
+		).toBe('<div id="33"><a></a><a>XXX</a></div>');
 	});
-
 });

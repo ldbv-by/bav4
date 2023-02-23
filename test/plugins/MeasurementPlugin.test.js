@@ -7,10 +7,7 @@ import { measurementReducer } from '../../src/store/measurement/measurement.redu
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action';
 
-
-
 describe('MeasurementPlugin', () => {
-
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer,

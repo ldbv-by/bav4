@@ -1,5 +1,5 @@
 {
-  "extends": "stylelint-config-recommended",
-  "defaultSeverity": "error",
-  "rules": {}
+	"extends": "stylelint-config-recommended",
+	"defaultSeverity": "error",
+	"rules": {}
 }

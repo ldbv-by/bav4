@@ -2,7 +2,7 @@
 	min-width: 25em;
 }
 .share_label {
-	padding: .8em 0;
+	padding: 0.8em 0;
 }
 .link {
 	display: flex;
@@ -10,7 +10,8 @@
 .share_url {
 	flex-grow: 1;
 }
-.share_api , .share_copy {
+.share_api,
+.share_copy {
 	margin-left: 1em;
 }
 .toggle {

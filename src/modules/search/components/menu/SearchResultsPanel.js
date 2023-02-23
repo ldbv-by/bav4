@@ -12,18 +12,15 @@ import { CpResultsPanel } from './types/cp/CpResultsPanel';
  * @author costa_gi
  */
 export class SearchResultsPanel extends AbstractMvuContentPanel {
-
 	/**
 	 *
 	 */
 	createView() {
 		return html`
-		<div class="search-results-panel">
-		${unsafeHTML(`<${LocationResultsPanel.tag}/>`)}
-		${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)}
-		${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
-		</div>
-        `;
+			<div class="search-results-panel">
+				${unsafeHTML(`<${LocationResultsPanel.tag}/>`)} ${unsafeHTML(`<${GeoResourceResultsPanel.tag}/>`)} ${unsafeHTML(`<${CpResultsPanel.tag}/>`)}
+			</div>
+		`;
 	}
 
 	static get tag() {

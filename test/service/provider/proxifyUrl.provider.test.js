@@ -6,14 +6,12 @@ describe('proxyUrlTemplate', () => {
 	const backendUrl = 'https://backend.url';
 
 	describe('bvv proxified url provider', () => {
-
 		const configService = {
-			getValueAsPath: value => value === 'BACKEND_URL' ? backendUrl : proxyUrl
+			getValueAsPath: (value) => (value === 'BACKEND_URL' ? backendUrl : proxyUrl)
 		};
 
 		beforeAll(() => {
-			$injector
-				.registerSingleton('ConfigService', configService);
+			$injector.registerSingleton('ConfigService', configService);
 		});
 
 		it('returns BVV specific proxified URL', () => {
@@ -35,7 +33,6 @@ describe('proxyUrlTemplate', () => {
 		});
 
 		describe('when config param PROXY_URL is not available', () => {
-
 			it('it returns the the unproxified URL and logs a warn statement', () => {
 				const unproxifiedUrl = 'https://some.one';
 				const errorMessage = 'foo';

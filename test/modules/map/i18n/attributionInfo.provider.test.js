@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/map/i18n/attributionInfo.provider';
 
-
 describe('i18n for attribution info', () => {
-
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.map_attributionInfo_label).toBe('Data');
@@ -12,9 +9,7 @@ describe('i18n for attribution info', () => {
 		expect(map.map_attributionInfo_collapse_title_close).toBe('Close');
 	});
 
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.map_attributionInfo_label).toBe('Daten');
@@ -34,7 +29,6 @@ describe('i18n for attribution info', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

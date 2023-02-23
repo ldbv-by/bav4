@@ -4,9 +4,7 @@ import { QueryParameters } from '../../src/domain/queryParameters.js';
 import { searchReducer } from '../../src/store/search/search.reducer.js';
 import { SearchPlugin } from '../../src/plugins/SearchPlugin.js';
 
-
 describe('SearchPlugin', () => {
-
 	const windowMock = {
 		location: {
 			get search() {
@@ -20,7 +18,6 @@ describe('SearchPlugin', () => {
 	};
 
 	const setup = (state) => {
-
 		const initialState = {
 			search: {
 				query: null
@@ -31,16 +28,12 @@ describe('SearchPlugin', () => {
 		const store = TestUtils.setupStoreAndDi(initialState, {
 			search: searchReducer
 		});
-		$injector
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-			.registerSingleton('SecurityService', securityService);
+		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock }).registerSingleton('SecurityService', securityService);
 		return store;
 	};
 
 	describe('register', () => {
-
 		describe('query parameter available', () => {
-
 			it('puts the requested query term to the store', async () => {
 				const term = 'foo';
 				const queryParam = `${QueryParameters.QUERY}=${term}`;

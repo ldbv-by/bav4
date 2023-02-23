@@ -5,7 +5,6 @@ import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById
 import { TabId } from '../store/mainMenu/mainMenu.action';
 import { createUniqueId } from '../utils/numberUtils';
 
-
 /**
  * Id of the layer used for highlight visualization.
  */
@@ -33,22 +32,17 @@ export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTempora
  * @author taulinger
  */
 export class HighlightPlugin extends BaPlugin {
-
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
-
 		const highlightFeatureId = createUniqueId();
 
-
 		const onChange = (active) => {
-
 			if (active) {
 				addLayer(HIGHLIGHT_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-			}
-			else {
+			} else {
 				removeLayer(HIGHLIGHT_LAYER_ID);
 			}
 		};
@@ -74,21 +68,24 @@ export class HighlightPlugin extends BaPlugin {
 				const coordinate = state.featureInfo.coordinate.payload;
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_RUNNING });
 				removeHighlightFeaturesById(QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID);
-			}
-			else {
+			} else {
 				const coordinate = state.featureInfo.coordinate.payload;
 				removeHighlightFeaturesById(highlightFeatureId);
 				// we show a highlight feature if we have at least one FeatureInfo object containing no geometry
-				if (state.featureInfo.current.some(fi => !fi.geometry)) {
-					addHighlightFeatures({ id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
+				if (state.featureInfo.current.some((fi) => !fi.geometry)) {
+					addHighlightFeatures({
+						id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+						data: { coordinate: coordinate },
+						type: HighlightFeatureType.QUERY_SUCCESS
+					});
 				}
 			}
 		};
 
-		observe(store, state => state.highlight.active, onChange);
-		observe(store, state => state.pointer.click, onPointerClick);
-		observe(store, store => store.mainMenu.tab, onTabChanged, false);
-		observe(store, store => store.search.query, onQueryChanged);
-		observe(store, state => state.featureInfo.querying, onFeatureInfoQueryingChange);
+		observe(store, (state) => state.highlight.active, onChange);
+		observe(store, (state) => state.pointer.click, onPointerClick);
+		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
+		observe(store, (store) => store.search.query, onQueryChanged);
+		observe(store, (state) => state.featureInfo.querying, onFeatureInfoQueryingChange);
 	}
 }

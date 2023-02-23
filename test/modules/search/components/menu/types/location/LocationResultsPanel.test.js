@@ -10,23 +10,17 @@ import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(LocationResultsPanel.tag, LocationResultsPanel);
 
 describe('LocationResultsPanel', () => {
-
-
 	const searchResultServiceMock = {
-		locationsByTerm() { }
+		locationsByTerm() {}
 	};
 
 	const setup = (state) => {
-
 		TestUtils.setupStoreAndDi(state, { search: searchReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultService', searchResultServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SearchResultService', searchResultServiceMock);
 		return TestUtils.render(LocationResultsPanel.tag);
 	};
 
 	describe('static properties', () => {
-
 		it('defines a debounce time', async () => {
 			expect(LocationResultsPanel.Debounce_Delay).toBe(200);
 		});
@@ -41,9 +35,7 @@ describe('LocationResultsPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders the view', async () => {
-
 			const element = await setup();
 
 			//wait for elements
@@ -58,18 +50,19 @@ describe('LocationResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
+			const results = Array.from(
+				{ length: LocationResultsPanel.Default_Result_Item_Length },
+				(_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
 					query: new EventLike(query)
 				}
 			};
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo(results);
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
-
 
 			//wait for elements
 			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
@@ -85,20 +78,20 @@ describe('LocationResultsPanel', () => {
 			expect(getLocationSearchResultProvider).toHaveBeenCalled();
 		});
 
-
 		it('renders the view based on a current query with more than "maxShow" results', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
+			const results = Array.from(
+				{ length: LocationResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
 					query: new EventLike(query)
 				}
 			};
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo(results);
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
-
 
 			//wait for elements
 			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);
@@ -115,11 +108,11 @@ describe('LocationResultsPanel', () => {
 	});
 
 	describe('when query changes', () => {
-
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
+			const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo([
+				new LocationSearchResult('labelLocation', 'labelLocationFormated')
+			]);
 
 			const element = await setup();
 			setQuery(query);
@@ -149,9 +142,7 @@ describe('LocationResultsPanel', () => {
 	});
 
 	describe('collaps button of item list', () => {
-
 		describe('when items are available', () => {
-
 			it('toggles the list of item', async () => {
 				const query = 'foo';
 				const initialState = {
@@ -159,8 +150,9 @@ describe('LocationResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm')
-					.and.resolveTo([new LocationSearchResult('labelLocation', 'labelLocationFormated')]);
+				const getLocationSearchResultProvider = spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo([
+					new LocationSearchResult('labelLocation', 'labelLocationFormated')
+				]);
 
 				const element = await setup(initialState);
 
@@ -190,7 +182,6 @@ describe('LocationResultsPanel', () => {
 		});
 
 		describe('items are NOT available', () => {
-
 			it('disables the collapse button', async () => {
 				const element = await setup();
 
@@ -215,20 +206,20 @@ describe('LocationResultsPanel', () => {
 	});
 
 	describe('show-all button', () => {
-
 		it('displays all results on click', async () => {
-			const results = Array.from({ length: LocationResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`));
+			const results = Array.from(
+				{ length: LocationResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new LocationSearchResult(`labelLocation${i}`, `labelLocationFormated${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'locationsByTerm')
-				.and.resolveTo(results);
+			spyOn(searchResultServiceMock, 'locationsByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
-
 
 			//wait for elements
 			await TestUtils.timeout(LocationResultsPanel.Debounce_Delay + 100);

@@ -3,22 +3,22 @@
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 }
 .ba-list:after {
-	background-image: linear-gradient(180deg,  var(--tertiary-bg-color) 20%,  var(--primary-bg-color) 100%);
+	background-image: linear-gradient(180deg, var(--tertiary-bg-color) 20%, var(--primary-bg-color) 100%);
 	height: 10em;
-	content: "";
+	content: '';
 	position: absolute;
 	bottom: -10em;
 	left: -3em;
 	right: -3em;
-	margin: .5em 1px 0;
-} 
+	margin: 0.5em 1px 0;
+}
 .icon-share {
 	background: var(--primary-bg-color);
 	border-radius: 2em;
 }
 
 .collapse-content {
-	padding: 0 1.2em; 
+	padding: 0 1.2em;
 }
 
 .featureinfo-header {
@@ -30,17 +30,21 @@
 }
 .featureinfo-header:hover {
 	background-color: var(--tertiary-bg-color);
-	
 }
 
 /* not implemented yet  */
-.icon-rotate-90 , .print , .share {
+.icon-rotate-90,
+.print,
+.share {
 	display: none;
 }
 
 /* GetFeat styl  */
 
-table , tr, td, th {
+table,
+tr,
+td,
+th {
 	border: 0;
 	background: transparent;
 	width: 100%;
@@ -57,7 +61,7 @@ table {
 }
 
 table:not(:only-of-type):not(:last-child):after {
-	content: " ";
+	content: ' ';
 	position: absolute;
 	left: -1em;
 	right: -1em;
@@ -66,42 +70,45 @@ table:not(:only-of-type):not(:last-child):after {
 }
 
 tr {
-	padding: 0 0 .8em 0;
+	padding: 0 0 0.8em 0;
 }
 
-th, td {
-	padding: .8em 1em;
+th,
+td {
+	padding: 0.8em 1em;
 	width: auto;
 }
 
-.is-portrait table , .is-portrait tr, .is-portrait th {
+.is-portrait table,
+.is-portrait tr,
+.is-portrait th {
 	display: flex;
 	flex-direction: column;
 }
 
 td:nth-last-child(2):first-child {
-	opacity: .8;
-	font-size: .9rem;
+	opacity: 0.8;
+	font-size: 0.9rem;
 	font-weight: bold;
 	color: var(--text1);
 	min-width: 11em;
 	max-width: 22em;
 	width: auto;
 	vertical-align: top;
-	padding-top: .9em;
+	padding-top: 0.9em;
 }
 
 .collapse-content b {
-	font-size: .9rem;
-	opacity: .8;
+	font-size: 0.9rem;
+	opacity: 0.8;
 }
 
 caption {
 	text-align: left;
-	padding: .8em 1em;
+	padding: 0.8em 1em;
 }
 
-.table-striped>tbody>tr:nth-of-type(odd) {
+.table-striped > tbody > tr:nth-of-type(odd) {
 	background: var(--header-background-color);
 }
 
@@ -112,7 +119,7 @@ img {
 }
 
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
-	color: var(--primary-color) .3;
+	color: var(--primary-color) 0.3;
 }
 
 .content {
@@ -123,12 +130,12 @@ img {
 	display: flex;
 	justify-content: flex-start;
 	flex-flow: wrap;
-	gap: .5em .8em;
+	gap: 0.5em 0.8em;
 	padding: 1em 0;
 	border-bottom: 1px solid var(--header-background-color);
 }
 
 /* just for grundsteuer release, should be removed later */
 .grundsteuer p {
-	padding: 0 0 .8em 0;
+	padding: 0 0 0.8em 0;
 }

@@ -1,11 +1,14 @@
-import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult, SearchResult, SearchResultTypes } from '../../../../../src/modules/search/services/domain/searchResult';
+import {
+	CadastralParcelSearchResult,
+	GeoResourceSearchResult,
+	LocationSearchResult,
+	SearchResult,
+	SearchResultTypes
+} from '../../../../../src/modules/search/services/domain/searchResult';
 
 describe('searchResult', () => {
-
 	describe('SearchResultTypes', () => {
-
 		it('provides an enum of all available types', () => {
-
 			expect(Object.keys(SearchResultTypes).length).toBe(3);
 			expect(SearchResultTypes.LOCATION).toBeTruthy();
 			expect(SearchResultTypes.GEORESOURCE).toBeTruthy();
@@ -15,7 +18,6 @@ describe('searchResult', () => {
 });
 
 describe('abstract SearchResult', () => {
-
 	class SearchResultNoImpl extends SearchResult {
 		constructor(label, labelFormatted) {
 			super(label, labelFormatted);
@@ -29,7 +31,6 @@ describe('abstract SearchResult', () => {
 	}
 
 	describe('constructor', () => {
-
 		it('throws exception when instantiated without inheritance', () => {
 			expect(() => new SearchResult()).toThrowError(TypeError, 'Can not construct abstract class.');
 		});
@@ -40,14 +41,15 @@ describe('abstract SearchResult', () => {
 	});
 
 	describe('methods', () => {
-
 		it('throws exception when abstract #getType is called without overriding', () => {
-			expect(() => new SearchResultNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+			expect(() => new SearchResultNoImpl('some').getType()).toThrowError(
+				TypeError,
+				'Please implement abstract method #getType or do not call super.getType from child.'
+			);
 		});
 	});
 
 	describe('properties', () => {
-
 		it('provides default properties', () => {
 			const label = 'label';
 			const georesource = new SearchResultImpl(label);
@@ -67,11 +69,11 @@ describe('abstract SearchResult', () => {
 });
 
 describe('LocationSearchResult', () => {
-
 	it('instantiates a LocationSearchResult', () => {
 		const label = 'label';
 		const labelFormatted = 'labelFormatted';
-		const center = [1, 2], extent = [3, 4, 5, 6];
+		const center = [1, 2],
+			extent = [3, 4, 5, 6];
 
 		const locationSearchResult = new LocationSearchResult(label, labelFormatted, center, extent);
 
@@ -97,11 +99,11 @@ describe('LocationSearchResult', () => {
 });
 
 describe('CadastralParcelSearchResult', () => {
-
 	it('instantiates a CadastralParcelSearchResult', () => {
 		const label = 'label';
 		const labelFormatted = 'labelFormatted';
-		const center = [1, 2], extent = [3, 4, 5, 6];
+		const center = [1, 2],
+			extent = [3, 4, 5, 6];
 
 		const cadastralParcelSearchResult = new CadastralParcelSearchResult(label, labelFormatted, center, extent);
 
@@ -127,7 +129,6 @@ describe('CadastralParcelSearchResult', () => {
 });
 
 describe('GeoResourceSearchResult', () => {
-
 	it('instantiates a GeoResourceSearchResult', () => {
 		const geoResourceId = 'geoResourceId';
 		const label = 'label';

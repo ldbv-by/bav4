@@ -9,7 +9,6 @@ window.customElements.define(ZoomButtons.tag, ZoomButtons);
 let store;
 
 describe('ZoomButtons', () => {
-
 	const mapServiceMock = {
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
@@ -17,7 +16,6 @@ describe('ZoomButtons', () => {
 	let element;
 
 	beforeEach(async () => {
-
 		const state = {
 			position: {
 				zoom: 10
@@ -25,16 +23,13 @@ describe('ZoomButtons', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', mapServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('MapService', mapServiceMock);
 
 		element = await TestUtils.render(ZoomButtons.tag);
 	});
 
 	describe('when initialized', () => {
 		it('adds a div which shows two zoom buttons', async () => {
-
 			expect(element.shadowRoot.querySelector('.zoom-in')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.zoom-in').parentElement.title).toBe('map_zoomButtons_in');
 			expect(element.shadowRoot.querySelector('.zoom-out')).toBeTruthy();
@@ -43,19 +38,14 @@ describe('ZoomButtons', () => {
 	});
 
 	describe('when clicked', () => {
-
 		it('decreases the current zoom level by one', () => {
-
 			element.shadowRoot.querySelector('.zoom-out').click();
 			expect(store.getState().position.zoom).toBe(9);
-
 		});
 
 		it('increases the current zoom level by one', () => {
-
 			element.shadowRoot.querySelector('.zoom-in').click();
 			expect(store.getState().position.zoom).toBe(11);
-
 		});
 	});
 });

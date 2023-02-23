@@ -10,7 +10,7 @@ import { MeasurementOverlay } from '../components/MeasurementOverlay';
 
 export const saveManualOverlayPosition = (feature) => {
 	const draggableOverlayTypes = ['area', 'measurement'];
-	draggableOverlayTypes.forEach(t => {
+	draggableOverlayTypes.forEach((t) => {
 		const overlay = feature.get(t);
 		if (overlay) {
 			if (overlay.get('manualPositioning')) {
@@ -22,24 +22,26 @@ export const saveManualOverlayPosition = (feature) => {
 };
 
 const SectorsOfPlacement = [
-	{ name: 'top', isSector: (angle) => (angle <= 60 || 300 < angle) },
-	{ name: 'right', isSector: (angle) => (60 < angle && angle <= 120) },
-	{ name: 'bottom', isSector: (angle) => (120 < angle && angle <= 210) },
-	{ name: 'left', isSector: (angle) => (210 < angle && angle <= 300) }];
-
+	{ name: 'top', isSector: (angle) => angle <= 60 || 300 < angle },
+	{ name: 'right', isSector: (angle) => 60 < angle && angle <= 120 },
+	{ name: 'bottom', isSector: (angle) => 120 < angle && angle <= 210 },
+	{ name: 'left', isSector: (angle) => 210 < angle && angle <= 300 }
+];
 
 /**
  * @author thiloSchlemmer
  */
 export class MeasurementOverlayStyle extends OverlayStyle {
-
 	constructor() {
 		super();
 		const { MapService, EnvironmentService, StoreService } = $injector.inject('MapService', 'EnvironmentService', 'StoreService');
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
-		this._projectionHints = { fromProjection: 'EPSG:' + this._mapService.getSrid(), toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid() };
+		this._projectionHints = {
+			fromProjection: 'EPSG:' + this._mapService.getSrid(),
+			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid()
+		};
 	}
 
 	/**
@@ -54,7 +56,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 		this._restoreManualOverlayPosition(olFeature, olMap);
 	}
-
 
 	/**
 	 * A Container-Object for optional properties related to a update of feature-overlays
@@ -88,7 +89,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					const valueOrDefaultVisible = 'visible' in properties ? properties.visible : true;
 					const valueOrDefaultTop = 'top' in properties ? properties.top : true;
 
-					return (valueOrDefaultVisible && valueOrDefaultTop) ? 'inherit' : 'none';
+					return valueOrDefaultVisible && valueOrDefaultTop ? 'inherit' : 'none';
 				}
 				return 'inherit';
 			};
@@ -98,11 +99,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 			// setting both properties, to prevent an issue with webkit-based browsers
 			// where opacity is not applied as a single property
-			overlays.forEach(o => {
+			overlays.forEach((o) => {
 				o.getElement().style.display = isVisibleStyle;
 				o.getElement().style.opacity = opacity;
-			}
-			);
+			});
 		}
 	}
 
@@ -113,7 +113,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	 */
 	remove(olFeature, olMap) {
 		const featureOverlays = olFeature.get('overlays') || [];
-		featureOverlays.forEach(o => olMap.removeOverlay(o));
+		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set('measurement', null);
 		olFeature.set('area', null);
 		olFeature.set('partitions', null);
@@ -128,7 +128,13 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_createDistanceOverlay(olFeature, olMap) {
 		const createNew = () => {
 			const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
-			const overlay = this._createOlOverlay(olMap, { offset: [0, -15], positioning: 'bottom-center' }, MeasurementOverlayTypes.DISTANCE, this._projectionHints, isDraggable);
+			const overlay = this._createOlOverlay(
+				olMap,
+				{ offset: [0, -15], positioning: 'bottom-center' },
+				MeasurementOverlayTypes.DISTANCE,
+				this._projectionHints,
+				isDraggable
+			);
 			olFeature.set('measurement', overlay);
 			this._add(overlay, olFeature, olMap);
 			return overlay;
@@ -142,7 +148,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	_createOrRemoveAreaOverlay(olFeature, olMap) {
 		let areaOverlay = olFeature.get('area');
 		if (olFeature.getGeometry() instanceof Polygon) {
-
 			if (olFeature.getGeometry().getArea()) {
 				const isDraggable = !this._environmentService.isTouch() && this._isActiveMeasurement();
 
@@ -152,15 +157,13 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				}
 				this._updateOlOverlay(areaOverlay, olFeature.getGeometry());
 				olFeature.set('area', areaOverlay);
-			}
-			else {
+			} else {
 				if (areaOverlay) {
 					this._remove(areaOverlay, olFeature, olMap);
 					olFeature.set('area', null);
 				}
 			}
-		}
-		else {
+		} else {
 			if (areaOverlay) {
 				this._remove(areaOverlay, olFeature, olMap);
 				olFeature.set('area', null);
@@ -169,13 +172,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			if (simplifiedGeometry) {
 				return partitions;
 			}
-			partitions.forEach(p => this._remove(p, olFeature, olMap));
+			partitions.forEach((p) => this._remove(p, olFeature, olMap));
 			return [];
 		};
 		const partitions = getPartitions();
@@ -193,7 +195,12 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
 			let partition = partitions[partitionIndex] || false;
 			if (partition === false) {
-				partition = this._createOlOverlay(olMap, { offset: [0, -25], positioning: 'top-center' }, MeasurementOverlayTypes.DISTANCE_PARTITION, this._projectionHints);
+				partition = this._createOlOverlay(
+					olMap,
+					{ offset: [0, -25], positioning: 'top-center' },
+					MeasurementOverlayTypes.DISTANCE_PARTITION,
+					this._projectionHints
+				);
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
@@ -217,7 +224,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	_restoreManualOverlayPosition(olFeature) {
 		const draggableOverlayTypes = ['area', 'measurement'];
-		draggableOverlayTypes.forEach(t => {
+		draggableOverlayTypes.forEach((t) => {
 			const overlay = olFeature.get(t);
 			if (overlay) {
 				const posX = olFeature.get(t + '_position_x');
@@ -241,7 +248,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			const currentLength = collectedSegments.length + segment.getLength();
 			const currentMinPartition = currentLength / lineString.getLength();
 			const azimuth = getAzimuth(segment);
-			partitions.forEach(overlay => {
+			partitions.forEach((overlay) => {
 				const element = overlay.getElement();
 				const partition = element.value;
 				if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
@@ -279,7 +286,10 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 
 	_createDragOn(overlay, olMap) {
 		const element = overlay.getElement();
-		const dragPanInteraction = olMap.getInteractions().getArray().find(i => i instanceof DragPan);
+		const dragPanInteraction = olMap
+			.getInteractions()
+			.getArray()
+			.find((i) => i instanceof DragPan);
 
 		if (dragPanInteraction) {
 			const handleMouseDown = () => {
@@ -304,7 +314,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			element.addEventListener('mouseenter', handleMouseEnter);
 			element.addEventListener('mouseleave', handleMouseLeave);
 		}
-
 	}
 
 	_getPlacement(angle) {

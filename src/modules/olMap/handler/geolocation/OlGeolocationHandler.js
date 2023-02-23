@@ -10,15 +10,12 @@ import { unByKey } from 'ol/Observable';
 import { Point, Circle } from 'ol/geom';
 import { GEOLOCATION_LAYER_ID } from '../../../../plugins/GeolocationPlugin';
 
-
-
 /**
  * Handler for displaying geolocation information on the map
  * @class
  * @author thiloSchlemmer
  */
 export class OlGeolocationHandler extends OlLayerHandler {
-
 	constructor() {
 		super(GEOLOCATION_LAYER_ID, { preventDefaultClickHandling: false, preventDefaultContextClickHandling: false });
 		const { StoreService } = $injector.inject('StoreService');
@@ -28,7 +25,6 @@ export class OlGeolocationHandler extends OlLayerHandler {
 		this._positionFeature = new Feature();
 		this._map = null;
 	}
-
 
 	/**
 	 * Activates the Handler.
@@ -40,7 +36,6 @@ export class OlGeolocationHandler extends OlLayerHandler {
 			this._geolocationLayer = new VectorLayer({
 				source: source
 			});
-
 		}
 		this._map = olMap;
 
@@ -57,7 +52,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
+	onDeactivate(/*eslint-disable no-unused-vars */ olMap) {
 		this._positionFeature.setStyle(nullStyleFunction);
 		this._accuracyFeature.setStyle(nullStyleFunction);
 		this._geolocationLayer = null;
@@ -97,8 +92,7 @@ export class OlGeolocationHandler extends OlLayerHandler {
 				if (!stateSnapshot.pointer.beingDragged) {
 					this._blinkPosition(this._positionFeature);
 				}
-			}
-			else {
+			} else {
 				this._positionFeature.setStyle(nullStyleFunction);
 				this._accuracyFeature.setStyle(nullStyleFunction);
 			}

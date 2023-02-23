@@ -15,7 +15,6 @@ import { $injector } from '../../../injection';
  * @author taulinger
  */
 export class GeoResourceInfoService {
-
 	/**
 	 * @param {provider} [providers=loadBvvGeoResources]
 	 */
@@ -27,12 +26,12 @@ export class GeoResourceInfoService {
 	}
 
 	/**
-	* Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrived from backend.
-	* @public
-	* @param {string} geoResourceId Id of the desired {@link GeoResourceInfoResult}
-	* @returns {GeoResourceInfoResult | null}
-	* @throws Will throw an error if the provider result is wrong and pass it to the view.
-	*/
+	 * Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrived from backend.
+	 * @public
+	 * @param {string} geoResourceId Id of the desired {@link GeoResourceInfoResult}
+	 * @returns {GeoResourceInfoResult | null}
+	 * @throws Will throw an error if the provider result is wrong and pass it to the view.
+	 */
 	async byId(geoResourceId) {
 		if (this._environmentService.isStandalone()) {
 			console.warn('GeoResourceInfo could not be fetched from backend. Using a fallback GeoResourceInfo.');
@@ -48,8 +47,7 @@ export class GeoResourceInfoService {
 						return geoResourceInfoResult;
 					}
 				}
-			}
-			catch (e) {
+			} catch (e) {
 				throw new Error('Could not load a GeoResourceInfoResult from provider: ' + e.message);
 			}
 		}
@@ -63,18 +61,16 @@ export class GeoResourceInfoService {
 }
 
 /**
-* @class
-* @author costa_gi
-*/
+ * @class
+ * @author costa_gi
+ */
 export class GeoResourceInfoResult {
-
 	/**
 	 *
 	 * @param {string} content of this GeoResourceInfoResult
 	 * @param {string} [title=null] optional title of this GeoResourceInfoResult
 	 */
 	constructor(content, title = null) {
-
 		this._content = content;
 		this._title = title;
 	}
@@ -87,4 +83,3 @@ export class GeoResourceInfoResult {
 		return this._title;
 	}
 }
-

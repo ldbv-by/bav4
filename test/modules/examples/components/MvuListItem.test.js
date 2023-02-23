@@ -4,15 +4,12 @@ import { MvuListItem } from '../../../../src/modules/examples/components/MvuList
 window.customElements.define(MvuListItem.tag, MvuListItem);
 
 describe('Button', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
 	describe('MvuListItem', () => {
-
 		it('should render the view', async () => {
-
 			const element = await TestUtils.render(MvuListItem.tag);
 
 			//view
@@ -21,7 +18,6 @@ describe('Button', () => {
 		});
 
 		it('should contain default values in the model', async () => {
-
 			const element = await TestUtils.render(MvuListItem.tag);
 
 			//model
@@ -29,7 +25,6 @@ describe('Button', () => {
 		});
 
 		it('should update the label property with signal', async () => {
-
 			const element = await TestUtils.render(MvuListItem.tag);
 
 			element.signal('Update_Label', 'ba');
@@ -38,7 +33,6 @@ describe('Button', () => {
 		});
 
 		it('should update the label property with set', async () => {
-
 			const element = await TestUtils.render(MvuListItem.tag);
 
 			element.label = 'ba';
@@ -48,7 +42,6 @@ describe('Button', () => {
 		});
 
 		it('should call the click event of the button element', async () => {
-
 			const element = await TestUtils.render(MvuListItem.tag);
 
 			const button = element.shadowRoot.querySelector('button');

@@ -10,7 +10,6 @@ import toolContentCss from './abstractToolContent.css';
  * @abstract
  */
 export class AbstractToolContent extends MvuElement {
-
 	constructor(model = {}) {
 		super(model);
 		if (this.constructor === AbstractToolContent) {
@@ -20,14 +19,14 @@ export class AbstractToolContent extends MvuElement {
 	}
 
 	/**
-	* @override
-	*/
+	 * @override
+	 */
 	defaultCss() {
 		return html`
-		${super.defaultCss()}
-		<style>
-		    ${toolContentCss}
-		</style>
+			${super.defaultCss()}
+			<style>
+				${toolContentCss}
+			</style>
 		`;
 	}
 }

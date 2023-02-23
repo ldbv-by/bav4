@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/map/i18n/contextMenu.provider';
 
-
 describe('i18n for context menu', () => {
-
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.map_contextMenu_header).toBe('Location');
@@ -17,9 +14,7 @@ describe('i18n for context menu', () => {
 		expect(map.map_contextMenuContent_clipboard_success).toBe('was copied to clipboard');
 	});
 
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.map_contextMenu_header).toBe('Position');
@@ -44,7 +39,6 @@ describe('i18n for context menu', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

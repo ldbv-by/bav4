@@ -6,9 +6,8 @@ describe('SecurityService', () => {
 		return new SecurityService(provider);
 	};
 	describe('init', () => {
-
 		it('initializes the service with custom provider', async () => {
-			const customProvider = () => { };
+			const customProvider = () => {};
 			const instanceUnderTest = setup(customProvider);
 			expect(instanceUnderTest._sanitizeHtmlProvider).toBeDefined();
 			expect(instanceUnderTest._sanitizeHtmlProvider).toEqual(customProvider);
@@ -31,5 +30,4 @@ describe('SecurityService', () => {
 			expect(result).toEqual(mockedResult);
 		});
 	});
-
 });

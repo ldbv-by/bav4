@@ -6,7 +6,6 @@ export const LAYER_MODIFIED = 'layer/modified';
 export const LAYER_RESOURCES_READY = 'layer/resources/ready';
 export const LAYER_GEORESOURCE_CHANGED = 'layer/geoResource/changed';
 
-
 export const initialState = {
 	/**
 	 * List of currently active {@link Layer}.
@@ -35,12 +34,11 @@ export const index = (list) => {
  * @param {*} list
  */
 export const sort = (list) => {
-
-	const layersWithAlwaysTopConstraint = list.filter(l => l.constraints.alwaysTop);
+	const layersWithAlwaysTopConstraint = list.filter((l) => l.constraints.alwaysTop);
 	const sorted = list.sort((a, b) => a.zIndex - b.zIndex);
 
 	//we insert alwaysTop layers at the end
-	layersWithAlwaysTopConstraint.forEach(l => {
+	layersWithAlwaysTopConstraint.forEach((l) => {
 		sorted.push(sorted.splice(sorted.indexOf(l), 1)[0]);
 	});
 	//and reindex
@@ -81,7 +79,7 @@ export const createDefaultLayerProperties = () => ({
 const addLayer = (state, payload) => {
 	const { id, properties } = payload;
 
-	if (state.active.findIndex(layer => layer.id === id) !== -1) {
+	if (state.active.findIndex((layer) => layer.id === id) !== -1) {
 		//do nothing when id already present
 		return {
 			...state
@@ -92,13 +90,15 @@ const addLayer = (state, payload) => {
 		...createDefaultLayerProperties(),
 		geoResourceId: id,
 		...properties,
-		constraints: { ...createDefaultLayersConstraints(), ...properties.constraints ?? {} },
+		constraints: { ...createDefaultLayersConstraints(), ...(properties.constraints ?? {}) },
 		id: id
 	};
 
-	const { constraints: { alwaysTop } } = layer;
+	const {
+		constraints: { alwaysTop }
+	} = layer;
 	//when index is given we insert at that value, otherwise we append the layer
-	const insertIndex = (properties.zIndex >= 0 && !alwaysTop) ? properties.zIndex : state.active.length;
+	const insertIndex = properties.zIndex >= 0 && !alwaysTop ? properties.zIndex : state.active.length;
 	const active = [...state.active];
 	active.splice(insertIndex, 0, layer);
 	return {
@@ -110,7 +110,7 @@ const addLayer = (state, payload) => {
 const removeLayer = (state, payload) => {
 	return {
 		...state,
-		active: index(state.active.filter(layer => layer.id !== payload))
+		active: index(state.active.filter((layer) => layer.id !== payload))
 	};
 };
 
@@ -124,7 +124,7 @@ const setReady = (state, payload) => {
 const modifyLayer = (state, payload) => {
 	const { id, properties } = payload;
 
-	const layer = state.active.find(layer => layer.id === id);
+	const layer = state.active.find((layer) => layer.id === id);
 	if (layer) {
 		const active = [...state.active];
 
@@ -153,18 +153,16 @@ const modifyLayer = (state, payload) => {
 const updateGrChangedFlags = (state, payload /* the geoResourceId*/) => {
 	return {
 		...state,
-		active: state.active.map(layer => ({
+		active: state.active.map((layer) => ({
 			...layer,
-			grChangedFlag: (layer.geoResourceId === payload) ? new EventLike(payload) : layer.grChangedFlag
+			grChangedFlag: layer.geoResourceId === payload ? new EventLike(payload) : layer.grChangedFlag
 		}))
 	};
 };
 
 export const layersReducer = (state = initialState, action) => {
-
 	const { type, payload } = action;
 	switch (type) {
-
 		case LAYER_ADDED: {
 			return addLayer(state, payload);
 		}

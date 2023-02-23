@@ -1,4 +1,11 @@
-import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID, HighlightPlugin, HIGHLIGHT_LAYER_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID } from '../../src/plugins/HighlightPlugin';
+import {
+	QUERY_RUNNING_HIGHLIGHT_FEATURE_ID,
+	QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID,
+	HighlightPlugin,
+	HIGHLIGHT_LAYER_ID,
+	SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
+	SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+} from '../../src/plugins/HighlightPlugin';
 import { TestUtils } from '../test-utils.js';
 import { highlightReducer } from '../../src/store/highlight/highlight.reducer';
 import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } from '../../src/store/highlight/highlight.action';
@@ -13,9 +20,7 @@ import { searchReducer } from '../../src/store/search/search.reducer';
 import { EventLike } from '../../src/utils/storeUtils';
 import { setQuery } from '../../src/store/search/search.action';
 
-
 describe('HighlightPlugin', () => {
-
 	const setup = (state) => {
 		const initialState = {
 			mainMenu: {
@@ -40,7 +45,6 @@ describe('HighlightPlugin', () => {
 	};
 
 	describe('when highlight.active changes', () => {
-
 		it('adds or removes the highlight layer', async () => {
 			const highlightFeature = { data: [21, 42] };
 			const store = setup();
@@ -62,7 +66,6 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when pointer.click property changes', () => {
-
 		it('clears all featureInfo related highlight items', async () => {
 			const coordinate = [11, 22];
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
@@ -83,7 +86,6 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when mainMenu.tab changes', () => {
-
 		it('clears all featureInfo related highlight items (also initially)', async () => {
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID };
 			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
@@ -99,7 +101,6 @@ describe('HighlightPlugin', () => {
 			});
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
-
 
 			//should be cleared also initially
 			expect(store.getState().highlight.features).toHaveSize(1);
@@ -125,10 +126,13 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when search.query is empty', () => {
-
 		it('clears all searchResult related highlight items', async () => {
 			const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID };
-			const highlightFeature1 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID };
+			const highlightFeature1 = {
+				type: HighlightFeatureType.DEFAULT,
+				data: { coordinate: [21, 42] },
+				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID
+			};
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
@@ -167,7 +171,6 @@ describe('HighlightPlugin', () => {
 	});
 
 	describe('when featureInfo.querying property changes', () => {
-
 		it('adds and removes a featureinfo highlight feature', async () => {
 			const coordinate = [21, 42];
 			const queryId = 'foo';

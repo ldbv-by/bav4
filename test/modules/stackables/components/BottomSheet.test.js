@@ -12,7 +12,6 @@ import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.a
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('BottomSheet', () => {
-
 	let store;
 	const defaultState = {
 		mainMenu: {
@@ -20,15 +19,17 @@ describe('BottomSheet', () => {
 		},
 		media: {
 			portrait: false
-		} };
+		}
+	};
 
 	const setup = async (content, state = {}) => {
+		const initialState = { ...defaultState, ...state };
 
-		const initialState = { ...defaultState,
-			...state
-		};
-
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), bottomSheet: bottomSheetReducer });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer(),
+			bottomSheet: bottomSheetReducer
+		});
 
 		const element = await TestUtils.renderAndLogLifecycle(BottomSheet.tag);
 		element.content = content;
@@ -36,7 +37,6 @@ describe('BottomSheet', () => {
 	};
 
 	describe('constructor', () => {
-
 		it('sets a initial model', async () => {
 			TestUtils.setupStoreAndDi(defaultState);
 			const element = new BottomSheet();
@@ -53,12 +53,11 @@ describe('BottomSheet', () => {
 			const element = new BottomSheet();
 
 			expect(element._subscriptions).toHaveSize(2);
-			expect(element._subscriptions.every(subscription => typeof subscription === 'function')).toBeTrue();
+			expect(element._subscriptions.every((subscription) => typeof subscription === 'function')).toBeTrue();
 		});
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
 
@@ -67,7 +66,6 @@ describe('BottomSheet', () => {
 	});
 
 	describe('when BottomSheet is rendered', () => {
-
 		it('displays the bottom sheet content', async () => {
 			const element = await setup('FooBar');
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
@@ -89,7 +87,6 @@ describe('BottomSheet', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape and open Menu', async () => {
 			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
@@ -125,12 +122,9 @@ describe('BottomSheet', () => {
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.bottom-sheet.is-open')).toHaveSize(0);
 		});
-
 	});
 
-
 	describe('after initial rendering ', () => {
-
 		it('when orientation changes', async () => {
 			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false, observeResponsiveParameter: true } });
 
@@ -178,12 +172,10 @@ describe('BottomSheet', () => {
 			expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
 			expect(store.getState().bottomSheet.data).toBeNull();
-
 		});
 	});
 
 	describe('when disconnected', () => {
-
 		it('removes all observers', async () => {
 			const element = await setup();
 			const spy1 = jasmine.createSpy();
@@ -196,6 +188,4 @@ describe('BottomSheet', () => {
 			expect(spy2).toHaveBeenCalled();
 		});
 	});
-
-
 });

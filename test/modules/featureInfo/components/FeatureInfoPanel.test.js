@@ -12,13 +12,9 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 
-
-
 describe('FeatureInfoPanel', () => {
-
 	let store;
 	const setup = (state) => {
-
 		const initialState = {
 			media: {
 				portrait: false
@@ -27,27 +23,23 @@ describe('FeatureInfoPanel', () => {
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
-			featureInfo: featureInfoReducer, highlight: highlightReducer,
+			featureInfo: featureInfoReducer,
+			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(FeatureInfoPanel.tag);
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractContentPanel', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
 		});
 	});
 
-
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new FeatureInfoPanel().getModel();
@@ -60,11 +52,8 @@ describe('FeatureInfoPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		describe('and no featureInfo items are available', () => {
-
 			it('renders a close icon-button, a container and no items', async () => {
-
 				const element = await setup();
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
@@ -77,13 +66,14 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('and featureInfo items are available', () => {
-
 			it('renders a close icon-button, a container and no items', async () => {
-
 				const element = await setup({
 					featureInfo: {
 						//content may be a String or a TemplateResult
-						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` }
+						]
 					}
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
@@ -104,7 +94,6 @@ describe('FeatureInfoPanel', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape', async () => {
 			const state = {
 				media: {
@@ -126,15 +115,11 @@ describe('FeatureInfoPanel', () => {
 			const element = await setup(state);
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 		});
-
 	});
 
 	describe('when initialized', () => {
-
 		describe('and no featureInfo items are available', () => {
-
 			it('renders a close icon-button, a container and no items', async () => {
-
 				const element = await setup();
 				const button = element.shadowRoot.querySelector('ba-icon');
 				const container = element.shadowRoot.querySelectorAll('.container');
@@ -147,12 +132,13 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('and featureInfo items are available', () => {
-
 			it('renders a close icon-button, a container and no items', async () => {
-
 				const element = await setup({
 					featureInfo: {
-						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` }
+						]
 					}
 				});
 				const button = element.shadowRoot.querySelector('ba-icon');
@@ -167,9 +153,7 @@ describe('FeatureInfoPanel', () => {
 	});
 
 	describe('when featureInfo items are added', () => {
-
 		it('renders renders the items', async () => {
-
 			const element = await setup();
 
 			addFeatureInfoItems({ title: 'title0', content: 'content0' });
@@ -181,18 +165,18 @@ describe('FeatureInfoPanel', () => {
 	});
 
 	describe('events', () => {
-
 		describe('on mouse enter', () => {
-
 			it('sets a temporary highlight feature', async () => {
-				const geoJson = { 'type': 'Point', 'coordinates': [21, 42, 0] };
+				const geoJson = { type: 'Point', coordinates: [21, 42, 0] };
 				const element = await setup({
 					featureInfo: {
-						current: [{
-							title: 'title0',
-							content: 'content0',
-							geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
-						}]
+						current: [
+							{
+								title: 'title0',
+								content: 'content0',
+								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+							}
+						]
 					}
 				});
 
@@ -209,10 +193,12 @@ describe('FeatureInfoPanel', () => {
 			it('does nothing when featureInfo contains no geometry', async () => {
 				const element = await setup({
 					featureInfo: {
-						current: [{
-							title: 'title0',
-							content: 'content0'
-						}]
+						current: [
+							{
+								title: 'title0',
+								content: 'content0'
+							}
+						]
 					}
 				});
 
@@ -224,16 +210,17 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('on mouse leave', () => {
-
 			it('removes a temporary highlight feature', async () => {
-				const geoJson = { 'type': 'Point', 'coordinates': [21, 42, 0] };
+				const geoJson = { type: 'Point', coordinates: [21, 42, 0] };
 				const element = await setup({
 					featureInfo: {
-						current: [{
-							title: 'title0',
-							content: 'content0',
-							geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
-						}]
+						current: [
+							{
+								title: 'title0',
+								content: 'content0',
+								geometry: { data: geoJson, geometryType: FeatureInfoGeometryTypes.GEOJSON }
+							}
+						]
 					},
 					highlight: {
 						features: [{ id: TEMPORARY_FEATURE_HIGHLIGHT_ID, data: { geometry: geoJson, geometryType: HighlightGeometryType.GEOJSON } }]
@@ -248,12 +235,13 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('when clear button clicked', () => {
-
 			it('clear the featureInfo in store', async () => {
-
 				const element = await setup({
 					featureInfo: {
-						current: [{ title: 'title0', content: 'content0' }, { title: 'title1', content: html`content1` }]
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` }
+						]
 					}
 				});
 				const iconButton = element.shadowRoot.querySelector('ba-icon');

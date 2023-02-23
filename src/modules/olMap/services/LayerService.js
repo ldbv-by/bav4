@@ -15,7 +15,6 @@ import { Projection } from 'ol/proj';
  * @author taulinger
  */
 export class LayerService {
-
 	/**
 	 * @param {baaImageLoadFunctionProvider} [baaImageLoadFunctionProvider=getBvvBaaImageLoadFunction]
 	 */
@@ -31,7 +30,6 @@ export class LayerService {
 	 * @returns ol layer
 	 */
 	toOlLayer(id, geoResource, olMap) {
-
 		const {
 			GeoResourceService: georesourceService,
 			VectorLayerService: vectorLayerService,
@@ -41,22 +39,20 @@ export class LayerService {
 		const { minZoom, maxZoom, opacity } = geoResource;
 
 		switch (geoResource.getType()) {
-
 			case GeoResourceTypes.FUTURE: {
 				// in that case we return a placeholder layer
-				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => { }, properties: { placeholder: true } });
+				return new Layer({ id: id, geoResourceId: geoResource.id, render: () => {}, properties: { placeholder: true } });
 			}
 
 			case GeoResourceTypes.WMS: {
-
 				const imageWmsSource = new LimitedImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
 					ratio: 1,
 					params: {
-						'LAYERS': geoResource.layers,
-						'FORMAT': geoResource.format,
-						'VERSION': '1.1.1',
+						LAYERS: geoResource.layers,
+						FORMAT: geoResource.format,
+						VERSION: '1.1.1',
 						...geoResource.extraParams
 					}
 				});
@@ -85,18 +81,18 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.XYZ: {
-
 				const xyzSource = () => {
 					switch (geoResource.tileGridId) {
-
-						case 'adv_wmts': return new XYZSource({
-							url: geoResource.url,
-							tileGrid: new AdvWmtsTileGrid(),
-							projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
-						});
-						default: return new XYZSource({
-							url: geoResource.url
-						});
+						case 'adv_wmts':
+							return new XYZSource({
+								url: geoResource.url,
+								tileGrid: new AdvWmtsTileGrid(),
+								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
+							});
+						default:
+							return new XYZSource({
+								url: geoResource.url
+							});
 					}
 				};
 
@@ -112,7 +108,6 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.VECTOR: {
-
 				return vectorLayerService.createVectorLayer(id, geoResource, olMap);
 			}
 
@@ -133,7 +128,7 @@ export class LayerService {
 				return new LayerGroup({
 					id: id,
 					opacity: opacity,
-					layers: geoResource.geoResourceIds.map(id => this.toOlLayer(id, georesourceService.byId(id))),
+					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, georesourceService.byId(id))),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});

@@ -3,40 +3,38 @@ import { $injector } from '../../src/injection';
 import { BvvFileStorageService, FileStorageServiceDataTypes } from '../../src/services/FileStorageService';
 
 describe('BvvFileStorageService', () => {
-
 	const configService = {
-		getValueAsPath: () => { }
+		getValueAsPath: () => {}
 	};
 
 	const httpService = {
-		post() { },
-		get() { }
+		post() {},
+		get() {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 	});
 
 	describe('get', () => {
-
 		it('loads a KML file by id', async () => {
 			const data = 'data';
 			const fileId = 'someId';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(data, {
-					headers: new Headers({
-						'Content-Type': FileStorageServiceDataTypes.KML
-					})
-				})
-
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(
+					Promise.resolve(
+						new Response(data, {
+							headers: new Headers({
+								'Content-Type': FileStorageServiceDataTypes.KML
+							})
+						})
+					)
+				);
 			const instanceUnderTest = new BvvFileStorageService();
-
 
 			const result = await instanceUnderTest.get('someId');
 
@@ -52,22 +50,23 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(data, {
-					headers: new Headers({
-						'Content-Type': contentType
-					})
-				})
-
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(
+					Promise.resolve(
+						new Response(data, {
+							headers: new Headers({
+								'Content-Type': contentType
+							})
+						})
+					)
+				);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			try {
 				await instanceUnderTest.get('someId');
 				throw new Error('Promise should not be resolved');
-
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
 			}
 		});
@@ -77,24 +76,21 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(null, { status: 404 })
-
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 			const instanceUnderTest = new BvvFileStorageService();
 
 			try {
 				await instanceUnderTest.get('someId');
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('File could not be loaded: ' + expectedUrl);
 			}
 		});
 	});
 
 	describe('save', () => {
-
 		it('saves a new KML file', async () => {
 			const data = 'data';
 			const fileId = 'someFileId';
@@ -102,16 +98,19 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post').withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify(
-						{
-							adminId: adminId,
-							fileId: fileId
-						}
-					),
-					{ status: 200 })
-			));
+			spyOn(httpService, 'post')
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML)
+				.and.returnValue(
+					Promise.resolve(
+						new Response(
+							JSON.stringify({
+								adminId: adminId,
+								fileId: fileId
+							}),
+							{ status: 200 }
+						)
+					)
+				);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
@@ -127,16 +126,19 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + fileId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post').withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify(
-						{
-							adminId: adminId,
-							fileId: fileId
-						}
-					),
-					{ status: 200 })
-			));
+			spyOn(httpService, 'post')
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML)
+				.and.returnValue(
+					Promise.resolve(
+						new Response(
+							JSON.stringify({
+								adminId: adminId,
+								fileId: fileId
+							}),
+							{ status: 200 }
+						)
+					)
+				);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.save(fileId, data, FileStorageServiceDataTypes.KML);
@@ -153,8 +155,7 @@ describe('BvvFileStorageService', () => {
 			try {
 				await instanceUnderTest.save(null, data, contentType);
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('Content-Type ' + contentType + ' currently not supported');
 			}
 		});
@@ -164,25 +165,22 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files';
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'post').withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML).and.returnValue(Promise.resolve(
-				new Response(null, { status: 500 })
-			));
+			spyOn(httpService, 'post')
+				.withArgs(expectedUrl, data, FileStorageServiceDataTypes.KML)
+				.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 			const instanceUnderTest = new BvvFileStorageService();
 
 			try {
 				await instanceUnderTest.save(null, data, FileStorageServiceDataTypes.KML);
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('File could not be saved: ' + expectedUrl);
 			}
 		});
 	});
 
 	describe('isFileId', () => {
-
 		it('checks if a string represents a fileId', async () => {
-
 			const instanceUnderTest = new BvvFileStorageService();
 
 			expect(instanceUnderTest.isFileId('foo')).toBeFalse();
@@ -191,9 +189,7 @@ describe('BvvFileStorageService', () => {
 	});
 
 	describe('iAdminId', () => {
-
 		it('checks if a string represents an adminId', async () => {
-
 			const instanceUnderTest = new BvvFileStorageService();
 
 			expect(instanceUnderTest.isAdminId('foo')).toBeFalse();
@@ -202,23 +198,24 @@ describe('BvvFileStorageService', () => {
 	});
 
 	describe('getFileId', () => {
-
 		it('loads a fileId file by an adminId', async () => {
 			const adminId = 'a_Id';
 			const fileId = 'f_Id';
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify(
-						{
-							fileId: fileId
-						}
-					),
-					{ status: 200 }
-				)
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(
+					Promise.resolve(
+						new Response(
+							JSON.stringify({
+								fileId: fileId
+							}),
+							{ status: 200 }
+						)
+					)
+				);
 			const instanceUnderTest = new BvvFileStorageService();
 
 			const result = await instanceUnderTest.getFileId(adminId);
@@ -240,19 +237,15 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify({}),
-					{ status: 200 }
-				)
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200 })));
 			const instanceUnderTest = new BvvFileStorageService();
 
 			try {
 				await instanceUnderTest.getFileId(adminId);
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
 			}
 		});
@@ -262,16 +255,15 @@ describe('BvvFileStorageService', () => {
 			const backendUrl = 'https://backend.url/';
 			const expectedUrl = backendUrl + 'files/' + adminId;
 			spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').withArgs(expectedUrl).and.returnValue(Promise.resolve(
-				new Response(null, { status: 404 })
-			));
+			spyOn(httpService, 'get')
+				.withArgs(expectedUrl)
+				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 			const instanceUnderTest = new BvvFileStorageService();
 
 			try {
 				await instanceUnderTest.getFileId(adminId);
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe('FileId could not be retrieved: ' + expectedUrl);
 			}
 		});

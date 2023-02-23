@@ -32,45 +32,58 @@ export class GeometryInfo extends MvuElement {
 		}
 	}
 
-
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const getContent = statistics => {
+		const getContent = (statistics) => {
 			if (statistics.coordinate != null) {
 				// TODO: future implementations should render the coordinate in the current srid of the view, which is defined globally by the user
 				// As long as there is no possibility to specify this in user-settings etc., the coordinate will not be displayed.
 				const title = translate('geometryInfo_title_coordinate');
-				return html`<div class='stats-point stats-content' title=${title}></div>`;
+				return html`<div class="stats-point stats-content" title=${title}></div>`;
 			}
 			if (statistics.length != null && statistics.azimuth != null) {
 				const titleAzimuth = translate('geometryInfo_title_azimuth');
 				const titleLength = translate('geometryInfo_title_line_length');
-				return html`<div class='stats-line-azimuth stats-content' title=${titleAzimuth}><span>${titleAzimuth}:</span>${statistics.azimuth.toFixed(2)}°</div>
-					<div class='stats-line-length stats-content' title=${titleLength}><span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
+				return html`<div class="stats-line-azimuth stats-content" title=${titleAzimuth}>
+						<span>${titleAzimuth}:</span>${statistics.azimuth.toFixed(2)}°
+					</div>
+					<div class="stats-line-length stats-content" title=${titleLength}>
+						<span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}
+					</div>`;
 			}
 
 			if (statistics.length != null && statistics.area != null) {
 				const titleArea = translate('geometryInfo_title_polygon_area');
 				const titleLength = translate('geometryInfo_title_line_length');
-				return html`<div class='stats-polygon-length stats-content' title=${titleLength}><span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>
-					<div class='stats-polygon-area stats-content' title=${titleArea}><span>${titleArea}:</span>${unsafeHTML(this._unitsService.formatArea(statistics.area, 2))}</div>`;
+				return html`<div class="stats-polygon-length stats-content" title=${titleLength}>
+						<span>${titleLength}:</span>${this._unitsService.formatDistance(statistics.length, 2)}
+					</div>
+					<div class="stats-polygon-area stats-content" title=${titleArea}>
+						<span>${titleArea}:</span>${unsafeHTML(this._unitsService.formatArea(statistics.area, 2))}
+					</div>`;
 			}
 			if (statistics.length != null) {
 				const title = translate('geometryInfo_title_line_length');
-				return html`<div class='stats-line-length stats-content' title=${title}><span>${title}:</span>${this._unitsService.formatDistance(statistics.length, 2)}</div>`;
+				return html`<div class="stats-line-length stats-content" title=${title}>
+					<span>${title}:</span>${this._unitsService.formatDistance(statistics.length, 2)}
+				</div>`;
 			}
 			return null;
 		};
 
 		const content = getContent(model.statistics);
 
-		return content ? html`
-        <style>${css}</style>
-		<div>
-			<div class="stats-container">
-			${content}
-			<div>
-		</div>` : nothing;
+		return content
+			? html` <style>
+						${css}
+					</style>
+					<div>
+						<div class="stats-container">
+							${content}
+							<div></div>
+						</div>
+					</div>`
+			: nothing;
 	}
 
 	static get tag() {

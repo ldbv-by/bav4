@@ -5,7 +5,6 @@ import { isTemplateResult } from '../src/utils/checks';
 import { LOG_LIFECYLE_ATTRIBUTE_NAME } from '../src/utils/markup';
 
 class TestableBlob extends Blob {
-
 	constructor(data, mimeType, size) {
 		super([data], { type: mimeType });
 		this._size = size;
@@ -87,7 +86,7 @@ export class TestUtils {
 	 * @returns {Promise<HTMLElement>}
 	 */
 	static async _waitForComponentToRender(tag, _document = document, _window = window) {
-		return new Promise(resolve => {
+		return new Promise((resolve) => {
 			function requestComponent() {
 				const element = _document.querySelector(tag);
 				if (element) {
@@ -96,8 +95,7 @@ export class TestUtils {
 						element.onWindowLoad();
 					}
 					resolve(element);
-				}
-				else {
+				} else {
 					_window.requestAnimationFrame(requestComponent);
 				}
 			}
@@ -111,7 +109,6 @@ export class TestUtils {
 	 * @returns HTMLElement Container of the rendered TemplateResult
 	 */
 	static renderTemplateResult(templateResult) {
-
 		if (!isTemplateResult(templateResult)) {
 			console.error(`'${JSON.stringify(templateResult)}' is not a lit-html TemplateResult`);
 			return;
@@ -137,23 +134,17 @@ export class TestUtils {
 	 * @returns the store
 	 */
 	static setupStoreAndDi(state = {}, reducer) {
-
 		const store = reducer
-			? createStore(
-				combineReducers(reducer),
-				state)
-			//noop reducer
-			: createStore(state => state, state);
+			? createStore(combineReducers(reducer), state)
+			: //noop reducer
+			  createStore((state) => state, state);
 
-		$injector
-			.reset()
-			.registerSingleton('StoreService', {
-				getStore: () => store
-			});
+		$injector.reset().registerSingleton('StoreService', {
+			getStore: () => store
+		});
 
 		return store;
 	}
-
 
 	/**
 	 * Returns a MediaQueryList object
@@ -165,7 +156,7 @@ export class TestUtils {
 			addEventListener(type, listener) {
 				listener({ matches: shouldMatch });
 			},
-			removeEventListener() { },
+			removeEventListener() {},
 			matches: shouldMatch
 		};
 	}
@@ -178,7 +169,6 @@ export class TestUtils {
 	 * @returns {Blob}
 	 */
 	static newBlob(data = null, mimeType = '', size = 0) {
-
 		return new TestableBlob(data, mimeType, size);
 	}
 
@@ -194,7 +184,7 @@ export class TestUtils {
 	 * @param {number} touchCount the count of simulated touches
 	 */
 	static simulateTouchEvent(type, eventSource = document, x, y, touchCount = 1) {
-		const touchEventSupported = () => window.TouchEvent ? true : false;
+		const touchEventSupported = () => (window.TouchEvent ? true : false);
 		const repeat = (toRepeat, amount) => {
 			return Array(amount).fill(toRepeat);
 		};
@@ -232,7 +222,7 @@ export class TestUtils {
 	 * @returns {Promise}
 	 */
 	static async timeout(ms = 0) {
-		return new Promise(resolve => setTimeout(resolve, ms));
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	/**
@@ -243,7 +233,6 @@ export class TestUtils {
 	 * @returns {Promise}
 	 */
 	static async waitFor(checkFn, timeout = 5000) {
-
 		return new Promise((resolve, reject) => {
 			const clear = () => {
 				clearInterval(intervallId);
@@ -261,5 +250,4 @@ export class TestUtils {
 			}, 10);
 		});
 	}
-
 }

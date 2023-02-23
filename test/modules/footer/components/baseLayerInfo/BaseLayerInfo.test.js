@@ -6,13 +6,11 @@ import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/lay
 import { XyzGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 
-
 window.customElements.define(BaseLayerInfo.tag, BaseLayerInfo);
 
 describe('BaseLayerInfo', () => {
-
 	const geoResourceServiceMock = {
-		byId: () => { }
+		byId: () => {}
 	};
 
 	const setup = (state) => {
@@ -20,15 +18,12 @@ describe('BaseLayerInfo', () => {
 			layers: layersReducer,
 			position: positionReducer
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
 		return TestUtils.render(BaseLayerInfo.tag);
 	};
 
 	describe('when initialized', () => {
-
 		it('renders BaseLayerInfo component', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {

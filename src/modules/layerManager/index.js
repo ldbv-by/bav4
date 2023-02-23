@@ -7,4 +7,3 @@ if (!window.customElements.get(LayerItem.tag)) {
 if (!window.customElements.get(LayerManager.tag)) {
 	window.customElements.define(LayerManager.tag, LayerManager);
 }
-

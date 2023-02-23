@@ -22,7 +22,6 @@ const Update_Title = 'update_title';
  * @author taulinger
  */
 export class Checkbox extends MvuElement {
-
 	constructor() {
 		super({
 			checked: false,
@@ -35,8 +34,7 @@ export class Checkbox extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-
-		this._onToggle = () => { };
+		this._onToggle = () => {};
 
 		this.addEventListener('click', (event) => {
 			this._click();
@@ -56,7 +54,6 @@ export class Checkbox extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Checked:
 				return { ...model, checked: data };
@@ -78,26 +75,30 @@ export class Checkbox extends MvuElement {
 		const onChange = (event) => {
 			const checked = event.target.checked;
 			this.signal(Update_Checked, checked);
-			this.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: checked }
-			}));
+			this.dispatchEvent(
+				new CustomEvent('toggle', {
+					detail: { checked: checked }
+				})
+			);
 
 			this._onToggle(event);
 		};
 
 		return html`
-        <style>${css}</style>
-		<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${disabled} .checked=${checked} />
-		<label title='${title}' class="ba-checkbox" >
-		  		<span>
-			  	<svg width="100%" height="100%" viewbox="0 0 12 9">
-					<polyline points="1 5 4 8 11 1"></polyline>
-			 	 </svg>
+			<style>
+				${css}
+			</style>
+			<input @change=${onChange} class="input" id="cbx" type="checkbox" style="display: none;" ?disabled=${disabled} .checked=${checked} />
+			<label title="${title}" class="ba-checkbox">
+				<span>
+					<svg width="100%" height="100%" viewbox="0 0 12 9">
+						<polyline points="1 5 4 8 11 1"></polyline>
+					</svg>
 				</span>
 				<span>
-				<slot></slot>
+					<slot></slot>
 				</span>
-		 </label>
+			</label>
 		`;
 	}
 

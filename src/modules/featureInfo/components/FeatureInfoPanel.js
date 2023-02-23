@@ -7,7 +7,12 @@ import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
 import printerIcon from '../assets/printer.svg';
-import { addHighlightFeatures, HighlightFeatureType, HighlightGeometryType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import {
+	addHighlightFeatures,
+	HighlightFeatureType,
+	HighlightGeometryType,
+	removeHighlightFeaturesById
+} from '../../../store/highlight/highlight.action';
 import { createUniqueId } from '../../../utils/numberUtils';
 import { isTemplateResult } from '../../../utils/checks';
 
@@ -15,14 +20,12 @@ const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 
-
 /**
  * @class
  * @author taulinger
  * @author alsturm
  */
 export class FeatureInfoPanel extends AbstractMvuContentPanel {
-
 	constructor() {
 		super({
 			featureInfoData: [],
@@ -32,8 +35,14 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 
-		this.observe(store => store.featureInfo.current, current => this.signal(Update_FeatureInfo_Data, [...current]));
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
+		this.observe(
+			(store) => store.featureInfo.current,
+			(current) => this.signal(Update_FeatureInfo_Data, [...current])
+		);
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait, media.portrait)
+		);
 	}
 
 	/**
@@ -52,11 +61,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	 *@override
 	 */
 	createView(model) {
-
 		const { featureInfoData, isPortrait } = model;
 		const translate = (key) => this._translationService.translate(key);
 
-		const getContent = content => {
+		const getContent = (content) => {
 			return isTemplateResult(content) ? content : html`${unsafeHTML(content)}`;
 		};
 
@@ -82,43 +90,48 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		};
 
 		return html`
-        <style>${css}</style>
-		<div>
-			<div class="container  ${getOrientationClass()}">
-			<ul class="ba-list">	
-				<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">			
-					<span class="ba-list-item__pre" style='position:relative;left:-1em;'>													
-							<ba-icon .icon='${arrowLeftShortIcon}' .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>	 											
-					</span>
-					<span class="ba-list-item__text vertical-center">
-						<span class="ba-list-item__main-text" style='position:relative;left:-1em;'>	
-							${translate('featureInfo_header')}
-						</span>					
-					</span>
-					<span class="share ba-icon-button ba-list-item__after vertical-center separator" style='padding-right: 1.5em;'>											
-						<ba-icon .icon='${shareIcon}' .size=${1.3} ></ba-icon>												
-					</span>
-					<span class="print ba-icon-button ba-list-item__after vertical-center separator">														
-						<ba-icon .icon='${printerIcon}' .size=${1.5} ></ba-icon>												
-					</span>
-				</li>	
-				${featureInfoData.map((item) => html`
-					<li class="ba-section">
-						<button class="ba-list-item ba-list-item__header" @mouseenter=${() => onMouseEnter(item.geometry)} @mouseleave=${() => onMouseLeave(item.geometry)}>
-							<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
-							<span class="ba-list-item__after">
-								<i class="icon icon-rotate-90 chevron iconexpand"></i>
-							</span>
-						</button>					
-						<div class="collapse-content divider">	
-							${getContent(item.content)}
-						</div>	
-					</li>
-					`)}
-					</ul>	
+			<style>
+				${css}
+			</style>
 			<div>
-		</div>
-        `;
+				<div class="container  ${getOrientationClass()}">
+					<ul class="ba-list">
+						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
+							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
+								<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+							</span>
+							<span class="ba-list-item__text vertical-center">
+								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>
+							</span>
+							<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
+								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
+							</span>
+							<span class="print ba-icon-button ba-list-item__after vertical-center separator">
+								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
+							</span>
+						</li>
+						${featureInfoData.map(
+							(item) => html`
+								<li class="ba-section">
+									<button
+										class="ba-list-item ba-list-item__header"
+										@mouseenter=${() => onMouseEnter(item.geometry)}
+										@mouseleave=${() => onMouseLeave(item.geometry)}
+									>
+										<span class="ba-list-item__text  ba-list-item__primary-text">${item.title}</span>
+										<span class="ba-list-item__after">
+											<i class="icon icon-rotate-90 chevron iconexpand"></i>
+										</span>
+									</button>
+									<div class="collapse-content divider">${getContent(item.content)}</div>
+								</li>
+							`
+						)}
+					</ul>
+					<div></div>
+				</div>
+			</div>
+		`;
 	}
 
 	static get tag() {

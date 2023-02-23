@@ -22,7 +22,6 @@ export const networkReducer = (state = initialState, action) => {
 			};
 		}
 		case OFFLINE_CHANGED: {
-
 			return {
 				...state,
 				offline: payload

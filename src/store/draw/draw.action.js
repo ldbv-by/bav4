@@ -2,10 +2,24 @@
  * Action creators to activate/deactive the draw tool
  * @module draw/action
  */
-import { ACTIVE_CHANGED, MODE_CHANGED, TYPE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, STYLE_CHANGED, SELECTED_STYLE_CHANGED, DESCRIPTION_CHANGED, GEOMETRY_IS_VALID_CHANGED, SELECTION_CHANGED, CLEAR_DESCRIPTION, CLEAR_TEXT } from './draw.reducer';
+import {
+	ACTIVE_CHANGED,
+	MODE_CHANGED,
+	TYPE_CHANGED,
+	RESET_REQUESTED,
+	FINISH_REQUESTED,
+	REMOVE_REQUESTED,
+	FILE_SAVE_RESULT_CHANGED,
+	STYLE_CHANGED,
+	SELECTED_STYLE_CHANGED,
+	DESCRIPTION_CHANGED,
+	GEOMETRY_IS_VALID_CHANGED,
+	SELECTION_CHANGED,
+	CLEAR_DESCRIPTION,
+	CLEAR_TEXT
+} from './draw.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-
 
 /**
  * MetaData of a successfully saved drawing (@see {@link FileSaveResult}).
@@ -56,7 +70,6 @@ export const deactivate = () => {
 		payload: false
 	});
 };
-
 
 /**
  * Set the mode of a drawing.
@@ -114,7 +127,6 @@ export const setSelectedStyle = (selectedSyle) => {
 	});
 };
 
-
 /**
  * Set the description of a drawing.
  * @function
@@ -132,7 +144,6 @@ export const clearDescription = () => {
 		type: CLEAR_DESCRIPTION
 	});
 };
-
 
 export const clearText = () => {
 	getStore().dispatch({
@@ -164,7 +175,6 @@ export const setSelection = (selection) => {
 	});
 };
 
-
 /**
  * Set the reset request.
  * @function
@@ -176,7 +186,6 @@ export const reset = () => {
 	});
 };
 
-
 /**
  * Set the reset request.
  * @function
@@ -187,7 +196,6 @@ export const finish = () => {
 		payload: new EventLike('finish')
 	});
 };
-
 
 /**
  * Set the delete request.

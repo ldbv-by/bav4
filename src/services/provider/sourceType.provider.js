@@ -1,5 +1,3 @@
-
-
 import { html } from 'lit-html';
 import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
@@ -34,7 +32,11 @@ import { parse } from '../../utils/ewkt';
  * @returns TemplateResult
  */
 export const _createCredentialPanel = (url, authenticateFunction, onCloseFunction) => {
-	return html`<ba-auth-password-credential-panel .url=${url} .authenticate=${authenticateFunction} .onClose=${onCloseFunction}>`;
+	return html`<ba-auth-password-credential-panel
+		.url=${url}
+		.authenticate=${authenticateFunction}
+		.onClose=${onCloseFunction}
+	></ba-auth-password-credential-panel>`;
 };
 
 /**
@@ -45,9 +47,12 @@ export const _createCredentialPanel = (url, authenticateFunction, onCloseFunctio
  * @returns {SourceTypeResult}
  */
 export const bvvUrlSourceTypeProvider = async (url, createModalContent = _createCredentialPanel) => {
-
-	const { HttpService: httpService, ConfigService: configService, BaaCredentialService: baaCredentialService, ProjectionService: projectionService }
-		= $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService', 'ProjectionService');
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		BaaCredentialService: baaCredentialService,
+		ProjectionService: projectionService
+	} = $injector.inject('HttpService', 'ConfigService', 'BaaCredentialService', 'ProjectionService');
 	const endpointUrl = configService.getValueAsPath('BACKEND_URL') + 'sourceType';
 
 	const post = async (url, credential = null) => {
@@ -64,7 +69,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 			case 200: {
 				const { name, version, srid } = await result.json();
 
-				const sourceTypeNameFor = name => {
+				const sourceTypeNameFor = (name) => {
 					switch (name) {
 						case 'KML':
 							return SourceTypeName.KML;
@@ -80,11 +85,14 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				};
 				const sourceTypeName = sourceTypeNameFor(name);
 				if (sourceTypeName) {
-					if (srid && !projectionService.getProjections().includes(srid)) { // check if SRID is supported
+					if (srid && !projectionService.getProjections().includes(srid)) {
+						// check if SRID is supported
 						return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_SRID);
 					}
-					return new SourceTypeResult(authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
-						new SourceType(sourceTypeName, version, srid));
+					return new SourceTypeResult(
+						authenticated ? SourceTypeResultStatus.BAA_AUTHENTICATED : SourceTypeResultStatus.OK,
+						new SourceType(sourceTypeName, version, srid)
+					);
 				}
 				return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
 			}
@@ -103,11 +111,8 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 
 	// in that case we open the credential ui as modal window
 	if (response.status === 401) {
-
 		return new Promise((resolve) => {
-
-			const { StoreService: storeService, TranslationService: translationService }
-				= $injector.inject('StoreService', 'TranslationService');
+			const { StoreService: storeService, TranslationService: translationService } = $injector.inject('StoreService', 'TranslationService');
 			const translate = (key) => translationService.translate(key);
 
 			const authenticate = async (credential, url) => {
@@ -122,7 +127,11 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 				}
 			};
 
-			const unsubscribe = observe(storeService.getStore(), state => state.modal, modal => resolveBeforeClosing(modal));
+			const unsubscribe = observe(
+				storeService.getStore(),
+				(state) => state.modal,
+				(modal) => resolveBeforeClosing(modal)
+			);
 
 			// onClose-callback is called with a verified credential object and the result object or simply null
 			const onClose = async (credential, latestResponse) => {
@@ -133,8 +142,7 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
 					baaCredentialService.addOrReplace(url, credential);
 					// resolve with the latest response
 					resolve(await mapResponseToSourceType(latestResponse, true));
-				}
-				else {
+				} else {
 					// resolve with the original response
 					resolve(await mapResponseToSourceType(response));
 				}
@@ -154,7 +162,6 @@ export const bvvUrlSourceTypeProvider = async (url, createModalContent = _create
  * @returns {SourceTypeResult}
  */
 export const defaultDataSourceTypeProvider = (data) => {
-
 	const { ProjectionService: projectionService } = $injector.inject('ProjectionService');
 
 	if (new Blob([data]).size >= SourceTypeMaxFileSize) {
@@ -181,12 +188,10 @@ export const defaultDataSourceTypeProvider = (data) => {
 		if (validGeoJsonTypes.includes(type)) {
 			return new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType(SourceTypeName.GEOJSON, null, 4326));
 		}
-	}
-	catch {
+	} catch {
 		// Nothing todo here
 	}
 	return new SourceTypeResult(SourceTypeResultStatus.UNSUPPORTED_TYPE);
-
 };
 
 /**

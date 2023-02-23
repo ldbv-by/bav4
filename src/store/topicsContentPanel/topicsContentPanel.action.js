@@ -10,7 +10,6 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
 /**
  *  Sets the index of an content element that should be active / displayed.
  * @param {TopicsContentPanelIndex} index

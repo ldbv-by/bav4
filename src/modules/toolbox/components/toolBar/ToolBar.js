@@ -4,7 +4,6 @@ import { $injector } from '../../../../injection';
 import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 
-
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
@@ -18,7 +17,6 @@ const Update_ToolId = 'update_toolid';
  * @author taulinger
  */
 export class ToolBar extends MvuElement {
-
 	constructor() {
 		super({
 			isOpen: true,
@@ -28,11 +26,10 @@ export class ToolBar extends MvuElement {
 			toolId: null
 		});
 
-		const {
-			EnvironmentService: environmentService,
-			TranslationService: translationService
-		}
-			= $injector.inject('EnvironmentService', 'TranslationService');
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
@@ -52,9 +49,18 @@ export class ToolBar extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.network.fetching, fetching => this.signal(Update_Fetching, fetching));
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
-		this.observe(state => state.tools.current, current => this.signal(Update_ToolId, current));
+		this.observe(
+			(state) => state.network.fetching,
+			(fetching) => this.signal(Update_Fetching, fetching)
+		);
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+		);
+		this.observe(
+			(state) => state.tools.current,
+			(current) => this.signal(Update_ToolId, current)
+		);
 
 		if (this.getModel().isPortrait || !this.getModel().hasMinWidth) {
 			this.signal(Update_IsOpen, false);
@@ -65,7 +71,6 @@ export class ToolBar extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-
 		const { isFetching, isPortrait, hasMinWidth, isOpen, toolId } = model;
 
 		const getOrientationClass = () => {
@@ -101,65 +106,76 @@ export class ToolBar extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
-			<style>${css}</style>		
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">  															
-				<button id='tools-button' data-test-id class='toolbar__button-tools ${getButtonClass()} ' @click="${() => this.signal(Update_IsOpen, !isOpen)}">
-					<div class="wrench">													
-					</div>
+			<style>
+				${css}
+			</style>
+			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+				<button
+					id="tools-button"
+					data-test-id
+					class="toolbar__button-tools ${getButtonClass()} "
+					@click="${() => this.signal(Update_IsOpen, !isOpen)}"
+				>
+					<div class="wrench"></div>
 				</button>
-				<button id='action-button' data-test-id class="action-button" >
-					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
-					</div>
+				<button id="action-button" data-test-id class="action-button">
+					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}"></div>
 					<div class="action-button__icon">
-						<div class="ba">
-						</div>
+						<div class="ba"></div>
 					</div>
-					<div class='toolbar__logo-badge'>										
-						${translate('toolbox_toolbar_logo_badge')}
-					</div>	
+					<div class="toolbar__logo-badge">${translate('toolbox_toolbar_logo_badge')}</div>
 				</button>
-				<div class="tool-bar ${getOverlayClass()}">    	
-					<button id='measure-button' data-test-id @click="${() => toggleTool(ToolId.MEASURING)}" class="tool-bar__button ${getActiveClass(ToolId.MEASURING)}">
-						<div class="tool-bar__button_icon measure">							
-						</div>
-						<div class="tool-bar__button-text">
-							${translate('toolbox_toolbar_measure_button')}
-						</div>  
-					</button>  	
-					<button id="draw-button" data-test-id @click="${() => toggleTool(ToolId.DRAWING)}" class="tool-bar__button ${getActiveClass(ToolId.DRAWING)}">
-						<div class="tool-bar__button_icon pencil">							
-						</div>
-						<div class="tool-bar__button-text">
-							${translate('toolbox_toolbar_draw_button')}
-						</div>  					
-					</button>  				               
-					<button  id="import-button" data-test-id @click="${() => toggleTool(ToolId.IMPORT)}" class="tool-bar__button ${getActiveClass(ToolId.IMPORT)}">
-						<div class="tool-bar__button_icon import">							
-						</div>
-						<div class="tool-bar__button-text">
-						${translate('toolbox_toolbar_import_button')}							
-						</div>  					
+				<div class="tool-bar ${getOverlayClass()}">
+					<button
+						id="measure-button"
+						data-test-id
+						@click="${() => toggleTool(ToolId.MEASURING)}"
+						class="tool-bar__button ${getActiveClass(ToolId.MEASURING)}"
+					>
+						<div class="tool-bar__button_icon measure"></div>
+						<div class="tool-bar__button-text">${translate('toolbox_toolbar_measure_button')}</div>
 					</button>
-					<button  id="export-button" data-test-id @click="${() => toggleTool(ToolId.EXPORT)}" class="tool-bar__button ${getActiveClass(ToolId.EXPORT)}">
-						<div class="tool-bar__button_icon export">							
-						</div>
-						<div class="tool-bar__button-text">
-							${translate('toolbox_toolbar_export_button')}
-						</div>  
-					</button>  			               
-					<button  id="share-button" data-test-id @click="${() => toggleTool(ToolId.SHARING)}" class="tool-bar__button ${getActiveClass(ToolId.SHARING)}">
-						<div class="tool-bar__button_icon share">							
-						</div>
-						<div class="tool-bar__button-text">
-							${translate('toolbox_toolbar_share_button')}
-						</div>  
+					<button
+						id="draw-button"
+						data-test-id
+						@click="${() => toggleTool(ToolId.DRAWING)}"
+						class="tool-bar__button ${getActiveClass(ToolId.DRAWING)}"
+					>
+						<div class="tool-bar__button_icon pencil"></div>
+						<div class="tool-bar__button-text">${translate('toolbox_toolbar_draw_button')}</div>
 					</button>
-					<button  id="close-button" class="tool-bar__button tool-bar__button-close"  @click="${() => this.signal(Update_IsOpen, !isOpen)}">
-						<div class="tool-bar__button_icon close arrowright">							
-						</div>						
-					</button>  	 				               				               				 				           					 				               				               				 				            				               				               				 				           
-				</div>		
-			</div>		
+					<button
+						id="import-button"
+						data-test-id
+						@click="${() => toggleTool(ToolId.IMPORT)}"
+						class="tool-bar__button ${getActiveClass(ToolId.IMPORT)}"
+					>
+						<div class="tool-bar__button_icon import"></div>
+						<div class="tool-bar__button-text">${translate('toolbox_toolbar_import_button')}</div>
+					</button>
+					<button
+						id="export-button"
+						data-test-id
+						@click="${() => toggleTool(ToolId.EXPORT)}"
+						class="tool-bar__button ${getActiveClass(ToolId.EXPORT)}"
+					>
+						<div class="tool-bar__button_icon export"></div>
+						<div class="tool-bar__button-text">${translate('toolbox_toolbar_export_button')}</div>
+					</button>
+					<button
+						id="share-button"
+						data-test-id
+						@click="${() => toggleTool(ToolId.SHARING)}"
+						class="tool-bar__button ${getActiveClass(ToolId.SHARING)}"
+					>
+						<div class="tool-bar__button_icon share"></div>
+						<div class="tool-bar__button-text">${translate('toolbox_toolbar_share_button')}</div>
+					</button>
+					<button id="close-button" class="tool-bar__button tool-bar__button-close" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
+						<div class="tool-bar__button_icon close arrowright"></div>
+					</button>
+				</div>
+			</div>
 		`;
 	}
 

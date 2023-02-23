@@ -9,9 +9,7 @@ import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
 
-
 window.customElements.define(FirstSteps.tag, FirstSteps);
-
 
 describe('Help', () => {
 	let store;
@@ -35,7 +33,12 @@ describe('Help', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer(), bottomSheet: bottomSheetReducer, modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer(),
+			bottomSheet: bottomSheetReducer,
+			modal: modalReducer
+		});
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
 			getUrlParams: () => urlParams
@@ -70,7 +73,6 @@ describe('Help', () => {
 			expect(model.firstStepsContentSource).toBe('http://some.url');
 		});
 
-
 		it('renders Help buttons', async () => {
 			const state = {
 				media: {
@@ -96,7 +98,9 @@ describe('Help', () => {
 				expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 				//we expect a lit-html TemplateResult as content
 				expect(store.getState().modal.data.content.strings[1]).toContain('<iframe title=');
-				expect(store.getState().modal.data.content.strings[3]).toContain('allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"');
+				expect(store.getState().modal.data.content.strings[3]).toContain(
+					'allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"'
+				);
 				expect(store.getState().modal.data.content.values[2]).toBe('http://some.url');
 			});
 
@@ -115,8 +119,6 @@ describe('Help', () => {
 				//we expect a lit-html TemplateResult as content
 				expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
 			});
-
-
 		});
 
 		it('opens the bottomSheet', async () => {
@@ -207,13 +209,14 @@ describe('Help', () => {
 					expect(store.getState().modal.data.title).toBe('help_firstSteps_notification_first_steps');
 					//we expect a lit-html TemplateResult as content
 					expect(store.getState().modal.data.content.strings[1]).toContain('<iframe title=');
-					expect(store.getState().modal.data.content.strings[3]).toContain('allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"');
+					expect(store.getState().modal.data.content.strings[3]).toContain(
+						'allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"'
+					);
 				});
-
 			});
 		});
 
-		it('supress the bottomSheet, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' is active ', async () => {
+		it("supress the bottomSheet, when urlParameter 'T_DISABLE_INITIAL_UI_HINTS' is active ", async () => {
 			const state = {
 				media: {
 					portrait: true
@@ -254,7 +257,7 @@ describe('Help', () => {
 			expect(store.getState().bottomSheet.data).toBeNull();
 		});
 
-		it('does not supress a notification, when urlParameter \'T_DISABLE_INITIAL_UI_HINTS\' have invalid value ', async () => {
+		it("does not supress a notification, when urlParameter 'T_DISABLE_INITIAL_UI_HINTS' have invalid value ", async () => {
 			const state = {
 				media: {
 					portrait: true
@@ -270,7 +273,6 @@ describe('Help', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('renders for landscape mode', async () => {
 			const state = {
 				media: {

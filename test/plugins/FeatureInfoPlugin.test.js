@@ -16,28 +16,25 @@ import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { DRAW_TOOL_ID } from '../../src/plugins/DrawPlugin.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
-
 describe('FeatureInfoPlugin', () => {
-
 	const featureInfoService = {
-		async get() { }
+		async get() {}
 	};
 
 	const mapService = {
-		calcResolution() { }
+		calcResolution() {}
 	};
 
 	const geoResourceService = {
-		byId() { }
+		byId() {}
 	};
 
 	const translationService = {
-		register() { },
+		register() {},
 		translate: (key) => key
 	};
 
 	const setup = (state) => {
-
 		const initialState = {
 			mainMenu: {
 				open: true,
@@ -64,7 +61,6 @@ describe('FeatureInfoPlugin', () => {
 	};
 
 	describe('when pointer.click property changes', () => {
-
 		it('clears all previous existing FeatureInfo items and updates the coordinate property', async () => {
 			const coordinate = [11, 22];
 			const store = setup();
@@ -92,7 +88,6 @@ describe('FeatureInfoPlugin', () => {
 		});
 
 		describe('calls the FeatureInfoService', () => {
-
 			it('adds FeatureInfo items ', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
@@ -123,7 +118,7 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 
-			it('adds FeatureInfo items taking the GeoResource\' label as title', async () => {
+			it("adds FeatureInfo items taking the GeoResource' label as title", async () => {
 				const labelO = 'label0';
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
@@ -250,7 +245,6 @@ describe('FeatureInfoPlugin', () => {
 	});
 
 	describe('when tools.current property changes', () => {
-
 		describe('when tools.current is a toolId', () => {
 			it('resets the FeatureInfo', async () => {
 				const store = setup();
@@ -279,6 +273,5 @@ describe('FeatureInfoPlugin', () => {
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 			});
 		});
-
 	});
 });

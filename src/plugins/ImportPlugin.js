@@ -12,7 +12,6 @@ import { fitLayer } from '../store/position/position.action';
  */
 export const LAYER_ADDING_DELAY_MS = 500;
 
-
 /**
  * @class
  * @author thiloSchlemmer
@@ -21,7 +20,10 @@ export const LAYER_ADDING_DELAY_MS = 500;
 export class ImportPlugin extends BaPlugin {
 	constructor() {
 		super();
-		const { ImportVectorDataService: importVectorDataService, TranslationService: translationService } = $injector.inject('ImportVectorDataService', 'TranslationService');
+		const { ImportVectorDataService: importVectorDataService, TranslationService: translationService } = $injector.inject(
+			'ImportVectorDataService',
+			'TranslationService'
+		);
 		this._importVectorDataService = importVectorDataService;
 		this._translationService = translationService;
 	}
@@ -31,9 +33,10 @@ export class ImportPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-
 		const onChange = async (latestImport) => {
-			const { payload: { url, data, sourceType } } = latestImport;
+			const {
+				payload: { url, data, sourceType }
+			} = latestImport;
 
 			const geoResource = url ? await this._importByUrl(url, sourceType) : this._importByData(data, sourceType);
 			if (geoResource) {
@@ -48,7 +51,7 @@ export class ImportPlugin extends BaPlugin {
 			}
 		};
 
-		observe(store, state => state.import.latest, onChange);
+		observe(store, (state) => state.import.latest, onChange);
 	}
 
 	/**
@@ -70,7 +73,6 @@ export class ImportPlugin extends BaPlugin {
 			return null;
 		};
 
-
 		const geoResource = createGeoResource(url, sourceType);
 		if (geoResource) {
 			geoResource.onReject(() => {
@@ -83,11 +85,11 @@ export class ImportPlugin extends BaPlugin {
 	}
 
 	/**
-	  * Imports the data as local {@link GeoResource}
-	  * @param {string} data the local data
-	  * @param {string} mimeType the mimeType of the data
-	  * @returns {GeoResource|null} the imported GeoResource or null on failure
-	  */
+	 * Imports the data as local {@link GeoResource}
+	 * @param {string} data the local data
+	 * @param {string} mimeType the mimeType of the data
+	 * @returns {GeoResource|null} the imported GeoResource or null on failure
+	 */
 	_importByData(data, sourceType) {
 		const vectorGeoResource = this._importVectorDataService.forData(data, { sourceType: sourceType });
 		if (vectorGeoResource) {

@@ -1,9 +1,7 @@
 import { Proj4JsService } from '../../src/services/Proj4JsService';
 
 describe('Proj4JsService', () => {
-
 	describe('constructor', () => {
-
 		it('initializes the service', async () => {
 			const proj4Provider = jasmine.createSpy().and.returnValue([]);
 

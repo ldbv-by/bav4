@@ -2,9 +2,7 @@ import { setClick, setContextClick, setBeingDragged, setPointerMove } from '../.
 import { pointerReducer } from '../../../src/store/pointer/pointer.reducer';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('pointerReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			pointer: pointerReducer
@@ -18,7 +16,7 @@ describe('pointerReducer', () => {
 		expect(store.getState().pointer.beingDragged).toBeFalse();
 	});
 
-	it('changes the \'click\' property', () => {
+	it("changes the 'click' property", () => {
 		const store = setup();
 		const pointerEvent = { coordinate: [38, 57], screenCoordinate: [21, 42] };
 
@@ -27,7 +25,7 @@ describe('pointerReducer', () => {
 		expect(store.getState().pointer.click.payload).toEqual(pointerEvent);
 	});
 
-	it('changes the \'contextClick\' property', () => {
+	it("changes the 'contextClick' property", () => {
 		const store = setup();
 		const pointerEvent = { coordinate: [57, 38], screenCoordinate: [42, 21] };
 
@@ -36,7 +34,7 @@ describe('pointerReducer', () => {
 		expect(store.getState().pointer.contextClick.payload).toEqual(pointerEvent);
 	});
 
-	it('changes the \'move\' property', () => {
+	it("changes the 'move' property", () => {
 		const store = setup();
 		const pointerEvent = { coordinate: [7, 8], screenCoordinate: [2, 1] };
 
@@ -45,7 +43,7 @@ describe('pointerReducer', () => {
 		expect(store.getState().pointer.move.payload).toEqual(pointerEvent);
 	});
 
-	it('changes the \'beingDragged\' property', () => {
+	it("changes the 'beingDragged' property", () => {
 		const store = setup();
 
 		setBeingDragged(true);

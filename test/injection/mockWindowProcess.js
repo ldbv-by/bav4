@@ -1,5 +1,4 @@
 const process = {
-	env: {
-	}
+	env: {}
 };
 window.process = process;

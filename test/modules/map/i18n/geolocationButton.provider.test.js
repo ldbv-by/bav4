@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/map/i18n/geolocationButton.provider';
 
-
 describe('i18n for map module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.map_geolocationButton_title_activate).toBe('Ortung einschalten');
@@ -13,7 +10,6 @@ describe('i18n for map module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.map_geolocationButton_title_activate).toBe('Activate geolocation');
@@ -33,7 +29,6 @@ describe('i18n for map module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

@@ -20,22 +20,22 @@
 .contact {
 	mask-image: url('assets/contact.svg');
 	-webkit-mask-image: url('assets/contact.svg');
-	transform: scale(.7);
+	transform: scale(0.7);
 }
 .checklist {
 	mask-image: url('assets/checklist.svg');
 	-webkit-mask-image: url('assets/checklist.svg');
-	transform: scale(.7);
+	transform: scale(0.7);
 }
 .lock {
 	mask-image: url('assets/lock.svg');
 	-webkit-mask-image: url('assets/lock.svg');
-	transform: scale(.7);
+	transform: scale(0.7);
 }
 .imprint {
 	mask-image: url('assets/imprint.svg');
 	-webkit-mask-image: url('assets/imprint.svg');
-	transform: scale(.7);
+	transform: scale(0.7);
 }
 .geoportal {
 	background-color: transparent;
@@ -52,5 +52,5 @@
 	-webkit-mask-size: cover;
 	mask-image: url('assets/gdo.svg');
 	-webkit-mask-image: url('assets/gdo.svg');
-	background: linear-gradient(90deg, rgba(8,131,181,1) 0%, rgba(43,91,148,1) 100%);
+	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
 }

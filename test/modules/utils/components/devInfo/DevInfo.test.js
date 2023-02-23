@@ -7,17 +7,18 @@ import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(DevInfo.tag, DevInfo);
 
-
 describe('DevInfo', () => {
-
 	let store;
 
 	const setup = (config) => {
 		const { softwareInfo, runtimeMode } = config;
 
-		store = TestUtils.setupStoreAndDi({}, {
-			modal: modalReducer
-		});
+		store = TestUtils.setupStoreAndDi(
+			{},
+			{
+				modal: modalReducer
+			}
+		);
 		$injector.registerSingleton('ConfigService', {
 			getValue: (key) => {
 				switch (key) {
@@ -33,7 +34,6 @@ describe('DevInfo', () => {
 
 	describe('when initialized', () => {
 		it('adds dev-info elements and css classes', async () => {
-
 			const element = await setup({ softwareInfo: '42', runtimeMode: 'development' });
 
 			expect(element.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
@@ -41,7 +41,6 @@ describe('DevInfo', () => {
 		});
 
 		it('adds nothing when SOFTWARE_INFO property is missing', async () => {
-
 			const element = await setup({ softwareInfo: undefined, runtimeMode: 'development' });
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
@@ -49,7 +48,6 @@ describe('DevInfo', () => {
 	});
 
 	describe('when button is clicked', () => {
-
 		it('shows a modal window containing the showcase', async () => {
 			const element = await setup({ softwareInfo: '42', runtimeMode: 'development' });
 

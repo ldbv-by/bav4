@@ -3,9 +3,7 @@ import { TopicsContentPanelIndex } from '../../../src/modules/topics/components/
 import { topicsContentPanelReducer } from '../../../src/store/topicsContentPanel/topicsContentPanel.reducer.js';
 import { setIndex } from '../../../src/store/topicsContentPanel/topicsContentPanel.action.js';
 
-
 describe('topicsContentPanelReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			topicsPanel: topicsContentPanelReducer
@@ -17,8 +15,7 @@ describe('topicsContentPanelReducer', () => {
 		expect(store.getState().topicsPanel.index).toBe(TopicsContentPanelIndex.TOPICS);
 	});
 
-	describe('changes the \'catalogLevel\' property', () => {
-
+	describe("changes the 'catalogLevel' property", () => {
 		it('sets a new Level', () => {
 			const store = setup();
 
@@ -26,8 +23,5 @@ describe('topicsContentPanelReducer', () => {
 
 			expect(store.getState().topicsPanel.index).toBe(TopicsContentPanelIndex.CATALOG_1);
 		});
-
 	});
 });
-
-

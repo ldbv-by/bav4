@@ -11,7 +11,6 @@ import { fit } from '../../../../store/position/position.action';
  */
 
 export class ZoomToExtentButton extends BaElement {
-
 	constructor() {
 		super();
 		const { TranslationService, MapService } = $injector.inject('TranslationService', 'MapService');
@@ -20,8 +19,8 @@ export class ZoomToExtentButton extends BaElement {
 	}
 
 	/**
-     *@override
-     */
+	 *@override
+	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
@@ -31,12 +30,15 @@ export class ZoomToExtentButton extends BaElement {
 		};
 
 		return html`
-            <style>${css}</style>
+			<style>
+				${css}
+			</style>
 			<div class="zoom-to-extent">
-				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoomButtons_extent')}" ><i class="icon zoom-to-extent-icon"></i></button>
-            </div>
-            
-        `;
+				<button class="zoom-to-extent-button" @click=${zoomToExtent} title="${translate('map_zoomButtons_extent')}">
+					<i class="icon zoom-to-extent-icon"></i>
+				</button>
+			</div>
+		`;
 	}
 
 	static get tag() {

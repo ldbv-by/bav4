@@ -1,8 +1,22 @@
 import { positionReducer } from '../../../src/store/position/position.reducer';
-import { changeCenter, changeCenterAndRotation, changeLiveRotation, changeRotation, changeZoom, changeZoomAndCenter, changeZoomAndRotation, changeZoomCenterAndRotation, decreaseZoom, increaseZoom, fit, fitLayer, changeLiveCenter, changeLiveZoom } from '../../../src/store/position/position.action';
+import {
+	changeCenter,
+	changeCenterAndRotation,
+	changeLiveRotation,
+	changeRotation,
+	changeZoom,
+	changeZoomAndCenter,
+	changeZoomAndRotation,
+	changeZoomCenterAndRotation,
+	decreaseZoom,
+	increaseZoom,
+	fit,
+	fitLayer,
+	changeLiveCenter,
+	changeLiveZoom
+} from '../../../src/store/position/position.action';
 import { TestUtils } from '../../test-utils.js';
 import { $injector } from '../../../src/injection';
-
 
 describe('positionReducer', () => {
 	const initialZoomLevel = 12;
@@ -12,8 +26,8 @@ describe('positionReducer', () => {
 	const zoomRounded = 10.222; // rounded to 3 decimal digits
 	const centerRaw = [21.11111111, 21.11111111, 42.22222222, 42.22222222];
 	const centerRounded = [21.1111111, 21.1111111, 42.2222222, 42.2222222]; // rounded to 7 decimal digits
-	const rotationRaw = .444444;
-	const rotationRounded = .44444; // rounded to 5 decimal digits
+	const rotationRaw = 0.444444;
+	const rotationRounded = 0.44444; // rounded to 5 decimal digits
 	const mapServiceMock = {
 		getMinZoomLevel: () => minZoom,
 		getMaxZoomLevel: () => maxZoom
@@ -38,7 +52,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.fitLayerRequest.payload).toBeNull();
 	});
 
-	it('changes the \'zoom\' property', () => {
+	it("changes the 'zoom' property", () => {
 		const store = setup();
 
 		changeZoom(zoomRaw);
@@ -62,7 +76,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(maxZoom);
 	});
 
-	it('changes the \'liveZoom\' property', () => {
+	it("changes the 'liveZoom' property", () => {
 		const store = setup();
 
 		changeLiveZoom(zoomRaw);
@@ -86,7 +100,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.liveZoom).toBe(maxZoom);
 	});
 
-	it('changes \'zoom\' and  \'rotation\' property', () => {
+	it("changes 'zoom' and  'rotation' property", () => {
 		const store = setup();
 
 		changeZoomAndRotation({ zoom: zoomRaw, rotation: rotationRaw });
@@ -115,7 +129,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
-	it('changes the \'center\' property', () => {
+	it("changes the 'center' property", () => {
 		const store = setup();
 
 		changeCenter(centerRaw);
@@ -123,7 +137,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual(centerRounded);
 	});
 
-	it('changes the \'liveCenter\' property', () => {
+	it("changes the 'liveCenter' property", () => {
 		const store = setup();
 
 		changeLiveCenter(centerRaw);
@@ -131,7 +145,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.liveCenter).toEqual(centerRounded);
 	});
 
-	it('changes the \'center\'  \'rotation\' property', () => {
+	it("changes the 'center'  'rotation' property", () => {
 		const store = setup();
 
 		changeCenterAndRotation({ center: centerRaw, rotation: rotationRaw });
@@ -140,7 +154,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
-	it('changes the \'rotation\' property', () => {
+	it("changes the 'rotation' property", () => {
 		const store = setup();
 
 		changeRotation(rotationRaw);
@@ -148,15 +162,15 @@ describe('positionReducer', () => {
 		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
-	it('changes the \'liveRotation\' property', () => {
+	it("changes the 'liveRotation' property", () => {
 		const store = setup();
 
-		changeLiveRotation(.8);
+		changeLiveRotation(0.8);
 
-		expect(store.getState().position.liveRotation).toBe(.8);
+		expect(store.getState().position.liveRotation).toBe(0.8);
 	});
 
-	it('changes \'zoom\' and  \'center\' property', () => {
+	it("changes 'zoom' and  'center' property", () => {
 		const store = setup();
 
 		changeZoomAndCenter({ zoom: zoomRaw, center: centerRaw });
@@ -185,7 +199,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.center).toEqual(centerRounded);
 	});
 
-	it('changes \'zoom\',  \'center\' and  \'rotation\' property', () => {
+	it("changes 'zoom',  'center' and  'rotation' property", () => {
 		const store = setup();
 
 		changeZoomCenterAndRotation({ zoom: zoomRaw, center: centerRaw, rotation: rotationRaw });
@@ -219,7 +233,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.rotation).toBe(rotationRounded);
 	});
 
-	it('increases the \'zoom\' property by plus one', () => {
+	it("increases the 'zoom' property by plus one", () => {
 		const store = setup({
 			position: {
 				zoom: 18
@@ -237,7 +251,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(maxZoom);
 	});
 
-	it('decreases the \'zoom\' property by minus one', () => {
+	it("decreases the 'zoom' property by minus one", () => {
 		const store = setup({
 			position: {
 				zoom: 5
@@ -255,7 +269,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.zoom).toBe(minZoom);
 	});
 
-	it('places a \'fitRequest\' property', () => {
+	it("places a 'fitRequest' property", () => {
 		const store = setup();
 
 		fit([21, 21, 42, 42], { maxZoom: 42 });
@@ -274,7 +288,7 @@ describe('positionReducer', () => {
 		expect(store.getState().position.fitRequest.payload.options).toEqual({ useVisibleViewport: true });
 	});
 
-	it('places a \'fitLayerRequest\' property', () => {
+	it("places a 'fitLayerRequest' property", () => {
 		const store = setup();
 
 		fitLayer('foo', { maxZoom: 42 });

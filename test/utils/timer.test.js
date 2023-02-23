@@ -2,9 +2,7 @@
 import { debounced, throttled, sleep } from '../../src/utils/timer.js';
 
 describe('Unit test functions from asyncs.js', () => {
-
 	describe('debounce and throttle', () => {
-
 		beforeEach(function () {
 			jasmine.clock().install();
 		});
@@ -12,7 +10,6 @@ describe('Unit test functions from asyncs.js', () => {
 		afterEach(function () {
 			jasmine.clock().uninstall();
 		});
-
 
 		it('debounces a function call', () => {
 			const myFunction = jasmine.createSpy();
@@ -29,7 +26,6 @@ describe('Unit test functions from asyncs.js', () => {
 
 			expect(myFunction).toHaveBeenCalledTimes(2);
 		});
-
 
 		it('throttles a function call', () => {
 			//throttled is based on Date
@@ -51,14 +47,12 @@ describe('Unit test functions from asyncs.js', () => {
 	});
 
 	describe('sleep', () => {
-
 		it('delays an execution', async () => {
 			const date = Date.now();
 
 			await sleep(100);
 
-			expect((Date.now() - date) > 80).toBeTrue();
+			expect(Date.now() - date > 80).toBeTrue();
 		});
 	});
-
 });

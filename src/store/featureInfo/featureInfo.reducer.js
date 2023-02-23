@@ -59,7 +59,7 @@ export const featureInfoReducer = (state = initialState, action) => {
 				querying: true
 			};
 		case QUERY_RESOLVED: {
-			const queries = state.queries.filter(geoResId => geoResId !== payload);
+			const queries = state.queries.filter((geoResId) => geoResId !== payload);
 			return {
 				...state,
 				queries: queries,

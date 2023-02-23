@@ -33,7 +33,6 @@ export const BaOverlayTypes = {
  * @author thiloSchlemmer
  */
 export class BaOverlay extends BaElement {
-
 	constructor() {
 		super();
 		this._value = null;
@@ -57,10 +56,10 @@ export class BaOverlay extends BaElement {
 		};
 
 		return html`
-			<style>${css}</style>
-			<div class='ba-overlay ${classMap(classes)}'>
-			${content ? unsafeHTML(content) : nothing}
-			</div>
+			<style>
+				${css}
+			</style>
+			<div class="ba-overlay ${classMap(classes)}">${content ? unsafeHTML(content) : nothing}</div>
 		`;
 	}
 
@@ -78,7 +77,7 @@ export class BaOverlay extends BaElement {
 	 * @param {string|BaOverlayTypes} type the BaOverlayType
 	 * @returns {string}
 	 */
-	_getContent(/*eslint-disable no-unused-vars */type) {
+	_getContent(/*eslint-disable no-unused-vars */ type) {
 		return this._value;
 	}
 
@@ -145,8 +144,7 @@ export class BaOverlay extends BaElement {
 	}
 
 	set projectionHints(value) {
-		if (value.toProjection !== this.projectionHints.toProjection ||
-			value.fromProjection !== this.projectionHints.fromProjection) {
+		if (value.toProjection !== this.projectionHints.toProjection || value.fromProjection !== this.projectionHints.fromProjection) {
 			this._projectionHints = value;
 			this.render();
 		}

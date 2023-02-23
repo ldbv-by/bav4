@@ -5,7 +5,6 @@ import css from './baseLayerSwitcher.css';
 import { MvuElement } from '../../../MvuElement';
 import { createUniqueId } from '../../../../utils/numberUtils';
 
-
 const Update_Topic_Id = 'update_topic_id';
 const Update_Layers = 'update_layers';
 const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
@@ -15,7 +14,6 @@ const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
  * @author taulinger
  */
 export class BaseLayerSwitcher extends MvuElement {
-
 	constructor() {
 		super({
 			currentTopicId: null,
@@ -23,8 +21,7 @@ export class BaseLayerSwitcher extends MvuElement {
 			layersStoreReady: false
 		});
 
-		const { TopicsService: topicsService, GeoResourceService: geoResourceService }
-			= $injector.inject('TopicsService', 'GeoResourceService');
+		const { TopicsService: topicsService, GeoResourceService: geoResourceService } = $injector.inject('TopicsService', 'GeoResourceService');
 
 		this._topicsService = topicsService;
 		this._geoResourceService = geoResourceService;
@@ -32,9 +29,18 @@ export class BaseLayerSwitcher extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 
-		this.observe(store => store.topics.current, topicId => this.signal(Update_Topic_Id, topicId));
-		this.observe(store => store.layers.active, layers => this.signal(Update_Layers, [...layers]));
-		this.observe(store => store.layers.ready, ready => this.signal(Update_Is_Layers_Store_Ready, ready));
+		this.observe(
+			(store) => store.topics.current,
+			(topicId) => this.signal(Update_Topic_Id, topicId)
+		);
+		this.observe(
+			(store) => store.layers.active,
+			(layers) => this.signal(Update_Layers, [...layers])
+		);
+		this.observe(
+			(store) => store.layers.ready,
+			(ready) => this.signal(Update_Is_Layers_Store_Ready, ready)
+		);
 	}
 
 	/**
@@ -60,19 +66,15 @@ export class BaseLayerSwitcher extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		if (layersStoreReady) {
-
 			/**
 			 * carefully differentiate between layer ids and geoResource ids!
 			 */
 
 			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerGeoResourceId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
-			const geoRs = baseGeoRIds
-				.map(grId => this._geoResourceService.byId(grId))
-				.filter(geoR => !!geoR);
+			const geoRs = baseGeoRIds.map((grId) => this._geoResourceService.byId(grId)).filter((geoR) => !!geoR);
 
 			const onClick = (geoR) => {
-
 				const add = () => {
 					// we create always a unique layer id
 					addLayer(`${geoR.id}_${createUniqueId()}`, { zIndex: 0, geoResourceId: geoR.id });
@@ -88,26 +90,26 @@ export class BaseLayerSwitcher extends MvuElement {
 						// add selected layer
 						add();
 					}
-				}
-				else {
+				} else {
 					add();
 				}
 			};
 
 			const getType = (geoR) => {
-				return (geoR.id === currentBaseLayerGeoResourceId) ? 'primary' : 'secondary';
+				return geoR.id === currentBaseLayerGeoResourceId ? 'primary' : 'secondary';
 			};
 
 			return html`
-				<style>${css}</style>
-				<div class="title">					
-					${translate('baselayer_switcher_header')}
-				</div>
+				<style>
+					${css}
+				</style>
+				<div class="title">${translate('baselayer_switcher_header')}</div>
 				<div class="baselayer__container">
-					${geoRs.map((geoR) => html`
-							<button class="baselayer__button  ${geoR.id}"  @click=${() => onClick(geoR)}  type=${getType(geoR)}  >
-								<div class="baselayer__label">${geoR.label}</div>
-							</button>`)}
+					${geoRs.map(
+						(geoR) => html` <button class="baselayer__button  ${geoR.id}" @click=${() => onClick(geoR)} type=${getType(geoR)}>
+							<div class="baselayer__label">${geoR.label}</div>
+						</button>`
+					)}
 				</div>
 			`;
 		}

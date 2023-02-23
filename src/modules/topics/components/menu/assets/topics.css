@@ -1,11 +1,11 @@
 * {
-	--topic-theme: hsl( var(--topic-hue) var(--topic-saturation) var(--topic-lightness));
+	--topic-theme: hsl(var(--topic-hue) var(--topic-saturation) var(--topic-lightness));
 }
 .light-theme {
 	--topic-saturation: 60%;
-	--topic-lightness: 40%; 	
-}				
+	--topic-lightness: 40%;
+}
 .dark-theme {
 	--topic-saturation: 70%;
-	--topic-lightness: 70%; 	
+	--topic-lightness: 70%;
 }

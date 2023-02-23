@@ -25,11 +25,15 @@ const Default_Preview_Delay_Time = 1500;
  * @author thiloSchlemmer
  */
 export class OlMfpHandler extends OlLayerHandler {
-
 	constructor() {
 		super(MFP_LAYER_ID);
-		const { StoreService: storeService, TranslationService: translationService, MapService: mapService, MfpService: mfpService, Mfp3Encoder: mfp3Encoder }
-			= $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
+		const {
+			StoreService: storeService,
+			TranslationService: translationService,
+			MapService: mapService,
+			MfpService: mfpService,
+			Mfp3Encoder: mfp3Encoder
+		} = $injector.inject('StoreService', 'TranslationService', 'MapService', 'MfpService', 'Mfp3Encoder');
 
 		this._storeService = storeService;
 		this._translationService = translationService;
@@ -66,7 +70,10 @@ export class OlMfpHandler extends OlLayerHandler {
 
 			const mfpSettings = this._storeService.getStore().getState().mfp.current;
 			this._mfpLayer.on('prerender', (event) => event.context.save());
-			this._mfpLayer.on('postrender', createMapMaskFunction(this._map, () => this._getPixelCoordinates()));
+			this._mfpLayer.on(
+				'postrender',
+				createMapMaskFunction(this._map, () => this._getPixelCoordinates())
+			);
 			this._registeredObservers = this._register(this._storeService.getStore());
 
 			// Initialize forceRenderFeature with centerpoint to get a first valid
@@ -75,7 +82,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			this._forceRenderFeature.setGeometry(new Point(this._map.getView().getCenter()));
 			this._forceRenderFeature.setStyle(forceRenderStyle);
 			this._mapListener = this._map.on('precompose', () => this._updateForceRenderFeature());
-
 
 			this._updateMfpPage(mfpSettings);
 			this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
@@ -88,7 +94,7 @@ export class OlMfpHandler extends OlLayerHandler {
 	 *  @override
 	 *  @param {Map} olMap
 	 */
-	onDeactivate(/*eslint-disable no-unused-vars */olMap) {
+	onDeactivate(/*eslint-disable no-unused-vars */ olMap) {
 		//use the map to unregister event listener, interactions, etc
 		this._mfpBoundaryFeature.setStyle(nullStyleFunction);
 		this._mfpBoundaryFeature.setGeometry(null);
@@ -107,46 +113,76 @@ export class OlMfpHandler extends OlLayerHandler {
 		// The current design is chosen prior to the alternative, due to the fact, that the call traffic have no substantial influence to
 		// the performance and time consumptions (< 1 ms), but makes it simpler to follow only one source of events.
 		return [
-			observe(store, state => state.mfp.current, (current) => {
-				this._updateMfpPage(current);
-				this._updateMfpPreview(this._getVisibleCenterPoint());
-			}),
-			observe(store, state => state.mfp.jobRequest, () => this._encodeMap()),
-			observe(store, state => state.position.center, () => this._updateMfpPreview(this._getVisibleCenterPoint())),
-			// zoom-animation is always initialized by the application and the internal beingDragged-state must be set accordingly
-			observe(store, state => state.position.liveZoom, () => this._beingDragged = true),
-			observe(store, state => state.map.moveStart, () => {
-				// If a rotation is init by the application, the 'pointer.beingDragged' event is not
-				// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
-				// set twice by the events 'pointer.beingDragged' and 'map.moveStart'.
-				// To prevent flickering, we check for a already existing delay, caused by pointer.beingDragged.
-				if (!this._previewDelayTimeoutId) {
-					this._beingDragged = true;
+			observe(
+				store,
+				(state) => state.mfp.current,
+				(current) => {
+					this._updateMfpPage(current);
+					this._updateMfpPreview(this._getVisibleCenterPoint());
 				}
-			}),
-			observe(store, state => state.map.moveEnd, () => {
-				this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
-			}),
-			observe(store, state => state.pointer.beingDragged, (beingDragged) => {
-				const clearPreview = () => {
-					// forcing the used render function to skip the drawing of the geometry
-					this._beingDragged = beingDragged;
-					if (this._previewDelayTimeoutId) {
-						clearTimeout(this._previewDelayTimeoutId);
-						this._previewDelayTimeoutId = null;
+			),
+			observe(
+				store,
+				(state) => state.mfp.jobRequest,
+				() => this._encodeMap()
+			),
+			observe(
+				store,
+				(state) => state.position.center,
+				() => this._updateMfpPreview(this._getVisibleCenterPoint())
+			),
+			// zoom-animation is always initialized by the application and the internal beingDragged-state must be set accordingly
+			observe(
+				store,
+				(state) => state.position.liveZoom,
+				() => (this._beingDragged = true)
+			),
+			observe(
+				store,
+				(state) => state.map.moveStart,
+				() => {
+					// If a rotation is init by the application, the 'pointer.beingDragged' event is not
+					// triggered and we must set the internal 'beingDragged'-state by 'map.moveStart'. In the other cases obviously this state is
+					// set twice by the events 'pointer.beingDragged' and 'map.moveStart'.
+					// To prevent flickering, we check for a already existing delay, caused by pointer.beingDragged.
+					if (!this._previewDelayTimeoutId) {
+						this._beingDragged = true;
 					}
-				};
-
-				const action = beingDragged ? clearPreview : () => {
+				}
+			),
+			observe(
+				store,
+				(state) => state.map.moveEnd,
+				() => {
 					this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
-				};
-				action();
-			})
+				}
+			),
+			observe(
+				store,
+				(state) => state.pointer.beingDragged,
+				(beingDragged) => {
+					const clearPreview = () => {
+						// forcing the used render function to skip the drawing of the geometry
+						this._beingDragged = beingDragged;
+						if (this._previewDelayTimeoutId) {
+							clearTimeout(this._previewDelayTimeoutId);
+							this._previewDelayTimeoutId = null;
+						}
+					};
+
+					const action = beingDragged
+						? clearPreview
+						: () => {
+								this._delayedUpdateMfpPreview(this._getVisibleCenterPoint());
+						  };
+					action();
+				}
+			)
 		];
 	}
 
 	_unregister(observers) {
-		observers.forEach(unsubscribe => unsubscribe());
+		observers.forEach((unsubscribe) => unsubscribe());
 		observers = [];
 	}
 
@@ -158,7 +194,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		this._mfpBoundaryFeature.setStyle(createThumbnailStyleFunction(() => this._getBeingDragged()));
 
 		const toGeographicSize = (size) => {
-			const toGeographic = (pixelValue) => pixelValue / Points_Per_Inch * MM_Per_Inches / 1000.0 * scale;
+			const toGeographic = (pixelValue) => (((pixelValue / Points_Per_Inch) * MM_Per_Inches) / 1000.0) * scale;
 			return { width: toGeographic(size.width), height: toGeographic(size.height) };
 		};
 
@@ -216,7 +252,6 @@ export class OlMfpHandler extends OlLayerHandler {
 			}
 			this._previewDelayTimeoutId = null;
 		}, timeOut);
-
 	}
 
 	_getPixelCoordinates() {
@@ -258,7 +293,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	_getAverageDeviationFromEquator(smercCoordinate) {
 		const lonLat = toLonLat(smercCoordinate);
-		return Math.abs(Math.cos(lonLat[1] * Math.PI / 180));
+		return Math.abs(Math.cos((lonLat[1] * Math.PI) / 180));
 	}
 
 	_getOptimalScale(map) {
@@ -277,8 +312,8 @@ export class OlMfpHandler extends OlLayerHandler {
 
 		const { id } = this._storeService.getStore().getState().mfp.current;
 		const layoutSize = this._mfpService.getLayoutById(id).mapSize;
-		const scaleWidth = widthInMeter * Units_Ratio * Points_Per_Inch / layoutSize.width;
-		const scaleHeight = heightInMeter * Units_Ratio * Points_Per_Inch / layoutSize.height;
+		const scaleWidth = (widthInMeter * Units_Ratio * Points_Per_Inch) / layoutSize.width;
+		const scaleHeight = (heightInMeter * Units_Ratio * Points_Per_Inch) / layoutSize.height;
 
 		const testScale = Math.min(scaleWidth, scaleHeight);
 		const scaleCandidates = [...this._mfpService.getLayoutById(id).scales].reverse();
@@ -289,7 +324,7 @@ export class OlMfpHandler extends OlLayerHandler {
 			// return last or undefined (instead of null), to get identical results
 			let last = undefined;
 
-			array.forEach(e => {
+			array.forEach((e) => {
 				if (matcher(e)) {
 					last = e;
 				}
@@ -336,7 +371,7 @@ export class OlMfpHandler extends OlLayerHandler {
 
 	async _encodeMap() {
 		const { id, scale, dpi } = this._storeService.getStore().getState().mfp.current;
-		const rotation = getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180 / Math.PI;
+		const rotation = (getAzimuthFrom(this._mfpBoundaryFeature.getGeometry()) * 180) / Math.PI;
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = { layoutId: id, scale: scale, rotation: rotation, dpi: dpi, pageCenter: pageCenter, showGrid: showGrid };

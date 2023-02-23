@@ -4,18 +4,14 @@ import { get as getProjection } from 'ol/proj.js';
 import { ImageWMS } from 'ol/source';
 
 describe('LimitedImageWMS', () => {
-
 	describe('constructor', () => {
-
 		it('initializes an instance with default params', async () => {
-
 			const instanceUnderTest = new LimitedImageWMS();
 
 			expect(instanceUnderTest._maxSize).toEqual([2000, 2000]);
 		});
 
 		it('initializes an instance with custom params', async () => {
-
 			const instanceUnderTest = new LimitedImageWMS({ maxSize: [42, 42], ratio: 5 });
 
 			expect(instanceUnderTest._maxSize).toEqual([42, 42]);
@@ -24,16 +20,15 @@ describe('LimitedImageWMS', () => {
 	});
 
 	describe('#getMaxSize', () => {
-
 		it('returns the current max size', async () => {
-
 			const instanceUnderTest = new LimitedImageWMS();
 
 			expect(instanceUnderTest.getMaxSize()).toEqual([2000, 2000]);
 		});
 	});
 
-	describe('#getImage', () => { // #getImage tests are adopted from ol.ImageWMS
+	describe('#getImage', () => {
+		// #getImage tests are adopted from ol.ImageWMS
 
 		it('returns the expected image URL', () => {
 			const pixelRatio = 1;
@@ -42,7 +37,7 @@ describe('LimitedImageWMS', () => {
 			[1, 1.5].forEach(function (ratio) {
 				const options = {
 					params: {
-						'LAYERS': 'layer'
+						LAYERS: 'layer'
 					},
 					ratio: ratio,
 					url: 'http://example.com/wms'
@@ -52,12 +47,7 @@ describe('LimitedImageWMS', () => {
 				const viewWidth = getWidth(viewExtent);
 				const viewHeight = getHeight(viewExtent);
 
-				const image = source.getImage(
-					viewExtent,
-					resolution,
-					pixelRatio,
-					projection
-				);
+				const image = source.getImage(viewExtent, resolution, pixelRatio, projection);
 
 				const uri = new URL(image.src_);
 				const queryData = uri.searchParams;
@@ -80,7 +70,7 @@ describe('LimitedImageWMS', () => {
 			[1, 1.5].forEach(function (ratio) {
 				const options = {
 					params: {
-						'LAYERS': 'layer'
+						LAYERS: 'layer'
 					},
 					ratio: ratio,
 					url: 'http://example.com/wms',
@@ -89,12 +79,7 @@ describe('LimitedImageWMS', () => {
 				const source = new LimitedImageWMS(options);
 				const viewExtent = [10, 20, 30.1, 39.9];
 
-				const image = source.getImage(
-					viewExtent,
-					resolution,
-					pixelRatio,
-					projection
-				);
+				const image = source.getImage(viewExtent, resolution, pixelRatio, projection);
 
 				const uri = new URL(image.src_);
 				const queryData = uri.searchParams;
@@ -112,9 +97,7 @@ describe('LimitedImageWMS', () => {
 });
 
 describe('getPrerenderFunctionForImageLayer', () => {
-
 	it('draws on the canvas when canvas size > maxSize', async () => {
-
 		const source = new LimitedImageWMS({ maxSize: [2000, 2000] });
 		const target = {
 			getSource: () => source
@@ -151,8 +134,20 @@ describe('getPrerenderFunctionForImageLayer', () => {
 
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(beginPathSpy).toHaveBeenCalledTimes(1);
-		expect(moveToSpy.calls.allArgs()).toEqual([[0, 0], [1000, 1000]]);
-		expect(lineToSpy.calls.allArgs()).toEqual([[4000, 0], [4000, 4000], [0, 4000], [0, 0], [1000, 3000], [3000, 3000], [3000, 1000], [1000, 1000]]);
+		expect(moveToSpy.calls.allArgs()).toEqual([
+			[0, 0],
+			[1000, 1000]
+		]);
+		expect(lineToSpy.calls.allArgs()).toEqual([
+			[4000, 0],
+			[4000, 4000],
+			[0, 4000],
+			[0, 0],
+			[1000, 3000],
+			[3000, 3000],
+			[3000, 1000],
+			[1000, 1000]
+		]);
 		expect(closePathSpy).toHaveBeenCalledTimes(2);
 		expect(fillSpy).toHaveBeenCalledTimes(1);
 		expect(ctx.fillStyle).toBe('rgba(0, 5, 25, 0.2)');
@@ -160,7 +155,6 @@ describe('getPrerenderFunctionForImageLayer', () => {
 	});
 
 	it('does NOT draws on the canvas when canvas size <= maxSize', async () => {
-
 		const source = new LimitedImageWMS({ maxSize: [2000, 2000] });
 		const target = {
 			getSource: () => source
@@ -188,7 +182,6 @@ describe('getPrerenderFunctionForImageLayer', () => {
 	});
 
 	it('does NOT draws on the canvas when source is not an LimitedImageWMS instance', async () => {
-
 		const source = new ImageWMS();
 		const target = {
 			getSource: () => source

@@ -1,11 +1,9 @@
-
 /**
-* Configuration for a layer handler
-* @typedef {Object} LayerHandlerOptions
-* @property {boolean} [preventDefaultClickHandling=true]  `true` if default click event handling on map should be disabled
-* @property {boolean} [preventDefaultContextClickHandling=true]  `true` if default context click event handling on map should be disabled
-*/
-
+ * Configuration for a layer handler
+ * @typedef {Object} LayerHandlerOptions
+ * @property {boolean} [preventDefaultClickHandling=true]  `true` if default click event handling on map should be disabled
+ * @property {boolean} [preventDefaultContextClickHandling=true]  `true` if default context click event handling on map should be disabled
+ */
 
 export const getDefaultLayerOptions = () => ({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: true });
 
@@ -16,7 +14,6 @@ export const getDefaultLayerOptions = () => ({ preventDefaultClickHandling: true
  * @author taulinger
  */
 export class OlLayerHandler {
-
 	/**
 	 *
 	 * @param {string} id Id for this handler, which will be also the id of the layer created by this handler
@@ -89,5 +86,4 @@ export class OlLayerHandler {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.');
 	}
-
 }

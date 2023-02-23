@@ -12,13 +12,9 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
-
 describe('ToolBarElement', () => {
-
-
 	let store;
 	const setup = async (state = {}, config = {}) => {
-
 		const { embed = false, fetching = false } = config;
 
 		const initialState = {
@@ -36,7 +32,6 @@ describe('ToolBarElement', () => {
 			...state
 		};
 
-
 		store = TestUtils.setupStoreAndDi(initialState, {
 			tools: toolsReducer,
 			network: networkReducer,
@@ -52,7 +47,6 @@ describe('ToolBarElement', () => {
 	};
 
 	describe('constructor', () => {
-
 		it('sets a default model', async () => {
 			setup();
 			const element = new ToolBar();
@@ -68,9 +62,7 @@ describe('ToolBarElement', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('adds a div which holds the toolbar with five Tools and close button', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('.tool-bar')).toBeTruthy();
@@ -86,7 +78,6 @@ describe('ToolBarElement', () => {
 		});
 
 		it('contains test-id attributes', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(7);
@@ -106,9 +97,7 @@ describe('ToolBarElement', () => {
 	});
 
 	describe('when Toolbar button is clicked', () => {
-
 		it('open or closes the Toolbar in portrait orientation', async () => {
-
 			const state = {
 				media: {
 					portrait: true,
@@ -134,7 +123,6 @@ describe('ToolBarElement', () => {
 		});
 
 		it('open or closes the Toolbar in desktop orientation', async () => {
-
 			const state = {
 				media: {
 					portrait: false,
@@ -161,9 +149,7 @@ describe('ToolBarElement', () => {
 	});
 
 	describe('when tool buttons are clicked', () => {
-
 		it('toggles a tool', async () => {
-
 			const element = await setup();
 			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
@@ -212,7 +198,6 @@ describe('ToolBarElement', () => {
 		});
 
 		it('switches a tool', async () => {
-
 			const element = await setup();
 			const toolButtons = element.shadowRoot.querySelectorAll('.tool-bar__button_icon');
 
@@ -234,16 +219,27 @@ describe('ToolBarElement', () => {
 	describe('network fetching state', () => {
 		it('runs or pauses the border animation class', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeFalse();
 			setFetching(true);
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeTrue();
 			setFetching(false);
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeFalse();
 		});
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape desktop', async () => {
 			const state = {
 				media: {

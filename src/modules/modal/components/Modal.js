@@ -16,7 +16,6 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * @author taulinger
  */
 export class Modal extends MvuElement {
-
 	constructor() {
 		super({
 			data: null,
@@ -28,12 +27,17 @@ export class Modal extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.modal, modal => this.signal(Update_Modal_Data, modal));
-		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+		this.observe(
+			(state) => state.modal,
+			(modal) => this.signal(Update_Modal_Data, modal)
+		);
+		this.observe(
+			(state) => state.media.portrait,
+			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
+		);
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Modal_Data:
 				return { ...model, data: data.data, active: data.active };
@@ -63,26 +67,29 @@ export class Modal extends MvuElement {
 		};
 
 		if (active) {
-			const { data: { title, content } } = model;
+			const {
+				data: { title, content }
+			} = model;
 			return html`
-        		<style>${css}</style>
-				<div class='modal__container modal_show ${getOrientationClass()}'>
-					<div class='modal '>
-						<div class='modal__title'>
+				<style>
+					${css}
+				</style>
+				<div class="modal__container modal_show ${getOrientationClass()}">
+					<div class="modal ">
+						<div class="modal__title">
 							<span class="ba-list-item__pre back-icon" @click="${hide}">
-								<ba-icon id='back_button' data-test-id .icon='${arrowLeftShort}' .color=${'var(--primary-color)'} .size=${4}  ></ba-icon>                    							 
-							</span>	
-							<span class='modal__title-text'>${title}</span>
+								<ba-icon id="back_button" data-test-id .icon="${arrowLeftShort}" .color=${'var(--primary-color)'} .size=${4}></ba-icon>
+							</span>
+							<span class="modal__title-text">${title}</span>
 						</div>
-						<div class='modal__content'>${content}</div>
-						<div class='modal__actions'>
-							<ba-button id='close_button' data-test-id .label=${translate('modal_close_button')} @click=${hide}></ba-button>
+						<div class="modal__content">${content}</div>
+						<div class="modal__actions">
+							<ba-button id="close_button" data-test-id .label=${translate('modal_close_button')} @click=${hide}></ba-button>
 						</div>
 					</div>
 				</div>
-				<div class='modal__background' @click="${hide}">
-    			</div>
-				`;
+				<div class="modal__background" @click="${hide}"></div>
+			`;
 		}
 		return nothing;
 	}

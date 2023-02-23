@@ -1,6 +1,5 @@
 import { $injector } from '../injection';
 
-
 /**
  * Service for persisting and loading ASCII based geodata.
  * @author taulinger
@@ -89,7 +88,6 @@ export const FileStorageServiceDataTypes = Object.freeze({
  * @implements {FileStorageService}
  */
 export class BvvFileStorageService {
-
 	constructor() {
 		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 		this._httpService = httpService;
@@ -101,7 +99,7 @@ export class BvvFileStorageService {
 	}
 
 	_getKeyByValue(object, value) {
-		return Object.keys(object).find(key => object[key] === value);
+		return Object.keys(object).find((key) => object[key] === value);
 	}
 
 	isAdminId(id) {
@@ -140,17 +138,14 @@ export class BvvFileStorageService {
 					type: FileStorageServiceDataTypes[type],
 					srid: 4326
 				};
-
 			}
 			throw new Error('Content-Type ' + result.headers.get('Content-Type') + ' currently not supported');
 		}
 		throw new Error('File could not be loaded: ' + url);
 	}
 
-
 	async save(id, content, type) {
 		if (type === FileStorageServiceDataTypes.KML) {
-
 			const url = id ? `${this._getFileStorageUrl()}/${id}` : this._getFileStorageUrl();
 			const result = await this._httpService.post(url, content, type);
 			if (result.ok) {

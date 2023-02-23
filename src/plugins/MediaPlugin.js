@@ -3,18 +3,15 @@ import { BaPlugin } from './BaPlugin';
 import { setIsDarkSchema, setIsMinWidth, setIsPortrait } from '../store/media/media.action';
 import { MIN_WIDTH_MEDIA_QUERY, ORIENTATION_MEDIA_QUERY, PREFERS_COLOR_SCHEMA_QUERY } from '../store/media/media.reducer';
 
-
 /**
  * @class
  * @author taulinger
  */
 export class MediaPlugin extends BaPlugin {
-
 	/**
 	 * @override
 	 */
 	async register() {
-
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const _window = environmentService.getWindow();

@@ -3,18 +3,15 @@ const templateParameters = require(`../../src/assets/${process.env.DEFAULT_LANG 
 const BASE_URL = process.env.URL || 'http://localhost:8080';
 
 test.describe('embed page', () => {
-
 	test.beforeEach(async ({ page }) => {
 		// Go to the starting url before each test.
 		await page.goto(`${BASE_URL}/embed/wrapper`);
-
 	});
 
 	test.describe('when loaded', () => {
-
 		test('html tag should contain correct attributes', async ({ page }) => {
 			expect(await page.frameLocator('#wrapper').locator(`html[lang='${templateParameters.lang}']`)).toBeTruthy();
-			expect(await page.frameLocator('#wrapper').locator('html[translate=\'no\']')).toBeTruthy();
+			expect(await page.frameLocator('#wrapper').locator("html[translate='no']")).toBeTruthy();
 		});
 
 		test('should contain 7 top level ba-components', async ({ page }) => {

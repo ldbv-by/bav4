@@ -42,7 +42,6 @@ export const isCoordinate = (val) => {
 	return Array.isArray(val) && val.length === 2 && isNumber(val[0]) && isNumber(val[1]);
 };
 
-
 /**
  * Checks if a value is a Promise.
  * @param {*} val
@@ -85,12 +84,11 @@ export const isHttpUrl = (val) => {
 	const getUrl = (string) => {
 		try {
 			return new URL(string);
-		}
-		catch (_) {
+		} catch (_) {
 			return null;
 		}
 	};
 
 	const url = isString(val) ? getUrl(val) : null;
-	return url ? (url.protocol === 'http:' || url.protocol === 'https:') : false;
+	return url ? url.protocol === 'http:' || url.protocol === 'https:' : false;
 };

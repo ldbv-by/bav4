@@ -7,7 +7,6 @@ import { $injector } from '../../../../injection';
  * @author taulinger
  */
 export class ThemeProvider extends BaElement {
-
 	constructor() {
 		super();
 
@@ -20,14 +19,11 @@ export class ThemeProvider extends BaElement {
 	}
 
 	_updateCss(state) {
-
 		const { darkSchema } = state;
 		const cssClassToAdd = darkSchema ? 'dark-theme' : 'light-theme';
 		const cssClassToRemove = darkSchema ? 'light-theme' : 'dark-theme';
-		this._environmentService.getWindow()
-			.document.body.classList.add(cssClassToAdd);
-		this._environmentService.getWindow()
-			.document.body.classList.remove(cssClassToRemove);
+		this._environmentService.getWindow().document.body.classList.add(cssClassToAdd);
+		this._environmentService.getWindow().document.body.classList.remove(cssClassToRemove);
 	}
 
 	isRenderingSkipped() {
@@ -39,7 +35,9 @@ export class ThemeProvider extends BaElement {
 	}
 
 	extractState(globalState) {
-		const { media: { darkSchema } } = globalState;
+		const {
+			media: { darkSchema }
+		} = globalState;
 		return { darkSchema };
 	}
 

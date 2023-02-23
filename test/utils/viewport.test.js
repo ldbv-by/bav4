@@ -43,7 +43,6 @@ describe('calculateVisibleViewport', () => {
 		expect(visibleRectangle.bottom).toBe(1000);
 	});
 
-
 	it('calculates an visibleRectangle besides a topPanel and a bottomPanel', () => {
 		const topPanelMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 1000, height: 300 }) };
 		const bottomPanelMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 700, width: 1000, height: 300 }) };
@@ -81,7 +80,6 @@ describe('calculateVisibleViewport', () => {
 		expect(visibleRectangle.right).toBe(1000);
 		expect(visibleRectangle.bottom).toBe(1000);
 	});
-
 
 	it('calculates an visibleRectangle besides an empty element', () => {
 		const emptyElementMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 0, y: 0, width: 0, height: 0 }) };

@@ -6,29 +6,26 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
-
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
 window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
-
-
 	const mapServiceMock = {
-		getSridDefinitionsForView() { },
-		getSrid() { }
+		getSridDefinitionsForView() {},
+		getSrid() {}
 	};
 	const coordinateServiceMock = {
-		stringify() { },
-		transform() { }
+		stringify() {},
+		transform() {}
 	};
 	const shareServiceMock = {
-		copyToClipboard() { }
+		copyToClipboard() {}
 	};
 	const elevationServiceMock = {
-		getElevation() { }
+		getElevation() {}
 	};
 	const administrationServiceMock = {
-		getAdministration() { }
+		getAdministration() {}
 	};
 	let store;
 
@@ -59,16 +56,19 @@ describe('OlMapContextMenuContent', () => {
 	});
 
 	describe('when screen coordinate available', () => {
-
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42, digits: 7 }]);
+			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([
+				{ label: 'code42', code: 42, digits: 7 }
+			]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
-			const administrationMock = spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
+			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
+				.withArgs(coordinateMock)
+				.and.returnValue({ community: 'LDBV', district: 'Ref42' });
 			const element = await setup();
 
 			element.coordinate = coordinateMock;
@@ -95,7 +95,6 @@ describe('OlMapContextMenuContent', () => {
 			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
 			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
-
 		});
 
 		it('copies a coordinate to the clipboard', async () => {

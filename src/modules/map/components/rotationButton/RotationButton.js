@@ -6,7 +6,6 @@ import { changeRotation } from '../../../../store/position/position.action';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { throttled } from '../../../../utils/timer';
 
-
 const Update_Live_Rotation = 'update_live_rotation';
 
 /**
@@ -15,7 +14,6 @@ const Update_Live_Rotation = 'update_live_rotation';
  * @author taulinger
  */
 export class RotationButton extends MvuElement {
-
 	constructor() {
 		super({ liveRotation: 0 });
 
@@ -38,32 +36,34 @@ export class RotationButton extends MvuElement {
 	 * @override
 	 */
 	onInitialize() {
-
 		/**
 		 * liveRotation value changes on a high frequency, therefore we throttle the view's update down to avoid a flickering icon
 		 */
-		const update = throttled(RotationButton.THROTTLE_DELAY_MS, liveRotation => this.signal(Update_Live_Rotation, liveRotation));
+		const update = throttled(RotationButton.THROTTLE_DELAY_MS, (liveRotation) => this.signal(Update_Live_Rotation, liveRotation));
 		/**
 		 * When a user rotates the map, the icon button will be hidden when the maps rotation angle is below a threshold and
 		 * it will be shown again above this value.
 		 * In order to avoid a flickering icon, we delay hiding the icon.
 		 */
-		this.observe(store => store.position.liveRotation, liveRotation => {
-			if (Math.abs(liveRotation) >= RotationButton.VISIBILITY_THRESHOLD_RAD) {
-				if (this._timeoutId) {
-					clearTimeout(this._timeoutId);
-					this._timeoutId = null;
+		this.observe(
+			(store) => store.position.liveRotation,
+			(liveRotation) => {
+				if (Math.abs(liveRotation) >= RotationButton.VISIBILITY_THRESHOLD_RAD) {
+					if (this._timeoutId) {
+						clearTimeout(this._timeoutId);
+						this._timeoutId = null;
+					}
+				} else {
+					if (!this._timeoutId) {
+						this._timeoutId = setTimeout(() => {
+							update(liveRotation);
+						}, RotationButton.HIDE_BUTTON_DELAY_MS);
+					}
 				}
-			}
-			else {
-				if (!this._timeoutId) {
-					this._timeoutId = setTimeout(() => {
-						update(liveRotation);
-					}, RotationButton.HIDE_BUTTON_DELAY_MS);
-				}
-			}
-			update(liveRotation);
-		}, true);
+				update(liveRotation);
+			},
+			true
+		);
 	}
 
 	/**
@@ -74,7 +74,6 @@ export class RotationButton extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		if (!this._timeoutId) {
-
 			const onClick = () => {
 				changeRotation(0);
 			};
@@ -84,12 +83,14 @@ export class RotationButton extends MvuElement {
 			};
 
 			return html`
-			<style>${css}</style>
-			<div>
-				<button class="rotation-button" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')} >
-					<i class="icon rotation-icon"></i>
-				</button>
-			</div>
+				<style>
+					${css}
+				</style>
+				<div>
+					<button class="rotation-button" style="${styleMap(styles)}" @click=${onClick} title=${translate('map_rotationButton_title')}>
+						<i class="icon rotation-icon"></i>
+					</button>
+				</div>
 			`;
 		}
 		return nothing;
@@ -108,6 +109,6 @@ export class RotationButton extends MvuElement {
 	}
 
 	static get VISIBILITY_THRESHOLD_RAD() {
-		return .0001;
+		return 0.0001;
 	}
 }

@@ -1,6 +1,10 @@
 import { $injector } from '../../../src/injection';
-import { bvvDistanceUnitsProvider, bvvAreaUnitsProvider, distanceUnitsProvider, areaUnitsProvider } from '../../../src/services/provider/units.provider';
-
+import {
+	bvvDistanceUnitsProvider,
+	bvvAreaUnitsProvider,
+	distanceUnitsProvider,
+	areaUnitsProvider
+} from '../../../src/services/provider/units.provider';
 
 describe('Units provider', () => {
 	const configService = {
@@ -8,8 +12,7 @@ describe('Units provider', () => {
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('ConfigService', configService);
 	});
 
 	it('provides formatted distance for metric system', () => {

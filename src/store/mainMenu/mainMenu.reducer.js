@@ -6,7 +6,6 @@ const mainMenuReducer = (state, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case OPEN_CLOSED_CHANGED: {
-
 			return {
 				...state,
 				open: payload
@@ -14,13 +13,11 @@ const mainMenuReducer = (state, action) => {
 		}
 
 		case TAB_CHANGED: {
-
 			return {
 				...state,
 				tab: payload
 			};
 		}
-
 	}
 	return state;
 };
@@ -40,7 +37,6 @@ export const createNoInitialStateMainMenuReducer = () => {
  * @returns media reducer
  */
 export const createMainMenuReducer = (_window = window) => {
-
 	const initialState = {
 		/**
 		 * @property {boolean}

@@ -10,9 +10,8 @@ import { addLayer } from '../../src/store/layers/layers.action';
 import { topicsContentPanelReducer } from '../../src/store/topicsContentPanel/topicsContentPanel.reducer';
 
 describe('ChipsPlugin', () => {
-
 	const chipsConfigurationService = {
-		all() { }
+		all() {}
 	};
 
 	const windowMock = {
@@ -24,7 +23,6 @@ describe('ChipsPlugin', () => {
 	};
 
 	const setup = (state) => {
-
 		const store = TestUtils.setupStoreAndDi(state, {
 			chips: chipsReducer,
 			layers: layersReducer,
@@ -39,15 +37,17 @@ describe('ChipsPlugin', () => {
 	};
 
 	describe('register', () => {
-
 		it('loads all chip configurations and publishes all permanent chips', async () => {
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': true
-			}, {
-				'id': 'id1',
-				'permanent': false
-			}];
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: true
+				},
+				{
+					id: 'id1',
+					permanent: false
+				}
+			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
@@ -61,13 +61,16 @@ describe('ChipsPlugin', () => {
 		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
 			const chipId = 'id1';
 			const queryParam = `${QueryParameters.CHIP_ID}=${chipId}`;
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': false
-			}, {
-				'id': chipId,
-				'permanent': false
-			}];
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: chipId,
+					permanent: false
+				}
+			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
@@ -81,20 +84,20 @@ describe('ChipsPlugin', () => {
 
 		it('publishes all Topic related chips', async () => {
 			const topicId = 'topic0';
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': false
-			}, {
-				'id': 'id1',
-				'permanent': false,
-				'observer': {
-					'geoResources': [
-					],
-					'topics': [
-						topicId
-					]
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: 'id1',
+					permanent: false,
+					observer: {
+						geoResources: [],
+						topics: [topicId]
+					}
 				}
-			}];
+			];
 			const store = setup({
 				topics: {
 					current: topicId
@@ -114,20 +117,20 @@ describe('ChipsPlugin', () => {
 
 		it('publishes all GeoResource related chips', async () => {
 			const geoResourceId = 'geoResourceId0';
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': false
-			}, {
-				'id': 'id1',
-				'permanent': false,
-				'observer': {
-					'geoResources': [
-						geoResourceId
-					],
-					'topics': [
-					]
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: 'id1',
+					permanent: false,
+					observer: {
+						geoResources: [geoResourceId],
+						topics: []
+					}
 				}
-			}];
+			];
 			const store = setup({
 				layers: {
 					active: [createDefaultLayer('foo'), createDefaultLayer('bar', geoResourceId)]
@@ -144,20 +147,20 @@ describe('ChipsPlugin', () => {
 
 		it('it registes an observer for Topic related chips', async () => {
 			const topicId = 'topic0';
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': false
-			}, {
-				'id': 'id1',
-				'permanent': false,
-				'observer': {
-					'geoResources': [
-					],
-					'topics': [
-						topicId
-					]
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: 'id1',
+					permanent: false,
+					observer: {
+						geoResources: [],
+						topics: [topicId]
+					}
 				}
-			}];
+			];
 			const store = setup({
 				topicsContentPanel: {
 					index: 1
@@ -177,20 +180,20 @@ describe('ChipsPlugin', () => {
 
 		it('it registes an observer for GeoResource related chips', async () => {
 			const geoResourceId = 'geoResourceId0';
-			const mockChips = [{
-				'id': 'id0',
-				'permanent': false
-			}, {
-				'id': 'id1',
-				'permanent': false,
-				'observer': {
-					'geoResources': [
-						geoResourceId
-					],
-					'topics': [
-					]
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: 'id1',
+					permanent: false,
+					observer: {
+						geoResources: [geoResourceId],
+						topics: []
+					}
 				}
-			}];
+			];
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);

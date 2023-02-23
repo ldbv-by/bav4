@@ -1,6 +1,5 @@
 import { $injector, http, router } from './testsConfig';
 
-
 //Test ES6 class
 class classTest {
 	constructor() {

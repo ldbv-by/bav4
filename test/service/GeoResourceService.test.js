@@ -1,16 +1,30 @@
 /* eslint-disable no-undef */
-import { FALLBACK_GEORESOURCE_ID_0, FALLBACK_GEORESOURCE_ID_1, FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3, FALLBACK_GEORESOURCE_LABEL_0, FALLBACK_GEORESOURCE_LABEL_1, FALLBACK_GEORESOURCE_LABEL_2, FALLBACK_GEORESOURCE_LABEL_3, GeoResourceService } from '../../src/services/GeoResourceService';
+import {
+	FALLBACK_GEORESOURCE_ID_0,
+	FALLBACK_GEORESOURCE_ID_1,
+	FALLBACK_GEORESOURCE_ID_2,
+	FALLBACK_GEORESOURCE_ID_3,
+	FALLBACK_GEORESOURCE_LABEL_0,
+	FALLBACK_GEORESOURCE_LABEL_1,
+	FALLBACK_GEORESOURCE_LABEL_2,
+	FALLBACK_GEORESOURCE_LABEL_3,
+	GeoResourceService
+} from '../../src/services/GeoResourceService';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadExternalGeoResource } from '../../src/services/provider/geoResource.provider';
+import {
+	loadBvvGeoResourceById,
+	loadBvvGeoResources,
+	loadExampleGeoResources,
+	loadExternalGeoResource
+} from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
 
 describe('GeoResourceService', () => {
-
 	const environmentService = {
-		isStandalone: () => { }
+		isStandalone: () => {}
 	};
 
 	let store;
@@ -19,14 +33,12 @@ describe('GeoResourceService', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer
 		});
-		$injector
-			.registerSingleton('EnvironmentService', environmentService);
+		$injector.registerSingleton('EnvironmentService', environmentService);
 		return new GeoResourceService(provider, byIdProviders);
 	};
 	const xyzGeoResource = new XyzGeoResource('xyzId', 'xyzLabel', 'xyzUrl');
 
 	it('exports constant values', async () => {
-
 		expect(FALLBACK_GEORESOURCE_ID_0).toBe('tpo');
 		expect(FALLBACK_GEORESOURCE_ID_1).toBe('tpo_mono');
 		expect(FALLBACK_GEORESOURCE_ID_2).toBe('bmde_vector');
@@ -38,9 +50,7 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('init', () => {
-
 		it('initializes the service and proxifies all GeoResource', async () => {
-
 			const instanceUnderTest = setup();
 			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
 			expect(instanceUnderTest._georesources).toBeNull();
@@ -60,17 +70,15 @@ describe('GeoResourceService', () => {
 		});
 
 		it('initializes the service with custom provider', async () => {
-
-			const customProvider = async () => { };
-			const customByIdProvider0 = async () => { };
-			const customByIdProvider1 = async () => { };
+			const customProvider = async () => {};
+			const customByIdProvider0 = async () => {};
+			const customByIdProvider1 = async () => {};
 			const instanceUnderTest = setup(customProvider, [customByIdProvider0, customByIdProvider1]);
 			expect(instanceUnderTest._provider).toEqual(customProvider);
 			expect(instanceUnderTest._byIdProvider).toEqual([customByIdProvider0, customByIdProvider1]);
 		});
 
 		it('just provides GeoResources when already initialized', async () => {
-
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
 
@@ -80,9 +88,7 @@ describe('GeoResourceService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-
 			it('loads two fallback geoResources when we are in standalone mode', async () => {
-
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
@@ -110,13 +116,11 @@ describe('GeoResourceService', () => {
 			});
 
 			it('logs an error when we are NOT in standalone mode', async () => {
-
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('GeoResources could not be loaded');
 				});
 				const errorSpy = spyOn(console, 'error');
-
 
 				const topics = await instanceUnderTest.init();
 
@@ -127,9 +131,7 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('all', () => {
-
 		it('provides all GeoResources', () => {
-
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
 
@@ -139,7 +141,6 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when service hat not been initialized', () => {
-
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -149,12 +150,9 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('byId', () => {
-
 		it('provides a GeoResource by its id', () => {
-
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
-
 
 			const geoResource = instanceUnderTest.byId('xyzId');
 
@@ -162,7 +160,6 @@ describe('GeoResourceService', () => {
 		});
 
 		it('provides null if for an unknown id', () => {
-
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
 
@@ -172,7 +169,6 @@ describe('GeoResourceService', () => {
 		});
 
 		it('provides null if for null or undefined id', () => {
-
 			const instanceUnderTest = setup();
 			instanceUnderTest._georesources = [xyzGeoResource];
 
@@ -181,7 +177,6 @@ describe('GeoResourceService', () => {
 		});
 
 		it('logs a warn statement when when service hat not been initialized', () => {
-
 			const instanceUnderTest = setup();
 			const warnSpy = spyOn(console, 'warn');
 
@@ -191,9 +186,7 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('addOrReplace', () => {
-
 		it('adds a GeoResource', async () => {
-
 			const instanceUnderTest = setup();
 			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
 			instanceUnderTest._georesources = [];
@@ -209,7 +202,6 @@ describe('GeoResourceService', () => {
 		});
 
 		it('replaces a GeoResource', async () => {
-
 			const instanceUnderTest = setup();
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
@@ -224,7 +216,7 @@ describe('GeoResourceService', () => {
 			expect(result).toEqual(geoResource2);
 		});
 
-		it('updates the slice-of-state \'layers\'', () => {
+		it("updates the slice-of-state 'layers'", () => {
 			const geoResourceId0 = 'geoResourceId0';
 			const geoResourceId1 = 'geoResourceId1';
 			const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
@@ -245,10 +237,9 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('asyncById', () => {
-
 		it('adds a GeoResourceFuture to the internal cache and returns it', async () => {
 			const id = 'id';
-			const expectedFuture = new GeoResourceFuture(id, () => { });
+			const expectedFuture = new GeoResourceFuture(id, () => {});
 			const customByIdProvider0 = () => null;
 			const customByIdProvider1 = () => expectedFuture;
 			const instanceUnderTest = setup(async () => [], [customByIdProvider0, customByIdProvider1]);
@@ -274,9 +265,7 @@ describe('GeoResourceService', () => {
 	});
 
 	describe('_proxify', () => {
-
 		it('returns an observable GeoResource', () => {
-
 			const instanceUnderTest = setup();
 			const geoResource0 = new WmsGeoResource('id', 'Wms', 'https://some.url', 'someLayer', 'image/png');
 
@@ -290,8 +279,7 @@ describe('GeoResourceService', () => {
 		});
 
 		describe('observable GeoResource', () => {
-
-			it('updates the slice-of-state \'layers\' when property \'label\' changes', () => {
+			it("updates the slice-of-state 'layers' when property 'label' changes", () => {
 				const geoResourceId0 = 'geoResourceId0';
 				const geoResourceId1 = 'geoResourceId1';
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
@@ -310,7 +298,7 @@ describe('GeoResourceService', () => {
 				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
 			});
 
-			it('does not updates the slice-of-state \'layers\' for other properties', () => {
+			it("does not updates the slice-of-state 'layers' for other properties", () => {
 				const geoResourceId0 = 'geoResourceId0';
 				const geoResourceId1 = 'geoResourceId1';
 				const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId0 };
@@ -323,7 +311,7 @@ describe('GeoResourceService', () => {
 				});
 				const observableGeoResource = instanceUnderTest._proxify(geoResource0);
 
-				observableGeoResource.setOpacity(.5);
+				observableGeoResource.setOpacity(0.5);
 
 				expect(store.getState().layers.active[0].grChangedFlag).toBeNull();
 				expect(store.getState().layers.active[1].grChangedFlag).toBeNull();
@@ -331,4 +319,3 @@ describe('GeoResourceService', () => {
 		});
 	});
 });
-

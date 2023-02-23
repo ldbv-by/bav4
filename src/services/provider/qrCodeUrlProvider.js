@@ -10,8 +10,6 @@ import { $injector } from '../../injection';
  * @typedef {function(string) : (string)} qrCodeUrlProvider
  */
 
-
-
 /**
  * Uses the BVV service to return a qrCode URL.
  * @function
@@ -20,7 +18,7 @@ import { $injector } from '../../injection';
  */
 export const bvvQrCodeProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
-	return (url.trim().startsWith(configService.getValueAsPath('SHORTENING_SERVICE_URL')))
+	return url.trim().startsWith(configService.getValueAsPath('SHORTENING_SERVICE_URL'))
 		? `${url}.png` // we already have a shortened URL
 		: `${configService.getValueAsPath('SHORTENING_SERVICE_URL')}?url=${encodeURIComponent(url)}`;
 };

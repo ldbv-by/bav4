@@ -7,28 +7,28 @@
 	cursor: pointer;
 }
 .georesource-results-panel {
-	border-left: .3em solid var(--primary-bg-color);
+	border-left: 0.3em solid var(--primary-bg-color);
 }
 .georesource-results-panel:hover {
-	border-left: .3em solid var(--secondary-color);
+	border-left: 0.3em solid var(--secondary-color);
 }
 .georesource-label__text {
 	font-weight: bold;
-	padding: .8em 1.5em .8em 1.3em;
+	padding: 0.8em 1.5em 0.8em 1.3em;
 	flex-grow: 1;
 }
 .georesource-results-panel:hover .georesource-label__text {
 	color: var(--primary-color);
 }
 .georesource-label:focus-visible {
-	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
 .georesource-items {
 	overflow: hidden;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
 }
 .georesource-label__collapse {
-	padding: .8em 1.5em .8em 1.3em;
+	padding: 0.8em 1.5em 0.8em 1.3em;
 }
 .icon {
 	background: var(--primary-color);
@@ -52,7 +52,7 @@
 	background: var(--secondary-bg-color);
 }
 .georesource-label__collapse:hover .icon {
-	filter: brightness(.8);
+	filter: brightness(0.8);
 }
 .iconexpand {
 	-moz-transform: rotate(270deg);
@@ -60,14 +60,14 @@
 	transform: rotate(270deg);
 }
 .iscollaps {
-	max-height: 0;    
+	max-height: 0;
 	display: none;
 }
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
 .show-all {
-	padding: .8em 1.5em;
+	padding: 0.8em 1.5em;
 	cursor: pointer;
 	background: var(--primary-bg-color);
 	width: 100%;
@@ -79,5 +79,5 @@
 	color: var(--primary-color);
 }
 .show-all:focus-visible {
-	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }

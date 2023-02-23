@@ -17,12 +17,15 @@ export class ImportToolContent extends AbstractToolContent {
 			mode: null
 		});
 
-		const { EnvironmentService: environmentService, TranslationService, SourceTypeService } = $injector.inject('TranslationService', 'EnvironmentService', 'TranslationService', 'SourceTypeService');
+		const {
+			EnvironmentService: environmentService,
+			TranslationService,
+			SourceTypeService
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'TranslationService', 'SourceTypeService');
 		this._environmentService = environmentService;
 		this._translationService = TranslationService;
 		this._sourceTypeService = SourceTypeService;
 	}
-
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
@@ -39,13 +42,11 @@ export class ImportToolContent extends AbstractToolContent {
 				setData(text, sourceType);
 			};
 			const handleFiles = (files) => {
-				Array.from(files).forEach(async f => {
+				Array.from(files).forEach(async (f) => {
 					try {
-
 						const sourceTypeResult = await this._sourceTypeService.forBlob(f);
 						this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
-					}
-					catch (error) {
+					} catch (error) {
 						emitNotification(translate('toolbox_import_file_error'), LevelTypes.ERROR);
 					}
 				});
@@ -109,15 +110,14 @@ export class ImportToolContent extends AbstractToolContent {
             </div>
 		</div>
         `;
-
 	}
 
 	/**
-	  * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
-	  * other than {@link SourceTypeResultStatus.OK}
-	  * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
-	  * @param {function} importAction the importAction
-	  */
+	 * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
+	 * other than {@link SourceTypeResultStatus.OK}
+	 * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
+	 * @param {function} importAction the importAction
+	 */
 	_importOrNotify(sourceTypeResult, importAction) {
 		const translate = (key) => this._translationService.translate(key);
 		switch (sourceTypeResult.status) {
@@ -134,7 +134,6 @@ export class ImportToolContent extends AbstractToolContent {
 				emitNotification(translate('toolbox_import_unknown'), LevelTypes.ERROR);
 		}
 	}
-
 
 	static get tag() {
 		return 'ba-tool-import-content';

@@ -12,8 +12,7 @@ export const provide = (interactionState) => {
 		const appendDeleteLastPoint = (message) => {
 			if (interactionState.pointCount > 2) {
 				return message + '<br/>' + translate('olMap_handler_delete_last_point');
-			}
-			else {
+			} else {
 				return message;
 			}
 		};
@@ -29,7 +28,6 @@ export const provide = (interactionState) => {
 	}
 
 	if (interactionState.type === InteractionStateType.MODIFY) {
-
 		if (interactionState.snap === InteractionSnapType.VERTEX) {
 			return translate('olMap_handler_measure_modify_click_or_drag');
 		}

@@ -5,7 +5,6 @@ import { elevationProfileReducer } from '../../../../src/store/elevationProfile/
 import { TestUtils } from '../../../test-utils';
 import profileSvg from '../../../../src/modules/chips/components/assistChips/assets/profile.svg';
 
-
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
 describe('ElevationProfileChip', () => {
@@ -27,10 +26,12 @@ describe('ElevationProfileChip', () => {
 		return element;
 	};
 
-	const coordinates = [[42, 21], [0, 0]];
+	const coordinates = [
+		[42, 21],
+		[0, 0]
+	];
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new ElevationProfileChip().getModel();
@@ -47,7 +48,6 @@ describe('ElevationProfileChip', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
 			const element = await setup();
 
@@ -67,7 +67,10 @@ describe('ElevationProfileChip', () => {
 			const element = await setup(defaultState);
 
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
-			element.coordinates = [[2, 0], [1, 0]];
+			element.coordinates = [
+				[2, 0],
+				[1, 0]
+			];
 
 			expect(element.isVisible()).toBeTrue();
 			expect(unsubscribeSpy).toHaveBeenCalled();
@@ -78,7 +81,10 @@ describe('ElevationProfileChip', () => {
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();
 
 			// case 1: the store-observer is set before property changes
-			element.coordinates = [[2, 0], [1, 0]];
+			element.coordinates = [
+				[2, 0],
+				[1, 0]
+			];
 			updateCoordinates([]);
 
 			expect(element.isVisible()).toBeTrue();
@@ -86,7 +92,10 @@ describe('ElevationProfileChip', () => {
 			unsubscribeSpy.calls.reset();
 
 			element.coordinates = [];
-			updateCoordinates([[2, 0], [1, 0]]);
+			updateCoordinates([
+				[2, 0],
+				[1, 0]
+			]);
 
 			expect(element.isVisible()).toBeFalse();
 		});
@@ -99,7 +108,6 @@ describe('ElevationProfileChip', () => {
 	});
 
 	describe('when observed slice-of-state changes', () => {
-
 		it('changes visibility accroding to changes in store', async () => {
 			const element = await setup();
 
@@ -116,7 +124,6 @@ describe('ElevationProfileChip', () => {
 	});
 
 	describe('when chip is clicked', () => {
-
 		it('changes store on click', async () => {
 			const state = { elevationProfile: { active: false, coordinates: coordinates } };
 			const element = await setup(state);
@@ -136,12 +143,18 @@ describe('ElevationProfileChip', () => {
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
-			element.coordinates = [[2, 0], [1, 0]];
+			element.coordinates = [
+				[2, 0],
+				[1, 0]
+			];
 			const button = element.shadowRoot.querySelector('button');
 			button.click();
 
 			expect(store.getState().elevationProfile.active).toBeTrue();
-			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 0], [1, 0]]);
+			expect(store.getState().elevationProfile.coordinates).toEqual([
+				[2, 0],
+				[1, 0]
+			]);
 		});
 
 		it('changes store on click with local coordinates without z-value', async () => {
@@ -151,17 +164,22 @@ describe('ElevationProfileChip', () => {
 			expect(store.getState().elevationProfile.active).toBeFalse();
 			expect(store.getState().elevationProfile.coordinates).toEqual([]);
 
-			element.coordinates = [[2, 0, 3], [1, 0, 1]];
+			element.coordinates = [
+				[2, 0, 3],
+				[1, 0, 1]
+			];
 			const button = element.shadowRoot.querySelector('button');
 			button.click();
 
 			expect(store.getState().elevationProfile.active).toBeTrue();
-			expect(store.getState().elevationProfile.coordinates).toEqual([[2, 0], [1, 0]]);
+			expect(store.getState().elevationProfile.coordinates).toEqual([
+				[2, 0],
+				[1, 0]
+			]);
 		});
 	});
 
 	describe('when disconnected', () => {
-
 		it('removes all observers', async () => {
 			const element = await setup();
 			const unsubscribeSpy = spyOn(element, '_unsubscribeFromStore').and.callThrough();

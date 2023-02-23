@@ -1,4 +1,3 @@
-
 import Point from 'ol/geom/Point';
 import { getBottomRight, getTopLeft, intersects as extentIntersects } from 'ol/extent';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
@@ -56,9 +55,14 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  * @implements {Mfp3Encoder}
  */
 export class BvvMfp3Encoder {
-
 	constructor() {
-		const { MapService: mapService, GeoResourceService: geoResourceService, UrlService: urlService, ShareService: shareService, MfpService: mfpService } = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
+		const {
+			MapService: mapService,
+			GeoResourceService: geoResourceService,
+			UrlService: urlService,
+			ShareService: shareService,
+			MfpService: mfpService
+		} = $injector.inject('MapService', 'GeoResourceService', 'UrlService', 'ShareService', 'MfpService');
 		this._mapService = mapService;
 		this._geoResourceService = geoResourceService;
 		this._urlService = urlService;
@@ -79,12 +83,12 @@ export class BvvMfp3Encoder {
 	async encode(olMap, encodingProperties) {
 		this._initStyleId();
 		this._mfpProperties = encodingProperties;
-		this._mfpProjection = this._mfpProperties.targetSRID ? `EPSG:${this._mfpProperties.targetSRID}` : `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
+		this._mfpProjection = this._mfpProperties.targetSRID
+			? `EPSG:${this._mfpProperties.targetSRID}`
+			: `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
 
 		const validEncodingProperties = (properties) => {
-			return properties.layoutId != null &&
-				(properties.scale != null && properties.scale !== 0) &&
-				properties.dpi != null;
+			return properties.layoutId != null && properties.scale != null && properties.scale !== 0 && properties.dpi != null;
 		};
 
 		if (!validEncodingProperties(this._mfpProperties)) {
@@ -98,25 +102,26 @@ export class BvvMfp3Encoder {
 			return olMap.getView().calculateExtent(olMap.getSize());
 		};
 
-		const mfpCenter = this._mfpProperties.pageCenter && this._mfpProperties.pageCenter instanceof Point
-			? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
-			: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
+		const mfpCenter =
+			this._mfpProperties.pageCenter && this._mfpProperties.pageCenter instanceof Point
+				? this._mfpProperties.pageCenter.clone().transform(this._mapProjection, this._mfpProjection)
+				: getDefaultMapCenter().clone().transform(this._mapProjection, this._mfpProjection);
 
-		this._pageExtent = this._mfpProperties.pageExtent
-			? this._mfpProperties.pageExtent
-			: getDefaultMapExtent();
-		const encodableLayers = olMap.getLayers().getArray()
-			.filter(layer => {
+		this._pageExtent = this._mfpProperties.pageExtent ? this._mfpProperties.pageExtent : getDefaultMapExtent();
+		const encodableLayers = olMap
+			.getLayers()
+			.getArray()
+			.filter((layer) => {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
-		const encodedLayers = encodableLayers.flatMap(l => this._encode(l));
+		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l));
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
-		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter(spec => Object.hasOwn(spec, 'type'));
+		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -128,7 +133,7 @@ export class BvvMfp3Encoder {
 					rotation: this._mfpProperties.rotation,
 					layers: layers
 				},
-				dataOwner: Array.from(new Set(copyRights.map(c => c.label))).join(','),
+				dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
 			}
@@ -140,7 +145,7 @@ export class BvvMfp3Encoder {
 	}
 
 	_getCopyrights(map, encodableLayers) {
-		const resolveGroupLayers = (layers) => layers.flatMap(layer => layer instanceof LayerGroup ? layer.getLayers().getArray() : layer);
+		const resolveGroupLayers = (layers) => layers.flatMap((layer) => (layer instanceof LayerGroup ? layer.getLayers().getArray() : layer));
 		const useSubstitutionOptional = (geoResource) => {
 			if (!geoResource) {
 				return geoResource;
@@ -158,16 +163,14 @@ export class BvvMfp3Encoder {
 			return map.getView().getZoomForResolution(pageResolution);
 		};
 
-		const geoResources = resolveGroupLayers(encodableLayers)
-			.flatMap(
-				l => useSubstitutionOptional(this._geoResourceService.byId(l.get('geoResourceId')))
-			);
+		const geoResources = resolveGroupLayers(encodableLayers).flatMap((l) =>
+			useSubstitutionOptional(this._geoResourceService.byId(l.get('geoResourceId')))
+		);
 
 		return getUniqueCopyrights(geoResources, getZoomLevel(map));
 	}
 
 	_encode(layer) {
-
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer);
 		}
@@ -191,16 +194,17 @@ export class BvvMfp3Encoder {
 
 	_encodeGroup(groupLayer) {
 		const subLayers = groupLayer.getLayers().getArray();
-		return subLayers.map(l => this._encode(l));
+		return subLayers.map((l) => this._encode(l));
 	}
 
 	_encodeWMTS(olLayer, wmtsGeoResource) {
-
 		const getSubstitutionLayer = (layer, geoResource) => {
 			const { LayerService: layerService } = $injector.inject('LayerService');
 			const { grSubstitutions } = this._mfpService.getCapabilities();
 
-			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id) ? this._geoResourceService.byId(grSubstitutions[geoResource.id]) : null;
+			const substitutionGeoResource = Object.hasOwn(grSubstitutions, geoResource.id)
+				? this._geoResourceService.byId(grSubstitutions[geoResource.id])
+				: null;
 
 			if (substitutionGeoResource) {
 				const substitutionLayerId = layer.id ?? substitutionGeoResource.id;
@@ -255,7 +259,6 @@ export class BvvMfp3Encoder {
 
 		const substitutionLayer = getSubstitutionLayer(olLayer, wmtsGeoResource);
 		return substitutionLayer ? createWmtsSpecs(substitutionLayer) : createEmptySpecsAndWarn();
-
 	}
 
 	_encodeWMS(olLayer, wmsGeoResource) {
@@ -263,9 +266,7 @@ export class BvvMfp3Encoder {
 		const source = olLayer.getSource();
 		const params = source.getParams();
 		const layers = params.LAYERS?.split(',') || [];
-		const styles = (params.STYLES != null) ?
-			params.STYLES.split(',') :
-			new Array(layers.length).join(',').split(',');
+		const styles = params.STYLES != null ? params.STYLES.split(',') : new Array(layers.length).join(',').split(',');
 
 		const url = source.getUrl && source.getUrl();
 		const defaultCustomParams = { transparent: true }; // similar to OpenLayers TRANSPARENT-Parameter is set by default
@@ -284,15 +285,25 @@ export class BvvMfp3Encoder {
 	_encodeVector(olVectorLayer) {
 		// todo: refactor to utils
 		// adopted/adapted from {@link https://dmitripavlutin.com/javascript-array-group/#:~:text=must%20be%20inserted.-,array.,provided%20by%20core%2Djs%20library. | Array Grouping in JavaScript}
-		const groupBy = (elementsToGroup, groupByFunction) => elementsToGroup.reduce((group, element) => {
-			const groupName = groupByFunction(element);
-			group[groupName] = group[groupName] ?? [];
-			group[groupName].push(element);
-			return group;
-		}, {});
+		const groupBy = (elementsToGroup, groupByFunction) =>
+			elementsToGroup.reduce((group, element) => {
+				const groupName = groupByFunction(element);
+				group[groupName] = group[groupName] ?? [];
+				group[groupName].push(element);
+				return group;
+			}, {});
 
-		const defaultGroups = { MultiPolygon: [], Polygon: [], Circle: [], GeometryCollection: [], LineString: [], MultiLineString: [], MultiPoint: [], Point: [] };
-		const groupByGeometryType = (features) => groupBy(features, feature => feature.getGeometry().getType());
+		const defaultGroups = {
+			MultiPolygon: [],
+			Polygon: [],
+			Circle: [],
+			GeometryCollection: [],
+			LineString: [],
+			MultiLineString: [],
+			MultiPoint: [],
+			Point: []
+		};
+		const groupByGeometryType = (features) => groupBy(features, (feature) => feature.getGeometry().getType());
 		const groupedByGeometryType = { ...defaultGroups, ...groupByGeometryType(olVectorLayer.getSource().getFeatures()) };
 
 		const featuresSortedByGeometryType = [
@@ -303,7 +314,8 @@ export class BvvMfp3Encoder {
 			...groupedByGeometryType['LineString'],
 			...groupedByGeometryType['MultiLineString'],
 			...groupedByGeometryType['MultiPoint'],
-			...groupedByGeometryType['Point']];
+			...groupedByGeometryType['Point']
+		];
 
 		const transformForMfp = (olFeature) => {
 			const mfpFeature = olFeature.clone();
@@ -315,9 +327,11 @@ export class BvvMfp3Encoder {
 		// todo: find a better implementation then this mix of feature aggregation (reducer) and style aggregation (cache)
 		const aggregateResults = (encoded, feature) => {
 			const result = this._encodeFeature(feature, olVectorLayer, styleCache);
-			return result ? {
-				features: [...encoded.features, ...result.features]
-			} : encoded;
+			return result
+				? {
+						features: [...encoded.features, ...result.features]
+				  }
+				: encoded;
 		};
 
 		// we provide a cache for ol styles which are applied to multiple features, to reduce the
@@ -326,8 +340,8 @@ export class BvvMfp3Encoder {
 		const mfpPageExtent = getPolygonFrom(this._pageExtent).transform(this._mapProjection, this._mfpProjection).getExtent();
 
 		const encodingResults = featuresSortedByGeometryType
-			.map(f => transformForMfp(f))
-			.filter(f => f.getGeometry().intersectsExtent(mfpPageExtent))
+			.map((f) => transformForMfp(f))
+			.filter((f) => f.getGeometry().intersectsExtent(mfpPageExtent))
 			.reduce(aggregateResults, startResult);
 
 		const styleObjectFrom = (styles) => {
@@ -336,7 +350,7 @@ export class BvvMfp3Encoder {
 			};
 
 			const asV2 = (styles) => {
-				styles.forEach(style => {
+				styles.forEach((style) => {
 					const { id, symbolizers } = style;
 					styleObjectV2[`[_gx_style = ${id}]`] = {
 						symbolizers: symbolizers
@@ -347,13 +361,15 @@ export class BvvMfp3Encoder {
 			return asV2(styles);
 		};
 
-		return encodingResults.features.length === 0 ? false : {
-			type: 'geojson',
-			geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
-			name: olVectorLayer.get('id'),
-			style: styleObjectFrom(Array.from(styleCache.values())),
-			opacity: olVectorLayer.getOpacity()
-		};
+		return encodingResults.features.length === 0
+			? false
+			: {
+					type: 'geojson',
+					geoJson: { features: encodingResults.features, type: 'FeatureCollection' },
+					name: olVectorLayer.get('id'),
+					style: styleObjectFrom(Array.from(styleCache.values())),
+					opacity: olVectorLayer.getOpacity()
+			  };
 	}
 
 	_encodeFeature(olFeature, olLayer, styleCache, presetStyles = []) {
@@ -362,7 +378,7 @@ export class BvvMfp3Encoder {
 
 		const getOlStyles = (feature, layer, resolution) => {
 			const featureStyles = feature.getStyle();
-			if (featureStyles != null && typeof (featureStyles) === 'function') {
+			if (featureStyles != null && typeof featureStyles === 'function') {
 				// todo: currently only the fallback-style for measurement-features is encodable
 				// and the fallbackStyle is forced by calling the styleFunction with resolution = null
 				const getExplicitFallbackStyleForMeasurement = (f) => featureStyles(f, null);
@@ -380,7 +396,7 @@ export class BvvMfp3Encoder {
 
 		const getEncodableOlStyle = (styles, isPreset) => {
 			const getFirstNonAdvancedStyle = (allStyles) => {
-				return allStyles.find(s => !(s.getGeometry && typeof (s.getGeometry()) === 'function')) ?? null;
+				return allStyles.find((s) => !(s.getGeometry && typeof s.getGeometry() === 'function')) ?? null;
 			};
 
 			if (styles && styles.length > 0) {
@@ -397,22 +413,29 @@ export class BvvMfp3Encoder {
 					const origin = geometry.getCenter();
 					const radius = geometry.getRadius();
 					const sides = 40;
-					const angle = Math.PI * ((1 / sides) - (1 / 2));
+					const angle = Math.PI * (1 / sides - 1 / 2);
 					const points = [];
 					for (let i = 0; i < sides; ++i) {
-						const rotatedAngle = angle + (i * 2 * Math.PI / sides);
-						const x = origin[0] + (radius * Math.cos(rotatedAngle));
-						const y = origin[1] + (radius * Math.sin(rotatedAngle));
+						const rotatedAngle = angle + (i * 2 * Math.PI) / sides;
+						const x = origin[0] + radius * Math.cos(rotatedAngle);
+						const y = origin[1] + radius * Math.sin(rotatedAngle);
 						points.push([x, y]);
 					}
-					points.push(points[0]);// Close the polygon
+					points.push(points[0]); // Close the polygon
 					return new Feature(new Polygon([points]));
 				}
 			};
 
 			const isEncodable = () => {
 				const geometry = olFeature.getGeometry();
-				return geometry instanceof Polygon || geometry instanceof MultiPolygon || geometry instanceof LineString || geometry instanceof MultiLineString || geometry instanceof Point || geometry instanceof MultiPoint;
+				return (
+					geometry instanceof Polygon ||
+					geometry instanceof MultiPolygon ||
+					geometry instanceof LineString ||
+					geometry instanceof MultiLineString ||
+					geometry instanceof Point ||
+					geometry instanceof MultiPoint
+				);
 			};
 			return isEncodable() ? olFeature : toEncodableFeature();
 		};
@@ -438,8 +461,11 @@ export class BvvMfp3Encoder {
 		}
 		const addOrUpdateEncodedStyle = (olStyle) => {
 			const addEncodedStyle = () => {
-				const encodedStyle = { ...initEncodedStyle(), symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi) };
-				encodedStyle.symbolizers.forEach(symbolizer => {
+				const encodedStyle = {
+					...initEncodedStyle(),
+					symbolizers: this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)
+				};
+				encodedStyle.symbolizers.forEach((symbolizer) => {
 					if (symbolizer.fillOpacity) {
 						symbolizer.fillOpacity *= olLayer.getOpacity();
 					}
@@ -455,8 +481,11 @@ export class BvvMfp3Encoder {
 			const updateEncodedStyle = () => {
 				const { id, symbolizers } = styleCache.get(olStyle);
 				const encodedGeometryType = this._encodeGeometryType(olFeatureToEncode.getGeometry().getType());
-				if (symbolizers.every(s => s.type !== encodedGeometryType)) {
-					const encodedStyle = { id: id, symbolizers: [...symbolizers, ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)] };
+				if (symbolizers.every((s) => s.type !== encodedGeometryType)) {
+					const encodedStyle = {
+						id: id,
+						symbolizers: [...symbolizers, ...this._encodeStyle(olStyleToEncode, olFeatureToEncode.getGeometry(), this._mfpProperties.dpi)]
+					};
 					styleCache.set(olStyle, encodedStyle);
 				}
 
@@ -469,18 +498,20 @@ export class BvvMfp3Encoder {
 		const encodedStyleId = addOrUpdateEncodedStyle(olStyleToEncode);
 
 		// handle advanced styles
-		const advancedStyleFeatures = Array.isArray(olStyles) ? olStyles.reduce((styleFeatures, style) => {
-			const isGeometryFunction = style.getGeometry && typeof (style.getGeometry()) === 'function';
+		const advancedStyleFeatures = Array.isArray(olStyles)
+			? olStyles.reduce((styleFeatures, style) => {
+					const isGeometryFunction = style.getGeometry && typeof style.getGeometry() === 'function';
 
-			if (isGeometryFunction) {
-				const geometry = style.getGeometry()(olFeatureToEncode);
-				if (geometry) {
-					const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, [style]);
-					return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
-				}
-			}
-			return styleFeatures;
-		}, defaultResult) : { features: [] };
+					if (isGeometryFunction) {
+						const geometry = style.getGeometry()(olFeatureToEncode);
+						if (geometry) {
+							const result = this._encodeFeature(new Feature(geometry), olLayer, styleCache, [style]);
+							return result ? { features: [...styleFeatures.features, ...result.features] } : defaultResult;
+						}
+					}
+					return styleFeatures;
+			  }, defaultResult)
+			: { features: [] };
 
 		const encodedFeature = this._geometryEncodingFormat.writeFeatureObject(olFeatureToEncode);
 		encodedFeature.properties = { _gx_style: encodedStyleId };
@@ -504,13 +535,12 @@ export class BvvMfp3Encoder {
 		const geometryType = olGeometry.getType();
 		const encoded = { type: this._encodeGeometryType(geometryType), zIndex: olStyle.getZIndex() ? olStyle.getZIndex() : 0 };
 
-
 		// Encode imageStyle only for Point-geometries;
 		// LineString- and Polygon-geometries have a
 		// ImageStyle only by default (import as kml -> createFeatureStyleFunction)
 		if (imageStyle && encoded.type === 'point') {
 			const scale = imageStyle.getScale();
-			encoded.rotation = (imageStyle.getRotation() ?? 0) * 180.0 / Math.PI;
+			encoded.rotation = ((imageStyle.getRotation() ?? 0) * 180.0) / Math.PI;
 			const getPropertiesFromIconStyle = (iconStyle) => {
 				return {
 					size: iconStyle.getSize(),
@@ -521,7 +551,9 @@ export class BvvMfp3Encoder {
 			const getPropertiesFromShapeStyle = (shapeStyle) => {
 				const stroke = shapeStyle.getStroke();
 				const radius = shapeStyle.getRadius();
-				const width = stroke ? BvvMfp3Encoder.adjustDistance(2 * radius, dpi) + BvvMfp3Encoder.adjustDistance(stroke.getWidth() + 1, dpi) : BvvMfp3Encoder.adjustDistance(2 * radius, dpi);
+				const width = stroke
+					? BvvMfp3Encoder.adjustDistance(2 * radius, dpi) + BvvMfp3Encoder.adjustDistance(stroke.getWidth() + 1, dpi)
+					: BvvMfp3Encoder.adjustDistance(2 * radius, dpi);
 				return {
 					fill: shapeStyle.getFill(),
 					stroke: stroke,
@@ -532,8 +564,8 @@ export class BvvMfp3Encoder {
 
 			const styleProperties = imageStyle instanceof IconStyle ? getPropertiesFromIconStyle(imageStyle) : getPropertiesFromShapeStyle(imageStyle);
 			if (styleProperties.size) {
-				encoded.graphicWidth = BvvMfp3Encoder.adjustDistance((styleProperties.size[0] * scale || 0.1), dpi);
-				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance((styleProperties.size[1] * scale || 0.1), dpi);
+				encoded.graphicWidth = BvvMfp3Encoder.adjustDistance(styleProperties.size[0] * scale || 0.1, dpi);
+				encoded.graphicHeight = BvvMfp3Encoder.adjustDistance(styleProperties.size[1] * scale || 0.1, dpi);
 				const hexColor = styleProperties.fill?.getColor();
 				if (hexColor) {
 					const color = ColorAsArray(hexColor);
@@ -578,7 +610,6 @@ export class BvvMfp3Encoder {
 
 		encoded.fillOpacity = encoded.fillOpacity ?? 0;
 		encoded.strokeOpacity = encoded.strokeOpacity ?? 0;
-
 
 		if (textStyle && textStyle.getText()) {
 			encoded.label = textStyle.getText();
@@ -643,7 +674,9 @@ export class BvvMfp3Encoder {
 			const defaultAnchorPoint = { x: 0.5, y: 0.5 };
 			const verticalAndHorizontalAlignment = positioning.split('-');
 			const isValid = verticalAndHorizontalAlignment && verticalAndHorizontalAlignment.length === 2;
-			const anchorPoint = isValid ? { x: AnchorPointPositions[verticalAndHorizontalAlignment[1]], y: AnchorPointPositions[verticalAndHorizontalAlignment[0]] } : defaultAnchorPoint;
+			const anchorPoint = isValid
+				? { x: AnchorPointPositions[verticalAndHorizontalAlignment[1]], y: AnchorPointPositions[verticalAndHorizontalAlignment[0]] }
+				: defaultAnchorPoint;
 			return anchorPoint;
 		};
 
@@ -677,93 +710,100 @@ export class BvvMfp3Encoder {
 				}
 			};
 		};
-		const overlayFeatures = overlays.map(o => toFeatureWithOverlayProperties(o)).filter(f => f !== null);
+		const overlayFeatures = overlays.map((o) => toFeatureWithOverlayProperties(o)).filter((f) => f !== null);
 
-		return overlayFeatures.length === 0 ? [] : {
-			type: 'geojson',
-			name: 'overlay',
-			opacity: 1,
-			geoJson: {
-				type: 'FeatureCollection',
-				features: overlayFeatures
-			},
-			style: {
-				version: 2,
-				conflictResolution: false,
-				'[type=\'distance\']': {
-					symbolizers: [
-						{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 0,
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 3
-						}, {
-							type: 'text',
-							label: '[label]',
-							labelXOffset: '[labelXOffset]',
-							labelYOffset: '[labelYOffset]',
-							labelAnchorPointX: '[labelAnchorPointX]',
-							labelAnchorPointY: '[labelAnchorPointY]',
-							fontColor: '#ffffff',
-							fontSize: 10,
-							fontFamily: 'sans-serif',
-							fontWeight: 'bold',
-							haloColor: '#ff0000',
-							haloOpacity: 1,
-							haloRadius: 1,
-							strokeColor: '#ff0000'
-						}]
-				},
-				'[type=\'distance-partition\']': {
-					symbolizers: [
-						{
-							type: 'point',
-							fillColor: '#ff0000',
-							fillOpacity: 1,
-							strokeOpacity: 1,
-							strokeWidth: 1.5,
-							strokeColor: '#ffffff',
-							graphicName: 'circle',
-							graphicOpacity: 0.4,
-							pointRadius: 2
-						}, {
-							type: 'text',
-							label: '[label]',
-							labelXOffset: '[labelXOffset]',
-							labelYOffset: '[labelYOffset]',
-							labelAnchorPointX: '[labelAnchorPointX]',
-							labelAnchorPointY: '[labelAnchorPointY]',
-							fontColor: '#000000',
-							fontSize: 8,
-							fontFamily: 'sans-serif',
-							fontWeight: 'normal',
-							haloColor: '#ffffff',
-							haloOpacity: 1,
-							haloRadius: 2,
-							strokeColor: '#ff0000'
-						}]
-				},
-				'[type=\'area\']': {
-					symbolizers: [
-						{
-							type: 'text',
-							label: '[label]',
-							labelAlign: 'cm',
-							fontColor: '#ffffff',
-							fontSize: 10,
-							fontFamily: 'sans-serif',
-							fontWeight: 'bold',
-							haloColor: '#ff0000',
-							haloOpacity: 1,
-							haloRadius: 1,
-							strokeColor: '#ff0000'
-						}]
-				}
-			}
-		};
+		return overlayFeatures.length === 0
+			? []
+			: {
+					type: 'geojson',
+					name: 'overlay',
+					opacity: 1,
+					geoJson: {
+						type: 'FeatureCollection',
+						features: overlayFeatures
+					},
+					style: {
+						version: 2,
+						conflictResolution: false,
+						"[type='distance']": {
+							symbolizers: [
+								{
+									type: 'point',
+									fillColor: '#ff0000',
+									fillOpacity: 1,
+									strokeOpacity: 0,
+									graphicName: 'circle',
+									graphicOpacity: 0.4,
+									pointRadius: 3
+								},
+								{
+									type: 'text',
+									label: '[label]',
+									labelXOffset: '[labelXOffset]',
+									labelYOffset: '[labelYOffset]',
+									labelAnchorPointX: '[labelAnchorPointX]',
+									labelAnchorPointY: '[labelAnchorPointY]',
+									fontColor: '#ffffff',
+									fontSize: 10,
+									fontFamily: 'sans-serif',
+									fontWeight: 'bold',
+									haloColor: '#ff0000',
+									haloOpacity: 1,
+									haloRadius: 1,
+									strokeColor: '#ff0000'
+								}
+							]
+						},
+						"[type='distance-partition']": {
+							symbolizers: [
+								{
+									type: 'point',
+									fillColor: '#ff0000',
+									fillOpacity: 1,
+									strokeOpacity: 1,
+									strokeWidth: 1.5,
+									strokeColor: '#ffffff',
+									graphicName: 'circle',
+									graphicOpacity: 0.4,
+									pointRadius: 2
+								},
+								{
+									type: 'text',
+									label: '[label]',
+									labelXOffset: '[labelXOffset]',
+									labelYOffset: '[labelYOffset]',
+									labelAnchorPointX: '[labelAnchorPointX]',
+									labelAnchorPointY: '[labelAnchorPointY]',
+									fontColor: '#000000',
+									fontSize: 8,
+									fontFamily: 'sans-serif',
+									fontWeight: 'normal',
+									haloColor: '#ffffff',
+									haloOpacity: 1,
+									haloRadius: 2,
+									strokeColor: '#ff0000'
+								}
+							]
+						},
+						"[type='area']": {
+							symbolizers: [
+								{
+									type: 'text',
+									label: '[label]',
+									labelAlign: 'cm',
+									fontColor: '#ffffff',
+									fontSize: 10,
+									fontFamily: 'sans-serif',
+									fontWeight: 'bold',
+									haloColor: '#ff0000',
+									haloOpacity: 1,
+									haloRadius: 1,
+									strokeColor: '#ff0000'
+								}
+							]
+						}
+					}
+			  };
 	}
 
 	_encodeGridLayer(scale) {
@@ -788,14 +828,8 @@ export class BvvMfp3Encoder {
 		return {
 			type: 'grid',
 			gridType: 'lines',
-			origin: [
-				600000,
-				4800000
-			],
-			spacing: [
-				spacing,
-				spacing
-			],
+			origin: [600000, 4800000],
+			spacing: [spacing, spacing],
 			renderAsSvg: true,
 			haloColor: '#f5f5f5',
 			labelColor: 'black',
@@ -803,14 +837,7 @@ export class BvvMfp3Encoder {
 			indent: 10,
 			haloRadius: 4,
 			font: {
-				name: [
-					'Liberation Sans',
-					'Helvetica',
-					'Nimbus Sans L',
-					'Liberation Sans',
-					'FreeSans',
-					'Sans-serif'
-				],
+				name: ['Liberation Sans', 'Helvetica', 'Nimbus Sans L', 'Liberation Sans', 'FreeSans', 'Sans-serif'],
 				size: 8,
 				style: 'BOLD'
 			}
@@ -818,7 +845,7 @@ export class BvvMfp3Encoder {
 	}
 
 	static adjustDistance(distance, dpi) {
-		return distance != null ? distance * 90 / dpi : null;
+		return distance != null ? (distance * 90) / dpi : null;
 	}
 
 	/**
@@ -828,8 +855,7 @@ export class BvvMfp3Encoder {
 		const url = this._shareService.encodeState();
 		try {
 			return await this._urlService.shorten(url);
-		}
-		catch (e) {
+		} catch (e) {
 			console.warn('Could not shorten url: ' + e);
 			return url;
 		}
@@ -838,8 +864,7 @@ export class BvvMfp3Encoder {
 	_generateQrCode(linkUrl) {
 		try {
 			return this._urlService.qrCode(linkUrl);
-		}
-		catch (e) {
+		} catch (e) {
 			console.warn('Could not generate qr-code url: ' + e);
 		}
 		return null;

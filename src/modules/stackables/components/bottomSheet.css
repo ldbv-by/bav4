@@ -1,5 +1,5 @@
 .bottom-sheet {
-	background-color: var(--primary-bg-color);   
+	background-color: var(--primary-bg-color);
 	box-shadow: 3px 0px 4px rgb(0 0 0 / 50%);
 	display: flex;
 	flex-direction: column;
@@ -10,7 +10,7 @@
 	margin: 0 0 0 0;
 	transition-property: margin;
 	transition-duration: var(--animation-duration-large-open);
-	transition-timing-function: var(--animation-easing-linea);   
+	transition-timing-function: var(--animation-easing-linea);
 	animation-name: animateIn;
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-large-open);
@@ -20,7 +20,7 @@
 	animation-name: animateOut;
 }
 .is-open {
-	margin: 0 0 0 28em;	
+	margin: 0 0 0 28em;
 }
 .notification_item_hide {
 	animation-name: animateOut;
@@ -38,7 +38,7 @@
 	font-weight: bold;
 	cursor: pointer;
 	display: block;
-	padding: .7em;
+	padding: 0.7em;
 	position: absolute;
 	right: 0;
 	top: 0;

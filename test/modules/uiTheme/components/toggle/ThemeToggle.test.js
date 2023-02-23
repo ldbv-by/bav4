@@ -11,7 +11,6 @@ window.customElements.define(Toggle.tag, Toggle);
 let store;
 
 describe('ThemeToggle', () => {
-
 	const setup = () => {
 		const state = {
 			media: {
@@ -22,8 +21,7 @@ describe('ThemeToggle', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(ThemeToggle.tag);
 	};

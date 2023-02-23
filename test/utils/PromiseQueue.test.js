@@ -1,7 +1,6 @@
 import { PromiseQueue } from '../../src/utils/PromiseQueue';
 
 describe('PromiseQueue', () => {
-
 	it('queues the execution of a number of functions', async () => {
 		const result = [];
 		const instanceUnderTest = new PromiseQueue();

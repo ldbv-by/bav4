@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/dndImport/i18n/dndImport.provider';
 
-
 describe('i18n for dndImport module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.dndImport_import_textcontent).toBe('Text oder URL hierhin ziehen');
@@ -17,7 +14,6 @@ describe('i18n for dndImport module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.dndImport_import_textcontent).toBe('Drop Text-Data or URL here');
@@ -41,7 +37,6 @@ describe('i18n for dndImport module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

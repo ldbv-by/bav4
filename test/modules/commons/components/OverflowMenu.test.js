@@ -14,21 +14,17 @@ describe('OverflowMenu', () => {
 
 	beforeEach(async () => {
 		store = TestUtils.setupStoreAndDi({}, { bottomSheet: bottomSheetReducer });
-		$injector
-			.registerSingleton('EnvironmentService', environmentService);
+		$injector.registerSingleton('EnvironmentService', environmentService);
 	});
 
 	describe('when initialized', () => {
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(OverflowMenu.tag);
 
 			expect(element.getModel()).toEqual({ type: MenuTypes.MEATBALL, menuItems: [], isCollapsed: true, anchorPosition: null });
-
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(OverflowMenu.tag);
 
 			const anchorElements = element.shadowRoot.querySelectorAll('.anchor');
@@ -71,11 +67,11 @@ describe('OverflowMenu', () => {
 	});
 
 	describe('when button is clicked', () => {
-
 		const menuItems = [
-			{ label: 'Item 1', action: () => { } },
-			{ label: 'Item 2', action: () => { } },
-			{ label: 'Item 3', action: () => { } }];
+			{ label: 'Item 1', action: () => {} },
+			{ label: 'Item 2', action: () => {} },
+			{ label: 'Item 3', action: () => {} }
+		];
 
 		it('opens menu with the menu-items', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
@@ -106,9 +102,10 @@ describe('OverflowMenu', () => {
 		it('has menu-items with custom ids', async () => {
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = [
-				{ id: 'foo', label: 'Item 1', action: () => { } },
-				{ id: 'bar', label: 'Item 2', action: () => { } },
-				{ id: 'baz', label: 'Item 3', action: () => { } }];
+				{ id: 'foo', label: 'Item 1', action: () => {} },
+				{ id: 'bar', label: 'Item 2', action: () => {} },
+				{ id: 'baz', label: 'Item 3', action: () => {} }
+			];
 			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
@@ -142,12 +139,13 @@ describe('OverflowMenu', () => {
 			element.items = [
 				{ label: 'item 1', action: actionSpy1 },
 				{ label: 'Item 2', action: actionSpy2 },
-				{ label: 'item 3', action: actionSpy3 }];
+				{ label: 'item 3', action: actionSpy3 }
+			];
 			const button = element.shadowRoot.querySelector('.menu__button');
 
 			button.click();
 			const menuItems = element.shadowRoot.querySelectorAll('.menuitem');
-			menuItems.forEach(item => item.click());
+			menuItems.forEach((item) => item.click());
 
 			expect(actionSpy1).toHaveBeenCalled();
 			expect(actionSpy2).toHaveBeenCalled();
@@ -155,12 +153,14 @@ describe('OverflowMenu', () => {
 		});
 
 		it('renders menuitems with icons', async () => {
-			const icon = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
+			const icon =
+				'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctdXAtY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiI+PCEtLU1JVCBMaWNlbnNlLS0+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAwIDAgOGE4IDggMCAwIDAgMTYgMHptLTcuNSAzLjVhLjUuNSAwIDAgMS0xIDBWNS43MDdMNS4zNTQgNy44NTRhLjUuNSAwIDEgMS0uNzA4LS43MDhsMy0zYS41LjUgMCAwIDEgLjcwOCAwbDMgM2EuNS41IDAgMCAxLS43MDguNzA4TDguNSA1LjcwN1YxMS41eiIvPgo8L3N2Zz4=';
 			const element = await TestUtils.render(OverflowMenu.tag);
 			element.items = [
 				{ label: 'item 1', icon: icon },
 				{ label: 'Item 2', icon: icon },
-				{ label: 'item 3', icon: icon }];
+				{ label: 'item 3', icon: icon }
+			];
 
 			const button = element.shadowRoot.querySelector('.menu__button');
 
@@ -169,10 +169,15 @@ describe('OverflowMenu', () => {
 			//element.shadowRoot.styleSheets[0] --> baElement.css
 			//element.shadowRoot.styleSheets[1] --> overflowmenu.css
 			//element.shadowRoot.styleSheets[2] --> menuitem.css
-			expect(element.shadowRoot.styleSheets[3].cssRules.item(0).cssText).toContain('.menuitem__icon_0 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
-			expect(element.shadowRoot.styleSheets[4].cssRules.item(0).cssText).toContain('.menuitem__icon_1 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
-			expect(element.shadowRoot.styleSheets[5].cssRules.item(0).cssText).toContain('.menuitem__icon_2 { mask: url("data:image/svg+xml;base64,PHN2ZyB4');
-
+			expect(element.shadowRoot.styleSheets[3].cssRules.item(0).cssText).toContain(
+				'.menuitem__icon_0 { mask: url("data:image/svg+xml;base64,PHN2ZyB4'
+			);
+			expect(element.shadowRoot.styleSheets[4].cssRules.item(0).cssText).toContain(
+				'.menuitem__icon_1 { mask: url("data:image/svg+xml;base64,PHN2ZyB4'
+			);
+			expect(element.shadowRoot.styleSheets[5].cssRules.item(0).cssText).toContain(
+				'.menuitem__icon_2 { mask: url("data:image/svg+xml;base64,PHN2ZyB4'
+			);
 		});
 
 		it('closes the open menu and deregisters document listener', async () => {
@@ -216,7 +221,6 @@ describe('OverflowMenu', () => {
 		});
 
 		describe('creates menu for sector', () => {
-
 			it('0 (default)', async () => {
 				const element = await TestUtils.render(OverflowMenu.tag);
 				const button = element.shadowRoot.querySelector('.menu__button');
@@ -350,6 +354,5 @@ describe('OverflowMenu', () => {
 
 			expect(eventSpy).toHaveBeenCalled();
 		});
-
 	});
 });

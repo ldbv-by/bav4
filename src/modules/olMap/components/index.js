@@ -10,4 +10,3 @@ if (!window.customElements.get(BaOverlay.tag)) {
 if (!window.customElements.get(MeasurementOverlay.tag)) {
 	window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 }
-

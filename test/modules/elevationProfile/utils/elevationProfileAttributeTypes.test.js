@@ -14,8 +14,7 @@ const setup = (state = {}) => {
 		media: createNoInitialStateMediaReducer()
 	});
 
-	$injector
-		.registerSingleton('TranslationService', { translate: (key) => key });
+	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 	return;
 };

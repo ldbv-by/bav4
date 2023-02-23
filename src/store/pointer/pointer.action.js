@@ -8,11 +8,10 @@ import { EventLike } from '../../utils/storeUtils';
 import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED, POINTER_MOVE_CHANGED } from './pointer.reducer';
 
 /**
-* @typedef {Object} PointerEvent
-* @param {number[]} coordinate Of the last click expressed in EPSG:3857
-* @param {number[]} screenCoordinate Of the last click expressed pixel
-*/
-
+ * @typedef {Object} PointerEvent
+ * @param {number[]} coordinate Of the last click expressed in EPSG:3857
+ * @param {number[]} screenCoordinate Of the last click expressed pixel
+ */
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -66,4 +65,3 @@ export const setBeingDragged = (dragged) => {
 		payload: dragged
 	});
 };
-

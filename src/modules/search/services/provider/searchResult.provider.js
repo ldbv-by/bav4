@@ -18,22 +18,20 @@ import { $injector } from '../../../../injection';
  */
 
 const removeHtml = (htmlLabel) => {
-	const regex = /(<([^>]+)>)/ig;
+	const regex = /(<([^>]+)>)/gi;
 	return htmlLabel.replace(regex, '');
 };
 
 export const loadBvvGeoResourceSearchResults = async (query) => {
-
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	const url = configService.getValueAsPath('BACKEND_URL') + 'search/type/layers/searchText';
-
 
 	const result = await httpService.get(`${url}/${encodeURIComponent(query.replace(/\//g, ' '))}`);
 
 	if (result.ok) {
 		const raw = await result.json();
-		const data = raw.map(o => {
+		const data = raw.map((o) => {
 			return new GeoResourceSearchResult(o.id, removeHtml(o.attrs.label), o.attrs.label);
 		});
 		return data;
@@ -50,7 +48,7 @@ export const loadBvvLocationSearchResults = async (query) => {
 
 	if (result.ok) {
 		const raw = await result.json();
-		const data = raw.map(o => {
+		const data = raw.map((o) => {
 			return new LocationSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
 		});
 		return data;
@@ -67,7 +65,7 @@ export const loadBvvCadastralParcelSearchResults = async (query) => {
 
 	if (result.ok) {
 		const raw = await result.json();
-		const data = raw.map(o => {
+		const data = raw.map((o) => {
 			return new CadastralParcelSearchResult(removeHtml(o.attrs.label), o.attrs.label, o.attrs.coordinate, o.attrs.extent ?? null);
 		});
 		return data;

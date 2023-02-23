@@ -10,7 +10,6 @@ import { activate, deactivate } from '../store/draw/draw.action';
  */
 export const DRAW_LAYER_ID = 'draw_layer';
 
-
 /**
  * Id of the tool used for drawing interaction.
  * Feature of a layer will also use this id as part their id.
@@ -30,19 +29,15 @@ export const DRAW_TOOL_ID = 'draw';
  * @author thiloSchlemmer
  */
 export class DrawPlugin extends BaPlugin {
-
-
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
-
-		const onToolChanged = toolId => {
+		const onToolChanged = (toolId) => {
 			if (toolId !== ToolId.DRAWING) {
 				deactivate();
-			}
-			else {
+			} else {
 				// we activate the tool after another possible active tool was deactivated
 				setTimeout(() => activate());
 			}
@@ -51,13 +46,12 @@ export class DrawPlugin extends BaPlugin {
 		const onChange = (changedState) => {
 			if (changedState) {
 				addLayer(DRAW_LAYER_ID, { constraints: { hidden: true, alwaysTop: true } });
-			}
-			else {
+			} else {
 				removeLayer(DRAW_LAYER_ID);
 			}
 		};
 
-		observe(store, state => state.draw.active, onChange);
-		observe(store, state => state.tools.current, onToolChanged, false);
+		observe(store, (state) => state.draw.active, onChange);
+		observe(store, (state) => state.tools.current, onToolChanged, false);
 	}
 }

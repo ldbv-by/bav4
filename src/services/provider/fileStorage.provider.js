@@ -3,12 +3,12 @@ import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../do
 import { FileStorageServiceDataTypes } from '../FileStorageService';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribution.provider';
 
-export const _newLoader = id => {
-
+export const _newLoader = (id) => {
 	return async () => {
-
-		const { FileStorageService: fileStorageService, TranslationService: translationService }
-			= $injector.inject('FileStorageService', 'TranslationService');
+		const { FileStorageService: fileStorageService, TranslationService: translationService } = $injector.inject(
+			'FileStorageService',
+			'TranslationService'
+		);
 
 		try {
 			const fileId = await fileStorageService.getFileId(id);
@@ -21,8 +21,7 @@ export const _newLoader = id => {
 				return vgr;
 			}
 			throw new Error(`Unsupported FileStorageServiceDataType '${type}'`);
-		}
-		catch (e) {
+		} catch (e) {
 			throw new Error(`Could not load vector data for id '${id}': ${e.message}`);
 		}
 	};
@@ -33,13 +32,10 @@ export const _newLoader = id => {
  * @implements geoResourceByIdProvider
  * @returns {GeoResourceFuture|null}
  */
-export const loadBvvFileStorageResourceById = id => {
-
-	const { FileStorageService: fileStorageService }
-		= $injector.inject('FileStorageService');
+export const loadBvvFileStorageResourceById = (id) => {
+	const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 
 	if (fileStorageService.isAdminId(id) || fileStorageService.isFileId(id)) {
-
 		return new GeoResourceFuture(id, _newLoader(id));
 	}
 	return null;

@@ -6,7 +6,6 @@ import { isHttpUrl } from '../utils/checks';
  * @author taulinger
  */
 export class BaaCredentialService {
-
 	constructor() {
 		this._credentials = new Map();
 		const { UrlService: urlService } = $injector.inject('UrlService');

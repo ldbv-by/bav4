@@ -13,7 +13,6 @@ export const FINISH_REQUESTED = 'draw/finish';
 export const RESET_REQUESTED = 'draw/reset';
 export const REMOVE_REQUESTED = 'draw/remove';
 
-
 export const INITIAL_STYLE = {
 	symbolSrc: null,
 	scale: null,
@@ -35,8 +34,8 @@ export const initialState = {
 	 */
 	type: null,
 	/**
-	* @type {boolean}
-	*/
+	 * @type {boolean}
+	 */
 	geometryIsValid: false,
 	/**
 	 * @type {Object}
@@ -73,120 +72,91 @@ export const initialState = {
 };
 
 export const drawReducer = (state = initialState, action) => {
-
 	const { type, payload } = action;
 	switch (type) {
 		case ACTIVE_CHANGED: {
-
 			return {
 				...state,
 				active: payload
-
 			};
 		}
 		case MODE_CHANGED: {
-
 			return {
 				...state,
 				mode: payload
-
 			};
 		}
 		case TYPE_CHANGED: {
-
 			return {
 				...state,
 				type: payload
-
 			};
 		}
 		case GEOMETRY_IS_VALID_CHANGED: {
-
 			return {
 				...state,
 				validGeometry: payload
-
 			};
 		}
 		case STYLE_CHANGED: {
-
 			return {
 				...state,
 				style: payload
-
 			};
 		}
 		case SELECTED_STYLE_CHANGED: {
-
 			return {
 				...state,
 				selectedStyle: payload
-
 			};
 		}
 		case DESCRIPTION_CHANGED: {
-
 			return {
 				...state,
 				description: payload
-
 			};
 		}
 		case CLEAR_DESCRIPTION: {
-
 			return {
 				...state,
 				description: null
-
 			};
 		}
 		case CLEAR_TEXT: {
-
 			return {
 				...state,
 				style: { ...state.style, text: null },
 				selectedStyle: state.selectedStyle ? { ...state.selectedStyle, style: { ...state.selectedStyle.style, text: null } } : null
-
 			};
 		}
 		case FILE_SAVE_RESULT_CHANGED: {
-
 			return {
 				...state,
 				fileSaveResult: payload
-
 			};
 		}
 		case SELECTION_CHANGED: {
-
 			return {
 				...state,
 				selection: [...payload]
-
 			};
 		}
 		case FINISH_REQUESTED: {
-
 			return {
 				...state,
 				finish: payload
-
 			};
 		}
 		case RESET_REQUESTED: {
-
 			return {
 				...state,
 				reset: payload
-
 			};
 		}
 		case REMOVE_REQUESTED: {
-
 			return {
 				...state,
 				remove: payload
-
 			};
 		}
 	}

@@ -1,9 +1,14 @@
 import { $injector } from '../../../src/injection';
 import { AggregateGeoResource, GeoResource, GeoResourceTypes } from '../../../src/domain/geoResources';
-import { getAttributionForLocallyImportedOrCreatedGeoResource, getAttributionProviderForGeoResourceImportedByUrl, getBvvAttribution, getDefaultAttribution, getMinimalAttribution } from '../../../src/services/provider/attribution.provider';
+import {
+	getAttributionForLocallyImportedOrCreatedGeoResource,
+	getAttributionProviderForGeoResourceImportedByUrl,
+	getBvvAttribution,
+	getDefaultAttribution,
+	getMinimalAttribution
+} from '../../../src/services/provider/attribution.provider';
 
 describe('Attribution provider', () => {
-
 	class GeoResourceImpl extends GeoResource {
 		constructor(attribution, id = 'id', label) {
 			super(id, label);
@@ -16,28 +21,25 @@ describe('Attribution provider', () => {
 	}
 
 	describe('helper functions', () => {
-
 		it('provides a minimal attribution object', () => {
-
-			const { copyright: { label } } = getMinimalAttribution('foo');
+			const {
+				copyright: { label }
+			} = getMinimalAttribution('foo');
 
 			expect(label).toBe('foo');
 		});
 	});
 
 	describe('Bvv GeoResource provider', () => {
-
 		const geoResourceServiceMock = {
-			byId: () => { }
+			byId: () => {}
 		};
 
 		beforeAll(() => {
-			$injector
-				.registerSingleton('GeoResourceService', geoResourceServiceMock);
+			$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
 		});
 
 		it('provides an attribution for a GeoResource', () => {
-
 			const fooAttribution = getMinimalAttribution('foo');
 			const barAttribution = getMinimalAttribution('bar');
 
@@ -79,9 +81,7 @@ describe('Attribution provider', () => {
 	});
 
 	describe('default GeoResource provider', () => {
-
 		it('provides an attribution for a GeoResource', () => {
-
 			expect(getDefaultAttribution(new GeoResourceImpl(null))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl(undefined))).toEqual(getMinimalAttribution(''));
 			expect(getDefaultAttribution(new GeoResourceImpl('foo'))).toEqual(getMinimalAttribution('foo'));
@@ -90,10 +90,8 @@ describe('Attribution provider', () => {
 	});
 
 	describe('getAttributionForLocallyImportedOrCreatedGeoResource', () => {
-
 		beforeAll(() => {
-			$injector
-				.registerSingleton('TranslationService', { translate: (key) => key });
+			$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		});
 
 		it('provides an attribution for locally imported dataset', () => {
@@ -107,7 +105,6 @@ describe('Attribution provider', () => {
 	});
 
 	describe('getAttributionProviderForGeoResourceImportedByUrl', () => {
-
 		it('Returns a function returning the actual provider for an URL based dataset imported by the user', () => {
 			const label = 'label';
 			const url = 'https://foo.bar/some?k=v';

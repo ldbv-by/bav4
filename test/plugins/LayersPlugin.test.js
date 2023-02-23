@@ -8,19 +8,17 @@ import { Topic } from '../../src/domain/topic';
 import { setCurrent } from '../../src/store/topics/topics.action';
 import { topicsReducer } from '../../src/store/topics/topics.reducer';
 
-
 describe('LayersPlugin', () => {
-
 	const geoResourceServiceMock = {
-		async init() { },
-		all() { },
-		byId() { },
-		asyncById() { },
-		addOrReplace() { }
+		async init() {},
+		all() {},
+		byId() {},
+		asyncById() {},
+		addOrReplace() {}
 	};
 	const topicsServiceMock = {
-		default() { },
-		byId() { }
+		default() {},
+		byId() {}
 	};
 	const windowMock = {
 		location: {
@@ -30,12 +28,11 @@ describe('LayersPlugin', () => {
 		}
 	};
 	const translationService = {
-		register() { },
+		register() {},
 		translate: (key) => key
 	};
 
 	const setup = (state) => {
-
 		const store = TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			topics: topicsReducer
@@ -50,7 +47,6 @@ describe('LayersPlugin', () => {
 	};
 
 	describe('register', () => {
-
 		it('calls #_init and awaits its completion', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
@@ -64,7 +60,6 @@ describe('LayersPlugin', () => {
 	});
 
 	describe('_init', () => {
-
 		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
@@ -98,7 +93,6 @@ describe('LayersPlugin', () => {
 		});
 
 		describe('_addLayersFromConfig', () => {
-
 			it('adds the configured layer', () => {
 				const store = setup();
 				const configuredBgId = 'atkis';
@@ -110,7 +104,6 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
-
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -154,7 +147,6 @@ describe('LayersPlugin', () => {
 		});
 
 		describe('_addLayersFromQueryParams', () => {
-
 			it('adds layers loading existing and on-demand geoResources', () => {
 				const queryParam = QueryParameters.LAYER + '=some0,some1,some2';
 				const store = setup();
@@ -171,7 +163,7 @@ describe('LayersPlugin', () => {
 				spyOn(geoResourceServiceMock, 'asyncById').and.callFake((id) => {
 					switch (id) {
 						case 'some1':
-							return new GeoResourceFuture(id, () => { });
+							return new GeoResourceFuture(id, () => {});
 					}
 				});
 

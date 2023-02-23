@@ -23,9 +23,9 @@ const getStore = () => {
 };
 
 /**
-* @typedef {Object} Notification
-* @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
-* @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+ * @typedef {Object} Notification
+ * @property {string|TemplateResult} content The notification content. Could either be a a plain string or a lit-html TemplateResult.
+ * @property {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
  */
 
 /**
@@ -33,7 +33,7 @@ const getStore = () => {
  * @param {string} content The notification content.
  * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
  * @function
-  */
+ */
 export const emitNotification = (content, level) => {
 	getStore().dispatch({
 		type: NOTIFICATION_ADDED,

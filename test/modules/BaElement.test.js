@@ -2,11 +2,9 @@ import { BaElement, renderTagOf } from '../../src/modules/BaElement';
 import { html, nothing } from 'lit-html';
 import { TestUtils } from '../test-utils.js';
 
-
 let skipRendering = false;
 
 class BaElementImpl extends BaElement {
-
 	constructor() {
 		super();
 		this.callOrderIndex = 0;
@@ -15,7 +13,9 @@ class BaElementImpl extends BaElement {
 	extractState(globalState) {
 		this.extractStateCalled = this.callOrderIndex++;
 		//here we extract the local state from the application store
-		const { root: { applicationStateIndex } } = globalState;
+		const {
+			root: { applicationStateIndex }
+		} = globalState;
 		return { elementStateIndex: applicationStateIndex, someWhatNull: null };
 	}
 
@@ -38,7 +38,6 @@ class BaElementImpl extends BaElement {
 		this.onRenderCalled = this.callOrderIndex++;
 	}
 
-
 	onAfterRender() {
 		this.onAfterRenderCalled = this.callOrderIndex++;
 	}
@@ -47,9 +46,8 @@ class BaElementImpl extends BaElement {
 		this.onWindowLoadCalled = this.callOrderIndex++;
 	}
 
-
 	createView(state) {
-		return html`<div class='ba-element-impl'> ${state.elementStateIndex}</div>`;
+		return html`<div class="ba-element-impl">${state.elementStateIndex}</div>`;
 	}
 
 	static get tag() {
@@ -57,14 +55,11 @@ class BaElementImpl extends BaElement {
 	}
 }
 
-class BaElementNoImpl extends BaElement {
-}
+class BaElementNoImpl extends BaElement {}
 
 class BaElementDefaultCss extends BaElement {
-
-
 	defaultCss() {
-		return html`<style id='defaultCss'></style>`;
+		return html`<style id="defaultCss"></style>`;
 	}
 
 	createView() {
@@ -77,10 +72,8 @@ class BaElementDefaultCss extends BaElement {
 }
 
 class BaElementNoDefaultCss extends BaElement {
-
-
 	defaultCss() {
-		return html`<style id='defaultCss'></style>`;
+		return html`<style id="defaultCss"></style>`;
 	}
 
 	createView() {
@@ -97,7 +90,6 @@ window.customElements.define('ba-element', BaElement);
 window.customElements.define('ba-element-noimpl', BaElementNoImpl);
 window.customElements.define('ba-element-default-css', BaElementDefaultCss);
 window.customElements.define('ba-element-no-default-css', BaElementNoDefaultCss);
-
 
 let store;
 
@@ -121,16 +113,12 @@ const setupStoreAndDi = () => {
 	store = TestUtils.setupStoreAndDi({ root: { applicationStateIndex: 21 } }, { root: changeApplicationStoreIndexReducer });
 };
 
-
 describe('BaElement', () => {
-
 	beforeEach(() => {
-
 		setupStoreAndDi();
 		skipRendering = false;
 	});
 	describe('expected errors', () => {
-
 		describe('constructor', () => {
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new BaElement()).toThrowError(TypeError, 'Can not construct abstract class.');
@@ -139,7 +127,10 @@ describe('BaElement', () => {
 
 		describe('methods', () => {
 			it('throws exception when abstract #createView is called without overriding', () => {
-				expect(() => new BaElementNoImpl().createView()).toThrowError(TypeError, 'Please implement abstract method #createView or do not call super.createView from child.');
+				expect(() => new BaElementNoImpl().createView()).toThrowError(
+					TypeError,
+					'Please implement abstract method #createView or do not call super.createView from child.'
+				);
 			});
 
 			it('throws exception when abstract static method #tag is called directly', () => {
@@ -147,14 +138,15 @@ describe('BaElement', () => {
 			});
 
 			it('throws exception when abstract static method #tag is called without overriding', () => {
-				expect(() => BaElementNoImpl.tag).toThrowError(TypeError, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+				expect(() => BaElementNoImpl.tag).toThrowError(
+					TypeError,
+					'Please implement static abstract method #tag or do not call static abstract method #tag from child.'
+				);
 			});
 		});
-
 	});
 
 	describe('events', () => {
-
 		it('is able to emit an event', async () => {
 			const myFunction = jasmine.createSpy();
 			const element = await TestUtils.render(BaElementImpl.tag);
@@ -167,7 +159,6 @@ describe('BaElement', () => {
 	});
 
 	describe('getState()', () => {
-
 		it('returns the state of this element', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 
@@ -175,9 +166,7 @@ describe('BaElement', () => {
 		});
 	});
 
-
 	describe('log()', () => {
-
 		it('returns the state of this element', async () => {
 			const logSpy = spyOn(console, 'log');
 			const element = await TestUtils.render(BaElementImpl.tag);
@@ -189,7 +178,6 @@ describe('BaElement', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders the view', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 
@@ -250,11 +238,9 @@ describe('BaElement', () => {
 			expect(instance.onBeforeRender).toHaveBeenCalledWith(false);
 			expect(instance.onAfterRender).toHaveBeenCalledWith(false);
 		});
-
 	});
 
 	describe('when state changed', () => {
-
 		it('calls state change callback in correct order', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const updateStateSpy = spyOn(element, 'updateState').and.callThrough();
@@ -279,7 +265,6 @@ describe('BaElement', () => {
 	});
 
 	describe('updateState', () => {
-
 		it('calls extractState()', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const extractStateSpy = spyOn(element, 'extractState').and.callThrough();
@@ -293,7 +278,6 @@ describe('BaElement', () => {
 	});
 
 	describe('observe', () => {
-
 		it('registers observers', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
@@ -316,7 +300,7 @@ describe('BaElement', () => {
 			expect(elementStateIndexCallback).toHaveBeenCalledTimes(3);
 			expect(someWhatNullFieldCallback).not.toHaveBeenCalled();
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the state of BaElementImpl');
+			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the state of BaElementImpl");
 		});
 
 		it('registers observers and calls the callbacks immediately', async () => {
@@ -338,12 +322,10 @@ describe('BaElement', () => {
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
 			expect(someWhatNullFieldCallback).toHaveBeenCalledWith(null);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the state of BaElementImpl');
+			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the state of BaElementImpl");
 		});
-
 	});
 	describe('default css', () => {
-
 		it('checks if a template result contains content', async () => {
 			const element = await TestUtils.render(BaElementImpl.tag);
 
@@ -359,24 +341,21 @@ describe('BaElement', () => {
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeTruthy();
 		});
 
-		it('does not prepends the default css when #createView returns \'nothing\'', async () => {
+		it("does not prepends the default css when #createView returns 'nothing'", async () => {
 			const element = await TestUtils.render(BaElementNoDefaultCss.tag);
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeFalsy();
 		});
-
 	});
 });
 
 describe('renderTagOf', () => {
-
 	it('throws an exception when class does not inherit BaElement', () => {
-		class Foo { }
+		class Foo {}
 
 		expect(() => renderTagOf(Foo)).toThrowError(TypeError, 'Foo does not inherit BaElement');
 	});
 
 	it('renders the tag as html', () => {
-
 		expect(renderTagOf(BaElementImpl)).toBeTruthy();
 	});
 });
