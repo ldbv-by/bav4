@@ -225,7 +225,16 @@ describe('ElevationProfile', () => {
 
 			// assert
 			const initialModel = altitudeProfile.getModel();
-			expect(initialModel).toEqual({ profile: null, labels: null, data: null, selectedAttribute: Default_Selected_Attribute, darkSchema: null, distUnit: null, portrait: false, minWidth: false });
+			expect(initialModel).toEqual({
+				profile: null,
+				labels: null,
+				data: null,
+				selectedAttribute: Default_Selected_Attribute,
+				darkSchema: null,
+				distUnit: null,
+				portrait: false,
+				minWidth: false
+			});
 		});
 	});
 
