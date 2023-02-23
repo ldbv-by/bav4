@@ -34,7 +34,7 @@
 		"karma-script-launcher": "1.0.0",
 		"karma-webkit-launcher": "2.1.0",
 		"karma-webpack": "5.0.0",
-		"playwright": "1.29.0",
+		"playwright": "1.31.1",
 		"portfinder-sync": "0.0.2",
 		"prettier": "2.8.4",
 		"redux-test-utils": "1.0.2",
