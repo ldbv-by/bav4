@@ -7,7 +7,6 @@ export const SourceTypeMaxFileSize = 2 ** 27;
  * Describes the type of a geodata source.
  */
 export class SourceType {
-
 	/**
 	 * @param {SourceTypeName} name
 	 * @param {string} [version] version of type of source
@@ -43,14 +42,12 @@ export const SourceTypeName = Object.freeze({
 	EWKT: 'ewkt'
 });
 
-
 /**
  * Result of a request for a SourceType.
  * Contains a status flag ({@link SourceTypeResultStatus})
  * and, if the request was successful, the actual {@link SourceType}.
  */
 export class SourceTypeResult {
-
 	/**
 	 *
 	 * @param {SourceTypeResultStatus} status
@@ -83,4 +80,3 @@ export const SourceTypeResultStatus = Object.freeze({
 	RESTRICTED: 5,
 	UNSUPPORTED_SRID: 6
 });
-

@@ -16,14 +16,18 @@ const UPDATE_GEORESOURCEINFO = 'UPDATE_GEORESOURCEINFO';
  * @author alsturm
  */
 export class GeoResourceInfoPanel extends MvuElement {
-
 	constructor() {
 		super({ geoResourceInfo: null });
-		const { TranslationService: translationService, GeoResourceInfoService: geoResourceInfoService }
-		= $injector.inject('TranslationService', 'GeoResourceInfoService');
+		const { TranslationService: translationService, GeoResourceInfoService: geoResourceInfoService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceInfoService'
+		);
 		this._translationService = translationService;
 		this._geoResourceInfoService = geoResourceInfoService;
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait, media.portrait)
+		);
 	}
 
 	update(type, data, model) {
@@ -47,9 +51,11 @@ export class GeoResourceInfoPanel extends MvuElement {
 
 		if (geoResourceInfo) {
 			return html`
-			<style>${css}</style>
-			<div>${geoResourceInfo.title}</div>
-			<div class='${getOrientationClass()}'>${unsafeHTML(`${geoResourceInfo.content}`)}</div>
+				<style>
+					${css}
+				</style>
+				<div>${geoResourceInfo.title}</div>
+				<div class="${getOrientationClass()}">${unsafeHTML(`${geoResourceInfo.content}`)}</div>
 			`;
 		}
 		return html`<ba-spinner></ba-spinner>`;
@@ -70,7 +76,6 @@ export class GeoResourceInfoPanel extends MvuElement {
 	 * @private
 	 */
 	async _getGeoResourceInfo(geoResourceId) {
-
 		try {
 			let result = await this._geoResourceInfoService.byId(geoResourceId);
 			if (result === null) {
@@ -79,8 +84,7 @@ export class GeoResourceInfoPanel extends MvuElement {
 				result = new GeoResourceInfoResult(infoText);
 			}
 			this.signal(UPDATE_GEORESOURCEINFO, result);
-		}
-		catch (e) {
+		} catch (e) {
 			const message = this._translationService.translate('geoResourceInfo_geoResourceInfo_response_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn(e);

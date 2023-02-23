@@ -2,25 +2,21 @@ import { $injector } from '../../src/injection';
 import { BaaCredentialService } from '../../src/services/BaaCredentialService';
 
 describe('BaaService', () => {
-
 	const urlService = {
-		originAndPathname() { }
+		originAndPathname() {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('UrlService', urlService);
+		$injector.registerSingleton('UrlService', urlService);
 	});
 
 	describe('addOrReplace', () => {
-
 		it('adds a credential object base64-encoded', () => {
 			const url = 'http://foo.bar/';
 			const spy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const credential = {
 				username: 'username',
 				password: 'password'
-
 			};
 			const credentialEncoded = btoa(JSON.stringify({ ...credential }));
 			const instanceUnderTest = new BaaCredentialService();
@@ -56,14 +52,12 @@ describe('BaaService', () => {
 	});
 
 	describe('addOrReplace', () => {
-
 		it('return a credential object decoded', () => {
 			const url = 'http://foo.bar/';
 			const spy = spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const credential = {
 				username: 'username',
 				password: 'password'
-
 			};
 			const instanceUnderTest = new BaaCredentialService();
 			instanceUnderTest._credentials.set(url, btoa(JSON.stringify({ ...credential })));
@@ -80,7 +74,6 @@ describe('BaaService', () => {
 			const credential = {
 				username: 'username',
 				password: 'password'
-
 			};
 			instanceUnderTest._credentials.set(url, btoa(JSON.stringify({ ...credential })));
 
@@ -95,7 +88,6 @@ describe('BaaService', () => {
 			const credential = {
 				username: 'username',
 				password: 'password'
-
 			};
 			instanceUnderTest._credentials.set(url, btoa(JSON.stringify({ ...credential })));
 

@@ -1,7 +1,6 @@
 import { HighlightFeatureType, HighlightGeometryType } from '../../../src/store/highlight/highlight.action';
 
 describe('highlightAction', () => {
-
 	it('exports a enum for HighlightFeatureTypes', () => {
 		expect(Object.keys(HighlightFeatureType).length).toBe(4);
 		expect(HighlightFeatureType.DEFAULT).toBe(0);

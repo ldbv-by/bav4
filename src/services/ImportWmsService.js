@@ -26,7 +26,6 @@ import { getAttributionProviderForGeoResourceImportedByUrl } from './provider/at
  * @author thiloSchlemmer
  */
 export class ImportWmsService {
-
 	/**
 	 * @param {wmsCapabilitiesProvider} [wmsCapabilitiesProvider = bvvCapabilitiesProvider]
 	 */
@@ -39,9 +38,9 @@ export class ImportWmsService {
 	}
 
 	/**
-	* Returns default wms import options.
-	* @returns ImportWmsOptions
-	*/
+	 * Returns default wms import options.
+	 * @returns ImportWmsOptions
+	 */
 	_newDefaultImportWmsOptions() {
 		return {
 			isAuthenticated: false,
@@ -62,7 +61,7 @@ export class ImportWmsService {
 		const completeOptions = { ...this._newDefaultImportWmsOptions(), ...options };
 		const geoResources = await this._wmsCapabilitiesProvider(this._urlService.originAndPathname(url), completeOptions);
 		return geoResources
-			.map(gr => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
-			.map(gr => this._geoResourceService.addOrReplace(gr));
+			.map((gr) => gr.setAttributionProvider(getAttributionProviderForGeoResourceImportedByUrl(url)))
+			.map((gr) => this._geoResourceService.addOrReplace(gr));
 	}
 }

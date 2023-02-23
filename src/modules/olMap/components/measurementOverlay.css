@@ -1,34 +1,42 @@
-.ba-overlay, .help, .static, .distance,.area, .floating {
-	background-color: rgba(140,140,140,0.9);
-	border-radius: 0.25em; 
+.ba-overlay,
+.help,
+.static,
+.distance,
+.area,
+.floating {
+	background-color: rgba(140, 140, 140, 0.9);
+	border-radius: 0.25em;
 	color: var(--text3);
 	padding: 0.125em 0.5em;
 	font-size: 0.75rem;
 	cursor: default;
-	-webkit-user-select: none; 
-	-ms-user-select: none; 
-	user-select: none; 
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
-.ba-overlay:after,.static:after, .floating:after {
+.ba-overlay:after,
+.static:after,
+.floating:after {
 	position: absolute;
 	left: 50%;
-	bottom: -0.375em; 
-	margin-left: -0.25em; 
-	content: "";
-	border-top: 6px solid rgba(140,140,140,0.9); 
-    
+	bottom: -0.375em;
+	margin-left: -0.25em;
+	content: '';
+	border-top: 6px solid rgba(140, 140, 140, 0.9);
 }
 
 .partition {
 	background: var(--primary-bg-color-05);
 	color: var(--text1);
-	padding: .1em .2em;
+	padding: 0.1em 0.2em;
 	border-radius: 0;
 }
 
-.static,.distance, .area {
-	background-color: rgba(255,0,0,0.9);
+.static,
+.distance,
+.area {
+	background-color: rgba(255, 0, 0, 0.9);
 	/* cursor: move; */
 }
 

@@ -2,9 +2,7 @@ import { setFileSaveResult, acknowledgeTermsOfUse } from '../../../src/store/sha
 import { sharedReducer } from '../../../src/store/shared/shared.reducer';
 import { TestUtils } from '../../test-utils';
 
-
 describe('sharedReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			shared: sharedReducer
@@ -35,5 +33,4 @@ describe('sharedReducer', () => {
 
 		expect(store.getState().shared.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
 	});
-
 });

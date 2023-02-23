@@ -6,10 +6,7 @@ import { drawReducer } from '../../src/store/draw/draw.reducer.js';
 import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
-
-
 describe('DrawPlugin', () => {
-
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer,

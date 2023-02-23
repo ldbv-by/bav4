@@ -10,7 +10,6 @@ import { $injector } from '../../injection';
  * @typedef {function(url) : (string)} proxifyUrlProvider
  */
 
-
 /**
  * Returns a BVV -style proxified URL.
  * If the `PROXY_URL` config param is not available,
@@ -29,8 +28,7 @@ export const bvvProxifyUrlProvider = (url) => {
 			return url;
 		}
 		return `${proxyUrl}?url=${encodeURIComponent(url)}`;
-	}
-	catch (e) {
+	} catch (e) {
 		console.warn(e);
 	}
 	return url;

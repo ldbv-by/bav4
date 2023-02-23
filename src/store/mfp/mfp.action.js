@@ -84,7 +84,6 @@ export const setShowGrid = (isActive) => {
  * @function
  */
 export const requestJob = () => {
-
 	getStore().dispatch({
 		type: JOB_REQUEST_CHANGED,
 		payload: new EventLike(null)
@@ -97,7 +96,6 @@ export const requestJob = () => {
  * @function
  */
 export const startJob = (spec) => {
-
 	getStore().dispatch({
 		type: JOB_SPEC_CHANGED,
 		payload: new EventLike(spec)
@@ -105,11 +103,10 @@ export const startJob = (spec) => {
 };
 
 /**
-* Cancels a currently running job.
-* @function
-*/
+ * Cancels a currently running job.
+ * @function
+ */
 export const cancelJob = () => {
-
 	getStore().dispatch({
 		type: JOB_SPEC_CHANGED,
 		payload: new EventLike(null)

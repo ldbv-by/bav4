@@ -3,11 +3,11 @@
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-medium-open);
 	animation-timing-function: var(--animation-easing-open);
-	background-color: var(--primary-bg-color);   
+	background-color: var(--primary-bg-color);
 	box-shadow: 0px 0px 2px rgb(0 0 0 / 50%);
 	display: flex;
 	flex-direction: column;
-	margin: .1em auto;
+	margin: 0.1em auto;
 	padding: 0.8em 1.5em;
 	width: -moz-min-content;
 	width: min-content;
@@ -20,18 +20,17 @@
 }
 
 .notification_content a {
-	
 	color: var(--text3);
 }
 
 .notification_level {
 	font-weight: bold;
 	color: var(--text3);
-	margin-bottom: .2em;
+	margin-bottom: 0.2em;
 }
 
 .notification_fixed {
-	border: .2em solid var(--primary-color);
+	border: 0.2em solid var(--primary-color);
 }
 
 .notification_info {
@@ -56,15 +55,15 @@
 		transform: translateY(200%);
 	}
 	100% {
-		opacity: 1;   
+		opacity: 1;
 	}
 }
 @keyframes animateOut {
 	0% {
-		opacity: 1;   
+		opacity: 1;
 	}
 	100% {
-		opacity: 0;      
+		opacity: 0;
 		transform: translateY(200%);
 	}
 }

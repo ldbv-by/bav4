@@ -13,9 +13,8 @@ import { HighlightFeatureType } from '../../src/store/highlight/highlight.action
 import { bottomSheetReducer } from '../../src/store/bottomSheet/bottomSheet.reducer.js';
 
 describe('ContextClickPlugin', () => {
-
 	const environmentServiceMock = {
-		isTouch() { }
+		isTouch() {}
 	};
 
 	const setup = (state) => {
@@ -27,20 +26,17 @@ describe('ContextClickPlugin', () => {
 			highlight: highlightReducer
 		});
 
-		$injector
-			.registerSingleton('EnvironmentService', environmentServiceMock);
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
 
 	describe('touch environment', () => {
-
 		beforeEach(() => {
 			spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 		});
 
 		describe('when context-click state changed', () => {
-
 			it('updates the mapContextMenu and the highlight store section', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
@@ -60,7 +56,6 @@ describe('ContextClickPlugin', () => {
 			});
 
 			describe('when move-start state changed', () => {
-
 				it('updates the highlight store section', () => {
 					const store = setup();
 					new ContextClickPlugin().register(store);
@@ -78,7 +73,6 @@ describe('ContextClickPlugin', () => {
 			});
 
 			describe('when pointer-click state changed', () => {
-
 				it('updates the highlight store section', () => {
 					const store = setup();
 					new ContextClickPlugin().register(store);
@@ -99,17 +93,14 @@ describe('ContextClickPlugin', () => {
 	});
 
 	describe('non-touch environment', () => {
-
 		beforeEach(() => {
 			spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 		});
 
 		describe('when context-click state changed', () => {
-
 			it('updates the mapContextMenu store section', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
-
 
 				setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
@@ -120,7 +111,6 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when move-start state changed', () => {
-
 			it('updates the mapContextMenu store section', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
@@ -136,7 +126,6 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when pointer-click state changed', () => {
-
 			it('updates the mapContextMenu store section', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);

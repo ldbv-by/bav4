@@ -20,16 +20,18 @@ describe('PasswordCredentialPanel', () => {
 			},
 			...state
 		};
-		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, modal: modalReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			notifications: notificationReducer,
+			modal: modalReducer,
+			media: createNoInitialStateMediaReducer()
+		});
 
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(PasswordCredentialPanel.tag);
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new PasswordCredentialPanel().getModel();
@@ -41,7 +43,6 @@ describe('PasswordCredentialPanel', () => {
 				showPassword: false
 			});
 		});
-
 
 		it('has default callback methods', async () => {
 			await setup();
@@ -55,7 +56,6 @@ describe('PasswordCredentialPanel', () => {
 	});
 
 	describe('when panel is rendered', () => {
-
 		describe('the first time', () => {
 			it('displays the username-input with focus', async () => {
 				const element = await setup();
@@ -76,7 +76,6 @@ describe('PasswordCredentialPanel', () => {
 
 		it('hides optimal but empty url', async () => {
 			const element = await setup();
-
 
 			expect(element.url).toBeNull();
 
@@ -155,7 +154,7 @@ describe('PasswordCredentialPanel', () => {
 
 		it('resolves credential on successful credential-check', async () => {
 			const authenticateCallback = jasmine.createSpy().withArgs({ username: 'someUser', password: '42' }, 'someUrl').and.resolveTo({ foo: 'bar' });
-			const onCloseCallback = () => { };
+			const onCloseCallback = () => {};
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
@@ -170,7 +169,6 @@ describe('PasswordCredentialPanel', () => {
 			expect(authenticateCallback).toHaveBeenCalled();
 			expect(spy).toHaveBeenCalledWith({ username: 'someUser', password: '42' }, { foo: 'bar' });
 		});
-
 
 		it('emits notification on failed credential-authentication', async () => {
 			const authenticateCallback = jasmine.createSpy().and.resolveTo(null);
@@ -192,12 +190,11 @@ describe('PasswordCredentialPanel', () => {
 				await TestUtils.timeout(authenticationDelay);
 				return true;
 			};
-			const onCloseCallback = () => { };
+			const onCloseCallback = () => {};
 			const element = await setup();
 			element.url = 'someUrl';
 			element.authenticate = authenticateCallback;
 			element.onClose = onCloseCallback;
-
 
 			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
 			submitButton.click();
@@ -246,7 +243,6 @@ describe('PasswordCredentialPanel', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape desktop', async () => {
 			const state = {
 				media: {
@@ -271,5 +267,4 @@ describe('PasswordCredentialPanel', () => {
 			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
 		});
 	});
-
 });

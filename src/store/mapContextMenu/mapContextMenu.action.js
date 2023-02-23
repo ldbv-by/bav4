@@ -15,7 +15,6 @@ const getStore = () => {
  * @typedef {Array<number>} ScreenCoordinate
  */
 
-
 /**
  * Properties to display the contextmenu at a specific point with specific entries
  * @typedef {Object} ContextMenuData

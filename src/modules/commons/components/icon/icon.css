@@ -8,8 +8,8 @@
 }
 
 .icon.disabled {
-	filter: brightness(0.8) ;
-	cursor: not-allowed;   
+	filter: brightness(0.8);
+	cursor: not-allowed;
 }
 
 .icon:active {
@@ -19,7 +19,7 @@
 .icon.disabled:hover {
 	transform: none;
 }
-  
+
 .icon.disabled:active {
 	transform: none;
 }

@@ -12,7 +12,6 @@ const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
  */
 
 export class MapButtonsContainer extends MvuElement {
-
 	constructor() {
 		super({
 			isPortrait: false,
@@ -22,7 +21,6 @@ export class MapButtonsContainer extends MvuElement {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		this._environmentService = environmentService;
-
 	}
 
 	update(type, data, model) {
@@ -33,14 +31,16 @@ export class MapButtonsContainer extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth }));
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait_HasMinWidth, { isPortrait: media.portrait, hasMinWidth: media.minWidth })
+		);
 	}
 
 	/**
 	 *@override
 	 */
 	createView(model) {
-
 		const { isPortrait, hasMinWidth } = model;
 
 		const getOrientationClass = () => {
@@ -52,14 +52,16 @@ export class MapButtonsContainer extends MvuElement {
 		};
 
 		return html`
-            <style>${css}</style>
-            <div class="map-buttons-container ${getOrientationClass()} ${getMinWidthClass()}">
+			<style>
+				${css}
+			</style>
+			<div class="map-buttons-container ${getOrientationClass()} ${getMinWidthClass()}">
 				<ba-rotation-button></ba-rotation-button>
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>
-				<ba-extent-button></ba-extent-button>                     
-            </div>			            
-        `;
+				<ba-extent-button></ba-extent-button>
+			</div>
+		`;
 	}
 
 	static get tag() {

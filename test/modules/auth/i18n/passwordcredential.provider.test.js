@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/auth/i18n/passwordcredential.provider';
 
-
 describe('i18n for header module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.auth_passwordCredentialPanel_title).toBe('Authentifizierung für:');
@@ -16,7 +13,6 @@ describe('i18n for header module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.auth_passwordCredentialPanel_title).toBe('Authentication for:');
@@ -39,7 +35,6 @@ describe('i18n for header module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

@@ -1,6 +1,6 @@
 .slider-container {
 	width: 50%;
-	padding-top: 1em; 	
+	padding-top: 1em;
 }
 
 ba-icon {
@@ -8,16 +8,15 @@ ba-icon {
 	width: 2.6em;
 	height: 2.6em;
 	display: block;
-	margin: 0 .3em;
+	margin: 0 0.3em;
 }
 
 ba-icon:hover {
 	background: var(--primary-color);
-
 }
 
 ba-icon:focus {
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .ba-list-item:hover {
@@ -32,16 +31,16 @@ ba-icon:focus {
 	visibility: hidden;
 }
 
-.collapse-content>* {
+.collapse-content > * {
 	border-right: 1px dotted var(--header-background-color);
 }
 
-.collapse-content>*:first-child {
+.collapse-content > *:first-child {
 	border-right: 0;
-	margin-right: .5em;
+	margin-right: 0.5em;
 }
 
-.collapse-content>*:last-child {
+.collapse-content > *:last-child {
 	padding-right: 1em;
 	border-right: 0;
 }

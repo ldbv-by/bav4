@@ -8,8 +8,6 @@ import { register } from 'ol/proj/proj4';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
 import { DragPan } from 'ol/interaction';
 
-
-
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 
@@ -27,7 +25,8 @@ describe('MeasurementOverlayStyle', () => {
 			measurement: state
 		};
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key })
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', {
@@ -40,7 +39,6 @@ describe('MeasurementOverlayStyle', () => {
 					return area + ' m²';
 				}
 			});
-
 	};
 
 	const createFeature = () => {
@@ -101,7 +99,10 @@ describe('MeasurementOverlayStyle', () => {
 
 		const classUnderTest = new MeasurementOverlayStyle();
 
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 		classUnderTest._createDistanceOverlay(feature, mapMock);
 
@@ -125,7 +126,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
@@ -149,7 +153,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
@@ -172,7 +179,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createDistanceOverlay(feature, mapMock);
@@ -195,7 +205,14 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
@@ -219,7 +236,14 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
@@ -242,7 +266,14 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
@@ -263,15 +294,16 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
 	});
-
-
 
 	it('creates partition tooltips for line in right-sector', () => {
 		setup();
@@ -287,7 +319,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -295,7 +330,6 @@ describe('MeasurementOverlayStyle', () => {
 
 		expect(partition.placement).toEqual({ sector: 'right', positioning: 'center-center', offset: [jasmine.any(Number), jasmine.any(Number)] });
 	});
-
 
 	it('creates partition tooltips for line in left-sector', () => {
 		setup();
@@ -311,7 +345,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[12345, 0], [0, 0]]);
+		const geometry = new LineString([
+			[12345, 0],
+			[0, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -334,7 +371,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 12345], [0, 0]]);
+		const geometry = new LineString([
+			[0, 12345],
+			[0, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -357,7 +397,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [0, 12345]]);
+		const geometry = new LineString([
+			[0, 0],
+			[0, 12345]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -380,7 +423,10 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [12345, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[12345, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -402,7 +448,14 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
@@ -426,13 +479,19 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[123456, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 		expect(feature.get('partitions').length).toBe(12);
 
-		geometry.setCoordinates([[0, 0], [12345, 0]]);
+		geometry.setCoordinates([
+			[0, 0],
+			[12345, 0]
+		]);
 		classUnderTest._createOrRemovePartitionOverlays(feature, mapMock);
 
 		expect(feature.get('partitions').length).toBe(1);
@@ -454,14 +513,24 @@ describe('MeasurementOverlayStyle', () => {
 		};
 
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new Polygon([[[0, 0], [5000, 0], [5500, 5500], [0, 5000]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[5000, 0],
+				[5500, 5500],
+				[0, 5000]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 		expect(feature.get('area')).toBeTruthy();
 
 		// change to Line
-		geometry.setCoordinates([[0, 0], [12345, 0]]);
+		geometry.setCoordinates([
+			[0, 0],
+			[12345, 0]
+		]);
 		classUnderTest._createOrRemoveAreaOverlay(feature, mapMock);
 
 		expect(feature.get('area')).toBeFalsy();
@@ -470,17 +539,22 @@ describe('MeasurementOverlayStyle', () => {
 	it('writes manual overlay-position to the related feature', () => {
 		setup();
 		const draggedOverlayMock = {
-			getPosition: () => [42, 21], get(property) {
+			getPosition: () => [42, 21],
+			get(property) {
 				return property === 'manualPositioning';
 			}
 		};
 		const staticOverlayMock = {
-			getPosition: () => [], get() {
+			getPosition: () => [],
+			get() {
 				return false;
 			}
 		};
 
-		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[123456, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', draggedOverlayMock);
@@ -500,17 +574,22 @@ describe('MeasurementOverlayStyle', () => {
 	it('writes no manual overlay-position to the related feature, when not needed', () => {
 		setup();
 		const draggedOverlayMock = {
-			getPosition: () => [42, 21], get() {
+			getPosition: () => [42, 21],
+			get() {
 				return false;
 			}
 		};
 		const staticOverlayMock = {
-			getPosition: () => [], get() {
+			getPosition: () => [],
+			get() {
 				return false;
 			}
 		};
 
-		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[123456, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', draggedOverlayMock);
@@ -527,8 +606,6 @@ describe('MeasurementOverlayStyle', () => {
 		expect(feature.get('static_position_y')).toBeUndefined();
 	});
 
-
-
 	it('restore manual overlay-position from the related feature', () => {
 		setup();
 		let actualPosition;
@@ -536,13 +613,18 @@ describe('MeasurementOverlayStyle', () => {
 		const overlayMock = {
 			setPosition(pos) {
 				actualPosition = pos;
-			}, set(key, value) {
+			},
+			set(key, value) {
 				actualProperty.key = key;
 				actualProperty.value = value;
-			}, setOffset() { }
+			},
+			setOffset() {}
 		};
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[123456, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', overlayMock);
@@ -562,13 +644,18 @@ describe('MeasurementOverlayStyle', () => {
 		const overlayMock = {
 			setPosition(pos) {
 				actualPosition = pos;
-			}, set(key, value) {
+			},
+			set(key, value) {
 				actualProperty.key = key;
 				actualProperty.value = value;
-			}, setOffset() { }
+			},
+			setOffset() {}
 		};
 		const classUnderTest = new MeasurementOverlayStyle();
-		const geometry = new LineString([[0, 0], [123456, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[123456, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		feature.set('measurement', overlayMock);
@@ -581,12 +668,10 @@ describe('MeasurementOverlayStyle', () => {
 	});
 
 	describe('_createDragOn', () => {
-
 		const getOverlay = () => {
 			const element = document.createElement('div');
-			return { getElement: () => element, set: () => { } };
+			return { getElement: () => element, set: () => {} };
 		};
-
 
 		const getMapMock = (interaction) => {
 			return {
@@ -659,6 +744,5 @@ describe('MeasurementOverlayStyle', () => {
 
 			expect(dragableSpy).toHaveBeenCalledWith('dragable', false);
 		});
-
 	});
 });

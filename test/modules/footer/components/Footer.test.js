@@ -8,9 +8,7 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 
 window.customElements.define(Footer.tag, Footer);
 
-
 describe('Footer', () => {
-
 	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 
@@ -34,7 +32,6 @@ describe('Footer', () => {
 	};
 
 	describe('responsive layout ', () => {
-
 		it('layouts with open main menu for landscape mode', async () => {
 			const state = {
 				media: {
@@ -43,7 +40,6 @@ describe('Footer', () => {
 				}
 			};
 			const element = await setup(state);
-
 
 			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
@@ -99,9 +95,7 @@ describe('Footer', () => {
 		});
 	});
 
-
 	describe('when initialized', () => {
-
 		it('removes a preload css class', async () => {
 			const element = await setup();
 

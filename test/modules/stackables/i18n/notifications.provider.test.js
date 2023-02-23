@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/stackables/i18n/notifications.provider';
 
-
 describe('i18n for search module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.notifications_item_info).toBe('Info');
@@ -13,7 +10,6 @@ describe('i18n for search module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.notifications_item_info).toBe('Info');
@@ -33,7 +29,6 @@ describe('i18n for search module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

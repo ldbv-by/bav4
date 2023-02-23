@@ -3,13 +3,11 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import css from './stackableContentPanel.css';
 import { MvuElement } from '../../MvuElement';
 
-
 const Notification_Autoclose_Time = 5000;
 const Update_Notifications = 'update_notifications';
 const Update_Bottom_Sheet = 'update_bottom_sheet';
 const Update_Remove_Notification = 'update_remove_notification';
 const Update_Autoclose_Time = 'update_autoclose_time';
-
 
 /**
  * Container for notifications and the bottom-sheet.
@@ -17,7 +15,6 @@ const Update_Autoclose_Time = 'update_autoclose_time';
  * @author thiloSchlemmer
  */
 export class StackableContentPanel extends MvuElement {
-
 	constructor() {
 		super({
 			notifications: [],
@@ -32,16 +29,14 @@ export class StackableContentPanel extends MvuElement {
 			if (notification) {
 				this.signal(Update_Notifications, notification);
 			}
-
 		};
 
 		const onBottomSheetChanged = (content) => {
 			this.signal(Update_Bottom_Sheet, content);
-
 		};
 
-		this.observe(state => state.notifications.latest, onLatestChanged);
-		this.observe(state => state.bottomSheet, onBottomSheetChanged);
+		this.observe((state) => state.notifications.latest, onLatestChanged);
+		this.observe((state) => state.bottomSheet, onBottomSheetChanged);
 	}
 
 	update(type, data, model) {
@@ -55,12 +50,11 @@ export class StackableContentPanel extends MvuElement {
 			case Update_Bottom_Sheet:
 				return { ...model, bottomSheet: data.data };
 			case Update_Remove_Notification:
-				return { ...model, notifications: model.notifications.filter(n => n.id !== data.id) };
+				return { ...model, notifications: model.notifications.filter((n) => n.id !== data.id) };
 			case Update_Autoclose_Time:
 				return { ...model, autocloseTime: data };
 		}
 	}
-
 
 	/**
 	 * @override
@@ -70,7 +64,10 @@ export class StackableContentPanel extends MvuElement {
 
 		const createNotificationItem = (notification, index) => {
 			const item = { ...notification, index: index, autocloseTime: autocloseTime };
-			return html`<ba-notification-item .content=${item} .onClose=${(event) => this.signal(Update_Remove_Notification, event)}></ba-notification-item>`;
+			return html`<ba-notification-item
+				.content=${item}
+				.onClose=${(event) => this.signal(Update_Remove_Notification, event)}
+			></ba-notification-item>`;
 		};
 
 		const createBottomSheet = (content) => {
@@ -79,14 +76,13 @@ export class StackableContentPanel extends MvuElement {
 
 		const isEmpty = notifications.length === 0 && bottomSheet == null;
 
-		return isEmpty ? nothing : html`
-			<style>${css}</style>
-			<div class="stackable-content-notification-panel">
-				${repeat(notifications, (notification) => notification.id, createNotificationItem)}  					
-			</div>
-			<div class="stackable-content-sheet-panel">				
-				${createBottomSheet(bottomSheet)}
-			</div>`;
+		return isEmpty
+			? nothing
+			: html` <style>
+						${css}
+					</style>
+					<div class="stackable-content-notification-panel">${repeat(notifications, (notification) => notification.id, createNotificationItem)}</div>
+					<div class="stackable-content-sheet-panel">${createBottomSheet(bottomSheet)}</div>`;
 	}
 
 	static get tag() {

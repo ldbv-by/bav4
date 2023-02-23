@@ -19,13 +19,11 @@ describe('ToolContainer', () => {
 	let store;
 
 	const environmentService = {
-		isEmbedded: () => { }
+		isEmbedded: () => {}
 	};
 
 	const setup = async (state = {}) => {
-
 		const initialState = {
-
 			media: {
 				portrait: false,
 				minWidth: true
@@ -37,14 +35,11 @@ describe('ToolContainer', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 
-		$injector
-			.registerSingleton('EnvironmentService', environmentService)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentService).registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ToolContainer.tag);
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new ToolContainer().getModel();
@@ -58,7 +53,6 @@ describe('ToolContainer', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when toolId is Null', async () => {
 			const element = await setup();
 
@@ -106,7 +100,6 @@ describe('ToolContainer', () => {
 			const element = await setup();
 
 			Object.entries(ToolId).forEach(([, value]) => {
-
 				setCurrentTool(value);
 				const content = element.shadowRoot.querySelector('.tool-container__content');
 
@@ -132,7 +125,6 @@ describe('ToolContainer', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape desktop', async () => {
 			const state = {
 				tools: {
@@ -207,7 +199,6 @@ describe('ToolContainer', () => {
 	});
 
 	describe('when close button clicked', () => {
-
 		it('resets the toolId', async () => {
 			const state = {
 				tools: {

@@ -4,11 +4,7 @@ import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(MapButtonsContainer.tag, MapButtonsContainer);
 
-
-
 describe('MapButtonsContainer', () => {
-
-
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
@@ -19,14 +15,12 @@ describe('MapButtonsContainer', () => {
 		};
 
 		TestUtils.setupStoreAndDi(initialState);
-		$injector
-			.registerSingleton('EnvironmentService', {});
+		$injector.registerSingleton('EnvironmentService', {});
 		return TestUtils.render(MapButtonsContainer.tag);
 	};
 
 	describe('when initialized', () => {
 		it('adds a div which contains map buttons', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelector('div').children).toHaveSize(4);
@@ -38,7 +32,6 @@ describe('MapButtonsContainer', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape and width >= 80em', async () => {
 			const state = {
 				media: {

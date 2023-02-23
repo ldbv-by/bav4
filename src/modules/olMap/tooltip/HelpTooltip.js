@@ -1,10 +1,8 @@
-
 import { BaOverlay, BaOverlayTypes } from '../components/BaOverlay';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../injection';
 
 export class HelpTooltip {
-
 	constructor() {
 		this._overlay = null;
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -35,11 +33,9 @@ export class HelpTooltip {
 
 		if (message != null && !interactionState.dragging) {
 			this._updateOverlay(interactionState.coordinate, message);
-		}
-		else {
+		} else {
 			this._hide();
 		}
-
 	}
 
 	get active() {
@@ -65,5 +61,4 @@ export class HelpTooltip {
 	_hide() {
 		this._overlay.setPosition(undefined);
 	}
-
 }

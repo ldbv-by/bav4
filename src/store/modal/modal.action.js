@@ -15,7 +15,6 @@ const getStore = () => {
  * @typedef {Object} ModalOptions
  */
 
-
 /**
  * Opens the modal.
  * @param {string} title The title of the modal
@@ -24,7 +23,6 @@ const getStore = () => {
  * @function
  */
 export const openModal = (title, content, options = {}) => {
-
 	getStore().dispatch({
 		type: MODAL_CHANGED,
 		payload: {

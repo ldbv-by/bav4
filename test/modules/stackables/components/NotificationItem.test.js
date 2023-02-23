@@ -38,7 +38,6 @@ describe('NotificationItem', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
 
@@ -53,7 +52,6 @@ describe('NotificationItem', () => {
 	});
 
 	describe('when notification item is rendered', () => {
-
 		beforeEach(function () {
 			jasmine.clock().install();
 		});
@@ -127,7 +125,6 @@ describe('NotificationItem', () => {
 		});
 
 		describe('displays the level type', () => {
-
 			it('info', async () => {
 				const element = await setup({ ...notificationContent, level: LevelTypes.INFO });
 				const contentElement = element.shadowRoot.querySelector('.notification_level');
@@ -154,7 +151,6 @@ describe('NotificationItem', () => {
 
 				expect(element.shadowRoot.querySelector('.notification_level')).toBeFalsy();
 			});
-
 		});
 	});
 });

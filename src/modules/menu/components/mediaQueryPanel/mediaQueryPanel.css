@@ -1,16 +1,16 @@
 .content-panel {
-	position: fixed;    
+	position: fixed;
 	background-color: var(--primary-bg-color);
 	padding: 7em 0em 0em;
 	bottom: 0;
 	top: 0;
 	left: -28em;
-	width: 28em;   
+	width: 28em;
 	z-index: 10;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	overflow-x: hidden;
 	overflow-y: auto;
-	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);    
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 }
 .content-panel__close-button {
 	position: absolute;
@@ -27,9 +27,9 @@
 	position: absolute;
 	width: 0;
 	height: 0;
-	top: .6em;
-	left: .5em;
-	border-width: .5em;
+	top: 0.6em;
+	left: 0.5em;
+	border-width: 0.5em;
 	border-style: solid;
 	border-color: transparent var(--text2) transparent transparent;
 }
@@ -52,25 +52,24 @@
 	top: unset;
 	left: unset;
 	bottom: 0em;
-	right: 0em;    
-	border-radius: 2em  0 0  0;
+	right: 0em;
+	border-radius: 2em 0 0 0;
 }
 .is-portrait .arrow {
 	position: absolute;
 	width: 0;
 	height: 0;
-	top: .6em;
+	top: 0.6em;
 	left: 1em;
-	border-width: .5em;
+	border-width: 0.5em;
 	border-style: solid;
-	border-color: transparent  transparent var(--text2) transparent;
+	border-color: transparent transparent var(--text2) transparent;
 }
 
 .is-portrait .is-open {
 	transform: translate(0, 75vh);
 }
 
-    
 .only-greater-600 {
 	background-color: red;
 }

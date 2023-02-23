@@ -11,12 +11,11 @@ const getStore = () => {
 	return StoreService.getStore();
 };
 
-
 /**
-  * Sets the current query.
-  * @function
-  * @param {string|null} term (will be trimmed)
-  */
+ * Sets the current query.
+ * @function
+ * @param {string|null} term (will be trimmed)
+ */
 export const setQuery = (term) => {
 	getStore().dispatch({
 		type: QUERY_CHANGED,

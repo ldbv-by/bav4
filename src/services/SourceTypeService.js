@@ -2,8 +2,6 @@ import { isHttpUrl, isString } from '../utils/checks';
 import { PromiseQueue } from '../utils/PromiseQueue';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';
 
-
-
 /**
  * Determines the source type of a Url or given data.
  * @class
@@ -11,14 +9,17 @@ import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSo
  * @author thiloSchlemmer
  */
 export class SourceTypeService {
-
 	/**
 	 *
 	 * @param {urlSourceTypeProvider} [urlSourceTypeProvider=bvvUrlSourceTypeProvider]
 	 * @param {dataSourceTypeProvider} [dataSourceTypeProvider=defaultDataSourceTypeProvider]
 	 * @param {mediaSourceTypeProvider} [mediaSourceTypeProvider=defaultMediaSourceTypeProvider]
 	 */
-	constructor(urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider, mediaSourceTypeProvider = defaultMediaSourceTypeProvider) {
+	constructor(
+		urlSourceTypeProvider = bvvUrlSourceTypeProvider,
+		dataSourceTypeProvider = defaultDataSourceTypeProvider,
+		mediaSourceTypeProvider = defaultMediaSourceTypeProvider
+	) {
 		this._urlSourceTypeProvider = urlSourceTypeProvider;
 		this._dataSourceTypeProvider = dataSourceTypeProvider;
 		this._mediaSourceTypeProvider = mediaSourceTypeProvider;

@@ -5,7 +5,6 @@ import { RotationButton } from '../../../../../src/modules/map/components/rotati
 import { changeLiveRotation } from '../../../../../src/store/position/position.action.js';
 window.customElements.define(RotationButton.tag, RotationButton);
 
-
 describe('RotationButton', () => {
 	let store;
 	const defaultState = {
@@ -13,31 +12,25 @@ describe('RotationButton', () => {
 	};
 
 	const setup = async (positionState = defaultState) => {
-
 		const state = {
 			position: positionState
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { position: positionReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return await TestUtils.render(RotationButton.tag);
 	};
 
 	describe('class', () => {
-
 		it('defines constant values', async () => {
-
 			expect(RotationButton.HIDE_BUTTON_DELAY_MS).toBe(1000);
 			expect(RotationButton.THROTTLE_DELAY_MS).toBe(10);
-			expect(RotationButton.VISIBILITY_THRESHOLD_RAD).toBe(.0001);
+			expect(RotationButton.VISIBILITY_THRESHOLD_RAD).toBe(0.0001);
 		});
 	});
 
 	describe('when initialized', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new RotationButton().getModel();
@@ -48,9 +41,8 @@ describe('RotationButton', () => {
 		});
 
 		describe('liveRotation < threshold value', () => {
-
 			it('renders a rotation button', async () => {
-				const liveRotationValue = RotationButton.VISIBILITY_THRESHOLD_RAD - .00001;
+				const liveRotationValue = RotationButton.VISIBILITY_THRESHOLD_RAD - 0.00001;
 				const element = await setup({ liveRotation: liveRotationValue });
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -58,10 +50,9 @@ describe('RotationButton', () => {
 		});
 
 		describe('liveRotation > threshold value', () => {
-
 			it('renders a rotation button', async () => {
-				const liveRotationValue = .5;
-				const element = await setup({ rotation: .5, liveRotation: liveRotationValue });
+				const liveRotationValue = 0.5;
+				const element = await setup({ rotation: 0.5, liveRotation: liveRotationValue });
 				expect(element.shadowRoot.querySelectorAll('button')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('button').classList.contains('rotation-button')).toBeTrue();
 				expect(element.shadowRoot.querySelector('button').title).toBe('map_rotationButton_title');
@@ -72,7 +63,6 @@ describe('RotationButton', () => {
 	});
 
 	describe('when rotation changes', () => {
-
 		beforeEach(async () => {
 			jasmine.clock().install();
 		});
@@ -84,20 +74,20 @@ describe('RotationButton', () => {
 		it('rotates the button throttled', async () => {
 			//throttle is based on Date
 			jasmine.clock().mockDate();
-			let liveRotationValue = .5;
+			let liveRotationValue = 0.5;
 			const element = await setup({ liveRotation: liveRotationValue });
 
 			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS + 100);
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 
-			changeLiveRotation(liveRotationValue = 1);
+			changeLiveRotation((liveRotationValue = 1));
 			jasmine.clock().tick(RotationButton.THROTTLE_DELAY_MS) + 100;
 
 			expect(element.shadowRoot.querySelector('button').style.transform).toBe(`rotate(${liveRotationValue}rad)`);
 		});
 
 		it('hides the button when rotation < threshold', async () => {
-			const element = await setup({ liveRotation: RotationButton.VISIBILITY_THRESHOLD_RAD - .00001 });
+			const element = await setup({ liveRotation: RotationButton.VISIBILITY_THRESHOLD_RAD - 0.00001 });
 
 			changeLiveRotation();
 
@@ -107,7 +97,7 @@ describe('RotationButton', () => {
 		it('avoids flickering', async () => {
 			//throttle is based on Date
 			jasmine.clock().mockDate();
-			const liveRotationValue = .5;
+			const liveRotationValue = 0.5;
 			const element = await setup({ liveRotation: liveRotationValue });
 
 			expect(element.shadowRoot.children.length).not.toBe(0);
@@ -122,9 +112,8 @@ describe('RotationButton', () => {
 	});
 
 	describe('when clicked', () => {
-
 		it('updates the rotation property', async () => {
-			const element = await setup({ liveRotation: .5 });
+			const element = await setup({ liveRotation: 0.5 });
 
 			element.shadowRoot.querySelector('button').click();
 

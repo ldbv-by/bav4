@@ -1,33 +1,40 @@
 /* eslint-disable no-undef */
-import { GeoResourceTypes, GeoResource, WmsGeoResource, XyzGeoResource, VectorGeoResource, VectorSourceType, AggregateGeoResource, GeoResourceFuture, observable, GeoResourceAuthenticationType, VTGeoResource } from '../../src/domain/geoResources';
+import {
+	GeoResourceTypes,
+	GeoResource,
+	WmsGeoResource,
+	XyzGeoResource,
+	VectorGeoResource,
+	VectorSourceType,
+	AggregateGeoResource,
+	GeoResourceFuture,
+	observable,
+	GeoResourceAuthenticationType,
+	VTGeoResource
+} from '../../src/domain/geoResources';
 import { $injector } from '../../src/injection';
 import { getDefaultAttribution, getMinimalAttribution } from '../../src/services/provider/attribution.provider';
 import { TestUtils } from '../test-utils';
 
-
 describe('GeoResource', () => {
-
 	const geoResourceServiceMock = {
-		addOrReplace() { }
+		addOrReplace() {}
 	};
 
 	const setup = (state = {}) => {
 		const store = TestUtils.setupStoreAndDi(state);
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
 		return store;
 	};
 
 	const handledByGeoResourceServiceMarker = 'marker';
-	const addOrReplaceMethodMock = gr => {
+	const addOrReplaceMethodMock = (gr) => {
 		gr.marker = handledByGeoResourceServiceMarker;
 		return gr;
 	};
 
 	describe('GeoResourceTypes', () => {
-
 		it('provides an enum of all available types', () => {
-
 			expect(GeoResourceTypes.WMS.description).toBe('wms');
 			expect(GeoResourceTypes.XYZ.description).toBe('xyz');
 			expect(GeoResourceTypes.VECTOR.description).toBe('vector');
@@ -38,16 +45,13 @@ describe('GeoResource', () => {
 	});
 
 	describe('GeoResourceAuthenticationType', () => {
-
 		it('provides an enum of all available types', () => {
-
 			expect(GeoResourceAuthenticationType.BAA).toBe('baa');
 			expect(GeoResourceAuthenticationType.PLUS).toBe('plus');
 		});
 	});
 
 	describe('abstract GeoResource', () => {
-
 		class GeoResourceNoImpl extends GeoResource {
 			constructor(id) {
 				super(id);
@@ -71,14 +75,14 @@ describe('GeoResource', () => {
 		});
 
 		describe('methods', () => {
-
 			it('throws exception when abstract #getType is called without overriding', () => {
-				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(TypeError, 'Please implement abstract method #getType or do not call super.getType from child.');
+				expect(() => new GeoResourceNoImpl('some').getType()).toThrowError(
+					TypeError,
+					'Please implement abstract method #getType or do not call super.getType from child.'
+				);
 			});
 
-
 			it('provides a check for containing a non-default value as label', () => {
-
 				expect(new GeoResourceImpl('id').hasLabel()).toBeFalse();
 				expect(new GeoResourceImpl('id', null).hasLabel()).toBeFalse();
 				expect(new GeoResourceImpl('id', '').hasLabel()).toBeFalse();
@@ -86,14 +90,12 @@ describe('GeoResource', () => {
 			});
 
 			it('provides a check for detecting an imported GeoResource ', () => {
-
 				expect(new GeoResourceImpl('id').isExternal()).toBeFalse();
 				expect(new GeoResourceImpl('https://foo.bar', null).isExternal()).toBeTrue();
 				expect(new GeoResourceImpl('https://foo.bar||some||thing', null).isExternal()).toBeTrue();
 			});
 
 			it('sets the attribution provider', () => {
-
 				const provider = jasmine.createSpy();
 				const grs = new GeoResourceImpl('id');
 				grs.setAttributionProvider(provider);
@@ -184,7 +186,7 @@ describe('GeoResource', () => {
 				const georesource = new GeoResourceNoImpl('id');
 
 				georesource
-					.setOpacity(.5)
+					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
 					.setHidden(true)
@@ -194,9 +196,8 @@ describe('GeoResource', () => {
 					.setQueryable(false)
 					.setExportable(false);
 
-
 				expect(georesource.hidden).toBeTrue();
-				expect(georesource.opacity).toBe(.5);
+				expect(georesource.opacity).toBe(0.5);
 				expect(georesource.minZoom).toBe(5);
 				expect(georesource.maxZoom).toBe(19);
 				expect(georesource.label).toBe('some label');
@@ -206,14 +207,12 @@ describe('GeoResource', () => {
 				expect(georesource.exportable).toBeFalse();
 			});
 		});
-
 	});
 
 	describe('GeoResourceFuture', () => {
-
 		it('instantiates a GeoResourceFuture', () => {
 			setup();
-			const loader = async () => { };
+			const loader = async () => {};
 
 			const future = new GeoResourceFuture('id', loader);
 			const futureWithoutLabel = new GeoResourceFuture('id', loader);
@@ -249,8 +248,7 @@ describe('GeoResource', () => {
 			try {
 				await future.get();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error).toBe(message);
 			}
 		});
@@ -281,18 +279,14 @@ describe('GeoResource', () => {
 			try {
 				await future.get();
 				throw new Error('Promise should not be resolved');
-
-			}
-			catch (error) {
+			} catch (error) {
 				expect(onResolveCallback).toHaveBeenCalledWith(future);
 			}
 		});
 	});
 
 	describe('WmsGeoResource', () => {
-
 		it('instantiates a WmsGeoResource', () => {
-
 			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format');
 
 			expect(wmsGeoResource.getType()).toEqual(GeoResourceTypes.WMS);
@@ -310,17 +304,14 @@ describe('GeoResource', () => {
 		});
 
 		it('provides set methods and getters', () => {
-			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format')
-				.setExtraParams({ 'foo': 'bar' });
+			const wmsGeoResource = new WmsGeoResource('id', 'label', 'url', 'layers', 'format').setExtraParams({ foo: 'bar' });
 
-			expect(wmsGeoResource.extraParams).toEqual({ 'foo': 'bar' });
+			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
 		});
 	});
 
 	describe('XyzGeoResource', () => {
-
 		it('instantiates a XyzGeoResource', () => {
-
 			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url');
 
 			expect(xyzGeoResource.getType()).toEqual(GeoResourceTypes.XYZ);
@@ -336,15 +327,13 @@ describe('GeoResource', () => {
 		});
 
 		it('provides set methods and getters', () => {
-			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url')
-				.setTileGridId('tileGridId');
+			const xyzGeoResource = new XyzGeoResource('id', 'label', 'url').setTileGridId('tileGridId');
 
 			expect(xyzGeoResource.tileGridId).toBe('tileGridId');
 		});
 	});
 
 	it('provides an enum of all available vector source types', () => {
-
 		expect(Object.keys(VectorSourceType).length).toBe(4);
 		expect(VectorSourceType.KML).toBeTruthy();
 		expect(VectorSourceType.GPX).toBeTruthy();
@@ -352,11 +341,8 @@ describe('GeoResource', () => {
 		expect(VectorSourceType.EWKT).toBeTruthy();
 	});
 
-
 	describe('VectorGeoResource', () => {
-
 		it('instantiates a VectorGeoResource', () => {
-
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
 
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
@@ -369,7 +355,6 @@ describe('GeoResource', () => {
 		});
 
 		it('provides the source type as fallback label', () => {
-
 			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).label).toBe('foo');
 			expect(new VectorGeoResource('id', null, VectorSourceType.KML).label).toBe('KML');
 			expect(new VectorGeoResource('id', null, VectorSourceType.GPX).label).toBe('GPX');
@@ -378,16 +363,13 @@ describe('GeoResource', () => {
 			expect(new VectorGeoResource('id', null, 'unknown').label).toBe('');
 		});
 
-
 		it('provides a check for containing a non-default value as label', () => {
-
 			expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
 			expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
 			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
 		});
 
 		it('sets the url of an external VectorGeoResource', () => {
-
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
 
 			expect(vectorGeoResource.url).toBe('someUrl');
@@ -396,7 +378,6 @@ describe('GeoResource', () => {
 		});
 
 		it('sets the source of an internal VectorGeoResource by a string', () => {
-
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
 			expect(vectorGeoResource.data).toBe('someData');
@@ -406,9 +387,7 @@ describe('GeoResource', () => {
 	});
 
 	describe('AggregateGeoResource', () => {
-
 		it('instantiates a AggregateResource', () => {
-
 			const wmsGeoResource = new WmsGeoResource('wmsId', 'label', 'url', 'layers', 'format');
 			const xyzGeoResource = new XyzGeoResource('xyzId', 'label', 'url');
 
@@ -419,13 +398,10 @@ describe('GeoResource', () => {
 			expect(aggregateGeoResource.geoResourceIds[0].id).toBe('wmsId');
 			expect(aggregateGeoResource.geoResourceIds[1].id).toBe('xyzId');
 		});
-
 	});
 
 	describe('VTGeoResource', () => {
-
 		it('instantiates a VTGeoResource', () => {
-
 			const vectorGeoResource = new VTGeoResource('id', 'label', 'styleUrl');
 
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VT);
@@ -433,11 +409,9 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.label).toBe('label');
 			expect(vectorGeoResource.styleUrl).toBe('styleUrl');
 		});
-
 	});
 
 	describe('observableGeoResource', () => {
-
 		it('observes changes', () => {
 			setup();
 			const modifiedLabel = 'modified';

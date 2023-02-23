@@ -16,7 +16,7 @@ export const observe = (store, extract, onChange, ignoreInitialState = true) => 
 	const handleChange = () => {
 		const nextState = extract(store.getState());
 		if (!equals(nextState, currentState)) {
-			const callCallback = (currentState !== initialFlag || !ignoreInitialState);
+			const callCallback = currentState !== initialFlag || !ignoreInitialState;
 			currentState = nextState;
 			if (callCallback) {
 				onChange(currentState, store.getState());
@@ -42,26 +42,15 @@ export const equals = (value0, value1) => {
 		return true;
 	}
 
-	if (
-		typeof value0 === 'function' &&
-		typeof value1 === 'function'
-	) {
+	if (typeof value0 === 'function' && typeof value1 === 'function') {
 		return value0.toString() === value1.toString();
 	}
 
-	if (
-		typeof value0 !== 'object' ||
-		typeof value1 !== 'object' ||
-		!value0 ||
-		!value1
-	) {
+	if (typeof value0 !== 'object' || typeof value1 !== 'object' || !value0 || !value1) {
 		return false;
 	}
 
-	if (
-		(Array.isArray(value0) && !Array.isArray(value1)) ||
-		(!Array.isArray(value0) && Array.isArray(value1))
-	) {
+	if ((Array.isArray(value0) && !Array.isArray(value1)) || (!Array.isArray(value0) && Array.isArray(value1))) {
 		return false;
 	}
 
@@ -84,7 +73,6 @@ export const equals = (value0, value1) => {
  * Wrapper for payloads of actions which dispatch event-like changes of state.
  */
 export class EventLike {
-
 	constructor(payload) {
 		this._payload = payload;
 		this._id = createUniqueId();

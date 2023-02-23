@@ -4,9 +4,7 @@ import { createStore } from 'redux';
 
 // onChangeSpy.calls.reset();
 describe('store utils', () => {
-
 	describe('observe', () => {
-
 		it('observes a property', () => {
 			//arrange
 			const reducer = (state = { active: false }, action) => {
@@ -27,7 +25,6 @@ describe('store utils', () => {
 			observe(store, extract, onChangeSpy);
 			//no initial call after observer registration
 			expect(onChangeSpy).not.toHaveBeenCalled();
-
 
 			//act
 			store.dispatch({
@@ -66,7 +63,6 @@ describe('store utils', () => {
 
 			expect(onChangeSpy).toHaveBeenCalledOnceWith(false, { active: false });
 		});
-
 
 		it('observes an object', () => {
 			//arrange
@@ -108,7 +104,6 @@ describe('store utils', () => {
 		});
 	});
 	describe('equals', () => {
-
 		it('compares values shallowly', () => {
 			expect(equals(1, 1)).toBeTrue();
 			expect(equals(true, true)).toBeTrue();
@@ -129,8 +124,7 @@ describe('store utils', () => {
 		});
 
 		it('compares functions', () => {
-
-			const someF = () => { };
+			const someF = () => {};
 			const someOtherF = () => {
 				return;
 			};
@@ -146,12 +140,17 @@ describe('store utils', () => {
 
 			expect(equals({ some: 42 }, { some: 21 })).toBeFalse();
 			expect(equals({ some: 42 }, { thing: 42 })).toBeFalse();
-			expect(equals({ some: () => { } }, { some: () => { } })).toBeTrue();
-			expect(equals({ some: () => { } }, {
-				some: () => {
-					return;
-				}
-			})).toBeFalse();
+			expect(equals({ some: () => {} }, { some: () => {} })).toBeTrue();
+			expect(
+				equals(
+					{ some: () => {} },
+					{
+						some: () => {
+							return;
+						}
+					}
+				)
+			).toBeFalse();
 			expect(equals(['some', 'foo'], ['foo', 'some'])).toBeFalse();
 			expect(equals([42, { value: 42 }, 'some'], [42, { value: 21 }, 'some'])).toBeFalse();
 			expect(equals([], {})).toBeFalse();
@@ -160,7 +159,6 @@ describe('store utils', () => {
 	});
 
 	describe('class EventLike', () => {
-
 		it('initializes the object', () => {
 			const eventLike = new EventLike('payload');
 
@@ -168,6 +166,5 @@ describe('store utils', () => {
 			expect(eventLike.id).toBeDefined();
 			expect(equals(new EventLike('some'), new EventLike('some'))).toBeFalse();
 		});
-
 	});
 });

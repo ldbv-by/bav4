@@ -11,7 +11,6 @@ const Update_ZoomLevel = 'update_zoomLevel';
  * @author taulinger
  */
 export class BaseLayerInfo extends MvuElement {
-
 	constructor() {
 		super({
 			activeLayers: null,
@@ -21,8 +20,14 @@ export class BaseLayerInfo extends MvuElement {
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
 
-		this.observe(store => store.layers.active, active => this.signal(Update_Layers, [...active]));
-		this.observe(store => store.position.zoom, zoom => this.signal(Update_ZoomLevel, zoom));
+		this.observe(
+			(store) => store.layers.active,
+			(active) => this.signal(Update_Layers, [...active])
+		);
+		this.observe(
+			(store) => store.position.zoom,
+			(zoom) => this.signal(Update_ZoomLevel, zoom)
+		);
 	}
 
 	/**
@@ -46,13 +51,13 @@ export class BaseLayerInfo extends MvuElement {
 		const { activeLayers, zoomLevel } = model;
 
 		const getDescription = () => {
-
 			const geoResource = activeLayers[0] ? this._georesourceService.byId(activeLayers[0].geoResourceId) : null;
 			if (geoResource) {
-
-				const description = geoResource.getAttribution(zoomLevel)
-					.map(a => a.description)
-					.filter(d => !!d).join(', ');
+				const description = geoResource
+					.getAttribution(zoomLevel)
+					.map((a) => a.description)
+					.filter((d) => !!d)
+					.join(', ');
 				return description ? description : geoResource.label;
 			}
 
@@ -61,9 +66,7 @@ export class BaseLayerInfo extends MvuElement {
 
 		const content = getDescription() ?? translate('map_baseLayerInfo_fallback');
 
-		return activeLayers.length > 0 ? html`
-		<div>${translate('map_baseLayerInfo_label')}: ${content} </div>
-		` : nothing;
+		return activeLayers.length > 0 ? html` <div>${translate('map_baseLayerInfo_label')}: ${content}</div> ` : nothing;
 	}
 
 	static get tag() {

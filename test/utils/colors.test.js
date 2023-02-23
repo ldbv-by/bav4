@@ -43,9 +43,7 @@ describe('hexToRgb', () => {
 	});
 });
 
-
 describe('rgbToHsv', () => {
-
 	it('should convert a rgb-color array to a hsv-color-array', () => {
 		const tooShortArray = [0, 0];
 		expect(rgbToHsv(undefined)).toBeNull();
@@ -61,7 +59,6 @@ describe('rgbToHsv', () => {
 });
 
 describe('hsvToRgb', () => {
-
 	it('should convert a hsv-color array to a rgb-color array', () => {
 		const tooShortArray = [0, 0];
 		expect(hsvToRgb(undefined)).toBeNull();
@@ -76,16 +73,14 @@ describe('hsvToRgb', () => {
 	});
 });
 
-
 describe('getContrastColorFrom', () => {
-
 	it('should find a color with best contrast', () => {
 		const rgbDarkBlue = [11, 1, 57];
 		const rgbLightBlue = [36, 3, 185];
 		expect(getContrastColorFrom(undefined)).toBeNull();
 		expect(getContrastColorFrom(null)).toBeNull();
-		expect(getContrastColorFrom((Rgb_Red))).toEqual(Rgb_Black);
-		expect(getContrastColorFrom((Rgb_Yellow))).toEqual(Rgb_Black);
+		expect(getContrastColorFrom(Rgb_Red)).toEqual(Rgb_Black);
+		expect(getContrastColorFrom(Rgb_Yellow)).toEqual(Rgb_Black);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
 	});

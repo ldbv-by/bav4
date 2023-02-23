@@ -21,7 +21,6 @@ describe('InteractionStorageService', () => {
 		isAdminId(id) {
 			return id.startsWith('a_');
 		}
-
 	};
 	const initialState = {
 		termsOfUseAcknowledged: false,
@@ -29,13 +28,16 @@ describe('InteractionStorageService', () => {
 	};
 
 	const setup = (state = initialState) => {
-		const store = TestUtils.setupStoreAndDi({
-			notifications: {
-				notification: null
-			}, shared: state
-		}, { notifications: notificationReducer, shared: sharedReducer });
-		$injector.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('FileStorageService', fileStorageServiceMock);
+		const store = TestUtils.setupStoreAndDi(
+			{
+				notifications: {
+					notification: null
+				},
+				shared: state
+			},
+			{ notifications: notificationReducer, shared: sharedReducer }
+		);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('FileStorageService', fileStorageServiceMock);
 		return store;
 	};
 
@@ -110,9 +112,7 @@ describe('InteractionStorageService', () => {
 	it('stores initial content in the fileStorage', async () => {
 		const store = setup({ ...initialState, fileSaveResult: null });
 		const content = 'someContent';
-		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-		);
+		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' }));
 
 		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
@@ -120,15 +120,12 @@ describe('InteractionStorageService', () => {
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith(null, content, FileStorageServiceDataTypes.KML);
-
 	});
 
 	it('stores new content in the fileStorage', async () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const content = 'someContent';
-		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(
-			Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' })
-		);
+		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' }));
 
 		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
@@ -136,7 +133,6 @@ describe('InteractionStorageService', () => {
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
-
 	});
 
 	it('resets state store on empty content', async () => {
@@ -153,9 +149,7 @@ describe('InteractionStorageService', () => {
 		const store = setup({ ...initialState, fileSaveResult: null });
 		const content = 'someContent';
 		const warnSpy = spyOn(console, 'warn');
-		spyOn(fileStorageServiceMock, 'save').and.returnValue(
-			Promise.reject(new Error('Failed'))
-		);
+		spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.reject(new Error('Failed')));
 
 		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
@@ -168,9 +162,7 @@ describe('InteractionStorageService', () => {
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const content = 'someContent';
 		const warnSpy = spyOn(console, 'warn');
-		spyOn(fileStorageServiceMock, 'save').and.returnValue(
-			Promise.reject(new Error('Failed'))
-		);
+		spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.reject(new Error('Failed')));
 
 		const classUnderTest = new InteractionStorageService();
 		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
@@ -178,7 +170,4 @@ describe('InteractionStorageService', () => {
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'f_someId', adminId: 'a_someId' });
 		expect(warnSpy).toHaveBeenCalledWith('Could not store content:', jasmine.any(Error));
 	});
-
-
 });
-

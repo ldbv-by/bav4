@@ -25,7 +25,7 @@ window.customElements.define(Icon.tag, Icon);
 describe('MeasureToolContent', () => {
 	let store;
 	const windowMock = {
-		matchMedia() { }
+		matchMedia() {}
 	};
 
 	const defaultState = {
@@ -55,13 +55,11 @@ describe('MeasureToolContent', () => {
 		}
 	};
 	const setup = async (state = defaultState, config = {}) => {
-
 		const { embed = false, isTouch = false } = config;
-
 
 		class MockClass {
 			constructor() {
-				this.get = 'I\'m a UnitsService.';
+				this.get = "I'm a UnitsService.";
 			}
 
 			formatDistance(distance, decimals) {
@@ -76,14 +74,20 @@ describe('MeasureToolContent', () => {
 			}
 		}
 
-		store = TestUtils.setupStoreAndDi(state, { measurement: measurementReducer, modal: modalReducer, shared: sharedReducer, notifications: notificationReducer, elevationProfile: elevationProfileReducer });
+		store = TestUtils.setupStoreAndDi(state, {
+			measurement: measurementReducer,
+			modal: modalReducer,
+			shared: sharedReducer,
+			notifications: notificationReducer,
+			elevationProfile: elevationProfileReducer
+		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
 				getWindow: () => windowMock,
 				isTouch: () => isTouch
-
-			}).registerSingleton('TranslationService', { translate: (key) => key })
+			})
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock)
 			.register('UnitsService', MockClass);
@@ -91,9 +95,7 @@ describe('MeasureToolContent', () => {
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractToolContent', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractToolContent).toBeTrue();
@@ -101,8 +103,6 @@ describe('MeasureToolContent', () => {
 	});
 
 	describe('when initialized', () => {
-
-
 		it('displays the finish-button', async () => {
 			const state = {
 				measurement: {
@@ -138,7 +138,6 @@ describe('MeasureToolContent', () => {
 
 			expect(store.getState().measurement.finish).toBeInstanceOf(EventLike);
 		});
-
 
 		it('resets the measurement', async () => {
 			const state = {
@@ -242,7 +241,6 @@ describe('MeasureToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
-
 		it('shows only the lenght measurement statistics', async () => {
 			const state = {
 				measurement: {
@@ -301,7 +299,9 @@ describe('MeasureToolContent', () => {
 			expect(copyDistanceElement).toBeTruthy();
 			expect(copyToClipboardMock).toHaveBeenCalledWith(length);
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success');
+			expect(store.getState().notifications.latest.payload.content).toBe(
+				'toolbox_measureTool_clipboard_measure_distance_notification_text toolbox_clipboard_success'
+			);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -324,7 +324,9 @@ describe('MeasureToolContent', () => {
 			expect(copyAreaElement).toBeTruthy();
 			expect(copyToClipboardMock).toHaveBeenCalledWith(area);
 			//check notification
-			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success');
+			expect(store.getState().notifications.latest.payload.content).toBe(
+				'toolbox_measureTool_clipboard_measure_area_notification_text toolbox_clipboard_success'
+			);
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -352,7 +354,6 @@ describe('MeasureToolContent', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 
-
 		it('shows the measurement sub-text', async () => {
 			const state = {
 				measurement: {
@@ -363,7 +364,6 @@ describe('MeasureToolContent', () => {
 			};
 			const element = await setup(state);
 			const subTextElement = element.shadowRoot.querySelector('.sub-text');
-
 
 			expect(subTextElement).toBeTruthy();
 			expect(subTextElement.textContent).toBe('');

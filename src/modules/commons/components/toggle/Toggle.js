@@ -22,18 +22,15 @@ const Update_Title = 'update_title';
  * @author taulinger
  */
 export class Toggle extends MvuElement {
-
 	constructor() {
 		super({
 			checked: false,
 			disabled: false,
 			title: ''
 		});
-
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Checked:
 				return { ...model, checked: data };
@@ -47,7 +44,7 @@ export class Toggle extends MvuElement {
 	}
 
 	onInitialize() {
-		this._onToggle = () => { };
+		this._onToggle = () => {};
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
@@ -55,15 +52,16 @@ export class Toggle extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-
 		const { title, disabled, checked } = model;
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
 			this.signal(Update_Checked, checked);
-			this.dispatchEvent(new CustomEvent('toggle', {
-				detail: { checked: checked }
-			}));
+			this.dispatchEvent(
+				new CustomEvent('toggle', {
+					detail: { checked: checked }
+				})
+			);
 			this._onToggle(event);
 		};
 		const classes = {
@@ -72,14 +70,16 @@ export class Toggle extends MvuElement {
 		};
 
 		return html`
-        <style>${css}</style>
-        <label title='${title}' class='switch ${classMap(classes)}'>
-            <slot></slot>
-			<div>
-		  		<input type='checkbox' @change=${onChange} ?disabled=${disabled} .checked=${checked}>
-		  		<span class='slider round'></span>
-			</div>
-	  	</label>
+			<style>
+				${css}
+			</style>
+			<label title="${title}" class="switch ${classMap(classes)}">
+				<slot></slot>
+				<div>
+					<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} />
+					<span class="slider round"></span>
+				</div>
+			</label>
 		`;
 	}
 

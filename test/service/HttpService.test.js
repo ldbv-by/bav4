@@ -2,10 +2,7 @@ import { MediaType, HttpService, NetworkStateSyncHttpService } from '../../src/s
 import { networkReducer } from '../../src/store/network/network.reducer';
 import { TestUtils } from '../test-utils';
 
-
-
 describe('HttpService', () => {
-
 	beforeEach(function () {
 		jasmine.clock().install();
 	});
@@ -15,21 +12,21 @@ describe('HttpService', () => {
 	});
 
 	describe('static properties', () => {
-
 		it('provides a DefaultRequestMode', () => {
 			expect(HttpService.DEFAULT_REQUEST_MODE).toBe('cors');
 		});
 	});
 
 	describe('fetch', () => {
-
 		it('provides a result', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(window, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(window, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.fetch('something');
 
@@ -75,14 +72,15 @@ describe('HttpService', () => {
 	});
 
 	describe('get', () => {
-
 		it('provides a result with default options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.get('something');
 
@@ -92,29 +90,31 @@ describe('HttpService', () => {
 
 		it('provides a result with custom options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.get('something', { timeout: 2000 });
 
 			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
-
 	});
 
 	describe('delete', () => {
-
 		it('provides a result with default options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.delete('something');
 
@@ -124,29 +124,31 @@ describe('HttpService', () => {
 
 		it('provides a result with custom options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.delete('something', { timeout: 2000 });
 
 			expect(spy).toHaveBeenCalledWith('something', { mode: HttpService.DEFAULT_REQUEST_MODE, method: 'DELETE', timeout: 2000 });
 			expect(result.text()).toBe(42);
 		});
-
 	});
 
 	describe('post', () => {
-
 		it('post data and provides a result with default options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.post('something', 'someData', 'someContentType');
 
@@ -163,11 +165,13 @@ describe('HttpService', () => {
 
 		it('post data and provides a result with custom options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				text: () => {
-					return 42;
-				}
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					text: () => {
+						return 42;
+					}
+				})
+			);
 
 			const result = await httpService.post('something', 'someData', 'someContentType', { timeout: 2000 });
 
@@ -185,12 +189,13 @@ describe('HttpService', () => {
 	});
 
 	describe('head', () => {
-
 		it('provides a result with default options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				ok: true
-			}));
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					ok: true
+				})
+			);
 
 			const result = await httpService.head('something');
 
@@ -203,10 +208,11 @@ describe('HttpService', () => {
 
 		it('provides a result with custom options', async () => {
 			const httpService = new HttpService();
-			const spy = spyOn(httpService, 'fetch').and.returnValue(Promise.resolve({
-				ok: true
-			}));
-
+			const spy = spyOn(httpService, 'fetch').and.returnValue(
+				Promise.resolve({
+					ok: true
+				})
+			);
 
 			const result = await httpService.head('something', { timeout: 2000 });
 
@@ -217,12 +223,10 @@ describe('HttpService', () => {
 			});
 			expect(result.ok).toBeTrue();
 		});
-
 	});
 });
 
 describe('NetworkStateSyncHttpService', () => {
-
 	beforeEach(function () {
 		jasmine.clock().install();
 	});
@@ -232,26 +236,26 @@ describe('NetworkStateSyncHttpService', () => {
 	});
 
 	const setup = () => {
-		return TestUtils.setupStoreAndDi({}, {
-			network: networkReducer
-		});
+		return TestUtils.setupStoreAndDi(
+			{},
+			{
+				network: networkReducer
+			}
+		);
 	};
 
 	describe('fetch', () => {
-
-		it('calls parent\'s fetch and updates the store', async () => {
+		it("calls parent's fetch and updates the store", async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 
 			spyOn(window, 'fetch').and.callFake(() => {
-
 				expect(store.getState().network.fetching).toBeTrue();
 				return Promise.resolve({
 					text: () => {
 						return 42;
 					}
 				});
-
 			});
 
 			const result = await instanceUnderTest.fetch('something');
@@ -262,7 +266,7 @@ describe('NetworkStateSyncHttpService', () => {
 		it('regards pending responses', async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
-			spyOn(window, 'fetch').and.callFake(async () => { });
+			spyOn(window, 'fetch').and.callFake(async () => {});
 
 			instanceUnderTest.fetch('first');
 			instanceUnderTest.fetch('second');
@@ -284,8 +288,7 @@ describe('NetworkStateSyncHttpService', () => {
 			try {
 				await instanceUnderTest.fetch('first');
 				throw new Error('Promise should not be resolved');
-			}
-			catch {
+			} catch {
 				expect(store.getState().network.fetching).toBeFalse();
 			}
 		});
@@ -301,8 +304,7 @@ describe('NetworkStateSyncHttpService', () => {
 			try {
 				await instanceUnderTest.fetch('something');
 				throw new Error('Promise should not be resolved');
-			}
-			catch {
+			} catch {
 				expect(store.getState().network.fetching).toBeFalse();
 			}
 		});
@@ -310,9 +312,7 @@ describe('NetworkStateSyncHttpService', () => {
 });
 
 describe('MediaType', () => {
-
 	it('is an enum representing common media types', () => {
-
 		expect(Object.entries(MediaType).length).toBe(6);
 		expect(Object.isFrozen(MediaType)).toBeTrue();
 		expect(MediaType.JSON).toEqual('application/json');

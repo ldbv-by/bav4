@@ -16,13 +16,13 @@ window.customElements.define(ImportToolContent.tag, ImportToolContent);
 describe('ImportToolContent', () => {
 	let store;
 	const windowMock = {
-		matchMedia() { }
+		matchMedia() {}
 	};
 
 	const sourceTypeService = {
-		forUrl() { },
-		forData() { },
-		forBlob() { }
+		forUrl() {},
+		forData() {},
+		forBlob() {}
 	};
 	const setup = async (config = {}) => {
 		const { embed = false, isTouch = false } = config;
@@ -37,7 +37,12 @@ describe('ImportToolContent', () => {
 				portrait: false
 			}
 		};
-		store = TestUtils.setupStoreAndDi(initialState, { import: importReducer, notifications: notificationReducer, modal: modalReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			import: importReducer,
+			notifications: notificationReducer,
+			modal: modalReducer,
+			media: createNoInitialStateMediaReducer()
+		});
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -50,11 +55,8 @@ describe('ImportToolContent', () => {
 		return TestUtils.render(ImportToolContent.tag);
 	};
 
-
 	describe('class', () => {
-
 		it('inherits from AbstractToolContent', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractToolContent).toBeTrue();
@@ -62,7 +64,6 @@ describe('ImportToolContent', () => {
 	});
 
 	describe('checks touch layout', () => {
-
 		it('layouts for non-touch devices', async () => {
 			const element = await setup();
 
@@ -91,7 +92,6 @@ describe('ImportToolContent', () => {
 	});
 
 	describe('when instantiated', () => {
-
 		it('has a model with default values', async () => {
 			const element = await setup();
 			const model = element.getModel();
@@ -179,7 +179,8 @@ describe('ImportToolContent', () => {
 
 		it('emits a notification for a unreadable file', async () => {
 			const fileMock = {
-				type: MediaType.KML, text: () => {
+				type: MediaType.KML,
+				text: () => {
 					throw new Error('some');
 				}
 			};

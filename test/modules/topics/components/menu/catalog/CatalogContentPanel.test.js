@@ -15,19 +15,17 @@ import { AbstractContentPanel } from '../../../../../../src/modules/menu/compone
 window.customElements.define(CatalogContentPanel.tag, CatalogContentPanel);
 
 describe('TopicsContentPanel', () => {
-
 	const catalogServiceMock = {
-		async byId() { }
+		async byId() {}
 	};
 
 	const topicsServiceMock = {
-		byId() { }
+		byId() {}
 	};
 
 	let store;
 
 	const setup = (state) => {
-
 		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer });
 
 		$injector
@@ -39,9 +37,7 @@ describe('TopicsContentPanel', () => {
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractContentPanel', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractContentPanel).toBeTrue();
@@ -49,28 +45,23 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders the nothing', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 
-
-
 	describe('topic changes', () => {
-
 		it('renders the component exactly twice', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
-			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.resolve(await loadExampleCatalog())
-			);
+			spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.resolve(await loadExampleCatalog()));
 			const element = await setup();
 			const renderSpy = spyOn(element, 'render');
 			//assign data
@@ -97,9 +88,9 @@ describe('TopicsContentPanel', () => {
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
-			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.resolve(await loadExampleCatalog())
-			);
+			spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.resolve(await loadExampleCatalog()));
 			const element = await setup();
 			//assign data
 			element.data = topicId;
@@ -118,16 +109,15 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('and currentTopic matches', () => {
-
 		it('renders the catalog panel', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
-			const spy = spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.resolve(await loadExampleCatalog())
-			);
+			const spy = spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.resolve(await loadExampleCatalog()));
 			const element = await setup();
 			//assign data
 			element.data = topicId;
@@ -142,7 +132,6 @@ describe('TopicsContentPanel', () => {
 			//wait for elements
 			await TestUtils.timeout();
 			expect(spy).toHaveBeenCalledOnceWith(topicId);
-
 
 			//test correct rendering of the style -tags
 			expect(element.shadowRoot.styleSheets).toHaveSize(3);
@@ -172,9 +161,9 @@ describe('TopicsContentPanel', () => {
 			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
 
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
-			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.resolve(await loadExampleCatalog())
-			);
+			spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.resolve(await loadExampleCatalog()));
 			const element = await setup();
 			//assign data
 			element.data = topicId;
@@ -188,7 +177,6 @@ describe('TopicsContentPanel', () => {
 		});
 
 		describe('currentTopic does NOT match', () => {
-
 			it('renders nothing', async () => {
 				const topicId = 'foo';
 				const element = await setup();
@@ -205,14 +193,12 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('and CatalogService cannot fulfill', () => {
-
 		it('logs a warn statement and renders nothing', async () => {
-
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
-			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.reject(new Error('Something got wrong'))
-			);
+			spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.reject(new Error('Something got wrong')));
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
 			//assign data
@@ -228,16 +214,13 @@ describe('TopicsContentPanel', () => {
 		});
 	});
 
-
 	describe('change topic button clicked', () => {
-
 		it('changes the index', async () => {
-
 			const topicId = 'foo';
 			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
-			spyOn(catalogServiceMock, 'byId').withArgs(topicId).and.returnValue(
-				Promise.resolve(await loadExampleCatalog())
-			);
+			spyOn(catalogServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(Promise.resolve(await loadExampleCatalog()));
 			const element = await setup({
 				topicsContentPanel: {
 					index: TopicsContentPanelIndex.CATALOG_0

@@ -1,6 +1,5 @@
 import './setupPage';
 
-
 // register required modules
 import './modules/header';
 import './modules/footer';

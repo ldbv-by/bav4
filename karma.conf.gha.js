@@ -2,7 +2,6 @@ const baseConfig = require('./karma.conf.js');
 const path = require('path');
 
 module.exports = function (config) {
-
 	// Load base config
 	baseConfig(config);
 

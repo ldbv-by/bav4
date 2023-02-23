@@ -2,14 +2,12 @@ import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../src/modules/MvuElement';
 import { TestUtils } from '../test-utils.js';
 
-
 let skipRendering = false;
 
 const Update_Foo = 'update_foo';
 const Update_Index = 'update_index';
 
 class MvuElementImpl extends MvuElement {
-
 	constructor() {
 		super({
 			foo: 'foo',
@@ -19,15 +17,15 @@ class MvuElementImpl extends MvuElement {
 		this.callOrderIndex = 0;
 
 		//we synchronize the global "applicationStateIndex" with our model
-		this.observe(state => state.root.applicationStateIndex, applicationStateIndex => this.signal(Update_Index, applicationStateIndex));
+		this.observe(
+			(state) => state.root.applicationStateIndex,
+			(applicationStateIndex) => this.signal(Update_Index, applicationStateIndex)
+		);
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
-
 			case Update_Foo: {
-
 				return {
 					...model,
 					foo: data
@@ -35,7 +33,6 @@ class MvuElementImpl extends MvuElement {
 			}
 
 			case Update_Index: {
-
 				return {
 					...model,
 					index: data
@@ -74,12 +71,11 @@ class MvuElementImpl extends MvuElement {
 		this.onDisconnectCalled = this.callOrderIndex++;
 	}
 
-
 	createView(model) {
 		return html`
-			<div class='ba-element-impl-local'> ${model.foo}</div>
-			<div class='ba-element-impl-global'> ${model.index}</div>
-			`;
+			<div class="ba-element-impl-local">${model.foo}</div>
+			<div class="ba-element-impl-global">${model.index}</div>
+		`;
 	}
 
 	static get tag() {
@@ -87,14 +83,11 @@ class MvuElementImpl extends MvuElement {
 	}
 }
 
-class MvuElementNoImpl extends MvuElement {
-}
+class MvuElementNoImpl extends MvuElement {}
 
 class MvuElementDefaultCss extends MvuElement {
-
-
 	defaultCss() {
-		return html`<style id='defaultCss'></style>`;
+		return html`<style id="defaultCss"></style>`;
 	}
 
 	createView() {
@@ -107,10 +100,8 @@ class MvuElementDefaultCss extends MvuElement {
 }
 
 class MvuElementNoDefaultCss extends MvuElement {
-
-
 	defaultCss() {
-		return html`<style id='defaultCss'></style>`;
+		return html`<style id="defaultCss"></style>`;
 	}
 
 	createView() {
@@ -157,17 +148,13 @@ const setupStoreAndDi = () => {
 	store = TestUtils.setupStoreAndDi({ root: { applicationStateIndex: 21 } }, { root: changeApplicationStoreIndexReducer });
 };
 
-
 describe('MvuElement', () => {
-
 	beforeEach(() => {
-
 		setupStoreAndDi();
 		skipRendering = false;
 	});
 
 	describe('expected errors', () => {
-
 		describe('constructor', () => {
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new MvuElement()).toThrowError(Error, 'Can not construct abstract class.');
@@ -184,11 +171,17 @@ describe('MvuElement', () => {
 
 		describe('methods', () => {
 			it('throws exception when abstract #createView is called without overriding', () => {
-				expect(() => new MvuElementNoImpl().createView()).toThrowError(Error, 'Please implement abstract method #createView or do not call super.createView from child.');
+				expect(() => new MvuElementNoImpl().createView()).toThrowError(
+					Error,
+					'Please implement abstract method #createView or do not call super.createView from child.'
+				);
 			});
 
 			it('throws exception when #update is called without overriding', () => {
-				expect(() => new MvuElementNoImpl().update()).toThrowError(Error, 'Please implement method #update before calling #signal or do not call super.update from child.');
+				expect(() => new MvuElementNoImpl().update()).toThrowError(
+					Error,
+					'Please implement method #update before calling #signal or do not call super.update from child.'
+				);
 			});
 
 			it('throws exception when abstract static method #tag is called directly', () => {
@@ -196,14 +189,17 @@ describe('MvuElement', () => {
 			});
 
 			it('throws exception when abstract static method #tag is called without overriding', () => {
-				expect(() => MvuElementNoImpl.tag).toThrowError(Error, 'Please implement static abstract method #tag or do not call static abstract method #tag from child.');
+				expect(() => MvuElementNoImpl.tag).toThrowError(
+					Error,
+					'Please implement static abstract method #tag or do not call static abstract method #tag from child.'
+				);
 			});
 
 			it('calls #createView with a copied model', () => {
 				const model = { foo: 'bar' };
 				let transferedModel = null;
 				const instance = new MvuElementModelTest(model);
-				spyOn(instance, 'createView').and.callFake(model => {
+				spyOn(instance, 'createView').and.callFake((model) => {
 					transferedModel = model;
 					return model;
 				});
@@ -215,11 +211,9 @@ describe('MvuElement', () => {
 				expect(instance._model === transferedModel).toBeFalse();
 			});
 		});
-
 	});
 
 	describe('when initialized', () => {
-
 		it('renders the view', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
@@ -305,11 +299,9 @@ describe('MvuElement', () => {
 			expect(instance.onBeforeRender).toHaveBeenCalledWith(false);
 			expect(instance.onAfterRender).toHaveBeenCalledWith(false);
 		});
-
 	});
 
 	describe('getModel', () => {
-
 		it('returns a copy of the current model', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const copiedModel = element.getModel();
@@ -323,9 +315,7 @@ describe('MvuElement', () => {
 	});
 
 	describe('model update', () => {
-
 		describe('when #signal is called', () => {
-
 			it('calls callbacks in correct order and updates the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
@@ -357,7 +347,7 @@ describe('MvuElement', () => {
 			it('calls callbacks with a copied model', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				let transferedModel = null;
-				spyOn(element, 'onModelChanged').and.callFake(model => {
+				spyOn(element, 'onModelChanged').and.callFake((model) => {
 					transferedModel = model;
 					return model;
 				});
@@ -367,11 +357,9 @@ describe('MvuElement', () => {
 				expect(transferedModel).toEqual(element._model);
 				expect(element._model === transferedModel).toBeFalse();
 			});
-
 		});
 
 		describe('when #signal is called with an unknown action type', () => {
-
 			it('does not call callbacks and does not update the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
@@ -388,7 +376,6 @@ describe('MvuElement', () => {
 		});
 
 		describe('when #signal is called from an observer', () => {
-
 			it('calls callbacks in correct order and updates the view', async () => {
 				const element = await TestUtils.render(MvuElementImpl.tag);
 				const onModelChangedSpy = spyOn(element, 'onModelChanged').and.callThrough();
@@ -406,11 +393,9 @@ describe('MvuElement', () => {
 				expect(element.shadowRoot.querySelector('.ba-element-impl-global').innerHTML.includes(42)).toBeTrue();
 			});
 		});
-
 	});
 
 	describe('default css', () => {
-
 		it('checks if a template result contains content', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 
@@ -426,15 +411,13 @@ describe('MvuElement', () => {
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeTruthy();
 		});
 
-		it('does not prepends the default css when #createView returns \'nothing\'', async () => {
+		it("does not prepends the default css when #createView returns 'nothing'", async () => {
 			const element = await TestUtils.render(MvuElementNoDefaultCss.tag);
 			expect(element.shadowRoot.querySelector('#defaultCss')).toBeFalsy();
 		});
-
 	});
 
 	describe('observeModel', () => {
-
 		it('registers model observers', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();
@@ -454,7 +437,7 @@ describe('MvuElement', () => {
 			expect(elementStateIndexCallback).toHaveBeenCalledWith(42);
 			expect(elementStateIndexCallback).toHaveBeenCalledTimes(3);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
+			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
 		});
 
 		it('registers observers and calls the callbacks immediately', async () => {
@@ -473,7 +456,7 @@ describe('MvuElement', () => {
 
 			expect(elementStateIndexCallback).toHaveBeenCalledOnceWith(42);
 			expect(someUnknownFieldCallback).not.toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledOnceWith('Could not register observer --> \'someUnknowField\' is not a field in the Model of MvuElementImpl');
+			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
 		});
 	});
 });

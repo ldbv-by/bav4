@@ -2,7 +2,16 @@
  * Action creators to activate/deactive the measurement tool
  * @module measurement/action
  */
-import { ACTIVE_CHANGED, STATISTIC_CHANGED, MODE_CHANGED, RESET_REQUESTED, FINISH_REQUESTED, REMOVE_REQUESTED, FILE_SAVE_RESULT_CHANGED, SELECTION_CHANGED } from './measurement.reducer';
+import {
+	ACTIVE_CHANGED,
+	STATISTIC_CHANGED,
+	MODE_CHANGED,
+	RESET_REQUESTED,
+	FINISH_REQUESTED,
+	REMOVE_REQUESTED,
+	FILE_SAVE_RESULT_CHANGED,
+	SELECTION_CHANGED
+} from './measurement.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
@@ -19,7 +28,6 @@ import { EventLike } from '../../utils/storeUtils';
  * @property {string} adminId The adminId of the succesfully saved measurement
  * @property {string} fileId The fileId of the succesfully saved measurement
  */
-
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -48,7 +56,6 @@ export const deactivate = () => {
 	});
 };
 
-
 /**
  * set the statistic of a measurement.
  * @function
@@ -71,7 +78,6 @@ export const setMode = (mode) => {
 		payload: mode
 	});
 };
-
 
 /**
  * set the {@link FileSaveResult}
@@ -108,7 +114,6 @@ export const reset = () => {
 	});
 };
 
-
 /**
  * set the reset request.
  * @function
@@ -119,7 +124,6 @@ export const finish = () => {
 		payload: new EventLike('finish')
 	});
 };
-
 
 /**
  * set the delete request.

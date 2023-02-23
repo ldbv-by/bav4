@@ -1,17 +1,13 @@
 import { provide } from '../../../../src/modules/chips/i18n/chips.provider';
 
-
 describe('i18n for chips module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
@@ -29,7 +25,6 @@ describe('i18n for chips module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

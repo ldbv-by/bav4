@@ -10,7 +10,6 @@ import { MvuElement } from '../../../MvuElement';
  * @author taulinger
  */
 export class ZoomButtons extends MvuElement {
-
 	constructor() {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -22,7 +21,6 @@ export class ZoomButtons extends MvuElement {
 	 */
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-
 
 		return html`
 			<style>${css}</style>

@@ -2,13 +2,12 @@ import { Style, Fill, Circle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 
 export const createThumbnailStyleFunction = (beingDraggedCallback) => {
-
 	const isPolygonArray = (arr) => arr[0][0] != null && arr[0][0][0] != null;
 
 	const drawBoundary = (context, pixelCoordinates, style) => {
 		context.beginPath();
 		context.moveTo(pixelCoordinates[0][0], pixelCoordinates[0][1]);
-		[...pixelCoordinates].slice(1).forEach(c => context.lineTo(c[0], c[1]));
+		[...pixelCoordinates].slice(1).forEach((c) => context.lineTo(c[0], c[1]));
 		context.closePath();
 
 		context.lineWidth = style.lineWidth;
@@ -47,7 +46,6 @@ export const forceRenderStyle = new Style({
 export const nullStyleFunction = () => [new Style({})];
 
 export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
-
 	const getMask = (map, pixelCoordinates) => {
 		const size = map.getSize();
 		const width = size[0] * DEVICE_PIXEL_RATIO;
@@ -57,9 +55,10 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 			[width, 0],
 			[width, height],
 			[0, height],
-			[0, 0]];
+			[0, 0]
+		];
 
-		return [outerPixelPolygon, pixelCoordinates.map(c => [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO])];
+		return [outerPixelPolygon, pixelCoordinates.map((c) => [c[0] * DEVICE_PIXEL_RATIO, c[1] * DEVICE_PIXEL_RATIO])];
 	};
 
 	const drawMask = (ctx, mask) => {
@@ -69,12 +68,15 @@ export const createMapMaskFunction = (map, getPixelCoordinatesCallback) => {
 
 		// outside -> clockwise
 		ctx.moveTo(outer[0][0], outer[0][1]);
-		outer.slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		outer.slice(1).forEach((c) => ctx.lineTo(c[0], c[1]));
 		ctx.closePath();
 
 		// inside -> counter-clockwise
 		ctx.moveTo(inner[0][0], inner[0][1]);
-		[...inner].reverse().slice(1).forEach(c => ctx.lineTo(c[0], c[1]));
+		[...inner]
+			.reverse()
+			.slice(1)
+			.forEach((c) => ctx.lineTo(c[0], c[1]));
 		ctx.closePath();
 
 		ctx.fillStyle = 'rgba(0, 5, 25, 0.75)';

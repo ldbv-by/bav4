@@ -5,17 +5,16 @@ import { $injector } from './testsConfig';
  * singletons with instance dependencies.
  */
 const instanceHttp = function () {
-	this.get = 'I\'m a http service.';
+	this.get = "I'm a http service.";
 };
 const instanceRouter = function () {
-	this.get = 'I\'m a router.';
+	this.get = "I'm a router.";
 };
 
 $injector.register({
 	HttpService: instanceHttp,
 	RouterService: instanceRouter
 });
-
 
 //Test ES6 class
 class classTest {
@@ -31,10 +30,10 @@ const instance = new classTest();
 //tests
 describe('ES6 Class Injection', () => {
 	it('Has http service new instance', () => {
-		expect(instance.http.get).toEqual('I\'m a http service.');
+		expect(instance.http.get).toEqual("I'm a http service.");
 	});
 
 	it('Has router service new instance', () => {
-		expect(instance.router.get).toEqual('I\'m a router.');
+		expect(instance.router.get).toEqual("I'm a router.");
 	});
 });

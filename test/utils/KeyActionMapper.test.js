@@ -1,11 +1,9 @@
 import { KeyActionMapper } from '../../src/utils/KeyActionMapper';
 
 describe('KeyActionMapper', () => {
-
-	const keyCodes = { 'Escape': 'Escape', 'Backspace': 'Backspace', 'Delete': 'Delete', 'F11': 'F11' };
+	const keyCodes = { Escape: 'Escape', Backspace: 'Backspace', Delete: 'Delete', F11: 'F11' };
 
 	describe('when instantiated', () => {
-
 		it('has initial state', () => {
 			const instanceUnderTest = new KeyActionMapper(document);
 
@@ -27,7 +25,7 @@ describe('KeyActionMapper', () => {
 		});
 
 		it('accepts only key-values as String', () => {
-			const action = () => { };
+			const action = () => {};
 
 			expect(() => new KeyActionMapper(document).addForKeyDown({}, action)).toThrowError(TypeError, 'keyCode must be a string');
 			expect(() => new KeyActionMapper(document).addForKeyDown(42, action)).toThrowError(TypeError, 'keyCode must be a string');
@@ -46,7 +44,6 @@ describe('KeyActionMapper', () => {
 
 	describe('when activated', () => {
 		it('adds event listener', () => {
-
 			const instanceUnderTest = new KeyActionMapper(document);
 			const spy = spyOn(document, 'addEventListener');
 
@@ -59,7 +56,6 @@ describe('KeyActionMapper', () => {
 
 	describe('when deactivated', () => {
 		it('removes event listener', () => {
-
 			const instanceUnderTest = new KeyActionMapper(document);
 			const spy = spyOn(document, 'removeEventListener');
 
@@ -71,7 +67,6 @@ describe('KeyActionMapper', () => {
 	});
 
 	describe('when key is pressed', () => {
-
 		describe('and keys for keyup mapped to actions', () => {
 			const getKeyEvent = (key) => {
 				return new KeyboardEvent('keyup', { key: key });
@@ -102,8 +97,7 @@ describe('KeyActionMapper', () => {
 
 			it('does NOT calls the mapped actions after deactivate', () => {
 				const backspaceSpy = jasmine.createSpy('backspaceAction');
-				const instanceUnderTest = new KeyActionMapper(document)
-					.addForKeyUp(keyCodes.Backspace, backspaceSpy);
+				const instanceUnderTest = new KeyActionMapper(document).addForKeyUp(keyCodes.Backspace, backspaceSpy);
 
 				instanceUnderTest.activate();
 				document.dispatchEvent(getKeyEvent(keyCodes.Backspace));
@@ -117,7 +111,6 @@ describe('KeyActionMapper', () => {
 				expect(backspaceSpy).not.toHaveBeenCalled();
 			});
 		});
-
 
 		describe('and keys for keydown mapped to actions', () => {
 			const getKeyEvent = (key) => {
@@ -149,8 +142,7 @@ describe('KeyActionMapper', () => {
 
 			it('does NOT calls the mapped actions after deactivate', () => {
 				const backspaceSpy = jasmine.createSpy('backspaceAction');
-				const instanceUnderTest = new KeyActionMapper(document)
-					.addForKeyDown(keyCodes.Backspace, backspaceSpy);
+				const instanceUnderTest = new KeyActionMapper(document).addForKeyDown(keyCodes.Backspace, backspaceSpy);
 
 				instanceUnderTest.activate();
 				document.dispatchEvent(getKeyEvent(keyCodes.Backspace));
@@ -167,7 +159,6 @@ describe('KeyActionMapper', () => {
 	});
 
 	describe('when key is pressed on inputElement', () => {
-
 		describe('and keys for keyup mapped to actions', () => {
 			const getKeyDownEvent = (keyCode, target) => {
 				const event = new KeyboardEvent('keydown', { code: keyCode });
@@ -183,8 +174,7 @@ describe('KeyActionMapper', () => {
 
 			it('does NOT calls the mapped actions', () => {
 				const backspaceSpy = jasmine.createSpy('backspaceAction');
-				const instanceUnderTest = new KeyActionMapper(document)
-					.addForKeyDown(keyCodes.Backspace, backspaceSpy);
+				const instanceUnderTest = new KeyActionMapper(document).addForKeyDown(keyCodes.Backspace, backspaceSpy);
 
 				const input = document.createElement('input');
 				input.type = 'text';

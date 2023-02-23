@@ -23,14 +23,13 @@ describe('FeatureInfo provider', () => {
 	};
 
 	const coordinateServiceMock = {
-		stringify() { },
-		toLonLat() { }
+		stringify() {},
+		toLonLat() {}
 	};
 
 	const geoResourceServiceMock = {
-		byId() { }
+		byId() {}
 	};
-
 
 	const unitsServiceMock = {
 		formatDistance: (distance) => {
@@ -42,8 +41,6 @@ describe('FeatureInfo provider', () => {
 		}
 	};
 
-
-
 	beforeAll(() => {
 		TestUtils.setupStoreAndDi();
 		$injector
@@ -53,16 +50,12 @@ describe('FeatureInfo provider', () => {
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
-
 	});
 	const coordinate = fromLonLat([11, 48]);
 
 	describe('Bvv featureInfo provider', () => {
-
 		describe('and no suitable properties are available', () => {
-
 			it('returns null', () => {
-
 				const layer = createDefaultLayer('foo');
 				const feature = new Feature({});
 
@@ -73,7 +66,6 @@ describe('FeatureInfo provider', () => {
 		});
 
 		describe('and suitable properties are available', () => {
-
 			it('returns a LayerInfo item', () => {
 				const target = document.createElement('div');
 				const geoResourceId = 'geoResourceId';
@@ -91,7 +83,8 @@ describe('FeatureInfo provider', () => {
 				render(featureInfo.content, target);
 
 				expect(featureInfo).toEqual({
-					title: 'name - foo', content: jasmine.any(Object),
+					title: 'name - foo',
+					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
 				expect(target.innerText).toBe('');
@@ -106,10 +99,11 @@ describe('FeatureInfo provider', () => {
 				render(featureInfo.content, target);
 
 				expect(featureInfo).toEqual({
-					title: 'foo', content: jasmine.any(Object),
+					title: 'foo',
+					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
-				expect(target.innerText).toBe('description');
+				expect(target.querySelector('.content').innerText).toBe('description');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
@@ -121,13 +115,13 @@ describe('FeatureInfo provider', () => {
 				render(featureInfo.content, target);
 
 				expect(featureInfo).toEqual({
-					title: 'foo', content: jasmine.any(Object),
+					title: 'foo',
+					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
-				expect(target.innerText).toBe('desc');
+				expect(target.querySelector('.content').innerText).toBe('desc');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
-
 			});
 
 			it('should sanitize description content', () => {

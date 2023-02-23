@@ -16,10 +16,10 @@
 */
 
 /**
-* @typedef {Object} ChipStyle
-* @property {String} colorLight
-* @property {String} backgroundColorLight
-* @property {String} colorDark
-* @property {String} backgroundColorDark
-* @property {String} [icon]
-*/
+ * @typedef {Object} ChipStyle
+ * @property {String} colorLight
+ * @property {String} backgroundColorLight
+ * @property {String} colorDark
+ * @property {String} backgroundColorDark
+ * @property {String} [icon]
+ */

@@ -2,24 +2,30 @@
 	position: fixed;
 	z-index: var(--z-mapbuttons);
 	bottom: 5.7em;
-	right: .4em;
+	right: 0.4em;
 	margin: 0 1.25em;
 	display: flex;
 	flex-direction: column;
 }
 .map-buttons-container > * {
-	margin: .2em 0; 
+	margin: 0.2em 0;
 }
-.is-portrait ba-zoom-buttons, .is-portrait ba-extent-button, .is-tablet ba-zoom-buttons, .is-tablet ba-extent-button {
+.is-portrait ba-zoom-buttons,
+.is-portrait ba-extent-button,
+.is-tablet ba-zoom-buttons,
+.is-tablet ba-extent-button {
 	display: none;
-} 
-.is-portrait > *, .is-tablet > * {
+}
+.is-portrait > *,
+.is-tablet > * {
 	transform: scale(1.5);
 	margin: 0 0 1.4em 0;
 }
-.map-buttons-container.is-portrait, .map-buttons-container.is-tablet {
+.map-buttons-container.is-portrait,
+.map-buttons-container.is-tablet {
 	bottom: 10.2em;
 }
-.is-portrait ba-rotation-button, .is-tablet ba-rotation-button {
+.is-portrait ba-rotation-button,
+.is-tablet ba-rotation-button {
 	margin-bottom: 2.2em;
 }

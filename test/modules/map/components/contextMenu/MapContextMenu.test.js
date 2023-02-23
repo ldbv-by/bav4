@@ -8,22 +8,18 @@ import { close, open } from '../../../../../src/store/mapContextMenu/mapContextM
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {
-
 	const setup = (state = initialState) => {
 		const mapContextMenuState = {
 			mapContextMenu: state
 		};
 
 		TestUtils.setupStoreAndDi(mapContextMenuState, { mapContextMenu: mapContextMenuReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(MapContextMenu.tag);
 	};
 
 	describe('when initialized', () => {
-
 		it('renders nothing', async () => {
-
 			const element = await setup();
 
 			expect(element.childElementCount).toBe(0);
@@ -31,7 +27,6 @@ describe('MapContextMenu', () => {
 	});
 
 	describe('store changed', () => {
-
 		it('shows/hides the context menu and its content', async () => {
 			const element = await setup();
 
@@ -49,14 +44,12 @@ describe('MapContextMenu', () => {
 	});
 
 	describe('when opened', () => {
-
 		it('shows a header and a close button which closes the menu', async () => {
 			const element = await setup({ coordinate: [10, 20], content: 'someId' });
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
 			expect(header.innerText).toBe('map_contextMenu_header');
-
 
 			const icon = element.shadowRoot.querySelector('ba-icon');
 			expect(icon).toBeTruthy();

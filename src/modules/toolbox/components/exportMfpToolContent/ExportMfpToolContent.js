@@ -6,7 +6,6 @@ import css from './exportMfpToolContent.css';
 import plus from './assets/plus.svg';
 import minus from './assets/minus.svg';
 
-
 const Update = 'update';
 const Update_Scale = 'update_scale';
 const Update_Id = 'update_id';
@@ -34,10 +33,22 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	}
 
 	onInitialize() {
-		this.observe(state => state.mfp.current, data => this.signal(Update, data));
-		this.observe(state => state.mfp.showGrid, data => this.signal(Update_Show_Grid, data));
-		this.observe(state => state.mfp.jobSpec, data => this.signal(Update_Job_Started, data));
-		this.observe(state => state.media, data => this.signal(Update_IsPortrait, data.portrait));
+		this.observe(
+			(state) => state.mfp.current,
+			(data) => this.signal(Update, data)
+		);
+		this.observe(
+			(state) => state.mfp.showGrid,
+			(data) => this.signal(Update_Show_Grid, data)
+		);
+		this.observe(
+			(state) => state.mfp.jobSpec,
+			(data) => this.signal(Update_Job_Started, data)
+		);
+		this.observe(
+			(state) => state.media,
+			(data) => this.signal(Update_IsPortrait, data.portrait)
+		);
 	}
 
 	update(type, data, model) {
@@ -66,20 +77,26 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		const btnLabel = isJobStarted ? translate('toolbox_exportMfp_cancel') : translate('toolbox_exportMfp_submit');
 		const btnType = isJobStarted ? 'loading' : 'primary';
 		const btnId = isJobStarted ? 'btn_cancel' : 'btn_submit';
-		const areSettingsComplete = (capabilities && scale && id);
-		return html`
-		<style>${css}</style>
-        <div class='ba-tool-container' ?data-register-for-viewport-calc=${isPortrait} >
-			<div class="ba-tool-container__title">
-				${translate('toolbox_exportMfp_header')}
-			</div>
-			<div class='ba-tool-container__content'>
-				${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid) : this._getSpinner()}				
-			</div>
-			<div class="ba-tool-container__actions"> 
-				<ba-button id='${btnId}' class="tool-container__button preview_button" .label=${btnLabel} @click=${onClickAction} .type=${btnType} .disabled=${!areSettingsComplete}></ba-button>
-			</div>			
-		</div>`;
+		const areSettingsComplete = capabilities && scale && id;
+		return html` <style>
+				${css}
+			</style>
+			<div class="ba-tool-container" ?data-register-for-viewport-calc=${isPortrait}>
+				<div class="ba-tool-container__title">${translate('toolbox_exportMfp_header')}</div>
+				<div class="ba-tool-container__content">
+					${areSettingsComplete ? this._getContent(id, scale, capabilities.layouts, showGrid) : this._getSpinner()}
+				</div>
+				<div class="ba-tool-container__actions">
+					<ba-button
+						id="${btnId}"
+						class="tool-container__button preview_button"
+						.label=${btnLabel}
+						@click=${onClickAction}
+						.type=${btnType}
+						.disabled=${!areSettingsComplete}
+					></ba-button>
+				</div>
+			</div>`;
 	}
 
 	_getSpinner() {
@@ -89,7 +106,7 @@ export class ExportMfpToolContent extends AbstractToolContent {
 	_getContent(id, scale, layouts, showGrid) {
 		const translate = (key) => this._translationService.translate(key);
 
-		const layoutItems = layouts.map(capability => {
+		const layoutItems = layouts.map((capability) => {
 			return { name: translate(`toolbox_exportMfp_id_${capability.id}`), id: capability.id };
 		});
 
@@ -129,51 +146,71 @@ export class ExportMfpToolContent extends AbstractToolContent {
 		};
 
 		const getScaleOptions = (scales, selectedScale) => {
-			return scales.map((scale) => html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>)}`);
+			return scales.map(
+				(scale) =>
+					html`<option value=${scale} ?selected=${scale === selectedScale}>1:${scale}</option>
+						)}`
+			);
 		};
 
 		const getLayoutOptions = (layoutItems, selectedId) => {
-			return layoutItems.map((item) => html`
-			<button class='layout-button ${item.id} ${getActiveClass(item.id, selectedId)}'  value="${item.id}" title="${item.name}" @click=${onChangeId}> 				
-			</button> 
-			`);
+			return layoutItems.map(
+				(item) => html`
+					<button
+						class="layout-button ${item.id} ${getActiveClass(item.id, selectedId)}"
+						value="${item.id}"
+						title="${item.name}"
+						@click=${onChangeId}
+					></button>
+				`
+			);
 		};
 
-		const getActiveClass = (value, selectedId) => value === selectedId ? 'active' : '';
+		const getActiveClass = (value, selectedId) => (value === selectedId ? 'active' : '');
 
 		const onChangeShowGrid = (event) => {
 			setShowGrid(event.detail.checked);
 		};
 
-		return html`
-				<div class='tool-section'>
-					<div class='tool-sub-header'>			
-						${translate('toolbox_exportMfp_layout')}				
-					</div>
-					<div class='button-container'>
-						${getLayoutOptions(layoutItems, id)}
+		return html` <div class="tool-section">
+				<div class="tool-sub-header">${translate('toolbox_exportMfp_layout')}</div>
+				<div class="button-container">${getLayoutOptions(layoutItems, id)}</div>
+			</div>
+			<div class="tool-section" style="margin-top:1em">
+				<div class="tool-sub-header">${translate('toolbox_exportMfp_scale')}</div>
+				<div style="display: flex; justify-content: center">
+					<ba-icon
+						id="decrease"
+						.icon="${plus}"
+						.color=${'var(--primary-color)'}
+						.size=${2.2}
+						.title=${translate('toolbox_exportMfp_scale_decrease')}
+						@click=${decreaseScale}
+					></ba-icon>
+					<select id="select_scale" @change=${onChangeScale}>
+						${getScaleOptions(scales, scale)}
+					</select>
+					<ba-icon
+						id="increase"
+						.icon="${minus}"
+						.color=${'var(--primary-color)'}
+						.size=${2.2}
+						.title=${translate('toolbox_exportMfp_scale_increase')}
+						@click=${increaseScale}
+					></ba-icon>
+					<div></div>
+				</div>
+				<div class="tool-section separator" style="margin-top:1em">
+					<div class="tool-section" style="margin-top:1em">
+						<ba-checkbox id="showgrid" .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid}
+							><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-checkbox
+						>
 					</div>
 				</div>
-				<div class='tool-section' style='margin-top:1em'>
-					<div class='tool-sub-header'>	
-						${translate('toolbox_exportMfp_scale')}	
-					</div>
-					<div style='display: flex; justify-content: center'>	
-						<ba-icon id='decrease' .icon='${plus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_decrease')} @click=${decreaseScale}></ba-icon>                    				
-						<select id='select_scale' @change=${onChangeScale}>							
-						${getScaleOptions(scales, scale)}
-						</select>
-						<ba-icon id='increase' .icon='${minus}' .color=${'var(--primary-color)'} .size=${2.2} .title=${translate('toolbox_exportMfp_scale_increase')} @click=${increaseScale}></ba-icon>                    									
-					<div>
-					</div>					
-				</div>				
-				<div class='tool-section separator' style='margin-top:1em'>
-					<div  class='tool-section' style='margin-top:1em'><ba-checkbox id='showgrid' .checked=${showGrid} .title=${translate('toolbox_exportMfp_show_grid_title')} @toggle=${onChangeShowGrid} ><span>${translate('toolbox_exportMfp_show_grid')}</span></ba-checkbox></div>
-				</div>`;
+			</div>`;
 	}
 
 	static get tag() {
 		return 'ba-tool-export-mfp-content';
 	}
-
 }

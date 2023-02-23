@@ -1,19 +1,23 @@
 import { SourceType, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
-import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from '../../src/services/provider/sourceType.provider';
+import {
+	bvvUrlSourceTypeProvider,
+	defaultDataSourceTypeProvider,
+	defaultMediaSourceTypeProvider
+} from '../../src/services/provider/sourceType.provider';
 import { SourceTypeService } from '../../src/services/SourceTypeService';
 import { TestUtils } from '../test-utils';
 
-
 describe('SourceTypeService', () => {
-
-	const setup = (urlSourceTypeProvider = bvvUrlSourceTypeProvider, dataSourceTypeProvider = defaultDataSourceTypeProvider, mediaSourceTypeProvider = defaultMediaSourceTypeProvider) => {
+	const setup = (
+		urlSourceTypeProvider = bvvUrlSourceTypeProvider,
+		dataSourceTypeProvider = defaultDataSourceTypeProvider,
+		mediaSourceTypeProvider = defaultMediaSourceTypeProvider
+	) => {
 		return new SourceTypeService(urlSourceTypeProvider, dataSourceTypeProvider, mediaSourceTypeProvider);
 	};
 
 	describe('constructor', () => {
-
 		it('initializes the service with default providers', async () => {
-
 			const instanceUnderTest = new SourceTypeService();
 			expect(instanceUnderTest._urlSourceTypeProvider).toEqual(bvvUrlSourceTypeProvider);
 			expect(instanceUnderTest._dataSourceTypeProvider).toEqual(defaultDataSourceTypeProvider);
@@ -21,10 +25,9 @@ describe('SourceTypeService', () => {
 		});
 
 		it('initializes the service with custom provider', async () => {
-
-			const customUrlSourceTypeProvider = async () => { };
-			const customDataSourceTypeProvider = async () => { };
-			const customMediaSourceTypeProvider = async () => { };
+			const customUrlSourceTypeProvider = async () => {};
+			const customDataSourceTypeProvider = async () => {};
+			const customMediaSourceTypeProvider = async () => {};
 			const instanceUnderTest = setup(customUrlSourceTypeProvider, customDataSourceTypeProvider, customMediaSourceTypeProvider);
 			expect(instanceUnderTest._urlSourceTypeProvider).toEqual(customUrlSourceTypeProvider);
 			expect(instanceUnderTest._dataSourceTypeProvider).toEqual(customDataSourceTypeProvider);
@@ -33,9 +36,7 @@ describe('SourceTypeService', () => {
 	});
 
 	describe('forUrl', () => {
-
 		it('provides a SourceType result', async () => {
-
 			const url = 'http://foo.bar';
 			const sourceTypeResultMock = new SourceType('name', 'version');
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, sourceTypeResultMock);
@@ -45,13 +46,11 @@ describe('SourceTypeService', () => {
 
 			const sourceTypeServiceResult = await instanceUnderTest.forUrl(url);
 
-			expect(sourceTypeServiceResult)
-				.toEqual(result);
+			expect(sourceTypeServiceResult).toEqual(result);
 			expect(promiseQueueSpy).toHaveBeenCalled();
 		});
 
 		it('throws an exception when <url> is not a string', async () => {
-
 			const url = {};
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(providerSpy);
@@ -62,9 +61,7 @@ describe('SourceTypeService', () => {
 	});
 
 	describe('forData', () => {
-
 		it('provides a SourceType result given <data> only', () => {
-
 			const data = 'data';
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
 			const providerSpy = jasmine.createSpy().withArgs(data).and.returnValue(result);
@@ -76,7 +73,6 @@ describe('SourceTypeService', () => {
 		});
 
 		it('throws an exception when data is not a String', async () => {
-
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const data = 0;
@@ -87,11 +83,9 @@ describe('SourceTypeService', () => {
 	});
 
 	describe('forBlob', () => {
-
 		const getBlob = (data, size = 10) => TestUtils.newBlob(data, 'text/mimeType', size);
 
 		it('provides a SourceType result given <blob>', async () => {
-
 			const data = '<kml>some</kml>';
 			const blobMock = getBlob(data);
 			const result = new SourceTypeResult(SourceTypeResultStatus.OK, new SourceType('name', 'version'));
@@ -101,11 +95,9 @@ describe('SourceTypeService', () => {
 			const sourceTypeResult = await instanceUnderTest.forBlob(blobMock);
 
 			expect(sourceTypeResult).toEqual(result);
-
 		});
 
 		it('throws an exception when blob is not a Blob', async () => {
-
 			const providerSpy = jasmine.createSpy();
 			const instanceUnderTest = setup(undefined, providerSpy);
 			const blobFake = { type: 'some', size: 0 };
@@ -116,9 +108,6 @@ describe('SourceTypeService', () => {
 	});
 
 	describe('SourceTypeServiceResult', () => {
-
-
-		it('provides a SourceType result given <blob>', () => {
-		});
+		it('provides a SourceType result given <blob>', () => {});
 	});
 });

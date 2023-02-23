@@ -1,6 +1,6 @@
 .geolocation-icon {
-	mask: url("./assets/geolocation.svg");
-	-webkit-mask-image: url("./assets/geolocation.svg");
+	mask: url('./assets/geolocation.svg');
+	-webkit-mask-image: url('./assets/geolocation.svg');
 	background: var(--text3);
 }
 .icon {
@@ -21,8 +21,8 @@
 .active .geolocation-icon {
 	background: var(--text3);
 	animation-name: stretch;
-	animation-duration: 4s; 
-	animation-timing-function: ease-out; 
+	animation-duration: 4s;
+	animation-timing-function: ease-out;
 	animation-delay: 0;
 	animation-direction: alternate;
 	animation-iteration-count: infinite;
@@ -35,13 +35,13 @@
 		transform: scale(1);
 	}
 	10% {
-		transform: scale(1.2);	
+		transform: scale(1.2);
 	}
 	20% {
-		transform: scale(1);		
+		transform: scale(1);
 	}
 	100% {
-		transform: scale(1);		
+		transform: scale(1);
 	}
 }
 
@@ -58,12 +58,12 @@
 	outline: none;
 	padding-top: 0.2em;
 }
-.geolocation-button:hover , .geolocation-button:focus {
+.geolocation-button:hover,
+.geolocation-button:focus {
 	transform: scale(1.1);
 }
 .geolocation-button:focus {
-
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 .geolocation-button:active {
 	transform: scale(1.15);

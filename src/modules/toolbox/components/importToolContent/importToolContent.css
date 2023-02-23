@@ -9,7 +9,7 @@
 	background: transparent;
 	cursor: pointer;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	color: rgba(255,255,255,.8);
+	color: rgba(255, 255, 255, 0.8);
 	padding: 0 1em;
 	border-right: 1px dotted var(--header-background-color);
 	border: 0;
@@ -40,7 +40,7 @@
 	height: 2em;
 	width: 2em;
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	margin: .8em .8em;
+	margin: 0.8em 0.8em;
 	position: absolute;
 }
 .data {
@@ -53,8 +53,8 @@
 }
 
 .tool-container__button-text {
-	font-size: .8rem;
-	margin: 5.5em .3em .5em .3em;
+	font-size: 0.8rem;
+	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
 	text-align: center;
 	min-width: 5em;
@@ -63,15 +63,15 @@
 }
 .preview_button {
 	width: 100%;
-	padding: .8em 1.5em;
+	padding: 0.8em 1.5em;
 }
 .tool-container__checkbox {
-	font-size: .9rem;
-	display: block;	
-} 
+	font-size: 0.9rem;
+	display: block;
+}
 .disclaimer-text {
 	text-align: justify;
-} 
+}
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
 }
@@ -97,8 +97,8 @@
 }
 .text-to-search-icon {
 	display: inline-block;
-	height: .8em;
-	width: .8em;
+	height: 0.8em;
+	width: 0.8em;
 	mask-image: url('assets/search.svg');
 	-webkit-mask-image: url('assets/search.svg');
 	mask-size: cover;
@@ -130,9 +130,9 @@
 	background: var(--primary-bg-color);
 }
 .ba-tool-container__sub-title {
-	font-size: .9rem; 
-	opacity: .9; 
-	margin-left: .5em;
+	font-size: 0.9rem;
+	opacity: 0.9;
+	margin-left: 0.5em;
 	font-weight: normal;
 }
 .tool-container__button:focus {
@@ -140,7 +140,7 @@
 }
 .tool-container__button:focus .tool-container__background {
 	background: var(--primary-color);
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 .tool-container__button:hover:not(.disabled-tool__button) .tool-container__background {
 	height: 3.4em;
@@ -155,7 +155,7 @@
 	height: 3.4em;
 	width: 3.4em;
 	background-color: var(--primary-color);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) ,  0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
 }
 .hide {
 	display: none !important;

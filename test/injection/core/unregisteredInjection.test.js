@@ -1,11 +1,9 @@
 import { $injector } from './testsConfig';
-const mockService = { get: 'I\'m a mock. ' };
-
+const mockService = { get: "I'm a mock. " };
 
 $injector.registerSingleton({
 	MockService: mockService
 });
-
 
 class RegistrationTest {
 	constructor(serviceName) {
@@ -15,7 +13,6 @@ class RegistrationTest {
 
 //tests
 describe('Injection Name does not match with dependency', () => {
-
 	it('MockService Injected / Registered', () => {
 		const testObj = new RegistrationTest('MockService');
 		expect(testObj.service).toEqual({ MockService: mockService });
@@ -23,8 +20,7 @@ describe('Injection Name does not match with dependency', () => {
 
 	it('UnknownService throws Error on Injecting', () => {
 		expect(() => {
-			new RegistrationTest('FooService')
-			;
+			new RegistrationTest('FooService');
 		}).toThrowError('No registered instance found for FooService');
 	});
 });

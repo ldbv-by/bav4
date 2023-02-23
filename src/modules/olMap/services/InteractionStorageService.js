@@ -11,7 +11,6 @@ const Temp_Session_Id = 'temp_session_id';
  * @author thiloSchlemmer
  */
 export class InteractionStorageService {
-
 	/**
 	 *
 	 * @param {string} value the id, which defines/overrides the following storage-process.
@@ -52,14 +51,16 @@ export class InteractionStorageService {
 	 */
 	isStorageId(candidate) {
 		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
-		return candidate == null ? false : fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate) || candidate === Temp_Session_Id;
+		return candidate == null
+			? false
+			: fileStorageService.isAdminId(candidate) || fileStorageService.isFileId(candidate) || candidate === Temp_Session_Id;
 	}
 
 	/**
-	   * Tests, whether or not the instance have a valid storage state. A valid storage state is reached
-	   * if one or more successful FileSaveResults are received from the FileStorageService
-	   * @returns {boolean}
-	   */
+	 * Tests, whether or not the instance have a valid storage state. A valid storage state is reached
+	 * if one or more successful FileSaveResults are received from the FileStorageService
+	 * @returns {boolean}
+	 */
 	isValid() {
 		return this._isValidFileSaveResult(this._getLastFileSaveResult()) && this.isStorageId(this.getStorageId());
 	}
@@ -92,23 +93,19 @@ export class InteractionStorageService {
 				try {
 					const fileSaveResult = await fileStorageService.save(shared.fileSaveResult.adminId, content, type);
 					setSharedFileSaveResult(fileSaveResult);
-				}
-				catch (error) {
+				} catch (error) {
 					console.warn('Could not store content:', error);
 				}
-			}
-			else {
+			} else {
 				try {
 					const fileSaveResult = await fileStorageService.save(null, content, type);
 					setSharedFileSaveResult(fileSaveResult);
-				}
-				catch (error) {
+				} catch (error) {
 					console.warn('Could not store content initially:', error);
 					setSharedFileSaveResult(null);
 				}
 			}
-		}
-		else {
+		} else {
 			setSharedFileSaveResult(null);
 		}
 	}

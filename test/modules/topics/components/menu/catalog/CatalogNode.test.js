@@ -7,11 +7,7 @@ import { TestUtils } from '../../../../../test-utils.js';
 window.customElements.define(CatalogNode.tag, CatalogNode);
 
 describe('CatalogNode', () => {
-
-
-
 	const setup = (levelAttribute = { level: 0 }) => {
-
 		const state = {
 			topics: { current: 'foo' }
 		};
@@ -25,16 +21,13 @@ describe('CatalogNode', () => {
 	};
 
 	describe('when initialized', () => {
-
 		it('renders the nothing', async () => {
-
 			const element = await setup();
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
 		it('it has a default level of 0', async () => {
-
 			const element = await setup(null);
 
 			expect(element._level).toBe(0);
@@ -42,7 +35,6 @@ describe('CatalogNode', () => {
 	});
 
 	describe('when model changes', () => {
-
 		it('renders a leaf', async () => {
 			//load node data
 			const [node] = await loadExampleCatalog('foo');
@@ -107,7 +99,5 @@ describe('CatalogNode', () => {
 			expect(element.shadowRoot.querySelector('.iscollapse')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('.iconexpand')).toBeTruthy();
 		});
-
 	});
 });
-

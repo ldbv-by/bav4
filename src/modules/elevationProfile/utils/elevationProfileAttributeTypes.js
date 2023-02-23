@@ -7,8 +7,7 @@ export class ElevationProfileAttributeType {
 		this._lightColor = lightColor;
 		if (darkColor === null) {
 			this._darkColor = lightColor;
-		}
-		else {
+		} else {
 			this._darkColor = darkColor;
 		}
 
@@ -45,6 +44,3 @@ export class SurfaceType extends ElevationProfileAttributeType {
 		super('surface', name, lightColor, darkColor);
 	}
 }
-
-
-

@@ -1,5 +1,14 @@
 import { $injector } from '../../../../src/injection';
-import { AggregateGeoResource, GeoResourceAuthenticationType, GeoResourceFuture, VectorGeoResource, VectorSourceType, VTGeoResource, WmsGeoResource, XyzGeoResource } from '../../../../src/domain/geoResources';
+import {
+	AggregateGeoResource,
+	GeoResourceAuthenticationType,
+	GeoResourceFuture,
+	VectorGeoResource,
+	VectorSourceType,
+	VTGeoResource,
+	WmsGeoResource,
+	XyzGeoResource
+} from '../../../../src/domain/geoResources';
 import { LayerService } from '../../../../src/modules/olMap/services/LayerService';
 import { Map } from 'ol';
 import VectorLayer from 'ol/layer/Vector';
@@ -10,17 +19,15 @@ import maplibregl from 'maplibre-gl';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
-
 describe('LayerService', () => {
-
 	const vectorLayerService = {
-		createVectorLayer: () => { }
+		createVectorLayer: () => {}
 	};
 	const georesourceService = {
-		byId: () => { }
+		byId: () => {}
 	};
 	const baaCredentialService = {
-		get: () => { }
+		get: () => {}
 	};
 
 	const setup = (baaImageLoadFunctionProvider) => {
@@ -36,30 +43,25 @@ describe('LayerService', () => {
 	});
 
 	describe('constructor', () => {
-
 		it('initializes the service with default providers', () => {
-
 			const instanceUnderTest = new LayerService();
 			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunction);
 		});
 
 		it('initializes the service with custom provider', () => {
-
-			const getBvvBaaImageLoadFunctionCustomProvider = () => { };
+			const getBvvBaaImageLoadFunctionCustomProvider = () => {};
 			const instanceUnderTest = setup(getBvvBaaImageLoadFunctionCustomProvider);
 			expect(instanceUnderTest._baaImageLoadFunctionProvider).toEqual(getBvvBaaImageLoadFunctionCustomProvider);
 		});
 	});
 
 	describe('toOlLayer', () => {
-
 		describe('GeoResourceFuture', () => {
-
 			it('converts a GeoResourceFuture to a placeholder olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
-				const wmsGeoresource = new GeoResourceFuture(geoResourceId, () => { });
+				const wmsGeoresource = new GeoResourceFuture(geoResourceId, () => {});
 
 				const placeholderOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
@@ -73,7 +75,6 @@ describe('LayerService', () => {
 		});
 
 		describe('VectorGeoresource', () => {
-
 			it('calls the VectorLayerService', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
@@ -89,7 +90,6 @@ describe('LayerService', () => {
 		});
 
 		describe('WmsGeoresource', () => {
-
 			it('converts a WmsGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
@@ -118,7 +118,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const wmsGeoresource = new WmsGeoResource(geoResourceId, 'label', 'https://some.url', 'layer', 'image/png')
-					.setOpacity(.5)
+					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19)
 					.setExtraParams({ STYLES: 'some' });
@@ -127,7 +127,7 @@ describe('LayerService', () => {
 
 				expect(wmsOlLayer.get('id')).toBe(id);
 				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
-				expect(wmsOlLayer.getOpacity()).toBe(.5);
+				expect(wmsOlLayer.getOpacity()).toBe(0.5);
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
@@ -142,18 +142,18 @@ describe('LayerService', () => {
 			});
 
 			describe('BAA Authentication', () => {
-
 				it('handles authentication type BAA', () => {
 					const url = 'https://some.url';
 					const credential = { username: 'u', password: 'p' };
-					const mockImageLoadFunction = () => { };
+					const mockImageLoadFunction = () => {};
 					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
 
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png')
-						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+						GeoResourceAuthenticationType.BAA
+					);
 
 					const wmsOlLayer = instanceUnderTest.toOlLayer(id, wmsGeoresource);
 
@@ -164,27 +164,25 @@ describe('LayerService', () => {
 				it('logs an error statement when credential is not available', () => {
 					const url = 'https://some.url';
 					const credential = null;
-					const mockImageLoadFunction = () => { };
+					const mockImageLoadFunction = () => {};
 					const providerSpy = jasmine.createSpy().withArgs(credential).and.returnValue(mockImageLoadFunction);
 					spyOn(baaCredentialService, 'get').withArgs(url).and.returnValue(credential);
 
 					const instanceUnderTest = setup(providerSpy);
 					const id = 'id';
-					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png')
-						.setAuthenticationType(GeoResourceAuthenticationType.BAA);
-
+					const wmsGeoresource = new WmsGeoResource('geoResourceId', 'label', url, 'layer', 'image/png').setAuthenticationType(
+						GeoResourceAuthenticationType.BAA
+					);
 
 					expect(providerSpy).not.toHaveBeenCalledWith(credential);
 					expect(() => {
 						instanceUnderTest.toOlLayer(id, wmsGeoresource);
-					})
-						.toThrowError(`No credential available for GeoResource with id '${wmsGeoresource.id}' and url '${wmsGeoresource.url}'`);
+					}).toThrowError(`No credential available for GeoResource with id '${wmsGeoresource.id}' and url '${wmsGeoresource.url}'`);
 				});
 			});
 		});
 
 		describe('XyzGeoresource', () => {
-
 			it('converts a XyzGeoresource to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
@@ -209,7 +207,7 @@ describe('LayerService', () => {
 				const id = 'id';
 				const geoResourceId = 'geoResourceId';
 				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', 'https://some{1-2}/layer/{z}/{x}/{y}')
-					.setOpacity(.5)
+					.setOpacity(0.5)
 					.setMinZoom(5)
 					.setMaxZoom(19);
 
@@ -218,7 +216,7 @@ describe('LayerService', () => {
 				expect(xyzOlLayer.get('id')).toBe(id);
 				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(xyzOlLayer.getPreload()).toBe(3);
-				expect(xyzOlLayer.getOpacity()).toBe(.5);
+				expect(xyzOlLayer.getOpacity()).toBe(0.5);
 				expect(xyzOlLayer.getMinZoom()).toBe(5);
 				expect(xyzOlLayer.getMaxZoom()).toBe(19);
 				const xyzSource = xyzOlLayer.getSource();
@@ -242,8 +240,7 @@ describe('LayerService', () => {
 			it('sets a XYZ source containing the ADV WMTS TileGrid', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
-				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}')
-					.setTileGridId('adv_wmts');
+				const xyzGeoresource = new XyzGeoResource('geoResourceId', 'Label', 'https://some{1-2}/layer/{z}/{x}/{y}').setTileGridId('adv_wmts');
 
 				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
 
@@ -254,13 +251,10 @@ describe('LayerService', () => {
 		});
 
 		describe('VTGeoresource', () => {
-
 			it('converts a VTGeoresource to a olLayer', () => {
-
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 				if (maplibregl.supported()) {
-
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
@@ -275,26 +269,21 @@ describe('LayerService', () => {
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
 					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
 				}
-
 			});
 
 			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
 				if (maplibregl.supported()) {
-
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
-					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null)
-						.setOpacity(.5)
-						.setMinZoom(5)
-						.setMaxZoom(19);
+					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null).setOpacity(0.5).setMinZoom(5).setMaxZoom(19);
 
 					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 					expect(vtOlLayer.get('id')).toBe(id);
 					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
-					expect(vtOlLayer.getOpacity()).toBe(.5);
+					expect(vtOlLayer.getOpacity()).toBe(0.5);
 					expect(vtOlLayer.getMinZoom()).toBe(5);
 					expect(vtOlLayer.getMaxZoom()).toBe(19);
 					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
@@ -343,14 +332,14 @@ describe('LayerService', () => {
 				}
 			});
 			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, xyzGeoresource.id])
-				.setOpacity(.5)
+				.setOpacity(0.5)
 				.setMinZoom(5)
 				.setMaxZoom(19);
 
 			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
 
 			expect(olLayerGroup.get('id')).toBe(id);
-			expect(olLayerGroup.getOpacity()).toBe(.5);
+			expect(olLayerGroup.getOpacity()).toBe(0.5);
 			expect(olLayerGroup.getMinZoom()).toBe(5);
 			expect(olLayerGroup.getMaxZoom()).toBe(19);
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
@@ -368,10 +357,7 @@ describe('LayerService', () => {
 						return 'Unknown';
 					}
 				});
-			})
-				.toThrowError(/Unknown currently not supported/);
+			}).toThrowError(/Unknown currently not supported/);
 		});
-
 	});
-
 });

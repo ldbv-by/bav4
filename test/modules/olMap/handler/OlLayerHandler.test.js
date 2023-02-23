@@ -1,38 +1,29 @@
 import { getDefaultLayerOptions, OlLayerHandler } from '../../../../src/modules/olMap/handler/OlLayerHandler';
 
-
 describe('getDefaultLayerConfig', () => {
-
 	it('returns thr default configuration for a layer handler', () => {
 		expect(getDefaultLayerOptions()).toEqual({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: true });
 	});
 });
 
 describe('LayerHandler', () => {
-
-	class OlLayerHandleNoId extends OlLayerHandler {
-
-	}
+	class OlLayerHandleNoId extends OlLayerHandler {}
 	class OlLayerHandlerImpl extends OlLayerHandler {
-
 		constructor() {
 			super('some');
 		}
 	}
 	class OlLayerHandlerImpl2 extends OlLayerHandler {
-
 		constructor(id, options) {
 			super(id, options);
 		}
 
-		onActivate() { }
+		onActivate() {}
 
-		onDeactivate() { }
+		onDeactivate() {}
 	}
 
-
 	describe('expected errors', () => {
-
 		describe('constructor', () => {
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new OlLayerHandler()).toThrowError(TypeError, 'Can not construct abstract class.');
@@ -45,16 +36,21 @@ describe('LayerHandler', () => {
 
 		describe('methods', () => {
 			it('throws exception when abstract #activate is called without overriding', () => {
-				expect(() => new OlLayerHandlerImpl().activate()).toThrowError(TypeError, 'Please implement abstract method #onActivate or do not call super.onActivate from child.');
+				expect(() => new OlLayerHandlerImpl().activate()).toThrowError(
+					TypeError,
+					'Please implement abstract method #onActivate or do not call super.onActivate from child.'
+				);
 			});
 			it('throws exception when abstract #activate is called without overriding', () => {
-				expect(() => new OlLayerHandlerImpl().deactivate()).toThrowError(TypeError, 'Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.');
+				expect(() => new OlLayerHandlerImpl().deactivate()).toThrowError(
+					TypeError,
+					'Please implement abstract method #onDeactivate or do not call super.onDeactivate from child.'
+				);
 			});
 		});
 	});
 
 	describe('implementation', () => {
-
 		describe('constructor', () => {
 			it('initializes fields with default config', () => {
 				const instanceUnderTest = new OlLayerHandlerImpl2('foo');

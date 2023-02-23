@@ -1,4 +1,3 @@
-
 /**
  * @enum
  */
@@ -15,7 +14,6 @@ export const SearchResultTypes = Object.freeze({
  * @author taulinger
  */
 export class SearchResult {
-
 	/**
 	 *
 	 * @param {string} label the label (plain text)
@@ -61,7 +59,6 @@ export class SearchResult {
 }
 
 export class LocationSearchResult extends SearchResult {
-
 	constructor(label, labelFormatted, center = null, extent = null) {
 		super(label, labelFormatted);
 		this._center = center;
@@ -82,7 +79,6 @@ export class LocationSearchResult extends SearchResult {
 }
 
 export class CadastralParcelSearchResult extends SearchResult {
-
 	constructor(label, labelFormatted, center = null, extent = null) {
 		super(label, labelFormatted);
 		this._center = center;
@@ -103,7 +99,6 @@ export class CadastralParcelSearchResult extends SearchResult {
 }
 
 export class GeoResourceSearchResult extends SearchResult {
-
 	constructor(geoResourceId, label, labelFormatted) {
 		super(label, labelFormatted);
 		this._geoResourceId = geoResourceId;

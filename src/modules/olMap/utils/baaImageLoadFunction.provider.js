@@ -5,12 +5,10 @@ import { $injector } from '../../../injection';
  * @param {Credential} credential
  * @returns ol.image.LoadFunction
  */
-export const getBvvBaaImageLoadFunction = credential => {
-
+export const getBvvBaaImageLoadFunction = (credential) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 	return async (image, src) => {
-
 		const url = `${configService.getValueAsPath('BACKEND_URL')}proxy/basicAuth/wms/map/?url=${encodeURIComponent(src)}`;
 		const { username, password } = credential;
 
@@ -18,7 +16,7 @@ export const getBvvBaaImageLoadFunction = credential => {
 			const response = await httpService.get(url, {
 				timeout: 10000,
 				headers: new Headers({
-					'Authorization': `Basic ${btoa(`${username}:${password}`)}`
+					Authorization: `Basic ${btoa(`${username}:${password}`)}`
 				})
 			});
 
@@ -26,8 +24,7 @@ export const getBvvBaaImageLoadFunction = credential => {
 				throw new Error(`Unexpected network status ${response.status}`);
 			}
 			image.getImage().src = URL.createObjectURL(await response.blob());
-		}
-		catch (error) {
+		} catch (error) {
 			console.error('Image could not be fetched', error);
 		}
 	};

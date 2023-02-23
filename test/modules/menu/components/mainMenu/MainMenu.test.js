@@ -10,7 +10,11 @@ import { DevInfo } from '../../../../../src/modules/utils/components/devInfo/Dev
 import { SearchResultsPanel } from '../../../../../src/modules/search/components/menu/SearchResultsPanel';
 import { TopicsContentPanel } from '../../../../../src/modules/topics/components/menu/TopicsContentPanel';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
-import { disableResponsiveParameterObservation, enableResponsiveParameterObservation, setIsPortrait } from '../../../../../src/store/media/media.action';
+import {
+	disableResponsiveParameterObservation,
+	enableResponsiveParameterObservation,
+	setIsPortrait
+} from '../../../../../src/store/media/media.action';
 import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
@@ -19,9 +23,7 @@ import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAM
 window.customElements.define(MainMenu.tag, MainMenu);
 
 describe('MainMenu', () => {
-
 	const setup = (state = {}, config = {}) => {
-
 		const { embed = false } = config;
 
 		const initialState = {
@@ -35,7 +37,6 @@ describe('MainMenu', () => {
 				observeResponsiveParameter: true
 			},
 			...state
-
 		};
 		TestUtils.setupStoreAndDi(initialState, {
 			mainMenu: createNoInitialStateMainMenuReducer(),
@@ -51,7 +52,6 @@ describe('MainMenu', () => {
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new MainMenu().getModel();
@@ -73,7 +73,6 @@ describe('MainMenu', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape and width >= 80em', async () => {
 			const state = {
 				media: {
@@ -136,9 +135,7 @@ describe('MainMenu', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('adds a div which holds the main menu and a close button', async () => {
-
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.main-menu.is-open')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.main-menu__close-button')).toBeTruthy();
@@ -257,8 +254,7 @@ describe('MainMenu', () => {
 	});
 
 	describe('when orientation changes', () => {
-
-		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+		it("adds or removes 'data-register-for-viewport-calc' attribute", async () => {
 			const state = {
 				media: {
 					portrait: true,
@@ -283,7 +279,6 @@ describe('MainMenu', () => {
 	});
 
 	describe('when tab-index changes', () => {
-
 		const check = (index, panels) => {
 			for (let i = 0; i < panels.length; i++) {
 				expect(panels[i].classList.contains('is-active')).toBe(Object.values(TabId)[i] === index);
@@ -331,7 +326,6 @@ describe('MainMenu', () => {
 	});
 
 	describe('when close button clicked', () => {
-
 		it('closes the main menu', async () => {
 			const element = await setup();
 
@@ -422,7 +416,6 @@ describe('MainMenu', () => {
 	});
 
 	describe('when responsive parameter observation state changes', () => {
-
 		it('adds or removes the prevent-transition css class', async () => {
 			const state = {
 				media: {
@@ -447,7 +440,6 @@ describe('MainMenu', () => {
 	});
 
 	describe('when slider changes', () => {
-
 		it('adjusts the main menu width', async () => {
 			const value = 50;
 			const state = {

@@ -1,4 +1,3 @@
-
 import { geolocationStyleFunction, nullStyleFunction, createAnimateFunction } from '../../../../../src/modules//olMap/handler/geolocation/styleUtils';
 import { Point, Circle } from 'ol/geom';
 import Map from 'ol/Map';
@@ -43,7 +42,6 @@ describe('geolocationStyleFunction', () => {
 	});
 });
 
-
 describe('nullStyleFunction', () => {
 	it('should create a empty style', () => {
 		const geometry = new Point([0, 0]);
@@ -61,21 +59,20 @@ describe('nullStyleFunction', () => {
 	});
 });
 
-
 describe('createAnimateFunction', () => {
-
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const transform = [1, 0, 0, 1, 0, 0];
 	const projection = getProjection('EPSG:3857');
 	const viewState = {
-		projection: projection, resolution: 1, rotation: 0
+		projection: projection,
+		resolution: 1,
+		rotation: 0
 	};
 
 	const get2dContext = () => {
 		const canvas = document.createElement('canvas');
 		return canvas.getContext('2d');
 	};
-
 
 	const setupMap = () => {
 		return new Map({
@@ -85,7 +82,6 @@ describe('createAnimateFunction', () => {
 				zoom: 1
 			})
 		});
-
 	};
 	const setupLayer = (map, feature) => {
 		const source = new VectorSource({
@@ -101,7 +97,10 @@ describe('createAnimateFunction', () => {
 
 	const setupFrameState = (time) => {
 		return {
-			time: +time, coordinateToPixelTransform: transform, viewHints: [], viewState: viewState
+			time: +time,
+			coordinateToPixelTransform: transform,
+			viewHints: [],
+			viewState: viewState
 		};
 	};
 
@@ -115,7 +114,7 @@ describe('createAnimateFunction', () => {
 	it('should create animation-function', () => {
 		const feature = getFeature();
 		const map = setupMap();
-		const endCallback = () => { };
+		const endCallback = () => {};
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 
@@ -127,7 +126,7 @@ describe('createAnimateFunction', () => {
 		const map = setupMap();
 		const layer = setupLayer(map, feature);
 		const earlyEvent = getPostRenderEvent(Date.now() - 1000);
-		const endCallback = () => { };
+		const endCallback = () => {};
 
 		const functionUnderTest = createAnimateFunction(map, feature, endCallback);
 		layer.on('postrender', functionUnderTest);
@@ -148,7 +147,6 @@ describe('createAnimateFunction', () => {
 
 		expect(functionUnderTest).toBeDefined();
 		expect(endCallback).not.toHaveBeenCalled();
-
 	});
 
 	it('when animation ends, should call the endCallback', () => {
@@ -166,6 +164,5 @@ describe('createAnimateFunction', () => {
 
 		layer.dispatchEvent(getPostRenderEvent(Date.now() + 1100));
 		expect(endCallback).toHaveBeenCalled();
-
 	});
 });

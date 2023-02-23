@@ -26,8 +26,6 @@ const Update_Layers = 'update_layers';
  * @author taulinger
  */
 export class OlMap extends MvuElement {
-
-
 	constructor() {
 		super({
 			zoom: null,
@@ -50,8 +48,20 @@ export class OlMap extends MvuElement {
 			OlFeatureInfoHandler: olFeatureInfoHandler,
 			ElevationProfileHandler: elevationProfileHandler,
 			OlMfpHandler: olMfpHandler
-		} = $injector.inject('MapService', 'GeoResourceService', 'LayerService', 'EnvironmentService', 'TranslationService',
-			'OlMeasurementHandler', 'OlDrawHandler', 'OlGeolocationHandler', 'OlHighlightLayerHandler', 'OlFeatureInfoHandler', 'ElevationProfileHandler', 'OlMfpHandler');
+		} = $injector.inject(
+			'MapService',
+			'GeoResourceService',
+			'LayerService',
+			'EnvironmentService',
+			'TranslationService',
+			'OlMeasurementHandler',
+			'OlDrawHandler',
+			'OlGeolocationHandler',
+			'OlHighlightLayerHandler',
+			'OlFeatureInfoHandler',
+			'ElevationProfileHandler',
+			'OlMfpHandler'
+		);
 
 		this._mapService = mapService;
 		this._geoResourceService = georesourceService;
@@ -59,8 +69,17 @@ export class OlMap extends MvuElement {
 		this._environmentService = environmentService;
 		this._translationService = translationService;
 		this._geoResourceService = georesourceService;
-		this._layerHandler = new Map([[measurementHandler.id, measurementHandler], [geolocationHandler.id, geolocationHandler], [olHighlightLayerHandler.id, olHighlightLayerHandler], [olDrawHandler.id, olDrawHandler], [olMfpHandler.id, olMfpHandler]]);
-		this._mapHandler = new Map([[olFeatureInfoHandler.id, olFeatureInfoHandler], [elevationProfileHandler.id, elevationProfileHandler]]);
+		this._layerHandler = new Map([
+			[measurementHandler.id, measurementHandler],
+			[geolocationHandler.id, geolocationHandler],
+			[olHighlightLayerHandler.id, olHighlightLayerHandler],
+			[olDrawHandler.id, olDrawHandler],
+			[olMfpHandler.id, olMfpHandler]
+		]);
+		this._mapHandler = new Map([
+			[olFeatureInfoHandler.id, olFeatureInfoHandler],
+			[elevationProfileHandler.id, elevationProfileHandler]
+		]);
 		this._unsubscribers = [];
 	}
 
@@ -81,7 +100,9 @@ export class OlMap extends MvuElement {
 	 */
 	createView() {
 		return html`
-			<style>${olCss + css}</style>
+			<style>
+				${olCss + css}
+			</style>
 			<div data-test-id id="ol-map" tabindex="0"></div>
 		`;
 	}
@@ -92,9 +113,19 @@ export class OlMap extends MvuElement {
 	onInitialize() {
 		//observe global state (position, active layers, orientation)
 		this._unsubscribers = [
-			this.observe(state => state.position, data => this.signal(Update_Position, data)),
-			this.observe(state => state.layers.active, data => this.signal(Update_Layers, data)),
-			this.observe(state => state.media.portrait, () => this._map.updateSize(), false)
+			this.observe(
+				(state) => state.position,
+				(data) => this.signal(Update_Position, data)
+			),
+			this.observe(
+				(state) => state.layers.active,
+				(data) => this.signal(Update_Layers, data)
+			),
+			this.observe(
+				(state) => state.media.portrait,
+				() => this._map.updateSize(),
+				false
+			)
 		];
 
 		const { zoom, center, rotation } = this.getModel();
@@ -132,10 +163,11 @@ export class OlMap extends MvuElement {
 				//for embedded mode
 				//onFocusOnly: false,
 				pinchRotate: false
-
-			}).extend([new PinchRotate({
-				threshold: this._mapService.getMinimalRotation()
-			})])
+			}).extend([
+				new PinchRotate({
+					threshold: this._mapService.getMinimalRotation()
+				})
+			])
 		});
 
 		this._map.on('movestart', () => {
@@ -154,7 +186,7 @@ export class OlMap extends MvuElement {
 
 		const singleClickOrShortPressHandler = (evt) => {
 			//when no layer handler is currently active or active handler does not prevent click handling
-			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultClickHandling).length === 0) {
+			if ([...this._layerHandler.values()].filter((lh) => lh.active).filter((lh) => lh.options.preventDefaultClickHandling).length === 0) {
 				evt.preventDefault();
 				const coord = this._map.getEventCoordinate(evt.originalEvent);
 				setClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
@@ -163,7 +195,7 @@ export class OlMap extends MvuElement {
 
 		const contextOrLongPressHandler = (evt) => {
 			//when no layer handler is currently active or active handler does not prevent context click handling
-			if ([...this._layerHandler.values()].filter(lh => lh.active).filter(lh => lh.options.preventDefaultContextClickHandling).length === 0) {
+			if ([...this._layerHandler.values()].filter((lh) => lh.active).filter((lh) => lh.options.preventDefaultContextClickHandling).length === 0) {
 				evt.preventDefault();
 				const coord = this._map.getEventCoordinate(evt.originalEvent);
 				setContextClick({ coordinate: coord, screenCoordinate: [evt.originalEvent.clientX, evt.originalEvent.clientY] });
@@ -172,12 +204,10 @@ export class OlMap extends MvuElement {
 
 		if (this._environmentService.isTouch()) {
 			registerLongPressListener(this._map, contextOrLongPressHandler, singleClickOrShortPressHandler);
-		}
-		else {
+		} else {
 			this._map.addEventListener('contextmenu', contextOrLongPressHandler);
 			this._map.on('singleclick', singleClickOrShortPressHandler);
 		}
-
 
 		this._map.on('pointermove', (evt) => {
 			if (evt.dragging) {
@@ -195,13 +225,13 @@ export class OlMap extends MvuElement {
 		this._map.on('loadstart', () => setFetching(true));
 		this._map.on('loadend', () => setFetching(false));
 
-		this._mapHandler.forEach(handler => {
+		this._mapHandler.forEach((handler) => {
 			handler.register(this._map);
 		});
 
 		//register particular observers on our model
 		//handle fitRequest
-		this.observeModel(['fitRequest', 'fitLayerRequest'], eventLike => this._fitToExtent(eventLike));
+		this.observeModel(['fitRequest', 'fitLayerRequest'], (eventLike) => this._fitToExtent(eventLike));
 		//sync layers
 		this.observeModel('layers', () => this._syncLayers());
 		//sync the view
@@ -250,25 +280,26 @@ export class OlMap extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { layers } = this.getModel();
 
-		const updatedIds = layers.map(layer => layer.id);
-		const currentIds = this._map.getLayers()
+		const updatedIds = layers.map((layer) => layer.id);
+		const currentIds = this._map
+			.getLayers()
 			.getArray()
-			.map(olLayer => olLayer.get('id'));
+			.map((olLayer) => olLayer.get('id'));
 
 		// array intersection
-		const toBeUpdated = updatedIds.filter(id => currentIds.includes(id));
+		const toBeUpdated = updatedIds.filter((id) => currentIds.includes(id));
 		// array difference left side
-		const toBeAdded = updatedIds.filter(id => !currentIds.includes(id));
+		const toBeAdded = updatedIds.filter((id) => !currentIds.includes(id));
 		// array difference right side
-		const toBeRemoved = currentIds.filter(id => !updatedIds.includes(id));
+		const toBeRemoved = currentIds.filter((id) => !updatedIds.includes(id));
 
-		const clearVectorSource = olLayer => {
+		const clearVectorSource = (olLayer) => {
 			if (olLayer.getSource() instanceof VectorSource) {
 				olLayer.getSource().clear();
 			}
 		};
 
-		toBeRemoved.forEach(id => {
+		toBeRemoved.forEach((id) => {
 			const olLayer = getLayerById(this._map, id);
 			if (olLayer) {
 				this._map.removeLayer(olLayer);
@@ -278,44 +309,47 @@ export class OlMap extends MvuElement {
 
 				if (olLayer instanceof LayerGroup) {
 					olLayer.getLayers().forEach(clearVectorSource);
-				}
-				else {
+				} else {
 					clearVectorSource(olLayer);
 				}
 			}
 		});
 
-		toBeAdded.forEach(id => {
-
+		toBeAdded.forEach((id) => {
 			const toOlLayer = (id, geoResource) => {
-				const olLayer = geoResource ? this._layerService.toOlLayer(id, geoResource, this._map) : (this._layerHandler.has(id) ? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map) : null);
+				const olLayer = geoResource
+					? this._layerService.toOlLayer(id, geoResource, this._map)
+					: this._layerHandler.has(id)
+					? toOlLayerFromHandler(id, this._layerHandler.get(id), this._map)
+					: null;
 				if (olLayer) {
-					const layer = layers.find(layer => layer.id === id);
+					const layer = layers.find((layer) => layer.id === id);
 					updateOlLayer(olLayer, layer);
 					this._map.getLayers().insertAt(layer.zIndex, olLayer);
-				}
-				else {
+				} else {
 					console.warn(`Could not add an olLayer for id '${id}'`);
 					emitNotification(`${translate('olMap_layer_not_available')} '${id}'`, LevelTypes.WARN);
 					removeLayer(id);
 				}
 			};
 
-			const geoResourceId = layers.find(l => l.id === id)?.geoResourceId;
+			const geoResourceId = layers.find((l) => l.id === id)?.geoResourceId;
 			const geoResource = this._geoResourceService.byId(geoResourceId);
 			//if geoResource is a future, we insert a placeholder olLayer replacing it after the geoResource was resolved
 			if (geoResource?.getType() === GeoResourceTypes.FUTURE) {
-				// eslint-disable-next-line promise/prefer-await-to-then
-				geoResource.get().then(lazyLoadedGeoResource => {
-					// replace the placeholder olLayer by the real the olLayer
-					const layer = layers.find(layer => layer.id === id);
-					const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
-					updateOlLayer(realOlLayer, layer);
-					this._map.getLayers().remove(getLayerById(this._map, id));
-					this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
-				})
+				geoResource
+					.get()
 					// eslint-disable-next-line promise/prefer-await-to-then
-					.catch(error => {
+					.then((lazyLoadedGeoResource) => {
+						// replace the placeholder olLayer by the real the olLayer
+						const layer = layers.find((layer) => layer.id === id);
+						const realOlLayer = this._layerService.toOlLayer(id, lazyLoadedGeoResource, this._map);
+						updateOlLayer(realOlLayer, layer);
+						this._map.getLayers().remove(getLayerById(this._map, id));
+						this._map.getLayers().insertAt(layer.zIndex, realOlLayer);
+					})
+					// eslint-disable-next-line promise/prefer-await-to-then
+					.catch((error) => {
 						console.warn(error);
 						emitNotification(`${translate('olMap_layer_not_available')} '${geoResource.id}'`, LevelTypes.WARN);
 						removeLayer(id);
@@ -324,8 +358,8 @@ export class OlMap extends MvuElement {
 			toOlLayer(id, geoResource);
 		});
 
-		toBeUpdated.forEach(id => {
-			const layer = layers.find(layer => layer.id === id);
+		toBeUpdated.forEach((id) => {
+			const layer = layers.find((layer) => layer.id === id);
 			const olLayer = getLayerById(this._map, id);
 			updateOlLayer(olLayer, layer);
 			this._map.getLayers().remove(olLayer);
@@ -345,27 +379,31 @@ export class OlMap extends MvuElement {
 				const maxZoom = eventLike.payload.options.maxZoom ?? this._view.getMaxZoom();
 				const viewportPadding = this._mapService.getVisibleViewport(this._map.getTarget());
 				const padding = eventLike.payload.options.useVisibleViewport
-					? [viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0], viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
-						viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2], viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]]
+					? [
+							viewportPadding.top + OlMap.DEFAULT_PADDING_PX[0],
+							viewportPadding.right + OlMap.DEFAULT_PADDING_PX[1],
+							viewportPadding.bottom + OlMap.DEFAULT_PADDING_PX[2],
+							viewportPadding.left + OlMap.DEFAULT_PADDING_PX[3]
+					  ]
 					: OlMap.DEFAULT_PADDING_PX;
 				this._view.fit(extent, { maxZoom: maxZoom, callback: onAfterFit, padding: padding });
 			}
 		};
 
-		if (eventLike.payload.id) { // we target a layer
+		if (eventLike.payload.id) {
+			// we target a layer
 			const { layers } = this.getModel();
-			const geoResourceId = layers.find(l => l.id === eventLike.payload.id)?.geoResourceId;
+			const geoResourceId = layers.find((l) => l.id === eventLike.payload.id)?.geoResourceId;
 			const gr = this._geoResourceService.byId(geoResourceId);
 			if (gr instanceof GeoResourceFuture) {
 				// when we have a GeoResourceFuture we wait until it is resolved
 				// Note: the actual call of #fit is wrapped within a timeout fn
 				gr.onResolve(() => setTimeout(() => fit()));
-			}
-			else {
+			} else {
 				fit();
 			}
-		}
-		else { // we have an extent
+		} else {
+			// we have an extent
 			fit();
 		}
 	}

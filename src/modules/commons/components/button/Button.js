@@ -4,7 +4,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
-
 const Update_Disabled = 'update_disabled';
 const Update_Label = 'update_label';
 const Update_Type = 'update_type';
@@ -26,7 +25,6 @@ const Update_Icon = 'update_icon';
  * @author taulinger
  */
 export class Button extends MvuElement {
-
 	constructor() {
 		super({
 			disabled: false,
@@ -34,7 +32,7 @@ export class Button extends MvuElement {
 			icon: null,
 			type: 'secondary'
 		});
-		this._onClick = () => { };
+		this._onClick = () => {};
 	}
 
 	onInitialize() {
@@ -42,7 +40,6 @@ export class Button extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Disabled:
 				return { ...model, disabled: data };
@@ -80,17 +77,23 @@ export class Button extends MvuElement {
 		}`;
 
 		const getIconStyle = () => {
-			return icon ? html`<style>${iconClass}</style>` : nothing;
+			return icon
+				? html`<style>
+						${iconClass}
+				  </style>`
+				: nothing;
 		};
 
 		const getIcon = () => {
-			return icon ? html`<span class='icon'></span>` : nothing;
+			return icon ? html`<span class="icon"></span>` : nothing;
 		};
 
 		return html`
-		 <style>${css}</style> 
-		 ${getIconStyle()}
-		 <button class='button ${classMap(classes)}' ?disabled=${disabled} @click=${onClick}>${getIcon()} ${label}</button>
+			<style>
+				${css}
+			</style>
+			${getIconStyle()}
+			<button class="button ${classMap(classes)}" ?disabled=${disabled} @click=${onClick}>${getIcon()} ${label}</button>
 		`;
 	}
 

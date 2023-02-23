@@ -30,12 +30,10 @@ import { ImageWMS } from 'ol/source';
 
 window.customElements.define(OlMap.tag, OlMap);
 
-
 describe('OlMap', () => {
-
 	const initialCenter = fromLonLat([11.57245, 48.14021]);
 	const initialZoomLevel = 10;
-	const initialRotationValue = .5;
+	const initialRotationValue = 0.5;
 	const longPressDelay = 300;
 	const minZoomLevel = 5;
 	const maxZoomLevel = 21;
@@ -46,7 +44,7 @@ describe('OlMap', () => {
 
 	const mapServiceStub = {
 		getMinimalRotation() {
-			return .05;
+			return 0.05;
 		},
 		getMinZoomLevel() {
 			return minZoomLevel;
@@ -54,8 +52,8 @@ describe('OlMap', () => {
 		getMaxZoomLevel() {
 			return maxZoomLevel;
 		},
-		getScaleLineContainer() { },
-		getVisibleViewport() { }
+		getScaleLineContainer() {},
+		getVisibleViewport() {}
 	};
 
 	const geoResourceServiceStub = {
@@ -68,20 +66,20 @@ describe('OlMap', () => {
 			}
 			return null;
 		},
-		addOrReplace() { }
+		addOrReplace() {}
 	};
 
 	const layerServiceMock = {
-		toOlLayer() { }
+		toOlLayer() {}
 	};
 
 	const environmentServiceMock = {
-		isTouch() { }
+		isTouch() {}
 	};
 
 	const measurementLayerHandlerMock = {
-		activate() { },
-		deactivate() { },
+		activate() {},
+		deactivate() {},
 		get id() {
 			return 'measurementLayerHandlerMockId';
 		},
@@ -93,8 +91,8 @@ describe('OlMap', () => {
 		}
 	};
 	const drawLayerHandlerMock = {
-		activate() { },
-		deactivate() { },
+		activate() {},
+		deactivate() {},
 		get id() {
 			return 'drawLayerHandlerMockId';
 		},
@@ -103,8 +101,8 @@ describe('OlMap', () => {
 		}
 	};
 	const geolocationLayerHandlerMock = {
-		activate() { },
-		deactivate() { },
+		activate() {},
+		deactivate() {},
 		get id() {
 			return 'geolocationLayerHandlerMockId';
 		},
@@ -113,8 +111,7 @@ describe('OlMap', () => {
 		}
 	};
 	const highlightLayerHandlerMock = {
-
-		deactivate() { },
+		deactivate() {},
 		get id() {
 			return 'highlightLayerHandlerMockId';
 		},
@@ -126,20 +123,20 @@ describe('OlMap', () => {
 		}
 	};
 	const featureInfoHandlerMock = {
-		register() { },
+		register() {},
 		get id() {
 			return 'featureInfoHandlerMockId';
 		}
 	};
 	const elevationProfileHandlerMock = {
-		register() { },
+		register() {},
 		get id() {
 			return 'elevationProfileHandlerMockId';
 		}
 	};
 	const mfpHandlerMock = {
-		activate() { },
-		deactivate() { },
+		activate() {},
+		deactivate() {},
 		get id() {
 			return 'mfpLayerHandlerMockId';
 		},
@@ -160,7 +157,8 @@ describe('OlMap', () => {
 				rotation: initialRotationValue,
 				fitRequest: null,
 				fitLayerRequest: null
-			}, media: {
+			},
+			media: {
 				portrait: false,
 				observeResponsiveParameter: true
 			}
@@ -181,7 +179,6 @@ describe('OlMap', () => {
 			notifications: notificationReducer
 		});
 
-
 		$injector
 			.registerSingleton('MapService', mapServiceStub)
 			.registerSingleton('GeoResourceService', geoResourceServiceStub)
@@ -201,14 +198,12 @@ describe('OlMap', () => {
 	};
 
 	describe('class', () => {
-
 		it('exposes static constants', async () => {
 			expect(OlMap.DEFAULT_PADDING_PX).toEqual([10, 10, 10, 10]);
 		});
 	});
 
 	describe('when instantiated', () => {
-
 		it('contains a model with default values', async () => {
 			await setup();
 			const model = new OlMap().getModel();
@@ -225,7 +220,6 @@ describe('OlMap', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('configures the map and adds a div which contains the ol-map', async () => {
 			const mapServiceSpy = spyOn(mapServiceStub, 'getScaleLineContainer');
 
@@ -249,7 +243,6 @@ describe('OlMap', () => {
 		});
 
 		describe('on touch device', () => {
-
 			it('configures the map and adds a div which contains the ol-map', async () => {
 				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 				const element = await setup();
@@ -268,7 +261,6 @@ describe('OlMap', () => {
 	});
 
 	describe('when disconnected', () => {
-
 		it('removes all observers and resets the map', async () => {
 			const element = await setup();
 			const spy = spyOn(element._map, 'setTarget');
@@ -283,7 +275,6 @@ describe('OlMap', () => {
 	});
 
 	describe('when orientation changes', () => {
-
 		it('updates the map size', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -296,11 +287,9 @@ describe('OlMap', () => {
 	});
 
 	describe('view events', () => {
-
 		describe('rotation:change', () => {
-
 			it('updates the liveRotation property of the position state', async () => {
-				const rotationValue = .5678;
+				const rotationValue = 0.5678;
 				const element = await setup();
 				const view = element._view;
 				const event = new Event('change:rotation');
@@ -313,7 +302,6 @@ describe('OlMap', () => {
 		});
 
 		describe('change:center', () => {
-
 			it('updates the liveCenter property of the position state', async () => {
 				const center = [21, 42];
 				const element = await setup();
@@ -328,7 +316,6 @@ describe('OlMap', () => {
 		});
 
 		describe('change:resolution', () => {
-
 			it('updates the liveZoom property of the position state', async () => {
 				const zoom = 5.55;
 				const element = await setup();
@@ -344,8 +331,7 @@ describe('OlMap', () => {
 	});
 
 	describe('map load events', () => {
-
-		it('updates the \'fetching\' property in network store', async () => {
+		it("updates the 'fetching' property in network store", async () => {
 			const element = await setup();
 
 			simulateMapEvent(element._map, MapEventType.LOADSTART);
@@ -360,8 +346,7 @@ describe('OlMap', () => {
 
 	describe('map move events', () => {
 		describe('movestart', () => {
-
-			it('updates the \'movestart\' property in map store', async () => {
+			it("updates the 'movestart' property in map store", async () => {
 				const element = await setup();
 
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
@@ -369,7 +354,7 @@ describe('OlMap', () => {
 				expect(store.getState().map.moveStart.payload).toBe('movestart');
 			});
 
-			it('updates the \'beingMoved\' property in pointer store', async () => {
+			it("updates the 'beingMoved' property in pointer store", async () => {
 				const element = await setup();
 
 				simulateMapEvent(element._map, MapEventType.MOVESTART);
@@ -383,8 +368,7 @@ describe('OlMap', () => {
 		});
 
 		describe('moveend', () => {
-
-			it('updates the \'moveend\' property in map store', async () => {
+			it("updates the 'moveend' property in map store", async () => {
 				const element = await setup();
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
@@ -397,21 +381,20 @@ describe('OlMap', () => {
 				const view = element._view;
 				spyOn(view, 'getZoom').and.returnValue(5);
 				spyOn(view, 'getCenter').and.returnValue([21, 42]);
-				spyOn(view, 'getRotation').and.returnValue(.5);
+				spyOn(view, 'getRotation').and.returnValue(0.5);
 
 				simulateMapEvent(element._map, MapEventType.MOVEEND);
 
 				expect(store.getState().position.zoom).toBe(5);
 				expect(store.getState().position.center).toEqual([21, 42]);
-				expect(store.getState().position.rotation).toBe(.5);
+				expect(store.getState().position.rotation).toBe(0.5);
 			});
 		});
 	});
 
 	describe('pointer events', () => {
-
 		describe('when pointer move', () => {
-			it('updates the \'pointer\' property in pointer store', async () => {
+			it("updates the 'pointer' property in pointer store", async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -425,9 +408,8 @@ describe('OlMap', () => {
 			});
 		});
 
-
 		describe('when pointer drag', () => {
-			it('does NOT update the \'pointer\' property in pointer store', async () => {
+			it("does NOT update the 'pointer' property in pointer store", async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -439,7 +421,7 @@ describe('OlMap', () => {
 				expect(store.getState().pointer.move).toBeNull();
 			});
 
-			it('updates the \'beingDragged\' property in pointer store', async () => {
+			it("updates the 'beingDragged' property in pointer store", async () => {
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -458,10 +440,8 @@ describe('OlMap', () => {
 	});
 
 	describe('single-click / short-press event', () => {
-
 		describe('on non touch device', () => {
-
-			it('updates the \'click\' property in pointer store', async () => {
+			it("updates the 'click' property in pointer store", async () => {
 				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 				const element = await setup();
 				const map = element._map;
@@ -477,11 +457,14 @@ describe('OlMap', () => {
 				expect(preventDefault).toHaveBeenCalled();
 			});
 
-			it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+			it("updates the 'click' property when layer handler is active but allows default click handling", async () => {
 				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 				//we set the highlightLayerHandlerMock active which allows click handling
 				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
+				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+					preventDefaultClickHandling: false,
+					preventDefaultContextClickHandling: true
+				});
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -514,7 +497,6 @@ describe('OlMap', () => {
 		});
 
 		describe('on touch device', () => {
-
 			beforeEach(async () => {
 				jasmine.clock().install();
 			});
@@ -523,7 +505,7 @@ describe('OlMap', () => {
 				jasmine.clock().uninstall();
 			});
 
-			it('updates the \'click\' property in pointer store', async () => {
+			it("updates the 'click' property in pointer store", async () => {
 				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 				const element = await setup();
 				const map = element._map;
@@ -542,11 +524,14 @@ describe('OlMap', () => {
 				expect(preventDefault).toHaveBeenCalled();
 			});
 
-			it('updates the \'click\' property when layer handler is active but allows default click handling', async () => {
+			it("updates the 'click' property when layer handler is active but allows default click handling", async () => {
 				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 				//we set the highlightLayerHandlerMock active which allows click handling
 				spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: false, preventDefaultContextClickHandling: true });
+				spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+					preventDefaultClickHandling: false,
+					preventDefaultContextClickHandling: true
+				});
 				const element = await setup();
 				const map = element._map;
 				const coordinate = [38, 75];
@@ -586,12 +571,9 @@ describe('OlMap', () => {
 	});
 
 	describe('context-click / long-press event', () => {
-
 		describe('contextmenu event handling', () => {
-
 			describe('on non touch device', () => {
-
-				it('updates the \'contextclick\' property in pointer store', async () => {
+				it("updates the 'contextclick' property in pointer store", async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 					const element = await setup();
 					const map = element._map;
@@ -607,11 +589,14 @@ describe('OlMap', () => {
 					expect(preventDefault).toHaveBeenCalled();
 				});
 
-				it('updates the \'contextclick\' when layer handler is active but allows default context click handling', async () => {
+				it("updates the 'contextclick' when layer handler is active but allows default context click handling", async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
 					//we set the highlightLayerHandlerMock active which allows context click handling
 					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: false });
+					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+						preventDefaultClickHandling: true,
+						preventDefaultContextClickHandling: false
+					});
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
@@ -644,7 +629,6 @@ describe('OlMap', () => {
 			});
 
 			describe('on touch device', () => {
-
 				beforeEach(async () => {
 					jasmine.clock().install();
 				});
@@ -653,7 +637,7 @@ describe('OlMap', () => {
 					jasmine.clock().uninstall();
 				});
 
-				it('updates the \'contextclick\' property in pointer store', async () => {
+				it("updates the 'contextclick' property in pointer store", async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 					const element = await setup();
 					const map = element._map;
@@ -672,11 +656,14 @@ describe('OlMap', () => {
 					expect(preventDefault).toHaveBeenCalled();
 				});
 
-				it('updates the \'contextclick\' when layer handler is active but allows default context click handling', async () => {
+				it("updates the 'contextclick' when layer handler is active but allows default context click handling", async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 					//we set one handler active
 					spyOnProperty(highlightLayerHandlerMock, 'active').and.returnValue(true);
-					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({ preventDefaultClickHandling: true, preventDefaultContextClickHandling: false });
+					spyOnProperty(highlightLayerHandlerMock, 'options').and.returnValue({
+						preventDefaultClickHandling: true,
+						preventDefaultContextClickHandling: false
+					});
 					const element = await setup();
 					const map = element._map;
 					const coordinate = [38, 75];
@@ -717,7 +704,6 @@ describe('OlMap', () => {
 	});
 
 	describe('olView management', () => {
-
 		it('updates zoom and center', async () => {
 			const element = await setup();
 			const view = element._map.getView();
@@ -760,7 +746,16 @@ describe('OlMap', () => {
 			fitMap(extent);
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: view.getMaxZoom(),
+				callback: jasmine.anything(),
+				padding: [
+					10 + OlMap.DEFAULT_PADDING_PX[0],
+					20 + OlMap.DEFAULT_PADDING_PX[1],
+					30 + OlMap.DEFAULT_PADDING_PX[2],
+					40 + OlMap.DEFAULT_PADDING_PX[3]
+				]
+			});
 
 			await TestUtils.timeout();
 			// store is in sync with view
@@ -780,7 +775,16 @@ describe('OlMap', () => {
 			fitMap(extent, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: maxZoom,
+				callback: jasmine.anything(),
+				padding: [
+					10 + OlMap.DEFAULT_PADDING_PX[0],
+					20 + OlMap.DEFAULT_PADDING_PX[1],
+					30 + OlMap.DEFAULT_PADDING_PX[2],
+					40 + OlMap.DEFAULT_PADDING_PX[3]
+				]
+			});
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalledTimes(1);
@@ -796,7 +800,11 @@ describe('OlMap', () => {
 			fitMap(extent, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitRequest).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: view.getMaxZoom(),
+				callback: jasmine.anything(),
+				padding: OlMap.DEFAULT_PADDING_PX
+			});
 			await TestUtils.timeout();
 			// store is in sync with view
 			expect(spy).toHaveBeenCalledTimes(1);
@@ -811,14 +819,25 @@ describe('OlMap', () => {
 			const extent = [38, 57, 39, 58];
 			const olVectorSource = new VectorSource();
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: view.getMaxZoom(),
+				callback: jasmine.anything(),
+				padding: [
+					10 + OlMap.DEFAULT_PADDING_PX[0],
+					20 + OlMap.DEFAULT_PADDING_PX[1],
+					30 + OlMap.DEFAULT_PADDING_PX[2],
+					40 + OlMap.DEFAULT_PADDING_PX[3]
+				]
+			});
 
 			await TestUtils.timeout();
 			// store is in sync with view
@@ -835,14 +854,25 @@ describe('OlMap', () => {
 			const olVectorSource = new VectorSource();
 			const maxZoom = 10;
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0, { maxZoom: maxZoom });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: maxZoom, callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: maxZoom,
+				callback: jasmine.anything(),
+				padding: [
+					10 + OlMap.DEFAULT_PADDING_PX[0],
+					20 + OlMap.DEFAULT_PADDING_PX[1],
+					30 + OlMap.DEFAULT_PADDING_PX[2],
+					40 + OlMap.DEFAULT_PADDING_PX[3]
+				]
+			});
 
 			await TestUtils.timeout();
 			// store is in sync with view
@@ -858,13 +888,19 @@ describe('OlMap', () => {
 			const extent = [38, 57, 39, 58];
 			const olVectorSource = new VectorSource();
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0, { useVisibleViewport: false });
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: OlMap.DEFAULT_PADDING_PX });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: view.getMaxZoom(),
+				callback: jasmine.anything(),
+				padding: OlMap.DEFAULT_PADDING_PX
+			});
 
 			await TestUtils.timeout();
 			// store is in sync with view
@@ -876,7 +912,9 @@ describe('OlMap', () => {
 			const map = element._map;
 			const view = map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new LayerGroup({ id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new LayerGroup({ id }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
@@ -890,7 +928,9 @@ describe('OlMap', () => {
 			const map = element._map;
 			const view = map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new Layer({ id: id, render: () => { } }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new Layer({ id: id, render: () => {} }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
@@ -904,7 +944,9 @@ describe('OlMap', () => {
 			const map = element._map;
 			const view = map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new ImageLayer({ id, source: new ImageWMS() }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new ImageLayer({ id, source: new ImageWMS() }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
@@ -913,14 +955,16 @@ describe('OlMap', () => {
 			expect(viewSpy).not.toHaveBeenCalled();
 		});
 
-		it('does nothing when source can\'t provide an extent', async () => {
+		it("does nothing when source can't provide an extent", async () => {
 			const element = await setup();
 			const map = element._map;
 			const view = map.getView();
 			const viewSpy = spyOn(view, 'fit').and.callThrough();
 			const olVectorSource = new VectorSource();
 			spyOn(olVectorSource, 'getExtent').and.returnValue(undefined);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
 			fitLayer(id0);
@@ -938,18 +982,20 @@ describe('OlMap', () => {
 			const spy = spyOn(element, '_syncStore').and.callThrough();
 			const olVectorSource = new VectorSource();
 			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
-			const olPlaceHolderLayer = new Layer({ id: id0, render: () => { } });
+			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0, source: olVectorSource });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id, geoResource) => {
-				if (geoResource instanceof GeoResourceFuture) {
-					return olPlaceHolderLayer;
-				}
-				return olRealLayer;
-			});
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id, geoResource) => {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
+					}
+					return olRealLayer;
+				});
 			spyOn(olVectorSource, 'getExtent').and.returnValue(extent);
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
 			spyOn(mapServiceStub, 'getVisibleViewport').withArgs(map.getTarget()).and.returnValue({ top: 10, right: 20, bottom: 30, left: 40 });
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
@@ -959,7 +1005,16 @@ describe('OlMap', () => {
 			await TestUtils.timeout(); // internal calling of #fit is wrapped within a timeout fn
 
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
-			expect(viewSpy).toHaveBeenCalledOnceWith(extent, { maxZoom: view.getMaxZoom(), callback: jasmine.anything(), padding: [10 + OlMap.DEFAULT_PADDING_PX[0], 20 + OlMap.DEFAULT_PADDING_PX[1], 30 + OlMap.DEFAULT_PADDING_PX[2], 40 + OlMap.DEFAULT_PADDING_PX[3]] });
+			expect(viewSpy).toHaveBeenCalledOnceWith(extent, {
+				maxZoom: view.getMaxZoom(),
+				callback: jasmine.anything(),
+				padding: [
+					10 + OlMap.DEFAULT_PADDING_PX[0],
+					20 + OlMap.DEFAULT_PADDING_PX[1],
+					30 + OlMap.DEFAULT_PADDING_PX[2],
+					40 + OlMap.DEFAULT_PADDING_PX[3]
+				]
+			});
 
 			await TestUtils.timeout();
 			// store is in sync with view
@@ -968,7 +1023,6 @@ describe('OlMap', () => {
 	});
 
 	describe('olLayer management', () => {
-
 		it('initially has no olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
@@ -981,22 +1035,26 @@ describe('OlMap', () => {
 			const map = element._map;
 			const id = 'id0';
 			const geoResourceId0 = 'geoResourceId0';
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 
-			addLayer(id0, { visible: false, opacity: .5, geoResourceId: geoResourceId0 });
+			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
 
 			expect(map.getLayers().getLength()).toBe(1);
 
 			const layer = map.getLayers().item(0);
 			expect(layer.get('id')).toBe(id);
-			expect(layer.getOpacity()).toBe(.5);
+			expect(layer.getOpacity()).toBe(0.5);
 			expect(layer.getVisible()).toBeFalse();
 		});
 
 		it('adds an olLayer with custom index', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(jasmine.anything(), jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { zIndex: 0, geoResourceId: geoResourceId1 });
@@ -1011,17 +1069,19 @@ describe('OlMap', () => {
 			const element = await setup();
 			const map = element._map;
 			const geoResource = new WmsGeoResource(geoResourceId0, 'Label2', 'https://something0.url', 'layer2', 'image/png');
-			const olPlaceHolderLayer = new Layer({ id: id0, render: () => { } });
+			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id, geoResource) => {
-				if (geoResource instanceof GeoResourceFuture) {
-					return olPlaceHolderLayer;
-				}
-				return olRealLayer;
-			});
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id, geoResource) => {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
+					}
+					return olRealLayer;
+				});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1041,26 +1101,28 @@ describe('OlMap', () => {
 			const element = await setup();
 			const map = element._map;
 			const geoResource = new VectorGeoResource(geoResourceId0, 'label', VectorSourceType.GEOJSON);
-			const olPlaceHolderLayer = new Layer({ id: id0, render: () => { } });
+			const olPlaceHolderLayer = new Layer({ id: id0, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: id0 });
 			const future = new GeoResourceFuture(geoResourceId0, async () => geoResource);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id, geoResource) => {
-				if (geoResource instanceof GeoResourceFuture) {
-					return olPlaceHolderLayer;
-				}
-				return olRealLayer;
-			});
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id, geoResource) => {
+					if (geoResource instanceof GeoResourceFuture) {
+						return olPlaceHolderLayer;
+					}
+					return olRealLayer;
+				});
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
 
-			addLayer(id0, { visible: false, opacity: .5, geoResourceId: geoResourceId0 });
+			addLayer(id0, { visible: false, opacity: 0.5, geoResourceId: geoResourceId0 });
 
 			await TestUtils.timeout();
 			const layer = map.getLayers().item(0);
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(layer).toEqual(olRealLayer);
 			expect(layer.get('id')).toBe(id0);
-			expect(layer.getOpacity()).toBe(.5);
+			expect(layer.getOpacity()).toBe(0.5);
 			expect(layer.getVisible()).toBeFalse();
 		});
 
@@ -1071,27 +1133,31 @@ describe('OlMap', () => {
 			const underTestLayerId = 'id';
 			const nonAsyncLayerId = 'non-async-id';
 			const geoResource = new VectorGeoResource(underTestLayerId, 'label', VectorSourceType.GEOJSON);
-			const olPlaceHolderLayer = new Layer({ id: underTestLayerId, render: () => { } });
+			const olPlaceHolderLayer = new Layer({ id: underTestLayerId, render: () => {} });
 			const olRealLayer = new VectorLayer({ id: underTestLayerId });
 			const future = new GeoResourceFuture(underTestLayerId, async () => geoResource);
 			const nonAsyncOlLayer = new VectorLayer({ id: nonAsyncLayerId });
 			const nonAsyncGeoResource = new VectorGeoResource(nonAsyncLayerId, 'label', VectorSourceType.GEOJSON);
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake((id, geoResource) => {
-				if (id === underTestLayerId) {
-					if (geoResource instanceof GeoResourceFuture) {
-						return olPlaceHolderLayer;
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(jasmine.anything(), jasmine.anything(), map)
+				.and.callFake((id, geoResource) => {
+					if (id === underTestLayerId) {
+						if (geoResource instanceof GeoResourceFuture) {
+							return olPlaceHolderLayer;
+						}
+						return olRealLayer;
 					}
-					return olRealLayer;
-				}
-				return nonAsyncOlLayer;
-			});
-			spyOn(geoResourceServiceStub, 'byId').withArgs(jasmine.anything()).and.callFake(id => {
-				if (id === underTestLayerId) {
-					return future;
-				}
-				return nonAsyncGeoResource;
-			});
-			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake(gr => gr);
+					return nonAsyncOlLayer;
+				});
+			spyOn(geoResourceServiceStub, 'byId')
+				.withArgs(jasmine.anything())
+				.and.callFake((id) => {
+					if (id === underTestLayerId) {
+						return future;
+					}
+					return nonAsyncGeoResource;
+				});
+			spyOn(geoResourceServiceStub, 'addOrReplace').and.callFake((gr) => gr);
 
 			addLayer(nonAsyncLayerId);
 			addLayer(underTestLayerId, { zIndex: 0 });
@@ -1107,7 +1173,9 @@ describe('OlMap', () => {
 			const map = element._map;
 			const message = 'error';
 			const future = new GeoResourceFuture(geoResourceId0, async () => Promise.reject(message));
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake((id) => new Layer({ id: id, render: () => { }, properties: { placeholder: true } }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new Layer({ id: id, render: () => {}, properties: { placeholder: true } }));
 			spyOn(geoResourceServiceStub, 'byId').withArgs(geoResourceId0).and.returnValue(future);
 			const warnSpy = spyOn(console, 'warn');
 
@@ -1123,11 +1191,12 @@ describe('OlMap', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
-
 		it('removes layer from state store when olLayer not available', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 			const warnSpy = spyOn(console, 'warn');
 			expect(store.getState().layers.active.length).toBe(0);
 
@@ -1138,15 +1207,17 @@ describe('OlMap', () => {
 			addLayer('unknown');
 			expect(map.getLayers().getLength()).toBe(1);
 			expect(store.getState().layers.active.length).toBe(1);
-			expect(warnSpy).toHaveBeenCalledWith('Could not add an olLayer for id \'unknown\'');
-			expect(store.getState().notifications.latest.payload.content).toBe('olMap_layer_not_available \'unknown\'');
+			expect(warnSpy).toHaveBeenCalledWith("Could not add an olLayer for id 'unknown'");
+			expect(store.getState().notifications.latest.payload.content).toBe("olMap_layer_not_available 'unknown'");
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 
 		it('removes an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			expect(map.getLayers().getLength()).toBe(1);
@@ -1161,7 +1232,9 @@ describe('OlMap', () => {
 			const map = element._map;
 			const olVectorSource = new VectorSource();
 			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id, source: olVectorSource }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id, source: olVectorSource }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1175,10 +1248,15 @@ describe('OlMap', () => {
 			const map = element._map;
 			const olVectorSource = new VectorSource();
 			const vectorSourceSpy = spyOn(olVectorSource, 'clear');
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(id0, jasmine.anything(), map).and.callFake(id => new LayerGroup({
-				id: id,
-				layers: [new VectorLayer({ id: 'sub_' + id, source: olVectorSource })]
-			}));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(id0, jasmine.anything(), map)
+				.and.callFake(
+					(id) =>
+						new LayerGroup({
+							id: id,
+							layers: [new VectorLayer({ id: 'sub_' + id, source: olVectorSource })]
+						})
+				);
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 
@@ -1190,18 +1268,20 @@ describe('OlMap', () => {
 		it('modifies the visibility of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(jasmine.anything(), jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { geoResourceId: geoResourceId1 });
 			expect(map.getLayers().getLength()).toBe(2);
 
-			modifyLayer('id0', { visible: false, opacity: .5 });
+			modifyLayer('id0', { visible: false, opacity: 0.5 });
 
 			const layer0 = map.getLayers().item(0);
 			expect(layer0.get('id')).toBe('id0');
 			expect(layer0.getVisible()).toBeFalse();
-			expect(layer0.getOpacity()).toBe(.5);
+			expect(layer0.getOpacity()).toBe(0.5);
 
 			const layer1 = map.getLayers().item(1);
 			expect(layer1.get('id')).toBe('id1');
@@ -1212,7 +1292,9 @@ describe('OlMap', () => {
 		it('modifies the z-index of an olLayer', async () => {
 			const element = await setup();
 			const map = element._map;
-			spyOn(layerServiceMock, 'toOlLayer').withArgs(jasmine.anything(), jasmine.anything(), map).and.callFake(id => new VectorLayer({ id: id }));
+			spyOn(layerServiceMock, 'toOlLayer')
+				.withArgs(jasmine.anything(), jasmine.anything(), map)
+				.and.callFake((id) => new VectorLayer({ id: id }));
 
 			addLayer(id0, { geoResourceId: geoResourceId0 });
 			addLayer(id1, { geoResourceId: geoResourceId1 });

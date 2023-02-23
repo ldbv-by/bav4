@@ -10,23 +10,17 @@ import { TestUtils } from '../../../../../../test-utils.js';
 window.customElements.define(GeoResourceResultsPanel.tag, GeoResourceResultsPanel);
 
 describe('GeoResourceResultsPanel', () => {
-
-
 	const searchResultServiceMock = {
-		geoResourcesByTerm() { }
+		geoResourcesByTerm() {}
 	};
 
 	const setup = (state) => {
-
 		TestUtils.setupStoreAndDi(state, { search: searchReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('SearchResultService', searchResultServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('SearchResultService', searchResultServiceMock);
 		return TestUtils.render(GeoResourceResultsPanel.tag);
 	};
 
 	describe('static properties', () => {
-
 		it('defines a debounce time', async () => {
 			expect(GeoResourceResultsPanel.Debounce_Delay).toBe(200);
 		});
@@ -41,9 +35,7 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('GeoResourceResultPanel', () => {
-
 		it('renders the view', async () => {
-
 			const element = await setup();
 
 			//wait for elements
@@ -59,15 +51,17 @@ describe('GeoResourceResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
 					query: new EventLike(query)
 				}
 			};
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo(results);
+			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
 
@@ -85,7 +79,10 @@ describe('GeoResourceResultsPanel', () => {
 		});
 
 		it('renders the view based on a current query with more than "Default_Result_Item_Length" results', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
 
 			const query = 'foo';
 			const initialState = {
@@ -93,11 +90,9 @@ describe('GeoResourceResultsPanel', () => {
 					query: new EventLike(query)
 				}
 			};
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo(results);
+			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
-
 
 			//wait for elements
 			await TestUtils.timeout(GeoResourceResultsPanel.Debounce_Delay + 100);
@@ -116,11 +111,11 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('when query changes', () => {
-
 		it('updates the view based on a current query', async () => {
 			const query = 'foo';
-			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')]);
+			const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo([
+				new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')
+			]);
 			const element = await setup();
 
 			setQuery(query);
@@ -152,9 +147,7 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('collaps button', () => {
-
 		describe('when items are available', () => {
-
 			it('toggles the list of item', async () => {
 				const query = 'foo';
 				const initialState = {
@@ -162,8 +155,9 @@ describe('GeoResourceResultsPanel', () => {
 						query: new EventLike(query)
 					}
 				};
-				const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-					.and.resolveTo([new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')]);
+				const searchResultService = spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo([
+					new GeoResourceSearchResult('labelGeoResource', 'labelGeoResourceFormated')
+				]);
 
 				const element = await setup(initialState);
 
@@ -193,7 +187,6 @@ describe('GeoResourceResultsPanel', () => {
 		});
 
 		describe('items are NOT available', () => {
-
 			it('disables the collapse button', async () => {
 				const element = await setup();
 
@@ -218,17 +211,18 @@ describe('GeoResourceResultsPanel', () => {
 	});
 
 	describe('show-all button', () => {
-
 		it('displays all results on click', async () => {
-			const results = Array.from({ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 }, (_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`));
+			const results = Array.from(
+				{ length: GeoResourceResultsPanel.Default_Result_Item_Length + 1 },
+				(_, i) => new GeoResourceSearchResult(`labelGeoResource${i}`, `labelGeoResourceFormated${i}`)
+			);
 			const query = 'foo';
 			const initialState = {
 				search: {
 					query: new EventLike(query)
 				}
 			};
-			spyOn(searchResultServiceMock, 'geoResourcesByTerm')
-				.and.resolveTo(results);
+			spyOn(searchResultServiceMock, 'geoResourcesByTerm').and.resolveTo(results);
 
 			const element = await setup(initialState);
 

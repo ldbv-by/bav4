@@ -1,12 +1,10 @@
 import { ProcessEnvConfigService } from '../../src/services/ProcessEnvConfigService';
 
 describe('tests for ProcessEnvConfigService', () => {
-
 	beforeEach(function () {
 		// eslint-disable-next-line no-undef
 		const process = {
-			env: {
-			}
+			env: {}
 		};
 		window.process = process;
 		window.ba_externalConfigProperties = {};
@@ -40,19 +38,17 @@ describe('tests for ProcessEnvConfigService', () => {
 		});
 	});
 
-
 	describe('getValue()', () => {
-
 		it('provides a value for required keys from process.env', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
 			process.env = {
-				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
-				'DEFAULT_LANG': 'DEFAULT_LANG_value',
-				'PROXY_URL': 'PROXY_URL_value',
-				'BACKEND_URL': 'BACKEND_URL_value',
-				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value',
-				'FIRST_STEPS_CONTENT_URL': 'HFIRST_STEPS_CONTENT_URL_value'
+				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
+				DEFAULT_LANG: 'DEFAULT_LANG_value',
+				PROXY_URL: 'PROXY_URL_value',
+				BACKEND_URL: 'BACKEND_URL_value',
+				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value',
+				FIRST_STEPS_CONTENT_URL: 'HFIRST_STEPS_CONTENT_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
@@ -73,12 +69,12 @@ describe('tests for ProcessEnvConfigService', () => {
 			const warnSpy = spyOn(console, 'warn');
 			// eslint-disable-next-line no-undef
 			window.ba_externalConfigProperties = {
-				'SOFTWARE_INFO': 'SOFTWARE_INFO_value',
-				'DEFAULT_LANG': 'DEFAULT_LANG_value',
-				'PROXY_URL': 'PROXY_URL_value',
-				'BACKEND_URL': 'BACKEND_URL_value',
-				'SHORTENING_SERVICE_URL': 'SHORTENING_SERVICE_URL_value',
-				'FIRST_STEPS_CONTENT_URL': 'FIRST_STEPS_CONTENT_URL_value'
+				SOFTWARE_INFO: 'SOFTWARE_INFO_value',
+				DEFAULT_LANG: 'DEFAULT_LANG_value',
+				PROXY_URL: 'PROXY_URL_value',
+				BACKEND_URL: 'BACKEND_URL_value',
+				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value',
+				FIRST_STEPS_CONTENT_URL: 'FIRST_STEPS_CONTENT_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
@@ -98,7 +94,7 @@ describe('tests for ProcessEnvConfigService', () => {
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
-			expect(() => configService.getValue('unknown')).toThrowError(Error, 'No value found for \'unknown\'');
+			expect(() => configService.getValue('unknown')).toThrowError(Error, "No value found for 'unknown'");
 		});
 
 		it('provides the the default value for a non-existing key', () => {
@@ -109,11 +105,10 @@ describe('tests for ProcessEnvConfigService', () => {
 	});
 
 	describe('getValueAsPath()', () => {
-
 		it('provides a path for required keys', () => {
 			// eslint-disable-next-line no-undef
 			process.env = {
-				'BACKEND_URL': 'BACKEND_URL_value'
+				BACKEND_URL: 'BACKEND_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
@@ -123,10 +118,9 @@ describe('tests for ProcessEnvConfigService', () => {
 	});
 
 	describe('test hasKey()', () => {
-
 		it('checks if a key exists', () => {
 			// eslint-disable-next-line no-undef
-			process.env = { 'DEFAULT_LANG': 'myValue' };
+			process.env = { DEFAULT_LANG: 'myValue' };
 
 			const configService = new ProcessEnvConfigService();
 

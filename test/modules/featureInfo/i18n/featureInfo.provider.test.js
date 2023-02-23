@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/featureInfo/i18n/featureInfo.provider';
 
-
 describe('i18n for featureInfo module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.featureInfo_close_button).toBe('Schließen');
@@ -17,7 +14,6 @@ describe('i18n for featureInfo module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.featureInfo_close_button).toBe('Close');
@@ -41,7 +37,6 @@ describe('i18n for featureInfo module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

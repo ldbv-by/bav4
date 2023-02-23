@@ -5,13 +5,10 @@
  * @property {string} [icon=null] svg
  */
 
-
-
 /**
-* @class
-*/
+ * @class
+ */
 export class Topic {
-
 	/**
 	 *
 	 * @param {string} id id of this Topic
@@ -23,8 +20,16 @@ export class Topic {
 	 * @param {string[]} [selectedGeoRs] GeoResources that should displayed "selected"
 	 * @param {TopicStyle} [style] The style of this Topic
 	 */
-	constructor(id, label, description, baseGeoRs, defaultBaseGeoR = baseGeoRs[0], activatedGeoRs = [], selectedGeoRs = [], style = { hue: null, icon: null }) {
-
+	constructor(
+		id,
+		label,
+		description,
+		baseGeoRs,
+		defaultBaseGeoR = baseGeoRs[0],
+		activatedGeoRs = [],
+		selectedGeoRs = [],
+		style = { hue: null, icon: null }
+	) {
 		this._id = id;
 		this._label = label;
 		this._description = description;

@@ -13,7 +13,6 @@ import { getWidth, getHeight } from 'ol/extent';
  * @author taulinger
  */
 export class LimitedImageWMS extends ImageWMS {
-
 	/**
 	 *
 	 * @param {Options} opt_options
@@ -31,18 +30,17 @@ export class LimitedImageWMS extends ImageWMS {
 	 * @override
 	 */
 	getImage(extent, resolution, pixelRatio, projection) {
-
 		/**
 		 * If the current extent would result in a dimension greater than the configured maximum size,
 		 * we calculate a cropped extent.
 		 */
 		const imageResolution = resolution / pixelRatio;
 
-		const widthPx = getWidth(extent) / imageResolution * this.ratio_;
-		const width = widthPx > this._maxSize[0] ? this._maxSize[0] * imageResolution / this.ratio_ : getWidth(extent);
+		const widthPx = (getWidth(extent) / imageResolution) * this.ratio_;
+		const width = widthPx > this._maxSize[0] ? (this._maxSize[0] * imageResolution) / this.ratio_ : getWidth(extent);
 
-		const heightPx = getHeight(extent) / imageResolution * this.ratio_;
-		const height = heightPx > this._maxSize[1] ? this._maxSize[1] * imageResolution / this.ratio_ : getHeight(extent);
+		const heightPx = (getHeight(extent) / imageResolution) * this.ratio_;
+		const height = heightPx > this._maxSize[1] ? (this._maxSize[1] * imageResolution) / this.ratio_ : getHeight(extent);
 
 		const centerX = (extent[0] + extent[2]) / 2;
 		const centerY = (extent[1] + extent[3]) / 2;
@@ -56,13 +54,11 @@ export class LimitedImageWMS extends ImageWMS {
 	}
 }
 
-
 /**
  * Returns a function drawing a rectangular to visualize the max. size of the current image layer.
  */
 export const getPrerenderFunctionForImageLayer = () => {
-	return 	(evt) => {
-
+	return (evt) => {
 		const ctx = evt.context;
 		if (evt.target.getSource() instanceof LimitedImageWMS) {
 			const width = ctx.canvas.width;
@@ -100,4 +96,3 @@ export const getPrerenderFunctionForImageLayer = () => {
 		}
 	};
 };
-

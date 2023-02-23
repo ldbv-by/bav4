@@ -11,10 +11,12 @@ import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domai
  * @returns {Promise<GeoResourceInfoResult>}
  */
 export const loadBvvGeoResourceInfo = async (geoResourceId) => {
-	const { HttpService: httpService,
+	const {
+		HttpService: httpService,
 		ConfigService: configService,
 		GeoResourceService: geoResourceService,
-		BaaCredentialService: baaCredentialService } = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
+		BaaCredentialService: baaCredentialService
+	} = $injector.inject('HttpService', 'ConfigService', 'GeoResourceService', 'BaaCredentialService');
 
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
@@ -22,11 +24,9 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 	};
 
 	const loadExternal = async (geoResource) => {
-
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/external/wms`;
 
-		const getPayload = geoResource => {
-
+		const getPayload = (geoResource) => {
 			const defaultPayload = {
 				url: geoResource.url,
 				layers: [...geoResource.layers.split(',')]
@@ -42,7 +42,6 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			const payload = geoResource.authenticationType === GeoResourceAuthenticationType.BAA ? extendWithCredential(defaultPayload) : defaultPayload;
 			return JSON.stringify(payload);
 		};
-
 
 		return httpService.post(url, getPayload(geoResource), MediaType.JSON);
 	};

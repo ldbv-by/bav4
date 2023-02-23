@@ -17,7 +17,7 @@ export const supportedGetMapMediaTypes = [
 export const _determinePreferredFormat = (arr) => {
 	const values = Array.isArray(arr) ? arr : [];
 	const sorted = [...values]
-		.filter(f => supportedGetMapMediaTypes.includes(f))
+		.filter((f) => supportedGetMapMediaTypes.includes(f))
 		.sort((a, b) => supportedGetMapMediaTypes.indexOf(a) - supportedGetMapMediaTypes.indexOf(b));
 	if (sorted.length < 1) {
 		console.warn(`No supported media type found. Valid media types are: ${supportedGetMapMediaTypes}`);
@@ -47,26 +47,29 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 
 		return format.length > 0
 			? new WmsGeoResource(
-				options.ids[index] ?? createUniqueId().toString(),
-				layer.title,
-				`${capabilities.onlineResourceGetMap}`,
-				`${layer.name}`,
-				format[0])
-				.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
-				.setQueryable(layer.queryable)
-				.setExtraParams(getExtraParams(capabilities))
+					options.ids[index] ?? createUniqueId().toString(),
+					layer.title,
+					`${capabilities.onlineResourceGetMap}`,
+					`${layer.name}`,
+					format[0]
+			  )
+					.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
+					.setQueryable(layer.queryable)
+					.setExtraParams(getExtraParams(capabilities))
 			: null;
 	};
 
 	const readCapabilities = (capabilities) => {
 		const { MapService: mapService } = $injector.inject('MapService');
-		const containsSRID = (layer, srid) => layer.referenceSystems.some(srs => srs.code === srid);
-		return capabilities.layers
-			?.filter((l) => containsSRID(l, mapService.getSrid()))
-			// we filter unwanted layers (if defined by WmsImportOptions)
-			.filter(layer => (options.layers.length) ? options.layers.includes(layer.name) : true)
-			.map((layer, index) => toWmsGeoResource(layer, capabilities, index))
-			.filter(l => !!l); // toWmsGeoResource may return null
+		const containsSRID = (layer, srid) => layer.referenceSystems.some((srs) => srs.code === srid);
+		return (
+			capabilities.layers
+				?.filter((l) => containsSRID(l, mapService.getSrid()))
+				// we filter unwanted layers (if defined by WmsImportOptions)
+				.filter((layer) => (options.layers.length ? options.layers.includes(layer.name) : true))
+				.map((layer, index) => toWmsGeoResource(layer, capabilities, index))
+				.filter((l) => !!l)
+		); // toWmsGeoResource may return null
 	};
 
 	const getCredentialOrFail = (url) => {

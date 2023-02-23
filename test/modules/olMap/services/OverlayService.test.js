@@ -25,7 +25,7 @@ describe('OverlayService', () => {
 	};
 
 	const environmentServiceMock = {
-		isTouch() { }
+		isTouch() {}
 	};
 
 	const unitsServiceMock = {
@@ -60,15 +60,28 @@ describe('OverlayService', () => {
 		}
 	};
 	const mapMock = {
-		getView: () => viewMock, addOverlay: () => { }, removeOverlay: () => { }, getOverlays: () => [], getInteractions() {
+		getView: () => viewMock,
+		addOverlay: () => {},
+		removeOverlay: () => {},
+		getOverlays: () => [],
+		getInteractions() {
 			return { getArray: () => [] };
 		}
 	};
 
 	describe('add overlays', () => {
-
 		it('adds measure-overlays to feature ', () => {
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			feature.setId('measure_123');
 			const addOverlaySpy = jasmine.createSpy();
 			const propertySetterSpy = spyOn(feature, 'set');
@@ -82,7 +95,17 @@ describe('OverlayService', () => {
 		});
 
 		it('adding overlays to feature with unknown style-type fails', () => {
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			feature.setId('measure_123');
 			const warnSpy = spyOn(console, 'warn');
 			const addOverlaySpy = jasmine.createSpy();
@@ -98,11 +121,20 @@ describe('OverlayService', () => {
 	});
 
 	describe('update overlays', () => {
-
 		it('updates measure-style to feature ', () => {
 			const mockElement = { value: null, position: null };
 			const mockOverlay = { get: () => true, getElement: () => mockElement };
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			feature.setId('measure_123');
 			feature.set('measurement', mockOverlay);
 			feature.set('area', mockOverlay);
@@ -116,11 +148,20 @@ describe('OverlayService', () => {
 			instanceUnderTest = new OverlayService();
 			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
 			expect(propertySetterSpy).toHaveBeenCalledWith('area', mockOverlay);
-
 		});
 
 		it('leaves feature to be not updated due to undetectable style ', () => {
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			feature.set('measurement', {});
 			feature.set('area', {});
 
@@ -130,12 +171,21 @@ describe('OverlayService', () => {
 			spyOn(instanceUnderTest, '_getOverlayStyleByType').and.returnValue(null);
 			instanceUnderTest.update(feature, mapMock, StyleTypes.MEASURE);
 			expect(propertySetterSpy).not.toHaveBeenCalled();
-
 		});
 	});
 	describe('remove overlays', () => {
 		it('remove overlays from feature', () => {
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			feature.set('overlays', [{}, {}]);
 			const removeOverlaySpy = jasmine.createSpy();
 			const viewMock = {
@@ -144,7 +194,9 @@ describe('OverlayService', () => {
 				}
 			};
 			const mapMock = {
-				getView: () => viewMock, removeOverlay: removeOverlaySpy, getInteractions() {
+				getView: () => viewMock,
+				removeOverlay: removeOverlaySpy,
+				getInteractions() {
 					return { getArray: () => [] };
 				}
 			};
@@ -155,5 +207,4 @@ describe('OverlayService', () => {
 			expect(removeOverlaySpy).toHaveBeenCalledTimes(2);
 		});
 	});
-
 });

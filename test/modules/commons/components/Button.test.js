@@ -5,17 +5,13 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(Button.tag, Button);
 
-
 describe('Button', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 	});
 
 	describe('when initialized', () => {
-
 		it('contains default values in the model', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 
 			//model
@@ -26,7 +22,6 @@ describe('Button', () => {
 		});
 
 		it('renders the view', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 
 			//view
@@ -44,10 +39,8 @@ describe('Button', () => {
 		});
 	});
 
-	describe('when property\'disabled\' changes', () => {
-
+	describe("when property'disabled' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
@@ -63,10 +56,8 @@ describe('Button', () => {
 		});
 	});
 
-	describe('when property\'label\' changes', () => {
-
+	describe("when property'label' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
@@ -78,10 +69,8 @@ describe('Button', () => {
 		});
 	});
 
-	describe('when property\'type\' changes', () => {
-
+	describe("when property'type' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
 
@@ -103,13 +92,10 @@ describe('Button', () => {
 		});
 	});
 
-	describe('when property\'icon\' changes', () => {
-
+	describe("when property'icon' changes", () => {
 		it('updates the view', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 			const button = element.shadowRoot.querySelector('button');
-
 
 			expect(button.classList.contains('iconbutton')).toBeFalse();
 			expect(button.children.length).toBe(0);
@@ -133,11 +119,8 @@ describe('Button', () => {
 		});
 	});
 
-
 	describe('when clicked', () => {
-
 		it('calls the onClick callback via property binding', async () => {
-
 			const element = await TestUtils.render(Button.tag);
 			element.onClick = jasmine.createSpy();
 
@@ -149,9 +132,8 @@ describe('Button', () => {
 		});
 
 		it('calls the onClick callback via attribute binding', async () => {
-
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });
+			const element = await TestUtils.render(Button.tag, { onClick: "alert('called')" });
 
 			element.click();
 
@@ -160,7 +142,7 @@ describe('Button', () => {
 
 		it('does nothing when disabled', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Button.tag, { onClick: 'alert(\'called\')' });
+			const element = await TestUtils.render(Button.tag, { onClick: "alert('called')" });
 			element.disabled = true;
 
 			element.onClick = jasmine.createSpy();
@@ -171,6 +153,5 @@ describe('Button', () => {
 			expect(element.onClick).not.toHaveBeenCalled();
 			expect(window.alert).not.toHaveBeenCalledWith('called');
 		});
-
 	});
 });

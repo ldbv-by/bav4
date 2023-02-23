@@ -11,7 +11,6 @@ import { BaPlugin } from './BaPlugin';
  * @author taulinger
  */
 export class ElevationProfilePlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		this._bottomSheetUnsubscribeFn = null;
@@ -22,25 +21,25 @@ export class ElevationProfilePlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-
-		// we also want to close the ElevationProfile when the BottomSheet was closed
-		const onBottomSheetActiveStateChanged = active => {
+		// we also want to close the ElevationProfile when the BottomSheet or the draw/measurement tool was closed
+		const onActiveStateChanged = (active) => {
 			if (!active) {
 				closeProfile();
 			}
 		};
 
-		const onProfileActiveStateChanged = active => {
+		const onProfileActiveStateChanged = (active) => {
 			if (active) {
-				this._bottomSheetUnsubscribeFn = observe(store, state => state.bottomSheet.active, onBottomSheetActiveStateChanged);
+				this._bottomSheetUnsubscribeFn = observe(store, (state) => state.bottomSheet.active, onActiveStateChanged);
 				openBottomSheet(html`<ba-elevation-profile></ba-elevation-profile>`);
-			}
-			else {
+			} else {
 				closeBottomSheet();
 				this._bottomSheetUnsubscribeFn?.();
 			}
 		};
 
-		observe(store, state => state.elevationProfile.active, onProfileActiveStateChanged, false);
+		observe(store, (state) => state.elevationProfile.active, onProfileActiveStateChanged, false);
+		observe(store, (state) => state.draw.active, onActiveStateChanged);
+		observe(store, (state) => state.measurement.active, onActiveStateChanged);
 	}
 }

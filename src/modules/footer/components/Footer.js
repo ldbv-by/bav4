@@ -9,14 +9,12 @@ import css from './footer.css';
  * @author taulinger
  */
 export class Footer extends BaElement {
-
 	constructor() {
 		super();
 
 		const { EnvironmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = EnvironmentService;
 	}
-
 
 	onWindowLoad() {
 		// we use optional chaining here because preload class may not be available
@@ -28,11 +26,10 @@ export class Footer extends BaElement {
 	}
 
 	createView(state) {
-
 		const { open, portrait, minWidth } = state;
 
 		const getOverlayClass = () => {
-			return (open && !portrait) ? 'is-open' : '';
+			return open && !portrait ? 'is-open' : '';
 		};
 
 		const getOrientationClass = () => {
@@ -44,15 +41,15 @@ export class Footer extends BaElement {
 		};
 
 		return html`
-			<style>${css}</style>
-			<div  class="preload">
+			<style>
+				${css}
+			</style>
+			<div class="preload">
 				<div class="${getOrientationClass()} ${getMinWidthClass()}">
 					<div class="footer ${getOverlayClass()}">
 						<div class="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
-						<div class="content">	
-							${this.createChildrenView()}
-						</div>
+						<div class="content">${this.createChildrenView()}</div>
 					</div>
 				</div>
 			</div>
@@ -60,9 +57,7 @@ export class Footer extends BaElement {
 	}
 
 	createChildrenView() {
-		return html`		
-		<ba-map-info></ba-map-info>
-		`;
+		return html` <ba-map-info></ba-map-info> `;
 	}
 
 	/**
@@ -70,7 +65,10 @@ export class Footer extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open }, media: { portrait, minWidth } } = globalState;
+		const {
+			mainMenu: { open },
+			media: { portrait, minWidth }
+		} = globalState;
 		return { open, portrait, minWidth };
 	}
 

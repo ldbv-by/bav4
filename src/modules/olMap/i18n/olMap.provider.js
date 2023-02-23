@@ -1,6 +1,5 @@
 export const provide = (lang) => {
 	switch (lang) {
-
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
@@ -26,7 +25,8 @@ export const provide = (lang) => {
 				olMap_handler_storage_offline: 'Offline: Could not store layer-data. The data will get lost after this session.',
 				olMap_handler_featureInfo_not_available: 'Object Information not available',
 				olMap_handler_termsOfUse: '', // no termsOfUse in default/standalone-version
-				olMap_handler_mfp_distortion_warning: 'The projection used for export has distortions in some areas which are not suitable for length measurements.',
+				olMap_handler_mfp_distortion_warning:
+					'The projection used for export has distortions in some areas which are not suitable for length measurements.',
 				olMap_handler_mfp_distortion_more_info: 'More info...',
 				olMap_handler_mfp_id_a4_landscape: 'DIN A4 landscape',
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 portrait',
@@ -59,8 +59,10 @@ export const provide = (lang) => {
 				olMap_handler_draw_new_text: 'Neuer Text',
 				olMap_handler_storage_offline: 'Offline: Die Zeichnung kann nicht gespeichert werden. Die Daten werden nach der Sitzung gelöscht.',
 				olMap_handler_featureInfo_not_available: 'Objekt-Info nicht verfügbar',
-				olMap_handler_termsOfUse: 'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.',
-				olMap_handler_mfp_distortion_warning: 'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen die nicht für Längenmessungen geeignet sind.',
+				olMap_handler_termsOfUse:
+					'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.',
+				olMap_handler_mfp_distortion_warning:
+					'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen die nicht für Längenmessungen geeignet sind.',
 				olMap_handler_mfp_distortion_more_info: 'Mehr erfahren...',
 				olMap_handler_mfp_id_a4_landscape: 'DIN A4 Querformat',
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 Hochformat',

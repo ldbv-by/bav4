@@ -1,17 +1,13 @@
 import { provide } from '../../../../src/modules/iconSelect/i18n/iconSelect.provider';
 
-
 describe('i18n for iconSelect module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.iconSelect_icon_hint).toBe('Klicken, um es als Symbol auswählen');
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.iconSelect_icon_hint).toBe('Click to select as icon');
@@ -29,7 +25,6 @@ describe('i18n for iconSelect module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

@@ -6,7 +6,7 @@
  */
 export const calculateVisibleViewport = (viewportElement, overlappingElements) => {
 	const viewportRectangle = viewportElement.getBoundingClientRect();
-	const overlappingRectangles = overlappingElements.map(e => e.getBoundingClientRect());
+	const overlappingRectangles = overlappingElements.map((e) => e.getBoundingClientRect());
 
 	const isEmpty = (domRect) => {
 		return domRect.left >= domRect.right || domRect.top >= domRect.bottom;
@@ -34,7 +34,6 @@ export const calculateVisibleViewport = (viewportElement, overlappingElements) =
 	};
 
 	const subtract = (that, other) => {
-
 		const result = [];
 		other = intersect(other, that);
 		if (isEmpty(other)) {
@@ -67,7 +66,7 @@ export const calculateVisibleViewport = (viewportElement, overlappingElements) =
 
 	const subtractAll = (that, others) => {
 		const subtractOthers = (previousResult, other) => {
-			return previousResult.map(r => subtract(r, other)).flat();
+			return previousResult.map((r) => subtract(r, other)).flat();
 		};
 
 		const getArea = (rect) => rect.width * rect.height;
@@ -80,5 +79,3 @@ export const calculateVisibleViewport = (viewportElement, overlappingElements) =
 
 	return candidates[candidates.length - 1];
 };
-
-

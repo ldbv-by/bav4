@@ -8,27 +8,24 @@ import { geolocationReducer } from '../../src/store/geolocation/geolocation.redu
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { setBeingDragged } from '../../src/store/pointer/pointer.action';
 
-
 describe('GeolocationPlugin', () => {
-
 	const coordinateServiceMock = {
-		fromLonLat() { },
-		transformExtent() { },
-		buffer() { }
+		fromLonLat() {},
+		transformExtent() {},
+		buffer() {}
 	};
 
 	const mapServiceMock = {
-		getDefaultGeodeticSrid() { },
-		getSrid() { }
+		getDefaultGeodeticSrid() {},
+		getSrid() {}
 	};
 
 	const translationService = {
-		register() { },
+		register() {},
 		translate: (key) => key
 	};
 
 	const setup = (state) => {
-
 		const store = TestUtils.setupStoreAndDi(state, {
 			pointer: pointerReducer,
 			geolocation: geolocationReducer,
@@ -44,7 +41,6 @@ describe('GeolocationPlugin', () => {
 	};
 
 	describe('constructor', () => {
-
 		it('setups local state', () => {
 			setup();
 			const instanceUnderTest = new GeolocationPlugin();
@@ -55,7 +51,6 @@ describe('GeolocationPlugin', () => {
 	});
 
 	describe('register', () => {
-
 		it('activates and deactivates the geolocation plugin', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
@@ -113,9 +108,7 @@ describe('GeolocationPlugin', () => {
 		});
 	});
 
-
 	describe('_transformPositionTo3857', () => {
-
 		it('transforms a position to 3857', () => {
 			setup();
 			const expectedCoord = [38, 57];
@@ -129,7 +122,6 @@ describe('GeolocationPlugin', () => {
 	});
 
 	describe('_handlePositionError', () => {
-
 		it('handles a PERMISSION_DENIED position error', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
@@ -143,7 +135,6 @@ describe('GeolocationPlugin', () => {
 			expect(store.getState().geolocation.denied).toBeTrue();
 			expect(window.alert).toHaveBeenCalledWith('global_geolocation_denied');
 			expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
-
 		});
 
 		it('handles other position errors', () => {
@@ -158,12 +149,10 @@ describe('GeolocationPlugin', () => {
 
 			expect(window.alert).toHaveBeenCalledWith('global_geolocation_not_available');
 			expect(warnSpy).toHaveBeenCalledWith('Geolocation activation failed', error);
-
 		});
 	});
 
 	describe('_handlePositionAndUpdateStore', () => {
-
 		it('handles a position update', () => {
 			const expectedCoord = [38, 57];
 			const expectedAccuracy = 42;
@@ -220,7 +209,6 @@ describe('GeolocationPlugin', () => {
 			spyOn(instanceUnderTest, '_transformPositionTo3857').withArgs(position).and.returnValue([38, 57]);
 			const fitSpy = spyOn(instanceUnderTest, '_fit');
 
-
 			instanceUnderTest._handlePositionAndUpdateStore(position);
 
 			expect(fitSpy).toHaveBeenCalledOnceWith(position);
@@ -228,13 +216,12 @@ describe('GeolocationPlugin', () => {
 	});
 
 	describe('_watchPosition', () => {
-
 		it('watches position successfully ', async () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 42 } };
 			const handlePositionAndUpdateStoreSpy = spyOn(instanceUnderTest, '_handlePositionAndUpdateStore');
-			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake(success => Promise.resolve(success(position)));
+			spyOn(window.navigator.geolocation, 'watchPosition').and.callFake((success) => Promise.resolve(success(position)));
 
 			instanceUnderTest._watchPosition(store.getState);
 
@@ -257,7 +244,6 @@ describe('GeolocationPlugin', () => {
 	});
 
 	describe('_fit', () => {
-
 		it('calculates an extent and updates the state', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();
@@ -282,9 +268,7 @@ describe('GeolocationPlugin', () => {
 		});
 	});
 
-
 	describe('activate / deactivate', () => {
-
 		it('activates the plugin', () => {
 			const store = setup();
 			const instanceUnderTest = new GeolocationPlugin();

@@ -4,7 +4,6 @@ import { loadBvvTopics } from '../../src/services/provider/topics.provider';
 import { $injector } from '../../src/injection';
 
 describe('FALLBACK_TOPICS_IDS', () => {
-
 	it('provides two fallback ids', () => {
 		const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 
@@ -14,29 +13,22 @@ describe('FALLBACK_TOPICS_IDS', () => {
 });
 
 describe('TopicService', () => {
-
 	const configService = {
-		getValue: () => { }
+		getValue: () => {}
 	};
 	const environmentService = {
-		isStandalone: () => { }
+		isStandalone: () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService)
-			.registerSingleton('EnvironmentService', environmentService);
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('EnvironmentService', environmentService);
 	});
 
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0']);
 	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...', ['bg1']);
 
 	const loadMockTopics = async () => {
-
-		return [
-			topic0,
-			topic1
-		];
+		return [topic0, topic1];
 	};
 
 	const setup = (provider = loadMockTopics) => {
@@ -44,7 +36,6 @@ describe('TopicService', () => {
 	};
 
 	describe('init', () => {
-
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup();
 			expect(instanceUnderTest._topics).toBeNull();
@@ -59,7 +50,6 @@ describe('TopicService', () => {
 			expect(instanceUnderTest._provider).toEqual(loadBvvTopics);
 		});
 
-
 		it('just provides the topics when already initialized', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
@@ -70,16 +60,13 @@ describe('TopicService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-
 			it('loads two fallback topics when we are in standalone mode', async () => {
-
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Topics could not be loaded');
 				});
 				const warnSpy = spyOn(console, 'warn');
-
 
 				const topics = await instanceUnderTest.init();
 
@@ -100,13 +87,11 @@ describe('TopicService', () => {
 			});
 
 			it('logs an error when we are NOT in standalone mode', async () => {
-
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Topics could not be loaded');
 				});
 				const errorSpy = spyOn(console, 'error');
-
 
 				const topics = await instanceUnderTest.init();
 
@@ -117,7 +102,6 @@ describe('TopicService', () => {
 	});
 
 	describe('all', () => {
-
 		it('provides all topics', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
@@ -137,7 +121,6 @@ describe('TopicService', () => {
 	});
 
 	describe('byId', () => {
-
 		it('provides a topic by id', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0];
@@ -167,7 +150,6 @@ describe('TopicService', () => {
 	});
 
 	describe('default', () => {
-
 		it('provides the configured default topic', () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._topics = [topic0, topic1];

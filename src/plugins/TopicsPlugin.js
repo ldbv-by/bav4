@@ -3,21 +3,17 @@ import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
 import { setCurrent, setReady } from '../store/topics/topics.action';
 
-
 /**
  * @class
  */
 export class TopicsPlugin extends BaPlugin {
-
-
 	_addTopicFromQueryParams(queryParams) {
 		const { TopicsService: topicsService } = $injector.inject('TopicsService');
 
 		const topicId = queryParams.get(QueryParameters.TOPIC);
 		if (topicsService.byId(topicId)) {
 			setCurrent(topicId);
-		}
-		else {
+		} else {
 			//fallback
 			this._addTopicFromConfig();
 		}

@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/header/i18n/header.provider';
 
-
 describe('i18n for header module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.header_tab_topics_button).toBe('Themen');
@@ -19,7 +16,6 @@ describe('i18n for header module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.header_tab_topics_button).toBe('Topics');
@@ -45,7 +41,6 @@ describe('i18n for header module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

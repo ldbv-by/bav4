@@ -3,13 +3,11 @@ import { QueryParameters } from '../domain/queryParameters';
 import { setQuery } from '../store/search/search.action';
 import { BaPlugin } from './BaPlugin';
 
-
 /**
  * @class
  * @author taulinger
  */
 export class SearchPlugin extends BaPlugin {
-
 	/**
 	 * @override
 	 */

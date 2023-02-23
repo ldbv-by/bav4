@@ -2,10 +2,7 @@ import { TestUtils } from '../../test-utils.js';
 import { topicsReducer } from '../../../src/store/topics/topics.reducer';
 import { setCurrent, setReady } from '../../../src/store/topics/topics.action';
 
-
-
 describe('topicsReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			topics: topicsReducer

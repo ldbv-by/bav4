@@ -34,15 +34,15 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 	stroke-linejoin: round;
 	stroke-dasharray: 1.2em;
 	stroke-dashoffset: 1.2em;
-	transition: all var(--animation-duration-small-open) var(--animation-easing-open);  
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
 	transition-delay: 0.1s;
 	transform: translate3d(0, 0, 0);
 	top: 0;
 	left: 0;
-	padding: .3em;
+	padding: 0.3em;
 }
 .ba-checkbox span:first-child:before {
-	content: "";
+	content: '';
 	width: 100%;
 	min-width: 1.5em;
 	height: 100%;
@@ -55,12 +55,11 @@ base from: https://codepen.io/avstorm/pen/vYYBxRM
 }
 .ba-checkbox span:last-child {
 	margin: auto 1em;
-    
 }
 .ba-checkbox span:last-child:after {
-	content: "";
+	content: '';
 	position: absolute;
-	top: .5em;
+	top: 0.5em;
 	left: 0;
 	height: 1px;
 	width: 100%;

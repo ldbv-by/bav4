@@ -21,7 +21,6 @@ const stopRedirectAndDefaultHandler = (e) => {
  * @author thiloSchlemmer
  */
 export class DndImportPanel extends MvuElement {
-
 	constructor() {
 		super({
 			dropzoneContent: null,
@@ -40,8 +39,8 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
-	* @override
-	*/
+	 * @override
+	 */
 	update(type, data, model) {
 		switch (type) {
 			case Update_DropZone_Content:
@@ -50,8 +49,8 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
-	*@override
-	*/
+	 *@override
+	 */
 	createView(model) {
 		const onDragOver = (e) => {
 			stopRedirectAndDefaultHandler(e);
@@ -64,7 +63,7 @@ export class DndImportPanel extends MvuElement {
 		const onDrop = (e) => {
 			stopRedirectAndDefaultHandler(e);
 			const types = e.dataTransfer.types || [];
-			types.forEach(type => {
+			types.forEach((type) => {
 				switch (type) {
 					case DragAndDropTypesMimeTypeFiles:
 						this._importFile(e.dataTransfer);
@@ -81,9 +80,12 @@ export class DndImportPanel extends MvuElement {
 			is_active: model.isActive
 		};
 
-		return html`<style>${css}</style>
-		<div id='dropzone' class='dropzone ${classMap(activeClass)}' @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>${model.dropzoneContent ? model.dropzoneContent : nothing}</div>
-		`;
+		return html`<style>
+				${css}
+			</style>
+			<div id="dropzone" class="dropzone ${classMap(activeClass)}" @dragover=${onDragOver} @dragleave=${onDragLeave} @drop=${onDrop}>
+				${model.dropzoneContent ? model.dropzoneContent : nothing}
+			</div> `;
 	}
 
 	_onDragEnter(e) {
@@ -96,7 +98,7 @@ export class DndImportPanel extends MvuElement {
 			return;
 		}
 
-		const importType = types.find(t => /(files|text\/plain)/i.test(t));
+		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
 		const signalImport = (importType) => {
 			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
 			this.signal(Update_DropZone_Content, content);
@@ -109,11 +111,11 @@ export class DndImportPanel extends MvuElement {
 	}
 
 	/**
-	  * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
-	  * other than {@link SourceTypeResultStatus.OK}
-	  * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
-	  * @param {function} importAction the importAction
-	  */
+	 * Calls the importAction or emits a notification, when the SourceTypeResultStatus is
+	 * other than {@link SourceTypeResultStatus.OK}
+	 * @param {SourceTypeResult} sourceTypeResult the sourceTypeResult
+	 * @param {function} importAction the importAction
+	 */
 	_importOrNotify(sourceTypeResult, importAction) {
 		const translate = (key) => this._translationService.translate(key);
 		switch (sourceTypeResult.status) {
@@ -140,12 +142,11 @@ export class DndImportPanel extends MvuElement {
 			setData(text, sourceType);
 		};
 		const handleFiles = (files) => {
-			Array.from(files).forEach(async f => {
+			Array.from(files).forEach(async (f) => {
 				try {
 					const sourceTypeResult = await this._sourceTypeService.forBlob(f);
 					this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
-				}
-				catch (error) {
+				} catch (error) {
 					emitNotification(translate('dndImport_import_file_error'), LevelTypes.ERROR);
 				}
 			});
@@ -182,5 +183,4 @@ export class DndImportPanel extends MvuElement {
 	static get tag() {
 		return 'ba-dnd-import-panel';
 	}
-
 }

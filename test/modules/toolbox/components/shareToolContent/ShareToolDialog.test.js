@@ -11,10 +11,10 @@ describe('ShareToolDialog', () => {
 	let store;
 
 	const windowMock = {
-		matchMedia() { }
+		matchMedia() {}
 	};
 	const shareServiceMock = {
-		copyToClipboard() { }
+		copyToClipboard() {}
 	};
 	const state = {
 		notifications: {

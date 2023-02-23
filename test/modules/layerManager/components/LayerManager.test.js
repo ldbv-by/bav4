@@ -12,7 +12,6 @@ window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(LayerManager.tag, LayerManager);
 
-
 describe('LayerManager', () => {
 	let store;
 
@@ -24,7 +23,6 @@ describe('LayerManager', () => {
 	const geoResourceLabel = 'label0';
 	const geoResourceServiceMock = { byId: () => new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML) };
 	const setup = async (state) => {
-
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
@@ -48,7 +46,10 @@ describe('LayerManager', () => {
 		it('with one layer displays one layer item', async () => {
 			const layer = {
 				...createDefaultLayerProperties(),
-				id: 'id0', geoResourceId: geoResourceId, visible: true, zIndex: 0
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0
 			};
 			const state = {
 				layers: {
@@ -66,7 +67,10 @@ describe('LayerManager', () => {
 		it('with one not visible layer displays one layer item', async () => {
 			const layer = {
 				...createDefaultLayerProperties(),
-				id: 'id0', geoResourceId: geoResourceId, visible: false, zIndex: 0
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: false,
+				zIndex: 0
 			};
 			const state = {
 				layers: {
@@ -84,12 +88,19 @@ describe('LayerManager', () => {
 		it('displays one out of two layers - one is hidden', async () => {
 			const layer = {
 				...createDefaultLayerProperties(),
-				id: 'id0', geoResourceId: geoResourceId, visible: true, zIndex: 0
+				id: 'id0',
+				geoResourceId: geoResourceId,
+				visible: true,
+				zIndex: 0
 			};
 
 			const hiddenLayer = {
 				...createDefaultLayerProperties(),
-				id: 'id1', geoResourceId: geoResourceId, visible: false, zIndex: 0, constraints: { hidden: true, alwaysOnTop: false }
+				id: 'id1',
+				geoResourceId: geoResourceId,
+				visible: false,
+				zIndex: 0,
+				constraints: { hidden: true, alwaysOnTop: false }
 			};
 			const state = {
 				layers: {
@@ -115,7 +126,6 @@ describe('LayerManager', () => {
 		});
 	});
 
-
 	describe('when layer items are rendered', () => {
 		let element;
 		beforeEach(async () => {
@@ -132,7 +142,6 @@ describe('LayerManager', () => {
 		});
 
 		it('renders placeholder for dragging around the layers', () => {
-
 			const listElements = element.shadowRoot.querySelectorAll('li');
 			const layerElements = element.shadowRoot.querySelectorAll('.layer');
 			const placeholderElements = element.shadowRoot.querySelectorAll('.placeholder');
@@ -140,7 +149,6 @@ describe('LayerManager', () => {
 			expect(layerElements.length).toBe(3);
 			expect(placeholderElements.length).toBe(4);
 		});
-
 
 		it('have only non-draggable placeholder items', () => {
 			const placeholderElements = [...element.shadowRoot.querySelectorAll('.placeholder')];
@@ -151,7 +159,6 @@ describe('LayerManager', () => {
 
 			expect(placeholderElements.length).toBe(4);
 			expect(nonDraggablePlaceholderElements.length).toBe(4);
-
 		});
 	});
 
@@ -175,8 +182,7 @@ describe('LayerManager', () => {
 				clearData: function (key) {
 					if (key === undefined) {
 						data = {};
-					}
-					else {
+					} else {
 						delete data[key];
 					}
 				},
@@ -186,7 +192,7 @@ describe('LayerManager', () => {
 				setData: function (key, value) {
 					data[key] = value;
 				},
-				setDragImage: function () { },
+				setDragImage: function () {},
 				dropEffect: 'none',
 				files: [],
 				items: [],
@@ -204,9 +210,7 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			expect(element.getModel().draggedItem).toBeFalse();
-
 		});
-
 
 		it('on dragstart should update internal draggedItem', () => {
 			const layerElement = element.shadowRoot.querySelector('.layer');
@@ -217,7 +221,6 @@ describe('LayerManager', () => {
 			layerElement.dispatchEvent(dragstartEvt);
 
 			expect(element.getModel().draggedItem).not.toBeFalse();
-
 		});
 
 		it('on dragstart should update placeholder-content for dragging 1th layer', () => {
@@ -270,33 +273,28 @@ describe('LayerManager', () => {
 		});
 
 		it('does NOT add style on dragEnter of neighbouring placeholder', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
-
 		});
 
 		it('add style class on dragEnter of not neighbouring placeholder', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeTrue();
-
 		});
 
 		it('does not add style class on dragEnter of unknown element ', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
 			element.signal('update_dragged_item', null);
 			const dragstartEvt = document.createEvent('MouseEvents');
@@ -305,11 +303,9 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
-
 		});
 
 		it('on dragEnd call event.preventDefault()', () => {
-
 			const listElement = element.shadowRoot.querySelector('li');
 
 			const dragendEvt = document.createEvent('MouseEvents');
@@ -319,13 +315,11 @@ describe('LayerManager', () => {
 			listElement.dispatchEvent(dragendEvt);
 
 			expect(dragendEvt.preventDefault).toHaveBeenCalled();
-
 		});
 
 		it('on dragleave of not neighbouring placeholder remove style class', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			const dragstartEvt = document.createEvent('MouseEvents');
 			dragstartEvt.initMouseEvent('dragleave', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -334,13 +328,11 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragstartEvt);
 
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
-
 		});
 
-		it('on dragover of not neighbouring placeholder dropEffect to \'all\'', () => {
-
+		it("on dragover of not neighbouring placeholder dropEffect to 'all'", () => {
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			const dragoverEvt = document.createEvent('MouseEvents');
 			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -348,13 +340,11 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragoverEvt);
 
 			expect(dragoverEvt.dataTransfer.dropEffect).toBe('all');
-
 		});
 
-		it('on dragover of not neighbouring placeholder dropEffect to \'none\'', () => {
-
+		it("on dragover of not neighbouring placeholder dropEffect to 'none'", () => {
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			const dragoverEvt = document.createEvent('MouseEvents');
 			dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -362,11 +352,9 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragoverEvt);
 
 			expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
-
 		});
 
-		it('on dragover of unknown element (null) dropEffect to \'none\'', () => {
-
+		it("on dragover of unknown element (null) dropEffect to 'none'", () => {
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
 			element.signal('update_dragged_item', null);
 			const dragoverEvt = document.createEvent('MouseEvents');
@@ -376,23 +364,21 @@ describe('LayerManager', () => {
 			neighbourPlaceholder.dispatchEvent(dragoverEvt);
 
 			expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
-
 		});
 
 		it('drops firstlayer on placeholder to be penultimate layer', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 1)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
 			expect(element.getModel().draggedItem.id).toBe('id0');
 			const dropEvt = document.createEvent('MouseEvents');
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
 
 			/*
-			*  0     0    1     1    2     2     3
-			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
-			*        |_______________^
-			*/
+			 *  0     0    1     1    2     2     3
+			 * [p0] [id0] [p2] [id1] [p4] [id2] [p5]
+			 *        |_______________^
+			 */
 
 			neighbourPlaceholder.classList.add('over');
 			neighbourPlaceholder.dispatchEvent(dropEvt);
@@ -401,23 +387,21 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[1].id).toBe('id0');
 			expect(store.getState().layers.active[2].id).toBe('id2');
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
-
 		});
 
 		it('drops last on placeholder to be penultimate layer', () => {
-
 			const neighbourPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-			element.signal('update_dragged_item', element.getModel().draggableItems.filter(element => element.listIndex === 5)[0]);
+			element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 5)[0]);
 			expect(element.getModel().draggedItem.id).toBe('id2');
 			const dropEvt = document.createEvent('MouseEvents');
 			dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighbourPlaceholder);
 			dropEvt.dataTransfer = createNewDataTransfer();
 
 			/*
-			*  0     0    1     1    2     2     3
-			* [p0] [id0] [p2] [id1] [p4] [id2] [p5]
-			*              ^_______________|
-			*/
+			 *  0     0    1     1    2     2     3
+			 * [p0] [id0] [p2] [id1] [p4] [id2] [p5]
+			 *              ^_______________|
+			 */
 
 			neighbourPlaceholder.classList.add('over');
 			neighbourPlaceholder.dispatchEvent(dropEvt);
@@ -426,15 +410,14 @@ describe('LayerManager', () => {
 			expect(store.getState().layers.active[1].id).toBe('id2');
 			expect(store.getState().layers.active[2].id).toBe('id1');
 			expect(neighbourPlaceholder.classList.contains('over')).toBeFalse();
-
 		});
 	});
 
 	describe('when layers are modified', () => {
-
 		it('renders changed layer.opacity', async () => {
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0'
+				...createDefaultLayerProperties(),
+				id: 'id0'
 			};
 			const state = {
 				layers: {
@@ -442,7 +425,7 @@ describe('LayerManager', () => {
 					background: 'bg0'
 				}
 			};
-			const modifyableLayerProperties = { opacity: .55 };
+			const modifyableLayerProperties = { opacity: 0.55 };
 
 			const element = await setup(state);
 			const layerItem = element.shadowRoot.querySelector('ba-layer-item');
@@ -452,13 +435,15 @@ describe('LayerManager', () => {
 			expect(slider.value).toBe('100');
 
 			modifyLayer('id0', modifyableLayerProperties);
-			expect(store.getState().layers.active[0].opacity).toBe(.55);
+			expect(store.getState().layers.active[0].opacity).toBe(0.55);
 			expect(slider.value).toBe('55');
 		});
 
 		it('renders changed layer.visible', async () => {
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0', visible: false
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
 			};
 			const state = {
 				layers: {
@@ -480,14 +465,18 @@ describe('LayerManager', () => {
 
 		it('renders changed label', async () => {
 			const updatedGeoResourceLabel = 'updatedLabel';
-			const spy = spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.callFake(() => {
-				if (spy.calls.count() > 1) {
-					return new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML);
-				}
-				return new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML);
-			});
+			const spy = spyOn(geoResourceServiceMock, 'byId')
+				.withArgs(geoResourceId)
+				.and.callFake(() => {
+					if (spy.calls.count() > 1) {
+						return new VectorGeoResource(geoResourceId, updatedGeoResourceLabel, VectorSourceType.KML);
+					}
+					return new VectorGeoResource(geoResourceId, geoResourceLabel, VectorSourceType.KML);
+				});
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0', geoResourceId: geoResourceId
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: geoResourceId
 			};
 			const state = {
 				layers: {
@@ -511,7 +500,9 @@ describe('LayerManager', () => {
 	describe('when layerItems are modified', () => {
 		it('updates draggableItems, when layerItem.collapsed changes', async () => {
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0', visible: false
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
 			};
 			const state = {
 				layers: {
@@ -532,9 +523,11 @@ describe('LayerManager', () => {
 			expect(actualDraggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
 		});
 
-		it('updates draggableItems, when button for \'expand or collapse\' is clicked', async () => {
+		it("updates draggableItems, when button for 'expand or collapse' is clicked", async () => {
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0', visible: false
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
 			};
 			const state = {
 				layers: {
@@ -548,20 +541,28 @@ describe('LayerManager', () => {
 			const buttonExpandOrCollapse = element.shadowRoot.querySelector('#button_expand_or_collapse');
 			buttonExpandOrCollapse.click();
 
-
-			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]), jasmine.anything());
+			expect(spy).toHaveBeenCalledWith(
+				'update_draggable_items',
+				jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]),
+				jasmine.anything()
+			);
 			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: false })]));
 
 			buttonExpandOrCollapse.click();
 
-			expect(spy).toHaveBeenCalledWith('update_draggable_items', jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]), jasmine.anything());
+			expect(spy).toHaveBeenCalledWith(
+				'update_draggable_items',
+				jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]),
+				jasmine.anything()
+			);
 			expect(element.getModel().draggableItems).toEqual(jasmine.arrayContaining([jasmine.objectContaining({ collapsed: true })]));
 		});
 
-
-		it('updates draggableItems, when button for \'remove all\' is clicked', async () => {
+		it("updates draggableItems, when button for 'remove all' is clicked", async () => {
 			const layer = {
-				...createDefaultLayerProperties(), id: 'id0', visible: false
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				visible: false
 			};
 			const state = {
 				layers: {
@@ -576,8 +577,5 @@ describe('LayerManager', () => {
 
 			expect(store.getState().layers.active.length).toBe(0);
 		});
-
 	});
-
-
 });

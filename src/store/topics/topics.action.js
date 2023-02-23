@@ -5,18 +5,16 @@
 import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
 import { $injector } from '../../injection';
 
-
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
 };
 
-
 /**
-  * Sets the current topic.
-  * @param {string} id id of the current topic
-  * @function
-  */
+ * Sets the current topic.
+ * @param {string} id id of the current topic
+ * @function
+ */
 export const setCurrent = (id) => {
 	getStore().dispatch({
 		type: TOPIC_CHANGED,

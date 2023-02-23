@@ -2,11 +2,23 @@
  * Action creators to change/update the properties concerning the zoom level and center of a map.
  * @module position/action
  */
-import { ZOOM_CHANGED, CENTER_CHANGED, ZOOM_CENTER_CHANGED, FIT_REQUESTED, ROTATION_CHANGED, LIVE_ROTATION_CHANGED, ZOOM_CENTER_ROTATION_CHANGED, ZOOM_ROTATION_CHANGED, CENTER_ROTATION_CHANGED, FIT_LAYER_REQUESTED, LIVE_CENTER_CHANGED, LIVE_ZOOM_CHANGED } from './position.reducer';
+import {
+	ZOOM_CHANGED,
+	CENTER_CHANGED,
+	ZOOM_CENTER_CHANGED,
+	FIT_REQUESTED,
+	ROTATION_CHANGED,
+	LIVE_ROTATION_CHANGED,
+	ZOOM_CENTER_ROTATION_CHANGED,
+	ZOOM_ROTATION_CHANGED,
+	CENTER_ROTATION_CHANGED,
+	FIT_LAYER_REQUESTED,
+	LIVE_CENTER_CHANGED,
+	LIVE_ZOOM_CHANGED
+} from './position.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { round } from '../../utils/numberUtils';
-
 
 /**
  * Request for fitting a map to a geographic extent
@@ -23,32 +35,32 @@ import { round } from '../../utils/numberUtils';
  */
 
 /**
-* A combination of zoom and center.
-* @typedef {Object} ZoomCenter
-* @property {number} zoom zoom level (will rounded to 3 decimal digits)
-* @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
-*/
+ * A combination of zoom and center.
+ * @typedef {Object} ZoomCenter
+ * @property {number} zoom zoom level (will rounded to 3 decimal digits)
+ * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ */
 
 /**
-* A combination of zoom and rotation.
-* @typedef {Object} ZoomRotation
-* @property {number} zoom zoom level (will rounded to 3 decimal digits)
-* @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
-*/
+ * A combination of zoom and rotation.
+ * @typedef {Object} ZoomRotation
+ * @property {number} zoom zoom level (will rounded to 3 decimal digits)
+ * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ */
 /**
-* A combination of center and rotation.
-* @typedef {Object} CenterRotation
-* @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
-* @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
-*/
+ * A combination of center and rotation.
+ * @typedef {Object} CenterRotation
+ * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ */
 
 /**
-* A combination of zoom and center.
-* @typedef {Object} ZoomCenterRotation
-* @property {number} zoom zoom level (will rounded to 3 decimal digits)
-* @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
-* @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
-*/
+ * A combination of zoom and center.
+ * @typedef {Object} ZoomCenterRotation
+ * @property {number} zoom zoom level (will rounded to 3 decimal digits)
+ * @property {Coordinate} center coordinate in map projection (will rounded to 7 decimal digits)
+ * @property {number} rotation rotation in radians (will rounded to 5 decimal digits)
+ */
 
 const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
@@ -60,7 +72,7 @@ const getMapService = () => {
 	return mapService;
 };
 
-const getValidZoomLevelValue = zoom => {
+const getValidZoomLevelValue = (zoom) => {
 	if (zoom > getMapService().getMaxZoomLevel()) {
 		return getMapService().getMaxZoomLevel();
 	}
@@ -70,12 +82,12 @@ const getValidZoomLevelValue = zoom => {
 	return round(zoom, 3);
 };
 
-const getValidRotationValue = rotation => {
+const getValidRotationValue = (rotation) => {
 	return round(rotation, 5);
 };
 
-const getValidCenterValues = center => {
-	return center.map(v => round(v, 7));
+const getValidCenterValues = (center) => {
+	return center.map((v) => round(v, 7));
 };
 /**
  * Changes the zoom level and the position.
@@ -115,7 +127,6 @@ export const changeCenterAndRotation = (centerRotation) => {
 		payload: { center: getValidCenterValues(center), rotation: getValidRotationValue(rotation) }
 	});
 };
-
 
 /**
  * Changes the zoom level, center and rotation
@@ -184,11 +195,12 @@ export const changeLiveRotation = (liveRotation) => {
  * @function
  */
 export const increaseZoom = () => {
-	const { position: { zoom } } = getStore().getState();
+	const {
+		position: { zoom }
+	} = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
 		payload: getValidZoomLevelValue(zoom + 1)
-
 	});
 };
 
@@ -197,11 +209,12 @@ export const increaseZoom = () => {
  * @function
  */
 export const decreaseZoom = () => {
-	const { position: { zoom } } = getStore().getState();
+	const {
+		position: { zoom }
+	} = getStore().getState();
 	getStore().dispatch({
 		type: ZOOM_CHANGED,
 		payload: getValidZoomLevelValue(zoom - 1)
-
 	});
 };
 

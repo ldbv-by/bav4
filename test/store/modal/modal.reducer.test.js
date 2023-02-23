@@ -2,9 +2,7 @@ import { closeModal, openModal } from '../../../src/store/modal/modal.action.js'
 import { modalReducer } from '../../../src/store/modal/modal.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('modalReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			modal: modalReducer

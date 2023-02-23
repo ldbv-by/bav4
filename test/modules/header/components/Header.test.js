@@ -19,9 +19,7 @@ window.customElements.define(Header.tag, Header);
 
 let store;
 
-
 describe('Header', () => {
-
 	const setup = (state = {}, config = {}) => {
 		const { embed = false } = config;
 
@@ -59,12 +57,10 @@ describe('Header', () => {
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
-
 		return TestUtils.render(Header.tag);
 	};
 
 	describe('when instantiated', () => {
-
 		it('has a model with default values', async () => {
 			await setup();
 			const model = new Header().getModel();
@@ -86,7 +82,6 @@ describe('Header', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape and width >= 80em', async () => {
 			const state = {
 				media: {
@@ -158,11 +153,9 @@ describe('Header', () => {
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
 		});
-
 	});
 
 	describe('when initialized', () => {
-
 		it('removes a preload css class', async () => {
 			const element = await setup();
 
@@ -239,11 +232,9 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('#misc_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#input').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
-
 	});
 
 	describe('when menu button is Tab.MAPS', () => {
-
 		it('updates the store', async () => {
 			const state = {
 				mainMenu: {
@@ -331,7 +322,6 @@ describe('Header', () => {
 	});
 
 	describe('when modal button is clicked', () => {
-
 		it('shows a modal window with the showcase', async () => {
 			const element = await setup();
 
@@ -339,12 +329,11 @@ describe('Header', () => {
 
 			expect(store.getState().modal.data.title).toBe('Showcase');
 			//we expect a lit-html TemplateResult as content
-			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase>');
+			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase></ba-showcase>');
 		});
 	});
 
 	describe('when menu button is clicked', () => {
-
 		it('click button Theme', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
@@ -378,15 +367,11 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
 			expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
 		});
-
 	});
 
 	describe('input for search queries', () => {
-
 		describe('when input changes', () => {
-
 			it('updates the store', async () => {
-
 				const element = await setup();
 
 				const inputElement = element.shadowRoot.querySelector('#input');
@@ -435,9 +420,7 @@ describe('Header', () => {
 		});
 
 		describe('when input clear button is clicked', () => {
-
 			it('updates the store', async () => {
-
 				const element = await setup({
 					search: {
 						query: new EventLike('foo')
@@ -452,8 +435,7 @@ describe('Header', () => {
 		});
 
 		describe('when input is focused or blurred ', () => {
-
-			it('disables/enables the \'observeResponsiveParameter\' property', async () => {
+			it("disables/enables the 'observeResponsiveParameter' property", async () => {
 				const state = {
 					mainMenu: {
 						open: false
@@ -476,7 +458,6 @@ describe('Header', () => {
 			});
 
 			describe('in portrait mode', () => {
-
 				beforeEach(function () {
 					jasmine.clock().install();
 				});
@@ -536,9 +517,7 @@ describe('Header', () => {
 				});
 			});
 
-
 			describe('min-width < 80em', () => {
-
 				beforeEach(function () {
 					jasmine.clock().install();
 				});
@@ -574,7 +553,6 @@ describe('Header', () => {
 				});
 			});
 
-
 			it('sets the correct tab index for the search-content-panel', async () => {
 				const state = {
 					mainMenu: {
@@ -592,7 +570,6 @@ describe('Header', () => {
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {
-
 				beforeEach(function () {
 					jasmine.clock().install();
 				});
@@ -603,7 +580,6 @@ describe('Header', () => {
 
 				it('hide mobile header and show again', async () => {
 					const state = {
-
 						media: {
 							portrait: true,
 							minWidth: false
@@ -623,16 +599,15 @@ describe('Header', () => {
 					expect(window.getComputedStyle(container).opacity).toBe('0');
 					jasmine.clock().tick(800);
 					/**
-				 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-				 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-				 * --> So we have to test for 'style' here
-				 */
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
 					expect(container.style.opacity).toBe('1');
 				});
 			});
 
 			describe('in landscape mode and min-width < 80em', () => {
-
 				beforeEach(function () {
 					jasmine.clock().install();
 				});
@@ -643,7 +618,6 @@ describe('Header', () => {
 
 				it('hide mobile header and show again', async () => {
 					const state = {
-
 						media: {
 							portrait: false,
 							minWidth: false
@@ -663,31 +637,40 @@ describe('Header', () => {
 					expect(window.getComputedStyle(container).opacity).toBe('0');
 					jasmine.clock().tick(800);
 					/**
-				 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
-				 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
-				 * --> So we have to test for 'style' here
-				 */
+					 * From https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle:
+					 * 'The element.style object should be used to set styles on that element, or inspect styles directly added to it from JavaScript manipulation or the global style attribute.'
+					 * --> So we have to test for 'style' here
+					 */
 					expect(container.style.opacity).toBe('1');
 				});
 			});
 		});
-
 	});
 
 	describe('when network fetching state changes', () => {
-
 		it('runs or pauses the border animation class', async () => {
 			const element = await setup();
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeFalse();
 			setFetching(true);
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeTrue();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeTrue();
 			setFetching(false);
-			expect(element.shadowRoot.querySelector('.action-button__border.animated-action-button__border').classList.contains('animated-action-button__border__running')).toBeFalse();
+			expect(
+				element.shadowRoot
+					.querySelector('.action-button__border.animated-action-button__border')
+					.classList.contains('animated-action-button__border__running')
+			).toBeFalse();
 		});
 	});
 
 	describe('when search query state changes', () => {
-
 		it('adopts the states query term', async () => {
 			const element = await setup();
 
@@ -700,8 +683,7 @@ describe('Header', () => {
 	});
 
 	describe('when orientation changes', () => {
-
-		it('adds or removes \'data-register-for-viewport-calc\' attribute', async () => {
+		it("adds or removes 'data-register-for-viewport-calc' attribute", async () => {
 			const state = {
 				media: {
 					portrait: false,
@@ -724,5 +706,4 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header').hasAttribute(REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME)).toBeFalse();
 		});
 	});
-
 });
