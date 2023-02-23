@@ -96,6 +96,7 @@ describe('FeatureInfo provider', () => {
 				});
 				expect(target.innerText).toBe('');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
 				//no name property, but description property
 				feature = new Feature({ geometry: new Point(coordinate) });
@@ -110,7 +111,7 @@ describe('FeatureInfo provider', () => {
 				});
 				expect(target.innerText).toBe('description');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
-
+				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
 				//no name property, but desc property
 				feature = new Feature({ geometry: new Point(coordinate) });
@@ -125,6 +126,7 @@ describe('FeatureInfo provider', () => {
 				});
 				expect(target.innerText).toBe('desc');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
+				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
 			});
 

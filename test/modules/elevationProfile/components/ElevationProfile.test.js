@@ -172,8 +172,6 @@ describe('ElevationProfile', () => {
 		}, chartArea: { left: 0, right: 100, width: 200 }
 	};
 	const altitudeData = profileSlopeSteep();
-	const context = { chart };
-
 
 	let store;
 
@@ -233,12 +231,19 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders nothing when no profile is available', async () => {
+		it('renders empty profile, if no coordinates are provided', async () => {
 			// arrange
 			const element = await setup();
+			const chart = element._chart;
+			const config = chart.config;
+			const datasetZero = config.data.datasets[0];
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(0);
+			expect(element.shadowRoot.children.length).toBe(3);
+			expect(datasetZero.data).toEqual([]);
+			expect(config.data.labels).toEqual([]);
+			expect(config.options.scales.y.suggestedMin).toBe(200);
+			expect(config.options.scales.y.suggestedMax).toBe(500);
 		});
 
 		it('renders the view when a profile is available', async () => {
@@ -257,18 +262,47 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-
-			// assert
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
+
+			// assert
 			expect(chart).not.toBeNull();
+			// config
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);
-			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
-			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
-			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
+			expect(config.options.animation.duration).toBe(600);
+			expect(config.options.animation.delay).toBe(300);
+			expect(config.options.maintainAspectRatio).toBe(false);
+			expect(config.options.events).toEqual(['pointermove', 'pointerup', 'mouseout']);
 			expect(config.data.labels).toEqual([0, 1, 2, 3, 4, 5]);
+			// config.options.scales.x
+			expect(config.options.scales.x.type).toBe('linear');
+			expect(config.options.scales.x.title.display).toBe(true);
+			expect(config.options.scales.x.title.text).toBe('elevationProfile_distance [m]');
+			expect(config.options.scales.x.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.x.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.scales.y
+			expect(config.options.scales.y.type).toBe('linear');
+			expect(config.options.scales.y.title.display).toBe(true);
+			expect(config.options.scales.y.title.text).toBe('elevationProfile_alt [m]');
+			expect(config.options.scales.y.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			expect(config.options.scales.y.ticks.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.plugins.title
+			expect(config.options.plugins.title.align).toBe('end');
+			expect(config.options.plugins.title.display).toBe(true);
+			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
+			expect(config.options.plugins.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
+			// config.options.plugins.legend
+			expect(config.options.plugins.legend.display).toBe(false);
+			// config.options.plugins.tooltip
+			expect(config.options.plugins.tooltip.displayColors).toBe(false);
+			expect(config.options.plugins.tooltip.mode).toBe('index');
+			expect(config.options.plugins.tooltip.intersect).toBe(false);
+			expect(config.options.plugins.tooltip.callbacks.title).toEqual(jasmine.any(Function));
+			expect(config.options.plugins.tooltip.callbacks.label).toEqual(jasmine.any(Function));
+			// expect(config.options.plugins.tooltip.callbacks.title).toBe(Function);
+
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
@@ -295,6 +329,87 @@ describe('ElevationProfile', () => {
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistance + ' m');
+		});
+	});
+
+	describe('when tooltip callback "title" is called', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+		it('returns a valid distance', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const config = element._chart.config;
+			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
+
+			// act
+			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
+
+			// assert
+			expect(titleRet).toBe('Distance: 10m');
+		});
+
+		it('calls setCoordinates() with valid coordinates', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const config = element._chart.config;
+			const setCoordinatesSpy = spyOn(element, 'setCoordinates');
+			const tooltipItems = [{ parsed: { x: 1 }, label: 10 }];
+
+			// act
+			config.options.plugins.tooltip.callbacks.title(tooltipItems);
+
+			// assert
+			expect(setCoordinatesSpy).toHaveBeenCalled();
+			expect(setCoordinatesSpy).toHaveBeenCalledWith([41, 51]);
+		});
+	});
+
+	describe('when tooltip callback "label" is called', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+		it('returns a valid elevation', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const config = element._chart.config;
+			const tooltipItem = { raw: 123 };
+
+			// act
+			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+
+			// assert
+			expect(labelRet).toBe('Elevation: 123m');
 		});
 	});
 
@@ -354,7 +469,7 @@ describe('ElevationProfile', () => {
 			expect(slopeGradientSpy).toHaveBeenCalled();
 		});
 
-		it('returns a gradient that ends in steep ', async () => {// todo check
+		it('returns a gradient that ends in steep ', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -411,9 +526,10 @@ describe('ElevationProfile', () => {
 		it('returns a valid bordercolor for "selectedAttribute alt"', async () => {
 			// arrange
 			const element = await setup();
+			const chart = element._chart;
 
 			// act
-			const value = element._getBorder(context, altitudeData);
+			const value = element._getBorder(chart, altitudeData);
 
 			// assert
 			expect(value).toBe('#2c5a93');
@@ -436,7 +552,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when attribute changes several times', () => {
-		it('should call _updateChart() and update the view', async () => {
+		it('should update the view', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -449,7 +565,8 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-			const updateChartSpy = spyOn(element, '_updateChart').and.callThrough();
+			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
+
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'surface';
@@ -458,10 +575,10 @@ describe('ElevationProfile', () => {
 			attrs.dispatchEvent(new Event('change'));
 
 			// assert
-			expect(updateChartSpy).toHaveBeenCalled();
 			const chart = element._chart;
 			const config = chart.config;
 			const datasetZero = config.data.datasets[0];
+			expect(destroyChartJsSpy).toHaveBeenCalled();
 			expect(chart).not.toBeNull();
 			expect(config.type).toBe('line');
 			expect(config.options.responsive).toBe(true);

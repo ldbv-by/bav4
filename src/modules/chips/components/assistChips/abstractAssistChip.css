@@ -1,0 +1,28 @@
+.chips__button {
+	background: var(--primary-bg-color);
+	border: 1px solid var(--text2);
+	/* margin: 1em .5em 1em .5em; */
+	display: flex;
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20);
+	border-radius: 2em;
+	padding: .5em 0.9em;
+	cursor: pointer;
+	text-decoration: none;
+	flex-shrink: 0;
+	font-size: .75rem;
+}
+.chips__button:focus {
+	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+}
+.chips__button-text {
+	color: var(--text1);
+	font-weight: bold;
+	margin: auto .5em;
+}
+.chips__button:hover {
+	border: 1px solid var(--secondary-color);
+}
+.chips__button:hover .chips__button-text {
+	color: var(--secondary-color);
+}

@@ -8,44 +8,26 @@
 	pointer-events: all;
 	color: var(--text3);
 	margin: 0 0 0 0;
-	animation-name: animateIn;
-	animation-fill-mode: both;
-	animation-duration: var(--animation-duration-medium-open);
-	animation-timing-function: var(--animation-easing-open);
 	transition-property: margin;
 	transition-duration: var(--animation-duration-large-open);
 	transition-timing-function: var(--animation-easing-linea);   
+	animation-name: animateIn;
+	animation-fill-mode: both;
+	animation-duration: var(--animation-duration-large-open);
+	animation-timing-function: var(--animation-easing-linea);
 }
-
+.hide {
+	animation-name: animateOut;
+}
 .is-open {
 	margin: 0 0 0 28em;	
 }
-
 .notification_item_hide {
 	animation-name: animateOut;
 	animation-fill-mode: both;
 	animation-duration: var(--animation-duration-medium-close);
 	animation-timing-function: var(--animation-easing-close);
 }
-@keyframes animateIn {
-	0% {
-		opacity: 0;
-		transform: translateY(200%);
-	}
-	100% {
-		opacity: 1;   
-	}
-}
-@keyframes animateOut {
-	0% {
-		opacity: 1;   
-	}
-	100% {
-		opacity: 0;      
-		transform: translateY(200%);
-	}
-}
-
 .tool-container__close-button {
 	margin: 0;
 	width: 3em;
@@ -63,4 +45,14 @@
 }
 .tool-container__close-button:hover {
 	background: var(--header-background-color);
+}
+@keyframes animateIn {
+	0% {
+		transform: translateY(100%);
+	}
+}
+@keyframes animateOut {
+	100% {
+		transform: translateY(100%);
+	}
 }

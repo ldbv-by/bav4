@@ -3,9 +3,21 @@
 	align-items: flex-end;
 	margin: 0 0 1em 0;
 }
+
+/*TODO: move to main.css/mvuElement.css*/
+.chips__container {
+	display: flex;
+	justify-content: center;
+	flex-flow: wrap;
+	gap: .5em .8em;
+	padding: 0 1em .8em;
+	border-bottom: 1px solid var(--header-background-color);
+}
+
 .copy {
 	width: 3em;
 }
+
 .prime-text-value {
 	font-size: 2.2em;
 	flex-grow: 1;
@@ -14,15 +26,18 @@
 	margin-right: .5em;
 	line-height: .9;
 }
+
 .prime-text-unit {
 	font-size: 2.2em;
 	text-align: left;
 	width: 2.1em;
 	line-height: .9;
 }
+
 .area {
 	opacity: 0;
 }
+
 .is-area {
 	opacity: 1;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);

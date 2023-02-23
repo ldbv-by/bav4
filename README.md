@@ -1,12 +1,12 @@
 <p align="center">
-   <img src="https://raw.githubusercontent.com/ldbv-by/bav4-nomigration/master/logo.svg" height="128">
+   <img src="https://raw.githubusercontent.com/ldbv-by/bav4/master/logo.svg" height="128">
 </p>
 <h1 align="center">
    BayernAtlas v4 <br><br>
 
-   [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4-nomigration/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4-nomigration/actions/workflows/node.js.yml?query=branch%3Amaster)
-[![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4-nomigration/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4-nomigration?branch=master)
-[![GitHub](https://img.shields.io/github/license/ldbv-by/bav4-nomigration?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
+   [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ldbv-by/bav4/node.js.yml?branch=master&style=for-the-badge)](https://github.com/ldbv-by/bav4/actions/workflows/node.js.yml?query=branch%3Amaster)
+[![Coveralls branch](https://img.shields.io/coveralls/github/ldbv-by/bav4/master?style=for-the-badge)](https://coveralls.io/github/ldbv-by/bav4?branch=master)
+[![GitHub](https://img.shields.io/github/license/ldbv-by/bav4?color=blue&style=for-the-badge)](http://www.apache.org/licenses/LICENSE-2.0)
 </h1>
 
 Next-generation web-map viewer based on web standards.

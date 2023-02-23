@@ -12,10 +12,13 @@ import { IconSelect } from '../../../../../src/modules/iconSelect/components/Ico
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
+import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
 window.customElements.define(Icon.tag, Icon);
 window.customElements.define(IconSelect.tag, IconSelect);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
+window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 
 
 describe('DrawToolContent', () => {
@@ -80,7 +83,7 @@ describe('DrawToolContent', () => {
 
 		const { embed = false, isTouch = false } = config;
 
-		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer, shared: sharedReducer, media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(state, { draw: drawReducer, modal: modalReducer, shared: sharedReducer, media: createNoInitialStateMediaReducer(), elevationProfile: elevationProfileReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				isEmbedded: () => embed,
@@ -646,6 +649,12 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelector('#cancel-button')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('#finish-button')).toBeFalsy();
 			expect(element.shadowRoot.querySelector('#cancel-button').label).toBe('toolbox_drawTool_cancel');
+		});
+
+		it('displays the elevation profile chip', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
+
+			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
 		it('finishes the drawing', async () => {
