@@ -38,7 +38,7 @@ describe('elevationProfileReducer', () => {
 		closeProfile();
 
 		expect(store.getState().elevationProfile.active).toBeFalse();
-		expect(store.getState().elevationProfile.coordinates).toEqual([[21, 42]]);
+		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 	});
 
 	it('updates the \'coordinates\' property', () => {
