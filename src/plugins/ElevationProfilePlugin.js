@@ -23,7 +23,7 @@ export class ElevationProfilePlugin extends BaPlugin {
 	 */
 	async register(store) {
 
-		// we also want to close the ElevationProfile when the BottomSheet or the draw/measurement tool was was closed
+		// we also want to close the ElevationProfile when the BottomSheet or the draw/measurement tool was closed
 		const onActiveStateChanged = active => {
 			if (!active) {
 				closeProfile();
