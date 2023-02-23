@@ -11,6 +11,8 @@ const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
 
 const Auto_Width = '100%';
+const Range_Min = 100;
+const Range_Max = 2000;
 
 /**
  * Component to preview the embedded version
@@ -20,7 +22,7 @@ const Auto_Width = '100%';
 export class IFrameGenerator extends MvuElement {
 	constructor() {
 		super({
-			size: ['400px', '300px'],
+			size: [400, 300],
 			autoWidth: false
 		});
 		const { TranslationService: translationService, ShareService: shareService, EnvironmentService: environmentService } = $injector.inject('TranslationService', 'ShareService', 'EnvironmentService');
@@ -64,6 +66,13 @@ export class IFrameGenerator extends MvuElement {
 			this.signal(Update_Size_Height, event.target.value);
 		};
 
+		const onChangeSliderWidth = (event) => {
+			this.signal(Update_Size_Width, event.target.value);
+		};
+		const onChangeSliderHeight = (event) => {
+			this.signal(Update_Size_Height, event.target.value);
+		};
+
 		const onToggleAutoWidth = (event) => {
 			this.signal(Update_Auto_Width, event.detail.checked);
 		};
@@ -72,38 +81,41 @@ export class IFrameGenerator extends MvuElement {
 
 		return html`
 		<style>${css}</style>		
-        <div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
-		<div class='iframe__controls'>
-			<div class='iframe__toggle'>
-				<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
-				<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
+        <div class='container'>
+			<div class='iframe__controls'>
+				<div class='iframe__toggle'>
+					<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
+					<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
+				</div>
+				<div class="fieldset">						
+					<div class='iframe__input'><input type="number" required="required" id="iframe_width" ?readonly=${autoWidth} value=${autoWidth ? '' : currentWidth}  @input=${onChangeWidth}></input>${autoWidth ? '' : 'Pixel'}</div>
+					<input type="range" ?disabled=${autoWidth} id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} value=${autoWidth ? Range_Max : currentWidth} @input=${onChangeSliderWidth}>
+					<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
+				</div>
+				<div class="fieldset">						
+					<div class='iframe__input'><input type="number" required="required" id="iframe_height" value=${height} @input=${onChangeHeight}></input>Pixel</div>
+					<input type="range" id="iframe_slider_height"  step=10 min=${Range_Min} max=${Range_Max} value=${height} @input=${onChangeSliderHeight}>
+					<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
+				</div>
 			</div>
-			<div class="fieldset">						
-				<input type="text" required="required" id="iframe_width" ?readonly=${autoWidth} value=${autoWidth ? '' : currentWidth}  @input=${onChangeWidth}></input>
-				<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
-			</div>
-			<div class="fieldset">						
-				<input type="text" required="required" id="iframe_height" value=${height} @input=${onChangeHeight}></input>
-				<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
-			</div>
-        </div>
-		<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
+			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
+			<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
+		</div>
         `;
 	}
 
 	_getIFrameContent(width, height) {
 		const previewUrl = this._getEmbeddedEncodedState();
 		return html`
-		<div class="iframe___content">
-			<iframe src=${previewUrl} width=${width} height=${height} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-		</div>`;
+			<iframe src=${previewUrl} width=${width === Auto_Width ? Auto_Width : width + 'px' } height=${height + 'px'} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+		`;
 	}
 
 	_getEmbedContent(width, height) {
 		const translate = (key) => this._translationService.translate(key);
 		const previewUrl = this._getEmbeddedEncodedState();
 
-		const embedString = `<iframe src=${previewUrl} width='${width}' height='${height}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
+		const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px' }' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 
 		const onCopyHTMLToClipBoard = async () => this._copyValueToClipboard(embedString);
 

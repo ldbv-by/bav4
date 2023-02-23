@@ -47,7 +47,7 @@ describe('IFrameGenerator', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
-				size: ['400px', '300px'],
+				size: [400, 300],
 				autoWidth: false
 			});
 		});
@@ -122,7 +122,7 @@ describe('IFrameGenerator', () => {
 			clipboardSpy.calls.reset();
 
 			// changing width
-			widthInputElement.value = '42px';
+			widthInputElement.value = 42;
 			widthInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.width).toBe('42px');
@@ -131,7 +131,7 @@ describe('IFrameGenerator', () => {
 			clipboardSpy.calls.reset();
 
 			// changing height
-			heightInputElement.value = '420px';
+			heightInputElement.value = 420;
 			heightInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.height).toBe('420px');
