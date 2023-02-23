@@ -2,7 +2,10 @@ import { Feature, Map, View } from 'ol';
 import { Point } from 'ol/geom';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-import { OlFeatureInfoHandler, OlFeatureInfoHandler_Query_Resolution_Delay_Ms } from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
+import {
+	OlFeatureInfoHandler,
+	OlFeatureInfoHandler_Query_Resolution_Delay_Ms
+} from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
 import { TestUtils } from '../../../../test-utils';
 import { abortOrReset, FeatureInfoGeometryTypes, startRequest } from '../../../../../src/store/featureInfo/featureInfo.action';
@@ -17,14 +20,12 @@ import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
-
 	it('determines amount of time query resolution delayed.', async () => {
 		expect(OlFeatureInfoHandler_Query_Resolution_Delay_Ms).toBe(300);
 	});
 });
 
 describe('OlFeatureInfoHandler', () => {
-
 	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 100;
 	const RenderCompleteDelay = 100;
 
@@ -40,8 +41,7 @@ describe('OlFeatureInfoHandler', () => {
 
 	const setup = (state = {}, featureInfoProvider = getBvvFeatureInfo) => {
 		store = TestUtils.setupStoreAndDi(state, { featureInfo: featureInfoReducer, layers: layersReducer, highlight: highlightReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return new OlFeatureInfoHandler(featureInfoProvider);
 	};
 
@@ -61,10 +61,9 @@ describe('OlFeatureInfoHandler', () => {
 	};
 
 	describe('constructor', () => {
-
 		it('initializes the service with custom provider', async () => {
 			setup();
-			const customProvider = async () => { };
+			const customProvider = async () => {};
 			const instanceUnderTest = new OlFeatureInfoHandler(customProvider);
 			expect(instanceUnderTest._featureInfoProvider).toEqual(customProvider);
 		});
@@ -74,7 +73,6 @@ describe('OlFeatureInfoHandler', () => {
 			expect(instanceUnderTest._featureInfoProvider).toEqual(getBvvFeatureInfo);
 		});
 	});
-
 
 	it('instantiates the handler', () => {
 		setup();
@@ -112,13 +110,14 @@ describe('OlFeatureInfoHandler', () => {
 		});
 
 		it('adds exactly one FeatureInfo and HighlightFeature per layer', async () => {
-			const handler = setup({
-				layers: {
-					active: [
-						createDefaultLayer(layerId0, geoResourceId0)
-					]
-				}
-			}, mockFeatureInfoProvider);
+			const handler = setup(
+				{
+					layers: {
+						active: [createDefaultLayer(layerId0, geoResourceId0)]
+					}
+				},
+				mockFeatureInfoProvider
+			);
 			const olVectorSource = new VectorSource();
 			const geometry = new Point(matchingCoordinate);
 			const feature0 = new Feature({ geometry: geometry });
@@ -153,14 +152,17 @@ describe('OlFeatureInfoHandler', () => {
 		});
 
 		it('removes outdated HighlightFeature items', async () => {
-			const handler = setup({
-				highlight: {
-					features: [
-						{ id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureType.DEFAULT, data: [21, 42] },
-						{ id: 'foo', type: HighlightFeatureType.DEFAULT, data: [5, 55] }
-					]
-				}
-			}, mockFeatureInfoProvider);
+			const handler = setup(
+				{
+					highlight: {
+						features: [
+							{ id: QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, type: HighlightFeatureType.DEFAULT, data: [21, 42] },
+							{ id: 'foo', type: HighlightFeatureType.DEFAULT, data: [5, 55] }
+						]
+					}
+				},
+				mockFeatureInfoProvider
+			);
 			const map = setupMap();
 			handler.register(map);
 
@@ -172,18 +174,17 @@ describe('OlFeatureInfoHandler', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
-
 		});
 
 		it('adds one FeatureInfo and HighlightFeature from each suitable layer', async () => {
-			const handler = setup({
-				layers: {
-					active: [
-						createDefaultLayer(layerId0, geoResourceId0),
-						createDefaultLayer(layerId1, geoResourceId1)
-					]
-				}
-			}, mockFeatureInfoProvider);
+			const handler = setup(
+				{
+					layers: {
+						active: [createDefaultLayer(layerId0, geoResourceId0), createDefaultLayer(layerId1, geoResourceId1)]
+					}
+				},
+				mockFeatureInfoProvider
+			);
 			const map = setupMap();
 			const geometry = new Point(matchingCoordinate);
 			const expectedFeatureInfoGeometry = { data: new GeoJSON().writeGeometry(geometry), geometryType: FeatureInfoGeometryTypes.GEOJSON };
@@ -266,18 +267,17 @@ describe('OlFeatureInfoHandler', () => {
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(0);
 			expect(store.getState().highlight.features).toHaveSize(0);
-
 		});
 
-		it('adds \'Not_Available\' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null', async () => {
-			const handler = setup({
-				layers: {
-					active: [
-						createDefaultLayer(layerId0, geoResourceId0),
-						createDefaultLayer(layerId1, geoResourceId1)
-					]
-				}
-			}, mockNullFeatureInfoProvider);
+		it("adds 'Not_Available' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null", async () => {
+			const handler = setup(
+				{
+					layers: {
+						active: [createDefaultLayer(layerId0, geoResourceId0), createDefaultLayer(layerId1, geoResourceId1)]
+					}
+				},
+				mockNullFeatureInfoProvider
+			);
 			const map = setupMap();
 
 			const geometry = new Point(matchingCoordinate);
@@ -305,7 +305,6 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current[0]).toEqual({ title: 'olMap_handler_featureInfo_not_available', content: '' });
 			expect(store.getState().featureInfo.current[1]).toEqual({ title: 'olMap_handler_featureInfo_not_available', content: '' });
 			expect(store.getState().highlight.features).toHaveSize(0);
-
 		});
 	});
 });

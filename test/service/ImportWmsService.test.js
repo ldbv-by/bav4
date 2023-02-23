@@ -7,28 +7,25 @@ import { getAttributionProviderForGeoResourceImportedByUrl } from '../../src/ser
 
 describe('ImportWmsService', () => {
 	const geoResourceService = {
-		addOrReplace() { }
+		addOrReplace() {}
 	};
 	const urlService = {
-		originAndPathname() { }
+		originAndPathname() {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('UrlService', urlService);
+		$injector.registerSingleton('GeoResourceService', geoResourceService).registerSingleton('UrlService', urlService);
 	});
 
 	const handledByGeoResourceServiceMarker = 'marker';
-	const addOrReplaceMethodMock = gr => {
+	const addOrReplaceMethodMock = (gr) => {
 		gr.marker = handledByGeoResourceServiceMarker;
 		return gr;
 	};
 
 	describe('init', () => {
-
 		it('initializes the service with custom provider', () => {
-			const customProvider = async () => { };
+			const customProvider = async () => {};
 			const instanceUnderTest = new ImportWmsService(customProvider);
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toBeDefined();
 			expect(instanceUnderTest._wmsCapabilitiesProvider).toEqual(customProvider);
@@ -43,7 +40,9 @@ describe('ImportWmsService', () => {
 	describe('forUrl', () => {
 		const getCompleteOptions = () => {
 			return {
-				isAuthenticated: false, sourceType: new SourceType(SourceTypeName.WMS, '42'), layers: [],
+				isAuthenticated: false,
+				sourceType: new SourceType(SourceTypeName.WMS, '42'),
+				layers: [],
 				ids: []
 			};
 		};
@@ -76,7 +75,7 @@ describe('ImportWmsService', () => {
 			const result = await instanceUnderTest.forUrl(url, options);
 
 			expect(result).toHaveSize(3);
-			result.forEach(gr => {
+			result.forEach((gr) => {
 				expect(gr.getAttribution()).toEqual([getAttributionProviderForGeoResourceImportedByUrl(url)(gr)]);
 				expect(gr.marker).toBe(handledByGeoResourceServiceMarker);
 			});
@@ -88,13 +87,15 @@ describe('ImportWmsService', () => {
 			const url = 'https://some.url/wms';
 
 			const resultMock = [];
-			const providerSpy = jasmine.createSpy('provider').withArgs(url, {
-				// the default options
-				isAuthenticated: false,
-				sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
-				layers: [],
-				ids: []
-			})
+			const providerSpy = jasmine
+				.createSpy('provider')
+				.withArgs(url, {
+					// the default options
+					isAuthenticated: false,
+					sourceType: new SourceType(SourceTypeName.WMS, '1.1.1'),
+					layers: [],
+					ids: []
+				})
 				.and.resolveTo(resultMock);
 			spyOn(urlService, 'originAndPathname').withArgs(url).and.returnValue(url);
 			const instanceUnderTest = new ImportWmsService(providerSpy);

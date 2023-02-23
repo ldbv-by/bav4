@@ -1,10 +1,13 @@
 import { highlightReducer } from '../../../src/store/highlight/highlight.reducer';
-import { clearHighlightFeatures, HighlightFeatureType, addHighlightFeatures, removeHighlightFeaturesById } from '../../../src/store/highlight/highlight.action';
+import {
+	clearHighlightFeatures,
+	HighlightFeatureType,
+	addHighlightFeatures,
+	removeHighlightFeaturesById
+} from '../../../src/store/highlight/highlight.action';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('highlightReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			highlight: highlightReducer
@@ -16,7 +19,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.features).toHaveSize(0);
 	});
 
-	it('changes the \'features\' and \'active\' property by adding features', () => {
+	it("changes the 'features' and 'active' property by adding features", () => {
 		const store = setup();
 		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'id' };
 
@@ -51,7 +54,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.active).toBeTrue();
 	});
 
-	it('changes the \'features\' and \'active\' property by clearing all features', () => {
+	it("changes the 'features' and 'active' property by clearing all features", () => {
 		const store = setup();
 		const highlightFeature = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] } };
 
@@ -81,7 +84,7 @@ describe('highlightReducer', () => {
 		expect(store.getState().highlight.features[0].id).toBeInstanceOf(Number);
 	});
 
-	it('changes the \'features\' and \'active\' property by removing a features by id', () => {
+	it("changes the 'features' and 'active' property by removing a features by id", () => {
 		const id = 'foo';
 		const store = setup();
 		const highlightFeature0 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: id };

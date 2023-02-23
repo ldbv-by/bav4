@@ -1,18 +1,19 @@
-
 export const getOverlays = (layer) => {
 	const overlays = [];
-	layer.getSource().getFeatures().forEach(f => {
-		const featureOverlays = f.get('overlays');
-		if (featureOverlays) {
-			featureOverlays.forEach(o => overlays.push(o));
-		}
-	});
+	layer
+		.getSource()
+		.getFeatures()
+		.forEach((f) => {
+			const featureOverlays = f.get('overlays');
+			if (featureOverlays) {
+				featureOverlays.forEach((o) => overlays.push(o));
+			}
+		});
 	return overlays;
 };
 
 export class OverlayStyle {
-	constructor() {
-	}
+	constructor() {}
 
 	_add(overlay, olFeature, olMap) {
 		const featureOverlays = olFeature.get('overlays') || [];
@@ -25,7 +26,10 @@ export class OverlayStyle {
 
 	_remove(overlay, olFeature, olMap) {
 		const featureOverlays = olFeature.get('overlays') || [];
-		olFeature.set('overlays', featureOverlays.filter(o => o !== overlay));
+		olFeature.set(
+			'overlays',
+			featureOverlays.filter((o) => o !== overlay)
+		);
 
 		olMap.removeOverlay(overlay);
 	}
@@ -35,7 +39,7 @@ export class OverlayStyle {
 	 * @param {ol.feature} olFeature
 	 * @param {ol.map} olMap
 	 */
-	add(/*eslint-disable no-unused-vars */olFeature, olMap) {
+	add(/*eslint-disable no-unused-vars */ olFeature, olMap) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement and call abstract method #add from child or do not call super.add from child.');
 	}
@@ -68,7 +72,7 @@ export class OverlayStyle {
 	 */
 	remove(olFeature, olMap) {
 		const featureOverlays = olFeature.get('overlays') || [];
-		featureOverlays.forEach(o => olMap.removeOverlay(o));
+		featureOverlays.forEach((o) => olMap.removeOverlay(o));
 		olFeature.set('overlays', []);
 	}
 }

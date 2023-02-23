@@ -4,7 +4,7 @@ const Min_Color_Components_Count = 3;
 const isRGBColor = (rgbCandidate) => {
 	const rgb_min = 0;
 	const rgb_max = 255;
-	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter(c => rgb_min <= c && c <= rgb_max).length;
+	return Array.isArray(rgbCandidate) && Min_Color_Components_Count <= rgbCandidate.filter((c) => rgb_min <= c && c <= rgb_max).length;
 };
 
 const isHSVColor = (hsvCandidate) => {
@@ -14,7 +14,7 @@ const isHSVColor = (hsvCandidate) => {
 
 	const isInMax = () => hsvCandidate[0] <= h_max && hsvCandidate[1] <= sv_max && hsvCandidate[2] <= sv_max;
 
-	return Array.isArray(hsvCandidate) && Min_Color_Components_Count <= hsvCandidate.filter(c => hsv_min <= c).length && isInMax() ;
+	return Array.isArray(hsvCandidate) && Min_Color_Components_Count <= hsvCandidate.filter((c) => hsv_min <= c).length && isInMax();
 };
 
 /**
@@ -71,7 +71,7 @@ export const rgbToHsv = (rgb) => {
 	const b = rgb[2] / 255;
 	const v = Math.max(r, g, b);
 	const c = v - Math.min(r, g, b);
-	const h = c && ((v === r) ? (g - b) / c : ((v === g) ? 2 + (b - r) / c : 4 + (r - g) / c));
+	const h = c && (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
 	return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
 };
 
@@ -88,7 +88,6 @@ export const hsvToRgb = (hsv) => {
 	const h = hsv[0] / 360;
 	const s = hsv[1];
 	const v = hsv[2];
-
 
 	const i = Math.floor(h * 6);
 	const f = h * 6 - i;
@@ -113,13 +112,8 @@ export const hsvToRgb = (hsv) => {
 	};
 
 	const normalizedRgb = calculateNormalizedRgb();
-	return [
-		Math.round(normalizedRgb[0] * 255),
-		Math.round(normalizedRgb[1] * 255),
-		Math.round(normalizedRgb[2] * 255)
-	];
+	return [Math.round(normalizedRgb[0] * 255), Math.round(normalizedRgb[1] * 255), Math.round(normalizedRgb[2] * 255)];
 };
-
 
 /**
  * Creates a lighter or darker version of the specified base color.
@@ -127,7 +121,7 @@ export const hsvToRgb = (hsv) => {
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
-	const HSV_Brightness_Limit = .7;
+	const HSV_Brightness_Limit = 0.7;
 	const isDark = (hsv) => hsv[2] < HSV_Brightness_Limit;
 
 	if (!isRGBColor(baseColor)) {
@@ -143,4 +137,3 @@ export const getContrastColorFrom = (baseColor) => {
 
 	return hsvToRgb(contrastHsv);
 };
-

@@ -17,7 +17,6 @@ import { isHttpUrl } from '../utils/checks';
  * @property {string} [url] copyright href
  */
 
-
 /**
  * @enum
  */
@@ -39,16 +38,14 @@ export const GeoResourceAuthenticationType = Object.freeze({
 	PLUS: 'plus'
 });
 
-
 /**
-* Parent class of all GeoResource types.
-* Obligatory fields are set in the constructor.
-* Optional fields have a setter method which returns the GeoResource instance for chaining.
-* @abstract
-* @class
-*/
+ * Parent class of all GeoResource types.
+ * Obligatory fields are set in the constructor.
+ * Optional fields have a setter method which returns the GeoResource instance for chaining.
+ * @abstract
+ * @class
+ */
 export class GeoResource {
-
 	constructor(id, label = '') {
 		if (this.constructor === GeoResource) {
 			// Abstract class can not be constructed.
@@ -207,9 +204,7 @@ export class GeoResource {
 	getAttribution(value = 0) {
 		if (this._attributionProvider) {
 			const attributions = this._attributionProvider(this, value);
-			return Array.isArray(attributions)
-				? attributions.length > 0 ? attributions : null
-				: attributions ? [attributions] : null;
+			return Array.isArray(attributions) ? (attributions.length > 0 ? attributions : null) : attributions ? [attributions] : null;
 		}
 		throw new Error('No attribution provider found');
 	}
@@ -221,7 +216,6 @@ export class GeoResource {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
 	}
-
 }
 
 /**
@@ -235,7 +229,6 @@ export class GeoResource {
  * Wrapper for a GeoResource that can be loaded from an external source by calling `get()`.
  */
 export class GeoResourceFuture extends GeoResource {
-
 	/**
 	 *
 	 * @param {string} id
@@ -283,11 +276,10 @@ export class GeoResourceFuture extends GeoResource {
 			const resolvedGeoResource = await this._loader(this.id);
 			// replace the GeoResourceFuture by the resolved GeoResource in the chache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
-			this._onResolve.forEach(f => f(observedGr, this));
+			this._onResolve.forEach((f) => f(observedGr, this));
 			return observedGr;
-		}
-		catch (error) {
-			this._onReject.forEach(f => f(this));
+		} catch (error) {
+			this._onReject.forEach((f) => f(this));
 			throw error;
 		}
 	}
@@ -297,7 +289,6 @@ export class GeoResourceFuture extends GeoResource {
  * @class
  */
 export class WmsGeoResource extends GeoResource {
-
 	constructor(id, label, url, layers, format) {
 		super(id, label);
 		this._url = url;
@@ -333,7 +324,6 @@ export class WmsGeoResource extends GeoResource {
 	getType() {
 		return GeoResourceTypes.WMS;
 	}
-
 }
 
 /**
@@ -381,8 +371,6 @@ export const VectorSourceType = Object.freeze({
 	EWKT: Symbol.for('ewkt')
 });
 
-
-
 /**
  * GeoResource for vector data.
  * Data could be either loaded externally by Url or internally from a string.
@@ -411,7 +399,8 @@ export class VectorGeoResource extends GeoResource {
 				return 'GeoJSON';
 			case VectorSourceType.EWKT:
 				return 'EWKT';
-			default: return '';
+			default:
+				return '';
 		}
 	}
 
@@ -474,7 +463,6 @@ export class VectorGeoResource extends GeoResource {
 	getType() {
 		return GeoResourceTypes.VECTOR;
 	}
-
 }
 
 /**
@@ -498,7 +486,6 @@ export class AggregateGeoResource extends GeoResource {
 	}
 }
 
-
 export class VTGeoResource extends GeoResource {
 	constructor(id, label, styleUrl) {
 		super(id, label);
@@ -517,7 +504,6 @@ export class VTGeoResource extends GeoResource {
 	}
 }
 
-
 /**
  * Returns an observable GeoResource.
  * All of its fields can be observed for changes.
@@ -527,7 +513,6 @@ export class VTGeoResource extends GeoResource {
  * @returns proxified GeoResource
  */
 export const observable = (geoResource, onChanged, identifier = null) => {
-
 	return new Proxy(geoResource, {
 		set: function (target, prop, value) {
 			if (Object.keys(target).includes(prop) && target[prop] !== value) {

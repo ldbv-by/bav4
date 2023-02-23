@@ -11,18 +11,16 @@ import { observe } from '../utils/storeUtils';
  * @author taulinger
  */
 export class ChipsPlugin extends BaPlugin {
-
 	_updateStore(chips, permanentChips, state) {
-
 		const findTopicsChips = () => {
 			return state.topicsContentPanel.index // check topics only if TopicsContentPanel is displayed at least at level 1
-				? chips.filter(c => c.observer?.topics.includes(state.topics.current))
+				? chips.filter((c) => c.observer?.topics.includes(state.topics.current))
 				: [];
 		};
 
 		const findActiveGeoResourceChips = () => {
-			const geoResourceIds = state.layers.active.map(l => l.geoResourceId);
-			return chips.filter(c => geoResourceIds.some(grId => c.observer?.geoResources.includes(grId)));
+			const geoResourceIds = state.layers.active.map((l) => l.geoResourceId);
+			return chips.filter((c) => geoResourceIds.some((grId) => c.observer?.geoResources.includes(grId)));
 		};
 
 		setCurrent([...new Set([...permanentChips, ...findTopicsChips(), ...findActiveGeoResourceChips()])]);
@@ -34,10 +32,10 @@ export class ChipsPlugin extends BaPlugin {
 		const findChipsFromQueryParams = () => {
 			const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 			const chipId = queryParams.get(QueryParameters.CHIP_ID) ?? [];
-			return chips.filter(c => chipId === c.id);
+			return chips.filter((c) => chipId === c.id);
 		};
 
-		return [...chips.filter(c => c.permanent), ...findChipsFromQueryParams(chips)];
+		return [...chips.filter((c) => c.permanent), ...findChipsFromQueryParams(chips)];
 	}
 
 	/**
@@ -45,8 +43,7 @@ export class ChipsPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { ChipsConfigurationService: chipsConfigurationService }
-			= $injector.inject('ChipsConfigurationService');
+		const { ChipsConfigurationService: chipsConfigurationService } = $injector.inject('ChipsConfigurationService');
 
 		const chips = await chipsConfigurationService.all();
 		const permanentChips /** let's store them here*/ = this._findPermanentAndQueryParamChips(chips);
@@ -54,7 +51,15 @@ export class ChipsPlugin extends BaPlugin {
 		// initial update
 		this._updateStore(chips, permanentChips, store.getState());
 		// register observer
-		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
-		observe(store, state => state, state => this._updateStore(chips, permanentChips, state));
+		observe(
+			store,
+			(state) => state,
+			(state) => this._updateStore(chips, permanentChips, state)
+		);
+		observe(
+			store,
+			(state) => state,
+			(state) => this._updateStore(chips, permanentChips, state)
+		);
 	}
 }

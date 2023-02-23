@@ -1,13 +1,12 @@
 .title {
 	font-weight: bold;
-	padding: .8em 1.5em;
+	padding: 0.8em 1.5em;
 }
 .baselayer__container {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	padding: .8em 1.5em;
-    
+	padding: 0.8em 1.5em;
 }
 .baselayer__label:after {
 	content: '';
@@ -16,37 +15,38 @@
 	border-style: solid;
 	border-color: transparent transparent var(--primary-bg-color-05) transparent;
 	left: 50%;
-	margin-left: -.8em;
+	margin-left: -0.8em;
 	top: -1.4em;
 }
-.baselayer__button[type="primary"] {
+.baselayer__button[type='primary'] {
 	transform: scale(1.1);
 	z-index: 1;
 }
 .baselayer__button {
 	border-radius: 0em;
 	transform: scale(1);
-	flex-grow: 1;   
+	flex-grow: 1;
 	width: auto;
 	height: 5em;
-	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);      
+	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);
 	background: var(--secondary-bg-color);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-	background-size: auto 100% ;
+	background-size: auto 100%;
 	background-position: center center;
 	cursor: pointer;
 	user-select: none;
 	border: 0;
 }
-.baselayer__button:hover, .baselayer__button:focus-visible {
-	transition: transform var(--animation-duration-medium-open) var(--animation-easing-close);      
+.baselayer__button:hover,
+.baselayer__button:focus-visible {
+	transition: transform var(--animation-duration-medium-open) var(--animation-easing-close);
 	transform: scale(1.2);
 	z-index: 2;
 }
 .baselayer__label {
 	display: none;
-	font-size: .6rem;
-	padding: .3em;
+	font-size: 0.6rem;
+	padding: 0.3em;
 	position: absolute;
 	background: var(--primary-bg-color-05);
 	color: var(--text1);
@@ -57,15 +57,16 @@
 	bottom: 0em;
 	user-select: 0;
 }
-.baselayer__button:hover .baselayer__label, .baselayer__button:focus-visible .baselayer__label {
+.baselayer__button:hover .baselayer__label,
+.baselayer__button:focus-visible .baselayer__label {
 	display: block;
 }
-.baselayer__button[type="primary"] .baselayer__label {
+.baselayer__button[type='primary'] .baselayer__label {
 	display: block;
 	background: var(--primary-color);
 	color: var(--text3);
 }
-.baselayer__button[type="primary"] .baselayer__label:after {
+.baselayer__button[type='primary'] .baselayer__label:after {
 	display: block;
 	border-color: transparent transparent var(--primary-color) transparent;
 }

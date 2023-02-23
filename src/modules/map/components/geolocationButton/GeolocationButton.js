@@ -12,7 +12,6 @@ import { activate, deactivate } from '../../../../store/geolocation/geolocation.
  */
 
 export class GeolocationButton extends BaElement {
-
 	constructor() {
 		super();
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -28,8 +27,7 @@ export class GeolocationButton extends BaElement {
 		const onClick = () => {
 			if (active) {
 				deactivate();
-			}
-			else {
+			} else {
 				activate();
 			}
 		};
@@ -37,8 +35,7 @@ export class GeolocationButton extends BaElement {
 		let title = translate('map_geolocationButton_title_activate');
 		if (active) {
 			title = translate('map_geolocationButton_title_deactivate');
-		}
-		else if (denied) {
+		} else if (denied) {
 			title = translate('map_geolocationButton_title_denied');
 		}
 
@@ -48,19 +45,23 @@ export class GeolocationButton extends BaElement {
 			denied: denied
 		};
 		return html`
-		<style>${css}</style> 
-		<div class='geolocation'>
-			<button class='geolocation-button ${classMap(classes)}' @click=${onClick} title=${title} >
-			<i class="icon geolocation-icon"></i></button>
-		</div>
+			<style>
+				${css}
+			</style>
+			<div class="geolocation">
+				<button class="geolocation-button ${classMap(classes)}" @click=${onClick} title=${title}>
+					<i class="icon geolocation-icon"></i>
+				</button>
+			</div>
 		`;
 	}
 
 	extractState(globalState) {
-		const { geolocation: { active, denied } } = globalState;
+		const {
+			geolocation: { active, denied }
+		} = globalState;
 		return { active, denied };
 	}
-
 
 	static get tag() {
 		return 'ba-geolocation-button';

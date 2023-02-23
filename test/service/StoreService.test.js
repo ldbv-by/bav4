@@ -3,64 +3,63 @@ import { StoreService } from '../../src/services/StoreService';
 import { TestUtils } from '../test-utils';
 
 describe('StoreService', () => {
-
 	describe('constructor', () => {
 		const topicsServiceMock = {
-			init: () => { }
+			init: () => {}
 		};
 		const geoResourceServiceMock = {
-			init: () => { }
+			init: () => {}
 		};
 		const measurementPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const drawPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const geolocationPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const layersPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const topicsPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const positionPluginMock = {
-			register() { }
+			register() {}
 		};
 		const contextClickPluginMock = {
-			register() { }
+			register() {}
 		};
 		const highlightPluginMock = {
-			register() { }
+			register() {}
 		};
 		const featureInfoPluginMock = {
-			register() { }
+			register() {}
 		};
 		const importPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const searchPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const exportMfpPluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const historyStatePluginMock = {
-			register: () => { }
+			register: () => {}
 		};
 		const mainMenuPluginMock = {
-			register() { }
+			register() {}
 		};
 		const mediaPluginMock = {
-			register() { }
+			register() {}
 		};
 		const chipsPlugin = {
-			register() { }
+			register() {}
 		};
 		const elevationProfilePluginMock = {
-			register() { }
+			register() {}
 		};
 
 		const setupInjector = () => {
@@ -90,7 +89,6 @@ describe('StoreService', () => {
 		};
 
 		it('registers all reducers', () => {
-
 			const instanceUnderTest = new StoreService();
 
 			const store = instanceUnderTest.getStore();
@@ -126,7 +124,6 @@ describe('StoreService', () => {
 		});
 
 		it('registers all plugins', async () => {
-
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const drawPluginSpy = spyOn(drawPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');

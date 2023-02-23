@@ -9,7 +9,6 @@ import { createUniqueId } from '../utils/numberUtils';
  * @author taulinger
  */
 export class LayersPlugin extends BaPlugin {
-
 	constructor() {
 		super();
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -20,35 +19,35 @@ export class LayersPlugin extends BaPlugin {
 		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 
 		const parseLayer = (layerValue, layerVisibilityValue, layerOpacityValue) => {
-
 			//Todo: parse KML and WMS layer from query params like layerIdOrType||layerLabel||layerUrl||layerOptions
 			const layer = layerValue.split(',');
 			const layerVisibility = layerVisibilityValue ? layerVisibilityValue.split(',') : [];
 			const layerOpacity = layerOpacityValue ? layerOpacityValue.split(',') : [];
 
-			return layer
-				.map((id, index) => {
-					if (id) {
-						const geoResource = geoResourceService.byId(id) ?? geoResourceService.asyncById(id);
-						const layerId = `${id}_${createUniqueId()}`;
+			return (
+				layer
+					.map((id, index) => {
+						if (id) {
+							const geoResource = geoResourceService.byId(id) ?? geoResourceService.asyncById(id);
+							const layerId = `${id}_${createUniqueId()}`;
 
-						if (geoResource) {
+							if (geoResource) {
+								const layerProperties = { geoResourceId: geoResource.id };
 
-							const layerProperties = { geoResourceId: geoResource.id };
+								if (layerVisibility[index] === 'false') {
+									layerProperties.visible = false;
+								}
+								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
+									layerProperties.opacity = parseFloat(layerOpacity[index]);
+								}
 
-							if (layerVisibility[index] === 'false') {
-								layerProperties.visible = false;
+								return { id: layerId, layerProperties };
 							}
-							if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
-								layerProperties.opacity = parseFloat(layerOpacity[index]);
-							}
-
-							return { id: layerId, layerProperties };
 						}
-					}
-				})
-				//remove undefined 'layer'
-				.filter(l => !!l);
+					})
+					//remove undefined 'layer'
+					.filter((l) => !!l)
+			);
 		};
 
 		const parsedLayers = parseLayer(
@@ -56,23 +55,27 @@ export class LayersPlugin extends BaPlugin {
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
 			queryParams.get(QueryParameters.LAYER_OPACITY)
 		);
-		parsedLayers.forEach(l => {
+		parsedLayers.forEach((l) => {
 			addLayer(l.id, l.layerProperties);
 		});
 	}
 
 	_addLayersFromConfig() {
-
-		const { GeoResourceService: georesourceService, TopicsService: topicsService, StoreService: storeService }
-			= $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
+		const {
+			GeoResourceService: georesourceService,
+			TopicsService: topicsService,
+			StoreService: storeService
+		} = $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
 
 		//we take the bg layer from the topic configuration
-		const { topics: { current } } = storeService.getStore().getState();
+		const {
+			topics: { current }
+		} = storeService.getStore().getState();
 		const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
 
 		const geoResources = georesourceService.all();
 
-		const bgGeoresources = geoResources.filter(geoResource => geoResource.id === defaultBaseGeoR);
+		const bgGeoresources = geoResources.filter((geoResource) => geoResource.id === defaultBaseGeoR);
 		//fallback: add the first available georesource as bg
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
@@ -84,9 +87,10 @@ export class LayersPlugin extends BaPlugin {
 	 * Initializes the georesource service and adds layers to the list of layers in the store
 	 */
 	async _init() {
-
-		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService }
-			= $injector.inject('GeoResourceService', 'EnvironmentService');
+		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService } = $injector.inject(
+			'GeoResourceService',
+			'EnvironmentService'
+		);
 
 		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 

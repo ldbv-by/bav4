@@ -7,22 +7,19 @@ import { createUniqueId } from '../utils/numberUtils';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 
-
 /**
  * Plugin for contextClick state management.
  * @class
  * @author taulinger
  */
 export class ContextClickPlugin extends BaPlugin {
-
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
 		const highlightFeatureId = createUniqueId();
-		const { EnvironmentService: environmentService }
-			= $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 
 		const onContextClick = ({ payload }) => {
 			const { coordinate, screenCoordinate } = payload;
@@ -30,12 +27,9 @@ export class ContextClickPlugin extends BaPlugin {
 
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
-				addHighlightFeatures(
-					{ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS }
-				);
+				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
 				openBottomSheet(content);
-			}
-			else {
+			} else {
 				open([screenCoordinate[0], screenCoordinate[1]], content);
 			}
 		};
@@ -44,14 +38,13 @@ export class ContextClickPlugin extends BaPlugin {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
 				closeBottomSheet();
-			}
-			else {
+			} else {
 				close();
 			}
 		};
 
-		observe(store, state => state.pointer.contextClick, onContextClick);
-		observe(store, state => state.pointer.click, onMoveOrClick);
-		observe(store, state => state.map.moveStart, onMoveOrClick);
+		observe(store, (state) => state.pointer.contextClick, onContextClick);
+		observe(store, (state) => state.pointer.click, onMoveOrClick);
+		observe(store, (state) => state.map.moveStart, onMoveOrClick);
 	}
 }

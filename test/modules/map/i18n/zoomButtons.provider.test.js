@@ -1,10 +1,7 @@
 import { provide } from '../../../../src/modules/map/i18n/zoomButtons.provider';
 
-
 describe('i18n for map module', () => {
-
 	it('provides translation for de', () => {
-
 		const map = provide('de');
 
 		expect(map.map_zoomButtons_in).toBe('Vergrößere Kartenausschnitt');
@@ -13,7 +10,6 @@ describe('i18n for map module', () => {
 	});
 
 	it('provides translation for en', () => {
-
 		const map = provide('en');
 
 		expect(map.map_zoomButtons_in).toBe('Zoom in');
@@ -33,7 +29,6 @@ describe('i18n for map module', () => {
 	});
 
 	it('provides an empty map for a unknown lang', () => {
-
 		const map = provide('unknown');
 
 		expect(map).toEqual({});

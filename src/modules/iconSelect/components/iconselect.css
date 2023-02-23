@@ -8,7 +8,7 @@
 	width: auto;
 	right: 2em;
 	left: 7em;
-	padding: .8em;
+	padding: 0.8em;
 	background-image: url('assets/chess.svg');
 	background-size: 1em;
 }
@@ -22,7 +22,7 @@
 }
 
 .ba_catalog_item {
-	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);  
+	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);
 }
 
 .ba_catalog_item:hover {
@@ -31,7 +31,7 @@
 
 .isselected {
 	background: var(--primary-color);
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .iscollapsed {
@@ -40,18 +40,18 @@
 
 .iconselect__toggle-button {
 	width: 100%;
-	padding: .2em 1.4em .3em .1em;
+	padding: 0.2em 1.4em 0.3em 0.1em;
 	border: 0;
 	border-bottom: 1px solid var(--text1);
-	text-align: left;	
-	font-size: 1rem;	
+	text-align: left;
+	font-size: 1rem;
 	box-shadow: none;
-	opacity: .9;
+	opacity: 0.9;
 	background: transparent;
 	background-image: url('./assets/caret-down-fill.svg');
 	background-repeat: no-repeat;
-	background-position: calc(100% - .5em) center;
-	background-size: .7em;
+	background-position: calc(100% - 0.5em) center;
+	background-size: 0.7em;
 }
 
 ba-icon {

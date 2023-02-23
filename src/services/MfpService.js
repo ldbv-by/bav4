@@ -74,7 +74,6 @@ import { getMfpCapabilities, postMfpSpec } from './provider/mfp.provider';
  * @implements {MfpService}
  */
 export class BvvMfpService {
-
 	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMfpSpecProvider = postMfpSpec) {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
@@ -99,13 +98,11 @@ export class BvvMfpService {
 				const { urlId, layouts, grSubstitutions, srid, extent } = await this._mfpCapabilitiesProvider();
 				this._mfpCapabilities = { layouts, grSubstitutions, srid, extent };
 				this._urlId = urlId;
-			}
-			catch (e) {
+			} catch (e) {
 				if (this._environmentService.isStandalone()) {
 					this._mfpCapabilities = this._newFallbackCapabilities();
 					console.warn('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
-				}
-				else {
+				} else {
 					throw e;
 				}
 			}
@@ -124,12 +121,12 @@ export class BvvMfpService {
 	}
 
 	/**
-	* Returns the corresponding  {@link MfpLayout} for a specific id.
-	* @param {string} id Id of the desired {@link MfpLayout}
-	* @returns {MfpLayout|null}
-	*/
+	 * Returns the corresponding  {@link MfpLayout} for a specific id.
+	 * @param {string} id Id of the desired {@link MfpLayout}
+	 * @returns {MfpLayout|null}
+	 */
 	getLayoutById(id) {
-		return this._mfpCapabilities?.layouts?.find(cp => cp.id === id) ?? null;
+		return this._mfpCapabilities?.layouts?.find((cp) => cp.id === id) ?? null;
 	}
 
 	/**
@@ -147,18 +144,15 @@ export class BvvMfpService {
 				return downloadURL;
 			}
 			return null;
-		}
-		catch (e) {
+		} catch (e) {
 			if (this._environmentService.isStandalone()) {
 				console.warn('No backend available, simulating Pdf request...');
 				await sleep(2500); // let's fake latency
 				return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-			}
-			else {
+			} else {
 				throw new Error(`Pdf request was not successful: ${e}`);
 			}
-		}
-		finally {
+		} finally {
 			this._abortController = null;
 		}
 	}
@@ -176,8 +170,20 @@ export class BvvMfpService {
 			extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 			grSubstitutions: {},
 			layouts: [
-				{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
-				{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
+				{
+					id: 'a4_landscape',
+					urlId: 0,
+					mapSize: { width: 785, height: 475 },
+					dpis: [72, 120, 200],
+					scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+				},
+				{
+					id: 'a4_portrait',
+					urlId: 0,
+					mapSize: { width: 539, height: 722 },
+					dpis: [72, 120, 200],
+					scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+				}
 			]
 		};
 	}

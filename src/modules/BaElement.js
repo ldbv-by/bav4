@@ -5,7 +5,6 @@ import { generateTestIds } from '../utils/markup';
 import { equals } from '../utils/storeUtils';
 import css from './baElement.css';
 
-
 /**
  * DEPRECATED - please use {@link MvuElement} instead
  *
@@ -50,10 +49,7 @@ import css from './baElement.css';
  * @deprecated
  */
 export class BaElement extends HTMLElement {
-
-
 	constructor() {
-
 		super();
 		if (this.constructor === BaElement) {
 			// Abstract class can not be constructed.
@@ -158,12 +154,11 @@ export class BaElement extends HTMLElement {
 	 * @see {@link BaElement#extractState}
 	 */
 	updateState() {
-
 		const extractedState = this.extractState(this._storeService.getStore().getState());
 
 		if (!equals(this._state, extractedState)) {
 			this._state = extractedState;
-			this._observer.forEach(o => o());
+			this._observer.forEach((o) => o());
 			this.onStateChanged(this._state);
 		}
 	}
@@ -183,7 +178,7 @@ export class BaElement extends HTMLElement {
 	 * @param {object} state state of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
-	createView(/*eslint-disable no-unused-vars */state) {
+	createView(/*eslint-disable no-unused-vars */ state) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #createView or do not call super.createView from child.');
 	}
@@ -197,7 +192,7 @@ export class BaElement extends HTMLElement {
 	 * @param {object} globalState **global** state
 	 * @returns state of this component
 	 */
-	extractState(/*eslint-disable no-unused-vars */globalState) {
+	extractState(/*eslint-disable no-unused-vars */ globalState) {
 		return {};
 	}
 
@@ -206,13 +201,13 @@ export class BaElement extends HTMLElement {
 	 * Js setup should be done here.
 	 * @protected
 	 */
-	initialize() { }
+	initialize() {}
 
 	/**
 	 * Called before the view is rendered.
 	 * @protected
 	 */
-	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
+	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) {}
 
 	/**
 	 * (Re-) renders the HTML view.
@@ -220,14 +215,12 @@ export class BaElement extends HTMLElement {
 	 */
 	render() {
 		if (this._initialized && !this.isRenderingSkipped()) {
-
 			const initialRendering = !this._rendered;
 			this.onBeforeRender(initialRendering);
 			const template = this.createView(this._state);
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
-			}
-			else {
+			} else {
 				renderLitHtml(html`${this.defaultCss()} ${template}`, this.getRenderTarget());
 			}
 
@@ -243,10 +236,7 @@ export class BaElement extends HTMLElement {
 	 * @returns {boolean}
 	 */
 	_isNothing(templateResult) {
-		return templateResult === nothing
-			|| templateResult === undefined
-			|| templateResult === null
-			|| templateResult === '';
+		return templateResult === nothing || templateResult === undefined || templateResult === null || templateResult === '';
 	}
 
 	/**
@@ -256,9 +246,9 @@ export class BaElement extends HTMLElement {
 	 */
 	defaultCss() {
 		return html`
-		<style>
-		${css}
-		</style>
+			<style>
+				${css}
+			</style>
 		`;
 	}
 
@@ -266,7 +256,7 @@ export class BaElement extends HTMLElement {
 	 * Called after the view has been rendered.
 	 * @protected
 	 */
-	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) { }
+	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) {}
 
 	/**
 	 * Called when the load event of the window is fired.
@@ -276,7 +266,7 @@ export class BaElement extends HTMLElement {
 	 * In this case use: {@link BaElement#onAfterRender}
 	 * @protected
 	 */
-	onWindowLoad() { }
+	onWindowLoad() {}
 
 	/**
 	 * Called after the components state has been changed.
@@ -284,14 +274,14 @@ export class BaElement extends HTMLElement {
 	 * @protected
 	 * @param {object} state state of this component
 	 */
-	onStateChanged(/*eslint-disable no-unused-vars */state) {
+	onStateChanged(/*eslint-disable no-unused-vars */ state) {
 		this.render();
 	}
 
 	/**
 	 * @protected
 	 */
-	onDisconnect() { }
+	onDisconnect() {}
 
 	/**
 	 * Returns the Html tag name of this component.
@@ -301,14 +291,11 @@ export class BaElement extends HTMLElement {
 		if (this === BaElement) {
 			// Abstract methods can not be called directly.
 			throw new TypeError('Can not call static abstract method #tag.');
-		}
-
-		else {
+		} else {
 			// The child has implemented this method but also called `super.foo()`.
 			throw new TypeError('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 		}
 	}
-
 
 	/**
 	 * Registers an observer for a field / property of the state of this component (see: {@link BaElement#extractState}).
@@ -319,7 +306,6 @@ export class BaElement extends HTMLElement {
 	 * @param {boolean} [immediately=false] If `true`, the onChange callback function will be called immediately after registration
 	 */
 	observe(names, onChange, immediately = false) {
-
 		const createObserver = (key, onChange) => {
 			let currentState = this._state[key];
 
@@ -330,27 +316,23 @@ export class BaElement extends HTMLElement {
 					onChange(currentState);
 				}
 			};
-
 		};
 
 		const keys = Array.isArray(names) ? names : [names];
 
-		keys.forEach(key => {
+		keys.forEach((key) => {
 			if (this._state[key] !== undefined) {
-
 				this._observer.push(createObserver(key, onChange));
 
 				if (immediately) {
 					onChange(this._state[key]);
 				}
-			}
-			else {
+			} else {
 				console.error(`Could not register observer --> '${key}' is not a field in the state of ${this.constructor.name}`);
 			}
 		});
 	}
 }
-
 
 /**
  * Calls the static #tag method of a BaElement and renders the result as HTML.

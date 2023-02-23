@@ -4,14 +4,12 @@ import { loadBvvElevation } from '../../src/services/provider/elevation.provider
 import { getBvvProfile } from '../../src/services/provider/profile.provider';
 
 describe('ElevationService', () => {
-
 	const environmentService = {
 		isStandalone: () => false
 	};
 
 	const setup = (elevationProvider = loadBvvElevation, profileProvider = getBvvProfile) => {
-		$injector
-			.registerSingleton('EnvironmentService', environmentService);
+		$injector.registerSingleton('EnvironmentService', environmentService);
 		return new ElevationService(elevationProvider, profileProvider);
 	};
 
@@ -20,10 +18,9 @@ describe('ElevationService', () => {
 	});
 
 	describe('constructor', () => {
-
 		it('initializes the service with custom provider', async () => {
-			const customElevationProvider = async () => { };
-			const customProfileProvider = async () => { };
+			const customElevationProvider = async () => {};
+			const customProfileProvider = async () => {};
 
 			const instanceUnderTest = setup(customElevationProvider, customProfileProvider);
 
@@ -43,7 +40,6 @@ describe('ElevationService', () => {
 	});
 
 	describe('getElevation', () => {
-
 		it('provides a elevation', async () => {
 			const mockElevation = 42;
 			const instanceUnderTest = setup(async () => {
@@ -63,17 +59,18 @@ describe('ElevationService', () => {
 			});
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(`Could not load an elevation from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(
+				`Could not load an elevation from provider: ${message}`
+			);
 		});
 
 		it('rejects when argument is not a coordinate', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError('Parameter \'coordinate3857\' must be a coordinate');
+			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError("Parameter 'coordinate3857' must be a coordinate");
 		});
 
 		describe('in standalone mode', () => {
-
 			it('provides a mocked elevation', async () => {
 				const warnSpy = spyOn(console, 'warn');
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
@@ -88,13 +85,15 @@ describe('ElevationService', () => {
 	});
 
 	describe('getProfile', () => {
-
 		it('provides a profile', async () => {
 			const mockProfile = { result: 42 };
 			const instanceUnderTest = setup(null, async () => {
 				return mockProfile;
 			});
-			const mockCoordinates = [[0, 1], [2, 3]];
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
 
 			const result = await instanceUnderTest.getProfile(mockCoordinates);
 
@@ -106,31 +105,45 @@ describe('ElevationService', () => {
 			const instanceUnderTest = setup(null, async () => {
 				throw new Error(message);
 			});
-			const mockCoordinates = [[0, 1], [2, 3]];
+			const mockCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load an elevation profile from provider: ${message}`);
+			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(
+				`Could not load an elevation profile from provider: ${message}`
+			);
 		});
 
 		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getProfile('foo')).toBeRejectedWithError('Parameter \'coordinates3857\' must be an array containing at least two coordinates');
-			await expectAsync(instanceUnderTest.getProfile([[0, 1]])).toBeRejectedWithError('Parameter \'coordinates3857\' must be an array containing at least two coordinates');
+			await expectAsync(instanceUnderTest.getProfile('foo')).toBeRejectedWithError(
+				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			);
+			await expectAsync(instanceUnderTest.getProfile([[0, 1]])).toBeRejectedWithError(
+				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
+			);
 		});
 
 		it('rejects when argument contains not only coordinated', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getProfile([[0, 1], 'foo'])).toBeRejectedWithError('Parameter \'coordinates3857\' contains invalid coordinates');
+			await expectAsync(instanceUnderTest.getProfile([[0, 1], 'foo'])).toBeRejectedWithError(
+				"Parameter 'coordinates3857' contains invalid coordinates"
+			);
 		});
 
 		describe('in standalone mode', () => {
-
 			it('provides a mocked profile', async () => {
 				const warnSpy = spyOn(console, 'warn');
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup();
-				const mockCoordinates = [[0, 1], [2, 3], [4, 5]];
+				const mockCoordinates = [
+					[0, 1],
+					[2, 3],
+					[4, 5]
+				];
 
 				const { elevations, stats, attrs } = await instanceUnderTest.getProfile(mockCoordinates);
 

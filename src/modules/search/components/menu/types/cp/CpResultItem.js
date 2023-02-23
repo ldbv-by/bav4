@@ -20,7 +20,6 @@ const Update_CpSearchResult = 'update_cpSearchResult';
  * @author costa_gi
  */
 export class CpResultItem extends MvuElement {
-
 	constructor() {
 		super({
 			cpSearchResult: null,
@@ -42,7 +41,10 @@ export class CpResultItem extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.media, media => this.signal(Update_IsPortrait, media.portrait));
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_IsPortrait, media.portrait)
+		);
 	}
 
 	set data(cpSearchResult) {
@@ -58,24 +60,24 @@ export class CpResultItem extends MvuElement {
 		const onMouseEnter = (result) => {
 			addHighlightFeatures({
 				id: SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID,
-				type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...result.center] }
+				type: HighlightFeatureType.TEMPORARY,
+				data: { coordinate: [...result.center] }
 			});
 		};
 		const onMouseLeave = () => {
 			removeHighlightFeaturesById(SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID);
 		};
 		const onClick = (result) => {
-
 			const extent = result.extent ? [...result.extent] : [...result.center, ...result.center];
 			removeHighlightFeaturesById([SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_HIGHLIGHT_FEATURE_ID]);
 			fit(extent, { maxZoom: CpResultItem._maxZoomLevel });
 			if (!result.extent) {
 				addHighlightFeatures({
 					id: SEARCH_RESULT_HIGHLIGHT_FEATURE_ID,
-					type: HighlightFeatureType.DEFAULT, data: { coordinate: [...result.center] }
+					type: HighlightFeatureType.DEFAULT,
+					data: { coordinate: [...result.center] }
 				});
-			}
-			else {
+			} else {
 				removeHighlightFeaturesById(SEARCH_RESULT_HIGHLIGHT_FEATURE_ID);
 			}
 
@@ -86,22 +88,23 @@ export class CpResultItem extends MvuElement {
 		};
 
 		if (cpSearchResult) {
-
 			return html`
-				<style>${css}</style>
-                <li class="ba-list-item" tabindex="0"
-					@click=${() => onClick(cpSearchResult)} 
-					@mouseenter=${() => onMouseEnter(cpSearchResult)} 
-					@mouseleave=${() => onMouseLeave(cpSearchResult)}>
+				<style>
+					${css}
+				</style>
+				<li
+					class="ba-list-item"
+					tabindex="0"
+					@click=${() => onClick(cpSearchResult)}
+					@mouseenter=${() => onMouseEnter(cpSearchResult)}
+					@mouseleave=${() => onMouseLeave(cpSearchResult)}
+				>
 					<span class="ba-list-item__pre ">
-						<span class="ba-list-item__icon">
-						</span>
+						<span class="ba-list-item__icon"> </span>
 					</span>
-					<span class="ba-list-item__text ">
-					${unsafeHTML(cpSearchResult.labelFormatted)}
-					</span>
+					<span class="ba-list-item__text "> ${unsafeHTML(cpSearchResult.labelFormatted)} </span>
 				</li>
-            `;
+			`;
 		}
 		return nothing;
 	}

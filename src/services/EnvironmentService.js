@@ -4,7 +4,6 @@ import { $injector } from '../injection';
  * @class
  */
 export class EnvironmentService {
-
 	/**
 	 *
 	 * @param {_window} [_window=window]
@@ -35,26 +34,19 @@ export class EnvironmentService {
 		let hasTouchScreen = false;
 		if ('maxTouchPoints' in navigator) {
 			hasTouchScreen = navigator.maxTouchPoints > 0;
-		}
-		else {
+		} else {
 			const mQ = window.matchMedia && window.matchMedia('(pointer:coarse)');
 			if (mQ && mQ.media === '(pointer:coarse)') {
 				hasTouchScreen = !!mQ.matches;
-			}
-			else if ('orientation' in window) {
+			} else if ('orientation' in window) {
 				hasTouchScreen = true; // deprecated, but good fallback
-			}
-			else {
+			} else {
 				// Only as a last resort, fall back to user agent sniffing
 				const UA = navigator.userAgent;
-				hasTouchScreen = (
-					/\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) ||
-					/\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA)
-				);
+				hasTouchScreen = /\b(BlackBerry|webOS|iPhone|IEMobile)\b/i.test(UA) || /\b(Android|Windows Phone|iPad|iPod)\b/i.test(UA);
 			}
 		}
 		return hasTouchScreen;
-
 	}
 
 	/**
@@ -75,7 +67,6 @@ export class EnvironmentService {
 			return {
 				portrait: widthHeightRatio < 1,
 				landscape: widthHeightRatio >= 1
-
 			};
 		}
 		return {

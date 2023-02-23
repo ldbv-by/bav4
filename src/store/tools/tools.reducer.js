@@ -8,9 +8,7 @@ export const initialState = {
 export const toolsReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
-
 		case CURRENT_TOOL_CHANGED: {
-
 			return {
 				...state,
 				current: payload

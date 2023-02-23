@@ -24,4 +24,3 @@ export const round = (value, decimals = 0) => {
 export const createUniqueId = () => {
 	return Math.floor(Math.random() * Date.now());
 };
-

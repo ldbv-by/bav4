@@ -9,35 +9,28 @@ import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 
-
 window.customElements.define(Modal.tag, Modal);
 
-
 describe('Modal', () => {
-
 	let store;
 
 	const setup = (state = {}) => {
-
 		const initialState = {
 			media: {
 				portrait: false
 			},
 			...state
-
 		};
 
 		store = TestUtils.setupStoreAndDi(initialState, {
 			modal: modalReducer,
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(Modal.tag);
 	};
 
 	describe('constructor', () => {
-
 		it('sets a default model', async () => {
 			setup();
 			const element = new Modal();
@@ -51,7 +44,6 @@ describe('Modal', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders no content', async () => {
 			const element = await setup();
 
@@ -60,11 +52,8 @@ describe('Modal', () => {
 	});
 
 	describe('when modal changes', () => {
-
 		describe('modal.portrait', () => {
-
 			it('adds the corresponding css class and ids', async () => {
-
 				const state = {
 					media: {
 						portrait: false,
@@ -91,9 +80,7 @@ describe('Modal', () => {
 		});
 
 		describe('modal.data', () => {
-
 			it('adds content from a string', async () => {
-
 				const state = {
 					media: {
 						portrait: false
@@ -135,7 +122,6 @@ describe('Modal', () => {
 		});
 
 		describe('modal.active', () => {
-
 			it('closes the modal', async () => {
 				const state = {
 					media: {
@@ -153,7 +139,6 @@ describe('Modal', () => {
 		});
 
 		describe('when close button clicked', () => {
-
 			it('closes the modal', async () => {
 				const state = {
 					media: {
@@ -175,7 +160,6 @@ describe('Modal', () => {
 		});
 
 		describe('when back button clicked', () => {
-
 			it('closes the modal', async () => {
 				const state = {
 					media: {
@@ -197,7 +181,6 @@ describe('Modal', () => {
 		});
 
 		describe('when background clicked', () => {
-
 			it('closes the modal', async () => {
 				const state = {
 					media: {

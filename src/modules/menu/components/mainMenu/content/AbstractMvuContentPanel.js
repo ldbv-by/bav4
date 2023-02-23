@@ -10,7 +10,6 @@ import contentPanelCss from './abstractContentPanel.css';
  * @abstract
  */
 export class AbstractMvuContentPanel extends MvuElement {
-
 	constructor(model = {}) {
 		super(model);
 		if (this.constructor === AbstractMvuContentPanel) {
@@ -20,14 +19,14 @@ export class AbstractMvuContentPanel extends MvuElement {
 	}
 
 	/**
-	* @override
-	*/
+	 * @override
+	 */
 	defaultCss() {
 		return html`
-		${super.defaultCss()}
-		<style>
-		    ${contentPanelCss}
-		</style>
+			${super.defaultCss()}
+			<style>
+				${contentPanelCss}
+			</style>
 		`;
 	}
 }

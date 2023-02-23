@@ -3,17 +3,15 @@ import { BvvMfpService } from '../../src/services/MfpService';
 import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
 
 describe('BvvMfpService', () => {
-
 	const environmentService = {
-		isStandalone: () => { }
+		isStandalone: () => {}
 	};
 	const abortControllerMock = {
-		abort: () => { }
+		abort: () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('EnvironmentService', environmentService);
+		$injector.registerSingleton('EnvironmentService', environmentService);
 	});
 
 	const scales = [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500];
@@ -36,7 +34,6 @@ describe('BvvMfpService', () => {
 	};
 
 	describe('constructor', () => {
-
 		it('instantiates the service with default providers', async () => {
 			const instanceUnderTest = new BvvMfpService();
 
@@ -47,8 +44,8 @@ describe('BvvMfpService', () => {
 		});
 
 		it('instantiates the service with custom providers', async () => {
-			const customCapabilitiesProvider = async () => { };
-			const customPostMfpSpecProvider = async () => { };
+			const customCapabilitiesProvider = async () => {};
+			const customPostMfpSpecProvider = async () => {};
 
 			const instanceUnderTest = setup(customCapabilitiesProvider, customPostMfpSpecProvider);
 
@@ -59,10 +56,14 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('init', () => {
-
 		it('initializes the service', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
-			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
+			const expectedCapabilities = {
+				grSubstitutions: bvvMockCapabilities.grSubstitutions,
+				layouts: bvvMockCapabilities.layouts,
+				srid: bvvMockCapabilities.srid,
+				extent: bvvMockCapabilities.extent
+			};
 			expect(instanceUnderTest._mfpCapabilities).toBeNull();
 
 			const mfpCapabilities = await instanceUnderTest.init();
@@ -72,7 +73,12 @@ describe('BvvMfpService', () => {
 
 		it('just provides the capabilities when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._mfpCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
+			instanceUnderTest._mfpCapabilities = {
+				grSubstitutions: bvvMockCapabilities.grSubstitutions,
+				layouts: bvvMockCapabilities.layouts,
+				srid: bvvMockCapabilities.srid,
+				extent: bvvMockCapabilities.extent
+			};
 
 			const mfpCapabilities = await instanceUnderTest.init();
 
@@ -80,15 +86,12 @@ describe('BvvMfpService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-
 			it('loads fallback capabilities when we are in standalone mode', async () => {
-
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(async () => {
 					throw new Error('MfpCapabilities could not be loaded');
 				});
 				const warnSpy = spyOn(console, 'warn');
-
 
 				const mfpCapabilities = await instanceUnderTest.init();
 
@@ -109,7 +112,6 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('getCapabilities', () => {
-
 		it('returns NULL when not initialized', async () => {
 			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities.layouts);
 			const instanceUnderTest = setup(provider);
@@ -119,7 +121,12 @@ describe('BvvMfpService', () => {
 
 		it('returns a MfpCapabilities object', async () => {
 			const provider = jasmine.createSpy().and.resolveTo(bvvMockCapabilities);
-			const expectedCapabilities = { grSubstitutions: bvvMockCapabilities.grSubstitutions, layouts: bvvMockCapabilities.layouts, srid: bvvMockCapabilities.srid, extent: bvvMockCapabilities.extent };
+			const expectedCapabilities = {
+				grSubstitutions: bvvMockCapabilities.grSubstitutions,
+				layouts: bvvMockCapabilities.layouts,
+				srid: bvvMockCapabilities.srid,
+				extent: bvvMockCapabilities.extent
+			};
 			const instanceUnderTest = setup(provider);
 			await instanceUnderTest.init();
 
@@ -132,7 +139,6 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('getLayoutById', () => {
-
 		it('returns NULL when not initialized', async () => {
 			const instanceUnderTest = setup(async () => bvvMockCapabilities);
 
@@ -149,7 +155,6 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('createJob', () => {
-
 		it('creates a new MFP job and returns a URL pointing to the generated resource', async () => {
 			const bvvMfpJob = {
 				downloadURL: 'http://foo.bar',
@@ -168,7 +173,6 @@ describe('BvvMfpService', () => {
 		});
 
 		describe('provider returns NULL (fetch request was aborted)', () => {
-
 			it('returns NULL', async () => {
 				const postMfpSpecProvider = jasmine.createSpy().and.resolveTo(null);
 				const instanceUnderTest = setup(null, postMfpSpecProvider);
@@ -184,7 +188,6 @@ describe('BvvMfpService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-
 			it('it simultates creating the Mfp job when we are in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
@@ -216,7 +219,6 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('cancelJob', () => {
-
 		it('cancels a running MFP job by its id', async () => {
 			const instanceUnderTest = setup();
 			instanceUnderTest._abortController = abortControllerMock;
@@ -238,15 +240,26 @@ describe('BvvMfpService', () => {
 	});
 
 	describe('_newFallbackCapabilities', () => {
-
 		it('returns fallback capabilities', async () => {
 			const expected = {
 				srid: 3857,
 				extent: [667916.9447596414, 4865942.279503176, 1558472.8711058302, 7558415.656081782],
 				grSubstitutions: {},
 				layouts: [
-					{ id: 'a4_landscape', urlId: 0, mapSize: { width: 785, height: 475 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] },
-					{ id: 'a4_portrait', urlId: 0, mapSize: { width: 539, height: 722 }, dpis: [72, 120, 200], scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }
+					{
+						id: 'a4_landscape',
+						urlId: 0,
+						mapSize: { width: 785, height: 475 },
+						dpis: [72, 120, 200],
+						scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+					},
+					{
+						id: 'a4_portrait',
+						urlId: 0,
+						mapSize: { width: 539, height: 722 },
+						dpis: [72, 120, 200],
+						scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+					}
 				]
 			};
 			const instanceUnderTest = new BvvMfpService();

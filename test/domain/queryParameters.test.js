@@ -1,7 +1,6 @@
 import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
-
 	it('provides an enum of all valid query parameters', () => {
 		expect(Object.keys(QueryParameters).length).toBe(12);
 

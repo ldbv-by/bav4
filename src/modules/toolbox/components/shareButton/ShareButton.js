@@ -13,7 +13,12 @@ export class ShareButton extends MvuElement {
 	constructor() {
 		super({ fileSaveResult: null });
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
+		const {
+			TranslationService: translationService,
+			EnvironmentService: environmentService,
+			UrlService: urlService,
+			ShareService: shareService
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
@@ -29,7 +34,6 @@ export class ShareButton extends MvuElement {
 				};
 		}
 	}
-
 
 	createView(model) {
 		const { fileSaveResult } = model;
@@ -49,31 +53,23 @@ export class ShareButton extends MvuElement {
 			try {
 				const shortUrl = await this._urlService.shorten(url);
 				return shortUrl;
-			}
-			catch (error) {
+			} catch (error) {
 				console.warn('Could not shorten url', error);
 				return url;
 			}
-
-
 		};
 		const generateShareUrls = async () => {
 			const forAdminId = await buildShareUrl(fileSaveResult.adminId);
 			const forFileId = await buildShareUrl(fileSaveResult.fileId);
 			return { adminId: forAdminId, fileId: forFileId };
-
 		};
 		if (isValidForSharing(fileSaveResult)) {
-
 			const title = translate('toolbox_measureTool_share');
 			const onClick = async () => {
 				const shareUrls = await generateShareUrls();
 				openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
 			};
-			return html`<ba-button id='share'  
-			data-test-id class="tool-container__button" 
-			.label=${title}
-			@click=${onClick}></ba-button>`;
+			return html`<ba-button id="share" data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
 		}
 		return html.nothing;
 	}

@@ -7,20 +7,20 @@
 .is-portrait .chart-container {
 	position: relative;
 	height: 14em;
-	width: 100%; 
-	display: inline-block; 
+	width: 100%;
+	display: inline-block;
 }
-.is-landscape  .chart-container {
+.is-landscape .chart-container {
 	position: relative;
 	height: 14em;
-	width: 89%; 
-	display: inline-block; 
+	width: 89%;
+	display: inline-block;
 }
 .is-portrait .profile__data {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	width: 100%;    
+	width: 100%;
 	position: relative;
 }
 .is-landscape .profile__data {
@@ -38,14 +38,14 @@
 .profile__box:first-child {
 	border-left: 0;
 }
-.is-portrait  .profile__box {
+.is-portrait .profile__box {
 	height: 4em;
 	display: flex;
 	flex-direction: column;
 	border-left: 1px dotted var(--header-background-color);
 	width: 100%;
 }
-.is-landscape  .profile__box {
+.is-landscape .profile__box {
 	height: 4em;
 	display: flex;
 	flex-direction: column;
@@ -58,12 +58,12 @@
 	font-weight: bold;
 	text-align: center;
 	margin: 0;
-	font-size: .9rem;
+	font-size: 0.9rem;
 	color: var(--text1);
 	cursor: pointer;
 }
 .is-tablet .profile__text {
-	font-size: .8rem;
+	font-size: 0.8rem;
 }
 .is-portrait.is-tablet .profile__text {
 	font-size: 1rem;

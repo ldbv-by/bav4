@@ -3,21 +3,19 @@ import { getMinimalAttribution } from '../../src/services/provider/attribution.p
 import { getUniqueCopyrights } from '../../src/utils/attributionUtils';
 
 describe('attributionUtils', () => {
-
 	describe('getUniqueCopyrightList', () => {
-
 		const getGeoResources = () => {
 			return [
 				new XyzGeoResource('geoResourceId0', '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`)),
 				//array of copyright
 				new XyzGeoResource('geoResourceId1', '', '').setAttributionProvider((geoResourceId, zoomLevel) => ({
-					copyright: [
-						{ label: `foo_${zoomLevel}` },
-						{ label: `bar_${zoomLevel}` }
-					]
+					copyright: [{ label: `foo_${zoomLevel}` }, { label: `bar_${zoomLevel}` }]
 				})),
 				// array of attribution
-				new XyzGeoResource('geoResourceId2', '', '').setAttributionProvider((geoResourceId, zoomLevel) => [getMinimalAttribution(`foo_${zoomLevel}`), getMinimalAttribution(`foo_${zoomLevel}`)]),
+				new XyzGeoResource('geoResourceId2', '', '').setAttributionProvider((geoResourceId, zoomLevel) => [
+					getMinimalAttribution(`foo_${zoomLevel}`),
+					getMinimalAttribution(`foo_${zoomLevel}`)
+				]),
 				// attribution is null
 				new XyzGeoResource('geoResourceId3', '', '').setAttributionProvider(() => null),
 				// copyright is null

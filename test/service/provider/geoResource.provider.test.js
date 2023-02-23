@@ -2,27 +2,34 @@ import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource 
 import { SourceType, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
 import { $injector } from '../../../src/injection';
 import { getBvvAttribution } from '../../../src/services/provider/attribution.provider';
-import { loadBvvGeoResourceById, loadBvvGeoResources, loadExampleGeoResources, loadExternalGeoResource, _definitionToGeoResource, _parseBvvAttributionDefinition } from '../../../src/services/provider/geoResource.provider';
+import {
+	loadBvvGeoResourceById,
+	loadBvvGeoResources,
+	loadExampleGeoResources,
+	loadExternalGeoResource,
+	_definitionToGeoResource,
+	_parseBvvAttributionDefinition
+} from '../../../src/services/provider/geoResource.provider';
 import { TestUtils } from '../../test-utils';
 
 describe('GeoResource provider', () => {
 	const configService = {
-		getValueAsPath() { }
+		getValueAsPath() {}
 	};
 	const httpService = {
-		async get() { }
+		async get() {}
 	};
 	const geoResourceService = {
-		addOrReplace() { }
+		addOrReplace() {}
 	};
 	const sourceTypeService = {
-		async forUrl() { }
+		async forUrl() {}
 	};
 	const importVectorDataService = {
-		async forUrl() { }
+		async forUrl() {}
 	};
 	const importWmsService = {
-		async forUrl() { }
+		async forUrl() {}
 	};
 
 	beforeAll(() => {
@@ -40,16 +47,77 @@ describe('GeoResource provider', () => {
 		copyright: 'copyright'
 	};
 
-	const wmsDefinition = { id: 'wmsId', label: 'wmsLabel', url: 'wmsUrl', layers: 'wmsLayer', format: 'image/png', type: 'wms', attribution: basicAttribution };
-	const wmsDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, extraParams: { 'foo': 'bar' }, queryable: false, exportable: false, ...wmsDefinition };
+	const wmsDefinition = {
+		id: 'wmsId',
+		label: 'wmsLabel',
+		url: 'wmsUrl',
+		layers: 'wmsLayer',
+		format: 'image/png',
+		type: 'wms',
+		attribution: basicAttribution
+	};
+	const wmsDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		extraParams: { foo: 'bar' },
+		queryable: false,
+		exportable: false,
+		...wmsDefinition
+	};
 	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', url: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
-	const xyzDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, exportable: false, tileGridId: 'tileGridId', ...xyzDefinition };
+	const xyzDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		tileGridId: 'tileGridId',
+		...xyzDefinition
+	};
 	const vtDefinition = { id: 'vtId', label: 'vtLabel', styleUrl: 'vtStyleUrl', type: 'vt', attribution: basicAttribution };
-	const vtDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, exportable: false, ...vtDefinition };
+	const vtDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		...vtDefinition
+	};
 	const vectorDefinition = { id: 'xyzId', label: 'vectorLabel', url: 'vectorUrl', sourceType: 'kml', type: 'vector', attribution: basicAttribution };
-	const vectorDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, exportable: false, ...vectorDefinition };
-	const aggregateDefinition = { id: 'xyzId', label: 'aggregateLabel', geoResourceIds: ['xyzId', 'wmsId'], type: 'aggregate', attribution: basicAttribution };
-	const aggregateDefinitionOptionalProperties = { background: true, opacity: 0.5, hidden: true, minZoom: 5, maxZoom: 19, queryable: false, exportable: false, ...aggregateDefinition };
+	const vectorDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		...vectorDefinition
+	};
+	const aggregateDefinition = {
+		id: 'xyzId',
+		label: 'aggregateLabel',
+		geoResourceIds: ['xyzId', 'wmsId'],
+		type: 'aggregate',
+		attribution: basicAttribution
+	};
+	const aggregateDefinitionOptionalProperties = {
+		background: true,
+		opacity: 0.5,
+		hidden: true,
+		minZoom: 5,
+		maxZoom: 19,
+		queryable: false,
+		exportable: false,
+		...aggregateDefinition
+	};
 
 	const vadlidateGeoResourceProperties = (georesource, definition) => {
 		expect(georesource.id).toBe(definition.id);
@@ -61,9 +129,7 @@ describe('GeoResource provider', () => {
 	};
 
 	describe('_definitionToGeoResource', () => {
-
 		it('maps a unknown BVV definition to a corresponding GeoResource instance', () => {
-
 			expect(_definitionToGeoResource({ type: 'unknown' })).toBeNull();
 		});
 
@@ -85,7 +151,7 @@ describe('GeoResource provider', () => {
 			expect(wmsGeoResource.hidden).toBeTrue();
 			expect(wmsGeoResource.minZoom).toBe(5);
 			expect(wmsGeoResource.maxZoom).toBe(19);
-			expect(wmsGeoResource.extraParams).toEqual({ 'foo': 'bar' });
+			expect(wmsGeoResource.extraParams).toEqual({ foo: 'bar' });
 			expect(wmsGeoResource.queryable).toBeFalse();
 			expect(wmsGeoResource.exportable).toBeFalse();
 		});
@@ -173,23 +239,21 @@ describe('GeoResource provider', () => {
 		});
 	});
 
-
 	describe('_parseBvvAttributionDefinition', () => {
-
 		it('returns null when basic attribution definition is missing', () => {
-
 			const result = _parseBvvAttributionDefinition({});
 
 			expect(result).toBeNull();
 		});
 
 		it('parses a basic attribution definition', () => {
-
 			const attribution = {
-				copyright: [{
-					label: 'label',
-					url: 'url'
-				}],
+				copyright: [
+					{
+						label: 'label',
+						url: 'url'
+					}
+				],
 				description: 'description'
 			};
 			const result = _parseBvvAttributionDefinition({ attribution });
@@ -198,30 +262,30 @@ describe('GeoResource provider', () => {
 		});
 
 		it('parses extended attribution definitions', () => {
-
 			const attributionDefinition = {
 				attribution: {
-					copyright: [{
-						label: 'label',
-						url: 'url'
-					}],
+					copyright: [
+						{
+							label: 'label',
+							url: 'url'
+						}
+					],
 					description: 'description'
 				},
 				extendedAttributions: [
+					{},
 					{
-
-					},
-					{
-						copyright: [{
-							label: 'label1',
-							url: 'url1'
-						}],
+						copyright: [
+							{
+								label: 'label1',
+								url: 'url1'
+							}
+						],
 						description: 'description1'
 					},
 					{
 						description: 'description2'
 					}
-
 				]
 			};
 			const result = _parseBvvAttributionDefinition(attributionDefinition);
@@ -229,40 +293,40 @@ describe('GeoResource provider', () => {
 			expect(result.length).toBe(3);
 			//completely from basic attribution definition
 			expect(result[0]).toEqual({
-				copyright: [{
-					label: 'label',
-					url: 'url'
-				}],
+				copyright: [
+					{
+						label: 'label',
+						url: 'url'
+					}
+				],
 				description: 'description'
 			});
 			//completely from extended attribution definition
 			expect(result[1]).toEqual({
-				copyright: [{
-					label: 'label1',
-					url: 'url1'
-				}],
+				copyright: [
+					{
+						label: 'label1',
+						url: 'url1'
+					}
+				],
 				description: 'description1'
 			});
 			//partially from extended attribution definition
 			expect(result[2]).toEqual({
-				copyright: [{
-					label: 'label',
-					url: 'url'
-				}],
+				copyright: [
+					{
+						label: 'label',
+						url: 'url'
+					}
+				],
 				description: 'description2'
 			});
 		});
 
 		it('sets extended attribution properties to NULL when not available', () => {
-
 			const attributionDefinition = {
-				attribution: {
-				},
-				extendedAttributions: [
-					{
-
-					}
-				]
+				attribution: {},
+				extendedAttributions: [{}]
 			};
 			const result = _parseBvvAttributionDefinition(attributionDefinition);
 
@@ -271,29 +335,22 @@ describe('GeoResource provider', () => {
 				copyright: null,
 				description: null
 			});
-
 		});
-
 	});
 
-
 	describe('loadBvvGeoResources', () => {
-
 		it('loads GeoResources', async () => {
-
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/all`;
 			const expectedArgs1 = {
 				timeout: 2000
 			};
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl + '/');
-			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify([
-						wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition
-					])
-				)
-			));
+			const configServiceSpy = spyOn(configService, 'getValueAsPath')
+				.withArgs('BACKEND_URL')
+				.and.returnValue(backendUrl + '/');
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(expectedArgs0, expectedArgs1)
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify([wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition]))));
 
 			const georesources = await loadBvvGeoResources();
 
@@ -315,18 +372,10 @@ describe('GeoResource provider', () => {
 		});
 
 		it('logs a warn statement when GeoResource type cannot be resolved', async () => {
-
 			const warnSpy = spyOn(console, 'warn');
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify([
-						{ id: 'someId', type: 'somethingUnknown' }
-					])
-				)
-			));
-
+			spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify([{ id: 'someId', type: 'somethingUnknown' }]))));
 
 			await loadBvvGeoResources();
 
@@ -334,22 +383,20 @@ describe('GeoResource provider', () => {
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
-
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = backendUrl + 'georesources/all';
 			const expectedArgs1 = {
 				timeout: 2000
 			};
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0, expectedArgs1).and.returnValue(Promise.resolve(
-				new Response(null, { status: 404 })
-			));
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(expectedArgs0, expectedArgs1)
+				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
 			try {
 				await loadBvvGeoResources();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(configServiceSpy).toHaveBeenCalled();
 				expect(httpServiceSpy).toHaveBeenCalled();
 				expect(error.message).toBe('GeoResources could not be loaded');
@@ -358,7 +405,6 @@ describe('GeoResource provider', () => {
 	});
 
 	describe('loadExampleGeoResources', () => {
-
 		it('loads GeoResources', async () => {
 			const georesources = await loadExampleGeoResources();
 
@@ -367,17 +413,16 @@ describe('GeoResource provider', () => {
 	});
 
 	describe('loadBvvGeoResourceById', () => {
-
 		it('loads a GeoResource by id', async () => {
 			const backendUrl = 'https://backend.url';
 			const expectedArgs0 = `${backendUrl}/georesources/byId/${wmsDefinition.id}`;
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl + '/');
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			const httpServiceSpy = spyOn(httpService, 'get').withArgs(expectedArgs0).and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify(wmsDefinition)
-				)
-			));
+			const configServiceSpy = spyOn(configService, 'getValueAsPath')
+				.withArgs('BACKEND_URL')
+				.and.returnValue(backendUrl + '/');
+			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(expectedArgs0)
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify(wmsDefinition))));
 
 			const future = loadBvvGeoResourceById(wmsDefinition.id);
 			const geoResource = await future.get();
@@ -394,18 +439,13 @@ describe('GeoResource provider', () => {
 			const id = 'foo';
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-				new Response(
-					JSON.stringify({ id: id, type: 'somethingUnknown' })
-				)
-			));
+			spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify({ id: id, type: 'somethingUnknown' }))));
 
 			try {
 				const future = loadBvvGeoResourceById(id);
 				await future.get();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
 			}
 		});
@@ -414,36 +454,33 @@ describe('GeoResource provider', () => {
 			const id = 'foo';
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
-			spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-				new Response(null, { status: 404 })
-			));
+			spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
 			try {
 				const future = loadBvvGeoResourceById(id);
 				await future.get();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
 			}
 		});
-
 	});
 
 	describe('loadExternalGeoResource', () => {
-
 		describe('Vector Url', () => {
-
 			it('loads a GEOJSON GeoResource', async () => {
 				const label = 'label';
 				const url = 'http://foo.bar';
 				const sourceType = new SourceType(SourceTypeName.GEOJSON);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.GEOJSON);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -465,10 +502,13 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.GEOJSON);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -490,10 +530,13 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.GPX);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -515,10 +558,13 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.KML);
 				const geoResourceId = `${url}`;
 				const geoResource = new VectorGeoResource(geoResourceId, label, VectorSourceType.EWKT);
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importVectorDataServiceSpy = spyOn(importVectorDataService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, id: geoResourceId })
 					.and.returnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -542,9 +588,8 @@ describe('GeoResource provider', () => {
 				const geoResource = new VectorGeoResource(geoResourceId, 'some label', VectorSourceType.EWKT);
 				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 				const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-					.and.returnValue(geoResourceFuture);
+				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
 
 				const future = loadExternalGeoResource(geoResourceId);
 				const resolvedGeoResource = await future.get();
@@ -554,12 +599,10 @@ describe('GeoResource provider', () => {
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
-
 			});
 		});
 
 		describe('WMS Url', () => {
-
 			it('loads a WMS GeoResource', async () => {
 				const label = 'label';
 				const layer = 'layer';
@@ -567,9 +610,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
 				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -592,9 +638,12 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
 				const geoResource = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: true })
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.BAA_AUTHENTICATED, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: true })
 					.and.returnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -618,9 +667,12 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}`;
 				const geoResource0 = new WmsGeoResource(geoResourceId, label, url, layer, 'image/png');
 				const geoResource1 = new WmsGeoResource('otherGeoResourceId', label, url, 'otherLayer', 'image/png');
-				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [], ids: [geoResourceId], isAuthenticated: false })
+				const sourceTypeServiceSpy = spyOn(sourceTypeService, 'forUrl')
+					.withArgs(url)
+					.and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
+				const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				const importWmsServiceSpy = spyOn(importWmsService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, layers: [], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource0, geoResource1]);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -644,8 +696,9 @@ describe('GeoResource provider', () => {
 				const geoResourceId = `${url}||${layer}||${label}`;
 				const geoResource = new WmsGeoResource(geoResourceId, 'some label', url, layer, 'image/png');
 				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
+				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				spyOn(importWmsService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([geoResource]);
 
 				const future = loadExternalGeoResource(geoResourceId);
@@ -664,13 +717,14 @@ describe('GeoResource provider', () => {
 				const sourceType = new SourceType(SourceTypeName.WMS, '1.1.1');
 				const geoResourceId = `${url}||${layer}`;
 				spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
-				spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-				spyOn(importWmsService, 'forUrl').withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
+				spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+				spyOn(importWmsService, 'forUrl')
+					.withArgs(url, { sourceType: sourceType, layers: [layer], ids: [geoResourceId], isAuthenticated: false })
 					.and.returnValue([]);
 
 				const future = loadExternalGeoResource(geoResourceId);
 
-				await expectAsync(future.get()).toBeRejectedWithError('Unsupported WMS: \'http://foo.bar\'');
+				await expectAsync(future.get()).toBeRejectedWithError("Unsupported WMS: 'http://foo.bar'");
 			});
 		});
 
@@ -681,13 +735,12 @@ describe('GeoResource provider', () => {
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OK, sourceType));
 			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
 
 			const future = loadExternalGeoResource(geoResourceId);
 
-			await expectAsync(future.get()).toBeRejectedWithError('Unsupported source type \'FOO\'');
+			await expectAsync(future.get()).toBeRejectedWithError("Unsupported source type 'FOO'");
 		});
 
 		it('throws an error when SourceType status is not OK', async () => {
@@ -697,9 +750,8 @@ describe('GeoResource provider', () => {
 			const geoResource = new VectorGeoResource(geoResourceId, 'label', VectorSourceType.EWKT);
 			spyOn(sourceTypeService, 'forUrl').withArgs(url).and.resolveTo(new SourceTypeResult(SourceTypeResultStatus.OTHER, sourceType));
 			const geoResourceFuture = new GeoResourceFuture(geoResourceId, async () => geoResource);
-			spyOn(geoResourceService, 'addOrReplace').and.callFake(gr => gr);
-			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId })
-				.and.returnValue(geoResourceFuture);
+			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+			spyOn(importVectorDataService, 'forUrl').withArgs(url, { sourceType: sourceType, id: geoResourceId }).and.returnValue(geoResourceFuture);
 
 			const future = loadExternalGeoResource(geoResourceId);
 
@@ -724,5 +776,3 @@ describe('GeoResource provider', () => {
 		});
 	});
 });
-
-

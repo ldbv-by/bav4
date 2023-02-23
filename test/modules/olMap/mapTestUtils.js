@@ -1,8 +1,7 @@
 import { MapBrowserEvent, MapEvent } from 'ol';
 import Event from 'ol/events/Event';
 
-
-export const simulateMapBrowserEvent = (map, type, x, y, dragging = false, preventDefaultFunction = () => { }) => {
+export const simulateMapBrowserEvent = (map, type, x, y, dragging = false, preventDefaultFunction = () => {}) => {
 	const eventType = type;
 
 	const event = new Event(eventType);
@@ -13,7 +12,6 @@ export const simulateMapBrowserEvent = (map, type, x, y, dragging = false, preve
 	event.pageY = y;
 	event.shiftKey = false;
 	event.preventDefault = preventDefaultFunction;
-
 
 	const mapEvent = new MapBrowserEvent(eventType, map, event);
 	mapEvent.coordinate = [x, y];

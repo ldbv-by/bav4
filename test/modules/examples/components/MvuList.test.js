@@ -23,9 +23,7 @@ const setup = (state) => {
 const TOPIC_UPDATE = 'TOPIC_UPDATE';
 
 describe('MvuList', () => {
-
 	it('should render Title of the component', async () => {
-
 		const expectedTitle = 'List of Topics';
 
 		const element = await setup(state);
@@ -34,7 +32,6 @@ describe('MvuList', () => {
 	});
 
 	it('should sort the order of topics', async () => {
-
 		const element = await setup(state);
 
 		setCurrent('ba');
@@ -49,7 +46,6 @@ describe('MvuList', () => {
 	});
 
 	it('should reverse the order of topics', async () => {
-
 		const element = await setup(state);
 
 		setCurrent('ba');
@@ -64,7 +60,6 @@ describe('MvuList', () => {
 	});
 
 	it('should update the topics adding ba topic to the list', async () => {
-
 		const element = await setup(state);
 
 		element.signal(TOPIC_UPDATE, 'ba');
@@ -77,7 +72,6 @@ describe('MvuList', () => {
 	});
 
 	it('should remove the first topic of the list new first element should be topic2 ', async () => {
-
 		const element = await setup(state);
 		setCurrent('ba');
 
@@ -92,7 +86,6 @@ describe('MvuList', () => {
 	});
 
 	it('should render label of the first topicItem', async () => {
-
 		const element = await setup(state);
 
 		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
@@ -102,7 +95,6 @@ describe('MvuList', () => {
 	});
 
 	it('should call the click event of child component topicitem button', async () => {
-
 		const element = await setup(state);
 		const topicItems = element.shadowRoot.querySelectorAll('ba-mvu-topic-item');
 		const topic = topicItems[0].shadowRoot.querySelector('button');

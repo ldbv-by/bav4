@@ -2,7 +2,6 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { IMPORT_ADDED } from './import.reducer';
 
-
 /**
  * Properties for a import of GeoResources
  * @typedef {Object} ImportProperties
@@ -12,7 +11,6 @@ import { IMPORT_ADDED } from './import.reducer';
  */
 
 const defaultImportProperties = { url: null, data: null, sourceType: null };
-
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');

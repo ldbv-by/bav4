@@ -2,9 +2,7 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { TestUtils } from '../../../../../test-utils';
 
-
 class AbstractMvuContentPanelImpl extends AbstractMvuContentPanel {
-
 	createView() {
 		return html`something`;
 	}
@@ -22,9 +20,7 @@ const setupStoreAndDi = () => {
 };
 
 describe('AbstractMvuContentPanel', () => {
-
 	beforeEach(() => {
-
 		setupStoreAndDi();
 	});
 
@@ -42,7 +38,6 @@ describe('AbstractMvuContentPanel', () => {
 	});
 
 	describe('expected errors', () => {
-
 		describe('constructor', () => {
 			it('throws exception when instantiated without inheritance', () => {
 				expect(() => new AbstractMvuContentPanel()).toThrowError(TypeError, 'Can not construct abstract class.');
@@ -51,7 +46,6 @@ describe('AbstractMvuContentPanel', () => {
 	});
 
 	describe('default css', () => {
-
 		it('adds the baElement and abstractContentPanel CSS files', async () => {
 			const element = await TestUtils.render(AbstractMvuContentPanelImpl.tag);
 

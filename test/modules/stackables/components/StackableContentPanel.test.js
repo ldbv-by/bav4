@@ -16,9 +16,7 @@ window.customElements.define(NotificationItem.tag, NotificationItem);
 window.customElements.define(BottomSheet.tag, BottomSheet);
 
 describe('StackableContentPanel', () => {
-
 	describe('constructor', () => {
-
 		it('sets a default model', async () => {
 			TestUtils.setupStoreAndDi();
 			const element = new StackableContentPanel();
@@ -33,9 +31,11 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
-			TestUtils.setupStoreAndDi({ notifications: { notification: null }, bottomSheet: { data: null } }, { notifications: notificationReducer, bottomSheet: bottomSheetReducer });
+			TestUtils.setupStoreAndDi(
+				{ notifications: { notification: null }, bottomSheet: { data: null } },
+				{ notifications: notificationReducer, bottomSheet: bottomSheetReducer }
+			);
 			const element = await TestUtils.render(StackableContentPanel.tag);
 
 			expect(element.shadowRoot.children.length).toBe(0);
@@ -43,7 +43,9 @@ describe('StackableContentPanel', () => {
 	});
 
 	describe('when rendered', () => {
-		const setup = async (state = { notifications: { notification: null }, bottomSheet: { data: null }, mainMenu: { open: false }, media: { portrait: false } }) => {
+		const setup = async (
+			state = { notifications: { notification: null }, bottomSheet: { data: null }, mainMenu: { open: false }, media: { portrait: false } }
+		) => {
 			TestUtils.setupStoreAndDi(state, {
 				notifications: notificationReducer,
 				pointer: pointerReducer,
@@ -108,7 +110,6 @@ describe('StackableContentPanel', () => {
 			expect(bottomSheetElements).toHaveSize(1);
 		});
 
-
 		it('adds and replace a bottomSheet content, when a bottomSheet content changed', async () => {
 			const element = await setup();
 
@@ -122,7 +123,6 @@ describe('StackableContentPanel', () => {
 			expect(bottomSheetElements1).toHaveSize(1);
 			expect(bottomSheetElements1[0].getModel().content).toBe('fooBar');
 			expect(element._model.bottomSheet).toBe('fooBar');
-
 
 			openBottomSheet('fooBarBaz');
 
@@ -169,6 +169,4 @@ describe('StackableContentPanel', () => {
 			expect(element.shadowRoot.querySelector('ba-notification-item')).toBeFalsy();
 		});
 	});
-
-
 });

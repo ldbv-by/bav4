@@ -24,9 +24,8 @@ describe('ShareButton', () => {
 	const setup = async () => {
 		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
 		$injector
-			.registerSingleton('EnvironmentService', {
-
-			}).registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('EnvironmentService', {})
+			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 
@@ -34,7 +33,6 @@ describe('ShareButton', () => {
 	};
 
 	describe('when initialized', () => {
-
 		it('shows the share-button', async () => {
 			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
 			const element = await setup();
@@ -94,6 +92,5 @@ describe('ShareButton', () => {
 			expect(element.shadowRoot.querySelectorAll(`[${TEST_ID_ATTRIBUTE_NAME}]`)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('#share').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
-
 	});
 });

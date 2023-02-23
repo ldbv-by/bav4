@@ -4,15 +4,13 @@ import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../.
 import { FALLBACK_TOPICS_IDS } from '../../../../src/services/TopicsService';
 
 describe('CatalogService', () => {
-
 	const setup = (provider) => {
 		return new CatalogService(provider);
 	};
 
 	describe('init', () => {
-
 		it('initializes the service', async () => {
-			const provider = async () => { };
+			const provider = async () => {};
 			const instanceUnderTest = setup(provider);
 
 			expect(instanceUnderTest._provider).toEqual(provider);
@@ -27,9 +25,7 @@ describe('CatalogService', () => {
 	});
 
 	describe('byId', () => {
-
 		it('provides and caches a catalog definition by id', async () => {
-
 			const topicId = 'foo';
 			const spyProvider = jasmine.createSpy().and.returnValue(await loadExampleCatalog());
 			const instanceUnderTest = setup(spyProvider);
@@ -44,9 +40,7 @@ describe('CatalogService', () => {
 			expect(spyProvider).toHaveBeenCalledOnceWith('foo');
 		});
 
-
 		describe('and provider throws exception', () => {
-
 			it('throws an exception when provider throws exception', async () => {
 				const instanceUnderTest = setup(async () => {
 					throw new Error('Something got wrong');
@@ -55,8 +49,7 @@ describe('CatalogService', () => {
 				try {
 					await instanceUnderTest.byId('foo');
 					throw new Error('Promise should not be resolved');
-				}
-				catch (error) {
+				} catch (error) {
 					expect(error.message).toContain('Could not load catalog from provider: Something got wrong');
 					expect(error).toBeInstanceOf(Error);
 				}
@@ -75,4 +68,3 @@ describe('CatalogService', () => {
 		});
 	});
 });
-

@@ -1,5 +1,5 @@
 import { isString } from './checks';
-const No_Op = () => { };
+const No_Op = () => {};
 
 /**
  * Maps actions to specific key-events

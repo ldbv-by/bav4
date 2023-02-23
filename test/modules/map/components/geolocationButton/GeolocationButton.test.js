@@ -4,23 +4,23 @@ import { GeolocationButton } from '../../../../../src/modules/map/components/geo
 import { geolocationReducer } from '../../../../../src/store/geolocation/geolocation.reducer.js';
 window.customElements.define(GeolocationButton.tag, GeolocationButton);
 
-
 describe('GeolocationButton', () => {
 	let store;
 	const defaultState = {
-		active: false, denied: false, tracking: false, accuracy: null, position: null
+		active: false,
+		denied: false,
+		tracking: false,
+		accuracy: null,
+		position: null
 	};
 
 	const setup = async (geolocationState = defaultState) => {
-
 		const state = {
 			geolocation: geolocationState
 		};
 
 		store = TestUtils.setupStoreAndDi(state, { geolocation: geolocationReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
-
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return await TestUtils.render(GeolocationButton.tag);
 	};
@@ -33,7 +33,6 @@ describe('GeolocationButton', () => {
 			expect(element.shadowRoot.querySelector('.icon')).toBeTruthy();
 			expect(element.shadowRoot.querySelector('.inactive')).toBeTruthy();
 		});
-
 
 		it('shows geolocation button in active state', async () => {
 			const element = await setup({ ...defaultState, active: true });

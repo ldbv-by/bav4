@@ -4,7 +4,6 @@
  * @abstract
  */
 export class OlMapHandler {
-
 	constructor(id) {
 		if (this.constructor === OlMapHandler) {
 			// Abstract class can not be constructed.
@@ -21,14 +20,12 @@ export class OlMapHandler {
 	}
 
 	/**
-     * Registers this handler.
-     * @abstract
-     * @param {Map} olMap
-     */
+	 * Registers this handler.
+	 * @abstract
+	 * @param {Map} olMap
+	 */
 	register(/*eslint-disable no-unused-vars */ map) {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #register or do not call super.activate from child.');
 	}
-
-
 }

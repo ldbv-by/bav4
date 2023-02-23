@@ -1,4 +1,30 @@
-import { measureStyleFunction, createSketchStyleFunction, modifyStyleFunction, nullStyleFunction, highlightStyleFunction, highlightTemporaryStyleFunction, markerStyleFunction, selectStyleFunction, getColorFrom, lineStyleFunction, polygonStyleFunction, textStyleFunction, getIconUrl, getMarkerSrc, getDrawingTypeFrom, getSymbolFrom, markerScaleToKeyword, getTextFrom, getStyleArray, renderRulerSegments, defaultStyleFunction, geojsonStyleFunction, DEFAULT_TEXT, getSizeFrom, textScaleToKeyword } from '../../../../src/modules/olMap/utils/olStyleUtils';
+import {
+	measureStyleFunction,
+	createSketchStyleFunction,
+	modifyStyleFunction,
+	nullStyleFunction,
+	highlightStyleFunction,
+	highlightTemporaryStyleFunction,
+	markerStyleFunction,
+	selectStyleFunction,
+	getColorFrom,
+	lineStyleFunction,
+	polygonStyleFunction,
+	textStyleFunction,
+	getIconUrl,
+	getMarkerSrc,
+	getDrawingTypeFrom,
+	getSymbolFrom,
+	markerScaleToKeyword,
+	getTextFrom,
+	getStyleArray,
+	renderRulerSegments,
+	defaultStyleFunction,
+	geojsonStyleFunction,
+	DEFAULT_TEXT,
+	getSizeFrom,
+	textScaleToKeyword
+} from '../../../../src/modules/olMap/utils/olStyleUtils';
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import { Feature } from 'ol';
 import proj4 from 'proj4';
@@ -16,7 +42,7 @@ import { hexToRgb } from '../../../../src/utils/colors';
 const Rgb_Black = [0, 0, 0];
 
 const configService = {
-	getValue: () => { },
+	getValue: () => {},
 	getValueAsPath: () => 'http://backend.url/'
 };
 
@@ -31,7 +57,6 @@ beforeAll(() => {
 		.registerSingleton('EnvironmentService', environmentService)
 		.registerSingleton('ConfigService', configService)
 		.registerSingleton('IconService', iconServiceMock);
-
 });
 
 describe('getMarkerSrc', () => {
@@ -49,12 +74,10 @@ describe('getMarkerSrc', () => {
 		const markerSrc = 'http://foo.bar/42/baz';
 		expect(getMarkerSrc(markerSrc)).toBe('http://foo.bar/42/baz');
 	});
-
 });
 
 describe('textScaleToKeyword', () => {
 	it('should map to keyword', () => {
-
 		expect(textScaleToKeyword(2)).toBe('large');
 		expect(textScaleToKeyword(1.5)).toBe('medium');
 		expect(textScaleToKeyword(1)).toBe('small');
@@ -67,7 +90,6 @@ describe('textScaleToKeyword', () => {
 
 describe('markerScaleToKeyword', () => {
 	it('should map to keyword', () => {
-
 		expect(markerScaleToKeyword(1)).toBe('large');
 		expect(markerScaleToKeyword(0.75)).toBe('medium');
 		expect(markerScaleToKeyword(0.5)).toBe('small');
@@ -79,7 +101,10 @@ describe('markerScaleToKeyword', () => {
 });
 
 describe('measureStyleFunction', () => {
-	const geometry = new LineString([[0, 0], [1, 0]]);
+	const geometry = new LineString([
+		[0, 0],
+		[1, 0]
+	]);
 	const feature = new Feature({ geometry: geometry });
 	const resolution = 1;
 	it('should create styles', () => {
@@ -92,17 +117,14 @@ describe('measureStyleFunction', () => {
 	it('should have a style which creates circle for Lines', () => {
 		const styles = measureStyleFunction(feature, resolution);
 
-
-		const circleStyle = styles.find(style => {
+		const circleStyle = styles.find((style) => {
 			const geometryFunction = style.getGeometryFunction();
 			if (geometryFunction) {
 				const renderObject = geometryFunction(feature, resolution);
 				return renderObject.getType() === 'Circle';
-			}
-			else {
+			} else {
 				return false;
 			}
-
 		});
 		const geometryFunction = circleStyle.getGeometryFunction();
 
@@ -110,7 +132,6 @@ describe('measureStyleFunction', () => {
 		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
 		const circle = geometryFunction(lineFeature);
 		const nonCircle = geometryFunction(pointFeature);
-
 
 		expect(circle).toBeTruthy();
 		expect(nonCircle).toBeFalsy();
@@ -130,28 +151,43 @@ describe('measureStyleFunction', () => {
 	it('should have a ruler-style with renderer-function', () => {
 		const styles = measureStyleFunction(feature, resolution);
 
-		const rulerStyle = styles.find(style => style.getRenderer != null);
+		const rulerStyle = styles.find((style) => style.getRenderer != null);
 
 		expect(rulerStyle).toBeDefined();
 	});
 
 	it('should have a ruler-style with renderer-function, which uses customContextRenderFunction', () => {
 		const styles = measureStyleFunction(feature, resolution);
-		const stateMock = { context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: () => { } };
+		const stateMock = { context: null, geometry: new Point([0, 0]), pixelRatio: 1, resolution: 1, customContextRenderFunction: () => {} };
 		const spy = spyOn(stateMock, 'customContextRenderFunction');
-		const rulerStyle = styles.find(style => style.getRenderer != null && typeof style.getRenderer() == 'function');
-		rulerStyle.getRenderer()([[0, 0], [1, 1]], stateMock);
+		const rulerStyle = styles.find((style) => style.getRenderer != null && typeof style.getRenderer() == 'function');
+		rulerStyle.getRenderer()(
+			[
+				[0, 0],
+				[1, 1]
+			],
+			stateMock
+		);
 
 		expect(spy).toHaveBeenCalled();
 	});
 
-
 	it('should draw to context with ruler-style', () => {
-		const pixelCoordinates = [[0, 0], [1, 1]];
-		const contextMock = { canvas: { width: 100, height: 100, style: { width: 100, height: 100 } }, stroke: () => new Stroke(), beginPath: () => { }, moveTo: () => { }, lineTo: () => { }, setLineDash: () => { } };
+		const pixelCoordinates = [
+			[0, 0],
+			[1, 1]
+		];
+		const contextMock = {
+			canvas: { width: 100, height: 100, style: { width: 100, height: 100 } },
+			stroke: () => new Stroke(),
+			beginPath: () => {},
+			moveTo: () => {},
+			lineTo: () => {},
+			setLineDash: () => {}
+		};
 		const stateMock = { context: contextMock, geometry: feature.getGeometry() };
 		const styles = measureStyleFunction(feature, resolution);
-		const rulerStyle = styles.find(style => style.getRenderer());
+		const rulerStyle = styles.find((style) => style.getRenderer());
 
 		const contextMoveToSpy = spyOn(contextMock, 'moveTo');
 		const customRenderer = rulerStyle.getRenderer();
@@ -162,13 +198,19 @@ describe('measureStyleFunction', () => {
 });
 
 describe('renderRulerSegments', () => {
-	const geometry = new LineString([[0, 0], [1, 0]]);
+	const geometry = new LineString([
+		[0, 0],
+		[1, 0]
+	]);
 	const feature = new Feature({ geometry: geometry });
 	const resolution = 1;
 	it('should call contextRenderer', () => {
 		const contextRenderer = jasmine.createSpy();
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution };
-		const pixelCoordinates = [[0, 0], [0, 1]];
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRenderer);
 		expect(contextRenderer).toHaveBeenCalledTimes(1 + 1 + 1); //baseStroke + mainStroke + subStroke
 		expect(contextRenderer).toHaveBeenCalledWith(jasmine.any(Geometry), jasmine.any(Fill), jasmine.any(Stroke));
@@ -187,7 +229,10 @@ describe('renderRulerSegments', () => {
 			actualStrokes.push(stroke);
 		};
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
-		const pixelCoordinates = [[0, 0], [0, 1]];
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContain(expectedSubStroke);
@@ -206,7 +251,10 @@ describe('renderRulerSegments', () => {
 			actualStrokes.push(stroke);
 		};
 		const stateMock = { geometry: feature.getGeometry(), resolution: resolution, pixelRatio: 1 };
-		const pixelCoordinates = [[0, 0], [0, 1]];
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toContain(expectedMainStroke);
@@ -217,8 +265,21 @@ describe('renderRulerSegments', () => {
 		const contextRendererStub = (geometry, fill, stroke) => {
 			actualStrokes.push(stroke);
 		};
-		const stateMock = { geometry: new Polygon([[[0, 0], [0, 1], [1, 0]]]), resolution: resolution, pixelRatio: 1 };
-		const pixelCoordinates = [[0, 0], [0, 1]];
+		const stateMock = {
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[0, 1],
+					[1, 0]
+				]
+			]),
+			resolution: resolution,
+			pixelRatio: 1
+		};
+		const pixelCoordinates = [
+			[0, 0],
+			[0, 1]
+		];
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toBeTruthy();
@@ -236,7 +297,10 @@ describe('nullStyleFunction', () => {
 
 describe('geojsonStyleFunction', () => {
 	const getFeatureWithProperties = (properties) => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		for (const [key, value] of Object.entries(properties)) {
@@ -290,9 +354,8 @@ describe('geojsonStyleFunction', () => {
 		expect(numberMarkerSizePointStyle[0].getImage().getRadius()).toBe(42);
 	});
 
-
 	it('should return a stroke style', () => {
-		const lineFeature = getFeatureWithProperties({ 'stroke-opacity': 0.42, 'stroke': '#ffff00', 'stroke-width': 4 });
+		const lineFeature = getFeatureWithProperties({ 'stroke-opacity': 0.42, stroke: '#ffff00', 'stroke-width': 4 });
 
 		const lineStyles = geojsonStyleFunction(lineFeature);
 
@@ -303,7 +366,7 @@ describe('geojsonStyleFunction', () => {
 	});
 
 	it('should return a fill style', () => {
-		const lineFeature = getFeatureWithProperties({ 'fill-opacity': 0.21, 'fill': '#00ff00' });
+		const lineFeature = getFeatureWithProperties({ 'fill-opacity': 0.21, fill: '#00ff00' });
 
 		const lineStyles = geojsonStyleFunction(lineFeature);
 
@@ -380,7 +443,6 @@ describe('highlightTemporaryStyleFunction', () => {
 });
 
 describe('markerStyleFunction', () => {
-
 	it('should return a style', () => {
 		const styles = markerStyleFunction();
 
@@ -475,9 +537,7 @@ describe('markerStyleFunction', () => {
 		expect(image.getColor()).toEqual([190, 218, 85, 1]);
 		expect(image.getScale()).toBe(0.75);
 	});
-
 });
-
 
 describe('textStyleFunction', () => {
 	it('should return a style', () => {
@@ -527,7 +587,6 @@ describe('textStyleFunction', () => {
 		expect(textStyle.getStroke().getColor()).toEqual(Rgb_Black.concat([0.4]));
 	});
 
-
 	it('should return a style specified by styleOption; text scale as number ', () => {
 		const styleOption = { color: '#BEDA55', scale: 2, text: 'Foo' };
 		const styles = textStyleFunction(styleOption);
@@ -566,7 +625,6 @@ describe('lineStyleFunction', () => {
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
 		expect(stroke.getWidth()).toBe(3);
 	});
-
 });
 
 describe('polygonStyleFunction', () => {
@@ -598,11 +656,9 @@ describe('polygonStyleFunction', () => {
 		expect(stroke.getColor()).toEqual([190, 218, 85, 1]);
 		expect(stroke.getWidth()).toBe(3);
 	});
-
 });
 
 describe('modifyStyleFunction', () => {
-
 	it('should return a style with a default-color', () => {
 		const expectedStyle = new Style({
 			image: new CircleStyle({
@@ -627,7 +683,10 @@ describe('modifyStyleFunction', () => {
 	});
 
 	it('should return a style with the feature-color over sketchFeature', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 		const featureColor = hexToRgb('#010203');
 
@@ -647,8 +706,6 @@ describe('modifyStyleFunction', () => {
 			})
 		});
 
-
-
 		const modifyFeatureMock = { get: () => [feature] };
 		const styles = modifyStyleFunction(modifyFeatureMock);
 
@@ -660,7 +717,10 @@ describe('modifyStyleFunction', () => {
 	});
 
 	it('should NOT return a style with the feature-color', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 		const featureColor = hexToRgb('#010203');
 
@@ -689,20 +749,20 @@ describe('modifyStyleFunction', () => {
 		const style = styles[0];
 		expect(style).toEqual(expectedStyle);
 	});
-
 });
 
 describe('selectStyleFunction', () => {
-
 	it('should create a stylefunction', () => {
 		const styleFunction = selectStyleFunction();
 
 		expect(styleFunction).toBeDefined();
-
 	});
 
 	it('should append a style', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const featureWithStyle = new Feature({ geometry: geometry });
 		featureWithStyle.setStyle(defaultStyleFunction([0, 0, 0, 0]));
 		const featureWithEmptyFirstStyle = new Feature({ geometry: geometry });
@@ -716,7 +776,10 @@ describe('selectStyleFunction', () => {
 	});
 
 	it('should add a style which creates MultiPoints for the polygon-vertices', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 		feature.setStyle(nullStyleFunction);
 		const styleFunction = selectStyleFunction();
@@ -725,30 +788,38 @@ describe('selectStyleFunction', () => {
 		const vertexStyle = styles[1];
 		const geometryFunction = vertexStyle.getGeometryFunction();
 
-
 		const lineFeature = feature;
 		const pointFeature = new Feature({ geometry: new Point([0, 0]) });
-		const polygonFeature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+		const polygonFeature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
 
 		expect(geometryFunction(lineFeature)).toBeTruthy();
 		expect(geometryFunction(pointFeature)).toBeTruthy();
 		expect(geometryFunction(polygonFeature)).toBeTruthy();
 	});
-
-
 });
 
 describe('createSketchStyleFunction', () => {
-
 	it('should create a stylefunction', () => {
-
 		const styleFunction = createSketchStyleFunction(measureStyleFunction);
 
 		expect(styleFunction).toBeDefined();
 	});
 
 	it('should query the featureGeometry', () => {
-		const geometry = new LineString([[0, 0], [1, 0]]);
+		const geometry = new LineString([
+			[0, 0],
+			[1, 0]
+		]);
 		const feature = new Feature({ geometry: geometry });
 		const geometrySpy = spyOn(feature, 'getGeometry').and.returnValue(geometry);
 
@@ -760,7 +831,15 @@ describe('createSketchStyleFunction', () => {
 	});
 
 	it('should have a style for sketch polygon', () => {
-		const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+		const geometry = new Polygon([
+			[
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]
+		]);
 		const feature = new Feature({ geometry: geometry });
 
 		const styleFunction = createSketchStyleFunction(measureStyleFunction);
@@ -858,7 +937,6 @@ describe('getColorFrom', () => {
 		expect(getColorFrom(null)).toBeNull();
 		expect(getColorFrom(undefined)).toBeNull();
 	});
-
 });
 
 describe('getSymbolFrom', () => {
@@ -879,7 +957,6 @@ describe('getSymbolFrom', () => {
 		})
 	});
 
-
 	it('should extract a image from feature style', () => {
 		const featureMock = { getStyle: () => [imageStyle] };
 
@@ -899,7 +976,6 @@ describe('getSymbolFrom', () => {
 		expect(getSymbolFrom(null)).toBeNull();
 		expect(getSymbolFrom(undefined)).toBeNull();
 	});
-
 });
 
 describe('getTextFrom', () => {
@@ -930,7 +1006,6 @@ describe('getTextFrom', () => {
 		})
 	});
 
-
 	it('should extract a text from feature style', () => {
 		const featureMock = { getStyle: () => [getTextStyle()] };
 
@@ -950,7 +1025,6 @@ describe('getTextFrom', () => {
 		expect(getTextFrom(null)).toBeNull();
 		expect(getTextFrom(undefined)).toBeNull();
 	});
-
 });
 
 describe('getSizeFrom', () => {
@@ -958,10 +1032,9 @@ describe('getSizeFrom', () => {
 		image: new Icon({
 			src: markerIcon,
 			color: [255, 0, 0],
-			scale: .75
+			scale: 0.75
 		})
 	});
-
 
 	const getTextStyle = (size) => {
 		const strokeWidth = 1;
@@ -991,7 +1064,6 @@ describe('getSizeFrom', () => {
 		})
 	});
 
-
 	it('should extract a size from feature with text style', () => {
 		expect(getSizeFrom({ getStyle: () => [getTextStyle(2)] })).toBe('large');
 		expect(getSizeFrom({ getStyle: () => [getTextStyle(1.5)] })).toBe('medium');
@@ -1018,10 +1090,7 @@ describe('getSizeFrom', () => {
 		expect(getSizeFrom(null)).toBeNull();
 		expect(getSizeFrom(undefined)).toBeNull();
 	});
-
 });
-
-
 
 describe('getDrawingTypeFrom', () => {
 	it('get the DrawingType from valid feature', () => {

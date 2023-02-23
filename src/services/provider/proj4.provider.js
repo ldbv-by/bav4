@@ -10,7 +10,6 @@ import { register } from 'ol/proj/proj4';
  * @typedef {function(coordinate) : (array<number>)} proj4Provider
  */
 
-
 /**
  * Registers BVV specific proj4 definitions.
  * @function

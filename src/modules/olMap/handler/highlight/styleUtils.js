@@ -1,4 +1,3 @@
-
 import { getVectorContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';
@@ -6,29 +5,29 @@ import CircleStyle from 'ol/style/Circle';
 import locationIcon from './assets/location.svg';
 import tempLocationIcon from './assets/temporaryLocation.svg';
 
-
-
-export const highlightCoordinateFeatureStyleFunction = () => [new Style({
-	image: new Icon({
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: locationIcon
+export const highlightCoordinateFeatureStyleFunction = () => [
+	new Style({
+		image: new Icon({
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: locationIcon
+		})
 	})
-})];
+];
 
-
-export const highlightTemporaryCoordinateFeatureStyleFunction = () => [new Style({
-	image: new Icon({
-		anchor: [0.5, 1],
-		anchorXUnits: 'fraction',
-		anchorYUnits: 'fraction',
-		src: tempLocationIcon
+export const highlightTemporaryCoordinateFeatureStyleFunction = () => [
+	new Style({
+		image: new Icon({
+			anchor: [0.5, 1],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'fraction',
+			src: tempLocationIcon
+		})
 	})
-})];
+];
 
 export const highlightGeometryFeatureStyleFunction = () => {
-
 	const selectStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 3
@@ -52,7 +51,6 @@ export const highlightGeometryFeatureStyleFunction = () => {
 };
 
 export const highlightTemporaryGeometryFeatureStyleFunction = () => {
-
 	const hlStroke = new Stroke({
 		color: [255, 128, 0, 1],
 		width: 6
@@ -76,13 +74,10 @@ export const highlightTemporaryGeometryFeatureStyleFunction = () => {
 };
 
 export const highlightAnimatedCoordinateFeatureStyleFunction = () => {
-
-	const selectStroke = new Stroke(
-		{
-			color: [255, 255, 255, 1],
-			width: 2
-		}
-	);
+	const selectStroke = new Stroke({
+		color: [255, 255, 255, 1],
+		width: 2
+	});
 	const selectFill = new Fill({
 		color: [9, 157, 221, 1]
 	});
@@ -119,23 +114,21 @@ export const createAnimation = (map, feature) => {
 				image: new CircleStyle({
 					radius: radius,
 					fill: new Fill({
-						color: 'rgba(9, 157, 221, ' + (opacity) * 0.6 + ')'
+						color: 'rgba(9, 157, 221, ' + opacity * 0.6 + ')'
 					})
 				})
 			});
 
-
 			return radius >= 11 + 10 ? [style, ...getStyles(radius - 10, opacity, index + 1)] : [style];
 		};
 
-		getStyles(radius, opacity, 0).forEach(style => {
+		getStyles(radius, opacity, 0).forEach((style) => {
 			vectorContext.setStyle(style);
 			vectorContext.drawGeometry(flashGeom);
 		});
 		const staticStyle = highlightAnimatedCoordinateFeatureStyleFunction();
 		vectorContext.setStyle(staticStyle[0]);
 		vectorContext.drawGeometry(flashGeom);
-
 
 		if (elapsed > state.duration) {
 			state.start = Date.now();
@@ -145,5 +138,3 @@ export const createAnimation = (map, feature) => {
 	};
 	return animate;
 };
-
-

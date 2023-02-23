@@ -3,16 +3,13 @@ import { MapService } from '../../src/services/MapService';
 import { $injector } from '../../src/injection';
 
 describe('MapService', () => {
-
-
 	const coordinateServiceMock = {
-		toLonLatExtent() { },
-		toLonLat() { }
+		toLonLatExtent() {},
+		toLonLat() {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('CoordinateService', coordinateServiceMock);
+		$injector.registerSingleton('CoordinateService', coordinateServiceMock);
 	});
 
 	const setup = () => {
@@ -21,7 +18,10 @@ describe('MapService', () => {
 				defaultExtent: [0, 1, 2, 3],
 				srid: 3857,
 				defaultSridForView: 4326,
-				sridDefinitionsForView: () => [{ label: 'WGS88', code: 4326 }, { label: 'Something', code: 9999 }],
+				sridDefinitionsForView: () => [
+					{ label: 'WGS88', code: 4326 },
+					{ label: 'Something', code: 9999 }
+				],
 				defaultGeodeticSrid: 9999,
 				minZoomLevel: 5,
 				maxZoomLevel: 21
@@ -39,7 +39,6 @@ describe('MapService', () => {
 	});
 
 	describe('provides an extent', () => {
-
 		it('for 3857', () => {
 			const instanceUnderTest = setup();
 
@@ -58,8 +57,7 @@ describe('MapService', () => {
 
 			expect(() => {
 				instanceUnderTest.getDefaultMapExtent(21);
-			})
-				.toThrowError(/Unsupported SRID 21/);
+			}).toThrowError(/Unsupported SRID 21/);
 		});
 	});
 
@@ -72,7 +70,10 @@ describe('MapService', () => {
 	it('provides an array of srids for the view', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getSridDefinitionsForView()).toEqual([{ label: 'WGS88', code: 4326 }, { label: 'Something', code: 9999 }]);
+		expect(instanceUnderTest.getSridDefinitionsForView()).toEqual([
+			{ label: 'WGS88', code: 4326 },
+			{ label: 'Something', code: 9999 }
+		]);
 	});
 
 	it('provides the internal srid of the map', () => {
@@ -102,11 +103,10 @@ describe('MapService', () => {
 	it('provides minimal angle for rotation', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getMinimalRotation()).toBe(.3);
+		expect(instanceUnderTest.getMinimalRotation()).toBe(0.3);
 	});
 
 	describe('calcResolution', () => {
-
 		it('calculates the resolution using default arguments', () => {
 			const expectedResolution = 3273.3667254226675;
 			const mock3857Coordinate = [0, 1];
@@ -134,18 +134,18 @@ describe('MapService', () => {
 		});
 
 		describe('and 3857 coordinate is missing', () => {
-
 			it('throws an error ', () => {
 				const zoomLevel = 5;
 				const srid = 3857;
 				const instanceUnderTest = setup();
 
-				expect(() => instanceUnderTest.calcResolution(zoomLevel)).toThrowError(`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`);
+				expect(() => instanceUnderTest.calcResolution(zoomLevel)).toThrowError(
+					`Parameter 'coordinateInMapProjection' must not be Null when using SRID ${srid}`
+				);
 			});
 		});
 
 		describe('and srid is not supported', () => {
-
 			it('throws an error ', () => {
 				const srid = -1;
 				const zoomLevel = 5;
@@ -158,11 +158,10 @@ describe('MapService', () => {
 	});
 
 	describe('getScaleLineContainer', () => {
-
 		it('returns an HTMLElement when available', () => {
 			const mockFooter = {
 				shadowRoot: {
-					querySelector() { }
+					querySelector() {}
 				}
 			};
 			const mockHTMElement = {};
@@ -190,9 +189,10 @@ describe('MapService', () => {
 
 	describe('getVisibleViewport', () => {
 		it('returns a visible viewportPadding', () => {
-			document.body.innerHTML = '<div id="overlapping1" data-register-for-viewport-calc></div>'
-									+ '<div id="non-overlapping"></div>'
-									+ '<div id="overlapping2" data-register-for-viewport-calc></div>';
+			document.body.innerHTML =
+				'<div id="overlapping1" data-register-for-viewport-calc></div>' +
+				'<div id="non-overlapping"></div>' +
+				'<div id="overlapping2" data-register-for-viewport-calc></div>';
 			const overlappingElement1 = document.getElementById('overlapping1');
 			const overlappingElement2 = document.getElementById('overlapping2');
 			const nonOverlappingElement = document.getElementById('non-overlapping');
@@ -214,9 +214,10 @@ describe('MapService', () => {
 			const mapElementMock = { getBoundingClientRect: () => DOMRect.fromRect({ x: 50, y: 50, width: 500, height: 500 }) };
 
 			it('with a leftSideElement and a bottomElement', () => {
-				document.body.innerHTML = '<div id="leftSideElement" data-register-for-viewport-calc></div>'
-										+ '<div id="non-overlapping"></div>'
-										+ '<div id="bottomElement" data-register-for-viewport-calc></div>';
+				document.body.innerHTML =
+					'<div id="leftSideElement" data-register-for-viewport-calc></div>' +
+					'<div id="non-overlapping"></div>' +
+					'<div id="bottomElement" data-register-for-viewport-calc></div>';
 				const leftSideElement = document.getElementById('leftSideElement');
 				const bottomElement = document.getElementById('bottomElement');
 				spyOn(leftSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 50, y: 50, width: 50, height: 550 }));
@@ -229,9 +230,10 @@ describe('MapService', () => {
 			});
 
 			it('with a rightSideElement and a topElement', () => {
-				document.body.innerHTML = '<div id="rightSideElement" data-register-for-viewport-calc></div>'
-										+ '<div id="non-overlapping"></div>'
-										+ '<div id="topElement" data-register-for-viewport-calc></div>';
+				document.body.innerHTML =
+					'<div id="rightSideElement" data-register-for-viewport-calc></div>' +
+					'<div id="non-overlapping"></div>' +
+					'<div id="topElement" data-register-for-viewport-calc></div>';
 				const rightSideElement = document.getElementById('rightSideElement');
 				const topElement = document.getElementById('topElement');
 				spyOn(rightSideElement, 'getBoundingClientRect').and.returnValue(DOMRect.fromRect({ x: 500, y: 50, width: 50, height: 550 }));
@@ -245,4 +247,3 @@ describe('MapService', () => {
 		});
 	});
 });
-

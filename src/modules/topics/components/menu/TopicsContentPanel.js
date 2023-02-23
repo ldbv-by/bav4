@@ -7,8 +7,6 @@ import commonTopicsCss from './assets/topics.css';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 
-
-
 /**
  * @enum
  */
@@ -24,11 +22,9 @@ export const TopicsContentPanelIndex = Object.freeze({
  * @author alsturm
  */
 export class TopicsContentPanel extends AbstractContentPanel {
-
 	constructor() {
 		super();
-		const { TopicsService: topicsService, TranslationService: translationService }
-			= $injector.inject('TopicsService', 'TranslationService');
+		const { TopicsService: topicsService, TranslationService: translationService } = $injector.inject('TopicsService', 'TranslationService');
 		this._topicsService = topicsService;
 		this._translationService = translationService;
 	}
@@ -39,7 +35,7 @@ export class TopicsContentPanel extends AbstractContentPanel {
 		this.observe('currentTopicId', (currentTopicId) => {
 			//we add and update the topic specific hue value
 			const topics = this._topicsService.all();
-			const topic = topics.filter(t => t.id === currentTopicId)[0];
+			const topic = topics.filter((t) => t.id === currentTopicId)[0];
 
 			if (!document.getElementById(TopicsContentPanel.Global_Topic_Hue_Style_Id)) {
 				const styleElement = document.createElement('style');
@@ -54,7 +50,6 @@ export class TopicsContentPanel extends AbstractContentPanel {
 	onWindowLoad() {
 		//append common styles for all topics
 		if (!document.getElementById(TopicsContentPanel.Global_Topics_Common_Style_Id)) {
-
 			const style = document.createElement('style');
 			style.innerHTML = commonTopicsCss;
 			style.id = TopicsContentPanel.Global_Topics_Common_Style_Id;
@@ -66,23 +61,21 @@ export class TopicsContentPanel extends AbstractContentPanel {
 	 * @override
 	 */
 	createView(state) {
-
 		const { currentTopicId, topicsReady, contentIndex } = state;
 
 		if (topicsReady) {
-
 			const topics = this._topicsService.all();
 
 			const getActiveClass = (id) => {
-				return (currentTopicId === id) ? 'active' : '';
+				return currentTopicId === id ? 'active' : '';
 			};
 
 			const getTabIndex = () => {
-				return (contentIndex === TopicsContentPanelIndex.TOPICS) ? 0 : -1;
+				return contentIndex === TopicsContentPanelIndex.TOPICS ? 0 : -1;
 			};
 
 			const getVisibilityClass = () => {
-				return (contentIndex === TopicsContentPanelIndex.TOPICS) ? '' : 'invisible';
+				return contentIndex === TopicsContentPanelIndex.TOPICS ? '' : 'invisible';
 			};
 
 			const changeTopic = (topic) => {
@@ -90,7 +83,6 @@ export class TopicsContentPanel extends AbstractContentPanel {
 				setCurrent(topic.id);
 				setIndex(TopicsContentPanelIndex.CATALOG_0);
 			};
-
 
 			const renderTopicStyle = (topic) => {
 				const hue = topic.style.hue || 0;
@@ -104,23 +96,26 @@ export class TopicsContentPanel extends AbstractContentPanel {
 			const renderTopicIcon = (topic) => {
 				if (topic.style.icon) {
 					return html`
-					<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-					${unsafeSVG(topic.style.icon)}
-					</svg>
+						<svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">${unsafeSVG(topic.style.icon)}</svg>
 					`;
 				}
 				return nothing;
 			};
 
 			return html`
-        	<style>${css}</style>
-			<div class="topics-content-panel ${getVisibilityClass()}">
-				<div class="col">
-				${topics.map(topic => html`
+				<style>
+					${css}
+				</style>
+				<div class="topics-content-panel ${getVisibilityClass()}">
+					<div class="col">
+						${topics.map(
+							(topic) => html`
 					<style>
 					${renderTopicStyle(topic)}
 					</style>
-					<button id='button-${topic.id}' data-test-id tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(topic.id)}" @click=${() => changeTopic(topic)}>
+					<button id='button-${topic.id}' data-test-id tabindex='${getTabIndex()}' class="topic topic-${topic.id} ba-list-item  ${getActiveClass(
+								topic.id
+							)}" @click=${() => changeTopic(topic)}>
 						<span class="ba-list-item__pre">
 							<span class="ba-list-item__icon icon-${topic.id}">
 							${renderTopicIcon(topic)}
@@ -135,27 +130,25 @@ export class TopicsContentPanel extends AbstractContentPanel {
 							<span class="arrow arrow-right"></span>
 						</span>
 					</button>
-				`)}
+				`
+						)}
+					</div>
+					<div class="col">${topics.map((topic) => html` <ba-catalog-content-panel .data=${topic.id}></ba-catalog-content-panel> `)}</div>
 				</div>
-				<div class="col">
-					${topics.map(topic => html`
-						<ba-catalog-content-panel .data=${topic.id}></ba-catalog-content-panel>
-					`)}
-				</div>
-			</div>
 			`;
 		}
 		return nothing;
 	}
-
 
 	onStateChanged() {
 		//nothing to do here, we only render on 'topicsReady' and 'contentIndeX' changes (see #initialize)
 	}
 
 	extractState(globalState) {
-
-		const { topics: { current: currentTopicId, ready: topicsReady }, topicsContentPanel: { index: contentIndex } } = globalState;
+		const {
+			topics: { current: currentTopicId, ready: topicsReady },
+			topicsContentPanel: { index: contentIndex }
+		} = globalState;
 		return { currentTopicId, topicsReady, contentIndex };
 	}
 

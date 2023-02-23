@@ -5,14 +5,12 @@ import css from './mediaQueryPanel.css';
 import { $injector } from '../../../../injection';
 import { close } from '../../../../store/mainMenu/mainMenu.action';
 
-
 /**
  *  Example for using and testing media queries
  * @class
  * @deprecated
  */
 export class MediaQueryPanel extends BaElement {
-
 	constructor() {
 		super();
 
@@ -22,7 +20,6 @@ export class MediaQueryPanel extends BaElement {
 		this._portrait = false;
 		this._minWidth = false;
 	}
-
 
 	initialize() {
 		const _window = this._environmentService.getWindow();
@@ -37,7 +34,6 @@ export class MediaQueryPanel extends BaElement {
 		mediaQuery.addEventListener('change', handleOrientationChange);
 		//initial set of local state
 		handleOrientationChange(mediaQuery);
-
 
 		//MediaQuery for 'min-width'
 		const mediaQueryMinWidth = _window.matchMedia('(min-width: 600px)');
@@ -55,7 +51,6 @@ export class MediaQueryPanel extends BaElement {
 	 * @override
 	 */
 	createView(state) {
-
 		const { open } = state;
 
 		const getOrientationClass = () => {
@@ -70,15 +65,19 @@ export class MediaQueryPanel extends BaElement {
 		};
 
 		return html`
-			<style>${cssmain}</style>
-			<style>${css}</style>
+			<style>
+				${cssmain}
+			</style>
+			<style>
+				${css}
+			</style>
 			<div class="${getOrientationClass()}">
-				<div class="content-panel ${getOverlayClass()} ${getMinWidthClass()}">            
+				<div class="content-panel ${getOverlayClass()} ${getMinWidthClass()}">
 					<button @click="${close}" class="content-panel__close-button">
-						<span class='arrow'></span>	
+						<span class="arrow"></span>
 					</button>
-				</div>			
-			</div>			
+				</div>
+			</div>
 		`;
 	}
 
@@ -87,7 +86,9 @@ export class MediaQueryPanel extends BaElement {
 	 * @param {Object} globalState
 	 */
 	extractState(globalState) {
-		const { mainMenu: { open } } = globalState;
+		const {
+			mainMenu: { open }
+		} = globalState;
 		return { open };
 	}
 

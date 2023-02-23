@@ -4,23 +4,21 @@ import { MediaType } from '../../../src/services/HttpService';
 import { loadBvvFeatureInfo } from '../../../src/services/provider/featureInfo.provider';
 
 describe('FeatureInfoResult provider', () => {
-
 	describe('Bvv FeatureInfoResult provider', () => {
-
 		const configService = {
-			getValueAsPath: () => { }
+			getValueAsPath: () => {}
 		};
 
 		const httpService = {
-			post: async () => { }
+			post: async () => {}
 		};
 
 		const geoResourceService = {
-			byId: () => { }
+			byId: () => {}
 		};
 
 		const baaCredentialService = {
-			get: () => { }
+			get: () => {}
 		};
 
 		beforeAll(() => {
@@ -32,7 +30,6 @@ describe('FeatureInfoResult provider', () => {
 		});
 
 		it('loads a FeatureInfoResult for a default WmsGeoResource', async () => {
-
 			const backendUrl = 'https://backend.url/';
 			const geoResourceId = 'geoResourceId';
 			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', '', '', '');
@@ -44,20 +41,15 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 			const expectedRequestPayload = JSON.stringify({
 				id: geoResourceId,
-				easting: coordinate3857[0], northing: coordinate3857[1],
+				easting: coordinate3857[0],
+				northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
-				.and.resolveTo(
-					new Response(
-						JSON.stringify(
-							featureInfoResultPayload
-						)
-					)
-				);
+				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 
@@ -68,7 +60,6 @@ describe('FeatureInfoResult provider', () => {
 		});
 
 		it('loads a FeatureInfoResult for a imported and BAA restricted WmsGeoResource', async () => {
-
 			const backendUrl = 'https://backend.url/';
 			const geoResourceId = 'geoResourceId';
 			const geoResourceUrl = 'url';
@@ -77,8 +68,9 @@ describe('FeatureInfoResult provider', () => {
 				username: 'u',
 				password: 'p'
 			};
-			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '')
-				.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '').setAuthenticationType(
+				GeoResourceAuthenticationType.BAA
+			);
 			const coordinate3857 = [38, 57];
 			const mapResolution = 5;
 			const content = 'content';
@@ -88,7 +80,8 @@ describe('FeatureInfoResult provider', () => {
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(credential);
 			const expectedRequestPayload = JSON.stringify({
 				id: geoResourceId,
-				easting: coordinate3857[0], northing: coordinate3857[1],
+				easting: coordinate3857[0],
+				northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution,
 				username: credential.username,
@@ -97,13 +90,7 @@ describe('FeatureInfoResult provider', () => {
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
-				.and.resolveTo(
-					new Response(
-						JSON.stringify(
-							featureInfoResultPayload
-						)
-					)
-				);
+				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 
@@ -114,23 +101,24 @@ describe('FeatureInfoResult provider', () => {
 		});
 
 		it('throws an error when BaaCredentialService cannot fulfill', async () => {
-
 			const geoResourceId = 'geoResourceId';
 			const geoResourceUrl = 'url';
 			const geoResourceLayer = 'layer';
 
-			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '')
-				.setAuthenticationType(GeoResourceAuthenticationType.BAA);
+			const wmsGeoResource = new WmsGeoResource(geoResourceId, '', geoResourceUrl, geoResourceLayer, '').setAuthenticationType(
+				GeoResourceAuthenticationType.BAA
+			);
 			const coordinate3857 = [38, 57];
 			const mapResolution = 5;
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(wmsGeoResource);
 			spyOn(baaCredentialService, 'get').withArgs(geoResourceUrl).and.returnValue(null);
 
-			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				'FeatureInfoResult could not be retrieved'
+			);
 		});
 
 		it('returns Null when no content is available', async () => {
-
 			const backendUrl = 'https://backend.url/';
 			const geoResourceId = 'geoResourceId';
 			const coordinate3857 = [38, 57];
@@ -140,15 +128,14 @@ describe('FeatureInfoResult provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
 				id: geoResourceId,
-				easting: coordinate3857[0], northing: coordinate3857[1],
+				easting: coordinate3857[0],
+				northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
-				.and.resolveTo(
-					new Response(null, { status: 204 })
-				);
+				.and.resolveTo(new Response(null, { status: 204 }));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
 
@@ -158,7 +145,6 @@ describe('FeatureInfoResult provider', () => {
 		});
 
 		it('throws an exception when backend responds with other status codes', async () => {
-
 			const backendUrl = 'https://backend.url/';
 			const geoResourceId = 'geoResourceId';
 			const coordinate3857 = [38, 57];
@@ -168,29 +154,31 @@ describe('FeatureInfoResult provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const expectedRequestPayload = JSON.stringify({
 				id: geoResourceId,
-				easting: coordinate3857[0], northing: coordinate3857[1],
+				easting: coordinate3857[0],
+				northing: coordinate3857[1],
 				srid: 3857,
 				resolution: mapResolution
 			});
 			const httpServiceSpy = spyOn(httpService, 'post')
 				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
-				.and.resolveTo(
-					new Response(null, { status: 500 })
-				);
+				.and.resolveTo(new Response(null, { status: 500 }));
 
-			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				'FeatureInfoResult could not be retrieved'
+			);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
 		it('throws an exception when GeoResourceService cannot fulfill', async () => {
-
 			const geoResourceId = 'geoResourceId';
 			const coordinate3857 = [38, 57];
 			const mapResolution = 5;
 			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(null);
 
-			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError('FeatureInfoResult could not be retrieved');
+			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
+				'FeatureInfoResult could not be retrieved'
+			);
 		});
 	});
 });

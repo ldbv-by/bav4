@@ -4,19 +4,17 @@ import { positionReducer } from '../../src/store/position/position.reducer';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 
-
 describe('PositionPlugin', () => {
-
 	const mapServiceMock = {
-		getDefaultMapExtent() { },
-		getDefaultGeodeticSrid() { },
-		getSrid() { },
-		getMinZoomLevel: () => { },
-		getMaxZoomLevel: () => { }
+		getDefaultMapExtent() {},
+		getDefaultGeodeticSrid() {},
+		getSrid() {},
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {}
 	};
 
 	const coordinateServiceMock = {
-		transform() { }
+		transform() {}
 	};
 
 	const windowMock = {
@@ -28,7 +26,6 @@ describe('PositionPlugin', () => {
 	};
 
 	const setup = (state) => {
-
 		const store = TestUtils.setupStoreAndDi(state, {
 			position: positionReducer
 		});
@@ -41,7 +38,6 @@ describe('PositionPlugin', () => {
 	};
 
 	describe('register', () => {
-
 		it('calls #register', async () => {
 			const store = setup();
 			const instanceUnderTest = new PositionPlugin();
@@ -52,11 +48,8 @@ describe('PositionPlugin', () => {
 			expect(spy).toHaveBeenCalledTimes(1);
 		});
 
-
 		describe('_init', () => {
-
 			describe('no suitable query param available', () => {
-
 				it('sets position by calling #_setPositionFromConfig', () => {
 					setup();
 					const instanceUnderTest = new PositionPlugin();
@@ -71,7 +64,6 @@ describe('PositionPlugin', () => {
 			});
 
 			describe('both CENTER and ZOOM query params available', () => {
-
 				it('sets position by calling #_setPositionFromQueryParams', () => {
 					setup();
 					const queryParam = `${QueryParameters.CENTER}=21,42&${QueryParameters.ZOOM}=5`;
@@ -88,8 +80,6 @@ describe('PositionPlugin', () => {
 			});
 
 			describe('CENTER query param available', () => {
-
-
 				it('sets position by calling #_setPositionFromQueryParams (only center)', () => {
 					setup();
 					const queryParam = `${QueryParameters.CENTER}=21,42`;
@@ -106,7 +96,6 @@ describe('PositionPlugin', () => {
 			});
 
 			describe('ZOOM query param available', () => {
-
 				it('sets position by calling #_setPositionFromQueryParams (only zoom available)', () => {
 					setup();
 					const queryParam = `${QueryParameters.ZOOM}=5`;
@@ -124,15 +113,12 @@ describe('PositionPlugin', () => {
 		});
 
 		describe('_setPositionFromConfig', () => {
-
 			it('sets position by zooming to configured extent', async () => {
 				const store = setup();
 				const initialFitRequest = store.getState().position.fitRequest;
 
 				const instanceUnderTest = new PositionPlugin();
-				const mapServiceSpy = spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue([
-					[21, 21, 42, 42]
-				]);
+				const mapServiceSpy = spyOn(mapServiceMock, 'getDefaultMapExtent').and.returnValue([[21, 21, 42, 42]]);
 
 				instanceUnderTest._setPositionFromConfig();
 
@@ -144,7 +130,6 @@ describe('PositionPlugin', () => {
 		});
 
 		describe('_setPositionFromQueryParams', () => {
-
 			it('sets position based on zoomlevel and geodetic coordinate', () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
@@ -190,8 +175,10 @@ describe('PositionPlugin', () => {
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
 				const expectedZoomLevel = 5;
-				const expectedRotationValue = .5;
-				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
+				const expectedRotationValue = 0.5;
+				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}&${
+					QueryParameters.ROTATION
+				}=${expectedRotationValue}`;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 				spyOn(coordinateServiceMock, 'transform').withArgs(wgs84Coordinate, 4326, 3857).and.returnValue(expectedCoordinate);
@@ -208,7 +195,7 @@ describe('PositionPlugin', () => {
 				const instanceUnderTest = new PositionPlugin();
 				const wgs84Coordinate = [11, 48];
 				const expectedCoordinate = [11111, 22222];
-				const expectedRotationValue = .5;
+				const expectedRotationValue = 0.5;
 				const queryParam = `${QueryParameters.CENTER}=${wgs84Coordinate.join(',')}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
@@ -239,7 +226,7 @@ describe('PositionPlugin', () => {
 				const store = setup();
 				const instanceUnderTest = new PositionPlugin();
 				const expectedZoomLevel = 5;
-				const expectedRotationValue = .5;
+				const expectedRotationValue = 0.5;
 				const queryParam = `${QueryParameters.ZOOM}=${expectedZoomLevel}&${QueryParameters.ROTATION}=${expectedRotationValue}`;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
@@ -276,6 +263,5 @@ describe('PositionPlugin', () => {
 				expect(setPositionFromConfigSpy).toHaveBeenCalled();
 			});
 		});
-
 	});
 });

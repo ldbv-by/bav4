@@ -12,4 +12,3 @@ translationService.register('geolocationButtonProvider', geolocationButtonProvid
 translationService.register('contextMenuProvider', contextMenuProvider);
 translationService.register('attributionInfoProvider', attributionInfoProvider);
 translationService.register('rotationButtonProvider', rotationButtonProvider);
-

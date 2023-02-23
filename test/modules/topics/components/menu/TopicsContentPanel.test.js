@@ -12,9 +12,7 @@ import { TestUtils } from '../../../../test-utils.js';
 window.customElements.define(TopicsContentPanel.tag, TopicsContentPanel);
 
 describe('TopicsContentPanelIndex', () => {
-
 	it('is an enum', () => {
-
 		expect(Object.entries(TopicsContentPanelIndex).length).toBe(3);
 		expect(Object.isFrozen(TopicsContentPanelIndex)).toBeTrue();
 		expect(TopicsContentPanelIndex.TOPICS).toBe(0);
@@ -23,32 +21,24 @@ describe('TopicsContentPanelIndex', () => {
 	});
 });
 
-
 describe('TopicsContentPanel', () => {
-
 	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
 	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...', ['bg1']);
-
 
 	let store;
 
 	const topicsServiceMock = {
-		all() { }
+		all() {}
 	};
 
 	const setup = (state) => {
-
 		store = TestUtils.setupStoreAndDi(state, { topics: topicsReducer, topicsContentPanel: topicsContentPanelReducer });
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('TopicsService', topicsServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('TopicsService', topicsServiceMock);
 		return TestUtils.render(TopicsContentPanel.tag);
 	};
 
 	describe('class', () => {
-
 		it('inherits from AbstractContentPanel', async () => {
-
 			const element = await setup();
 
 			expect(element instanceof AbstractContentPanel).toBeTrue();
@@ -56,11 +46,8 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('when initialized', () => {
-
 		describe('and no topics are available', () => {
-
 			it('renders the nothing', async () => {
-
 				const element = await setup();
 
 				expect(element.shadowRoot.children.length).toBe(0);
@@ -69,10 +56,7 @@ describe('TopicsContentPanel', () => {
 
 		describe('and topics state is not ready', () => {
 			it('renders the nothing', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([
-					topic0,
-					topic1
-				]);
+				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 				const element = await setup();
 
@@ -81,12 +65,8 @@ describe('TopicsContentPanel', () => {
 		});
 
 		describe('all set', () => {
-
 			it('adds common topic style element onWindowLoad', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([
-					topic0,
-					topic1
-				]);
+				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 				await setup({
 					topics: {
@@ -106,10 +86,7 @@ describe('TopicsContentPanel', () => {
 			});
 
 			it('adds or updates a topic specific style element on topicChange', async () => {
-				spyOn(topicsServiceMock, 'all').and.returnValue([
-					topic0,
-					topic1
-				]);
+				spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 				await setup({
 					topics: {
@@ -133,12 +110,8 @@ describe('TopicsContentPanel', () => {
 			});
 
 			describe('and topics should be visible', () => {
-
 				it('renders a list of topic elements and CatalogContentPanels', async () => {
-					spyOn(topicsServiceMock, 'all').and.returnValue([
-						topic0,
-						topic1
-					]);
+					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 					const element = await setup({
 						topics: {
@@ -183,12 +156,8 @@ describe('TopicsContentPanel', () => {
 			});
 
 			describe('and topics should NOT be visible', () => {
-
-				it('adds the \'invisible\' class', async () => {
-					spyOn(topicsServiceMock, 'all').and.returnValue([
-						topic0,
-						topic1
-					]);
+				it("adds the 'invisible' class", async () => {
+					spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 					const element = await setup({
 						topics: {
@@ -214,12 +183,8 @@ describe('TopicsContentPanel', () => {
 	});
 
 	describe('when topic element clicked', () => {
-
 		it('changes the current topic and updates the content panel index', async () => {
-			spyOn(topicsServiceMock, 'all').and.returnValue([
-				topic0,
-				topic1
-			]);
+			spyOn(topicsServiceMock, 'all').and.returnValue([topic0, topic1]);
 
 			const element = await setup({
 				topics: {

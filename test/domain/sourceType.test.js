@@ -1,9 +1,7 @@
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../src/domain/sourceType';
 
 describe('SourceType', () => {
-
 	it('provides getter for properties', () => {
-
 		const sourceType = new SourceType('name', 'version', 42);
 
 		expect(sourceType.name).toBe('name');
@@ -12,7 +10,6 @@ describe('SourceType', () => {
 	});
 
 	it('provides default properties', () => {
-
 		const sourceType = new SourceType('name', undefined);
 
 		expect(sourceType.name).toBe('name');
@@ -22,9 +19,7 @@ describe('SourceType', () => {
 });
 
 describe('SourceTypeResult', () => {
-
 	it('provides getter for properties', () => {
-
 		const sourceType = new SourceType('name', 'version');
 		const result = new SourceTypeResult(SourceTypeResultStatus.OK, sourceType);
 
@@ -33,7 +28,6 @@ describe('SourceTypeResult', () => {
 	});
 
 	it('provides default properties', () => {
-
 		const result = new SourceTypeResult(SourceTypeResultStatus.MAX_SIZE_EXCEEDED, undefined);
 
 		expect(result.status).toEqual(SourceTypeResultStatus.MAX_SIZE_EXCEEDED);
@@ -42,9 +36,7 @@ describe('SourceTypeResult', () => {
 });
 
 describe('SourceTypeName', () => {
-
 	it('provides an enum of all available types', () => {
-
 		expect(Object.keys(SourceTypeName).length).toBe(5);
 		expect(SourceTypeName.KML).toBe('kml');
 		expect(SourceTypeName.GPX).toBe('gpx');
@@ -52,13 +44,10 @@ describe('SourceTypeName', () => {
 		expect(SourceTypeName.EWKT).toBe('ewkt');
 		expect(SourceTypeName.WMS).toBe('wms');
 	});
-
 });
 
 describe('SourceTypeResultStatus', () => {
-
 	it('provides an enum of all available types', () => {
-
 		expect(Object.keys(SourceTypeResultStatus).length).toBe(7);
 		expect(SourceTypeResultStatus.OK).toBe(0);
 		expect(SourceTypeResultStatus.UNSUPPORTED_TYPE).toBe(1);
@@ -71,9 +60,7 @@ describe('SourceTypeResultStatus', () => {
 });
 
 describe('SourceTypeMaxFileSize', () => {
-
 	it('provides a maximum file size', () => {
 		expect(SourceTypeMaxFileSize).toBe(134217728);
 	});
 });
-

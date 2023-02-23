@@ -8,7 +8,6 @@ const protoTest = function () {
 
 //tests
 describe('Function based Injection', () => {
-
 	it('has http service', () => {
 		expect(protoTest().HttpService).toBe(http);
 	});

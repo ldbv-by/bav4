@@ -16,7 +16,6 @@ const Update_ZoomLevel_Property = 'update_zoomLevel_property';
  * @author taulinger
  */
 export class AttributionInfo extends MvuElement {
-
 	constructor() {
 		super({
 			open: false,
@@ -29,12 +28,17 @@ export class AttributionInfo extends MvuElement {
 	}
 
 	onInitialize() {
-		this.observe(state => state.layers.active, activeLayers => this.signal(Update_ActiveLayers_Property, activeLayers));
-		this.observe(state => state.position.zoom, zoomLevel => this.signal(Update_ZoomLevel_Property, zoomLevel));
+		this.observe(
+			(state) => state.layers.active,
+			(activeLayers) => this.signal(Update_ActiveLayers_Property, activeLayers)
+		);
+		this.observe(
+			(state) => state.position.zoom,
+			(zoomLevel) => this.signal(Update_ZoomLevel_Property, zoomLevel)
+		);
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Open_Property:
 				return { ...model, open: data };
@@ -46,11 +50,10 @@ export class AttributionInfo extends MvuElement {
 	}
 
 	_getCopyrights(activeLayers, zoomLevel) {
-
 		const geoResources = activeLayers
 			.filter(({ visible }) => visible)
 			.filter(({ constraints: { hidden } }) => !hidden)
-			.map(l => this._georesourceService.byId(l.geoResourceId));
+			.map((l) => this._georesourceService.byId(l.geoResourceId));
 
 		return getUniqueCopyrights(geoResources, zoomLevel);
 	}
@@ -62,14 +65,12 @@ export class AttributionInfo extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { activeLayers, zoomLevel, open } = model;
 
-		const attributionTemplates =
-			this._getCopyrights(activeLayers, zoomLevel)
-				.map((copyright, index, array) => {
-					const separator = index === array.length - 1 ? '' : ',';
-					return copyright.url
-						? html`<a class='attribution attribution-link' target='_blank' href=${copyright.url}>${copyright.label}${separator}</a>`
-						: html`<span class='attribution'>${copyright.label}${separator}</span>`;
-				});
+		const attributionTemplates = this._getCopyrights(activeLayers, zoomLevel).map((copyright, index, array) => {
+			const separator = index === array.length - 1 ? '' : ',';
+			return copyright.url
+				? html`<a class="attribution attribution-link" target="_blank" href=${copyright.url}>${copyright.label}${separator}</a>`
+				: html`<span class="attribution">${copyright.label}${separator}</span>`;
+		});
 
 		const toggleVisibilitiy = () => this.signal(Update_Open_Property, !open);
 
@@ -78,7 +79,7 @@ export class AttributionInfo extends MvuElement {
 		};
 
 		const getCollapseClass = () => {
-			return (attributionTemplates.length > 1 || open) ? 'is-collapse' : '';
+			return attributionTemplates.length > 1 || open ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {
@@ -86,15 +87,16 @@ export class AttributionInfo extends MvuElement {
 		};
 
 		return html`
-			<style>${css}</style>
-            <div class='attribution-container ${classMap(classes)}'>
-				© ${translate('map_attributionInfo_label')}: 
-				${attributionTemplates} 
+			<style>
+				${css}
+			</style>
+			<div class="attribution-container ${classMap(classes)}">
+				© ${translate('map_attributionInfo_label')}: ${attributionTemplates}
 				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
-				<i class="icon chevron  "></i>
+					<i class="icon chevron  "></i>
 				</div>
 			</div>
-			`;
+		`;
 	}
 
 	static get tag() {

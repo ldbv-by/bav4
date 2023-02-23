@@ -26,17 +26,13 @@ import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
 import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
 
-
-
 /**
  * Service which configures, initializes and holds the redux store.
  * @class
  * @author taulinger
  */
 export class StoreService {
-
 	constructor() {
-
 		const rootReducer = combineReducers({
 			/*
 			 * must be named like the field of the state
@@ -72,7 +68,6 @@ export class StoreService {
 		this._store = createStore(rootReducer);
 
 		$injector.onReady(async () => {
-
 			const {
 				LayersPlugin: layersPlugin,
 				TopicsPlugin: topicsPlugin,
@@ -91,26 +86,25 @@ export class StoreService {
 				ExportMfpPlugin: exportMfpPlugin,
 				ElevationProfilePlugin: elevationProfilePlugin,
 				HistoryStatePlugin: historyStatePlugin
-			}
-				= $injector.inject(
-					'TopicsPlugin',
-					'ChipsPlugin',
-					'LayersPlugin',
-					'GeolocationPlugin',
-					'MeasurementPlugin',
-					'DrawPlugin',
-					'PositionPlugin',
-					'ContextClickPlugin',
-					'HighlightPlugin',
-					'MediaPlugin',
-					'FeatureInfoPlugin',
-					'MainMenuPlugin',
-					'ImportPlugin',
-					'SearchPlugin',
-					'ExportMfpPlugin',
-					'ElevationProfilePlugin',
-					'HistoryStatePlugin'
-				);
+			} = $injector.inject(
+				'TopicsPlugin',
+				'ChipsPlugin',
+				'LayersPlugin',
+				'GeolocationPlugin',
+				'MeasurementPlugin',
+				'DrawPlugin',
+				'PositionPlugin',
+				'ContextClickPlugin',
+				'HighlightPlugin',
+				'MediaPlugin',
+				'FeatureInfoPlugin',
+				'MainMenuPlugin',
+				'ImportPlugin',
+				'SearchPlugin',
+				'ExportMfpPlugin',
+				'ElevationProfilePlugin',
+				'HistoryStatePlugin'
+			);
 
 			setTimeout(async () => {
 				//register plugins

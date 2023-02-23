@@ -1,4 +1,3 @@
-
 import { Point } from 'ol/geom';
 import { BaOverlay, BaOverlayTypes } from '../../../../src/modules/olMap/components/BaOverlay';
 import { TestUtils } from '../../../test-utils.js';
@@ -6,7 +5,6 @@ import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(BaOverlay.tag, BaOverlay);
 
 describe('BaOverlay', () => {
-
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 		// eslint-disable-next-line no-unused-vars
@@ -24,7 +22,6 @@ describe('BaOverlay', () => {
 		}
 		return element;
 	};
-
 
 	describe('when initialized with type property', () => {
 		it('renders the text view', async () => {
@@ -48,7 +45,7 @@ describe('BaOverlay', () => {
 			expect(element.value).toBe('foo');
 		});
 
-		it('have no effect on rendering the help view, when static is set to \'true\' ', async () => {
+		it("have no effect on rendering the help view, when static is set to 'true' ", async () => {
 			const properties = { type: BaOverlayTypes.HELP, value: 'foo', static: true };
 			const element = await setup(properties);
 			const div = element.shadowRoot.querySelector('div');
@@ -64,7 +61,6 @@ describe('BaOverlay', () => {
 
 	describe('when type changed', () => {
 		it('renders the changed view', async () => {
-
 			const element = await setup();
 			const div = element.shadowRoot.querySelector('div');
 
@@ -81,7 +77,6 @@ describe('BaOverlay', () => {
 		});
 
 		it('renders NOT the view, when type value is unchanged', async () => {
-
 			const element = await setup();
 			const spy = spyOn(element, 'render').and.callThrough();
 

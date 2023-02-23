@@ -16,15 +16,16 @@ const Update_Results_AllShown = 'update_results_allShown';
  * @author costa_gi
  */
 export class CpResultsPanel extends MvuElement {
-
 	constructor() {
 		super({
 			results: [],
 			collapsed: false,
 			allShown: false
 		});
-		const { SearchResultService: searchResultService, TranslationService: translationService }
-			= $injector.inject('SearchResultService', 'TranslationService');
+		const { SearchResultService: searchResultService, TranslationService: translationService } = $injector.inject(
+			'SearchResultService',
+			'TranslationService'
+		);
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
@@ -45,19 +46,20 @@ export class CpResultsPanel extends MvuElement {
 		const searchResultProvider = (term) => this._searchResultService.cadastralParcelsByTerm(term);
 
 		//requestData call has to be debounced
-		const requestCpDataAndUpdateViewHandler = debounced(CpResultsPanel.Debounce_Delay,
-			async (term) => {
-				if (term) {
-					const results = await requestData(term, searchResultProvider, CpResultsPanel.Min_Query_Length);
-					const allShown = (results.length > CpResultsPanel.Default_Result_Item_Length) ? false : true;
-					this.signal(Update_Results_AllShown, { results, allShown });
-				}
-				else {
-					this.signal(Update_Results_AllShown, { results: [], allShown: false });
-				}
-			});
+		const requestCpDataAndUpdateViewHandler = debounced(CpResultsPanel.Debounce_Delay, async (term) => {
+			if (term) {
+				const results = await requestData(term, searchResultProvider, CpResultsPanel.Min_Query_Length);
+				const allShown = results.length > CpResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown });
+			} else {
+				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+			}
+		});
 
-		this.observe(state => state.search.query, query => requestCpDataAndUpdateViewHandler(query.payload));
+		this.observe(
+			(state) => state.search.query,
+			(query) => requestCpDataAndUpdateViewHandler(query.payload)
+		);
 	}
 
 	/**
@@ -93,27 +95,26 @@ export class CpResultsPanel extends MvuElement {
 		const indexEnd = allShown ? results.length : CpResultsPanel.Default_Result_Item_Length;
 
 		return html`
-        <style>${css}</style>
-		<div class="cp-results-panel divider">
-			<button class="cp-label" @click="${toggleCollapse}">
-				<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>			
-				<a class='cp-label__collapse'>
-					<i class='icon chevron ${classMap(iconCollapseClass)}'>
-					</i>
-				</a>   
-			</button>		
-			<div class="${classMap(bodyCollapseClass)}">		
-				<ul class="cp-items">	
-					${results
-		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
-				</ul>
-				<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
-				${translate('search_menu_showAll_label')}
+			<style>
+				${css}
+			</style>
+			<div class="cp-results-panel divider">
+				<button class="cp-label" @click="${toggleCollapse}">
+					<span class="cp-label__text">${translate('search_menu_cpResultsPanel_label')}</span>
+					<a class="cp-label__collapse">
+						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
+					</a>
+				</button>
+				<div class="${classMap(bodyCollapseClass)}">
+					<ul class="cp-items">
+						${results
+							.slice(0, indexEnd)
+							.map((result) => html`<ba-search-content-panel-cp-item data-test-id .data=${result}></<ba-search-content-panel-cp-item>`)}
+					</ul>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
 				</div>
-			</div>	
-		</div>
-        `;
+			</div>
+		`;
 	}
 
 	static get tag() {

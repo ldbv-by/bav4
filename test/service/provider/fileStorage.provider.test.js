@@ -5,31 +5,23 @@ import { loadBvvFileStorageResourceById, _newLoader } from '../../../src/service
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../src/services/provider/attribution.provider';
 
 describe('BVV GeoResource provider', () => {
-
-
 	const fileStorageService = {
-		async get() { },
-		isFileId() { },
-		isAdminId() { },
-		async getFileId() { }
+		async get() {},
+		isFileId() {},
+		isAdminId() {},
+		async getFileId() {}
 	};
 
 	beforeEach(() => {
-
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('FileStorageService', fileStorageService);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('FileStorageService', fileStorageService);
 	});
 
 	afterEach(() => {
 		$injector.reset();
 	});
 
-
 	describe('loadBvvFileStorageResourceById', () => {
-
 		describe('Id is a FileStorage fileId', () => {
-
 			it('loads a GeoResource via the FileStorageService', () => {
 				const id = 'foo';
 				spyOn(fileStorageService, 'isFileId').withArgs(id).and.returnValue(true);
@@ -44,7 +36,6 @@ describe('BVV GeoResource provider', () => {
 		});
 
 		describe('Id is a FileStorage adminId', () => {
-
 			it('loads a GeoResource via the FileStorageService', () => {
 				const id = 'foo';
 				spyOn(fileStorageService, 'isAdminId').withArgs(id).and.returnValue(true);
@@ -59,7 +50,6 @@ describe('BVV GeoResource provider', () => {
 		});
 
 		describe('Id is neither an adminId nor a fileId', () => {
-
 			it('return Null', () => {
 				const id = 'foo';
 				spyOn(fileStorageService, 'isAdminId').withArgs(id).and.returnValue(false);
@@ -73,7 +63,6 @@ describe('BVV GeoResource provider', () => {
 	});
 
 	describe('_newLoader', () => {
-
 		it('returns a loader that loads a VectorGeoResource', async () => {
 			const id = 'id';
 			const fileId = 'f_id';
@@ -81,9 +70,9 @@ describe('BVV GeoResource provider', () => {
 			const type = FileStorageServiceDataTypes.KML;
 			const srid = 1234;
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
-			spyOn(fileStorageService, 'get').withArgs(fileId).and.returnValue(
-				Promise.resolve({ data: data, type: type, srid: srid })
-			);
+			spyOn(fileStorageService, 'get')
+				.withArgs(fileId)
+				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
 			const loader = _newLoader(id);
 
 			const geoResource = await loader();
@@ -104,17 +93,15 @@ describe('BVV GeoResource provider', () => {
 			const type = 'unsupported';
 			const srid = 1234;
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
-			spyOn(fileStorageService, 'get').withArgs(fileId).and.returnValue(
-				Promise.resolve({ data: data, type: type, srid: srid })
-			);
+			spyOn(fileStorageService, 'get')
+				.withArgs(fileId)
+				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
 			const loader = _newLoader(id);
-
 
 			try {
 				await loader();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe(`Could not load vector data for id '${id}': Unsupported FileStorageServiceDataType '${type}'`);
 			}
 		});
@@ -130,8 +117,7 @@ describe('BVV GeoResource provider', () => {
 			try {
 				await loader();
 				throw new Error('Promise should not be resolved');
-			}
-			catch (error) {
+			} catch (error) {
 				expect(error.message).toBe(`Could not load vector data for id '${id}': ${message}`);
 			}
 		});

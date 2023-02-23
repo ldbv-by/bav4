@@ -1,7 +1,6 @@
 import { domPurifySanitizeHtml } from './provider/sanitizeHtml.provider';
 
 export class SecurityService {
-
 	constructor(sanitizeHtmlProvider = domPurifySanitizeHtml) {
 		this._sanitizeHtmlProvider = sanitizeHtmlProvider;
 	}

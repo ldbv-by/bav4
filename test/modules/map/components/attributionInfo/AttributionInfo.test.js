@@ -8,17 +8,15 @@ import { XyzGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 import { getMinimalAttribution } from '../../../../../src/services/provider/attribution.provider';
 
-
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
 
 describe('AttributionInfo', () => {
-
 	const geoResourceServiceMock = {
-		byId: () => { }
+		byId: () => {}
 	};
 	const mapServiceMock = {
-		getMinZoomLevel: () => { },
-		getMaxZoomLevel: () => { }
+		getMinZoomLevel: () => {},
+		getMaxZoomLevel: () => {}
 	};
 
 	const setup = (state) => {
@@ -34,23 +32,25 @@ describe('AttributionInfo', () => {
 		return TestUtils.render(AttributionInfo.tag);
 	};
 
-
 	describe('_getCopyrights', () => {
-
 		it('return a set of valid attributions', async () => {
-
-			spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
+			spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
 				switch (geoResourceId) {
 					case '0':
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`foo_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) =>
+							getMinimalAttribution(`foo_${zoomLevel}`)
+						);
 
 					case '1':
 						// layer is not visisble
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`not_visible_${zoomLevel}`));
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) =>
+							getMinimalAttribution(`not_visible_${zoomLevel}`)
+						);
 					case '2':
 						// layer is  hidden
-						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) => getMinimalAttribution(`hidden${zoomLevel}`));
-
+						return new XyzGeoResource(geoResourceId, '', '').setAttributionProvider((geoResourceId, zoomLevel) =>
+							getMinimalAttribution(`hidden${zoomLevel}`)
+						);
 				}
 			});
 			const layer = [
@@ -68,7 +68,6 @@ describe('AttributionInfo', () => {
 	});
 
 	describe('when instantiated', () => {
-
 		it('has a model containing default values', async () => {
 			await setup();
 			const model = new AttributionInfo().getModel();
@@ -81,9 +80,7 @@ describe('AttributionInfo', () => {
 		});
 	});
 
-
 	describe('when initialized', () => {
-
 		it('renders available attributions', async () => {
 			const layerId0 = 'id0';
 			const geoResourceId0 = 'geoResourceId0';
@@ -93,13 +90,16 @@ describe('AttributionInfo', () => {
 			const url1 = 'http://foo.bar/';
 			const url2 = 'http://foo.bar/2/';
 			const attribution1 = {
-				copyright: [{
-					label: layerId1,
-					url: url1
-				}, {
-					label: layerId1 + '_2',
-					url: url2
-				}]
+				copyright: [
+					{
+						label: layerId1,
+						url: url1
+					},
+					{
+						label: layerId1 + '_2',
+						url: url2
+					}
+				]
 			};
 			const layer = [
 				{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 },
@@ -116,7 +116,7 @@ describe('AttributionInfo', () => {
 			};
 			const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(attribution0);
 			const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(attribution1);
-			spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
+			spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
 				switch (geoResourceId) {
 					case geoResourceId0:
 						return geoResource0;
@@ -157,13 +157,10 @@ describe('AttributionInfo', () => {
 		});
 
 		describe('when zoom changes', () => {
-
 			it('re-renders available attributions', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
-				const layer = [
-					{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 }
-				];
+				const layer = [{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 }];
 				const zoom = 12;
 				const state = {
 					layers: {
@@ -182,7 +179,6 @@ describe('AttributionInfo', () => {
 				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('span.attribution').innerText).toBe(`${geoResourceId0}_${zoom}`);
 
-
 				changeZoom(11);
 
 				expect(element.shadowRoot.querySelectorAll('span.attribution')).toHaveSize(1);
@@ -191,7 +187,6 @@ describe('AttributionInfo', () => {
 		});
 
 		describe('when layer slice of state changes', () => {
-
 			it('re-renders available attributions', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
@@ -212,7 +207,7 @@ describe('AttributionInfo', () => {
 				};
 				const geoResource0 = new XyzGeoResource(geoResourceId0, '', '').setAttribution(getMinimalAttribution(layerId0));
 				const geoResource1 = new XyzGeoResource(geoResourceId1, '', '').setAttribution(getMinimalAttribution(layerId1));
-				spyOn(geoResourceServiceMock, 'byId').and.callFake(geoResourceId => {
+				spyOn(geoResourceServiceMock, 'byId').and.callFake((geoResourceId) => {
 					switch (geoResourceId) {
 						case geoResourceId0:
 							return geoResource0;
@@ -233,13 +228,10 @@ describe('AttributionInfo', () => {
 		});
 
 		describe('when toggle button clicked', () => {
-
 			it('toogles the component', async () => {
 				const layerId0 = 'id0';
 				const geoResourceId0 = 'geoResourceId0';
-				const layer = [
-					{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 }
-				];
+				const layer = [{ ...createDefaultLayerProperties(), id: layerId0, geoResourceId: geoResourceId0 }];
 				const zoom = 12;
 				const state = {
 					layers: {
@@ -267,6 +259,5 @@ describe('AttributionInfo', () => {
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
 			});
 		});
-
 	});
 });

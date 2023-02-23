@@ -4,26 +4,23 @@ import { getLayerById, registerLongPressListener, toOlLayerFromHandler, updateOl
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { simulateMapBrowserEvent } from '../mapTestUtils';
 
-
 describe('olMapUtils', () => {
-
 	describe('updateOlLayer', () => {
 		it('updates the properties of a olLayer', () => {
-
 			const olLayer = new BaseLayer({});
-			const layer = { visible: false, opacity: .5 };
+			const layer = { visible: false, opacity: 0.5 };
 
 			updateOlLayer(olLayer, layer);
 
 			expect(olLayer.getVisible()).toBeFalse();
-			expect(olLayer.getOpacity()).toBe(.5);
+			expect(olLayer.getOpacity()).toBe(0.5);
 		});
 	});
 
 	describe('toOlLayerFromHandler', () => {
 		it('retrieves an olLayer from a handler', () => {
 			const mockHandler = {
-				activate() { }
+				activate() {}
 			};
 			const map = new Map();
 			const olLayer = new BaseLayer({});
@@ -36,7 +33,7 @@ describe('olMapUtils', () => {
 
 		it('retrieves an olLayer from a handler', () => {
 			const mockHandler = {
-				activate() { }
+				activate() {}
 			};
 			const map = new Map();
 			const olLayer = new BaseLayer({});
@@ -49,7 +46,7 @@ describe('olMapUtils', () => {
 
 		it('it passes return values from a handler', () => {
 			const mockHandler = {
-				activate() { }
+				activate() {}
 			};
 			const map = new Map();
 			spyOn(mockHandler, 'activate').withArgs(map).and.returnValue(null);
@@ -61,7 +58,6 @@ describe('olMapUtils', () => {
 	});
 
 	describe('registerLongPressListener', () => {
-
 		beforeEach(async () => {
 			jasmine.clock().install();
 		});
@@ -93,11 +89,11 @@ describe('olMapUtils', () => {
 			jasmine.clock().tick(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
-			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
-				{
+			expect(spy).toHaveBeenCalledWith(
+				jasmine.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
-				}
-			));
+				})
+			);
 		});
 
 		it('register a listener on long press events with default delay (III)', () => {
@@ -112,11 +108,11 @@ describe('olMapUtils', () => {
 			jasmine.clock().tick(defaultDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
-			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
-				{
+			expect(spy).toHaveBeenCalledWith(
+				jasmine.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
-				}
-			));
+				})
+			);
 		});
 
 		it('register a listener on long AND shot press events with default delay (I)', () => {
@@ -159,11 +155,11 @@ describe('olMapUtils', () => {
 			jasmine.clock().tick(customDelay + 100);
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERUP);
 
-			expect(spy).toHaveBeenCalledWith(jasmine.objectContaining(
-				{
+			expect(spy).toHaveBeenCalledWith(
+				jasmine.objectContaining({
 					type: MapBrowserEventType.POINTERDOWN
-				}
-			));
+				})
+			);
 		});
 
 		it('cancels the timeout on pointer move with dragging)', () => {
@@ -196,7 +192,6 @@ describe('olMapUtils', () => {
 	});
 
 	describe('getLayerById', () => {
-
 		it('returns the desired layer', () => {
 			const map = new Map();
 			const olLayer = new BaseLayer({ properties: { id: 'foo' } });

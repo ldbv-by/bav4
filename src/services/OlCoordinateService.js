@@ -9,7 +9,6 @@ import { $injector } from '../injection';
  * @author taulinger
  */
 export class OlCoordinateService {
-
 	/**
 	 *
 	 * @param {stringifyCoordProvider} [stringifyFunction=bvvStringifyFunction]
@@ -19,7 +18,6 @@ export class OlCoordinateService {
 		const { ProjectionService } = $injector.inject('ProjectionService');
 		this._projectionService = ProjectionService;
 	}
-
 
 	/**
 	 *
@@ -37,7 +35,6 @@ export class OlCoordinateService {
 	 */
 	toLonLat(coordinate3857) {
 		return toLonLat(coordinate3857);
-
 	}
 
 	/**
@@ -102,7 +99,6 @@ export class OlCoordinateService {
 		}
 		throw new Error('Unsupported SRID: ' + targetSrid);
 	}
-
 
 	/**
 	 * Stringifies a coordinate.

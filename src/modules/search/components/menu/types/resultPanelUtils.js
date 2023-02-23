@@ -3,8 +3,7 @@ export const requestData = async (term, provider, minQueryLength) => {
 		try {
 			const result = await provider(term);
 			return result;
-		}
-		catch (error) {
+		} catch (error) {
 			console.warn(error.message);
 		}
 	}

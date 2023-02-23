@@ -1,14 +1,24 @@
-import { activate, deactivate, reset, remove, setFileSaveResult, setMode, setType, finish, setStyle, setSelectedStyle, setDescription, clearDescription } from '../../../src/store/draw/draw.action';
+import {
+	activate,
+	deactivate,
+	reset,
+	remove,
+	setFileSaveResult,
+	setMode,
+	setType,
+	finish,
+	setStyle,
+	setSelectedStyle,
+	setDescription,
+	clearDescription
+} from '../../../src/store/draw/draw.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { StyleTypes } from '../../../src/modules/olMap/services/StyleService';
 import { StyleSizeTypes } from '../../../src/domain/styles';
 import { drawReducer, INITIAL_STYLE } from '../../../src/store/draw/draw.reducer';
 
-
-
 describe('drawReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer
@@ -26,7 +36,6 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.reset).toBeNull();
 		expect(store.getState().draw.fileSaveResult).toBeNull();
 	});
-
 
 	it('updates the active property', () => {
 		const store = setup();

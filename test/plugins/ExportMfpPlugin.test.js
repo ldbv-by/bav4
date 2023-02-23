@@ -10,21 +10,18 @@ import { notificationReducer } from '../../src/store/notifications/notifications
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
 
-
-
 describe('ExportMfpPlugin', () => {
-
 	const mfpService = {
-		async init() { },
-		async createJob() { },
-		cancelJob() { }
+		async init() {},
+		async createJob() {},
+		cancelJob() {}
 	};
 	const environmentService = {
-		getWindow: () => { }
+		getWindow: () => {}
 	};
 
 	const translationService = {
-		register() { },
+		register() {},
 		translate: (key) => key
 	};
 
@@ -33,7 +30,8 @@ describe('ExportMfpPlugin', () => {
 			mfp: mfpReducer,
 			layers: layersReducer,
 			tools: toolsReducer,
-			notifications: notificationReducer, position: positionReducer
+			notifications: notificationReducer,
+			position: positionReducer
 		});
 		$injector
 			.registerSingleton('EnvironmentService', environmentService)
@@ -43,12 +41,12 @@ describe('ExportMfpPlugin', () => {
 	};
 
 	describe('when not yet initialized and toolId changes', () => {
-
 		const getMockCapabilities = () => {
 			const scales = [1000, 5000];
 			const dpis = [125, 200];
 			return {
-				grSubstitutions: {}, layouts: [
+				grSubstitutions: {},
+				layouts: [
 					{ id: 'a4_portrait', scales: scales, dpis: dpis, mapSize: { width: 539, height: 722 } },
 					{ id: 'a4_landscape', scales: scales, dpis: dpis, mapSize: { width: 785, height: 475 } }
 				]
@@ -96,7 +94,6 @@ describe('ExportMfpPlugin', () => {
 	});
 
 	describe('when initialized and toolId changes', () => {
-
 		it('updates the active property (I)', async () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
@@ -128,7 +125,6 @@ describe('ExportMfpPlugin', () => {
 	});
 
 	describe('when active property changes', () => {
-
 		it('adds or removes the mfp layer', async () => {
 			const store = setup();
 			const instanceUnderTest = new ExportMfpPlugin();
@@ -147,11 +143,8 @@ describe('ExportMfpPlugin', () => {
 		});
 	});
 
-
 	describe('when jobSpec property changes', () => {
-
 		describe('and jobSpec is available', () => {
-
 			it('it creates a new job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
@@ -205,7 +198,6 @@ describe('ExportMfpPlugin', () => {
 		});
 
 		describe('and jobSpec is NOT available', () => {
-
 			it('it cancels the current job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();

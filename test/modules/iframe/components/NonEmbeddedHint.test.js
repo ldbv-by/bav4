@@ -6,23 +6,21 @@ import { $injector } from '../../../../src/injection';
 window.customElements.define(NonEmbeddedHint.tag, NonEmbeddedHint);
 
 describe('NonEmbeddedHint', () => {
-
 	const setup = (config) => {
 		const { embed, window } = config;
 
 		TestUtils.setupStoreAndDi();
-		$injector.registerSingleton('EnvironmentService', {
-			getWindow: () => window,
-			isEmbedded: () => embed
-		})
+		$injector
+			.registerSingleton('EnvironmentService', {
+				getWindow: () => window,
+				isEmbedded: () => embed
+			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(NonEmbeddedHint.tag);
 	};
 
 	describe('when initialized', () => {
-
 		it('does nothing when embedded version is not requested', async () => {
-
 			await setup({ embed: false, window: {} });
 
 			expect(document.body.innerHTML).toBe('<ba-nonembedded-hint></ba-nonembedded-hint>');

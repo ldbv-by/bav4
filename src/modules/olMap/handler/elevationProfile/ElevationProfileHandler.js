@@ -39,12 +39,11 @@ export class ElevationProfileHandler extends OlMapHandler {
 				this._updateListener(InteractionStateType.MODIFY, null);
 			}
 		});
-
 	}
 
 	_getCoordinates(features) {
 		const featureCount = features.getLength();
-		const force2D = (coordinates) => coordinates.map(c => c.slice(0, 2));
+		const force2D = (coordinates) => coordinates.map((c) => c.slice(0, 2));
 
 		if (featureCount === 1) {
 			const feature = features.getArray()[0];
@@ -69,7 +68,7 @@ export class ElevationProfileHandler extends OlMapHandler {
 	_updateListener(type, interaction) {
 		const listeners = this._mapListeners[type];
 		if (listeners.length > 0) {
-			listeners.forEach(listener => unByKey(listener));
+			listeners.forEach((listener) => unByKey(listener));
 			this._mapListeners[type] = [];
 			updateCoordinates(Empty_Elevation_Profile_Coordinates);
 		}

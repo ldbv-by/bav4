@@ -2,20 +2,17 @@ import { $injector } from '../../src/injection';
 import { HttpService, MediaType } from '../../src/services/HttpService';
 import { getMfpCapabilities, postMfpSpec } from '../../src/services/provider/mfp.provider';
 describe('mfp provider', () => {
-
 	describe('getMfpCapabilities', () => {
 		const configService = {
-			getValueAsPath() { }
+			getValueAsPath() {}
 		};
 
 		const httpService = {
-			async get() { }
+			async get() {}
 		};
 
 		beforeEach(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('HttpService', httpService);
+			$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 		});
 		afterEach(() => {
 			$injector.reset();
@@ -23,11 +20,27 @@ describe('mfp provider', () => {
 
 		it('loads an array of MfpCapabilities', async () => {
 			const backendUrl = 'https://backend.url';
-			const mockResponse = { 'urlId': 0, layouts: [{ 'id': 'a4_landscape', 'mapSize': { 'width': 785, 'height': 475 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }, { 'id': 'a3_portrait', 'mapSize': { 'width': 786, 'height': 1041 }, 'dpis': [72, 120, 200], 'scales': [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500] }] };
+			const mockResponse = {
+				urlId: 0,
+				layouts: [
+					{
+						id: 'a4_landscape',
+						mapSize: { width: 785, height: 475 },
+						dpis: [72, 120, 200],
+						scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+					},
+					{
+						id: 'a3_portrait',
+						mapSize: { width: 786, height: 1041 },
+						dpis: [72, 120, 200],
+						scales: [2000000, 1000000, 500000, 200000, 100000, 50000, 25000, 10000, 5000, 2500, 1250, 1000, 500]
+					}
+				]
+			};
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get').withArgs(`${backendUrl}/print/info`).and.resolveTo(new Response(
-				JSON.stringify(mockResponse))
-			);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(`${backendUrl}/print/info`)
+				.and.resolveTo(new Response(JSON.stringify(mockResponse)));
 
 			const mfpCapabilities = await getMfpCapabilities();
 
@@ -37,12 +50,11 @@ describe('mfp provider', () => {
 		});
 
 		it('throws error on failed request', async () => {
-
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
-			const httpServiceSpy = spyOn(httpService, 'get').withArgs(`${backendUrl}/print/info`).and.resolveTo(
-				new Response(JSON.stringify({}), { status: 500 })
-			);
+			const httpServiceSpy = spyOn(httpService, 'get')
+				.withArgs(`${backendUrl}/print/info`)
+				.and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
 
 			await expectAsync(getMfpCapabilities()).toBeRejectedWithError('MfpCapabilties could not be loaded: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
@@ -52,17 +64,15 @@ describe('mfp provider', () => {
 
 	describe('postMfpSpec', () => {
 		const configService = {
-			getValueAsPath() { }
+			getValueAsPath() {}
 		};
 
 		const httpService = {
-			async fetch() { }
+			async fetch() {}
 		};
 
 		beforeEach(() => {
-			$injector
-				.registerSingleton('ConfigService', configService)
-				.registerSingleton('HttpService', httpService);
+			$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 		});
 		afterEach(() => {
 			$injector.reset();
@@ -85,12 +95,16 @@ describe('mfp provider', () => {
 				},
 				timeout: 20000
 			};
-			const httpServiceSpy = spyOn(httpService, 'fetch').withArgs(`${backendUrl}/print/create/${urlId}`, options, abortController).and.resolveTo(new Response(
-				JSON.stringify({
-					downloadURL: downloadUrl,
-					id: id
-				}))
-			);
+			const httpServiceSpy = spyOn(httpService, 'fetch')
+				.withArgs(`${backendUrl}/print/create/${urlId}`, options, abortController)
+				.and.resolveTo(
+					new Response(
+						JSON.stringify({
+							downloadURL: downloadUrl,
+							id: id
+						})
+					)
+				);
 
 			const result = await postMfpSpec(spec, urlId, abortController);
 
@@ -101,7 +115,6 @@ describe('mfp provider', () => {
 		});
 
 		it('throws error on failed request', async () => {
-
 			const abortController = new AbortController();
 			const spec = { foo: 'bar' };
 			const urlId = '0';
@@ -115,7 +128,6 @@ describe('mfp provider', () => {
 		});
 
 		it('returns NULL on AbortError', async () => {
-
 			const abortController = new AbortController();
 			const spec = { foo: 'bar' };
 			const urlId = '0';

@@ -3,7 +3,6 @@ import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';
 import { $injector } from '../injection';
 
-
 /**
  * @typedef {Object} Profile
  * @property {Array<Elevation>} elevations elevations objects of this profile
@@ -39,7 +38,6 @@ import { $injector } from '../injection';
  * @class
  */
 export class ElevationService {
-
 	/**
 	 *
 	 * @param {elevationProvider} [elevationProvider=loadBvvElevation]
@@ -59,13 +57,12 @@ export class ElevationService {
 	 */
 	async getElevation(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
-			throw new TypeError('Parameter \'coordinate3857\' must be a coordinate');
+			throw new TypeError("Parameter 'coordinate3857' must be a coordinate");
 		}
 
 		try {
 			return await this._elevationProvider(coordinate3857);
-		}
-		catch (e) {
+		} catch (e) {
 			if (this._environmentService.isStandalone()) {
 				console.warn('Could not fetch an elevation from backend. Returning a mocked value ...');
 				return this._createMockElevation();
@@ -81,18 +78,17 @@ export class ElevationService {
 	 */
 	async getProfile(coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {
-			throw new TypeError('Parameter \'coordinates3857\' must be an array containing at least two coordinates');
+			throw new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates");
 		}
-		coordinates3857.forEach(c => {
+		coordinates3857.forEach((c) => {
 			if (!isCoordinate(c)) {
-				throw new TypeError('Parameter \'coordinates3857\' contains invalid coordinates');
+				throw new TypeError("Parameter 'coordinates3857' contains invalid coordinates");
 			}
 		});
 
 		try {
 			return await this._profileProvider(coordinates3857);
-		}
-		catch (e) {
+		} catch (e) {
 			if (this._environmentService.isStandalone()) {
 				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 				return this._createMockElevationProfile(coordinates3857);
@@ -106,7 +102,6 @@ export class ElevationService {
 	}
 
 	_createMockElevationProfile(coordinates3857) {
-
 		const profileStats = {
 			sumUp: 0,
 			sumDown: 0,

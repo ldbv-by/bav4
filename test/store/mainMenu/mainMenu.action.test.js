@@ -1,7 +1,6 @@
 import { TabId } from '../../../src/store/mainMenu/mainMenu.action';
 
 describe('mainMenuAction', () => {
-
 	it('exports a TabId enum', () => {
 		expect(Object.keys(TabId).length).toBe(7);
 		expect(Object.isFrozen(TabId)).toBeTrue();

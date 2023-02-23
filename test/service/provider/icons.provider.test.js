@@ -3,32 +3,27 @@ import { IconResult } from '../../../src/services/IconService';
 import { loadBvvIcons } from '../../../src/services/provider/icons.provider';
 
 describe('Icons provider', () => {
-
 	const configService = {
-		getValueAsPath: () => { }
+		getValueAsPath: () => {}
 	};
 
 	const httpService = {
-		get: async () => { }
+		get: async () => {}
 	};
 
 	beforeAll(() => {
-		$injector
-			.registerSingleton('ConfigService', configService)
-			.registerSingleton('HttpService', httpService);
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 	});
 
 	it('loads icons', async () => {
-
 		const backendUrl = 'https://backend.url/';
 		const payload = JSON.stringify([
 			{ id: 'foo1', svg: '<svg>bar1</svg>' },
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
-			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
-		);
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }
+		]);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-			new Response(payload)));
+		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
 
 		const icons = await loadBvvIcons();
 
@@ -46,13 +41,12 @@ describe('Icons provider', () => {
 	});
 
 	it('finds by ID in loaded icons', async () => {
-
 		const backendUrl = 'https://backend.url/';
 		const payload = JSON.stringify([
 			{ id: 'foo1', svg: '<svg>bar1</svg>' },
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
-			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
-		);
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }
+		]);
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
 
@@ -65,13 +59,12 @@ describe('Icons provider', () => {
 	});
 
 	it('finds by URL in loaded icons', async () => {
-
 		const backendUrl = 'https://backend.url/';
 		const payload = JSON.stringify([
 			{ id: 'foo1', svg: '<svg>bar1</svg>' },
 			{ id: 'foo2', svg: '<svg>bar2</svg>' },
-			{ id: 'foo3', svg: '<svg>bar3</svg>' }]
-		);
+			{ id: 'foo3', svg: '<svg>bar3</svg>' }
+		]);
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
 
@@ -84,13 +77,11 @@ describe('Icons provider', () => {
 	});
 
 	it('warns when backend does not have icons', async () => {
-
 		const backendUrl = 'https://backend.url';
 		const payload = JSON.stringify([]);
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const warnSpy = spyOn(console, 'warn');
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-			new Response(payload)));
+		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(payload)));
 
 		const icons = await loadBvvIcons();
 
@@ -100,20 +91,15 @@ describe('Icons provider', () => {
 		expect(icons.length).toBe(0);
 	});
 
-
 	it('rejects when backend request cannot be fulfilled', async () => {
-
 		const backendUrl = 'https://backend.url';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(
-			new Response(null, { status: 404 })
-		));
+		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
 		try {
 			await loadBvvIcons();
 			throw new Error('Promise should not be resolved');
-		}
-		catch (error) {
+		} catch (error) {
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(error.message).toBe('Icons could not be retrieved');

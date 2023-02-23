@@ -7,7 +7,6 @@ import { StyleTypes } from './StyleService';
  * @author thiloSchlemmer
  */
 export class OverlayService {
-
 	/**
 	 * Adds explicit named overlays (OverlayStyle by StyleType) to the specified feature.
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
@@ -21,7 +20,6 @@ export class OverlayService {
 			overlayStyle.add(olFeature, olMap);
 		}
 	}
-
 
 	/**
 	 * A Container-Object for optional properties related to a update of feature-overlays

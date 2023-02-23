@@ -10,14 +10,12 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 window.customElements.define(GeoResourceInfoPanel.tag, GeoResourceInfoPanel);
 
 describe('GeoResourceInfoPanel', () => {
-
 	const geoResourceInfoServiceMock = {
-		byId() { }
+		byId() {}
 	};
 
 	let store;
 	const setup = (state) => {
-
 		const initialState = {
 			notifications: {
 				notification: null
@@ -30,18 +28,12 @@ describe('GeoResourceInfoPanel', () => {
 
 		store = TestUtils.setupStoreAndDi(initialState, { notifications: notificationReducer, media: createNoInitialStateMediaReducer() });
 		$injector.registerSingleton('GeoResourceInfoService', geoResourceInfoServiceMock);
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(GeoResourceInfoPanel.tag);
 	};
 
-
-
-
 	describe('when initialized', () => {
-
 		it('should render the spinner when geoResourceId is null', async () => {
-
 			const element = await setup();
 
 			const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
@@ -50,7 +42,6 @@ describe('GeoResourceInfoPanel', () => {
 		});
 
 		it('should show a geoResourceInfo on the panel', async () => {
-
 			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
 
@@ -66,7 +57,6 @@ describe('GeoResourceInfoPanel', () => {
 		});
 
 		it('should return an info text when response is null ', async () => {
-
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(null);
 
 			const element = await setup();
@@ -81,8 +71,8 @@ describe('GeoResourceInfoPanel', () => {
 		});
 
 		it('fires a notification and logs a warn statement when GeoResourceInfoService is not available', async () => {
-
-			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788')
+			spyOn(geoResourceInfoServiceMock, 'byId')
+				.withArgs('914c9263-5312-453e-b3eb-5104db1bf788')
 				.and.returnValue(Promise.reject('geoResourceInfo error object'));
 			const warnSpy = spyOn(console, 'warn');
 
@@ -100,7 +90,6 @@ describe('GeoResourceInfoPanel', () => {
 	});
 
 	describe('responsive layout ', () => {
-
 		it('layouts for landscape', async () => {
 			const state = {
 				media: {
@@ -132,7 +121,5 @@ describe('GeoResourceInfoPanel', () => {
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
 		});
-
 	});
-
 });

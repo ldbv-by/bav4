@@ -2,9 +2,7 @@ import { loadBvvDefinitions } from '../../../src/services/provider/proj4.provide
 import { get } from 'ol/proj';
 
 describe('Proj4 provider', () => {
-
 	describe('Bvv specific provider', () => {
-
 		it('registers BVV specific definitions', () => {
 			const srids = loadBvvDefinitions();
 

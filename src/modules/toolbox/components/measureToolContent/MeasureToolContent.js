@@ -18,7 +18,6 @@ const Update_FileSaveResult = 'update_fileSaveResult';
  * @author costa_gi
  */
 export class MeasureToolContent extends AbstractToolContent {
-
 	constructor() {
 		super({
 			statistic: { length: null, area: null },
@@ -26,7 +25,13 @@ export class MeasureToolContent extends AbstractToolContent {
 			mode: null
 		});
 
-		const { TranslationService: translationService, EnvironmentService: environmentService, UnitsService: unitsService, UrlService: urlService, ShareService: shareService } = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
+		const {
+			TranslationService: translationService,
+			EnvironmentService: environmentService,
+			UnitsService: unitsService,
+			UrlService: urlService,
+			ShareService: shareService
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._unitsService = unitsService;
@@ -35,8 +40,14 @@ export class MeasureToolContent extends AbstractToolContent {
 	}
 
 	onInitialize() {
-		this.observe(state => state.measurement, data => this.signal(Update, data));
-		this.observe(state => state.shared, data => this.signal(Update_FileSaveResult, data));
+		this.observe(
+			(state) => state.measurement,
+			(data) => this.signal(Update, data)
+		);
+		this.observe(
+			(state) => state.shared,
+			(data) => this.signal(Update_FileSaveResult, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -116,7 +127,6 @@ export class MeasureToolContent extends AbstractToolContent {
             	</div>	  
             </div>	       
         `;
-
 	}
 
 	_getButtons(model) {
@@ -128,40 +138,32 @@ export class MeasureToolContent extends AbstractToolContent {
 		const removeAllowed = mode === 'draw' ? (this._environmentService.isTouch() ? statistic.length > 0 : statistic.area > 0) : statistic.length > 0;
 
 		const getButton = (id, title, onClick) => {
-			return html`<ba-button id=${id} data-test-id
-								class="tool-container__button" 
-								.label=${title}
-								@click=${onClick}></ba-button>`;
+			return html`<ba-button id=${id} data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
 		};
 
 		const getStartNew = () => {
-			return startNewCompliantModes.includes(mode) && finishAllowed ?
-				nothing :
-				getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset());
+			return startNewCompliantModes.includes(mode) && finishAllowed
+				? nothing
+				: getButton('startnew', translate('toolbox_measureTool_start_new'), () => reset());
 		};
 
 		const getFinish = () => {
-			return startNewCompliantModes.includes(mode) && finishAllowed ?
-				getButton('finish', translate('toolbox_drawTool_finish'), () => finish()) :
-				nothing;
+			return startNewCompliantModes.includes(mode) && finishAllowed
+				? getButton('finish', translate('toolbox_drawTool_finish'), () => finish())
+				: nothing;
 		};
 
 		const getRemovePoint = () => {
-			return mode === 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove()) :
-				nothing;
+			return mode === 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_point'), () => remove()) : nothing;
 		};
 
 		const getRemoveMeasure = () => {
-			return mode !== 'draw' && removeAllowed ?
-				getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) :
-				nothing;
+			return mode !== 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) : nothing;
 		};
 
 		const getShare = () => {
 			return html`<ba-share-button .share=${model.fileSaveResult}></ba-share-button>`;
 		};
-
 
 		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}${getShare()}`;
 	}
@@ -179,16 +181,25 @@ export class MeasureToolContent extends AbstractToolContent {
 			await this._shareService.copyToClipboard(value);
 			switch (measure) {
 				case 'distance': {
-					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_distance_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(
+						`${this._translationService.translate(
+							'toolbox_measureTool_clipboard_measure_distance_notification_text'
+						)} ${this._translationService.translate('toolbox_clipboard_success')}`,
+						LevelTypes.INFO
+					);
 					break;
 				}
 				case 'area': {
-					emitNotification(`${this._translationService.translate('toolbox_measureTool_clipboard_measure_area_notification_text')} ${this._translationService.translate('toolbox_clipboard_success')}`, LevelTypes.INFO);
+					emitNotification(
+						`${this._translationService.translate(
+							'toolbox_measureTool_clipboard_measure_area_notification_text'
+						)} ${this._translationService.translate('toolbox_clipboard_success')}`,
+						LevelTypes.INFO
+					);
 					break;
 				}
 			}
-		}
-		catch (error) {
+		} catch (error) {
 			const message = this._translationService.translate('toolbox_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');

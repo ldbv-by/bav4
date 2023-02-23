@@ -31,38 +31,31 @@ import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 
-
-
-
 describe('OlDrawHandler', () => {
 	class MockClass {
 		constructor() {
-			this.get = 'I\'m a StyleService.';
+			this.get = "I'm a StyleService.";
 		}
 
-		addStyle() { }
+		addStyle() {}
 
-		updateStyle() { }
+		updateStyle() {}
 
-		removeStyle() { }
+		removeStyle() {}
 
 		getStyleFunction() {
 			const styleFunction = () => {
-				const styles = [
-					new Style()
-				];
+				const styles = [new Style()];
 
 				return styles;
 			};
 
 			return styleFunction;
 		}
-
 	}
 
-
 	const geoResourceServiceMock = {
-		addOrReplace() { },
+		addOrReplace() {},
 		// eslint-disable-next-line no-unused-vars
 		byId() {
 			return null;
@@ -70,14 +63,14 @@ describe('OlDrawHandler', () => {
 	};
 
 	const interactionStorageServiceMock = {
-		async store() { },
+		async store() {},
 		isValid() {
 			return false;
 		},
 		isStorageId() {
 			return false;
 		},
-		setStorageId() { },
+		setStorageId() {},
 		getStorageId() {
 			return 'f_some';
 		}
@@ -93,7 +86,6 @@ describe('OlDrawHandler', () => {
 		isAdminId(id) {
 			return id.startsWith('a_');
 		}
-
 	};
 
 	const translationServiceMock = { translate: (key) => key };
@@ -146,8 +138,16 @@ describe('OlDrawHandler', () => {
 				notification: null
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(drawState, { draw: drawReducer, measurement: measurementReducer, layers: layersReducer, shared: sharedReducer, notifications: notificationReducer, tools: toolsReducer });
-		$injector.registerSingleton('TranslationService', translationServiceMock)
+		const store = TestUtils.setupStoreAndDi(drawState, {
+			draw: drawReducer,
+			measurement: measurementReducer,
+			layers: layersReducer,
+			shared: sharedReducer,
+			notifications: notificationReducer,
+			tools: toolsReducer
+		});
+		$injector
+			.registerSingleton('TranslationService', translationServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
@@ -192,7 +192,6 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when activated over olMap', () => {
-
 		it('creates a layer to draw', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -277,7 +276,6 @@ describe('OlDrawHandler', () => {
 					expect(store.getState().notifications.latest).toBeFalsy();
 				});
 			});
-
 		});
 
 		describe('when TermsOfUse already acknowledged', () => {
@@ -415,7 +413,6 @@ describe('OlDrawHandler', () => {
 				expect(styleSpy).toHaveBeenCalledTimes(1);
 			});
 
-
 			it('register observer for finish-request', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -439,7 +436,6 @@ describe('OlDrawHandler', () => {
 				reset();
 				expect(resetSpy).toHaveBeenCalled();
 			});
-
 
 			it('register observer for reset-request again, after deactivate', () => {
 				setup();
@@ -525,7 +521,6 @@ describe('OlDrawHandler', () => {
 				expect(abortSpy).toHaveBeenCalled();
 			});
 
-
 			it('aborts current drawing after type-change', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -576,7 +571,6 @@ describe('OlDrawHandler', () => {
 				expect(classUnderTest._modify.getActive()).toBeFalse();
 			});
 
-
 			it('aborts current drawing with additional warning after errornous type-change', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
@@ -596,14 +590,16 @@ describe('OlDrawHandler', () => {
 				expect(warnSpy).toHaveBeenCalled();
 			});
 
-
 			it('finishs drawing after finish-request', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				map.addInteraction = jasmine.createSpy();
 				const startNewSpy = spyOn(classUnderTest, '_finish').and.callThrough();
-				const geometry = new LineString([[0, 0], [1, 0]]);
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
@@ -623,7 +619,10 @@ describe('OlDrawHandler', () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const geometry = new LineString([[0, 0], [1, 0]]);
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
@@ -634,7 +633,6 @@ describe('OlDrawHandler', () => {
 				const draw = classUnderTest._draw;
 				simulateDrawEvent('drawstart', draw, feature);
 
-
 				expect(feature.get('description')).toBe('Foo');
 			});
 
@@ -643,7 +641,10 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
-				const geometry = new LineString([[0, 0], [1, 0]]);
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
@@ -663,7 +664,10 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const updateFeatureSpy = spyOn(classUnderTest, '_updateDescription').and.callThrough();
-				const geometry = new LineString([[0, 0], [1, 0]]);
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
 				const feature = new Feature({ geometry: geometry });
 
 				classUnderTest.activate(map);
@@ -680,7 +684,10 @@ describe('OlDrawHandler', () => {
 				const store = setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
-				const geometry = new LineString([[0, 0], [1, 0]]);
+				const geometry = new LineString([
+					[0, 0],
+					[1, 0]
+				]);
 				const feature = new Feature({ geometry: geometry });
 				feature.setId('draw_line_1');
 				feature.set('description', 'foo');
@@ -802,7 +809,6 @@ describe('OlDrawHandler', () => {
 					type: InteractionStateType.ACTIVE
 				};
 
-
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
 				setType('line');
@@ -819,7 +825,12 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
-				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
+				const feature = new Feature({
+					geometry: new LineString([
+						[0, 0],
+						[1, 1]
+					])
+				});
 
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
@@ -842,7 +853,12 @@ describe('OlDrawHandler', () => {
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5 };
-				const feature = new Feature({ geometry: new LineString([[0, 0], [1, 1]]) });
+				const feature = new Feature({
+					geometry: new LineString([
+						[0, 0],
+						[1, 1]
+					])
+				});
 				feature.setId('draw_line_1234');
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
@@ -850,7 +866,6 @@ describe('OlDrawHandler', () => {
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-
 
 				setType('line');
 
@@ -867,19 +882,27 @@ describe('OlDrawHandler', () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: '' };
 				const feature = new Feature({ geometry: new Point([0, 0]) });
 
-				const oldStyle1 = new Style(new Stroke({
-					color: [0, 0, 0, 1],
-					width: 3
-				}));
-				const oldStyle2 = new Style(new Stroke({
-					color: [42, 0, 0, 1],
-					width: 3
-				}));
-				const newStyle = new Style(new Stroke({
-					color: [255, 255, 255, 1],
-					width: 12
-				}));
-				spyOn(classUnderTest, '_getStyleFunctionFrom').withArgs(feature).and.callFake(() => () => [newStyle]);
+				const oldStyle1 = new Style(
+					new Stroke({
+						color: [0, 0, 0, 1],
+						width: 3
+					})
+				);
+				const oldStyle2 = new Style(
+					new Stroke({
+						color: [42, 0, 0, 1],
+						width: 3
+					})
+				);
+				const newStyle = new Style(
+					new Stroke({
+						color: [255, 255, 255, 1],
+						width: 12
+					})
+				);
+				spyOn(classUnderTest, '_getStyleFunctionFrom')
+					.withArgs(feature)
+					.and.callFake(() => () => [newStyle]);
 				feature.setId('draw_Symbol_1234');
 				feature.setStyle([oldStyle1, oldStyle2]);
 				const drawStateFake = {
@@ -896,26 +919,24 @@ describe('OlDrawHandler', () => {
 				expect(styleSpy).toHaveBeenCalledTimes(1);
 				expect(styleSpy).toHaveBeenCalledWith([newStyle, oldStyle2]);
 			});
-
-
 		});
 
 		it('looks for drawing-layer and adds the feature for update/copy on save', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
-			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => { });
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
-
 
 			await TestUtils.timeout();
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
@@ -928,13 +949,12 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
-
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(null);
-			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => { });
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
 			classUnderTest.activate(map);
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
@@ -947,13 +967,14 @@ describe('OlDrawHandler', () => {
 		it('adds style on old features', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const addStyleSpy = spyOn(classUnderTest._styleService, 'addStyle');
 			let oldFeature;
@@ -970,13 +991,14 @@ describe('OlDrawHandler', () => {
 		it('updates style of old features onChange', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const lastData = '<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="measurement_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
 			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
-			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => { });
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
 			const updateStyleSpy = spyOn(classUnderTest._styleService, 'updateStyle');
 			let oldFeature;
@@ -992,7 +1014,13 @@ describe('OlDrawHandler', () => {
 		});
 
 		it('adds a drawn feature to the selection, after adding to layer (on addFeature)', () => {
-			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			feature.setId('draw_line_1');
 			feature.setStyle(new Style());
@@ -1010,8 +1038,7 @@ describe('OlDrawHandler', () => {
 
 		describe('_createDrawByType', () => {
 			const defaultStyleOption = { symbolSrc: 'something', color: '#FFDAFF', scale: 0.5 };
-			it('returns a draw-interaction for \'Symbol\'', async () => {
-
+			it("returns a draw-interaction for 'Symbol'", async () => {
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
@@ -1025,21 +1052,18 @@ describe('OlDrawHandler', () => {
 
 				classUnderTest._vectorLayer = null;
 				expect(classUnderTest._createDrawByType('Any', defaultStyleOption)).toBeNull();
-
 			});
 		});
 
 		describe('_getStyleFunctionFrom', () => {
-
 			it('returns a styleFunction for a feature with valid featureId', async () => {
-				const styleFunctionMock = () => { };
+				const styleFunctionMock = () => {};
 				setup();
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				classUnderTest.activate(map);
 				const featureMock = { getId: () => 'foo_bar_12345' };
 				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType').and.callFake(() => styleFunctionMock);
-
 
 				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
 
@@ -1053,14 +1077,11 @@ describe('OlDrawHandler', () => {
 				const featureMock = { getId: () => 'foo' };
 				const typeSpy = spyOn(classUnderTest, '_getStyleFunctionByDrawType');
 
-
 				const styleFunction = classUnderTest._getStyleFunctionFrom(featureMock);
 
 				expect(styleFunction).toBeNull();
 				expect(typeSpy).not.toHaveBeenCalled();
 			});
-
-
 		});
 
 		describe('_getStyleFunctionByDrawType', () => {
@@ -1076,14 +1097,21 @@ describe('OlDrawHandler', () => {
 				expect(classUnderTest._getStyleFunctionByDrawType('foo', defaultStyleOption)()).toContain(jasmine.any(Style));
 			});
 		});
-
-
 	});
 
 	describe('when deactivated over olMap', () => {
-
 		const createFeature = () => {
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 0]
+					]
+				])
+			});
 			return feature;
 		};
 
@@ -1119,7 +1147,6 @@ describe('OlDrawHandler', () => {
 			expect(saveSpy).not.toHaveBeenCalled();
 		});
 
-
 		it('adds a vectorGeoResource for persisting purpose', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
 			setup(state);
@@ -1136,11 +1163,13 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 			expect(addOrReplaceSpy).toHaveBeenCalledTimes(1);
-			expect(addOrReplaceSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-				id: 'f_ooBarId',
-				label: 'olMap_handler_draw_layer_label',
-				_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
-			}));
+			expect(addOrReplaceSpy).toHaveBeenCalledWith(
+				jasmine.objectContaining({
+					id: 'f_ooBarId',
+					label: 'olMap_handler_draw_layer_label',
+					_attributionProvider: getAttributionForLocallyImportedOrCreatedGeoResource
+				})
+			);
 		});
 
 		it('adds layer with specific contraints', async () => {
@@ -1161,7 +1190,6 @@ describe('OlDrawHandler', () => {
 			expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
 			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
-
 		});
 
 		it('adds no layer when empty', async () => {
@@ -1189,7 +1217,10 @@ describe('OlDrawHandler', () => {
 			classUnderTest.deactivate(map);
 
 			await TestUtils.timeout();
-			const draw = map.getInteractions().getArray().find(i => i instanceof Draw);
+			const draw = map
+				.getInteractions()
+				.getArray()
+				.find((i) => i instanceof Draw);
 			expect(draw == null).toBeTrue();
 			expect(classUnderTest._draw).toBeNull();
 		});
@@ -1206,21 +1237,25 @@ describe('OlDrawHandler', () => {
 			setType('marker');
 
 			await TestUtils.timeout();
-			const draw = map.getInteractions().getArray().find(i => i instanceof Draw);
+			const draw = map
+				.getInteractions()
+				.getArray()
+				.find((i) => i instanceof Draw);
 			expect(draw == null).toBeTrue();
 			expect(classUnderTest._draw).toBeNull();
 			expect(initSpy).toHaveBeenCalled();
 		});
-
 	});
 
 	describe('when draw a line', () => {
-
 		it('feature gets valid id after start drawing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new LineString([[0, 0], [1, 0]]);
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
@@ -1238,7 +1273,10 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new LineString([[0, 0], [1, 0]]);
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
 			const feature = new Feature({ geometry: geometry });
 
 			classUnderTest.activate(map);
@@ -1254,7 +1292,13 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const geometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -1272,7 +1316,15 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			const backspaceKeyCode = 8;
 
@@ -1291,7 +1343,12 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const startNewSpy = spyOn(classUnderTest, '_startNew');
 			const map = setupMap();
-			const geometry = new Polygon([[[0, 0], [0, 0]]]);
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[0, 0]
+				]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -1312,12 +1369,20 @@ describe('OlDrawHandler', () => {
 			const deleteKeyCode = 46;
 			const sourceMock = {
 				hasFeature: () => true,
-				removeFeature: () => { }
+				removeFeature: () => {}
 			};
 
 			classUnderTest.activate(map);
 			setType('line');
-			const geometry = new Polygon([[[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
 			const feature = new Feature({ geometry: geometry });
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
@@ -1333,7 +1398,6 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(sourceSpy).toHaveBeenCalledWith(feature);
 		});
-
 	});
 
 	const createSnappingFeatureMock = (coordinate, feature) => {
@@ -1344,7 +1408,6 @@ describe('OlDrawHandler', () => {
 	};
 
 	describe('when pointer move', () => {
-
 		it('creates and activates helpTooltip', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1368,7 +1431,6 @@ describe('OlDrawHandler', () => {
 			expect(environmentSpy).toHaveBeenCalled();
 		});
 
-
 		it('change drawState, when sketch is changing', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1384,16 +1446,34 @@ describe('OlDrawHandler', () => {
 			setType('marker');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 15, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [15, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [15, 0],
+				pointCount: 0,
+				dragging: jasmine.any(Boolean)
+			});
 			classUnderTest._sketchHandler.activate(new Feature({ geometry: new Point([1, 0]) }));
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: null, coordinate: [20, 0], pointCount: 1, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: null,
+				coordinate: [20, 0],
+				pointCount: 1,
+				dragging: jasmine.any(Boolean)
+			});
 		});
 
 		it('change drawState, when sketch is snapping to first point', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const snappedGeometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const snappedGeometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
 			const feature = new Feature({ geometry: snappedGeometry });
 
 			const map = setupMap();
@@ -1403,20 +1483,44 @@ describe('OlDrawHandler', () => {
 			const drawStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: jasmine.any(Boolean)
+			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 0]]);
+			snappedGeometry.setCoordinates([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 0]
+			]);
 			feature.getGeometry().dispatchEvent('change');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.FIRSTPOINT, coordinate: [0, 0], pointCount: 5, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: InteractionSnapType.FIRSTPOINT,
+				coordinate: [0, 0],
+				pointCount: 5,
+				dragging: jasmine.any(Boolean)
+			});
 		});
 
 		it('change drawState, when sketch is snapping to last point', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
-			const snappedGeometry = new LineString([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500]]);
+			const snappedGeometry = new LineString([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500]
+			]);
 			const feature = new Feature({ geometry: snappedGeometry });
 			const map = setupMap();
 
@@ -1425,15 +1529,33 @@ describe('OlDrawHandler', () => {
 			const drawStateSpy = spyOn(classUnderTest._helpTooltip, 'notify');
 
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.ACTIVE, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.ACTIVE,
+				snap: null,
+				coordinate: [10, 0],
+				pointCount: 0,
+				dragging: jasmine.any(Boolean)
+			});
 
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
-			snappedGeometry.setCoordinates([[0, 0], [500, 0], [550, 550], [0, 500], [0, 500], [0, 500]]);
+			snappedGeometry.setCoordinates([
+				[0, 0],
+				[500, 0],
+				[550, 550],
+				[0, 500],
+				[0, 500],
+				[0, 500]
+			]);
 			feature.getGeometry().dispatchEvent('change');
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 500);
-			expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.DRAW, snap: InteractionSnapType.LASTPOINT, coordinate: [0, 500], pointCount: 6, dragging: jasmine.any(Boolean) });
+			expect(drawStateSpy).toHaveBeenCalledWith({
+				type: InteractionStateType.DRAW,
+				snap: InteractionSnapType.LASTPOINT,
+				coordinate: [0, 500],
+				pointCount: 6,
+				dragging: jasmine.any(Boolean)
+			});
 		});
-
 
 		it('adds/removes style for grabbing while modifying', () => {
 			setup();
@@ -1458,7 +1580,15 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const geometry = new Polygon([[[50, 0], [500, 0], [550, 550], [0, 500], [0, 500]]]);
+			const geometry = new Polygon([
+				[
+					[50, 0],
+					[500, 0],
+					[550, 550],
+					[0, 500],
+					[0, 500]
+				]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			const deleteKeyCode = 46;
 
@@ -1478,7 +1608,10 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('when switching to modify', () => {
-			const geometry = new LineString([[0, 0], [100, 0]]);
+			const geometry = new LineString([
+				[0, 0],
+				[100, 0]
+			]);
 			const feature = new Feature({ geometry: geometry });
 			feature.setStyle(new Style({ stroke: new Stroke({ color: [0, 0, 0] }) }));
 
@@ -1498,7 +1631,13 @@ describe('OlDrawHandler', () => {
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 10, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([10, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: null, coordinate: [10, 0], pointCount: 0, dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: null,
+					coordinate: [10, 0],
+					pointCount: 0,
+					dragging: jasmine.any(Boolean)
+				});
 			});
 
 			it('pointer is snapped to sketch boundary', () => {
@@ -1512,7 +1651,6 @@ describe('OlDrawHandler', () => {
 					return callback(snappingFeatureMock, undefined);
 				});
 
-
 				classUnderTest.activate(map);
 				classUnderTest._onDrawStateChanged(drawStateSpy);
 				classUnderTest._select.getFeatures().push(feature);
@@ -1520,7 +1658,13 @@ describe('OlDrawHandler', () => {
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 50, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.EGDE, coordinate: [50, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: InteractionSnapType.EGDE,
+					coordinate: [50, 0],
+					pointCount: jasmine.anything(),
+					dragging: jasmine.any(Boolean)
+				});
 			});
 
 			it('pointer is snapped to sketch vertex', () => {
@@ -1541,7 +1685,13 @@ describe('OlDrawHandler', () => {
 				simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 0, 0);
 
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([0, 0], jasmine.any(Function), jasmine.any(Object));
-				expect(drawStateSpy).toHaveBeenCalledWith({ type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, coordinate: [0, 0], pointCount: jasmine.anything(), dragging: jasmine.any(Boolean) });
+				expect(drawStateSpy).toHaveBeenCalledWith({
+					type: InteractionStateType.MODIFY,
+					snap: InteractionSnapType.VERTEX,
+					coordinate: [0, 0],
+					pointCount: jasmine.anything(),
+					dragging: jasmine.any(Boolean)
+				});
 			});
 
 			it('adds/removes style for grabbing while modifying', () => {
@@ -1554,18 +1704,14 @@ describe('OlDrawHandler', () => {
 				classUnderTest._modify.setActive(true);
 				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
 
-
 				expect(mapContainer.classList.contains('grabbing')).toBeTrue();
 				classUnderTest._modify.dispatchEvent(new ModifyEvent('modifyend', null, new Event(MapBrowserEventType.POINTERUP)));
 				expect(mapContainer.classList.contains('grabbing')).toBeFalse();
 			});
 		});
-
-
 	});
 
 	describe('when pointer doubleclick', () => {
-
 		it('does not zooming in', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1581,7 +1727,6 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when pointer click', () => {
-
 		const style = new Style({
 			image: new Icon({
 				src: 'something',
@@ -1606,13 +1751,11 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._select).toBeDefined();
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
 
-
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 600, 0);
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
 		});
-
 
 		it('select feature, if clickposition is in anyinteract to selected feature', () => {
 			setup();
@@ -1753,7 +1896,17 @@ describe('OlDrawHandler', () => {
 
 		it('updates the drawState, while pointerclick drawing', () => {
 			setup();
-			const feature = new Feature({ geometry: new Polygon([[[0, 0], [1, 0], [1, 1], [0, 1], [0, 1]]]) });
+			const feature = new Feature({
+				geometry: new Polygon([
+					[
+						[0, 0],
+						[1, 0],
+						[1, 1],
+						[0, 1],
+						[0, 1]
+					]
+				])
+			});
 			const map = setupMap();
 			const classUnderTest = new OlDrawHandler();
 			const layer = classUnderTest.activate(map);
@@ -1795,5 +1948,4 @@ describe('OlDrawHandler', () => {
 			expect(drawStateSpy).toHaveBeenCalledTimes(1);
 		});
 	});
-
 });

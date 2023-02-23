@@ -17,16 +17,16 @@ const Update_Results_AllShown = 'update_results_allShown';
  * @author alsturm
  */
 export class LocationResultsPanel extends MvuElement {
-
-
 	constructor() {
 		super({
 			results: [],
 			collapsed: false,
 			allShown: false
 		});
-		const { SearchResultService: searchResultService, TranslationService: translationService }
-			= $injector.inject('SearchResultService', 'TranslationService');
+		const { SearchResultService: searchResultService, TranslationService: translationService } = $injector.inject(
+			'SearchResultService',
+			'TranslationService'
+		);
 
 		this._searchResultService = searchResultService;
 		this._translationService = translationService;
@@ -47,19 +47,20 @@ export class LocationResultsPanel extends MvuElement {
 		const searchResultProvider = (term) => this._searchResultService.locationsByTerm(term);
 
 		//requestData call has to be debounced
-		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay,
-			async (term) => {
-				if (term) {
-					const results = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
-					const allShown = (results.length > LocationResultsPanel.Default_Result_Item_Length) ? false : true;
-					this.signal(Update_Results_AllShown, { results, allShown });
-				}
-				else {
-					this.signal(Update_Results_AllShown, { results: [], allShown: false });
-				}
-			});
+		const requestLocationDataAndUpdateViewHandler = debounced(LocationResultsPanel.Debounce_Delay, async (term) => {
+			if (term) {
+				const results = await requestData(term, searchResultProvider, LocationResultsPanel.Min_Query_Length);
+				const allShown = results.length > LocationResultsPanel.Default_Result_Item_Length ? false : true;
+				this.signal(Update_Results_AllShown, { results, allShown });
+			} else {
+				this.signal(Update_Results_AllShown, { results: [], allShown: false });
+			}
+		});
 
-		this.observe(state => state.search.query, query => requestLocationDataAndUpdateViewHandler(query.payload));
+		this.observe(
+			(state) => state.search.query,
+			(query) => requestLocationDataAndUpdateViewHandler(query.payload)
+		);
 	}
 
 	/**
@@ -95,27 +96,26 @@ export class LocationResultsPanel extends MvuElement {
 		const indexEnd = allShown ? results.length : LocationResultsPanel.Default_Result_Item_Length;
 
 		return html`
-        <style>${css}</style>
-		<div class="location-results-panel divider">
-			<button class="location-label" @click="${toggleCollapse}">
-				<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>			
-				<a class='location-label__collapse'>
-					<i class='icon chevron ${classMap(iconCollapseClass)}'>
-					</i>
-				</a>   
-			</button>		
-			<div class="${classMap(bodyCollapseClass)}">		
-				<ul class="location-items">	
-					${results
-		.slice(0, indexEnd)
-		.map((result) => html`<ba-search-content-panel-location-item data-test-id .data=${result}></<ba-search-content-panel-location-item>`)}
-				</ul>
-				<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">
-				${translate('search_menu_showAll_label')}
+			<style>
+				${css}
+			</style>
+			<div class="location-results-panel divider">
+				<button class="location-label" @click="${toggleCollapse}">
+					<span class="location-label__text">${translate('search_menu_locationResultsPanel_label')}</span>
+					<a class="location-label__collapse">
+						<i class="icon chevron ${classMap(iconCollapseClass)}"> </i>
+					</a>
+				</button>
+				<div class="${classMap(bodyCollapseClass)}">
+					<ul class="location-items">
+						${results
+							.slice(0, indexEnd)
+							.map((result) => html`<ba-search-content-panel-location-item data-test-id .data=${result}></<ba-search-content-panel-location-item>`)}
+					</ul>
+					<div class="show-all ${classMap(showAllButton)}" tabindex="0" @click="${toggleShowAll}">${translate('search_menu_showAll_label')}</div>
 				</div>
-			</div>	
-		</div>
-        `;
+			</div>
+		`;
 	}
 
 	static get tag() {

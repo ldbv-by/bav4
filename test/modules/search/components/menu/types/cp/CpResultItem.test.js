@@ -10,11 +10,9 @@ import { SEARCH_RESULT_HIGHLIGHT_FEATURE_ID, SEARCH_RESULT_TEMPORARY_HIGHLIGHT_F
 window.customElements.define(CpResultItem.tag, CpResultItem);
 
 describe('CpResultItem', () => {
-
 	let store;
 
 	const setup = (state = {}) => {
-
 		const initialState = {
 			media: {
 				portrait: false
@@ -33,15 +31,12 @@ describe('CpResultItem', () => {
 	};
 
 	describe('static properties', () => {
-
 		it('_maxZoomValue', async () => {
-
 			expect(CpResultItem._maxZoomLevel).toBe(19);
 		});
 	});
 
 	describe('when initialized', () => {
-
 		it('renders nothing when no data available', async () => {
 			const element = await setup();
 
@@ -59,9 +54,7 @@ describe('CpResultItem', () => {
 	});
 
 	describe('events', () => {
-
 		describe('on mouse enter', () => {
-
 			it('sets a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
 				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
@@ -79,7 +72,6 @@ describe('CpResultItem', () => {
 		});
 
 		describe('on mouse leave', () => {
-
 			it('removes a temporary highlight feature', async () => {
 				const coordinate = [21, 42];
 				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate);
@@ -90,7 +82,6 @@ describe('CpResultItem', () => {
 				});
 				element.data = data;
 
-
 				const target = element.shadowRoot.querySelector('li');
 				target.dispatchEvent(new Event('mouseleave'));
 
@@ -99,13 +90,11 @@ describe('CpResultItem', () => {
 		});
 
 		describe('on click', () => {
-
 			const previousCoordinate = [1, 2];
 			const coordinate = [21, 42];
 			const extent = [0, 1, 2, 3];
 
 			const setupOnClickTests = async (portraitOrientation, extent = null) => {
-
 				const data = new CadastralParcelSearchResult('label', 'labelFormatted', coordinate, extent);
 				const element = await setup({
 					highlight: {
@@ -126,7 +115,6 @@ describe('CpResultItem', () => {
 			};
 
 			describe('result has NO extent', () => {
-
 				it('removes both an existing and temporary highlight feature and set the permanent highlight feature', async () => {
 					const element = await setupOnClickTests();
 
@@ -151,7 +139,6 @@ describe('CpResultItem', () => {
 			});
 
 			describe('result has an extent', () => {
-
 				it('removes both an existing and temporary highlight feature and sets NO highlight feature when we have an extent', async () => {
 					const element = await setupOnClickTests(false, extent);
 

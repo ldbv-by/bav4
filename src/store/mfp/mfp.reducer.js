@@ -1,4 +1,3 @@
-
 export const ACTIVE_CHANGED = 'mfp/active';
 export const SCALE_CHANGED = 'mfp/current/scale';
 export const ID_CHANGED = 'mfp/current/id';
@@ -7,9 +6,7 @@ export const SHOW_GRID_CHANGED = 'mfp/showGrid';
 export const JOB_REQUEST_CHANGED = 'mfp/job/request';
 export const JOB_SPEC_CHANGED = 'mfp/job/spec';
 
-
 export const initialState = {
-
 	/**
 	 * @property {boolean}
 	 */
@@ -23,8 +20,8 @@ export const initialState = {
 		dpi: null
 	},
 	/**
-	* @property {boolean}
-	*/
+	 * @property {boolean}
+	 */
 	showGrid: false,
 	/**
 	 *@property {EvenLike | null}
@@ -65,7 +62,7 @@ export const mfpReducer = (state = initialState, action) => {
 				current: payload
 			};
 		}
-		case SHOW_GRID_CHANGED:{
+		case SHOW_GRID_CHANGED: {
 			return {
 				...state,
 				showGrid: payload
@@ -87,4 +84,3 @@ export const mfpReducer = (state = initialState, action) => {
 
 	return state;
 };
-

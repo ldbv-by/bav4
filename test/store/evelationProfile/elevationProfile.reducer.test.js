@@ -2,9 +2,7 @@ import { closeProfile, openProfile, updateCoordinates } from '../../../src/store
 import { elevationProfileReducer } from '../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { TestUtils } from '../../test-utils.js';
 
-
 describe('elevationProfileReducer', () => {
-
 	const setup = (state) => {
 		return TestUtils.setupStoreAndDi(state, {
 			elevationProfile: elevationProfileReducer
@@ -17,7 +15,7 @@ describe('elevationProfileReducer', () => {
 		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 	});
 
-	it('updates the \'active\' and optionally the \'coordinates\' property', () => {
+	it("updates the 'active' and optionally the 'coordinates' property", () => {
 		const store = setup();
 
 		openProfile();
@@ -41,7 +39,7 @@ describe('elevationProfileReducer', () => {
 		expect(store.getState().elevationProfile.coordinates).toEqual([]);
 	});
 
-	it('updates the \'coordinates\' property', () => {
+	it("updates the 'coordinates' property", () => {
 		const store = setup();
 
 		updateCoordinates([[21, 42]]);

@@ -6,19 +6,19 @@
 	margin-left: 0;
 	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
-	padding: .5em 0.9em;
+	padding: 0.5em 0.9em;
 	cursor: pointer;
 	text-decoration: none;
 	flex-shrink: 0;
-	font-size: .75rem;
+	font-size: 0.75rem;
 }
 .chips__button:focus {
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }
 .chips__button-text {
 	color: var(--text1);
 	font-weight: bold;
-	margin: auto .5em;
+	margin: auto 0.5em;
 }
 .chips__button:hover {
 	border: 1px solid var(--secondary-color);

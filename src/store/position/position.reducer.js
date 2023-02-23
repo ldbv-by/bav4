@@ -28,23 +28,18 @@ export const initialState = {
 };
 
 export const positionReducer = (state = initialState, action) => {
-
 	const { type, payload } = action;
 	switch (type) {
 		case ZOOM_CHANGED: {
-
 			return {
 				...state,
 				zoom: payload
-
 			};
 		}
 		case LIVE_ZOOM_CHANGED: {
-
 			return {
 				...state,
 				liveZoom: payload
-
 			};
 		}
 		case ZOOM_ROTATION_CHANGED: {
@@ -54,18 +49,15 @@ export const positionReducer = (state = initialState, action) => {
 				...state,
 				zoom: zoom,
 				rotation: rotation
-
 			};
 		}
 		case CENTER_CHANGED: {
-
 			return {
 				...state,
 				center: payload
 			};
 		}
 		case LIVE_CENTER_CHANGED: {
-
 			return {
 				...state,
 				liveCenter: payload
@@ -100,14 +92,12 @@ export const positionReducer = (state = initialState, action) => {
 			};
 		}
 		case ROTATION_CHANGED: {
-
 			return {
 				...state,
 				rotation: payload
 			};
 		}
 		case LIVE_ROTATION_CHANGED: {
-
 			return {
 				...state,
 				liveRotation: payload
@@ -115,7 +105,6 @@ export const positionReducer = (state = initialState, action) => {
 		}
 
 		case FIT_REQUESTED: {
-
 			return {
 				...state,
 				fitRequest: payload
@@ -123,7 +112,6 @@ export const positionReducer = (state = initialState, action) => {
 		}
 
 		case FIT_LAYER_REQUESTED: {
-
 			return {
 				...state,
 				fitLayerRequest: payload

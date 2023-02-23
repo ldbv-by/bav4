@@ -11,7 +11,6 @@ const instance = new protoTest();
 
 //tests
 describe('Prototype Constructor Injection', () => {
-
 	it('Has http service', () => {
 		expect(instance.http).toBe(http);
 	});

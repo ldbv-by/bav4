@@ -5,7 +5,6 @@ import { equals } from '../utils/storeUtils';
 import { observe } from '../utils/storeUtils';
 import css from './baElement.css';
 
-
 /**
  * Base class for components. Improved version of {@link BaElement} and based on
  * on the Model-View-Update pattern.
@@ -50,14 +49,11 @@ import css from './baElement.css';
  * @author taulinger
  */
 export class MvuElement extends HTMLElement {
-
-
 	/**
 	 *
 	 * @param {object} model initial Model of this component
 	 */
 	constructor(model = {}) {
-
 		super();
 		this._logLifeCycle(`📦 ${this.constructor.name}#constructor`, model);
 		if (this.constructor === MvuElement) {
@@ -97,7 +93,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
-			this._observer.forEach(o => o());
+			this._observer.forEach((o) => o());
 			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
@@ -112,7 +108,7 @@ export class MvuElement extends HTMLElement {
 	 * @param {object} model current Model
 	 * @returns the new Model
 	 */
-	update(/*eslint-disable no-unused-vars */type, data, model) {
+	update(/*eslint-disable no-unused-vars */ type, data, model) {
 		throw new Error('Please implement method #update before calling #signal or do not call super.update from child.');
 	}
 
@@ -128,7 +124,6 @@ export class MvuElement extends HTMLElement {
 	 * @private
 	 */
 	connectedCallback() {
-
 		window.addEventListener('load', () => {
 			this.onWindowLoad();
 		});
@@ -175,7 +170,7 @@ export class MvuElement extends HTMLElement {
 	 * @param {object} model the current Model of this component
 	 * @returns {TemplateResult|nothing|null|undefined|''}
 	 */
-	createView(/*eslint-disable no-unused-vars */model) {
+	createView(/*eslint-disable no-unused-vars */ model) {
 		// The child has not implemented this method.
 		throw new Error('Please implement abstract method #createView or do not call super.createView from child.');
 	}
@@ -184,13 +179,13 @@ export class MvuElement extends HTMLElement {
 	 * Called after after the component is connected to the DOM.
 	 * @protected
 	 */
-	onInitialize() { }
+	onInitialize() {}
 
 	/**
 	 * Called before the View is rendered.
 	 * @protected
 	 */
-	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) { }
+	onBeforeRender(/*eslint-disable no-unused-vars */ firsttime) {}
 
 	/**
 	 * (Re-) renders the HTML view.
@@ -203,7 +198,6 @@ export class MvuElement extends HTMLElement {
 	 */
 	render() {
 		if (this._initialized && !this.isRenderingSkipped()) {
-
 			const initialRendering = !this._rendered;
 			this._logLifeCycle(`📌 ${this.constructor.name}#onBeforeRender`);
 			this.onBeforeRender(initialRendering);
@@ -211,8 +205,7 @@ export class MvuElement extends HTMLElement {
 			const template = this.createView(this.getModel());
 			if (this._isNothing(template)) {
 				renderLitHtml(template, this.getRenderTarget());
-			}
-			else {
+			} else {
 				renderLitHtml(html`${this.defaultCss()} ${template}`, this.getRenderTarget());
 			}
 
@@ -229,10 +222,7 @@ export class MvuElement extends HTMLElement {
 	 * @returns {boolean}
 	 */
 	_isNothing(templateResult) {
-		return templateResult === nothing
-			|| templateResult === undefined
-			|| templateResult === null
-			|| templateResult === '';
+		return templateResult === nothing || templateResult === undefined || templateResult === null || templateResult === '';
 	}
 
 	/**
@@ -242,9 +232,9 @@ export class MvuElement extends HTMLElement {
 	 */
 	defaultCss() {
 		return html`
-		<style>
-		${css}
-		</style>
+			<style>
+				${css}
+			</style>
 		`;
 	}
 
@@ -252,7 +242,7 @@ export class MvuElement extends HTMLElement {
 	 * Called after the View has been rendered.
 	 * @protected
 	 */
-	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) { }
+	onAfterRender(/*eslint-disable no-unused-vars */ firsttime) {}
 
 	/**
 	 * Called when the load event of the window is fired.
@@ -262,7 +252,7 @@ export class MvuElement extends HTMLElement {
 	 * In this case use: {@link MvuElement#onAfterRender}
 	 * @protected
 	 */
-	onWindowLoad() { }
+	onWindowLoad() {}
 
 	/**
 	 * Called after the components Model has changed
@@ -273,14 +263,14 @@ export class MvuElement extends HTMLElement {
 	 * @param {object} model a copy of the updated Model of this component
 	 * @protected
 	 */
-	onModelChanged(/*eslint-disable no-unused-vars */model) {
+	onModelChanged(/*eslint-disable no-unused-vars */ model) {
 		this.render();
 	}
 
 	/**
 	 * @protected
 	 */
-	onDisconnect() { }
+	onDisconnect() {}
 
 	/**
 	 * Returns the Html tag name of this component.
@@ -290,14 +280,11 @@ export class MvuElement extends HTMLElement {
 		if (this === MvuElement) {
 			// Abstract methods can not be called directly.
 			throw new Error('Can not call static abstract method #tag.');
-		}
-
-		else {
+		} else {
 			// The child has implemented this method but also called `super.foo()`.
 			throw new Error('Please implement static abstract method #tag or do not call static abstract method #tag from child.');
 		}
 	}
-
 
 	/**
 	 * Registers an observer on state changes of the global store.
@@ -321,7 +308,6 @@ export class MvuElement extends HTMLElement {
 	 * @param {boolean|false} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
 	 */
 	observeModel(names, onChange, immediately = false) {
-
 		const createObserver = (key, onChange) => {
 			let currentState = this._model[key];
 
@@ -336,16 +322,14 @@ export class MvuElement extends HTMLElement {
 
 		const keys = Array.isArray(names) ? names : [names];
 
-		keys.forEach(key => {
+		keys.forEach((key) => {
 			if (this._model[key] !== undefined) {
-
 				this._observer.push(createObserver(key, onChange));
 
 				if (immediately) {
 					onChange(this._model[key]);
 				}
-			}
-			else {
+			} else {
 				console.error(`Could not register observer --> '${key}' is not a field in the Model of ${this.constructor.name}`);
 			}
 		});
@@ -354,7 +338,7 @@ export class MvuElement extends HTMLElement {
 	_logLifeCycle(message, ...values) {
 		if (this.hasAttribute(LOG_LIFECYLE_ATTRIBUTE_NAME)) {
 			// eslint-disable-next-line no-console
-			console.log(`${message}${values.length ? ': ' : ''}${values.map(v => JSON.stringify(v)).join(', ')}`);
+			console.log(`${message}${values.length ? ': ' : ''}${values.map((v) => JSON.stringify(v)).join(', ')}`);
 		}
 	}
 }

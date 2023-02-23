@@ -19,7 +19,7 @@ export const loadBvvChipConfiguration = async () => {
 
 	switch (result.status) {
 		case 200:
-			return (await result.json());
+			return await result.json();
 		default:
 			throw new Error(`Chips configuration could not be fetched: Http-Status ${result.status}`);
 	}

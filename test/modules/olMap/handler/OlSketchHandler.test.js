@@ -3,9 +3,7 @@ import { LineString, Point, Polygon } from 'ol/geom';
 import { OlSketchHandler } from '../../../../src/modules/olMap/handler/OlSketchHandler';
 
 describe('OlSketchPropertyHandler', () => {
-
 	describe('when initialized', () => {
-
 		it('have default properties', () => {
 			const classUnderTest = new OlSketchHandler();
 
@@ -18,11 +16,9 @@ describe('OlSketchPropertyHandler', () => {
 		});
 	});
 
-
 	describe('when set a activeSketch', () => {
-
 		it('registers a listener for feature change', () => {
-			const featureMock = { on: () => { }, getGeometry: () => new Point([0, 0]), setId: () => {}, setProperties: () => {} };
+			const featureMock = { on: () => {}, getGeometry: () => new Point([0, 0]), setId: () => {}, setProperties: () => {} };
 			const listenerSpy = spyOn(featureMock, 'on');
 
 			const classUnderTest = new OlSketchHandler();
@@ -32,7 +28,6 @@ describe('OlSketchPropertyHandler', () => {
 			expect(listenerSpy).toHaveBeenCalledWith('change', jasmine.any(Function));
 		});
 
-
 		it('monitors feature changes', () => {
 			const feature = new Feature(new Point([0, 0]));
 
@@ -41,40 +36,96 @@ describe('OlSketchPropertyHandler', () => {
 
 			expect(classUnderTest.pointCount).toBe(1);
 
-			feature.setGeometry(new LineString([[0, 0], [1, 1]]));
+			feature.setGeometry(
+				new LineString([
+					[0, 0],
+					[1, 1]
+				])
+			);
 			feature.dispatchEvent('change');
 
 			expect(classUnderTest.pointCount).toBe(2);
 		});
 
 		it('detects finishOnFirstPoint for polyline', () => {
-			const feature = new Feature(new LineString([[0, 0], [1, 1], [2, 2]]));
+			const feature = new Feature(
+				new LineString([
+					[0, 0],
+					[1, 1],
+					[2, 2]
+				])
+			);
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
 
-			feature.setGeometry(new LineString([[0, 0], [1, 1], [2, 2], [0, 0]]));
+			feature.setGeometry(
+				new LineString([
+					[0, 0],
+					[1, 1],
+					[2, 2],
+					[0, 0]
+				])
+			);
 			feature.dispatchEvent('change');
 
 			expect(classUnderTest.isFinishOnFirstPoint).toBe(true);
 		});
 
 		it('detects finishOnFirstPoint for polygon', () => {
-			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
+			const feature = new Feature(
+				new Polygon([
+					[
+						[0, 0],
+						[1, 1],
+						[2, 2],
+						[2, 2]
+					]
+				])
+			);
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
 
-			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [0, 0], [0, 0]]]));
+			feature.setGeometry(
+				new Polygon([
+					[
+						[0, 0],
+						[1, 1],
+						[2, 2],
+						[0, 0],
+						[0, 0]
+					]
+				])
+			);
 			feature.dispatchEvent('change');
 
 			expect(classUnderTest.isFinishOnFirstPoint).toBe(true);
 		});
 
 		it('detects isSnapOnLastPoint for polygon', () => {
-			const feature = new Feature(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2]]]));
+			const feature = new Feature(
+				new Polygon([
+					[
+						[0, 0],
+						[1, 1],
+						[2, 2],
+						[2, 2]
+					]
+				])
+			);
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
 
-			feature.setGeometry(new Polygon([[[0, 0], [1, 1], [2, 2], [2, 2], [0, 0]]]));
+			feature.setGeometry(
+				new Polygon([
+					[
+						[0, 0],
+						[1, 1],
+						[2, 2],
+						[2, 2],
+						[0, 0]
+					]
+				])
+			);
 			feature.dispatchEvent('change');
 
 			expect(classUnderTest.isSnapOnLastPoint).toBe(true);

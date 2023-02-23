@@ -1,10 +1,10 @@
 .topic .ba-list-item__icon {
 	padding: 0.3em;
 	background: var(--primary-bg-color);
-	border: .2em solid var(--secondary-color);
+	border: 0.2em solid var(--secondary-color);
 }
 .topic {
-	--secondary-color: var(--topic-theme, var(--secondary-color-theme));			  		  
+	--secondary-color: var(--topic-theme, var(--secondary-color-theme));
 }
 .topic-icon {
 	position: relative;
@@ -22,7 +22,7 @@
 }
 
 ba-spinner {
-	margin: .8em 1.2em;
+	margin: 0.8em 1.2em;
 }
 
 svg {

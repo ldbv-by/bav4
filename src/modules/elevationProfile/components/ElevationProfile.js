@@ -36,7 +36,8 @@ const EmptyProfileData = {
 		highestPoint: 0,
 		lowestPoint: 0,
 		linearDistance: 0
-	} };
+	}
+};
 
 /**
  * @author nklein
@@ -93,7 +94,11 @@ export class ElevationProfile extends MvuElement {
 				(state) => state.elevationProfile.coordinates,
 				(coordinates) => this._getAltitudeProfile(coordinates)
 			),
-			this.observe(state => state.media, data => this.signal(Update_Media, data), true)
+			this.observe(
+				(state) => state.media,
+				(data) => this.signal(Update_Media, data),
+				true
+			)
 		];
 	}
 
@@ -142,7 +147,6 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-
 		const { portrait, minWidth } = model;
 
 		const translate = (key) => this._translationService.translate(key);
@@ -164,9 +168,9 @@ export class ElevationProfile extends MvuElement {
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
-		const getOrientationClass = () => portrait ? 'is-portrait' : 'is-landscape';
+		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
-		const getMinWidthClass = () => (minWidth) ? 'is-desktop' : 'is-tablet';
+		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
 		return html`
 			<style>
@@ -175,44 +179,44 @@ export class ElevationProfile extends MvuElement {
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
 				<span class="profile__options">
 					<select id="attrs" @change=${onChange}>
-						${model.profile.attrs.map((attr) => html`
-								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>
-									${translate('elevationProfile_' + attr.id)}
-								</option>
-							`)}
+						${model.profile.attrs.map(
+							(attr) => html`
+								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
+							`
+						)}
 					</select>
 				</span>
 				<div class="chart-container" style="">
 					<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 				</div>
-				<div class="profile__data" id="route-altitude-chart-footer" >
+				<div class="profile__data" id="route-altitude-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${sumUp} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown" >${sumDown} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${sumDown} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint" >${highestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${highestPoint} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
 						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint" >${lowestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${lowestPoint} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
 						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight" >${verticalHeight} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${verticalHeight} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
 						<div class="profile__icon distance"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-linearDistance" >${linearDistance} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistance} m</div>
 					</div>
 				</div>
 			</div>
-	`;
+		`;
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
@@ -244,8 +248,7 @@ export class ElevationProfile extends MvuElement {
 		profile.elevations.forEach((alt) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(alt.dist / 1000);
-			}
-			else {
+			} else {
 				newLabels.push(alt.dist);
 			}
 		});
@@ -371,7 +374,6 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-
 	_getSlopeGradient(chart, altitudeData) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
@@ -389,8 +391,7 @@ export class ElevationProfile extends MvuElement {
 					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
 					currentSlopeType = SlopeType.FLAT;
 				}
-			}
-			else {
+			} else {
 				// look for first element with slope greater X
 				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
 					const xPoint = (xPointWidth / chartArea.width) * index;
@@ -403,8 +404,7 @@ export class ElevationProfile extends MvuElement {
 		// end with currentSlopeType - color
 		if (currentSlopeType === SlopeType.STEEP) {
 			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
-		}
-		else {
+		} else {
 			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
 		}
 		return gradientBg;
@@ -419,14 +419,12 @@ export class ElevationProfile extends MvuElement {
 				const profile = await this._elevationService.getProfile(coordinates);
 				this._enrichProfileData(profile);
 				this.signal(Update_Profile_Data, profile);
-			}
-			catch (e) {
+			} catch (e) {
 				console.warn(e.message);
-			// Todo: emit error notification
-			// this.signal(Update_Profile_Data, null);
+				// Todo: emit error notification
+				// this.signal(Update_Profile_Data, null);
 			}
-		}
-		else {
+		} else {
 			this.signal(Update_Profile_Data, EmptyProfileData);
 		}
 	}
@@ -455,7 +453,6 @@ export class ElevationProfile extends MvuElement {
 						chart.options.scales.x.min = Math.min(...chart.data.labels);
 						chart.options.scales.x.max = Math.max(...chart.data.labels);
 					}
-
 				},
 				{
 					id: 'drawVerticalLineAtMousePosition',
@@ -507,7 +504,6 @@ export class ElevationProfile extends MvuElement {
 						},
 						suggestedMin: 200,
 						suggestedMax: 500
-
 					}
 				},
 				events: ['pointermove', 'pointerup', 'mouseout'],
@@ -549,7 +545,8 @@ export class ElevationProfile extends MvuElement {
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		addHighlightFeatures({
 			id: ElevationProfile.HIGHLIGHT_FEATURE_ID,
-			type: HighlightFeatureType.TEMPORARY, data: { coordinate: [...coordinates] }
+			type: HighlightFeatureType.TEMPORARY,
+			data: { coordinate: [...coordinates] }
 		});
 	}
 

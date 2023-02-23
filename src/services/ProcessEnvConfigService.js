@@ -1,4 +1,3 @@
-
 /**
  * Service provides all configuration properties.
  * Properties are loaded from the process.env object,
@@ -7,9 +6,7 @@
  * @author taulinger
  */
 export class ProcessEnvConfigService {
-
 	constructor() {
-
 		this._properties = new Map();
 		// We cannot use the EnvironmentService for accessing the window object. It is not yet initialized at this moment.
 		// eslint-disable-next-line no-undef
@@ -25,11 +22,16 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);
 		// eslint-disable-next-line no-undef
-		this._properties.set('FIRST_STEPS_CONTENT_URL', window?.ba_externalConfigProperties?.FIRST_STEPS_CONTENT_URL ?? process.env.FIRST_STEPS_CONTENT_URL);
+		this._properties.set(
+			'FIRST_STEPS_CONTENT_URL',
+			window?.ba_externalConfigProperties?.FIRST_STEPS_CONTENT_URL ?? process.env.FIRST_STEPS_CONTENT_URL
+		);
 
 		this._properties.forEach((value, key) => {
 			if (value === undefined) {
-				console.warn('No config property found for ' + key + '. This is likely because the .env file is missing or you have to append this key to the .env file.');
+				console.warn(
+					'No config property found for ' + key + '. This is likely because the .env file is missing or you have to append this key to the .env file.'
+				);
 			}
 		});
 	}

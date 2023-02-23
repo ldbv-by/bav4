@@ -26,7 +26,6 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * @author alsturm
  */
 export class IconSelect extends MvuElement {
-
 	constructor() {
 		super({
 			title: '',
@@ -39,11 +38,14 @@ export class IconSelect extends MvuElement {
 		const { IconService: iconService, TranslationService: translationService } = $injector.inject('IconService', 'TranslationService');
 		this._iconService = iconService;
 		this._translationService = translationService;
-		this._onSelect = () => { };
+		this._onSelect = () => {};
 	}
 
 	onInitialize() {
-		this.observe(state => state.media.portrait, portrait => this.signal(Update_IsPortrait_Value, portrait));
+		this.observe(
+			(state) => state.media.portrait,
+			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
+		);
 	}
 
 	async _loadIcons() {
@@ -54,7 +56,6 @@ export class IconSelect extends MvuElement {
 	}
 
 	update(type, data, model) {
-
 		switch (type) {
 			case Update_Title:
 				return { ...model, title: data };
@@ -86,13 +87,15 @@ export class IconSelect extends MvuElement {
 			}
 
 			const onClick = (event) => {
-				const selectedIconResult = model.icons.find(iconResult => event.currentTarget.id === 'svg_' + iconResult.id);
+				const selectedIconResult = model.icons.find((iconResult) => event.currentTarget.id === 'svg_' + iconResult.id);
 				this.signal(Update_Value, selectedIconResult);
-				this.dispatchEvent(new CustomEvent('select', {
-					detail: {
-						selected: selectedIconResult
-					}
-				}));
+				this.dispatchEvent(
+					new CustomEvent('select', {
+						detail: {
+							selected: selectedIconResult
+						}
+					})
+				);
 				this._onSelect(selectedIconResult);
 				this.signal(Update_IsCollapsed, !model.isCollapsed);
 			};
@@ -101,11 +104,21 @@ export class IconSelect extends MvuElement {
 				const isSelectedClass = {
 					isselected: model.value === iconResult.base64
 				};
-				return html`
-				<div id=svg_${iconResult.id} class='ba_catalog_item ${classMap(isSelectedClass)}' title=${translate('iconSelect_icon_hint')} @click=${onClick}>${unsafeHTML(iconResult.svg)}</div>`;
+				return html` <div
+					id="svg_${iconResult.id}"
+					class="ba_catalog_item ${classMap(isSelectedClass)}"
+					title=${translate('iconSelect_icon_hint')}
+					@click=${onClick}
+				>
+					${unsafeHTML(iconResult.svg)}
+				</div>`;
 			};
 
-			return html`<style>svg{fill:${model.color}}</style>${model.icons.map(iconResult => getIcon(iconResult))}`;
+			return html`<style>
+					svg {
+						fill: ${model.color};
+					}</style
+				>${model.icons.map((iconResult) => getIcon(iconResult))}`;
 		};
 		const onClick = () => {
 			this.signal(Update_IsCollapsed, !model.isCollapsed);
@@ -120,15 +133,24 @@ export class IconSelect extends MvuElement {
 		};
 
 		return html`
-		<style>${css}</style>
-		<div class='iconselect__container ${getOrientationClass()}'>
-			<div class='catalog_header'>							
-				<button id="symbol-icon" data-test-id class='iconselect__toggle-button' @click=${onClick}  .title=${model.title} .disabled=${!iconsAvailable}>Symbol auswählen</button>	
+			<style>
+				${css}
+			</style>
+			<div class="iconselect__container ${getOrientationClass()}">
+				<div class="catalog_header">
+					<button
+						id="symbol-icon"
+						data-test-id
+						class="iconselect__toggle-button"
+						@click=${onClick}
+						.title=${model.title}
+						.disabled=${!iconsAvailable}
+					>
+						Symbol auswählen
+					</button>
+				</div>
+				<div class="ba_catalog_container ${classMap(isCollapsedClass)}">${getIcons()}</div>
 			</div>
-			<div class='ba_catalog_container ${classMap(isCollapsedClass)}'>
-				${getIcons()}
-			</div>
-		</div>
 		`;
 	}
 
@@ -152,7 +174,6 @@ export class IconSelect extends MvuElement {
 	}
 
 	set color(value) {
-
 		this.signal(Update_Color, value);
 	}
 

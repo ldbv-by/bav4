@@ -1,12 +1,12 @@
 .ba-list-item__text:focus-visible {
-	box-shadow: Inset 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
 }
 .ba-list-item ba-checkbox {
 	--primary-color: var(--topic-theme, var(--secondary-color));
 }
 
 .ba-icon-button {
-	padding: .6em !important;
+	padding: 0.6em !important;
 }
 
 ba-icon {
@@ -14,13 +14,12 @@ ba-icon {
 	width: 2em;
 	height: 2em;
 	display: block;
-	margin: 0 .3em;
+	margin: 0 0.3em;
 }
 ba-icon:hover {
 	background: var(--primary-color);
-
 }
 ba-icon:focus-visible {
 	background: var(--primary-color);
-	box-shadow: 0 0 0 .2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
 }

@@ -1,7 +1,7 @@
 /**
  * Helpers to reduce event trigger rate.
  * @see: https://codeburst.io/throttling-and-debouncing-in-javascript-646d076d0a44
-*/
+ */
 
 /**
  * Throttling is a straightforward reduction of the trigger rate.
@@ -22,7 +22,7 @@
 export function throttled(delay, fn) {
 	let lastCall = 0;
 	return function (...args) {
-		const now = (new Date).getTime();
+		const now = new Date().getTime();
 		if (now - lastCall < delay) {
 			return;
 		}
@@ -64,7 +64,5 @@ export function debounced(delay, fn) {
  * @returns {Promise}
  */
 export const sleep = async (milliseconds) => {
-	return new Promise(resolve => setTimeout(resolve, milliseconds));
+	return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
-
-

@@ -8,7 +8,6 @@ import { setIsDarkSchema } from '../../../../../src/store/media/media.action';
 window.customElements.define(ThemeProvider.tag, ThemeProvider);
 
 describe('ThemeProvider', () => {
-
 	const setup = (config) => {
 		const { window } = config;
 		const state = {
@@ -19,7 +18,6 @@ describe('ThemeProvider', () => {
 		TestUtils.setupStoreAndDi(state, {
 			media: createNoInitialStateMediaReducer()
 		});
-
 
 		$injector.registerSingleton('EnvironmentService', {
 			getWindow: () => window
@@ -40,7 +38,6 @@ describe('ThemeProvider', () => {
 						}
 					}
 				}
-
 			};
 
 			await setup({ window: mockWindow });

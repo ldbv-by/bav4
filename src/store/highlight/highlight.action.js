@@ -5,7 +5,6 @@
 import { CLEAR_FEATURES, FEATURE_ADD, REMOVE_FEATURE_BY_ID } from './highlight.reducer';
 import { $injector } from '../../injection';
 
-
 /**
  * Contains information for highlighting a position or an area in a map.
  * @typedef {Object} HighlightFeature
@@ -44,18 +43,16 @@ export const HighlightGeometryType = Object.freeze({
 	WKT: 1
 });
 
-
-
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
 };
 
 /**
-* Adds (appends) a single or an array of {@link HighlightFeature}.
-* @param {Array.<HighlightFeature>|HighlightFeature} features
-* @function
-*/
+ * Adds (appends) a single or an array of {@link HighlightFeature}.
+ * @param {Array.<HighlightFeature>|HighlightFeature} features
+ * @function
+ */
 export const addHighlightFeatures = (feature) => {
 	const featureAsArray = Array.isArray(feature) ? [...feature] : [feature];
 	getStore().dispatch({
@@ -87,4 +84,3 @@ export const removeHighlightFeaturesById = (id) => {
 		payload: idsAsArray
 	});
 };
-

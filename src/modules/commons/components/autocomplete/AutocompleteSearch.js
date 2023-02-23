@@ -21,7 +21,6 @@ const Update_Candidates = 'update_candidates';
  * @author taulinger
  */
 export class AutocompleteSearch extends MvuElement {
-
 	constructor() {
 		super({
 			candidates: []
@@ -30,7 +29,7 @@ export class AutocompleteSearch extends MvuElement {
 		this._currentFocus = -1;
 		this._provider = null;
 
-		this._onSelect = () => { };
+		this._onSelect = () => {};
 	}
 
 	onInitialize() {
@@ -86,17 +85,14 @@ export class AutocompleteSearch extends MvuElement {
 						if (data) {
 							this.signal(Update_Candidates, data);
 						}
-					}
-					catch (e) {
+					} catch (e) {
 						this._clearCandidates();
 						console.warn(e);
 					}
 				}
-			}
-			else {
+			} else {
 				console.warn('No SearchResult provider found.');
 			}
-
 		};
 
 		const addActive = (x) => {
@@ -110,7 +106,7 @@ export class AutocompleteSearch extends MvuElement {
 				this._currentFocus = 0;
 			}
 			if (this._currentFocus < 0) {
-				this._currentFocus = (x.length - 1);
+				this._currentFocus = x.length - 1;
 			}
 			/*add class "autocomplete-active":*/
 			x[this._currentFocus].classList.add('autocomplete-active');
@@ -140,15 +136,14 @@ export class AutocompleteSearch extends MvuElement {
 				this._currentFocus++;
 				/*and and make the current item more visible:*/
 				addActive(x);
-			}
-			else if (e.keyCode === 38) { //up
+			} else if (e.keyCode === 38) {
+				//up
 				/*If the arrow UP key is pressed,
 				decrease the currentFocus variable:*/
 				this._currentFocus--;
 				/*and and make the current item more visible:*/
 				addActive(x);
-			}
-			else if (e.keyCode === 13) {
+			} else if (e.keyCode === 13) {
 				/*If the ENTER key is pressed, prevent the form from being submitted,*/
 				e.preventDefault();
 				if (this._currentFocus > -1) {
@@ -161,13 +156,19 @@ export class AutocompleteSearch extends MvuElement {
 		};
 
 		return html`
-		 <style>${css}</style>
-		 <div class="autocomplete">
-			<input id='autoComplete'  @input=${onInput} @keydown=${onKeyDown}/>
-			${html`<div id='autocomplete-list' class='autocomplete-items'>${repeat(candidates, (candidate) => candidate.label, (candidate, index) => html`
-			<div index=${index} @click=${() => onClick(candidate)} >${unsafeHTML(candidate.labelFormatted)}</div>
-		  `)}</div>`} 
-		 </div>
+			<style>
+				${css}
+			</style>
+			<div class="autocomplete">
+				<input id="autoComplete" @input=${onInput} @keydown=${onKeyDown} />
+				${html`<div id="autocomplete-list" class="autocomplete-items">
+					${repeat(
+						candidates,
+						(candidate) => candidate.label,
+						(candidate, index) => html` <div index=${index} @click=${() => onClick(candidate)}>${unsafeHTML(candidate.labelFormatted)}</div> `
+					)}
+				</div>`}
+			</div>
 		`;
 	}
 
