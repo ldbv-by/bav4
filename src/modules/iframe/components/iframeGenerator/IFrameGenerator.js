@@ -5,7 +5,6 @@ import { MvuElement } from '../../../MvuElement';
 import clipboardIcon from './assets/clipboard.svg';
 import css from './iframegenerator.css';
 
-
 const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
@@ -25,7 +24,11 @@ export class IFrameGenerator extends MvuElement {
 			size: [400, 300],
 			autoWidth: false
 		});
-		const { TranslationService: translationService, ShareService: shareService, EnvironmentService: environmentService } = $injector.inject('TranslationService', 'ShareService', 'EnvironmentService');
+		const {
+			TranslationService: translationService,
+			ShareService: shareService,
+			EnvironmentService: environmentService
+		} = $injector.inject('TranslationService', 'ShareService', 'EnvironmentService');
 		this._translationService = translationService;
 		this._shareService = shareService;
 		this._environmentService = environmentService;
@@ -60,16 +63,24 @@ export class IFrameGenerator extends MvuElement {
 		const [width, height] = size;
 
 		const onChangeWidth = (event) => {
+			const iframe_slider_width = this.shadowRoot.getElementById('iframe_slider_width');
+			iframe_slider_width.value = parseInt(event.target.value);
 			this.signal(Update_Size_Width, parseInt(event.target.value));
 		};
 		const onChangeHeight = (event) => {
+			const iframe_slider_height = this.shadowRoot.getElementById('iframe_slider_height');
+			iframe_slider_height.value = parseInt(event.target.value);
 			this.signal(Update_Size_Height, parseInt(event.target.value));
 		};
 
 		const onChangeSliderWidth = (event) => {
+			const iframe_width = this.shadowRoot.getElementById('iframe_width');
+			iframe_width.value = parseInt(event.target.value);
 			this.signal(Update_Size_Width, parseInt(event.target.value));
 		};
 		const onChangeSliderHeight = (event) => {
+			const iframe_height = this.shadowRoot.getElementById('iframe_height');
+			iframe_height.value = parseInt(event.target.value);
 			this.signal(Update_Size_Height, parseInt(event.target.value));
 		};
 
@@ -87,8 +98,12 @@ export class IFrameGenerator extends MvuElement {
 					<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
 				</div>
 				<div class="fieldset">						
-					<div class='iframe__input'><input type="number" required="required" id="iframe_width" ?readonly=${autoWidth} value=${autoWidth ? '' : currentWidth}  @input=${onChangeWidth}></input>${autoWidth ? '' : 'Pixel'}</div>
-					<input type="range" ?disabled=${autoWidth} id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} value=${autoWidth ? Range_Max : currentWidth} @input=${onChangeSliderWidth}>
+					<div class='iframe__input'><input type="number" required="required" id="iframe_width" ?readonly=${autoWidth} value=${
+			autoWidth ? '' : currentWidth
+		}  @input=${onChangeWidth}></input>${autoWidth ? '' : 'Pixel'}</div>
+					<input type="range" ?disabled=${autoWidth} id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} value=${
+			autoWidth ? Range_Max : currentWidth
+		} @input=${onChangeSliderWidth}>
 					<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
 				</div>
 				<div class="fieldset">						
@@ -105,9 +120,14 @@ export class IFrameGenerator extends MvuElement {
 
 	_getIFrameContent(width, height) {
 		const previewUrl = this._getEmbeddedEncodedState();
-		return html`
-		<div class='iframe__content'>
-			<iframe src=${previewUrl} width=${width === Auto_Width ? Auto_Width : width + 'px' } height=${height + 'px'} loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+		return html` <div class="iframe__content">
+			<iframe
+				src=${previewUrl}
+				width=${width === Auto_Width ? Auto_Width : width + 'px'}
+				height=${height + 'px'}
+				loading="lazy"
+				referrerpolicy="no-referrer-when-downgrade"
+			></iframe>
 		</div>`;
 	}
 
@@ -115,19 +135,26 @@ export class IFrameGenerator extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const previewUrl = this._getEmbeddedEncodedState();
 
-		const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px' }' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
+		const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px'}' height='${
+			height + 'px'
+		}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 
 		const onCopyHTMLToClipBoard = async () => this._copyValueToClipboard(embedString);
 
-		return html`<ba-button id='iframe-button' .label=${translate('iframe_generate_code_label')}  .icon=${clipboardIcon} .type=${'primary'} @click=${onCopyHTMLToClipBoard}></ba-button>`;
+		return html`<ba-button
+			id="iframe-button"
+			.label=${translate('iframe_generate_code_label')}
+			.icon=${clipboardIcon}
+			.type=${'primary'}
+			@click=${onCopyHTMLToClipBoard}
+		></ba-button>`;
 	}
 
 	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
 			emitNotification(`${this._translationService.translate('iframe_embed_clipboard_success')}`, LevelTypes.INFO);
-		}
-		catch (error) {
+		} catch (error) {
 			emitNotification(this._translationService.translate('iframe_embed_clipboard_error'), LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}
