@@ -11,12 +11,15 @@
     display: flex;
     justify-content: center;
     padding: 0.3em;
-    border:1px;
-    border-style: solid;
+    border:1px solid var(--header-background-color);    
 }
 
 .iframe___content iframe{
     border:0;    
+}
+
+.iframe__section {
+	border-bottom: 1px solid var(--header-background-color);
 }
 
 .iframe__controls{
@@ -25,8 +28,8 @@
     align-content: space-evenly;
 }
 
-.iframe__copy {
-	margin-left: 1em;
+.iframe__code {
+    padding: 0.3em;
 }
 
 .iframe__toggle{

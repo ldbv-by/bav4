@@ -75,8 +75,8 @@ export class IFrameGenerator extends MvuElement {
         <div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
 		<div class='iframe__controls'>
 			<div class='iframe__toggle'>
-				<span class='iframe__toggle_text'>${translate('iframe_generator_toggle')}</span>
-				<ba-toggle id='toggleAutoWidth' .title=${'Toggle AutoWidth'} @toggle=${onToggleAutoWidth}></ba-toggle>
+				<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
+				<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
 			</div>
 			<div class="fieldset">						
 				<input type="text" required="required" id="iframe_width" ?readonly=${autoWidth} value=${autoWidth ? '' : currentWidth}  @input=${onChangeWidth}></input>
@@ -107,12 +107,7 @@ export class IFrameGenerator extends MvuElement {
 
 		const onCopyHTMLToClipBoard = async () => this._copyValueToClipboard(embedString);
 
-		return html`
-		<div class='iframe__embed_string'>
-			<input value=${embedString} readonly></input>
-			<ba-icon class='iframe__copy' .icon='${clipboardIcon}' .title=${translate('iframe_copy_icon')} .size=${2} @click=${onCopyHTMLToClipBoard}>
-			</ba-icon>
-		</div>`;
+		return html`<ba-button id='iframe-button' .label=${translate('iframe_generate_code_label')}  .icon=${clipboardIcon} .type=${'primary'} @click=${onCopyHTMLToClipBoard}></ba-button>`;
 	}
 
 	async _copyValueToClipboard(value) {
