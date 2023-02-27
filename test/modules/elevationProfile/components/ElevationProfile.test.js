@@ -202,7 +202,7 @@ describe('ElevationProfile', () => {
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(0.02);
+			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(2);
 			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('lime');
 			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('green');
 			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('red');
@@ -417,7 +417,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('elevationProfile_alt: 30');
+			expect(labelRet).toBe('elevationProfile_alt: 30m');
 		});
 	});
 
