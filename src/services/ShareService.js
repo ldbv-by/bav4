@@ -56,8 +56,8 @@ export class ShareService {
 
 		const searchParams = new URLSearchParams(extractedState);
 		const location = this._environmentService.getWindow().location;
-		const mergedPathParameters = [...location.pathname.split('/'), ...pathParameters];
-		return `${location.protocol}//${location.host}${mergedPathParameters.join('/')}/` + '?' + decodeURIComponent(searchParams.toString());
+		const mergedPathParameters = [...location.pathname.split('/'), ...pathParameters].filter((s) => s.length > 0);
+		return `${location.protocol}//${location.host}/${mergedPathParameters.join('/')}` + '?' + decodeURIComponent(searchParams.toString());
 	}
 
 	/**

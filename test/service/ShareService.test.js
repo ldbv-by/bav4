@@ -233,74 +233,148 @@ describe('ShareService', () => {
 		});
 
 		describe('encodeState', () => {
-			const location = {
-				protocol: 'http:',
-				host: 'foo.bar',
-				pathname: '/some'
-			};
+			describe('for pathname "/"', () => {
+				const location = {
+					protocol: 'http:',
+					host: 'foo.bar',
+					pathname: '/'
+				};
 
-			it('encodes a state object to url', () => {
-				setup();
-				const mockWindow = { location: location };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const instanceUnderTest = new ShareService();
-				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
-				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
-				const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+				it('encodes a state object to url', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
-				const encoded = instanceUnderTest.encodeState();
-				const queryParams = new URLSearchParams(new URL(encoded).search);
+					const encoded = instanceUnderTest.encodeState();
+					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/?`)).toBeTrue();
-				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
-				expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
+
+				it('encodes a state object to url merging extra parameter', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					const extraParam = { foo: 'bar' };
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
+
+					const encoded = instanceUnderTest.encodeState(extraParam);
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get('foo')).toBe('bar');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
+
+				it('encodes a state object to url appending optional path parameters', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					const pathParameters = ['foo', 'bar'];
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+
+					const encoded = instanceUnderTest.encodeState({}, pathParameters);
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}foo/bar?`)).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+				});
 			});
 
-			it('encodes a state object to url merging extra parameter', () => {
-				setup();
-				const mockWindow = { location: location };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const instanceUnderTest = new ShareService();
-				const extraParam = { foo: 'bar' };
-				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
-				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
-				const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
+			describe('for pathname "/some"', () => {
+				const location = {
+					protocol: 'http:',
+					host: 'foo.bar',
+					pathname: '/some'
+				};
 
-				const encoded = instanceUnderTest.encodeState(extraParam);
-				const queryParams = new URLSearchParams(new URL(encoded).search);
+				it('encodes a state object to url', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
 
-				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/?`)).toBeTrue();
-				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
-				expect(queryParams.get('foo')).toBe('bar');
-				expect(_mergeExtraParamsSpy).toHaveBeenCalled();
-			});
+					const encoded = instanceUnderTest.encodeState();
+					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-			it('encodes a state object to url appending optional path parameters', () => {
-				setup();
-				const mockWindow = { location: location };
-				spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
-				const instanceUnderTest = new ShareService();
-				const pathParameters = ['foo', 'bar'];
-				spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
-				spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
-				spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					expect(encoded.startsWith('http://foo.bar/some?')).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
 
-				const encoded = instanceUnderTest.encodeState({}, pathParameters);
-				const queryParams = new URLSearchParams(new URL(encoded).search);
+				it('encodes a state object to url merging extra parameter', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					const extraParam = { foo: 'bar' };
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), extraParam).and.callThrough();
 
-				expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}/foo/bar/?`)).toBeTrue();
-				expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
-				expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
-				expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
-				expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					const encoded = instanceUnderTest.encodeState(extraParam);
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith('http://foo.bar/some?')).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(queryParams.get('foo')).toBe('bar');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
+
+				it('encodes a state object to url appending optional path parameters', () => {
+					setup();
+					const mockWindow = { location: location };
+					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					const instanceUnderTest = new ShareService();
+					const pathParameters = ['foo', 'bar'];
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+
+					const encoded = instanceUnderTest.encodeState({}, pathParameters);
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith('http://foo.bar/some/foo/bar?')).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+				});
 			});
 		});
 	});
