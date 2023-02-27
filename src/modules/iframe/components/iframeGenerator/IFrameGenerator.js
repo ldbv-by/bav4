@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
+import { PathParameters } from '../../../../domain/pathParameters';
 import clipboardIcon from './assets/clipboard.svg';
 import css from './iframegenerator.css';
 
@@ -162,13 +163,8 @@ export class IFrameGenerator extends MvuElement {
 		}
 	}
 
-	// todo: move to ShareService
 	_getEmbeddedEncodedState() {
-		const location = this._environmentService.getWindow().location;
-		const baseLocation = `${location.protocol}//${location.host}${location.pathname}` + '?';
-		const embedLocation = `${location.protocol}//${location.host}${location.pathname}embed.html` + '?';
-		const baseUrl = this._shareService.encodeState();
-		return baseUrl.replace(baseLocation, embedLocation);
+		return this._shareService.encodeState([], [PathParameters.EMBED]);
 	}
 
 	static get tag() {

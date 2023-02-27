@@ -12,10 +12,9 @@ describe('IFrameGenerator', () => {
 	let store;
 
 	const shareServiceMock = {
-		encodeState: () => 'https://myhost/app/?param=foo',
+		encodeState: () => 'https://myhost/app/embed.html?param=foo',
 		copyToClipboard() {}
 	};
-	// const baseLocation = `${location.protocol}//${location.host}${location.pathname}` + '?';
 	const mockWindow = {
 		location: {
 			protocol: 'https:',
