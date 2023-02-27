@@ -535,6 +535,7 @@ export class ElevationProfile extends MvuElement {
 								return translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm';
 							},
 							label: (tooltipItem) => {
+								const retArray = [];
 								const selectedAttribute = this.getModel().selectedAttribute;
 								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
 								const elevationEntry = getElevationEntry(tooltipItem);
@@ -543,21 +544,33 @@ export class ElevationProfile extends MvuElement {
 								const attribute = altitudeData.attrs.find((attr) => {
 									return attr.id === selectedAttribute;
 								});
-								let label = selectedAttributeTranslation + ': ' + attributeValue;
+								let label = selectedAttributeTranslation + ': ';
 								if (attribute.prefix) {
-									label = attribute.prefix + ' ' + label;
+									label += attribute.prefix + ' ' + attributeValue;
+								} else {
+									label += attributeValue;
 								}
 
 								if (selectedAttribute === Default_Selected_Attribute) {
 									label += 'm';
 									return label;
+								} else {
+									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
+									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
+
+									// const defaultAttribute = altitudeData.attrs.find((attr) => {
+									// 	return attr.id === Default_Selected_Attribute;
+									// });
+									const defaultLabel = defaultAttributeTranslation + ': ' + defaultAttributeValue + 'm';
+									retArray.push(defaultLabel);
 								}
 
 								if (attribute.unit) {
 									label += attribute.unit;
 								}
 
-								return label;
+								retArray.push(label);
+								return retArray;
 							}
 						}
 					}

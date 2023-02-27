@@ -454,7 +454,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, altitudeData);
 
 			// assert
-			expect(labelRet).toBe('~ elevationProfile_slope: 20%');
+			expect(labelRet).toEqual(['elevationProfile_alt: 30m', 'elevationProfile_slope: ~ 20%']);
 		});
 	});
 
