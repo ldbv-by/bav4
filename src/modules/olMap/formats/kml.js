@@ -43,7 +43,14 @@ export const toKmlStyleProperties = (style) => {
 };
 
 const sanitizeStyle = (styles) => {
-	const style = styles[0] ? styles[0].clone() : styles && !Array.isArray(styles) ? styles.clone() : new Style();
+	const getFirstOrDefault = (styles) => {
+		const firstStyle = styles[0] ? styles[0] : styles && !Array.isArray(styles) ? styles : null;
+
+		return firstStyle ?? new Style();
+	};
+
+	const style = getFirstOrDefault(styles);
+	//const style = styles[0] ? styles[0].clone() : styles && !Array.isArray(styles) ? styles.clone() : new Style();
 
 	const kmlStyleProperties = toKmlStyleProperties(style);
 
