@@ -543,10 +543,10 @@ export class ElevationProfile extends MvuElement {
 								const attribute = altitudeData.attrs.find((attr) => {
 									return attr.id === selectedAttribute;
 								});
+								let label = selectedAttributeTranslation + ': ' + attributeValue;
 								if (attribute.prefix) {
 									label = attribute.prefix + ' ' + label;
 								}
-								let label = selectedAttributeTranslation + ': ' + attributeValue;
 
 								if (selectedAttribute === Default_Selected_Attribute) {
 									label += 'm';

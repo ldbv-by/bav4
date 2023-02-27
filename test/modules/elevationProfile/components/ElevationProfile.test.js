@@ -70,11 +70,13 @@ describe('ElevationProfile', () => {
 		attrs: [
 			{
 				id: 'slope',
+				prefix: '~',
+				unit: '%',
 				values: [
-					[0, 1, 0.01],
-					[2, 3, 0.2],
-					[4, 4, 0.4],
-					[5, 5, 0.01]
+					[0, 1, 1],
+					[2, 3, 20],
+					[4, 4, 40],
+					[5, 5, 1]
 				]
 			},
 			{
@@ -125,9 +127,11 @@ describe('ElevationProfile', () => {
 		attrs: [
 			{
 				id: 'slope',
+				prefix: '~',
+				unit: '%',
 				values: [
-					[0, 0, 0.01],
-					[1, 3, 0.2]
+					[0, 0, 1],
+					[1, 3, 20]
 				]
 			},
 			{
@@ -418,6 +422,39 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toBe('elevationProfile_alt: 30m');
+		});
+	});
+
+	describe('when tooltip callback "label" is called for attribute slope', () => {
+		it('uses attributes prefix and unit', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const altitudeData = profile();
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const config = element._chart.config;
+			const tooltipItem = { parsed: { x: 3 } };
+
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+			const chart = element._chart;
+
+			// act
+			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+			element._getBorder(chart, altitudeData);
+
+			// assert
+			expect(labelRet).toBe('~ elevationProfile_slope: 20%');
 		});
 	});
 
