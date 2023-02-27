@@ -249,8 +249,7 @@ export class ElevationProfile extends MvuElement {
 		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
 				newLabels.push(elevation.dist / 1000);
-			}
-			else {
+			} else {
 				newLabels.push(elevation.dist);
 			}
 			// create alt entry in elevations
@@ -541,7 +540,24 @@ export class ElevationProfile extends MvuElement {
 								const elevationEntry = getElevationEntry(tooltipItem);
 								const attributeValue = elevationEntry[selectedAttribute];
 
-								return selectedAttributeTranslation + ': ' + attributeValue;
+								const attribute = altitudeData.attrs.find((attr) => {
+									return attr.id === selectedAttribute;
+								});
+								if (attribute.prefix) {
+									label = attribute.prefix + ' ' + label;
+								}
+								let label = selectedAttributeTranslation + ': ' + attributeValue;
+
+								if (selectedAttribute === Default_Selected_Attribute) {
+									label += 'm';
+									return label;
+								}
+
+								if (attribute.unit) {
+									label += attribute.unit;
+								}
+
+								return label;
 							}
 						}
 					}
@@ -585,7 +601,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get SLOPE_STEEP_THRESHOLD() {
-		return 0.02;
+		return 2;
 	}
 
 	static get SLOPE_FLAT_COLOR_DARK() {
