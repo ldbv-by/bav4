@@ -85,6 +85,8 @@ export class IFrameGenerator extends MvuElement {
 		};
 
 		const onToggleAutoWidth = (event) => {
+			const iframe_width = this.shadowRoot.getElementById('iframe_width');
+			iframe_width.value = event.detail.checked ? '' : width;
 			this.signal(Update_Auto_Width, event.detail.checked);
 		};
 

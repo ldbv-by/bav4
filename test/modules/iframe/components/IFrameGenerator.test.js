@@ -265,10 +265,17 @@ describe('IFrameGenerator', () => {
 
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
+			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
 
 			toggle.click();
 
+			expect(widthInputElement.value).toBe('');
 			expect(iframeElement.width).toBe('100%');
+
+			toggle.click();
+
+			expect(widthInputElement.value).toBe('400');
+			expect(iframeElement.width).toBe('400px');
 		});
 	});
 });
