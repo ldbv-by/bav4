@@ -4,6 +4,6 @@ describe('QueryParameters', () => {
 	it('provides an enum of all valid path parameters', () => {
 		expect(Object.keys(PathParameters).length).toBe(1);
 
-		expect(PathParameters.EMBED).toBe('embed');
+		expect(PathParameters.EMBED).toBe('embed.html');
 	});
 });

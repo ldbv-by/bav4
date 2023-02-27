@@ -4,5 +4,5 @@
  */
 export const PathParameters = Object.freeze({
 	// official parameters
-	EMBED: 'embed'
+	EMBED: 'embed.html'
 });
