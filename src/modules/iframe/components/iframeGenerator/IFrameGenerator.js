@@ -3,7 +3,7 @@ import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
-import clipboardIcon from './assets/clipboard.svg';
+import codeIcon from './assets/code.svg';
 import css from './iframegenerator.css';
 
 const Update_Size_Width = 'update_size_width';
@@ -96,6 +96,7 @@ export class IFrameGenerator extends MvuElement {
 		<style>${css}</style>		
         <div class='container'>
 			<div class='iframe__controls'>
+			<div class='iframe__controls-section'>
 				<div class='iframe__toggle'>
 					<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
 					<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
@@ -114,9 +115,12 @@ export class IFrameGenerator extends MvuElement {
 					<input type="range" id="iframe_slider_height"  step=10 min=${Range_Min} max=${Range_Max} value=${height} @input=${onChangeSliderHeight}>
 					<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
 				</div>
-			</div>
+				</div>
+				<div class='iframe__controls-section'>
+				<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
+				</div>
+				</div>
 			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
-			<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
 		</div>
         `;
 	}
@@ -147,7 +151,7 @@ export class IFrameGenerator extends MvuElement {
 		return html`<ba-button
 			id="iframe-button"
 			.label=${translate('iframe_generate_code_label')}
-			.icon=${clipboardIcon}
+			.icon=${codeIcon}
 			.type=${'primary'}
 			@click=${onCopyHTMLToClipBoard}
 		></ba-button>`;
