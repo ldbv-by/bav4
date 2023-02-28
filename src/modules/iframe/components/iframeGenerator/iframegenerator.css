@@ -8,7 +8,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-height:100vh;
+	min-height: 100vh;
 }
 .iframe__embed_string {
 	display: flex;
@@ -29,20 +29,20 @@ iframe {
 }
 .iframe__controls {
 	position: fixed;
-    z-index: 999999;
-    padding: 1em 0.8em;
-    background: var(--primary-bg-color);
-    box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
-    transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
-    width: 37em;
-	top:50em;
+	z-index: 999999;
+	padding: 1em 0.8em;
+	background: var(--primary-bg-color);
+	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
+	transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
+	width: 37em;
+	top: 50em;
 }
-.iframe__controls-section{
-    display: flex;
-    align-content: space-evenly;
+.iframe__controls-section {
+	display: flex;
+	align-content: space-evenly;
 }
 .iframe__code {
-	width:100%;
+	width: 100%;
 }
 .iframe__toggle {
 	display: flex;
