@@ -83,20 +83,6 @@ export class ElevationProfile extends MvuElement {
 		this._initSurfaceTypes();
 	}
 
-	get _delay() {
-		if (this._noAnimation) {
-			return 0;
-		}
-		return Chart_Delay;
-	}
-
-	get _duration() {
-		if (this._noAnimation) {
-			return 0;
-		}
-		return Chart_Duration;
-	}
-
 	/**
 	 * @override
 	 */
@@ -497,8 +483,8 @@ export class ElevationProfile extends MvuElement {
 			options: {
 				responsive: true,
 				animation: {
-					duration: this._duration,
-					delay: this._delay
+					duration: this._noAnimation ? 0 : Chart_Duration,
+					delay: this._noAnimation ? 0 : Chart_Delay
 				},
 				maintainAspectRatio: false,
 
