@@ -14,6 +14,9 @@ const Update_Profile_Data = 'update_profile_data';
 
 const Update_Media = 'update_media';
 
+const Chart_Duration = 600;
+const Chart_Delay = 300;
+
 /**
  * different types of slope
  * @enum
@@ -474,8 +477,8 @@ export class ElevationProfile extends MvuElement {
 			options: {
 				responsive: true,
 				animation: {
-					duration: 600,
-					delay: 300
+					duration: ElevationProfile.DURATION,
+					delay: ElevationProfile.DELAY
 				},
 				maintainAspectRatio: false,
 
@@ -572,6 +575,20 @@ export class ElevationProfile extends MvuElement {
 			media: { darkSchema }
 		} = StoreService.getStore().getState();
 		return darkSchema;
+	}
+
+	static get DELAY() {
+		if (ElevationProfile.IS_DARK) {
+			return 0;
+		}
+		return Chart_Delay;
+	}
+
+	static get DURATION() {
+		if (ElevationProfile.IS_DARK) {
+			return 0;
+		}
+		return Chart_Duration;
 	}
 
 	static get SLOPE_STEEP_THRESHOLD() {
