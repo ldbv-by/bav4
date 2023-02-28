@@ -32,6 +32,8 @@ import { $injector } from '../injection';
  * @typedef {Object} ProfileAttribute
  * @property {string} id
  * @property {Array<Array<string|number>>} values
+ * @property {string} [prefix]
+ * @property {string} [unit]
  */
 
 /**
