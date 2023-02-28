@@ -83,7 +83,7 @@ describe('ElevationProfile', () => {
 				id: 'surface',
 				values: [
 					[0, 1, 'asphalt'],
-					[3, 5, 'gravel']
+					[2, 5, 'gravel']
 				]
 			}
 		]
@@ -137,7 +137,7 @@ describe('ElevationProfile', () => {
 			{
 				id: 'surface',
 				values: [
-					[0, 0, 'asphalt'],
+					[0, 1, 'asphalt'],
 					[2, 3, 'gravel']
 				]
 			}
@@ -720,7 +720,7 @@ describe('ElevationProfile', () => {
 					{
 						id: 'surface',
 						values: [
-							[0, 0, 'asphalt'],
+							[0, 1, 'asphalt'],
 							[2, 2, 'gravel'],
 							[3, 3, 0]
 						]
@@ -737,7 +737,7 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(altitudeProfile.elevations[0].surface).toBe('asphalt');
-			expect(altitudeProfile.elevations[1].surface).toBe('missing');
+			expect(altitudeProfile.elevations[1].surface).toBe('asphalt');
 			expect(altitudeProfile.elevations[2].surface).toBe('gravel');
 			expect(altitudeProfile.elevations[3].surface).toBe(0);
 		});
