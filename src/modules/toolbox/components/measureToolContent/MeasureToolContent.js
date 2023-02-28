@@ -173,7 +173,7 @@ export class MeasureToolContent extends AbstractToolContent {
 		const translate = (key) => this._translationService.translate(key);
 		const getTranslatedSpan = (key) => html`<span>${unsafeHTML(translate(key))}</span>`;
 		const getMeasurementModeMessage = (mode) => getTranslatedSpan('toolbox_measureTool_measure_' + mode);
-		return this._environmentService.isTouch() ? getMeasurementModeMessage(mode) : nothing;
+		return this._environmentService.isTouch() && mode ? getMeasurementModeMessage(mode) : nothing;
 	}
 
 	async _copyValueToClipboard(value, measure) {

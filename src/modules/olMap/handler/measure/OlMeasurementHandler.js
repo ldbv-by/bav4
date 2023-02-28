@@ -186,7 +186,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (this._measureState.type === InteractionStateType.DRAW) {
 					setSelection([event.feature.getId()]);
 				}
-				this._save();
+				saveDebounced();
 			};
 			this._mapListeners.push(layer.getSource().on('addfeature', setSelectedAndSave));
 			this._mapListeners.push(layer.getSource().on('changefeature', () => saveDebounced()));
