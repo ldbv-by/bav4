@@ -1,4 +1,4 @@
-import { getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '../../src/utils/colors';
+import { createHSVColorGradient, getContrastColorFrom, hexToRgb, hsvToRgb, rgbToHex, rgbToHsv } from '../../src/utils/colors';
 
 const Rgb_White = [255, 255, 255];
 const Rgb_Red = [255, 0, 0];
@@ -83,5 +83,14 @@ describe('getContrastColorFrom', () => {
 		expect(getContrastColorFrom(Rgb_Yellow)).toEqual(Rgb_Black);
 		expect(getContrastColorFrom(rgbDarkBlue)).toEqual(Rgb_White);
 		expect(getContrastColorFrom(rgbLightBlue)).toEqual(Rgb_Black);
+	});
+});
+
+describe('createHSVColorGradient', () => {
+	it('should build a gradient array', () => {
+		const greenToRedGradient = createHSVColorGradient(Rgb_Green, Rgb_Red, 5);
+		expect(greenToRedGradient).toHaveSize(5);
+		expect(greenToRedGradient[0]).toEqual(Rgb_Green);
+		expect(greenToRedGradient[4]).toEqual(Rgb_Red);
 	});
 });

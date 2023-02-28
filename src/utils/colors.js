@@ -117,7 +117,7 @@ export const hsvToRgb = (hsv) => {
 
 /**
  * Creates a lighter or darker version of the specified base color.
- * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
+ * @param {Array<Number>} rgbColor the baseColor as rgb-color-array
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {
@@ -136,4 +136,35 @@ export const getContrastColorFrom = (baseColor) => {
 	const contrastHsv = isDark(hsv) ? lighter(hsv) : darker(hsv);
 
 	return hsvToRgb(contrastHsv);
+};
+
+/**
+ * Creates a array of colors beginning with the defined startColor and ending with the endColor.
+ * The colors follows a linear gradient in the hsv colorspace.
+ * @param {Array<Number>} startColor the startColor as rgb-color-array
+ * @param {Array<Number>} endColor the endColor as rgb-color-array
+ * @param {Number} size the size auf the resulting array
+ * @returns {Array<Array<Number>>} the color palette
+ */
+export const createHSVColorGradientFromRgb = (startColor, endColor, size) => {
+	if (!isRGBColor(startColor) || !isRGBColor(endColor)) {
+		return null;
+	}
+
+	const startHsv = rgbToHsv(startColor);
+	const endHsv = rgbToHsv(endColor);
+	const calculateDelta = (start, end, size) => {
+		const difference = end - start;
+		return difference === 0 ? difference : difference / (size - 1);
+	};
+
+	const deltaH = calculateDelta(startHsv[0], endHsv[0], size);
+	const deltaS = calculateDelta(startHsv[1], endHsv[1], size);
+	const deltaV = calculateDelta(startHsv[2], endHsv[2], size);
+
+	const hsvGradients = [];
+	for (let i = 0; i < size; i++) {
+		hsvGradients.push([Math.floor(startHsv[0] + i * deltaH), Math.floor(startHsv[1] + i * deltaS), Math.floor(startHsv[2] + i * deltaV)]);
+	}
+	return hsvGradients.map((hsvColor) => hsvToRgb(hsvColor));
 };
