@@ -227,6 +227,12 @@ export class ElevationProfile extends MvuElement {
 				profile.elevations[index][attributeName] = from_to_value[2];
 			}
 		});
+		profile.elevations.forEach((alt) => {
+			if (alt[attributeName] === undefined) {
+				alt[attributeName] = 'missing';
+				// Todo: @Thomas: emit error notification?
+			}
+		});
 	}
 
 	_enrichProfileData(profile) {
