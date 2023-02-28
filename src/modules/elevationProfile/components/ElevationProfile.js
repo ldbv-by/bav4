@@ -76,7 +76,7 @@ export class ElevationProfile extends MvuElement {
 		this._secondLeft = 0;
 		this._top = 0;
 		this._bottom = 0;
-		this._noAnimation = false;
+		this._noAnimationValue = false;
 
 		this._unsubscribers = [];
 
@@ -167,7 +167,7 @@ export class ElevationProfile extends MvuElement {
 		const linearDistance = model.profile?.stats?.linearDistance;
 
 		const onChange = () => {
-			this.noAnimation(true);
+			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -224,8 +224,11 @@ export class ElevationProfile extends MvuElement {
 		`;
 	}
 
-	noAnimation(noAnimation) {
-		this._noAnimation = noAnimation;
+	get _noAnimation() {
+		return this._noAnimationValue;
+	}
+	set _noAnimation(value) {
+		this._noAnimationValue = value;
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {

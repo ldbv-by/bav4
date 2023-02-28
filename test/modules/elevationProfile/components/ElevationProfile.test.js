@@ -605,7 +605,7 @@ describe('ElevationProfile', () => {
 			[2, 3]
 		];
 
-		it('should call noAnimation', async () => {
+		it('should change _noAnimation', async () => {
 			// arrange
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 			const element = await setup({
@@ -614,7 +614,7 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-			const noAnimationSpy = spyOn(element, 'noAnimation').and.callThrough();
+			const noAnimationSpy = spyOnProperty(element, '_noAnimation', 'set').and.callThrough();
 
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
