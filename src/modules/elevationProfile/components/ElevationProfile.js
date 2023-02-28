@@ -553,21 +553,17 @@ export class ElevationProfile extends MvuElement {
 								}
 
 								if (selectedAttribute === Default_Selected_Attribute) {
-									label += 'm';
+									label += ' m';
 									return label;
 								} else {
 									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
 									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
-
-									// const defaultAttribute = altitudeData.attrs.find((attr) => {
-									// 	return attr.id === Default_Selected_Attribute;
-									// });
-									const defaultLabel = defaultAttributeTranslation + ': ' + defaultAttributeValue + 'm';
+									const defaultLabel = defaultAttributeTranslation + ': ' + defaultAttributeValue + ' m';
 									retArray.push(defaultLabel);
 								}
 
 								if (attribute.unit) {
-									label += attribute.unit;
+									label += ' ' + attribute.unit;
 								}
 
 								retArray.push(label);

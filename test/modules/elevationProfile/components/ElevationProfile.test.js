@@ -421,7 +421,7 @@ describe('ElevationProfile', () => {
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
 
 			// assert
-			expect(labelRet).toBe('elevationProfile_alt: 30m');
+			expect(labelRet).toBe('elevationProfile_alt: 30 m');
 		});
 	});
 
@@ -454,7 +454,7 @@ describe('ElevationProfile', () => {
 			element._getBorder(chart, altitudeData);
 
 			// assert
-			expect(labelRet).toEqual(['elevationProfile_alt: 30m', 'elevationProfile_slope: ~ 20%']);
+			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_slope: ~ 20 %']);
 		});
 	});
 
@@ -708,6 +708,12 @@ describe('ElevationProfile', () => {
 						z: 20,
 						e: 42,
 						n: 52
+					},
+					{
+						dist: 3,
+						z: 20,
+						e: 42,
+						n: 52
 					}
 				],
 				attrs: [
@@ -715,7 +721,8 @@ describe('ElevationProfile', () => {
 						id: 'surface',
 						values: [
 							[0, 0, 'asphalt'],
-							[2, 2, 'gravel']
+							[2, 2, 'gravel'],
+							[3, 3, 0]
 						]
 					}
 				]
@@ -732,6 +739,7 @@ describe('ElevationProfile', () => {
 			expect(altitudeProfile.elevations[0].surface).toBe('asphalt');
 			expect(altitudeProfile.elevations[1].surface).toBe('missing');
 			expect(altitudeProfile.elevations[2].surface).toBe('gravel');
+			expect(altitudeProfile.elevations[3].surface).toBe(0);
 		});
 
 		it('considers distances over 10000m and uses km instead', async () => {
