@@ -168,3 +168,32 @@ export const createHSVColorGradientFromRgb = (startColor, endColor, size) => {
 	}
 	return hsvGradients.map((hsvColor) => hsvToRgb(hsvColor));
 };
+
+/**
+ * Creates a color as gradient color step.
+ * @param {Array<Number>} startColor the RGB color, where the color gradient starts
+ * @param {Array<Number>} endColor the RGB color, where the color gradient ends
+ * @param {Number} ratio a value  between 0 and 1, which represents the relative position inside the gradient
+ * @returns {Array<Number>} the gradient color
+ */
+export const getHsvGradientColor = (startColor, endColor, ratio) => {
+	if (!isRGBColor(startColor) || !isRGBColor(endColor)) {
+		return null;
+	}
+
+	const startHsv = rgbToHsv(startColor);
+	const endHsv = rgbToHsv(endColor);
+
+	const calculateDelta = (start, end, ratio) => {
+		const difference = end - start;
+		return difference === 0 ? difference : difference * ratio;
+	};
+
+	const deltaH = calculateDelta(startHsv[0], endHsv[0], ratio);
+	const deltaS = calculateDelta(startHsv[1], endHsv[1], ratio);
+	const deltaV = calculateDelta(startHsv[2], endHsv[2], ratio);
+
+	const hsv = [Math.floor(startHsv[0] + deltaH), Math.floor(startHsv[1] + deltaS), Math.floor(startHsv[2] + deltaV)];
+
+	return hsvToRgb(hsv);
+};

@@ -7,6 +7,7 @@ import { $injector } from '../../../injection';
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import { getHsvGradientColor } from '../../../utils/colors';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -379,34 +380,25 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		// start gradient with 'flat' color
+
 		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
-		let currentSlopeType = SlopeType.FLAT;
+		const colorCache = new Map();
 		altitudeData?.elevations.forEach((element, index) => {
-			if (currentSlopeType === SlopeType.STEEP) {
-				// look for first element with slope less than X
-				if (!element.slope || element.slope <= ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					currentSlopeType = SlopeType.FLAT;
-				}
-			} else {
-				// look for first element with slope greater X
-				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					currentSlopeType = SlopeType.STEEP;
-				}
+			if (element.slope) {
+				const getColorFor = (value) => {
+					if (colorCache.has(value)) {
+						return colorCache.get(value);
+					}
+					const ratio = value / 100;
+					const color = getHsvGradientColor(ElevationProfile.SLOPE_FLAT_COLOR, ElevationProfile.SLOPE_STEEP_COLOR, ratio);
+					colorCache.set(value, color);
+					return color;
+				};
+				const xPoint = (xPointWidth / chartArea.width) * index;
+				const slopeColor = getColorFor(element.slope);
+				gradientBg.addColorStop(xPoint, slopeColor);
 			}
 		});
-		// end with currentSlopeType - color
-		if (currentSlopeType === SlopeType.STEEP) {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
-		} else {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
-		}
 		return gradientBg;
 	}
 
