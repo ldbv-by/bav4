@@ -18,11 +18,12 @@ const Range_Max = 2000;
  * Component to preview the embedded version
  *
  * @author thiloSchlemmer
+ * @author alsturm
  */
 export class IFrameGenerator extends MvuElement {
 	constructor() {
 		super({
-			size: [400, 300],
+			size: [800, 600],
 			autoWidth: false
 		});
 		const {

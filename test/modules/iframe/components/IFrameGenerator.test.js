@@ -45,7 +45,7 @@ describe('IFrameGenerator', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
-				size: [400, 300],
+				size: [800, 600],
 				autoWidth: false
 			});
 		});
@@ -74,7 +74,7 @@ describe('IFrameGenerator', () => {
 			buttonElement.click();
 
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 		});
 
@@ -113,10 +113,10 @@ describe('IFrameGenerator', () => {
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
-			expect(iframeElement.width).toBe('400px');
+			expect(iframeElement.width).toBe('800px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -127,7 +127,7 @@ describe('IFrameGenerator', () => {
 			expect(iframeElement.width).toBe('42px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -152,10 +152,10 @@ describe('IFrameGenerator', () => {
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
-			expect(iframeElement.width).toBe('400px');
+			expect(iframeElement.width).toBe('800px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -166,7 +166,7 @@ describe('IFrameGenerator', () => {
 			expect(iframeElement.width).toBe('210px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -191,10 +191,10 @@ describe('IFrameGenerator', () => {
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
-			expect(iframeElement.width).toBe('400px');
+			expect(iframeElement.width).toBe('800px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -205,7 +205,7 @@ describe('IFrameGenerator', () => {
 			expect(iframeElement.width).toBe('100px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -230,10 +230,10 @@ describe('IFrameGenerator', () => {
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
-			expect(iframeElement.width).toBe('400px');
+			expect(iframeElement.width).toBe('800px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='400px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -244,7 +244,7 @@ describe('IFrameGenerator', () => {
 			expect(iframeElement.width).toBe('2000px');
 			buttonElement.click();
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='300px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 			clipboardSpy.calls.reset();
 
@@ -273,8 +273,8 @@ describe('IFrameGenerator', () => {
 
 			toggle.click();
 
-			expect(widthInputElement.value).toBe('400');
-			expect(iframeElement.width).toBe('400px');
+			expect(widthInputElement.value).toBe('800');
+			expect(iframeElement.width).toBe('800px');
 		});
 	});
 });
