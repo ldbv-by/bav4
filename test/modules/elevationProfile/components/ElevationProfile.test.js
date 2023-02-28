@@ -250,8 +250,6 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.children.length).toBe(3);
 			expect(datasetZero.data).toEqual([]);
 			expect(config.data.labels).toEqual([]);
-			expect(config.options.scales.y.suggestedMin).toBe(200);
-			expect(config.options.scales.y.suggestedMax).toBe(500);
 		});
 
 		it('renders the view when a profile is available', async () => {

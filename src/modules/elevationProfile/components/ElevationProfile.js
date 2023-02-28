@@ -501,9 +501,7 @@ export class ElevationProfile extends MvuElement {
 						},
 						ticks: {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
-						},
-						suggestedMin: 200,
-						suggestedMax: 500
+						}
 					}
 				},
 				events: ['pointermove', 'pointerup', 'mouseout'],
