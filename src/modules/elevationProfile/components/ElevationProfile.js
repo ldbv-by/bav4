@@ -7,7 +7,7 @@ import { $injector } from '../../../injection';
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
-import { getHsvGradientColor } from '../../../utils/colors';
+import { getHsvGradientColor, rgbToHex } from '../../../utils/colors';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -380,22 +380,28 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-
-		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
+		gradientBg.addColorStop(0, rgbToHex([0, 255, 0]));
 		const colorCache = new Map();
 		altitudeData?.elevations.forEach((element, index) => {
-			if (element.slope) {
-				const getColorFor = (value) => {
+			if (element.slope && element.slope !== 'missing') {
+				const getColorFor = (value = 0) => {
+					const maxValue = 50;
+					const minColor = [0, 255, 0];
+					const maxColor = [255, 0, 0];
 					if (colorCache.has(value)) {
 						return colorCache.get(value);
 					}
-					const ratio = value / 100;
-					const color = getHsvGradientColor(ElevationProfile.SLOPE_FLAT_COLOR, ElevationProfile.SLOPE_STEEP_COLOR, ratio);
-					colorCache.set(value, color);
-					return color;
+					if (value >= maxValue) {
+						return rgbToHex(maxColor);
+					}
+
+					const ratio = value / maxValue;
+					const color = getHsvGradientColor(minColor, maxColor, ratio);
+					colorCache.set(value, rgbToHex(color));
+					return rgbToHex(color);
 				};
 				const xPoint = (xPointWidth / chartArea.width) * index;
-				const slopeColor = getColorFor(element.slope);
+				const slopeColor = `${getColorFor(Math.abs(element.slope))}`;
 				gradientBg.addColorStop(xPoint, slopeColor);
 			}
 		});
