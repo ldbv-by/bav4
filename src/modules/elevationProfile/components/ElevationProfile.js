@@ -76,10 +76,25 @@ export class ElevationProfile extends MvuElement {
 		this._secondLeft = 0;
 		this._top = 0;
 		this._bottom = 0;
+		this._noAnimation = false;
 
 		this._unsubscribers = [];
 
 		this._initSurfaceTypes();
+	}
+
+	get _delay() {
+		if (this._noAnimation) {
+			return 0;
+		}
+		return Chart_Delay;
+	}
+
+	get _duration() {
+		if (this._noAnimation) {
+			return 0;
+		}
+		return Chart_Duration;
 	}
 
 	/**
@@ -166,6 +181,7 @@ export class ElevationProfile extends MvuElement {
 		const linearDistance = model.profile?.stats?.linearDistance;
 
 		const onChange = () => {
+			this.noAnimation(true);
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -220,6 +236,10 @@ export class ElevationProfile extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	noAnimation(noAnimation) {
+		this._noAnimation = noAnimation;
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
@@ -477,8 +497,8 @@ export class ElevationProfile extends MvuElement {
 			options: {
 				responsive: true,
 				animation: {
-					duration: ElevationProfile.DURATION,
-					delay: ElevationProfile.DELAY
+					duration: this._duration,
+					delay: this._delay
 				},
 				maintainAspectRatio: false,
 
@@ -556,6 +576,7 @@ export class ElevationProfile extends MvuElement {
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
+		this._noAnimation = false;
 	}
 
 	_updateOrCreateChart() {
@@ -575,20 +596,6 @@ export class ElevationProfile extends MvuElement {
 			media: { darkSchema }
 		} = StoreService.getStore().getState();
 		return darkSchema;
-	}
-
-	static get DELAY() {
-		if (ElevationProfile.IS_DARK) {
-			return 0;
-		}
-		return Chart_Delay;
-	}
-
-	static get DURATION() {
-		if (ElevationProfile.IS_DARK) {
-			return 0;
-		}
-		return Chart_Duration;
 	}
 
 	static get SLOPE_STEEP_THRESHOLD() {

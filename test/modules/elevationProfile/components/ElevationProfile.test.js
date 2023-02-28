@@ -599,6 +599,56 @@ describe('ElevationProfile', () => {
 		});
 	});
 
+	describe('when attribute changes', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+
+		it('should call noAnimation', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const noAnimationSpy = spyOn(element, 'noAnimation').and.callThrough();
+
+			//act
+			const attrs = element.shadowRoot.getElementById('attrs');
+			// attrs.value = 'surface';
+			// attrs.dispatchEvent(new Event('change'));
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(noAnimationSpy).toHaveBeenCalled();
+		});
+
+		it('should reset _noAnimation afterwards', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			//act
+			const attrs = element.shadowRoot.getElementById('attrs');
+			// attrs.value = 'surface';
+			// attrs.dispatchEvent(new Event('change'));
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(element._noAnimation).toBe(false);
+		});
+	});
+
 	describe('when coordinates (slice-of-state) changes (from no coordinates)', () => {
 		it('calls _getAltitudeProfile with coordinates', async () => {
 			// arrange
