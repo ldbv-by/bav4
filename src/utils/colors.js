@@ -192,8 +192,6 @@ export const getHsvGradientColor = (startColor, endColor, ratio) => {
 	const deltaH = calculateDelta(startHsv[0], endHsv[0], ratio);
 	const deltaS = calculateDelta(startHsv[1], endHsv[1], ratio);
 	const deltaV = calculateDelta(startHsv[2], endHsv[2], ratio);
-
-	const hsv = [Math.floor(startHsv[0] + deltaH), Math.floor(startHsv[1] + deltaS), Math.floor(startHsv[2] + deltaV)];
-
+	const hsv = [startHsv[0] + deltaH, startHsv[1] + deltaS, startHsv[2] + deltaV];
 	return hsvToRgb(hsv);
 };

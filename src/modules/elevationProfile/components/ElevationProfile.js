@@ -385,8 +385,8 @@ export class ElevationProfile extends MvuElement {
 		altitudeData?.elevations.forEach((element, index) => {
 			if (element.slope && element.slope !== 'missing') {
 				const getColorFor = (value = 0) => {
-					const maxValue = 50;
-					const minColor = [0, 255, 0];
+					const maxValue = 30;
+					const minColor = [0, 204, 153];
 					const maxColor = [255, 0, 0];
 					if (colorCache.has(value)) {
 						return colorCache.get(value);
@@ -395,7 +395,7 @@ export class ElevationProfile extends MvuElement {
 						return rgbToHex(maxColor);
 					}
 
-					const ratio = value / maxValue;
+					const ratio = Math.pow(value, 2) / Math.pow(maxValue, 2);
 					const color = getHsvGradientColor(minColor, maxColor, ratio);
 					colorCache.set(value, rgbToHex(color));
 					return rgbToHex(color);
