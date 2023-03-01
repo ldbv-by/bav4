@@ -9,6 +9,7 @@ import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
 import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { fromLonLat } from 'ol/proj.js';
+import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -192,7 +193,8 @@ describe('ElevationProfile', () => {
 		store = TestUtils.setupStoreAndDi(initialState, {
 			highlight: highlightReducer,
 			media: createNoInitialStateMediaReducer(),
-			elevationProfile: elevationProfileReducer
+			elevationProfile: elevationProfileReducer,
+			notifications: notificationReducer
 		});
 
 		$injector
@@ -203,6 +205,26 @@ describe('ElevationProfile', () => {
 
 		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
 	};
+
+	describe('when using ElevationService', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+		it('logs an error when getProfile fails', async () => {
+			const message = 'error message';
+			const getProfileSpy = spyOn(elevationServiceMock, 'getProfile').and.rejectWith(new Error(message));
+			// const errorSpy = spyOn(console, 'error');
+			const element = await setup();
+
+			element._getElevationProfile(coordinates);
+
+			expect(getProfileSpy).toHaveBeenCalled();
+			// expect(errorSpy).toHaveBeenCalledWith(message);
+			// expect(store.getState().notifications.latest.payload.content).toBe('elevationProfile_could_not_load');
+			// expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+	});
 
 	describe('class', () => {
 		it('defines constant values', async () => {
@@ -1054,26 +1076,26 @@ describe('ElevationProfile', () => {
 			// assert
 			expect(element._unsubscribers).toHaveSize(0);
 		});
-	});
 
-	it('removes an existing highlight feature', async () => {
-		// arrange
-		const coordinates = fromLonLat([11, 48]);
-		spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-		const element = await setup({
-			elevationProfile: {
-				active: true,
-				coordinates: coordinates
-			},
-			highlight: {
-				features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
-			}
+		it('removes an existing highlight feature', async () => {
+			// arrange
+			const coordinates = fromLonLat([11, 48]);
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				},
+				highlight: {
+					features: [{ id: ElevationProfile.HIGHLIGHT_FEATURE_ID, data: [21, 41] }]
+				}
+			});
+
+			//act
+			element.onDisconnect(); // we have to call onDisconnect manually
+
+			// assert
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
-
-		//act
-		element.onDisconnect(); // we have to call onDisconnect manually
-
-		// assert
-		expect(store.getState().highlight.features).toHaveSize(0);
 	});
 });

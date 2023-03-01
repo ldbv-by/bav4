@@ -432,9 +432,8 @@ export class ElevationProfile extends MvuElement {
 				this._enrichProfileData(profile);
 				this.signal(Update_Profile_Data, profile);
 			} catch (e) {
-				console.warn(e.message);
-				const text = translate('elevationProfile_could_not_load') + ' ' + e.message;
-				emitNotification(text, LevelTypes.ERROR);
+				console.error(e);
+				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
 			}
 		} else {
 			this.signal(Update_Profile_Data, EmptyProfileData);
