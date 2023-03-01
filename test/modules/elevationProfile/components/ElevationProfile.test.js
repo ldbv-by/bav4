@@ -311,7 +311,6 @@ describe('ElevationProfile', () => {
 			expect(config.options.plugins.tooltip.intersect).toBe(false);
 			expect(config.options.plugins.tooltip.callbacks.title).toEqual(jasmine.any(Function));
 			expect(config.options.plugins.tooltip.callbacks.label).toEqual(jasmine.any(Function));
-			// expect(config.options.plugins.tooltip.callbacks.title).toBe(Function);
 
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
@@ -631,6 +630,52 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
+		});
+	});
+
+	describe('when attribute changes', () => {
+		const coordinates = [
+			[0, 1],
+			[2, 3]
+		];
+
+		it('should change _noAnimation', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const noAnimationSpy = spyOnProperty(element, '_noAnimation', 'set').and.callThrough();
+
+			//act
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(noAnimationSpy).toHaveBeenCalled();
+		});
+
+		it('should reset _noAnimation afterwards', async () => {
+			// arrange
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			//act
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(element._noAnimation).toBe(false);
 		});
 	});
 

@@ -14,6 +14,9 @@ const Update_Profile_Data = 'update_profile_data';
 
 const Update_Media = 'update_media';
 
+const Chart_Duration = 600;
+const Chart_Delay = 300;
+
 /**
  * different types of slope
  * @enum
@@ -74,6 +77,7 @@ export class ElevationProfile extends MvuElement {
 		this._secondLeft = 0;
 		this._top = 0;
 		this._bottom = 0;
+		this._noAnimationValue = false;
 
 		this._unsubscribers = [];
 
@@ -164,6 +168,7 @@ export class ElevationProfile extends MvuElement {
 		const linearDistance = model.profile?.stats?.linearDistance;
 
 		const onChange = () => {
+			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -218,6 +223,13 @@ export class ElevationProfile extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	get _noAnimation() {
+		return this._noAnimationValue;
+	}
+	set _noAnimation(value) {
+		this._noAnimationValue = value;
 	}
 
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
@@ -475,8 +487,8 @@ export class ElevationProfile extends MvuElement {
 			options: {
 				responsive: true,
 				animation: {
-					duration: 600,
-					delay: 300
+					duration: this._noAnimation ? 0 : Chart_Duration,
+					delay: this._noAnimation ? 0 : Chart_Delay
 				},
 				maintainAspectRatio: false,
 
@@ -581,6 +593,7 @@ export class ElevationProfile extends MvuElement {
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
+		this._noAnimation = false;
 	}
 
 	_updateOrCreateChart() {
