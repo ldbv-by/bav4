@@ -14,6 +14,7 @@ export const provide = (lang) => {
 				elevationProfile_highestPoint: 'Highest Point',
 				elevationProfile_lowestPoint: 'Lowest Point',
 				elevationProfile_linearDistance: 'Linear Distance',
+				elevationProfile_could_not_load: 'Elevation Profile could not be loaded',
 				elevationProfile_unknown: 'unknown'
 			};
 
@@ -31,6 +32,7 @@ export const provide = (lang) => {
 				elevationProfile_highestPoint: 'Höchster Punkt',
 				elevationProfile_lowestPoint: 'Tiefster Punkt',
 				elevationProfile_linearDistance: 'Strecke',
+				elevationProfile_could_not_load: 'Höhenprofil konnte nicht geladen werden',
 				elevationProfile_unknown: 'unbekannt'
 			};
 
