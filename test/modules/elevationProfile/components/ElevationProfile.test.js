@@ -680,7 +680,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when coordinates (slice-of-state) changes (from no coordinates)', () => {
-		it('calls _getAltitudeProfile with coordinates', async () => {
+		it('calls _getElevationProfile with coordinates', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -689,7 +689,7 @@ describe('ElevationProfile', () => {
 			const altitudeData = profileSlopeSteep();
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
 			const element = await setup();
-			const getAltitudeProfileSpy = spyOn(element, '_getAltitudeProfile').and.callThrough();
+			const getAltitudeProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
 
 			//act
 			updateCoordinates(coordinates);
@@ -701,7 +701,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when coordinates (slice-of-state) changes (from some coordinates)', () => {
-		it('calls _getAltitudeProfile with new coordinates', async () => {
+		it('calls _getElevationProfile with new coordinates', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -715,7 +715,7 @@ describe('ElevationProfile', () => {
 					coordinates: coordinates
 				}
 			});
-			const getAltitudeProfileSpy = spyOn(element, '_getAltitudeProfile').and.callThrough();
+			const getAltitudeProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
 
 			//act
 			const newCoordinates = [
