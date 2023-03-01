@@ -380,26 +380,26 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		gradientBg.addColorStop(0, rgbToHex([0, 255, 0]));
 		const colorCache = new Map();
+		const getColorFor = (value = 0) => {
+			const maxValue = 30;
+			const minColor = [0, 255, 0];
+			const maxColor = [255, 0, 0];
+			if (colorCache.has(value)) {
+				return colorCache.get(value);
+			}
+			if (value >= maxValue) {
+				return rgbToHex(maxColor);
+			}
+
+			const ratio = value / maxValue;
+			const color = getHsvGradientColor(minColor, maxColor, ratio);
+			colorCache.set(value, rgbToHex(color));
+			return rgbToHex(color);
+		};
+
 		altitudeData?.elevations.forEach((element, index) => {
 			if (element.slope && element.slope !== 'missing') {
-				const getColorFor = (value = 0) => {
-					const maxValue = 30;
-					const minColor = [0, 204, 153];
-					const maxColor = [255, 0, 0];
-					if (colorCache.has(value)) {
-						return colorCache.get(value);
-					}
-					if (value >= maxValue) {
-						return rgbToHex(maxColor);
-					}
-
-					const ratio = Math.pow(value, 2) / Math.pow(maxValue, 2);
-					const color = getHsvGradientColor(minColor, maxColor, ratio);
-					colorCache.set(value, rgbToHex(color));
-					return rgbToHex(color);
-				};
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeColor = `${getColorFor(Math.abs(element.slope))}`;
 				gradientBg.addColorStop(xPoint, slopeColor);
