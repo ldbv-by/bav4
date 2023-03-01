@@ -309,7 +309,6 @@ describe('ElevationProfile', () => {
 			expect(config.options.plugins.tooltip.intersect).toBe(false);
 			expect(config.options.plugins.tooltip.callbacks.title).toEqual(jasmine.any(Function));
 			expect(config.options.plugins.tooltip.callbacks.label).toEqual(jasmine.any(Function));
-			// expect(config.options.plugins.tooltip.callbacks.title).toBe(Function);
 
 			expect(datasetZero.data).toEqual([0, 10, 20, 30, 40, 50]);
 			expect(datasetZero.label).toBe('elevationProfile_elevation_profile');
@@ -618,8 +617,6 @@ describe('ElevationProfile', () => {
 
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
-			// attrs.value = 'surface';
-			// attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
 
@@ -639,8 +636,6 @@ describe('ElevationProfile', () => {
 
 			//act
 			const attrs = element.shadowRoot.getElementById('attrs');
-			// attrs.value = 'surface';
-			// attrs.dispatchEvent(new Event('change'));
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
 
