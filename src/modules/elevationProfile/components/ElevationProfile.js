@@ -64,12 +64,14 @@ export class ElevationProfile extends MvuElement {
 		const {
 			ConfigService: configService,
 			ElevationService: elevationService,
-			TranslationService: translationService
-		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService');
+			TranslationService: translationService,
+			UnitsService: unitsService
+		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService', 'UnitsService');
 
 		this._translationService = translationService;
 		this._configService = configService;
 		this._elevationService = elevationService;
+		this._unitsService = unitsService;
 
 		this._drawSelectedAreaBorder = false;
 		this._mouseIsDown = false;
@@ -198,32 +200,33 @@ export class ElevationProfile extends MvuElement {
 				<div class="profile__data" id="route-altitude-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${sumUp} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._unitsService.formatDistance(sumUp)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${sumDown} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._unitsService.formatDistance(sumDown)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${highestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._unitsService.formatDistance(highestPoint)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
 						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${lowestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._unitsService.formatDistance(lowestPoint)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
 						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${verticalHeight} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${this._unitsService.formatDistance(verticalHeight)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
 						<div class="profile__icon distance"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistance} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
 					</div>
 				</div>
 			</div>
 		`;
 	}
+	// const dist = this._unitsService.formatDistance(to - from);
 
 	get _noAnimation() {
 		return this._noAnimationValue;
@@ -270,8 +273,8 @@ export class ElevationProfile extends MvuElement {
 		const from = profile.elevations[0].dist;
 		const to = profile.elevations[profile.elevations.length - 1].dist;
 
-		const dist = to - from;
-		const distUnit = dist >= 10000 ? 'km' : 'm';
+		const dist = this._unitsService.formatDistance(to - from);
+		const distUnit = dist.includes('km') ? 'km' : 'm';
 		return distUnit;
 	}
 
