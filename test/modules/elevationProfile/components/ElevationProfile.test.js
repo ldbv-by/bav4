@@ -10,6 +10,7 @@ import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { fromLonLat } from 'ol/proj.js';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -214,15 +215,15 @@ describe('ElevationProfile', () => {
 		it('logs an error when getProfile fails', async () => {
 			const message = 'error message';
 			const getProfileSpy = spyOn(elevationServiceMock, 'getProfile').and.rejectWith(new Error(message));
-			// const errorSpy = spyOn(console, 'error');
+			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
-			element._getElevationProfile(coordinates);
+			await element._getElevationProfile(coordinates);
 
 			expect(getProfileSpy).toHaveBeenCalled();
-			// expect(errorSpy).toHaveBeenCalledWith(message);
-			// expect(store.getState().notifications.latest.payload.content).toBe('elevationProfile_could_not_load');
-			// expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
+			expect(store.getState().notifications.latest.payload.content).toBe('elevationProfile_could_not_load');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 	});
 
