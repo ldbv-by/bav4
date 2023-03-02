@@ -271,7 +271,6 @@ describe('ElevationProfile', () => {
 				[2, 3]
 			];
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
-			spyOn(unitsServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup({
 				media: {
 					darkSchema: true
