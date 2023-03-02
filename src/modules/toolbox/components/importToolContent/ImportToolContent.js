@@ -47,7 +47,6 @@ export class ImportToolContent extends AbstractToolContent {
 						const sourceTypeResult = await this._sourceTypeService.forBlob(f);
 						this._importOrNotify(sourceTypeResult, () => importData(f, sourceTypeResult.sourceType));
 					} catch (error) {
-						console.error(error);
 						emitNotification(translate('toolbox_import_file_error'), LevelTypes.ERROR);
 					}
 				});
@@ -126,10 +125,10 @@ export class ImportToolContent extends AbstractToolContent {
 				importAction();
 				break;
 			case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
-				emitNotification(translate('toolbox_import_max_size_exceeded'), LevelTypes.ERROR);
+				emitNotification(translate('toolbox_import_max_size_exceeded'), LevelTypes.WARN);
 				break;
 			case SourceTypeResultStatus.UNSUPPORTED_TYPE:
-				emitNotification(translate('toolbox_import_unsupported'), LevelTypes.ERROR);
+				emitNotification(translate('toolbox_import_unsupported'), LevelTypes.WARN);
 				break;
 			case SourceTypeResultStatus.OTHER:
 				emitNotification(translate('toolbox_import_unknown'), LevelTypes.ERROR);
