@@ -14,11 +14,17 @@ window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
 	const sumUp = 1480.8;
+	const sumUpAfterUnitsService = '1.5 km';
 	const sumDown = 1668.6;
+	const sumDownAfterUnitsService = '1.7 km';
 	const verticalHeight = 50;
+	const verticalHeightAfterUnitsService = '50 m';
 	const highestPoint = 50;
+	const highestPointAfterUnitsService = '50 m';
 	const lowestPoint = 0;
+	const lowestPointAfterUnitsService = '0 m';
 	const linearDistance = 5;
+	const linearDistanceAfterUnitsService = '5 m';
 
 	const _profile = {
 		elevations: [
@@ -167,6 +173,12 @@ describe('ElevationProfile', () => {
 		getValueAsPath: () => {}
 	};
 
+	const unitsServiceMock = {
+		formatDistance: (distance) => {
+			return distance > 100 ? (distance / 1000).toFixed(1) + ' km' : distance + ' m';
+		}
+	};
+
 	const chart = {
 		ctx: {
 			createLinearGradient: () => {
@@ -199,7 +211,8 @@ describe('ElevationProfile', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('ElevationService', elevationServiceMock);
+			.registerSingleton('ElevationService', elevationServiceMock)
+			.registerSingleton('UnitsService', unitsServiceMock);
 
 		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
 	};
@@ -263,6 +276,7 @@ describe('ElevationProfile', () => {
 				[2, 3]
 			];
 			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
+			spyOn(unitsServiceMock, 'formatDistance').and.callThrough();
 			const element = await setup({
 				media: {
 					darkSchema: true
@@ -322,22 +336,22 @@ describe('ElevationProfile', () => {
 			expect(attrs.value).toBe('alt');
 			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe(sumUp + ' m');
+			expect(sumUpElement.innerText).toBe(sumUpAfterUnitsService);
 			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe(sumDown + ' m');
+			expect(sumDownElement.innerText).toBe(sumDownAfterUnitsService);
 			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
-			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
+			expect(verticalHeightElement.innerText).toBe(verticalHeightAfterUnitsService);
 			expect(profile__box[3].title).toBe('elevationProfile_lowestPoint');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
-			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
+			expect(highestPointElement.innerText).toBe(highestPointAfterUnitsService);
 			expect(profile__box[4].title).toBe('elevationProfile_verticalHeight');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
-			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
+			expect(lowestPointElement.innerText).toBe(lowestPointAfterUnitsService);
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
-			expect(linearDistanceElement.innerText).toBe(linearDistance + ' m');
+			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsService);
 		});
 	});
 
