@@ -538,6 +538,34 @@ describe('ElevationProfile', () => {
 			expect(slopeGradientSpy).toHaveBeenCalled();
 		});
 
+		it('returns a gradient that uses SOTER-classification ', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const altitudeData = profileSlopeSteep();
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const gradientMock = { addColorStop: () => {} };
+			const ctxMock = { createLinearGradient: () => gradientMock };
+			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
+			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			element._getSlopeGradient(chartMock, altitudeData);
+
+			// assert
+			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#1f8a70');
+			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#d23600');
+		});
+
 		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
 			// arrange
 			const coordinates = [
@@ -827,8 +855,12 @@ describe('ElevationProfile', () => {
 
 	describe('SlopeType', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.keys(SlopeType).length).toBe(2);
+			expect(Object.keys(SlopeType).length).toBe(6);
 			expect(SlopeType.FLAT).toBe('flat');
+			expect(SlopeType.GENTLY_UNDULATING).toBe('gentlyUndulating');
+			expect(SlopeType.UNDULATING).toBe('undulating');
+			expect(SlopeType.ROLLING).toBe('rolling');
+			expect(SlopeType.MODERATELY_STEEP).toBe('moderatelySteep');
 			expect(SlopeType.STEEP).toBe('steep');
 		});
 	});
