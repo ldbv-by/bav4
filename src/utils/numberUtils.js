@@ -32,18 +32,19 @@ export const createUniqueId = () => {
  * @returns the formated number as `string` or `undefined`
  */
 export const toLocaleString = (value) => {
-	let defaultLang;
 	/**
 	 * For easier handling in test cases we also support a fallback without configured DI
 	 */
-	try {
-		const { ConfigService: configService } = $injector.inject('ConfigService');
-		defaultLang = configService.getValue('DEFAULT_LANG');
-	} catch {
-		defaultLang = 'en';
-	}
+	const getDefaultLang = () => {
+		try {
+			const { ConfigService: configService } = $injector.inject('ConfigService');
+			return configService.getValue('DEFAULT_LANG');
+		} catch {
+			return 'en';
+		}
+	};
+
 	if (isNumber(value)) {
-		return value.toLocaleString(defaultLang);
+		return value.toLocaleString(getDefaultLang());
 	}
-	return undefined;
 };
