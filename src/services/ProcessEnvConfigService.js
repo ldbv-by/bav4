@@ -14,7 +14,7 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
-		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG);
+		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');
 		// eslint-disable-next-line no-undef
 		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
