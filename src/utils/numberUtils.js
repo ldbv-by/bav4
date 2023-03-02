@@ -34,7 +34,7 @@ export const createUniqueId = () => {
 export const toLocaleString = (value) => {
 	let defaultLang;
 	/**
-	 * For easier handling within tests we also support a fallback without configured DI
+	 * For easier handling in test cases we also support a fallback without configured DI
 	 */
 	try {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
