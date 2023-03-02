@@ -283,7 +283,7 @@ describe('DndImportPanel', () => {
 				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/unsupported');
 				await TestUtils.timeout();
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -299,7 +299,7 @@ describe('DndImportPanel', () => {
 				expect(urlSpy).toHaveBeenCalledWith('https://foo.bar/too_large');
 				await TestUtils.timeout();
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -329,7 +329,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -487,7 +487,7 @@ describe('DndImportPanel', () => {
 
 				await TestUtils.timeout();
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_unsupported');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});
 
@@ -502,7 +502,7 @@ describe('DndImportPanel', () => {
 				simulateDragDropEvent('drop', dataTransferMock, dropZone);
 				await TestUtils.timeout();
 				expect(store.getState().notifications.latest.payload.content).toBe('dndImport_import_max_size_exceeded');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				expect(store.getState().import.latest).toBeNull();
 			});
 
