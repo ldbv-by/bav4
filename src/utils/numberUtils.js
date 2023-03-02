@@ -27,7 +27,7 @@ export const createUniqueId = () => {
 };
 
 /**
- * Formates a number according to the current "DEFAULT_LANG" property.
+ * Formates a number according to the current `DEFAULT_LANG` property.
  * @param {number} value
  * @returns the formated number as `string` or `undefined`
  */
