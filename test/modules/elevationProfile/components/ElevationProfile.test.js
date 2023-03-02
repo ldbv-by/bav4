@@ -14,17 +14,12 @@ window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
 	const sumUp = 1480.8;
-	const sumUpAfterUnitsService = '1.5 km';
 	const sumDown = 1668.6;
-	const sumDownAfterUnitsService = '1.7 km';
 	const verticalHeight = 50;
-	const verticalHeightAfterUnitsService = '50 m';
 	const highestPoint = 50;
-	const highestPointAfterUnitsService = '50 m';
 	const lowestPoint = 0;
-	const lowestPointAfterUnitsService = '0 m';
-	const linearDistance = 5;
-	const linearDistanceAfterUnitsService = '5 m';
+	const linearDistance = 5000;
+	const linearDistanceAfterUnitsService = '5.0 km';
 
 	const _profile = {
 		elevations: [
@@ -336,19 +331,19 @@ describe('ElevationProfile', () => {
 			expect(attrs.value).toBe('alt');
 			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe(sumUpAfterUnitsService);
+			expect(sumUpElement.innerText).toBe(sumUp + ' m');
 			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe(sumDownAfterUnitsService);
+			expect(sumDownElement.innerText).toBe(sumDown + ' m');
 			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
-			expect(verticalHeightElement.innerText).toBe(verticalHeightAfterUnitsService);
+			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
 			expect(profile__box[3].title).toBe('elevationProfile_lowestPoint');
 			const highestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-highestPoint');
-			expect(highestPointElement.innerText).toBe(highestPointAfterUnitsService);
+			expect(highestPointElement.innerText).toBe(highestPoint + ' m');
 			expect(profile__box[4].title).toBe('elevationProfile_verticalHeight');
 			const lowestPointElement = element.shadowRoot.getElementById('route-elevation-chart-footer-lowestPoint');
-			expect(lowestPointElement.innerText).toBe(lowestPointAfterUnitsService);
+			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsService);
@@ -379,7 +374,7 @@ describe('ElevationProfile', () => {
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('elevationProfile_distance: 10m');
+			expect(titleRet).toBe('elevationProfile_distance: 10.0 km');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
@@ -466,6 +461,39 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_slope: ~ 20 %']);
+		});
+	});
+
+	describe('when tooltip callback "label" is called for attribute surface', () => {
+		it('only shows the surface', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const altitudeData = profile();
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const config = element._chart.config;
+			const tooltipItem = { parsed: { x: 3 } };
+
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'surface';
+			attrs.dispatchEvent(new Event('change'));
+			const chart = element._chart;
+
+			// act
+			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+			element._getBorder(chart, altitudeData);
+
+			// assert
+			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_surface: gravel']);
 		});
 	});
 

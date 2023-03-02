@@ -200,23 +200,23 @@ export class ElevationProfile extends MvuElement {
 				<div class="profile__data" id="route-altitude-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._unitsService.formatDistance(sumUp)}</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${sumUp} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._unitsService.formatDistance(sumDown)}</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${sumDown} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._unitsService.formatDistance(highestPoint)}</div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${highestPoint} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
 						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._unitsService.formatDistance(lowestPoint)}</div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${lowestPoint} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
 						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${this._unitsService.formatDistance(verticalHeight)}</div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${verticalHeight} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
 						<div class="profile__icon distance"></div>
@@ -226,7 +226,6 @@ export class ElevationProfile extends MvuElement {
 			</div>
 		`;
 	}
-	// const dist = this._unitsService.formatDistance(to - from);
 
 	get _noAnimation() {
 		return this._noAnimationValue;
@@ -540,28 +539,30 @@ export class ElevationProfile extends MvuElement {
 								const elevationEntry = getElevationEntry(tooltipItem);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
-								return translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm';
+								const dist = this._unitsService.formatDistance(tooltipItem.label * 1000);
+								return translate('elevationProfile_distance') + ': ' + dist;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];
 								const selectedAttribute = this.getModel().selectedAttribute;
-								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
 								const elevationEntry = getElevationEntry(tooltipItem);
 								const attributeValue = elevationEntry[selectedAttribute];
+
+								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
+								let selectedLabel = selectedAttributeTranslation + ': ';
 
 								const attribute = altitudeData.attrs.find((attr) => {
 									return attr.id === selectedAttribute;
 								});
-								let label = selectedAttributeTranslation + ': ';
 								if (attribute.prefix) {
-									label += attribute.prefix + ' ' + attributeValue;
+									selectedLabel += attribute.prefix + ' ' + attributeValue;
 								} else {
-									label += attributeValue;
+									selectedLabel += attributeValue;
 								}
 
 								if (selectedAttribute === Default_Selected_Attribute) {
-									label += ' m';
-									return label;
+									selectedLabel += ' m';
+									return selectedLabel;
 								} else {
 									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
 									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
@@ -570,10 +571,10 @@ export class ElevationProfile extends MvuElement {
 								}
 
 								if (attribute.unit) {
-									label += ' ' + attribute.unit;
+									selectedLabel += ' ' + attribute.unit;
 								}
+								retArray.push(selectedLabel);
 
-								retArray.push(label);
 								return retArray;
 							}
 						}
