@@ -47,22 +47,34 @@ describe('Unit test functions from numberUtils.js', () => {
 	});
 
 	describe('toLocaleString', () => {
-		const configService = {
-			getValue: () => {}
-		};
+		describe('DI is available', () => {
+			const configService = {
+				getValue: () => {}
+			};
 
-		beforeAll(() => {
-			$injector.registerSingleton('ConfigService', configService);
+			beforeAll(() => {
+				$injector.registerSingleton('ConfigService', configService);
+			});
+
+			it('formates a number according to the current "DEFAULT_LANG" property', () => {
+				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				expect(toLocaleString(5.5)).toBe('5,5');
+			});
+
+			it('returns undefined when value is not a number', () => {
+				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
+				expect(toLocaleString('foo')).toBeUndefined();
+			});
 		});
 
-		it('formates a number according to the current "DEFAULT_LANG" property', () => {
-			spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
-			expect(toLocaleString(5.5)).toBe('5,5');
-		});
+		describe('DI is NOT available', () => {
+			it('formates a number according to the current "DEFAULT_LANG" property', () => {
+				expect(toLocaleString(5.5)).toBe('5.5');
+			});
 
-		it('returns undefined when value is not a number', () => {
-			spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
-			expect(toLocaleString('foo')).toBeUndefined();
+			it('returns undefined when value is not a number', () => {
+				expect(toLocaleString('foo')).toBeUndefined();
+			});
 		});
 	});
 });
