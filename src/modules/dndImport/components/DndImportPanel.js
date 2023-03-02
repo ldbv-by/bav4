@@ -123,10 +123,10 @@ export class DndImportPanel extends MvuElement {
 				importAction();
 				break;
 			case SourceTypeResultStatus.MAX_SIZE_EXCEEDED:
-				emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.WARN);
+				emitNotification(translate('dndImport_import_max_size_exceeded'), LevelTypes.ERROR);
 				break;
 			case SourceTypeResultStatus.UNSUPPORTED_TYPE:
-				emitNotification(translate('dndImport_import_unsupported'), LevelTypes.WARN);
+				emitNotification(translate('dndImport_import_unsupported'), LevelTypes.ERROR);
 				break;
 			case SourceTypeResultStatus.OTHER:
 				emitNotification(translate('dndImport_import_unknown'), LevelTypes.ERROR);
