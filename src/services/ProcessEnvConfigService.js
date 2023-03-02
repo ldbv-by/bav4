@@ -55,25 +55,21 @@ export class ProcessEnvConfigService {
 	/**
 	 *
 	 * @param {string} key
-	 * @param {string} defaultValue
+	 * @param {string} [defaultValue] optional default value
 	 * @public
 	 */
 	getValue(key, defaultValue) {
-		// eslint-disable-next-line no-undef
-		if (this.hasKey(key)) {
-			// eslint-disable-next-line no-undef
-			return this._properties.get(key);
-		}
-		if (defaultValue !== undefined) {
-			return defaultValue;
-		}
-		throw new Error(`No value found for '${key}'`);
+		const throwError = () => {
+			throw new Error(`No value found for '${key}'`);
+		};
+		const value = this._properties.get(key) ?? defaultValue;
+		return value ?? throwError();
 	}
 
 	/**
 	 * Ensures that the value ends with a <code>/</code>
 	 * @param {string} key
-	 * @param {string} defaultValue
+	 * @param {string} [defaultValue] optional default value
 	 * @public
 	 */
 	getValueAsPath(key, defaultValue) {
