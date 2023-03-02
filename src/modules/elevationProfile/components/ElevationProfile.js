@@ -7,7 +7,6 @@ import { $injector } from '../../../injection';
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
-import { getHsvGradientColor, rgbToHex } from '../../../utils/colors';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -24,8 +23,24 @@ const Chart_Delay = 300;
  */
 export const SlopeType = Object.freeze({
 	FLAT: 'flat',
+	GENTLY_UNDULATING: 'gentlyUndulating',
+	UNDULATING: 'undulating',
+	ROLLING: 'rolling',
+	MODERATELY_STEEP: 'moderatelySteep',
 	STEEP: 'steep'
 });
+
+/**
+ * slope classes based on https://esdac.jrc.ec.europa.eu/projects/SOTER/Soter_Model.html
+ */
+const SoterSlopeClasses = [
+	{ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' },
+	{ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' },
+	{ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' },
+	{ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' },
+	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
+	{ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }
+];
 export const Default_Selected_Attribute = 'alt';
 
 const EmptyProfileData = {
@@ -390,29 +405,14 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		const colorCache = new Map();
-		const getColorFor = (value = 0) => {
-			const maxValue = 30;
-			const minColor = [0, 255, 0];
-			const maxColor = [255, 0, 0];
-			if (colorCache.has(value)) {
-				return colorCache.get(value);
-			}
-			if (value >= maxValue) {
-				return rgbToHex(maxColor);
-			}
-
-			const ratio = value / maxValue;
-			const color = getHsvGradientColor(minColor, maxColor, ratio);
-			colorCache.set(value, rgbToHex(color));
-			return rgbToHex(color);
-		};
 
 		altitudeData?.elevations.forEach((element, index) => {
 			if (element.slope && element.slope !== 'missing') {
 				const xPoint = (xPointWidth / chartArea.width) * index;
-				const slopeColor = `${getColorFor(Math.abs(element.slope))}`;
-				gradientBg.addColorStop(xPoint, slopeColor);
+				const slopeValue = Math.abs(element.slope);
+				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
+
+				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
 		});
 		return gradientBg;
