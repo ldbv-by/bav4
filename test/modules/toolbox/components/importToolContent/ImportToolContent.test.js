@@ -136,7 +136,7 @@ describe('ImportToolContent', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_unsupported');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			expect(store.getState().import.latest).toBeNull();
 		});
 
@@ -154,7 +154,7 @@ describe('ImportToolContent', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_max_size_exceeded');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			expect(store.getState().import.latest).toBeNull();
 		});
 
@@ -178,12 +178,14 @@ describe('ImportToolContent', () => {
 		});
 
 		it('emits a notification for a unreadable file', async () => {
+			const message = 'some';
 			const fileMock = {
 				type: MediaType.KML,
 				text: () => {
-					throw new Error('some');
+					throw new Error(message);
 				}
 			};
+			const errorSpy = spyOn(console, 'error');
 			spyOn(sourceTypeService, 'forBlob').and.throwError('some');
 			const element = await setup();
 			const fileUploadInput = element.shadowRoot.querySelector('#fileupload');
@@ -196,6 +198,7 @@ describe('ImportToolContent', () => {
 			expect(store.getState().notifications.latest.payload.content).toBe('toolbox_import_file_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 			expect(store.getState().import.latest).toBeNull();
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
 		});
 
 		it('does nothing when no file is selected', async () => {
