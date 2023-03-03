@@ -1,5 +1,10 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { Default_Selected_Attribute, ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
+import {
+	Default_Selected_Attribute,
+	ElevationProfile,
+	SlopeType,
+	SoterSlopeClasses
+} from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
@@ -862,6 +867,18 @@ describe('ElevationProfile', () => {
 			expect(SlopeType.ROLLING).toBe('rolling');
 			expect(SlopeType.MODERATELY_STEEP).toBe('moderatelySteep');
 			expect(SlopeType.STEEP).toBe('steep');
+		});
+	});
+
+	describe('SoterSlopeClasses', () => {
+		it('provides an array of all available SOTER classes', () => {
+			expect(SoterSlopeClasses).toHaveSize(6);
+			expect(SoterSlopeClasses[0]).toEqual(jasmine.objectContaining({ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' }));
+			expect(SoterSlopeClasses[1]).toEqual(jasmine.objectContaining({ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' }));
+			expect(SoterSlopeClasses[2]).toEqual(jasmine.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
+			expect(SoterSlopeClasses[3]).toEqual(jasmine.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
+			expect(SoterSlopeClasses[4]).toEqual(jasmine.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
+			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }));
 		});
 	});
 
