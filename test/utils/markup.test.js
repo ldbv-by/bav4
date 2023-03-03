@@ -5,6 +5,7 @@ import {
 	decodeHtmlEntities,
 	findAllByAttribute,
 	forEachByAttribute,
+	IFRAME_ENCODED_STATE,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
 	TEST_ID_ATTRIBUTE_NAME
@@ -88,6 +89,9 @@ describe('markup utils', () => {
 
 		it('provides an attribute name to enable lifecycle logging', () => {
 			expect(LOG_LIFECYLE_ATTRIBUTE_NAME).toBe('data-log-lifecycle');
+		});
+		it('provides an attribute name for iframes to enable exposing the current state of an embedded BA app', () => {
+			expect(IFRAME_ENCODED_STATE).toBe('data-iframe-encoded-state');
 		});
 	});
 

@@ -16,6 +16,11 @@ export const REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME = 'data-register-f
 export const LOG_LIFECYLE_ATTRIBUTE_NAME = 'data-log-lifecycle';
 
 /**
+ * An iframe element containing this attribute will expose the current encoded state of an embedded BA app.
+ */
+export const IFRAME_ENCODED_STATE = 'data-iframe-encoded-state';
+
+/**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
  * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
  *(BaElements are also supported).
