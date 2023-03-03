@@ -1,5 +1,10 @@
 import { $injector } from '../../../../src/injection/index.js';
-import { Default_Selected_Attribute, ElevationProfile, SlopeType } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
+import {
+	Default_Selected_Attribute,
+	ElevationProfile,
+	SlopeType,
+	SoterSlopeClasses
+} from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
 import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
 import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
@@ -602,6 +607,34 @@ describe('ElevationProfile', () => {
 			expect(slopeGradientSpy).toHaveBeenCalled();
 		});
 
+		it('returns a gradient that uses SOTER-classification ', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const altitudeData = profileSlopeSteep();
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const gradientMock = { addColorStop: () => {} };
+			const ctxMock = { createLinearGradient: () => gradientMock };
+			const chartMock = { ctx: ctxMock, chartArea: { left: 1, right: 1, width: 1, height: 1 } };
+			const gradientSpy = spyOn(gradientMock, 'addColorStop').and.callThrough();
+
+			// act
+			element._getSlopeGradient(chartMock, altitudeData);
+
+			// assert
+			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#1f8a70');
+			expect(gradientSpy).toHaveBeenCalledWith(jasmine.any(Number), '#d23600');
+		});
+
 		it('executes the branch "TextType" for "selectedAttribute surface"', async () => {
 			// arrange
 			const coordinates = [
@@ -891,9 +924,25 @@ describe('ElevationProfile', () => {
 
 	describe('SlopeType', () => {
 		it('provides an enum of all available types', () => {
-			expect(Object.keys(SlopeType).length).toBe(2);
+			expect(Object.keys(SlopeType).length).toBe(6);
 			expect(SlopeType.FLAT).toBe('flat');
+			expect(SlopeType.GENTLY_UNDULATING).toBe('gentlyUndulating');
+			expect(SlopeType.UNDULATING).toBe('undulating');
+			expect(SlopeType.ROLLING).toBe('rolling');
+			expect(SlopeType.MODERATELY_STEEP).toBe('moderatelySteep');
 			expect(SlopeType.STEEP).toBe('steep');
+		});
+	});
+
+	describe('SoterSlopeClasses', () => {
+		it('provides an array of all available SOTER classes', () => {
+			expect(SoterSlopeClasses).toHaveSize(6);
+			expect(SoterSlopeClasses[0]).toEqual(jasmine.objectContaining({ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' }));
+			expect(SoterSlopeClasses[1]).toEqual(jasmine.objectContaining({ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' }));
+			expect(SoterSlopeClasses[2]).toEqual(jasmine.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
+			expect(SoterSlopeClasses[3]).toEqual(jasmine.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
+			expect(SoterSlopeClasses[4]).toEqual(jasmine.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
+			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }));
 		});
 	});
 
