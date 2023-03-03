@@ -60,7 +60,7 @@ test.describe('page', () => {
 		});
 
 		test('should contain 14 top level ba-components', async ({ page }) => {
-			expect(await page.locator('body > *').count()).toBe(14);
+			expect(await page.locator('body > *').count()).toBe(15);
 
 			expect(await page.locator('ba-header').count()).toBe(1);
 			expect(await page.locator('ba-dnd-import-panel').count()).toBe(1);
