@@ -3,7 +3,7 @@ import { UnitsService } from '../../src/services/UnitsService';
 
 describe('UnitsService', () => {
 	const configService = {
-		getValue: (key, defaultValue) => defaultValue
+		getValue: () => 'en'
 	};
 
 	beforeAll(() => {

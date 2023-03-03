@@ -14,7 +14,7 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set('SOFTWARE_INFO', window?.ba_externalConfigProperties?.SOFTWARE_INFO ?? process.env.SOFTWARE_INFO);
 		// eslint-disable-next-line no-undef
-		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG);
+		this._properties.set('DEFAULT_LANG', window?.ba_externalConfigProperties?.DEFAULT_LANG ?? process.env.DEFAULT_LANG ?? 'en');
 		// eslint-disable-next-line no-undef
 		this._properties.set('PROXY_URL', window?.ba_externalConfigProperties?.PROXY_URL ?? process.env.PROXY_URL);
 		// eslint-disable-next-line no-undef
@@ -55,25 +55,21 @@ export class ProcessEnvConfigService {
 	/**
 	 *
 	 * @param {string} key
-	 * @param {string} defaultValue
+	 * @param {string} [defaultValue] optional default value
 	 * @public
 	 */
 	getValue(key, defaultValue) {
-		// eslint-disable-next-line no-undef
-		if (this.hasKey(key)) {
-			// eslint-disable-next-line no-undef
-			return this._properties.get(key);
-		}
-		if (defaultValue !== undefined) {
-			return defaultValue;
-		}
-		throw new Error(`No value found for '${key}'`);
+		const throwError = () => {
+			throw new Error(`No value found for '${key}'`);
+		};
+		const value = this._properties.get(key) ?? defaultValue;
+		return value ?? throwError();
 	}
 
 	/**
 	 * Ensures that the value ends with a <code>/</code>
 	 * @param {string} key
-	 * @param {string} defaultValue
+	 * @param {string} [defaultValue] optional default value
 	 * @public
 	 */
 	getValueAsPath(key, defaultValue) {

@@ -91,6 +91,15 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
 
+		it('provides a fallback value for "DEFAULT_LANG"', () => {
+			// eslint-disable-next-line no-undef
+			process.env = {};
+
+			const configService = new ProcessEnvConfigService();
+
+			expect(configService.getValue('DEFAULT_LANG')).toBe('en');
+		});
+
 		it('throws an exception for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
