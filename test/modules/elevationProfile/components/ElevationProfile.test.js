@@ -249,11 +249,6 @@ describe('ElevationProfile', () => {
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(2);
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('lime');
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('green');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('red');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
@@ -499,7 +494,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when tooltip callback "label" is called for attribute surface', () => {
-		fit('only shows the surface, no prefix or unit', async () => {
+		it('only shows the surface, no prefix or unit', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -962,8 +957,6 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(true);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('lime');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
 			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(240, 243, 244)');
@@ -979,8 +972,6 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(false);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('green');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
 			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');

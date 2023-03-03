@@ -634,40 +634,6 @@ export class ElevationProfile extends MvuElement {
 		return darkSchema;
 	}
 
-	static get SLOPE_STEEP_THRESHOLD() {
-		return 2;
-	}
-
-	static get SLOPE_FLAT_COLOR_DARK() {
-		return 'lime';
-	}
-
-	static get SLOPE_FLAT_COLOR_LIGHT() {
-		return 'green';
-	}
-
-	static get SLOPE_FLAT_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.SLOPE_FLAT_COLOR_DARK;
-		}
-		return ElevationProfile.SLOPE_FLAT_COLOR_LIGHT;
-	}
-
-	static get SLOPE_STEEP_COLOR_DARK() {
-		return 'red';
-	}
-
-	static get SLOPE_STEEP_COLOR_LIGHT() {
-		return 'red';
-	}
-
-	static get SLOPE_STEEP_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
-		}
-		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
-	}
-
 	static get DEFAULT_TEXT_COLOR_DARK() {
 		return 'rgb(240, 243, 244)';
 	}
