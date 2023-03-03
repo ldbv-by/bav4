@@ -34,6 +34,7 @@ export const SlopeType = Object.freeze({
  * slope classes based on https://esdac.jrc.ec.europa.eu/projects/SOTER/Soter_Model.html
  */
 export const SoterSlopeClasses = [
+	// todo: refactor to a slopeClass-provider; there are potentially more classifications thinkable, then the current one
 	{ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' },
 	{ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' },
 	{ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' },
