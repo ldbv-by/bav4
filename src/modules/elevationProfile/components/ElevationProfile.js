@@ -7,6 +7,7 @@ import { $injector } from '../../../injection';
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -114,7 +115,7 @@ export class ElevationProfile extends MvuElement {
 			),
 			this.observe(
 				(state) => state.elevationProfile.coordinates,
-				(coordinates) => this._getAltitudeProfile(coordinates)
+				(coordinates) => this._getElevationProfile(coordinates)
 			),
 			this.observe(
 				(state) => state.media,
@@ -422,16 +423,17 @@ export class ElevationProfile extends MvuElement {
 	/**
 	 * @private
 	 */
-	async _getAltitudeProfile(coordinates) {
+	async _getElevationProfile(coordinates) {
+		const translate = (key) => this._translationService.translate(key);
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
 				this._enrichProfileData(profile);
 				this.signal(Update_Profile_Data, profile);
 			} catch (e) {
-				console.warn(e.message);
-				// Todo: emit error notification
-				// this.signal(Update_Profile_Data, null);
+				console.error(e);
+				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
+				this.signal(Update_Profile_Data, EmptyProfileData);
 			}
 		} else {
 			this.signal(Update_Profile_Data, EmptyProfileData);

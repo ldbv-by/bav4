@@ -16,6 +16,7 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_highestPoint).toBe('Höchster Punkt');
 		expect(map.elevationProfile_lowestPoint).toBe('Tiefster Punkt');
 		expect(map.elevationProfile_linearDistance).toBe('Strecke');
+		expect(map.elevationProfile_could_not_load).toBe('Höhenprofil konnte nicht geladen werden');
 		expect(map.elevationProfile_unknown).toBe('unbekannt');
 	});
 
@@ -34,11 +35,12 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_highestPoint).toBe('Highest Point');
 		expect(map.elevationProfile_lowestPoint).toBe('Lowest Point');
 		expect(map.elevationProfile_linearDistance).toBe('Linear Distance');
+		expect(map.elevationProfile_could_not_load).toBe('Elevation Profile could not be loaded');
 		expect(map.elevationProfile_unknown).toBe('unknown');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 13;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
