@@ -2,6 +2,7 @@ import { $injector } from '../../../../src/injection/index.js';
 import {
 	Default_Selected_Attribute,
 	ElevationProfile,
+	Empty_Profile_Data,
 	SlopeType,
 	SoterSlopeClasses
 } from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
@@ -258,7 +259,7 @@ describe('ElevationProfile', () => {
 			// assert
 			const initialModel = altitudeProfile.getModel();
 			expect(initialModel).toEqual({
-				profile: null,
+				profile: Empty_Profile_Data,
 				labels: null,
 				data: null,
 				selectedAttribute: Default_Selected_Attribute,
@@ -884,6 +885,7 @@ describe('ElevationProfile', () => {
 	describe('SlopeType', () => {
 		it('provides an enum of all available types', () => {
 			expect(Object.keys(SlopeType).length).toBe(6);
+			expect(Object.isFrozen(SlopeType)).toBeTrue();
 			expect(SlopeType.FLAT).toBe('flat');
 			expect(SlopeType.GENTLY_UNDULATING).toBe('gentlyUndulating');
 			expect(SlopeType.UNDULATING).toBe('undulating');
@@ -896,12 +898,34 @@ describe('ElevationProfile', () => {
 	describe('SoterSlopeClasses', () => {
 		it('provides an array of all available SOTER classes', () => {
 			expect(SoterSlopeClasses).toHaveSize(6);
+			expect(Object.isFrozen(SoterSlopeClasses)).toBeTrue();
 			expect(SoterSlopeClasses[0]).toEqual(jasmine.objectContaining({ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' }));
 			expect(SoterSlopeClasses[1]).toEqual(jasmine.objectContaining({ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' }));
 			expect(SoterSlopeClasses[2]).toEqual(jasmine.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
 			expect(SoterSlopeClasses[3]).toEqual(jasmine.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
 			expect(SoterSlopeClasses[4]).toEqual(jasmine.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
 			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }));
+		});
+	});
+
+	describe('Empty_Profile_Data', () => {
+		it('provides an emty profile data set', () => {
+			expect(Object.isFrozen(Empty_Profile_Data)).toBeTrue();
+			expect(Empty_Profile_Data).toEqual({
+				labels: [],
+				chartData: [],
+				elevations: [],
+				attrs: [{ id: 'alt' }],
+				distUnit: 'm',
+				stats: {
+					sumUp: 0,
+					sumDown: 0,
+					verticalHeight: 0,
+					highestPoint: 0,
+					lowestPoint: 0,
+					linearDistance: 0
+				}
+			});
 		});
 	});
 
