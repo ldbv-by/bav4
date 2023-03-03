@@ -524,7 +524,6 @@ describe('ElevationProfile', () => {
 
 			// act
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
-			console.log('🚀 ~ file: ElevationProfile.test.js:527 ~ fit ~ labelRet:', labelRet);
 			element._getBorder(chart, altitudeData);
 
 			// assert
