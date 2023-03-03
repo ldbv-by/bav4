@@ -23,6 +23,12 @@
 }
 iframe {
 	border: 0;
+	transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
+}
+iframe[width='100%'] {
+	width: 1000px;
+	border-right: 2em solid var(--secondary-color);
+	border-left: 2em solid var(--secondary-color);
 }
 .iframe__section {
 	border-bottom: 1px solid var(--header-background-color);
@@ -35,7 +41,7 @@ iframe {
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
 	width: 37em;
-	top: 50em;
+	top: 70vh;
 }
 .iframe__controls-section {
 	display: flex;
