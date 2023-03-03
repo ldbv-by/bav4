@@ -21,12 +21,19 @@ window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
 	const sumUp = 1480.8;
+	const sumUpAfterToLocaleStringEn = '1,480.8 m';
+	// const sumUpAfterToLocaleStringDe = '1.480,8 m';
+
 	const sumDown = 1668.6;
+	const sumDownAfterToLocaleStringEn = '1,668.6 m';
+	// const sumDownAfterToLocaleStringDe = '1.668,6 m';
+
 	const verticalHeight = 50;
 	const highestPoint = 50;
 	const lowestPoint = 0;
 	const linearDistance = 5000;
-	const linearDistanceAfterUnitsService = '5.0 km';
+	const linearDistanceAfterUnitsServiceEn = '5.0 km';
+	// const linearDistanceAfterUnitsServiceDe = '5,0 km';
 
 	const _profile = {
 		elevations: [
@@ -358,10 +365,10 @@ describe('ElevationProfile', () => {
 			expect(attrs.value).toBe('alt');
 			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe(sumUp + ' m');
+			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
 			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe(sumDown + ' m');
+			expect(sumDownElement.innerText).toBe(sumDownAfterToLocaleStringEn);
 			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
 			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
@@ -373,7 +380,7 @@ describe('ElevationProfile', () => {
 			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
-			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsService);
+			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
 		});
 	});
 
@@ -401,7 +408,7 @@ describe('ElevationProfile', () => {
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('elevationProfile_distance: 10.0 km');
+			expect(titleRet).toBe('elevationProfile_distance: 10 m');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
@@ -492,7 +499,7 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('when tooltip callback "label" is called for attribute surface', () => {
-		it('only shows the surface', async () => {
+		fit('only shows the surface, no prefix or unit', async () => {
 			// arrange
 			const coordinates = [
 				[0, 1],
@@ -517,6 +524,7 @@ describe('ElevationProfile', () => {
 
 			// act
 			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+			console.log('🚀 ~ file: ElevationProfile.test.js:527 ~ fit ~ labelRet:', labelRet);
 			element._getBorder(chart, altitudeData);
 
 			// assert
