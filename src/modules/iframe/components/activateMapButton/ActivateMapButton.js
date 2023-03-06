@@ -1,7 +1,7 @@
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './activateMapButton.css';
-import commonActivateMapCss from './activateMapCommonStyles.css';
+// import commonActivateMapCss from './activateMapCommonStyles.css';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
 
@@ -19,9 +19,17 @@ export class ActivateMapButton extends MvuElement {
 
 	onWindowLoad() {
 		//append common styles
+		const renderCommonStyle = () => {
+			return `
+			body *:not(ba-activate-map-button, ba-ol-map) {
+				display: none;
+			}			
+			`;
+		};
+
 		if (!document.getElementById(ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id)) {
 			const style = document.createElement('style');
-			style.innerHTML = commonActivateMapCss;
+			style.innerHTML = renderCommonStyle();
 			style.id = ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id;
 			document.head.appendChild(style);
 		}
