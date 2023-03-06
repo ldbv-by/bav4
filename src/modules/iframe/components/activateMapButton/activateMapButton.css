@@ -16,6 +16,9 @@
 	border-radius: 2em;
 	overflow: hidden;
 }
+.istouch {
+	opacity: 1 !important;
+}
 .active-map__background:hover .active-map__button {
 	opacity: 1;
 }

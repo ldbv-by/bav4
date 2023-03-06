@@ -2,6 +2,8 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './activateMapButton.css';
 import commonActivateMapCss from './activateMapCommonStyles.css';
+import { $injector } from '../../../../injection';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
  * @class
@@ -10,7 +12,9 @@ import commonActivateMapCss from './activateMapCommonStyles.css';
 export class ActivateMapButton extends MvuElement {
 	constructor() {
 		super();
-		this._isVisible = false;
+
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		this._environmentService = environmentService;
 	}
 
 	onWindowLoad() {
@@ -25,11 +29,14 @@ export class ActivateMapButton extends MvuElement {
 
 	createView() {
 		const close = () => {
-			this._isVisible = true;
 			const commonStyle = document.getElementById(ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id);
 			commonStyle.remove();
 			const background = this.shadowRoot.getElementById('background');
 			background.classList.add('hide');
+		};
+
+		const isTouch = {
+			istouch: this._environmentService.isTouch()
 		};
 
 		return html`
@@ -37,7 +44,7 @@ export class ActivateMapButton extends MvuElement {
 				${css}
 			</style>
 			<div id="background" class="active-map__background">
-				<div class="active-map__button">
+				<div class="active-map__button ${classMap(isTouch)}"">
 					<ba-button .type=${'primary'} .label=${'Karte Aktivieren'} @click=${close}></ba-button>
 				</div>
 			</div>
