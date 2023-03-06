@@ -5,8 +5,7 @@ import { BaPlugin } from './BaPlugin';
 
 /**
  * Checks if a surrounding iframe exists and contains the {@link IFRAME_ENCODED_STATE } data-attribute.
- * If so, it updates the attributes value on state changes. Currently only one surrounding iframe is supported.
- * @class
+ * If so, it updates the attributes value on state changes.
  * @author taulinger
  */
 export class IframeStatePlugin extends BaPlugin {
