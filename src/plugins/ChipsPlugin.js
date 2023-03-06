@@ -64,6 +64,7 @@ export class ChipsPlugin extends BaPlugin {
 			);
 		} catch (e) {
 			console.error('Chips configuration is not available.', e);
+			// no further notification of the user here
 		}
 	}
 }
