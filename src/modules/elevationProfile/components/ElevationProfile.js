@@ -34,7 +34,7 @@ export const SlopeType = Object.freeze({
 /**
  * slope classes based on https://esdac.jrc.ec.europa.eu/projects/SOTER/Soter_Model.html
  */
-export const SoterSlopeClasses = [
+export const SoterSlopeClasses = Object.freeze([
 	// todo: refactor to a slopeClass-provider; there are potentially more classifications thinkable, then the current one
 	{ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' },
 	{ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' },
@@ -42,10 +42,10 @@ export const SoterSlopeClasses = [
 	{ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' },
 	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
 	{ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }
-];
+]);
 export const Default_Selected_Attribute = 'alt';
 
-const EmptyProfileData = {
+export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
@@ -59,7 +59,7 @@ const EmptyProfileData = {
 		lowestPoint: 0,
 		linearDistance: 0
 	}
-};
+});
 
 /**
  * @author nklein
@@ -67,7 +67,7 @@ const EmptyProfileData = {
 export class ElevationProfile extends MvuElement {
 	constructor() {
 		super({
-			profile: null,
+			profile: Empty_Profile_Data,
 			labels: null,
 			data: null,
 			selectedAttribute: Default_Selected_Attribute,
@@ -433,10 +433,10 @@ export class ElevationProfile extends MvuElement {
 			} catch (e) {
 				console.error(e);
 				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
-				this.signal(Update_Profile_Data, EmptyProfileData);
+				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			}
 		} else {
-			this.signal(Update_Profile_Data, EmptyProfileData);
+			this.signal(Update_Profile_Data, Empty_Profile_Data);
 		}
 	}
 
@@ -599,12 +599,7 @@ export class ElevationProfile extends MvuElement {
 
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
-		if (profile === null) {
-			return;
-		}
-		if (this._chart != null) {
-			this._chart.destroy();
-		}
+		this._chart?.destroy();
 		this._createChart(profile, labels, data, distUnit);
 	}
 
