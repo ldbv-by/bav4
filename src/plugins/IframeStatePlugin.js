@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { IFRAME_ENCODED_STATE } from '../utils/markup';
+import { findAllByAttribute, findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -43,6 +43,10 @@ export class IframeStatePlugin extends BaPlugin {
 	}
 
 	_findIframe() {
-		return this._environmentService.getWindow().parent.document.querySelector(`iframe[${IFRAME_ENCODED_STATE}]`);
+		return findAllBySelector(this._getDocument(), `iframe[${IFRAME_ENCODED_STATE}]`)[0];
+	}
+
+	_getDocument() {
+		return this._environmentService.getWindow().parent.document;
 	}
 }
