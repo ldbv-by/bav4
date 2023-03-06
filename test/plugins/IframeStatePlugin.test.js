@@ -1,4 +1,6 @@
+import { html } from 'lit-html';
 import { $injector } from '../../src/injection';
+import { MvuElement } from '../../src/modules/MvuElement';
 import { IframeStatePlugin } from '../../src/plugins/IframeStatePlugin';
 import { addLayer } from '../../src/store/layers/layers.action';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
@@ -6,6 +8,17 @@ import { changeCenter, changeRotation, increaseZoom } from '../../src/store/posi
 import { positionReducer } from '../../src/store/position/position.reducer';
 import { IFRAME_ENCODED_STATE } from '../../src/utils/markup';
 import { TestUtils } from '../test-utils';
+
+class MvuElementParent extends MvuElement {
+	createView() {
+		return html` <iframe data-iframe-encoded-state src=""></iframe> `;
+	}
+
+	static get tag() {
+		return 'mvu-element-parent';
+	}
+}
+window.customElements.define(MvuElementParent.tag, MvuElementParent);
 
 describe('IframeState', () => {
 	const shareService = {
@@ -159,20 +172,28 @@ describe('IframeState', () => {
 
 	describe('_findIframe', () => {
 		it('finds an iframe element by the IFRAME_ENCODED_STATE attribute', async () => {
-			const querySelectorSpy = jasmine.createSpy();
+			setup();
+			await TestUtils.render(MvuElementParent.tag);
+			const instanceUnderTest = new IframeStatePlugin();
+			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
+
+			expect(instanceUnderTest._findIframe().tagName).toBe('IFRAME');
+		});
+	});
+
+	describe('_getDocument', () => {
+		it('returns the correct document', async () => {
+			const mock = {};
 			const mockWindow = {
 				parent: {
-					document: {
-						querySelector: querySelectorSpy
-					}
+					document: mock
 				}
 			};
 			spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 			setup();
 			const instanceUnderTest = new IframeStatePlugin();
 
-			instanceUnderTest._findIframe();
-			expect(querySelectorSpy).toHaveBeenCalledWith(`iframe[${IFRAME_ENCODED_STATE}]`);
+			expect(instanceUnderTest._getDocument()).toEqual(mock);
 		});
 	});
 });
