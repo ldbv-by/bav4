@@ -146,13 +146,13 @@ describe('OlMapContextMenuContent', () => {
 		it('logs a warn statement when Elevation Service is not available', async () => {
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(new Error('Elevation Error')));
-			const warnSpy = spyOn(console, 'warn');
+			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Elevation Error');
+			expect(errorSpy).toHaveBeenCalledWith('Elevation Error');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 		});
 

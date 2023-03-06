@@ -69,7 +69,7 @@ export class MapContextMenuContent extends MvuElement {
 			const elevation = (await this._elevationService.getElevation(coordinate)) + ' (m)';
 			this.signal(Update_Elevation, elevation);
 		} catch (e) {
-			console.warn(e.message);
+			console.error(e.message);
 			this.signal(Update_Elevation, null);
 		}
 	}
