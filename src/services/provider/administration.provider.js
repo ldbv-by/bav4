@@ -22,19 +22,15 @@ export const loadBvvAdministration = async (coordinate3857) => {
 
 	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
 
-	if (result.ok) {
-		const payload = await result.json();
-		const community = payload.gemeinde;
-		const district = payload.gemarkung;
-		// later we have to add this for BAplus users
-		// const parcelDenomination = payload.flstBezeichnung;
-		if (community && district) {
-			const bvvAdministration = {
-				community: community,
-				district: district
+	switch (result.status) {
+		case 200: {
+			const { gemarkung: community, gemarkung: district } = await result.json();
+			return {
+				community,
+				district
 			};
-			return Object.freeze(bvvAdministration);
 		}
+		default:
+			throw new Error(`Administration could not be retrieved: Http-Status ${result.status}`);
 	}
-	throw new Error('Administration could not be retrieved');
 };
