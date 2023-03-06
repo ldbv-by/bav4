@@ -43,23 +43,27 @@ export class ChipsPlugin extends BaPlugin {
 	 * @param {Store} store
 	 */
 	async register(store) {
-		const { ChipsConfigurationService: chipsConfigurationService } = $injector.inject('ChipsConfigurationService');
+		try {
+			const { ChipsConfigurationService: chipsConfigurationService } = $injector.inject('ChipsConfigurationService');
 
-		const chips = await chipsConfigurationService.all();
-		const permanentChips /** let's store them here*/ = this._findPermanentAndQueryParamChips(chips);
+			const chips = await chipsConfigurationService.all();
+			const permanentChips /** let's store them here*/ = this._findPermanentAndQueryParamChips(chips);
 
-		// initial update
-		this._updateStore(chips, permanentChips, store.getState());
-		// register observer
-		observe(
-			store,
-			(state) => state,
-			(state) => this._updateStore(chips, permanentChips, state)
-		);
-		observe(
-			store,
-			(state) => state,
-			(state) => this._updateStore(chips, permanentChips, state)
-		);
+			// initial update
+			this._updateStore(chips, permanentChips, store.getState());
+			// register observer
+			observe(
+				store,
+				(state) => state,
+				(state) => this._updateStore(chips, permanentChips, state)
+			);
+			observe(
+				store,
+				(state) => state,
+				(state) => this._updateStore(chips, permanentChips, state)
+			);
+		} catch (e) {
+			console.error('Chips configuration is not available.', e);
+		}
 	}
 }
