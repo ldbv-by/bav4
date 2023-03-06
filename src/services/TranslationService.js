@@ -8,7 +8,7 @@ import { $injector } from '../injection';
 export class TranslationService {
 	constructor() {
 		const { ConfigService: configService } = $injector.inject('ConfigService');
-		this._language = configService.getValue('DEFAULT_LANG', 'en');
+		this._language = configService.getValue('DEFAULT_LANG');
 		this._providers = new Map();
 		this._translations = new Map();
 	}

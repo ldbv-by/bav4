@@ -46,9 +46,6 @@ describe('StoreService', () => {
 		const exportMfpPluginMock = {
 			register: () => {}
 		};
-		const historyStatePluginMock = {
-			register: () => {}
-		};
 		const mainMenuPluginMock = {
 			register() {}
 		};
@@ -60,6 +57,12 @@ describe('StoreService', () => {
 		};
 		const elevationProfilePluginMock = {
 			register() {}
+		};
+		const iframeStatePluginMock = {
+			register: () => {}
+		};
+		const historyStatePluginMock = {
+			register: () => {}
 		};
 
 		const setupInjector = () => {
@@ -82,8 +85,9 @@ describe('StoreService', () => {
 				.registerSingleton('SearchPlugin', searchPluginMock)
 				.registerSingleton('ExportMfpPlugin', exportMfpPluginMock)
 				.registerSingleton('ElevationProfilePlugin', elevationProfilePluginMock)
-				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
+				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
+				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 
 				.ready();
 		};
@@ -139,6 +143,7 @@ describe('StoreService', () => {
 			const searchPluginSpy = spyOn(searchPluginMock, 'register');
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
 			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
+			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
@@ -164,6 +169,7 @@ describe('StoreService', () => {
 			expect(searchPluginSpy).toHaveBeenCalledWith(store);
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
 			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
+			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 		});
 	});

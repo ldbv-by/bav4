@@ -7,7 +7,7 @@ const Locales_Fallback = 'en';
 const getLocales = () => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
 
-	return [configService.getValue('DEFAULT_LANG', 'en'), Locales_Fallback];
+	return [configService.getValue('DEFAULT_LANG'), Locales_Fallback];
 };
 
 /**

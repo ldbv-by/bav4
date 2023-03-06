@@ -1,3 +1,4 @@
+import { $injector } from '../injection';
 import { isNumber } from './checks';
 
 /**
@@ -23,4 +24,27 @@ export const round = (value, decimals = 0) => {
  */
 export const createUniqueId = () => {
 	return Math.floor(Math.random() * Date.now());
+};
+
+/**
+ * Formates a number accordingly to the current `DEFAULT_LANG` property.
+ * @param {number} value
+ * @returns the formated number as `string` or `undefined`
+ */
+export const toLocaleString = (value) => {
+	/**
+	 * For easier handling in test cases we also support a fallback without configured DI
+	 */
+	const getDefaultLang = () => {
+		try {
+			const { ConfigService: configService } = $injector.inject('ConfigService');
+			return configService.getValue('DEFAULT_LANG');
+		} catch {
+			return 'en';
+		}
+	};
+
+	if (isNumber(value)) {
+		return value.toLocaleString(getDefaultLang());
+	}
 };

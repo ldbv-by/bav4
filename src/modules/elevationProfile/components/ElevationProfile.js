@@ -24,11 +24,28 @@ const Chart_Delay = 300;
  */
 export const SlopeType = Object.freeze({
 	FLAT: 'flat',
+	GENTLY_UNDULATING: 'gentlyUndulating',
+	UNDULATING: 'undulating',
+	ROLLING: 'rolling',
+	MODERATELY_STEEP: 'moderatelySteep',
 	STEEP: 'steep'
 });
+
+/**
+ * slope classes based on https://esdac.jrc.ec.europa.eu/projects/SOTER/Soter_Model.html
+ */
+export const SoterSlopeClasses = Object.freeze([
+	// todo: refactor to a slopeClass-provider; there are potentially more classifications thinkable, then the current one
+	{ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' },
+	{ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' },
+	{ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' },
+	{ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' },
+	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
+	{ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }
+]);
 export const Default_Selected_Attribute = 'alt';
 
-const EmptyProfileData = {
+export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
@@ -42,7 +59,7 @@ const EmptyProfileData = {
 		lowestPoint: 0,
 		linearDistance: 0
 	}
-};
+});
 
 /**
  * @author nklein
@@ -50,7 +67,7 @@ const EmptyProfileData = {
 export class ElevationProfile extends MvuElement {
 	constructor() {
 		super({
-			profile: null,
+			profile: Empty_Profile_Data,
 			labels: null,
 			data: null,
 			selectedAttribute: Default_Selected_Attribute,
@@ -390,34 +407,16 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		// start gradient with 'flat' color
-		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
-		let currentSlopeType = SlopeType.FLAT;
+
 		altitudeData?.elevations.forEach((element, index) => {
-			if (currentSlopeType === SlopeType.STEEP) {
-				// look for first element with slope less than X
-				if (!element.slope || element.slope <= ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					currentSlopeType = SlopeType.FLAT;
-				}
-			} else {
-				// look for first element with slope greater X
-				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					currentSlopeType = SlopeType.STEEP;
-				}
+			if (element.slope && element.slope !== 'missing') {
+				const xPoint = (xPointWidth / chartArea.width) * index;
+				const slopeValue = Math.abs(element.slope);
+				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
+
+				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
 		});
-		// end with currentSlopeType - color
-		if (currentSlopeType === SlopeType.STEEP) {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
-		} else {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
-		}
 		return gradientBg;
 	}
 
@@ -434,10 +433,10 @@ export class ElevationProfile extends MvuElement {
 			} catch (e) {
 				console.error(e);
 				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
-				this.signal(Update_Profile_Data, EmptyProfileData);
+				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			}
 		} else {
-			this.signal(Update_Profile_Data, EmptyProfileData);
+			this.signal(Update_Profile_Data, Empty_Profile_Data);
 		}
 	}
 
@@ -600,12 +599,7 @@ export class ElevationProfile extends MvuElement {
 
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
-		if (profile === null) {
-			return;
-		}
-		if (this._chart != null) {
-			this._chart.destroy();
-		}
+		this._chart?.destroy();
 		this._createChart(profile, labels, data, distUnit);
 	}
 

@@ -117,7 +117,7 @@ export const hsvToRgb = (hsv) => {
 
 /**
  * Creates a lighter or darker version of the specified base color.
- * @param {Array<Number>} rgbColor the basecolor as rgb-color-array
+ * @param {Array<Number>} rgbColor the baseColor as rgb-color-array
  * @returns {Array<Number>} the rgb-color-array, which is lighter or darker as contrast to the basecolor
  */
 export const getContrastColorFrom = (baseColor) => {

@@ -16,6 +16,11 @@ export const REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME = 'data-register-f
 export const LOG_LIFECYLE_ATTRIBUTE_NAME = 'data-log-lifecycle';
 
 /**
+ * An iframe element containing this attribute will expose the current encoded state of an embedded BA app.
+ */
+export const IFRAME_ENCODED_STATE = 'data-iframe-encoded-state';
+
+/**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
  * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
  *(BaElements are also supported).
@@ -76,33 +81,33 @@ export const generateTestIds = (element) => {
 };
 
 /**
- * Applies a function on all children (including custom elements) of a given element containing a given attribute.
+ * Applies a function on all children (including custom elements) matching a given element containing a given selector.
  * The start element will be excluded.
  * @param {HTMLElement} element start element
- * @param {string} attribute target attribute
+ * @param {string} selector CSS selector
  * @param {Function} callback callback function
  */
-export const forEachByAttribute = (element, attribute, callback) => {
+export const forEachBySelector = (element, selector, callback) => {
 	const checkShadowDOM = (el) => el.shadowRoot ?? el;
 
 	checkShadowDOM(element).childNodes.forEach((el) => {
-		if (el.hasAttribute && el.hasAttribute(attribute)) {
+		if (el.matches && el?.matches(selector)) {
 			callback(el);
 		}
-		forEachByAttribute(checkShadowDOM(el), attribute, callback);
+		forEachBySelector(checkShadowDOM(el), selector, callback);
 	});
 };
 
 /**
- * Returns an array containing all elements owning the given attribute starting from a given element.
+ * Returns an array containing all elements matching the given selector starting from a given element.
  * The start element will be excluded.
  * @param {HTMLElement} element
- * @param {string} attribute target attribute
+ * @param {string} selector CSS selector
  * @returns array
  */
-export const findAllByAttribute = (element, attribute) => {
+export const findAllBySelector = (element, selector) => {
 	const elements = [];
-	forEachByAttribute(element, attribute, (el) => elements.push(el));
+	forEachBySelector(element, selector, (el) => elements.push(el));
 	return elements;
 };
 
