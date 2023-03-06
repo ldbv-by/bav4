@@ -3,6 +3,7 @@ import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle
 import { IFrameGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IFrameGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
+import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(IFrameGenerator.tag, IFrameGenerator);
@@ -261,8 +262,10 @@ describe('IFrameGenerator', () => {
 
 		it('toggles auto width', async () => {
 			const element = await setup();
+			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
+			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
 
@@ -270,11 +273,39 @@ describe('IFrameGenerator', () => {
 
 			expect(widthInputElement.value).toBe('');
 			expect(iframeElement.width).toBe('100%');
+			buttonElement.click();
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 
 			toggle.click();
 
 			expect(widthInputElement.value).toBe('800');
 			expect(iframeElement.width).toBe('800px');
+		});
+	});
+
+	describe('when iframe source changes by user interaction (drag&zoom)', () => {
+		it('renders iframe with the changed values', async () => {
+			const element = await setup();
+			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
+
+			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+
+			// init values
+			buttonElement.click();
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
+			clipboardSpy.calls.reset();
+
+			iframeElement.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+
+			buttonElement.click();
+			expect(clipboardSpy).toHaveBeenCalledWith(
+				"<iframe src=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 		});
 	});
 });

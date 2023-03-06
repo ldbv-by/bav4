@@ -5,6 +5,7 @@ import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
 import codeIcon from './assets/code.svg';
 import css from './iframegenerator.css';
+import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 
 const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
@@ -127,9 +128,10 @@ export class IFrameGenerator extends MvuElement {
 	}
 
 	_getIFrameContent(width, height) {
-		const previewUrl = this._getEmbeddedEncodedState();
+		const previewUrl = this._shareService.encodeState([], [PathParameters.EMBED]);
 		return html` <div class="iframe__content">
 			<iframe
+				data-iframe-encoded-state
 				src=${previewUrl}
 				width=${width === Auto_Width ? Auto_Width : width + 'px'}
 				height=${height + 'px'}
@@ -141,13 +143,15 @@ export class IFrameGenerator extends MvuElement {
 
 	_getEmbedContent(width, height) {
 		const translate = (key) => this._translationService.translate(key);
-		const previewUrl = this._getEmbeddedEncodedState();
 
-		const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px'}' height='${
-			height + 'px'
-		}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
+		const onCopyHTMLToClipBoard = async () => {
+			const previewUrl = this._getEmbeddedEncodedState();
 
-		const onCopyHTMLToClipBoard = async () => this._copyValueToClipboard(embedString);
+			const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px'}' height='${
+				height + 'px'
+			}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
+			return this._copyValueToClipboard(embedString);
+		};
 
 		return html`<ba-button
 			id="iframe-button"
@@ -169,7 +173,10 @@ export class IFrameGenerator extends MvuElement {
 	}
 
 	_getEmbeddedEncodedState() {
-		return this._shareService.encodeState([], [PathParameters.EMBED]);
+		const iframeElement = this.shadowRoot.querySelector('iframe');
+		const encodedState = iframeElement?.getAttribute(IFRAME_ENCODED_STATE);
+
+		return encodedState ? encodedState : this._shareService.encodeState([], [PathParameters.EMBED]);
 	}
 
 	static get tag() {
