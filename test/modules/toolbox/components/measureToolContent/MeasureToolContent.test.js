@@ -439,6 +439,17 @@ describe('MeasureToolContent', () => {
 				expect(subTextElement).toBeTruthy();
 				expect(subTextElement.textContent).toBe('toolbox_measureTool_measure_select');
 			});
+
+			it('shows no measurement sub-text for mode:[null]', async () => {
+				const state = {
+					measurement: { ...defaultMeasurementState, mode: null }
+				};
+				const element = await setup(state, touchConfig);
+				const subTextElement = element.shadowRoot.querySelector('.sub-text');
+
+				expect(subTextElement).toBeTruthy();
+				expect(subTextElement.textContent).toBe('');
+			});
 		});
 	});
 });

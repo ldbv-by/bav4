@@ -7,6 +7,7 @@ import { $injector } from '../../../injection';
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
+import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -14,16 +15,37 @@ const Update_Profile_Data = 'update_profile_data';
 
 const Update_Media = 'update_media';
 
+const Chart_Duration = 600;
+const Chart_Delay = 300;
+
 /**
  * different types of slope
  * @enum
  */
 export const SlopeType = Object.freeze({
 	FLAT: 'flat',
+	GENTLY_UNDULATING: 'gentlyUndulating',
+	UNDULATING: 'undulating',
+	ROLLING: 'rolling',
+	MODERATELY_STEEP: 'moderatelySteep',
 	STEEP: 'steep'
 });
 
-const EmptyProfileData = {
+/**
+ * slope classes based on https://esdac.jrc.ec.europa.eu/projects/SOTER/Soter_Model.html
+ */
+export const SoterSlopeClasses = Object.freeze([
+	// todo: refactor to a slopeClass-provider; there are potentially more classifications thinkable, then the current one
+	{ type: SlopeType.FLAT, min: 0, max: 2, color: '#1f8a70' },
+	{ type: SlopeType.GENTLY_UNDULATING, min: 2, max: 5, color: '#bedb39' },
+	{ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' },
+	{ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' },
+	{ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' },
+	{ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }
+]);
+export const Default_Selected_Attribute = 'alt';
+
+export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
@@ -37,7 +59,7 @@ const EmptyProfileData = {
 		lowestPoint: 0,
 		linearDistance: 0
 	}
-};
+});
 
 /**
  * @author nklein
@@ -45,10 +67,10 @@ const EmptyProfileData = {
 export class ElevationProfile extends MvuElement {
 	constructor() {
 		super({
-			profile: null,
+			profile: Empty_Profile_Data,
 			labels: null,
 			data: null,
-			selectedAttribute: null,
+			selectedAttribute: Default_Selected_Attribute,
 			darkSchema: null,
 			distUnit: null,
 			portrait: false,
@@ -73,6 +95,7 @@ export class ElevationProfile extends MvuElement {
 		this._secondLeft = 0;
 		this._top = 0;
 		this._bottom = 0;
+		this._noAnimationValue = false;
 
 		this._unsubscribers = [];
 
@@ -92,7 +115,7 @@ export class ElevationProfile extends MvuElement {
 			),
 			this.observe(
 				(state) => state.elevationProfile.coordinates,
-				(coordinates) => this._getAltitudeProfile(coordinates)
+				(coordinates) => this._getElevationProfile(coordinates)
 			),
 			this.observe(
 				(state) => state.media,
@@ -163,6 +186,7 @@ export class ElevationProfile extends MvuElement {
 		const linearDistance = model.profile?.stats?.linearDistance;
 
 		const onChange = () => {
+			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('attrs');
 			const selectedAttribute = select.options[select.selectedIndex].value;
 			this.signal(Update_Selected_Attribute, selectedAttribute);
@@ -219,16 +243,18 @@ export class ElevationProfile extends MvuElement {
 		`;
 	}
 
+	get _noAnimation() {
+		return this._noAnimationValue;
+	}
+	set _noAnimation(value) {
+		this._noAnimationValue = value;
+	}
+
 	_enrichAltsArrayWithAttributeData(attribute, profile) {
 		const attributeName = attribute.id;
 		attribute.values.forEach((from_to_value) => {
 			for (let index = from_to_value[0]; index <= from_to_value[1]; index++) {
 				profile.elevations[index][attributeName] = from_to_value[2];
-			}
-		});
-		profile.elevations.forEach((alt) => {
-			if (!alt[attributeName]) {
-				alt[attributeName] = 'missing';
 			}
 		});
 	}
@@ -245,12 +271,14 @@ export class ElevationProfile extends MvuElement {
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
-		profile.elevations.forEach((alt) => {
+		profile.elevations.forEach((elevation) => {
 			if (profile.distUnit === 'km') {
-				newLabels.push(alt.dist / 1000);
+				newLabels.push(elevation.dist / 1000);
 			} else {
-				newLabels.push(alt.dist);
+				newLabels.push(elevation.dist);
 			}
+			// create alt entry in elevations
+			elevation.alt = elevation.z;
 		});
 		profile.labels = newLabels;
 		return;
@@ -379,58 +407,45 @@ export class ElevationProfile extends MvuElement {
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		// start gradient with 'flat' color
-		gradientBg.addColorStop(0, ElevationProfile.SLOPE_FLAT_COLOR);
-		let currentSlopeType = SlopeType.FLAT;
+
 		altitudeData?.elevations.forEach((element, index) => {
-			if (currentSlopeType === SlopeType.STEEP) {
-				// look for first element with slope less than X
-				if (!element.slope || element.slope <= ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					currentSlopeType = SlopeType.FLAT;
-				}
-			} else {
-				// look for first element with slope greater X
-				if (element.slope && element.slope > ElevationProfile.SLOPE_STEEP_THRESHOLD) {
-					const xPoint = (xPointWidth / chartArea.width) * index;
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_FLAT_COLOR);
-					gradientBg.addColorStop(xPoint, ElevationProfile.SLOPE_STEEP_COLOR);
-					currentSlopeType = SlopeType.STEEP;
-				}
+			if (element.slope && element.slope !== 'missing') {
+				const xPoint = (xPointWidth / chartArea.width) * index;
+				const slopeValue = Math.abs(element.slope);
+				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
+
+				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
 		});
-		// end with currentSlopeType - color
-		if (currentSlopeType === SlopeType.STEEP) {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_STEEP_COLOR);
-		} else {
-			gradientBg.addColorStop(1, ElevationProfile.SLOPE_FLAT_COLOR);
-		}
 		return gradientBg;
 	}
 
 	/**
 	 * @private
 	 */
-	async _getAltitudeProfile(coordinates) {
+	async _getElevationProfile(coordinates) {
+		const translate = (key) => this._translationService.translate(key);
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
 				this._enrichProfileData(profile);
 				this.signal(Update_Profile_Data, profile);
 			} catch (e) {
-				console.warn(e.message);
-				// Todo: emit error notification
-				// this.signal(Update_Profile_Data, null);
+				console.error(e);
+				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
+				this.signal(Update_Profile_Data, Empty_Profile_Data);
 			}
 		} else {
-			this.signal(Update_Profile_Data, EmptyProfileData);
+			this.signal(Update_Profile_Data, Empty_Profile_Data);
 		}
 	}
 
 	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
+		const getElevationEntry = (tooltipItem) => {
+			const index = altitudeData.labels.indexOf(tooltipItem.parsed.x);
+			return altitudeData.elevations[index];
+		};
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -467,15 +482,14 @@ export class ElevationProfile extends MvuElement {
 						chart.ctx.strokeStyle = '#ff0000';
 						chart.ctx.lineTo(x, yScale.getPixelForValue(yScale.min, 0));
 						chart.ctx.stroke();
-						// }
 					}
 				}
 			],
 			options: {
 				responsive: true,
 				animation: {
-					duration: 600,
-					delay: 300
+					duration: this._noAnimation ? 0 : Chart_Duration,
+					delay: this._noAnimation ? 0 : Chart_Delay
 				},
 				maintainAspectRatio: false,
 
@@ -501,9 +515,7 @@ export class ElevationProfile extends MvuElement {
 						},
 						ticks: {
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
-						},
-						suggestedMin: 200,
-						suggestedMax: 500
+						}
 					}
 				},
 				events: ['pointermove', 'pointerup', 'mouseout'],
@@ -521,17 +533,46 @@ export class ElevationProfile extends MvuElement {
 						intersect: false,
 						callbacks: {
 							title: (tooltipItems) => {
-								const { parsed } = tooltipItems[0];
-								const index = altitudeData.labels.indexOf(parsed.x);
-								if (index > -1) {
-									const found = altitudeData.elevations[index];
-									this.setCoordinates([found.e, found.n]);
-								}
+								const tooltipItem = tooltipItems[0];
+								// set highlight feature
+								const elevationEntry = getElevationEntry(tooltipItem);
+								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
 
-								return 'Distance: ' + tooltipItems[0].label + 'm';
+								return translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm';
 							},
 							label: (tooltipItem) => {
-								return 'Elevation: ' + tooltipItem.raw + 'm';
+								const retArray = [];
+								const selectedAttribute = this.getModel().selectedAttribute;
+								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
+								const elevationEntry = getElevationEntry(tooltipItem);
+								const attributeValue = elevationEntry[selectedAttribute];
+
+								const attribute = altitudeData.attrs.find((attr) => {
+									return attr.id === selectedAttribute;
+								});
+								let label = selectedAttributeTranslation + ': ';
+								if (attribute.prefix) {
+									label += attribute.prefix + ' ' + attributeValue;
+								} else {
+									label += attributeValue;
+								}
+
+								if (selectedAttribute === Default_Selected_Attribute) {
+									label += ' m';
+									return label;
+								} else {
+									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
+									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
+									const defaultLabel = defaultAttributeTranslation + ': ' + defaultAttributeValue + ' m';
+									retArray.push(defaultLabel);
+								}
+
+								if (attribute.unit) {
+									label += ' ' + attribute.unit;
+								}
+
+								retArray.push(label);
+								return retArray;
 							}
 						}
 					}
@@ -553,16 +594,12 @@ export class ElevationProfile extends MvuElement {
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
+		this._noAnimation = false;
 	}
 
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
-		if (profile === null) {
-			return;
-		}
-		if (this._chart != null) {
-			this._chart.destroy();
-		}
+		this._chart?.destroy();
 		this._createChart(profile, labels, data, distUnit);
 	}
 
@@ -575,7 +612,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	static get SLOPE_STEEP_THRESHOLD() {
-		return 0.02;
+		return 2;
 	}
 
 	static get SLOPE_FLAT_COLOR_DARK() {

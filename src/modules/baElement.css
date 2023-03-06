@@ -31,7 +31,15 @@
 	border-radius: 0.9em;
 	background: var(--secondary-bg-color);
 }
+::-moz-selection {
+	color: var(--text3);
+	background: var(--secondary-color);
+}
 
+::selection {
+	color: var(--text3);
+	background: var(--secondary-color);
+}
 input,
 textarea {
 	padding: 0.1em 0.5em;
