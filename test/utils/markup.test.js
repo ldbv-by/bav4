@@ -4,7 +4,9 @@ import { MvuElement } from '../../src/modules/MvuElement';
 import {
 	decodeHtmlEntities,
 	findAllByAttribute,
+	findAllBySelector,
 	forEachByAttribute,
+	forEachBySelector,
 	IFRAME_ENCODED_STATE,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
@@ -234,6 +236,52 @@ describe('markup utils', () => {
 			const element = await TestUtils.render(MvuElementParent.tag);
 
 			const result = findAllByAttribute(element, 'data-test-id');
+
+			expect(result).toHaveSize(8);
+			expect(result[0].tagName).toBe('DIV');
+			expect(result[3].tagName).toBe('MVU-ELEMENT-CHILD');
+		});
+	});
+
+	describe('forEachBySelector', () => {
+		beforeEach(() => {
+			TestUtils.setupStoreAndDi();
+		});
+
+		afterEach(() => {
+			window.ba_enableTestIds = undefined;
+		});
+
+		it('applies a function on all elements containing a specific attribute', async () => {
+			// we reuse the data-test-id MvuElement classes for our test
+			window.ba_enableTestIds = true;
+			spyOn(console, 'warn');
+			const element = await TestUtils.render(MvuElementParent.tag);
+			const callbackSpy = jasmine.createSpy();
+
+			forEachBySelector(element, '[data-test-id]', callbackSpy);
+
+			expect(callbackSpy).toHaveBeenCalledTimes(8);
+			expect(callbackSpy).toHaveBeenCalledWith(jasmine.any(HTMLElement));
+		});
+	});
+
+	describe('findAllBySelector', () => {
+		beforeEach(() => {
+			TestUtils.setupStoreAndDi();
+		});
+
+		afterEach(() => {
+			window.ba_enableTestIds = undefined;
+		});
+
+		it('finds all elements matching a specific selector', async () => {
+			// we reuse the data-test-id MvuElement classes for our test
+			window.ba_enableTestIds = true;
+			spyOn(console, 'warn');
+			const element = await TestUtils.render(MvuElementParent.tag);
+
+			const result = findAllBySelector(element, '[data-test-id]');
 
 			expect(result).toHaveSize(8);
 			expect(result[0].tagName).toBe('DIV');

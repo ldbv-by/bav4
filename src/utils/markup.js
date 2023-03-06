@@ -98,6 +98,17 @@ export const forEachByAttribute = (element, attribute, callback) => {
 	});
 };
 
+export const forEachBySelector = (element, selector, callback) => {
+	const checkShadowDOM = (el) => el.shadowRoot ?? el;
+
+	checkShadowDOM(element).childNodes.forEach((el) => {
+		if (el.matches && el?.matches(selector)) {
+			callback(el);
+		}
+		forEachBySelector(checkShadowDOM(el), selector, callback);
+	});
+};
+
 /**
  * Returns an array containing all elements owning the given attribute starting from a given element.
  * The start element will be excluded.
@@ -108,6 +119,12 @@ export const forEachByAttribute = (element, attribute, callback) => {
 export const findAllByAttribute = (element, attribute) => {
 	const elements = [];
 	forEachByAttribute(element, attribute, (el) => elements.push(el));
+	return elements;
+};
+
+export const findAllBySelector = (element, selector) => {
+	const elements = [];
+	forEachBySelector(element, selector, (el) => elements.push(el));
 	return elements;
 };
 
