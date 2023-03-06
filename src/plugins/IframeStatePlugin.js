@@ -1,5 +1,5 @@
 import { $injector } from '../injection';
-import { findAllByAttribute, findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';
+import { findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
