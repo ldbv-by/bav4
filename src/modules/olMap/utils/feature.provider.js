@@ -16,21 +16,7 @@ export const load = async function (extent, resolution, targetProj) {
 	const result = await httpService.get(url, {
 		timeout: 2000
 	});
-	// if (result.ok) {
-	// 	const raw = await result.text();
-	// 	const features = vectorSource
-	// 		.getFormat()
-	// 		.readFeatures(raw)
-	// 		.filter((f) => !!f.getGeometry()) // filter out features without a geometry. Todo: let's inform the user
-	// 		.map((f) => {
-	// 			// we have to transform the features!
-	// 			f.getGeometry().transform('EPSG:4326', targetProj);
-	// 			return f;
-	// 		});
-	// 	vectorSource.addFeatures(features);
-	// } else {
-	// 	console.warn('Source could not be loaded from ' + url);
-	// }
+
 	switch (result.status) {
 		case 200: {
 			const raw = await result.text();
