@@ -81,33 +81,33 @@ export const generateTestIds = (element) => {
 };
 
 /**
- * Applies a function on all children (including custom elements) of a given element containing a given attribute.
+ * Applies a function on all children (including custom elements) matching a given element containing a given selector.
  * The start element will be excluded.
  * @param {HTMLElement} element start element
- * @param {string} attribute target attribute
+ * @param {string} selector CSS selector
  * @param {Function} callback callback function
  */
-export const forEachByAttribute = (element, attribute, callback) => {
+export const forEachBySelector = (element, selector, callback) => {
 	const checkShadowDOM = (el) => el.shadowRoot ?? el;
 
 	checkShadowDOM(element).childNodes.forEach((el) => {
-		if (el.hasAttribute && el.hasAttribute(attribute)) {
+		if (el.matches && el?.matches(selector)) {
 			callback(el);
 		}
-		forEachByAttribute(checkShadowDOM(el), attribute, callback);
+		forEachBySelector(checkShadowDOM(el), selector, callback);
 	});
 };
 
 /**
- * Returns an array containing all elements owning the given attribute starting from a given element.
+ * Returns an array containing all elements matching the given selector starting from a given element.
  * The start element will be excluded.
  * @param {HTMLElement} element
- * @param {string} attribute target attribute
+ * @param {string} selector CSS selector
  * @returns array
  */
-export const findAllByAttribute = (element, attribute) => {
+export const findAllBySelector = (element, selector) => {
 	const elements = [];
-	forEachByAttribute(element, attribute, (el) => elements.push(el));
+	forEachBySelector(element, selector, (el) => elements.push(el));
 	return elements;
 };
 
