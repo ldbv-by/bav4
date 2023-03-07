@@ -16,28 +16,10 @@ describe('IFrameGenerator', () => {
 		encodeState: () => 'https://myhost/app/embed.html?param=foo',
 		copyToClipboard() {}
 	};
-	const mockWindow = {
-		location: {
-			protocol: 'https:',
-			host: 'myhost/',
-			pathname: 'app/'
-		},
-		parent: {
-			location: 'iframe'
-		}
-	};
-
-	const environmentServiceMock = {
-		getWindow: () => mockWindow,
-		isEmbedded: () => false
-	};
 
 	const setup = () => {
 		store = TestUtils.setupStoreAndDi({ notifications: { latest: null } }, { notifications: notificationReducer });
-		$injector
-			.registerSingleton('EnvironmentService', environmentServiceMock)
-			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('ShareService', shareServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(IFrameGenerator.tag);
 	};
 
@@ -67,7 +49,9 @@ describe('IFrameGenerator', () => {
 
 			expect(iframeElement.src).toBe('https://myhost/app/embed.html?param=foo');
 		});
+	});
 
+	describe('when user requests the iframe code', () => {
 		it('copies the example html code to clipboard', async () => {
 			const element = await setup();
 			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
