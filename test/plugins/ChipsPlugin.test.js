@@ -58,6 +58,18 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[0]);
 		});
 
+		it('logs an error when ChipsConfigurationService fails', async () => {
+			const errorSpy = spyOn(console, 'error');
+			const error = new Error('foo');
+			const store = setup();
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.rejectWith(error);
+
+			await instanceUnderTest.register(store);
+
+			expect(errorSpy).toHaveBeenCalledWith('Chips configuration is not available.', error);
+		});
+
 		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
 			const chipId = 'id1';
 			const queryParam = `${QueryParameters.CHIP_ID}=${chipId}`;

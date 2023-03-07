@@ -86,8 +86,8 @@ export class GeoResourceInfoPanel extends MvuElement {
 			this.signal(UPDATE_GEORESOURCEINFO, result);
 		} catch (e) {
 			const message = this._translationService.translate('geoResourceInfo_geoResourceInfo_response_error');
-			emitNotification(message, LevelTypes.WARN);
-			console.warn(e);
+			emitNotification(message, LevelTypes.ERROR);
+			console.error(e);
 			this.signal(UPDATE_GEORESOURCEINFO, null);
 		}
 	}

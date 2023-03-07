@@ -143,29 +143,31 @@ describe('OlMapContextMenuContent', () => {
 			expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 		});
 
-		it('logs a warn statement when Elevation Service is not available', async () => {
+		it('logs an error statement when Elevation Service is not available', async () => {
+			const error = new Error('Elevation Error');
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(new Error('Elevation Error')));
-			const warnSpy = spyOn(console, 'warn');
+			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(error));
+			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Elevation Error');
+			expect(errorSpy).toHaveBeenCalledWith(error);
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[3].innerText).toEqual('-');
 		});
 
-		it('logs a warn statement when Administration Service is not available', async () => {
+		it('logs an error statement when Administration Service is not available', async () => {
+			const error = new Error('Administration Error');
 			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
-			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(new Error('Administration Error')));
-			const warnSpy = spyOn(console, 'warn');
+			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(error));
+			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
 			element.coordinate = [1000, 2000];
 
 			await TestUtils.timeout();
-			expect(warnSpy).toHaveBeenCalledWith('Administration Error');
+			expect(errorSpy).toHaveBeenCalledWith(error);
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[0].innerText).toEqual('-');
 			expect(element.shadowRoot.querySelectorAll('.coordinate')[1].innerText).toEqual('-');
 		});

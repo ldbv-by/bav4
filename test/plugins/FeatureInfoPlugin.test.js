@@ -228,7 +228,7 @@ describe('FeatureInfoPlugin', () => {
 				const instanceUnderTest = new FeatureInfoPlugin();
 				spyOn(mapService, 'calcResolution').withArgs(zoom, coordinate).and.returnValue(resolution);
 				spyOn(featureInfoService, 'get').withArgs(geoResourceId0, coordinate, resolution).and.returnValue(Promise.reject(errorMessage));
-				const warnSpy = spyOn(console, 'warn');
+				const errorSpy = spyOn(console, 'error');
 				await instanceUnderTest.register(store);
 
 				setClick({ coordinate: coordinate, screenCoordinate: [33, 44] });
@@ -237,8 +237,8 @@ describe('FeatureInfoPlugin', () => {
 				await TestUtils.timeout();
 				expect(store.getState().featureInfo.current).toHaveSize(0);
 				expect(store.getState().notifications.latest.payload.content).toBe(`${label0}: global_featureInfoService_exception`);
-				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.WARN);
-				expect(warnSpy).toHaveBeenCalledWith(errorMessage);
+				expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+				expect(errorSpy).toHaveBeenCalledWith(errorMessage);
 				expect(store.getState().featureInfo.querying).toBeFalse();
 			});
 		});

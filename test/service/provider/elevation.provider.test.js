@@ -23,39 +23,17 @@ describe('Elevation provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(elevationMock))));
 
-			const elevation = await loadBvvElevation(coordinateMock);
-
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(elevation).toEqual(elevationMock.z);
-		});
-
-		it('throws error when backend provides empty payload', async () => {
-			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify({}), { status: 200 })));
-
-			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
+			await expectAsync(loadBvvElevation(coordinateMock)).toBeResolvedTo(elevationMock.z);
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
-		it('throws error when backend provides empty elevation', async () => {
+		it('throws an error when backend connot fulfill', async () => {
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify({ z: null }), { status: 200 })));
+			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
-			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-		});
-
-		it('throws error when backend request cannot be fulfilled', async () => {
-			const backendUrl = 'https://backend.url';
-			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
-
-			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved');
+			await expectAsync(loadBvvElevation(coordinateMock)).toBeRejectedWithError('Elevation could not be retrieved: Http-Status 500');
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});

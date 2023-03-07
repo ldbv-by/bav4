@@ -31,16 +31,17 @@ describe('requestData', () => {
 	});
 
 	describe('provider throws an error', () => {
-		it('returns empty array and logs a warn statement', async () => {
+		it('returns empty array and logs an error statement', async () => {
+			const error = new Error('foo');
 			const provider = async () => {
-				throw new Error('foo');
+				throw error;
 			};
-			const warnSpy = spyOn(console, 'warn');
+			const errorSpy = spyOn(console, 'error');
 
 			const result = await requestData('foobar', provider, 0);
 
 			expect(result.length).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith('foo');
+			expect(errorSpy).toHaveBeenCalledWith(error);
 		});
 	});
 });

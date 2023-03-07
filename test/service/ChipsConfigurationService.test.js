@@ -104,18 +104,14 @@ describe('ChipsCofigurationService', () => {
 				expect(warnSpy).toHaveBeenCalledWith('Chips configuration could not be fetched from backend. Using fallback configuration ...');
 			});
 
-			it('logs an error when we are NOT in standalone mode', async () => {
-				const message = 'something got wrong';
+			it('passes the provider exception', async () => {
+				const error = new Error('something got wrong');
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(async () => {
-					throw message;
+					throw error;
 				});
-				const errorSpy = spyOn(console, 'error');
 
-				const configurations = await instanceUnderTest.all();
-
-				expect(configurations).toEqual([]);
-				expect(errorSpy).toHaveBeenCalledWith('Chips configuration could not be fetched from backend.', message);
+				await expectAsync(instanceUnderTest.all()).toBeRejectedWith(error);
 			});
 		});
 	});
