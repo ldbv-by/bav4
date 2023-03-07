@@ -29,3 +29,18 @@
 .is-tablet ba-rotation-button {
 	margin-bottom: 2.2em;
 }
+.is-embedded > * {
+	transform: scale(1);
+	margin: 0.3em !important;
+	font-size: 1.1rem;
+}
+.is-embedded.map-buttons-container {
+	bottom: 1em;
+}
+.is-embedded ba-zoom-buttons {
+	display: block;
+}
+.is-embedded ba-geolocation-button,
+.is-embedded ba-extent-button {
+	display: none;
+}

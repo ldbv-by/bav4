@@ -51,11 +51,15 @@ export class MapButtonsContainer extends MvuElement {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
 		};
 
+		const isEmbedded = () => {
+			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
-			<div class="map-buttons-container ${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="map-buttons-container ${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
 				<ba-rotation-button></ba-rotation-button>
 				<ba-geolocation-button></ba-geolocation-button>
 				<ba-zoom-buttons></ba-zoom-buttons>
