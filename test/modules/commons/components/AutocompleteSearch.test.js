@@ -149,7 +149,7 @@ describe('Button', () => {
 		});
 	});
 
-	describe('provider cannot fullfill', () => {
+	describe('provider cannot fulfill', () => {
 		it('logs a warn statement', async () => {
 			const element = await TestUtils.render(AutocompleteSearch.tag);
 			element.provider = () => Promise.reject('Something got wrong');
