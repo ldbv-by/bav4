@@ -5,7 +5,6 @@ import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree 
 import { $injector } from '../../../injection';
 
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
-import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { toLocaleString } from '../../../utils/numberUtils';
@@ -177,9 +176,6 @@ export class ElevationProfile extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		if (!model.profile) {
-			return nothing;
-		}
 		const sumUp = model.profile?.stats?.sumUp;
 		const sumDown = model.profile?.stats?.sumDown;
 
