@@ -23,18 +23,15 @@ window.customElements.define(ElevationProfile.tag, ElevationProfile);
 describe('ElevationProfile', () => {
 	const sumUp = 1480.8;
 	const sumUpAfterToLocaleStringEn = '1,480.8 m';
-	// const sumUpAfterToLocaleStringDe = '1.480,8 m';
 
 	const sumDown = 1668.6;
 	const sumDownAfterToLocaleStringEn = '1,668.6 m';
-	// const sumDownAfterToLocaleStringDe = '1.668,6 m';
 
 	const verticalHeight = 50;
 	const highestPoint = 50;
 	const lowestPoint = 0;
 	const linearDistance = 5000;
 	const linearDistanceAfterUnitsServiceEn = '5.0 km';
-	// const linearDistanceAfterUnitsServiceDe = '5,0 km';
 
 	const _profile = {
 		elevations: [
