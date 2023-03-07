@@ -1,6 +1,7 @@
 import { $injector } from '../../../../injection';
 import { AbstractAssistChip } from './AbstractAssistChip';
-import baSvg from './assets/ba.svg';
+import baSvg from './assets/basolo.svg';
+// import css from './bigMapChip.css';
 
 /**
  *
@@ -9,11 +10,13 @@ import baSvg from './assets/ba.svg';
  */
 export class BigMapChip extends AbstractAssistChip {
 	constructor() {
-		super({
-			profileCoordinates: []
-		});
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
+		super({});
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
+		this._translationService = translationService;
+		this._environmentService = environmentService;
 	}
 
 	/**
@@ -28,7 +31,7 @@ export class BigMapChip extends AbstractAssistChip {
 	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('chips_assist_chip_elevation_profile');
+		return translate('chips_assist_big_map');
 	}
 
 	/**
@@ -41,13 +44,8 @@ export class BigMapChip extends AbstractAssistChip {
 	/**
 	 * @override
 	 */
-	onClick() {}
-
-	/**
-	 * @override
-	 */
-	onDisconnect() {
-		this._unsubscribeFromStore();
+	onClick() {
+		alert('test');
 	}
 
 	static get tag() {
