@@ -10,8 +10,7 @@ describe('MapButtonsContainer', () => {
 		const initialState = {
 			media: {
 				portrait: false,
-				minWidth: true,
-				embed: false
+				minWidth: true
 			},
 			...state
 		};
