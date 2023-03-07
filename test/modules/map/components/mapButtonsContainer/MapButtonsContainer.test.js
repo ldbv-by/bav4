@@ -5,17 +5,21 @@ import { $injector } from '../../../../../src/injection';
 window.customElements.define(MapButtonsContainer.tag, MapButtonsContainer);
 
 describe('MapButtonsContainer', () => {
-	const setup = (state = {}) => {
+	const setup = (state = {}, config = {}) => {
+		const { embed = false } = config;
 		const initialState = {
 			media: {
 				portrait: false,
-				minWidth: true
+				minWidth: true,
+				embed: false
 			},
 			...state
 		};
 
 		TestUtils.setupStoreAndDi(initialState);
-		$injector.registerSingleton('EnvironmentService', {});
+		$injector.registerSingleton('EnvironmentService', {
+			isEmbedded: () => embed
+		});
 		return TestUtils.render(MapButtonsContainer.tag);
 	};
 
@@ -106,6 +110,24 @@ describe('MapButtonsContainer', () => {
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
+		});
+	});
+
+	describe('embedded layout ', () => {
+		it('layouts for not embedded', async () => {
+			const element = await setup({}, { embed: false });
+
+			expect(element.shadowRoot.querySelector('.is-embedded')).toBeFalsy();
+		});
+
+		it('layouts for embedded', async () => {
+			const element = await setup({}, { embed: true });
+
+			expect(element.shadowRoot.querySelector('.is-embedded')).toBeTruthy();
+
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-geolocation-button')).display).toBe('none');
 		});
 	});
 });
