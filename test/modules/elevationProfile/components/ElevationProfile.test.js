@@ -22,11 +22,16 @@ window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
 	const sumUp = 1480.8;
+	const sumUpAfterToLocaleStringEn = '1,480.8 m';
+
 	const sumDown = 1668.6;
+	const sumDownAfterToLocaleStringEn = '1,668.6 m';
+
 	const verticalHeight = 50;
 	const highestPoint = 50;
 	const lowestPoint = 0;
-	const linearDistance = 5;
+	const linearDistance = 5000;
+	const linearDistanceAfterUnitsServiceEn = '5.0 km';
 
 	const _profile = {
 		elevations: [
@@ -175,6 +180,12 @@ describe('ElevationProfile', () => {
 		getValueAsPath: () => {}
 	};
 
+	const unitsServiceMock = {
+		formatDistance: (distance) => {
+			return distance > 100 ? (distance / 1000).toFixed(1) + ' km' : distance + ' m';
+		}
+	};
+
 	const chart = {
 		ctx: {
 			createLinearGradient: () => {
@@ -208,7 +219,8 @@ describe('ElevationProfile', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ConfigService', configService)
-			.registerSingleton('ElevationService', elevationServiceMock);
+			.registerSingleton('ElevationService', elevationServiceMock)
+			.registerSingleton('UnitsService', unitsServiceMock);
 
 		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
 	};
@@ -235,11 +247,6 @@ describe('ElevationProfile', () => {
 
 	describe('class', () => {
 		it('defines constant values', async () => {
-			expect(ElevationProfile.SLOPE_STEEP_THRESHOLD).toBe(2);
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_DARK).toBe('lime');
-			expect(ElevationProfile.SLOPE_FLAT_COLOR_LIGHT).toBe('green');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_DARK).toBe('red');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR_LIGHT).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR_DARK).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BACKGROUND_COLOR_LIGHT).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR_DARK).toBe('rgb(9, 157, 220)');
@@ -351,10 +358,10 @@ describe('ElevationProfile', () => {
 			expect(attrs.value).toBe('alt');
 			expect(profile__box[0].title).toBe('elevationProfile_sumUp');
 			const sumUpElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumUp');
-			expect(sumUpElement.innerText).toBe(sumUp + ' m');
+			expect(sumUpElement.innerText).toBe(sumUpAfterToLocaleStringEn);
 			expect(profile__box[1].title).toBe('elevationProfile_sumDown');
 			const sumDownElement = element.shadowRoot.getElementById('route-elevation-chart-footer-sumDown');
-			expect(sumDownElement.innerText).toBe(sumDown + ' m');
+			expect(sumDownElement.innerText).toBe(sumDownAfterToLocaleStringEn);
 			expect(profile__box[2].title).toBe('elevationProfile_highestPoint');
 			const verticalHeightElement = element.shadowRoot.getElementById('route-elevation-chart-footer-verticalHeight');
 			expect(verticalHeightElement.innerText).toBe(verticalHeight + ' m');
@@ -366,7 +373,7 @@ describe('ElevationProfile', () => {
 			expect(lowestPointElement.innerText).toBe(lowestPoint + ' m');
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
-			expect(linearDistanceElement.innerText).toBe(linearDistance + ' m');
+			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
 		});
 	});
 
@@ -394,7 +401,7 @@ describe('ElevationProfile', () => {
 			const titleRet = config.options.plugins.tooltip.callbacks.title(tooltipItems);
 
 			// assert
-			expect(titleRet).toBe('elevationProfile_distance: 10m');
+			expect(titleRet).toBe('elevationProfile_distance: 10 m');
 		});
 
 		it('calls setCoordinates() with valid coordinates', async () => {
@@ -481,6 +488,39 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_slope: ~ 20 %']);
+		});
+	});
+
+	describe('when tooltip callback "label" is called for attribute surface', () => {
+		it('only shows the surface, no prefix or unit', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const altitudeData = profile();
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(altitudeData);
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+
+			const config = element._chart.config;
+			const tooltipItem = { parsed: { x: 3 } };
+
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'surface';
+			attrs.dispatchEvent(new Event('change'));
+			const chart = element._chart;
+
+			// act
+			const labelRet = config.options.plugins.tooltip.callbacks.label(tooltipItem);
+			element._getBorder(chart, altitudeData);
+
+			// assert
+			expect(labelRet).toEqual(['elevationProfile_alt: 30 m', 'elevationProfile_surface: gravel']);
 		});
 	});
 
@@ -938,8 +978,6 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(true);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('lime');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('rgb(38, 74, 89)');
 			expect(ElevationProfile.BORDER_COLOR).toBe('rgb(9, 157, 220)');
 			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(240, 243, 244)');
@@ -955,8 +993,6 @@ describe('ElevationProfile', () => {
 			setIsDarkSchema(false);
 
 			// assert
-			expect(ElevationProfile.SLOPE_FLAT_COLOR).toBe('green');
-			expect(ElevationProfile.SLOPE_STEEP_COLOR).toBe('red');
 			expect(ElevationProfile.BACKGROUND_COLOR).toBe('#e3eef4');
 			expect(ElevationProfile.BORDER_COLOR).toBe('#2c5a93');
 			expect(ElevationProfile.DEFAULT_TEXT_COLOR).toBe('rgb(92, 106, 112)');
