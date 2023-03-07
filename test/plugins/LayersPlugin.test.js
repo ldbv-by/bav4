@@ -267,7 +267,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(1);
 			});
 
-			it('does NOT add a layer when geoResourceService cannot fullfill', () => {
+			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
 				const queryParam = QueryParameters.LAYER + '=unknown';
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
