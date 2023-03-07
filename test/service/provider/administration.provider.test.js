@@ -17,9 +17,9 @@ describe('Administration provider', () => {
 
 		const coordinateMock = [21, 42];
 
-		it('loads Administration', async () => {
+		it('loads an Administration object', async () => {
 			const backendUrl = 'https://backend.url';
-			const administrationMock = { gemeinde: 'LDBV', gemarkung: 'Ref42' };
+			const administrationMock = { gemeinde: 'gemeinde', gemarkung: 'gemarkung' };
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify(administrationMock))));
 
@@ -27,8 +27,8 @@ describe('Administration provider', () => {
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(administration.gemeinde).toEqual(administrationMock.community);
-			expect(administration.gemarkung).toEqual(administrationMock.district);
+			expect(administration.community).toEqual(administrationMock.gemeinde);
+			expect(administration.district).toEqual(administrationMock.gemarkung);
 		});
 
 		it('throws error when backend request cannot be fulfilled', async () => {

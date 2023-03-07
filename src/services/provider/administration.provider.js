@@ -24,7 +24,7 @@ export const loadBvvAdministration = async (coordinate3857) => {
 
 	switch (result.status) {
 		case 200: {
-			const { gemarkung: community, gemarkung: district } = await result.json();
+			const { gemeinde: community, gemarkung: district } = await result.json();
 			return {
 				community,
 				district
