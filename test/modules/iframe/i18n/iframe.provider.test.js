@@ -7,11 +7,11 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_non_embedded_hint).toBe('Die BayernAtlas Iframe API muss über ein Inlineframe-Element eingebunden werden.');
 		expect(map.iframe_generator_width).toBe('Breite');
 		expect(map.iframe_generator_height).toBe('Höhe');
-		expect(map.iframe_embed_clipboard_success).toBe('Der HTML Code wurde in die Zwischenablage kopiert');
-		expect(map.iframe_embed_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
+		expect(map.iframe_generator_clipboard_success).toBe('Der HTML Code wurde in die Zwischenablage kopiert');
+		expect(map.iframe_generator_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.iframe_generator_toggle_label).toBe('Auto-Anpassungsbreite');
 		expect(map.iframe_generator_toggle_title).toBe('Eingebettete Karte wird sich erweitern, um sich der Breite seines Containers anzupassen.');
-		expect(map.iframe_copy_icon).toBe('In die Zwischenablage kopieren');
+		expect(map.iframe_generator_copy_icon).toBe('In die Zwischenablage kopieren');
 	});
 
 	it('provides translation for en', () => {
@@ -20,11 +20,11 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_non_embedded_hint).toBe('The BayernAtlas Iframe API must be used in an iframe.');
 		expect(map.iframe_generator_width).toBe('Width');
 		expect(map.iframe_generator_height).toBe('Height');
-		expect(map.iframe_embed_clipboard_success).toBe('The HTML code was copied to the clipboard');
-		expect(map.iframe_embed_clipboard_error).toBe('"Copy to clipboard" is not available');
+		expect(map.iframe_generator_clipboard_success).toBe('The HTML code was copied to the clipboard');
+		expect(map.iframe_generator_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.iframe_generator_toggle_label).toBe('Auto-adjustment width');
 		expect(map.iframe_generator_toggle_title).toBe('Embedded map will expand to fit the width of its container.');
-		expect(map.iframe_copy_icon).toBe('Copy to clipboard');
+		expect(map.iframe_generator_copy_icon).toBe('Copy to clipboard');
 	});
 
 	it('have the expected amount of translations', () => {

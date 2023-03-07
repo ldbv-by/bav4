@@ -49,6 +49,27 @@ describe('IFrameGenerator', () => {
 
 			expect(iframeElement.src).toBe('https://myhost/app/embed.html?param=foo');
 		});
+
+		it('shows a textarea with a embedable code', async () => {
+			const element = await setup();
+
+			const textAreaElement = element.shadowRoot.querySelector('textarea');
+
+			expect(textAreaElement.readOnly).toBeTrue();
+			expect(textAreaElement.value).toBe(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
+		});
+
+		it('shows a ba-icon to copy code to clipboard', async () => {
+			const element = await setup();
+
+			const iconElements = element.shadowRoot.querySelectorAll('ba-icon');
+
+			expect(iconElements).toHaveSize(1);
+			expect(iconElements[0].classList.contains('iframe__copy_icon')).toBeTrue();
+			expect(iconElements[0].title).toBe('iframe_generator_copy_icon');
+		});
 	});
 
 	describe('when user requests the iframe code', () => {
@@ -71,7 +92,7 @@ describe('IFrameGenerator', () => {
 			buttonElement.click();
 			await TestUtils.timeout(); //waiting for async ShareAPI call
 
-			expect(store.getState().notifications.latest.payload.content).toBe('iframe_embed_clipboard_success');
+			expect(store.getState().notifications.latest.payload.content).toBe('iframe_generator_clipboard_success');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
@@ -83,7 +104,7 @@ describe('IFrameGenerator', () => {
 			buttonElement.click();
 			await TestUtils.timeout(); //waiting for async ShareAPI call
 
-			expect(store.getState().notifications.latest.payload.content).toBe('iframe_embed_clipboard_error');
+			expect(store.getState().notifications.latest.payload.content).toBe('iframe_generator_clipboard_error');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		});
 	});

@@ -176,12 +176,12 @@ export class IFrameGenerator extends MvuElement {
 			return this._copyValueToClipboard(getEmbedCode());
 		};
 
-		return html`<textarea class="iframe__code_string" type="text" id="iframe_code" name="shareurl" readonly>${getEmbedCode()}</textarea>
+		return html`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" readonly>${getEmbedCode()}</textarea>
 			<ba-icon
 				class="iframe__copy_icon"
 				id="iframe_code_copy"
 				.icon="${clipboardIcon}"
-				.title=${translate('toolbox_copy_icon')}
+				.title=${translate('iframe_generator_copy_icon')}
 				.size=${2}
 				@click=${onCopyHTMLToClipBoard}
 			>
@@ -191,10 +191,10 @@ export class IFrameGenerator extends MvuElement {
 	async _copyValueToClipboard(value) {
 		try {
 			await this._shareService.copyToClipboard(value);
-			emitNotification(`${this._translationService.translate('iframe_embed_clipboard_success')}`, LevelTypes.INFO);
+			emitNotification(`${this._translationService.translate('iframe_generator_clipboard_success')}`, LevelTypes.INFO);
 		} catch (error) {
 			console.warn('Clipboard API not available');
-			emitNotification(`${this._translationService.translate('iframe_embed_clipboard_error')}`, LevelTypes.WARN);
+			emitNotification(`${this._translationService.translate('iframe_generator_clipboard_error')}`, LevelTypes.WARN);
 		}
 	}
 
