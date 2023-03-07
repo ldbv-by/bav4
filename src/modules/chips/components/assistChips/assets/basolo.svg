@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xml:space="preserve"
+   enable-background="new 0 0 566.93 566.93"
+   viewBox="0 0 566.93 566.93"
+   y="0px"
+   x="0px"
+   id="Ebene_5"
+   version="1.1"><metadata
+   id="metadata15"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title></dc:title></cc:Work></rdf:RDF></metadata><defs
+   id="defs13" />
+
+<path
+   id="polygon4"
+   d="m 214.30649,100.80292 -45.00752,52.43126 -34.33598,0.46322 9.27837,47.79387 17.16887,-17.63208 48.72028,24.12764 4.17598,40.83155 21.34308,20.87987 2.32136,34.80096 -37.58376,29.69679 8.35194,64.49423 -32.01638,15.77747 40.33817,34.09462 16.73406,-35.02281 39.90334,19.02349 83.05627,-33.40778 54.11552,26.10826 -23.29886,-66.77477 49.45504,-29.62935 0.46498,-17.86458 24.59264,-0.46321 v -25.98581 l -60.32002,-45.23824 -29.6968,-45.70499 3.71277,-26.44724 -34.33598,-39.90514 h -24.59263 l -13.68861,-17.63209 -13.22363,22.27127 -21.34484,-6.49556 -18.0953,15.77748 z"
+   style="fill:#597b9a;stroke-width:0.90866917" />
+
+
+</svg>
