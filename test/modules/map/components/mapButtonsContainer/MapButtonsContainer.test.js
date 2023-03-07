@@ -114,13 +114,13 @@ describe('MapButtonsContainer', () => {
 	});
 
 	describe('embedded layout ', () => {
-		it('layouts for not embedded', async () => {
+		it('layouts for default mode', async () => {
 			const element = await setup({}, { embed: false });
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(0);
 		});
 
-		it('layouts for embedded', async () => {
+		it('layouts for embedded mode', async () => {
 			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
