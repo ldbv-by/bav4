@@ -31,6 +31,19 @@ describe('Footer', () => {
 		return TestUtils.render(Footer.tag);
 	};
 
+	describe('when instantiated', () => {
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new Footer().getModel();
+
+			expect(model).toEqual({
+				isOpen: false,
+				isPortrait: false,
+				hasMinWidth: false
+			});
+		});
+	});
+
 	describe('responsive layout ', () => {
 		it('layouts with open main menu for landscape mode', async () => {
 			const state = {
