@@ -10,10 +10,16 @@
 	align-items: center;
 	min-height: 100vh;
 }
-.iframe__embed_string {
-	display: flex;
-	align-content: space-evenly;
+.iframe__code_string {
+	margin-top: 0.5em;
+	resize: none;
+	min-height: 6em;
 }
+
+.iframe__copy_icon {
+	padding-left: 0.5em;
+}
+
 .iframe__input {
 	display: flex;
 	align-items: baseline;
@@ -49,6 +55,8 @@ iframe[width='100%'] {
 }
 .iframe__code {
 	width: 100%;
+	display: flex;
+	align-items: center;
 }
 .iframe__toggle {
 	display: flex;

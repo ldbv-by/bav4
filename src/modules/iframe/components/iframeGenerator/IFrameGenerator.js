@@ -3,13 +3,14 @@ import { $injector } from '../../../../injection';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
 import { PathParameters } from '../../../../domain/pathParameters';
-import codeIcon from './assets/code.svg';
+import clipboardIcon from './assets/clipboard.svg';
 import css from './iframegenerator.css';
 import { IFRAME_ENCODED_STATE } from '../../../../utils/markup';
 
 const Update_Size_Width = 'update_size_width';
 const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
+const Update_Preview_Url = 'update_preview_url';
 
 const Auto_Width = '100%';
 const Range_Min = 100;
@@ -25,7 +26,8 @@ export class IFrameGenerator extends MvuElement {
 	constructor() {
 		super({
 			size: [800, 600],
-			autoWidth: false
+			autoWidth: false,
+			previewUrl: null
 		});
 		const {
 			TranslationService: translationService,
@@ -35,6 +37,7 @@ export class IFrameGenerator extends MvuElement {
 		this._translationService = translationService;
 		this._shareService = shareService;
 		this._environmentService = environmentService;
+		this._iframeObserver = null;
 	}
 
 	update(type, data, model) {
@@ -54,7 +57,23 @@ export class IFrameGenerator extends MvuElement {
 					...model,
 					autoWidth: data
 				};
+			case Update_Preview_Url:
+				return { ...model, previewUrl: data };
 		}
+	}
+
+	onAfterRender() {
+		const iframeElement = this.shadowRoot.querySelector('iframe');
+		if (!this._iframeObserver) {
+			const config = { attributes: true, childList: false, subtree: false };
+			this._iframeObserver = new MutationObserver((mutationList) => this._onIFrameChanged(mutationList));
+			this._iframeObserver.observe(iframeElement, config);
+		}
+	}
+
+	onDisconnect() {
+		this._iframeObserver?.disconnect();
+		this._iframeObserver = null;
 	}
 
 	/**
@@ -62,7 +81,7 @@ export class IFrameGenerator extends MvuElement {
 	 */
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { size, autoWidth } = model;
+		const { size, autoWidth, previewUrl } = model;
 		const [width, height] = size;
 
 		const onChangeWidth = (event) => {
@@ -119,7 +138,7 @@ export class IFrameGenerator extends MvuElement {
 				</div>
 				</div>
 				<div class='iframe__controls-section'>
-				<div class='iframe__code'>${this._getEmbedContent(currentWidth, height)}</div>
+				<div class='iframe__code'>${this._getEmbedContent(currentWidth, height, previewUrl)}</div>
 				</div>
 				</div>
 			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
@@ -127,12 +146,20 @@ export class IFrameGenerator extends MvuElement {
         `;
 	}
 
+	_onIFrameChanged(mutationList) {
+		for (const mutation of mutationList) {
+			if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
+				this.signal(Update_Preview_Url, mutation.target.getAttribute(IFRAME_ENCODED_STATE));
+			}
+		}
+	}
+
 	_getIFrameContent(width, height) {
-		const previewUrl = this._shareService.encodeState([], [PathParameters.EMBED]);
+		const iframeSrc = this._shareService.encodeState([], [PathParameters.EMBED]);
 		return html` <div class="iframe__content">
 			<iframe
 				data-iframe-encoded-state
-				src=${previewUrl}
+				src=${iframeSrc}
 				width=${width === Auto_Width ? Auto_Width : width + 'px'}
 				height=${height + 'px'}
 				loading="lazy"
@@ -141,25 +168,29 @@ export class IFrameGenerator extends MvuElement {
 		</div>`;
 	}
 
-	_getEmbedContent(width, height) {
+	_getEmbedContent(width, height, previewUrl) {
 		const translate = (key) => this._translationService.translate(key);
 
-		const onCopyHTMLToClipBoard = async () => {
-			const previewUrl = this._getEmbeddedEncodedState();
-
-			const embedString = `<iframe src=${previewUrl} width='${width === Auto_Width ? Auto_Width : width + 'px'}' height='${
-				height + 'px'
-			}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
-			return this._copyValueToClipboard(embedString);
+		const getEmbedCode = () => {
+			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState([], [PathParameters.EMBED])} width='${
+				width === Auto_Width ? Auto_Width : width + 'px'
+			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 		};
 
-		return html`<ba-button
-			id="iframe-button"
-			.label=${translate('iframe_generate_code_label')}
-			.icon=${codeIcon}
-			.type=${'primary'}
-			@click=${onCopyHTMLToClipBoard}
-		></ba-button>`;
+		const onCopyHTMLToClipBoard = async () => {
+			return this._copyValueToClipboard(getEmbedCode());
+		};
+
+		return html`<textarea class="iframe__code_string" type="text" id="iframe_code" name="shareurl" readonly>${getEmbedCode()}</textarea>
+			<ba-icon
+				class="iframe__copy_icon"
+				id="iframe_code_copy"
+				.icon="${clipboardIcon}"
+				.title=${translate('toolbox_copy_icon')}
+				.size=${2}
+				@click=${onCopyHTMLToClipBoard}
+			>
+			</ba-icon>`;
 	}
 
 	async _copyValueToClipboard(value) {
@@ -167,16 +198,9 @@ export class IFrameGenerator extends MvuElement {
 			await this._shareService.copyToClipboard(value);
 			emitNotification(`${this._translationService.translate('iframe_embed_clipboard_success')}`, LevelTypes.INFO);
 		} catch (error) {
-			emitNotification(this._translationService.translate('iframe_embed_clipboard_error'), LevelTypes.WARN);
 			console.warn('Clipboard API not available');
+			emitNotification(`${this._translationService.translate('iframe_embed_clipboard_error')}`, LevelTypes.WARN);
 		}
-	}
-
-	_getEmbeddedEncodedState() {
-		const iframeElement = this.shadowRoot.querySelector('iframe');
-		const encodedState = iframeElement?.getAttribute(IFRAME_ENCODED_STATE);
-
-		return encodedState ? encodedState : this._shareService.encodeState([], [PathParameters.EMBED]);
 	}
 
 	static get tag() {

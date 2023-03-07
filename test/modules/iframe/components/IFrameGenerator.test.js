@@ -47,7 +47,8 @@ describe('IFrameGenerator', () => {
 			const model = element.getModel();
 			expect(model).toEqual({
 				size: [800, 600],
-				autoWidth: false
+				autoWidth: false,
+				previewUrl: null
 			});
 		});
 	});
@@ -71,7 +72,7 @@ describe('IFrameGenerator', () => {
 			const element = await setup();
 			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const buttonElement = element.shadowRoot.querySelector('#iframe_code_copy');
 			buttonElement.click();
 
 			expect(clipboardSpy).toHaveBeenCalledWith(
@@ -82,7 +83,7 @@ describe('IFrameGenerator', () => {
 		it('notifies about successfully copied to clipboard', async () => {
 			const element = await setup();
 
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const buttonElement = element.shadowRoot.querySelector('#iframe_code_copy');
 			buttonElement.click();
 			await TestUtils.timeout(); //waiting for async ShareAPI call
 
@@ -94,7 +95,7 @@ describe('IFrameGenerator', () => {
 			const element = await setup();
 			spyOn(shareServiceMock, 'copyToClipboard').and.throwError();
 
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const buttonElement = element.shadowRoot.querySelector('#iframe_code_copy');
 			buttonElement.click();
 			await TestUtils.timeout(); //waiting for async ShareAPI call
 
@@ -106,166 +107,137 @@ describe('IFrameGenerator', () => {
 	describe('when input values for size changes', () => {
 		it('renders iframe with the changed values', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
-
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
 			const heightInputElement = element.shadowRoot.querySelector('#iframe_height');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
 			expect(iframeElement.width).toBe('800px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing width
 			widthInputElement.value = 42;
 			widthInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.width).toBe('42px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing height
 			heightInputElement.value = 420;
 			heightInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.height).toBe('420px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 		});
 
 		it('renders iframe with the changed slider values', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
-
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
 			const heightInputElement = element.shadowRoot.querySelector('#iframe_slider_height');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
 			expect(iframeElement.width).toBe('800px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing width
 			widthInputElement.value = 210;
 			widthInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.width).toBe('210px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing height
 			heightInputElement.value = 420;
 			heightInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.height).toBe('420px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 		});
 
 		it('renders iframe with the min slider values', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
-
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
 			const heightInputElement = element.shadowRoot.querySelector('#iframe_slider_height');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
 			expect(iframeElement.width).toBe('800px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing width
 			widthInputElement.value = 42;
 			widthInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.width).toBe('100px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing height
 			heightInputElement.value = 42;
 			heightInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.height).toBe('100px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='100px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 		});
 
 		it('renders iframe with the max slider values', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
 			const heightInputElement = element.shadowRoot.querySelector('#iframe_slider_height');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			// init values
 			expect(iframeElement.width).toBe('800px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing width
 			widthInputElement.value = 3000;
 			widthInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.width).toBe('2000px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			// changing height
 			heightInputElement.value = 3000;
 			heightInputElement.dispatchEvent(new Event('input'));
 
 			expect(iframeElement.height).toBe('2000px');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='2000px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 		});
 
 		it('toggles auto width', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
-
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
 
@@ -273,8 +245,7 @@ describe('IFrameGenerator', () => {
 
 			expect(widthInputElement.value).toBe('');
 			expect(iframeElement.width).toBe('100%');
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
 
@@ -282,30 +253,27 @@ describe('IFrameGenerator', () => {
 
 			expect(widthInputElement.value).toBe('800');
 			expect(iframeElement.width).toBe('800px');
+			expect(textElement.value).toBe(
+				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+			);
 		});
 	});
 
 	describe('when iframe source changes by user interaction (drag&zoom)', () => {
 		it('renders iframe with the changed values', async () => {
 			const element = await setup();
-			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
-			const buttonElement = element.shadowRoot.querySelector('#iframe-button');
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
-			// init values
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
+			expect(textElement.value).toBe(
 				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
 			);
-			clipboardSpy.calls.reset();
 
 			iframeElement.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+			await TestUtils.timeout();
 
-			buttonElement.click();
-			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
-			);
+			expect(textElement.value).toBe("<iframe src=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>");
 		});
 	});
 });
