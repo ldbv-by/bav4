@@ -1,6 +1,6 @@
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
-import { findAllByAttribute, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
+import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';
 import { calculateVisibleViewport } from '../utils/viewport';
 import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
 
@@ -143,7 +143,7 @@ export class MapService {
 	 * @returns {ViewportPadding}
 	 */
 	getVisibleViewport(mapElement) {
-		const overlappingElements = findAllByAttribute(document, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME);
+		const overlappingElements = findAllBySelector(document, `[${REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME}]`);
 		const visibleRectangle = calculateVisibleViewport(mapElement, overlappingElements);
 
 		const baseRectangle = mapElement.getBoundingClientRect();
