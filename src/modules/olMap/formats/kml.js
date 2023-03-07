@@ -114,8 +114,3 @@ export const create = (layer, projection) => {
 	}
 	return kmlString;
 };
-
-export const readFeatures = (kmlString) => {
-	const format = new KML({ writeStyles: true });
-	return format.readFeatures(kmlString);
-};
