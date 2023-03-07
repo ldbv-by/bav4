@@ -46,10 +46,10 @@ describe('MapButtonsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('block');
@@ -65,10 +65,10 @@ describe('MapButtonsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(0);
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
@@ -84,10 +84,10 @@ describe('MapButtonsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
@@ -103,10 +103,10 @@ describe('MapButtonsContainer', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('.is-portrait')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('.is-landscape')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-desktop')).toBeFalsy();
-			expect(element.shadowRoot.querySelector('.is-tablet')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-desktop')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-tablet')).toHaveSize(1);
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
@@ -117,13 +117,13 @@ describe('MapButtonsContainer', () => {
 		it('layouts for not embedded', async () => {
 			const element = await setup({}, { embed: false });
 
-			expect(element.shadowRoot.querySelector('.is-embedded')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(0);
 		});
 
 		it('layouts for embedded', async () => {
 			const element = await setup({}, { embed: true });
 
-			expect(element.shadowRoot.querySelector('.is-embedded')).toBeTruthy();
+			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
 
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-zoom-buttons')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('ba-extent-button')).display).toBe('none');
