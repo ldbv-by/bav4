@@ -1,5 +1,5 @@
-import { IFrameGenerator } from './IFrameGenerator';
+import { IframeGenerator } from './IframeGenerator';
 
-if (!window.customElements.get(IFrameGenerator.tag)) {
-	window.customElements.define(IFrameGenerator.tag, IFrameGenerator);
+if (!window.customElements.get(IframeGenerator.tag)) {
+	window.customElements.define(IframeGenerator.tag, IframeGenerator);
 }

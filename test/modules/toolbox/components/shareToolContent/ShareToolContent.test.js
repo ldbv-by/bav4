@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { IFrameGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IFrameGenerator';
+import { IframeGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
 import { isTemplateResultOf } from '../../../../../src/utils/checks';
 
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
@@ -276,7 +276,7 @@ describe('ShareToolContent', () => {
 
 				await TestUtils.timeout();
 				expect(store.getState().modal.data.title).toBe('BayernAtlas-IFrame');
-				expect(isTemplateResultOf(store.getState().modal.data.content, IFrameGenerator.tag)).toBeTrue();
+				expect(isTemplateResultOf(store.getState().modal.data.content, IframeGenerator.tag)).toBeTrue();
 			});
 		});
 	});

@@ -1,15 +1,15 @@
 import { $injector } from '../../../../src/injection';
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
-import { IFrameGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IFrameGenerator';
+import { IframeGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(IFrameGenerator.tag, IFrameGenerator);
+window.customElements.define(IframeGenerator.tag, IframeGenerator);
 window.customElements.define(Toggle.tag, Toggle);
 
-describe('IFrameGenerator', () => {
+describe('IframeGenerator', () => {
 	let store;
 
 	const shareServiceMock = {
@@ -20,7 +20,7 @@ describe('IFrameGenerator', () => {
 	const setup = () => {
 		store = TestUtils.setupStoreAndDi({ notifications: { latest: null } }, { notifications: notificationReducer });
 		$injector.registerSingleton('ShareService', shareServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(IFrameGenerator.tag);
+		return TestUtils.render(IframeGenerator.tag);
 	};
 
 	describe('when instantiated', () => {

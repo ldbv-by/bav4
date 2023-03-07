@@ -22,7 +22,7 @@ const Range_Max = 2000;
  * @author thiloSchlemmer
  * @author alsturm
  */
-export class IFrameGenerator extends MvuElement {
+export class IframeGenerator extends MvuElement {
 	constructor() {
 		super({
 			size: [800, 600],
