@@ -29,14 +29,9 @@ export class IFrameGenerator extends MvuElement {
 			autoWidth: false,
 			previewUrl: null
 		});
-		const {
-			TranslationService: translationService,
-			ShareService: shareService,
-			EnvironmentService: environmentService
-		} = $injector.inject('TranslationService', 'ShareService', 'EnvironmentService');
+		const { TranslationService: translationService, ShareService: shareService } = $injector.inject('TranslationService', 'ShareService');
 		this._translationService = translationService;
 		this._shareService = shareService;
-		this._environmentService = environmentService;
 		this._iframeObserver = null;
 	}
 
@@ -62,9 +57,9 @@ export class IFrameGenerator extends MvuElement {
 		}
 	}
 
-	onAfterRender() {
-		const iframeElement = this.shadowRoot.querySelector('iframe');
-		if (!this._iframeObserver) {
+	onAfterRender(firstTime) {
+		if (firstTime) {
+			const iframeElement = this.shadowRoot.querySelector('iframe');
 			const config = { attributes: true, childList: false, subtree: false };
 			this._iframeObserver = new MutationObserver((mutationList) => this._onIFrameChanged(mutationList));
 			this._iframeObserver.observe(iframeElement, config);
