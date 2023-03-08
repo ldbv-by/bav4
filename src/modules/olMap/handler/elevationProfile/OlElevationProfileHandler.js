@@ -8,7 +8,7 @@ import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
 const Empty_Elevation_Profile_Coordinates = [];
-export class ElevationProfileHandler extends OlMapHandler {
+export class OlElevationProfileHandler extends OlMapHandler {
 	constructor() {
 		super('Elevation_Profile_Handler');
 
