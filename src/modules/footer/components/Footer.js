@@ -59,18 +59,11 @@ export class Footer extends MvuElement {
 	/**
 	 * @override
 	 */
-	isRenderingSkipped() {
-		return this._environmentService.isEmbedded();
-	}
-
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { isOpen, isPortrait, hasMinWidth } = model;
 
 		const getOverlayClass = () => {
-			return isOpen && !isPortrait ? 'is-open' : '';
+			return isOpen && !isPortrait && !this._environmentService.isEmbedded() ? 'is-open' : '';
 		};
 
 		const getOrientationClass = () => {
@@ -79,6 +72,10 @@ export class Footer extends MvuElement {
 
 		const getMinWidthClass = () => {
 			return hasMinWidth ? 'is-desktop' : 'is-tablet';
+		};
+
+		const isEmbedded = () => {
+			return this._environmentService.isEmbedded() ? 'is-embedded' : '';
 		};
 
 		const createChildrenView = () => {
@@ -90,7 +87,7 @@ export class Footer extends MvuElement {
 				${css}
 			</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()}">
+				<div class="${getOrientationClass()} ${getMinWidthClass()} ${isEmbedded()}">
 					<div class="footer ${getOverlayClass()}">
 						<div class="scale"></div>
 						<ba-attribution-info></ba-attribution-info>
