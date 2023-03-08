@@ -45,18 +45,19 @@ export class ElevationProfileHandler extends OlMapHandler {
 		observe(
 			this._storeService.getStore(),
 			(state) => state.elevationProfile.active,
-			(active) => this._eventuallyUpdateCoordinates(active)
+			(active) => this._updateSelectCoordinatesOnClose(active)
 		);
 	}
 
-	_eventuallyUpdateCoordinates(active) {
+	_updateSelectCoordinatesOnClose(active) {
+		const isClosed = !active;
 		const select = this._map
 			.getInteractions()
 			.getArray()
 			.find((interaction) => interaction instanceof Select);
-		const selectedFeatures = select.getFeatures();
-		if (!active && selectedFeatures.getLength() === 1) {
-			const coordinates = this._getCoordinates(selectedFeatures);
+		const coordinates = select ? this._getCoordinates(select.getFeatures()) : Empty_Elevation_Profile_Coordinates;
+
+		if (isClosed && coordinates !== Empty_Elevation_Profile_Coordinates) {
 			updateCoordinates(coordinates);
 		}
 	}
