@@ -1,7 +1,7 @@
 .chips__button {
 	position: absolute;
 	padding: 0.3em 0.5em;
-	font-size: 1rem;
+	font-size: 0.9rem;
 	top: 1em;
 	left: 1em;
 	border: 1px solid var(--primary-color);
@@ -22,10 +22,20 @@
 	color: var(--text1);
 	font-weight: bold;
 	margin: auto 0.5em;
+	margin-left: 2em;
+	padding: 0.3em;
 }
 .chips__button:hover {
 	border: 1px solid var(--secondary-color);
 }
 .chips__button:hover .chips__button-text {
 	color: var(--secondary-color);
+}
+.chips__icon {
+	position: absolute;
+	height: 2.5em;
+	width: 2.5em;
+	left: 0.1em;
+	top: 0;
+	background: var(--primary-color);
 }
