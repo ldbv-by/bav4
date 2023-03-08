@@ -10,7 +10,8 @@ export const provide = (lang) => {
 				iframe_generator_clipboard_error: '"Copy to clipboard" is not available',
 				iframe_generator_toggle_label: 'Auto-adjustment width',
 				iframe_generator_toggle_title: 'Embedded map will expand to fit the width of its container.',
-				iframe_generator_copy_icon: 'Copy to clipboard'
+				iframe_generator_copy_icon: 'Copy to clipboard',
+				iframe_view_large_map_chip: 'View larger map'
 			};
 
 		case 'de':
@@ -23,7 +24,8 @@ export const provide = (lang) => {
 				iframe_generator_clipboard_error: '"In die Zwischenablage kopieren" steht nicht zur Verfügung',
 				iframe_generator_toggle_label: 'Auto-Anpassungsbreite',
 				iframe_generator_toggle_title: 'Eingebettete Karte wird sich erweitern, um sich der Breite seines Containers anzupassen.',
-				iframe_generator_copy_icon: 'In die Zwischenablage kopieren'
+				iframe_generator_copy_icon: 'In die Zwischenablage kopieren',
+				iframe_view_large_map_chip: 'Große Karte anzeigen'
 			};
 
 		default:

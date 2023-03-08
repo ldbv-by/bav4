@@ -1,5 +1,5 @@
 import { $injector } from '../../../../injection';
-import { AbstractAssistChip } from './AbstractAssistChip';
+import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargeMapChip.css';
@@ -10,7 +10,7 @@ import { PathParameters } from '../../../../domain/pathParameters';
  * @class
  * @author alsturm
  */
-export class ViewLargeMapChip extends AbstractAssistChip {
+export class ViewLargeMapChip extends MvuElement {
 	constructor() {
 		super({});
 		const {
@@ -26,16 +26,9 @@ export class ViewLargeMapChip extends AbstractAssistChip {
 	/**
 	 * @override
 	 */
-	getIcon() {
-		return baSvg;
-	}
-
-	/**
-	 * @override
-	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('chips_assist_view_large_map');
+		return translate('iframe_view_large_map_chip');
 	}
 
 	/**
@@ -48,16 +41,15 @@ export class ViewLargeMapChip extends AbstractAssistChip {
 	/**
 	 * @override
 	 */
-	createView(/*eslint-disable no-unused-vars */ model) {
-		const icon = this.getIcon();
+	createView() {
 		const iconClass = `.chips__icon {
 			height: 1.5em;
 			width: 1.5em;
 			position: relative;
 			top: -.1em;		
 			mask-size:cover;
-			mask : url("${icon}");			
-			-webkit-mask-image : url("${icon}");			
+			mask : url("${baSvg}");			
+			-webkit-mask-image : url("${baSvg}");			
 			-webkit-mask-size:cover;
 			background: var(--secondary-color);
 		}`;

@@ -1,7 +1,6 @@
 import { $injector } from '../../../../src/injection';
-import { ViewLargeMapChip } from '../../../../src/modules/chips/components/assistChips/ViewLargeMapChip';
+import { ViewLargeMapChip } from '../../../../src/modules/iframe/components/viewLargeMapChip/ViewLargeMapChip';
 import { TestUtils } from '../../../test-utils';
-import baSvg from '../../../../src/modules/chips/components/assistChips/assets/ba.svg';
 import { PathParameters } from '../../../../src/domain/pathParameters';
 
 window.customElements.define(ViewLargeMapChip.tag, ViewLargeMapChip);
@@ -30,8 +29,7 @@ describe('ViewLargeMapChip', () => {
 		it('properly implements abstract methods', async () => {
 			const element = await setup();
 
-			expect(element.getLabel()).toBe('chips_assist_view_large_map');
-			expect(element.getIcon()).toBe(baSvg);
+			expect(element.getLabel()).toBe('iframe_view_large_map_chip');
 		});
 	});
 

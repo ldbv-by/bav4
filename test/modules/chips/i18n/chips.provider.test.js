@@ -5,18 +5,16 @@ describe('i18n for chips module', () => {
 		const map = provide('de');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
-		expect(map.chips_assist_view_large_map).toBe('Große Karte anzeigen');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
-		expect(map.chips_assist_view_large_map).toBe('View larger map');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 1;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
