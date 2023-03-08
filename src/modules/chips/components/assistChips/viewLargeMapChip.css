@@ -32,10 +32,9 @@
 }
 .chips__icon {
 	position: absolute;
-	height: 2.5em;
-	width: 2.5em;
-	left: 0.1em;
-	top: 0;
-	background: var(--primary-color);
+	height: 1.7em;
+	width: 1.7em;
+	left: 0.6em;
+	top: 0.3em;
 	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
 }
