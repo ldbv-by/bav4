@@ -2,6 +2,7 @@ import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
+import { observe } from '../../../../utils/storeUtils';
 import { getLineString } from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
@@ -14,12 +15,14 @@ export class ElevationProfileHandler extends OlMapHandler {
 		const { StoreService: storeService } = $injector.inject('StoreService');
 		this._storeService = storeService;
 		this._mapListeners = { select: [], modify: [] };
+		this._map = null;
 	}
 
 	/**
 	 * @override
 	 */
 	register(map) {
+		this._map = map;
 		const interactions = map.getInteractions();
 		interactions.on('add', (e) => {
 			if (e.element instanceof Select) {
@@ -39,6 +42,24 @@ export class ElevationProfileHandler extends OlMapHandler {
 				this._updateListener(InteractionStateType.MODIFY, null);
 			}
 		});
+		observe(
+			this._storeService.getStore(),
+			(state) => state.elevationProfile.active,
+			(active) => this._updateSelectCoordinatesOnClose(active)
+		);
+	}
+
+	_updateSelectCoordinatesOnClose(active) {
+		const isClosed = !active;
+		const select = this._map
+			.getInteractions()
+			.getArray()
+			.find((interaction) => interaction instanceof Select);
+		const coordinates = select ? this._getCoordinates(select.getFeatures()) : Empty_Elevation_Profile_Coordinates;
+
+		if (isClosed && coordinates !== Empty_Elevation_Profile_Coordinates) {
+			updateCoordinates(coordinates);
+		}
 	}
 
 	_getCoordinates(features) {
