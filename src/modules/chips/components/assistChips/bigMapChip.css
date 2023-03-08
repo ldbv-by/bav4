@@ -2,10 +2,9 @@
 	position: absolute;
 	padding: 0.3em 0.5em;
 	font-size: 0.9rem;
-	top: 1em;
-	left: 1em;
+	top: 0.7em;
+	left: 0.7em;
 	border: 1px solid var(--primary-color);
-
 	background: var(--primary-bg-color);
 	display: flex;
 	margin-left: 0;
@@ -29,7 +28,7 @@
 	border: 1px solid var(--secondary-color);
 }
 .chips__button:hover .chips__button-text {
-	color: var(--secondary-color);
+	color: var(--primary-color);
 }
 .chips__icon {
 	position: absolute;
@@ -38,4 +37,5 @@
 	left: 0.1em;
 	top: 0;
 	background: var(--primary-color);
+	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
 }
