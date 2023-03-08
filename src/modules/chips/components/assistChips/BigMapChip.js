@@ -12,12 +12,14 @@ import css from './bigMapChip.css';
 export class BigMapChip extends AbstractAssistChip {
 	constructor() {
 		super({});
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			ShareService: shareService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
+		this._shareService = shareService;
 	}
 
 	/**
@@ -45,13 +47,6 @@ export class BigMapChip extends AbstractAssistChip {
 	/**
 	 * @override
 	 */
-	onClick() {
-		alert('test');
-	}
-
-	/**
-	 * @override
-	 */
 	createView(/*eslint-disable no-unused-vars */ model) {
 		const icon = this.getIcon();
 		const iconClass = `.chips__icon {
@@ -66,15 +61,19 @@ export class BigMapChip extends AbstractAssistChip {
 			background: var(--secondary-color);
 		}`;
 
+		const getHref = () => {
+			return this._shareService.encodeState();
+		};
+
 		return this.isVisible()
 			? html` <style>
 						${iconClass}
 							${css}
 					</style>
-					<button class="chips__button" @click=${() => this.onClick()}>
+					<a class="chips__button" href=${getHref()} target="_blank">
 						<span class="chips__icon"></span>
 						<span class="chips__button-text">${this.getLabel()}</span>
-					</button>`
+					</a>`
 			: nothing;
 	}
 
