@@ -59,13 +59,6 @@ export class Footer extends MvuElement {
 	/**
 	 * @override
 	 */
-	isRenderingSkipped() {
-		// return this._environmentService.isEmbedded();
-	}
-
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { isOpen, isPortrait, hasMinWidth } = model;
 
