@@ -2,14 +2,13 @@ import { $injector } from '../../../../src/injection';
 import { ViewLargeMapChip } from '../../../../src/modules/chips/components/assistChips/ViewLargeMapChip';
 import { TestUtils } from '../../../test-utils';
 import baSvg from '../../../../src/modules/chips/components/assistChips/assets/ba.svg';
+import { PathParameters } from '../../../../src/domain/pathParameters';
 
 window.customElements.define(ViewLargeMapChip.tag, ViewLargeMapChip);
 
 describe('ViewLargeMapChip', () => {
 	const shareServiceMock = {
-		encodeState() {
-			return 'http://this.is.a.url/?forTestCase';
-		}
+		encodeState: () => {}
 	};
 
 	const setup = async (state = {}, config = {}) => {
@@ -38,6 +37,8 @@ describe('ViewLargeMapChip', () => {
 
 	describe('when initialized', () => {
 		it('renders the view', async () => {
+			const expectedUrl = 'http://this.is.a.url/?forTestCase';
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 			const element = await setup();
 
 			expect(element.isVisible()).toBeTrue();
@@ -49,6 +50,7 @@ describe('ViewLargeMapChip', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
+			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		});
 	});
 
