@@ -52,16 +52,14 @@ describe('ViewLargeMapChip', () => {
 			expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
 			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		});
-	});
 
-	describe('embedded layout ', () => {
-		it('layouts for default mode', async () => {
+		it('renders for default mode', async () => {
 			const element = await setup({}, { embed: false });
 
 			expect(element.isVisible()).toBeFalse();
 		});
 
-		it('layouts for embedded mode', async () => {
+		it('renders for embedded mode', async () => {
 			const element = await setup({}, { embed: true });
 
 			expect(element.isVisible()).toBeTrue();
