@@ -1,7 +1,8 @@
 import { $injector } from '../../../../injection';
 import { AbstractAssistChip } from './AbstractAssistChip';
 import baSvg from './assets/basolo.svg';
-// import css from './bigMapChip.css';
+import { html, nothing } from 'lit-html';
+import css from './bigMapChip.css';
 
 /**
  *
@@ -46,6 +47,35 @@ export class BigMapChip extends AbstractAssistChip {
 	 */
 	onClick() {
 		alert('test');
+	}
+
+	/**
+	 * @override
+	 */
+	createView(/*eslint-disable no-unused-vars */ model) {
+		const icon = this.getIcon();
+		const iconClass = `.chips__icon {
+			height: 1.5em;
+			width: 1.5em;
+			position: relative;
+			top: -.1em;		
+			mask-size:cover;
+			mask : url("${icon}");			
+			-webkit-mask-image : url("${icon}");			
+			-webkit-mask-size:cover;
+			background: var(--secondary-color);
+		}`;
+
+		return this.isVisible()
+			? html` <style>
+						${iconClass}
+							${css}
+					</style>
+					<button class="chips__button" @click=${() => this.onClick()}>
+						<span class="chips__icon"></span>
+						<span class="chips__button-text">${this.getLabel()}</span>
+					</button>`
+			: nothing;
 	}
 
 	static get tag() {

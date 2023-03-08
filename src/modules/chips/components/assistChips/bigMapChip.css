@@ -5,4 +5,27 @@
 	top: 1em;
 	left: 1em;
 	border: 1px solid var(--primary-color);
+
+	background: var(--primary-bg-color);
+	display: flex;
+	margin-left: 0;
+	z-index: calc(var(--z-header) + 20);
+	border-radius: 2em;
+	cursor: pointer;
+	text-decoration: none;
+	flex-shrink: 0;
+}
+.chips__button:focus {
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+}
+.chips__button-text {
+	color: var(--text1);
+	font-weight: bold;
+	margin: auto 0.5em;
+}
+.chips__button:hover {
+	border: 1px solid var(--secondary-color);
+}
+.chips__button:hover .chips__button-text {
+	color: var(--secondary-color);
 }
