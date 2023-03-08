@@ -67,7 +67,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OverlayService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlFeatureInfoHandler')).toBe(Injector.SCOPE_PERLOOKUP);
-		expect($injector.getScope('ElevationProfileHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('OlElevationProfileHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlMfpHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		// topic module
