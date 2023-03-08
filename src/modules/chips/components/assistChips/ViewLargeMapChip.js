@@ -1,15 +1,15 @@
 import { $injector } from '../../../../injection';
 import { AbstractAssistChip } from './AbstractAssistChip';
-import baSvg from './assets/basolo.svg';
+import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
-import css from './bigMapChip.css';
+import css from './viewLargeMapChip.css';
 
 /**
  *
  * @class
  * @author alsturm
  */
-export class BigMapChip extends AbstractAssistChip {
+export class ViewLargeMapChip extends AbstractAssistChip {
 	constructor() {
 		super({});
 		const {
@@ -34,7 +34,7 @@ export class BigMapChip extends AbstractAssistChip {
 	 */
 	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		return translate('chips_assist_big_map');
+		return translate('chips_assist_view_large_map');
 	}
 
 	/**
@@ -78,6 +78,6 @@ export class BigMapChip extends AbstractAssistChip {
 	}
 
 	static get tag() {
-		return 'big-map-chip-chip';
+		return 'view-large-map-chip';
 	}
 }
