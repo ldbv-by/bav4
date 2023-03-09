@@ -12,7 +12,10 @@ import {
 	getStats,
 	getPolygonFrom,
 	getAzimuthFrom,
-	getBoundingBoxFrom
+	getBoundingBoxFrom,
+	simplify,
+	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
+	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
@@ -809,5 +812,59 @@ describe('getBoundingBoxFrom', () => {
 		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
 		expect(getBoundingBoxFrom([10, 10], { width: null, height: 4 })).toBeUndefined();
 		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
+	});
+
+	describe('simplify', () => {
+		it('creates a simplified version of a geometry', () => {
+			const simplifiedGeom = simplify(
+				new LineString([
+					[0, 0],
+					[420, 420],
+					[421, 421],
+					[3, 5]
+				]),
+				3,
+				1
+			);
+
+			expect(simplifiedGeom.getCoordinates()).toEqual([
+				[0, 0],
+				[421, 421],
+				[3, 5]
+			]);
+		});
+
+		it('does nothing when coordinates length <= maxCount ', () => {
+			const coordinates = [
+				[0, 0],
+				[420, 420],
+				[421, 421],
+				[3, 5]
+			];
+
+			const simplifiedGeom = simplify(new LineString(coordinates), coordinates.length, 1);
+
+			expect(simplifiedGeom.getCoordinates()).toEqual(coordinates);
+		});
+
+		it('does nothing when argument are not present', () => {
+			const geom = new LineString([
+				[0, 0],
+				[420, 420],
+				[421, 421],
+				[3, 5]
+			]);
+
+			expect(simplify(geom)).toEqual(geom);
+			expect(simplify(geom, 5)).toEqual(geom);
+			expect(simplify(null, 5, 5)).toBeNull();
+		});
+	});
+
+	describe('constants', () => {
+		it('defines constant values', () => {
+			expect(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857).toBe(17.5);
+			expect(PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES).toBe(1000);
+		});
 	});
 });
