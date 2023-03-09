@@ -128,10 +128,10 @@ describe('OlMap', () => {
 			return 'featureInfoHandlerMockId';
 		}
 	};
-	const elevationProfileHandlerMock = {
+	const olElevationProfileHandlerMock = {
 		register() {},
 		get id() {
-			return 'elevationProfileHandlerMockId';
+			return 'olElevationProfileHandlerMockId';
 		}
 	};
 	const mfpHandlerMock = {
@@ -189,7 +189,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlGeolocationHandler', geolocationLayerHandlerMock)
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
-			.registerSingleton('ElevationProfileHandler', elevationProfileHandlerMock)
+			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
@@ -1426,7 +1426,7 @@ describe('OlMap', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
-			expect(element._mapHandler.get('elevationProfileHandlerMockId')).toEqual(elevationProfileHandlerMock);
+			expect(element._mapHandler.get('olElevationProfileHandlerMockId')).toEqual(olElevationProfileHandlerMock);
 		});
 	});
 });

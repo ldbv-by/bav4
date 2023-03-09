@@ -2,7 +2,7 @@ import { OlMeasurementHandler } from '../../../../../src/modules/olMap/handler/m
 import { Point, LineString, Polygon, Geometry } from 'ol/geom';
 import Map from 'ol/Map';
 import View from 'ol/View';
-import { Feature } from 'ol';
+import { Collection, Feature } from 'ol';
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { DrawEvent } from 'ol/interaction/Draw';
 import { MapBrowserEvent } from 'ol';
@@ -32,6 +32,7 @@ import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
+import { Layer } from 'ol/layer';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -430,7 +431,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -450,7 +451,7 @@ describe('OlMeasurementHandler', () => {
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -473,7 +474,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -497,7 +498,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -522,7 +523,7 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue({ getArray: () => [{ get: () => 'a_lastId' }] });
+			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
