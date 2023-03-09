@@ -380,8 +380,7 @@ export class OlMfpHandler extends OlLayerHandler {
 		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 
 		startJob(encodingResult.specs);
-
-		const encodingErrors = encodingResult.errors.filter((e) => e.error === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
+		const encodingErrors = encodingResult.errors.filter((e) => e.type === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 		const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
 		notify();
 	}
@@ -390,9 +389,9 @@ export class OlMfpHandler extends OlLayerHandler {
 		const translate = (key) => this._translationService.translate(key);
 
 		const warningContent = html`<div>
-			<p>${translate('olMap_handler_mfp_encoder_layer_not_exportable')}</p>
-			<ul>
-				${encodingErrors.map((encodingError) => html`<li>${encodingError.layer}</li>`)}
+			<p style="color: var(--text3);">${translate('olMap_handler_mfp_encoder_layer_not_exportable')}</p>
+			<ul style="margin-left:2em;">
+				${encodingErrors.map((encodingError) => html`<li style="color: var(--text3);">${encodingError.label}</li>`)}
 			</ul>
 		</div>`;
 

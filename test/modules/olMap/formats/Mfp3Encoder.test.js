@@ -100,6 +100,7 @@ describe('BvvMfp3Encoder', () => {
 		constructor(type, label, exportable = true) {
 			super(`test_${label}`);
 			this._type = type;
+			this._label = label;
 			this._exportable = exportable;
 		}
 
@@ -355,11 +356,11 @@ describe('BvvMfp3Encoder', () => {
 			const actualEncoded = encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
-			expect(errorSpy).toHaveBeenCalledWith(layerMock, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
+			expect(errorSpy).toHaveBeenCalledWith('[foo]', MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 		});
 
 		it('does NOT encode a layer, if a geoResource is not exportable', () => {
-			const notExportableGeoResource = new TestGeoResource('something', 'something', false);
+			const notExportableGeoResource = new TestGeoResource('something', 'foo label', false);
 
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo')
@@ -371,7 +372,7 @@ describe('BvvMfp3Encoder', () => {
 			const actualEncoded = encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
-			expect(errorSpy).toHaveBeenCalledWith(layerMock, MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
+			expect(errorSpy).toHaveBeenCalledWith('foo label', MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 		});
 
 		it('encodes two layers with attributions', async () => {
@@ -433,7 +434,7 @@ describe('BvvMfp3Encoder', () => {
 				getParams: () => []
 			};
 			const exportableGeoResource = new TestGeoResource(GeoResourceTypes.WMS);
-			const notExportableGeoResource = new TestGeoResource(GeoResourceTypes.WMS, 'something', false);
+			const notExportableGeoResource = new TestGeoResource(GeoResourceTypes.WMS, 'theLabel', false);
 
 			spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo')
@@ -476,8 +477,8 @@ describe('BvvMfp3Encoder', () => {
 					}
 				},
 				errors: [
-					{ layer: 'baz', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
-					{ layer: 'fuzz', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
+					{ label: 'theLabel', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+					{ label: 'theLabel', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
 				]
 			});
 		});

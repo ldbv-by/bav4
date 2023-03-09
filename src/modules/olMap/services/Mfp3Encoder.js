@@ -34,7 +34,7 @@ export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 /**
  * A Container-Object for the results of a encoding operation 
  * @typedef {Object} EncodingError
- * @param {String} layer the id of layer where encoding failed 
+ * @param {String} label the id or the geoResource label of the layer where encoding failed 
  * @param {String} type the error type
  * /
 
@@ -136,8 +136,8 @@ export class BvvMfp3Encoder {
 			});
 
 		const errors = [];
-		const collectErrors = (layer, error) => {
-			errors.push({ layer: layer.get('id'), error: error });
+		const collectErrors = (label, errorType) => {
+			errors.push({ label: label, type: errorType });
 		};
 
 		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
@@ -205,12 +205,12 @@ export class BvvMfp3Encoder {
 		}
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
-			encodingErrorCallback(layer, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
+			encodingErrorCallback(`[${layer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 			return false;
 		}
 
 		if (!geoResource.exportable) {
-			encodingErrorCallback(layer, MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
+			encodingErrorCallback(geoResource.label, MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 			return false;
 		}
 		switch (geoResource.getType()) {

@@ -519,9 +519,9 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			const encodingResult = {
 				errors: [
-					{ layer: 'foo', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
-					{ layer: 'bar', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
-					{ layer: 'baz', error: MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE }
+					{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+					{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+					{ label: 'baz', type: MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE }
 				]
 			};
 
@@ -533,8 +533,8 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(notifySpy).toHaveBeenCalledWith([
-				{ layer: 'foo', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
-				{ layer: 'bar', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
+				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
 			]);
 		});
 	});
@@ -719,8 +719,8 @@ describe('OlMfpHandler', () => {
 		it('notifies about encoder errors', async () => {
 			const store = setup();
 			const errors = [
-				{ layer: 'foo', error: 'something' },
-				{ layer: 'bar', error: 'something' }
+				{ label: 'foo', type: 'something' },
+				{ label: 'bar', type: 'something' }
 			];
 			const classUnderTest = new OlMfpHandler();
 
