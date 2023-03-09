@@ -1,3 +1,4 @@
+import { PathParameters } from '../domain/pathParameters';
 import { $injector } from '../injection';
 import { findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';
 import { observe } from '../utils/storeUtils';
@@ -35,7 +36,7 @@ export class IframeStatePlugin extends BaPlugin {
 	}
 
 	_updateAttribute() {
-		const encodedState = this._shareService.encodeState();
+		const encodedState = this._shareService.encodeState({}, [PathParameters.EMBED]);
 		if (this._currentEncodedState !== encodedState) {
 			this._findIframe()?.setAttribute(IFRAME_ENCODED_STATE, encodedState);
 			this._currentEncodedState = encodedState;
