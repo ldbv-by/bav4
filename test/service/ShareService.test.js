@@ -253,7 +253,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState();
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -275,7 +275,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState(extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}?`)).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -289,7 +289,7 @@ describe('ShareService', () => {
 					const mockWindow = { location: location };
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 					const instanceUnderTest = new ShareService();
-					const pathParameters = ['foo', 'bar'];
+					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
@@ -297,7 +297,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState({}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith(`${location.protocol}//${location.host}${location.pathname}foo/bar?`)).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar/param0/param1?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -305,7 +305,7 @@ describe('ShareService', () => {
 				});
 			});
 
-			describe('for pathname "/some"', () => {
+			describe('for existing pathname', () => {
 				const location = {
 					protocol: 'http:',
 					host: 'foo.bar',
@@ -325,7 +325,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState();
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar/some?')).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -347,7 +347,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState(extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar/some?')).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -361,7 +361,7 @@ describe('ShareService', () => {
 					const mockWindow = { location: location };
 					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
 					const instanceUnderTest = new ShareService();
-					const pathParameters = ['foo', 'bar'];
+					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
 					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
@@ -369,7 +369,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState({}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar/some/foo/bar?')).toBeTrue();
+					expect(encoded.startsWith('http://foo.bar/param0/param1?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
