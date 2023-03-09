@@ -24,6 +24,8 @@ import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMov
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
+import { MFP_ENCODING_ERROR } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
+import { isTemplateResult } from '../../../../../src/utils/checks';
 
 describe('OlMfpHandler', () => {
 	const initialState = {
@@ -58,7 +60,9 @@ describe('OlMfpHandler', () => {
 	};
 
 	const mfpEncoderMock = {
-		encode: async () => {}
+		encode: async () => {
+			return { errors: [] };
+		}
 	};
 
 	const setup = (state = initialState) => {
@@ -507,6 +511,32 @@ describe('OlMfpHandler', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('olMap_handler_mfp_distortion_warning');
 		});
+
+		it('warns about encoding errors after jobRequest', async () => {
+			const map = setupMap();
+			const store = setup();
+
+			const handler = new OlMfpHandler();
+			const encodingResult = {
+				errors: [
+					{ layer: 'foo', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
+					{ layer: 'bar', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
+					{ layer: 'baz', error: MFP_ENCODING_ERROR.MISSING_GEORESOURCE }
+				]
+			};
+
+			const notifySpy = spyOn(handler, '_notifyAboutEncodingErrors').and.callThrough();
+			spyOn(mfpEncoderMock, 'encode').and.resolveTo(encodingResult);
+			handler.activate(map);
+			requestJob();
+
+			await TestUtils.timeout();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(notifySpy).toHaveBeenCalledWith([
+				{ layer: 'foo', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
+				{ layer: 'bar', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE }
+			]);
+		});
 	});
 
 	describe('when deactivate', () => {
@@ -682,6 +712,28 @@ describe('OlMfpHandler', () => {
 			expect(transformSpy).toHaveBeenCalled();
 			expect(rotationSpy).toHaveBeenCalledWith(mapRotation, [0, 0]);
 			expect(mfpBoundary).toBe(cloned);
+		});
+	});
+
+	describe('_notifyAboutEncodingErrors', () => {
+		it('notifies about encoder errors', async () => {
+			const store = setup();
+			const errors = [
+				{ layer: 'foo', error: 'something' },
+				{ layer: 'bar', error: 'something' }
+			];
+			const classUnderTest = new OlMfpHandler();
+
+			classUnderTest._notifyAboutEncodingErrors(errors);
+
+			await TestUtils.timeout();
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
+			expect(store.getState().notifications.latest.payload.content.values[1]).toEqual(jasmine.any(Array));
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content.values[1][0].values).toEqual(['foo']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content.values[1][1].values).toEqual(['bar']);
 		});
 	});
 });

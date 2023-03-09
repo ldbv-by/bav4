@@ -32,6 +32,7 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 portrait',
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 landscape',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 portrait',
+				olMap_handler_mfp_encoder_layer_not_exportable: 'The following layers are not exportable:',
 				olMap_vectorLayerService_default_layer_name_vector: 'Data'
 			};
 
@@ -68,6 +69,7 @@ export const provide = (lang) => {
 				olMap_handler_mfp_id_a4_portrait: 'DIN A4 Hochformat',
 				olMap_handler_mfp_id_a3_landscape: 'DIN A3 Querformat',
 				olMap_handler_mfp_id_a3_portrait: 'DIN A3 Hochformat',
+				olMap_handler_mfp_encoder_layer_not_exportable: 'Die folgenden Ebenen konnten nicht exportiert werden:',
 				olMap_vectorLayerService_default_layer_name_vector: 'Daten'
 			};
 

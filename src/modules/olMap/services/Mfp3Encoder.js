@@ -20,6 +20,11 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
+export const MFP_ENCODING_ERROR = Object.freeze({
+	MISSING_GEORESOURCE: 'missing_georesource',
+	NOT_EXPORTABLE: 'not_exportable'
+});
+
 /**
  * Encoder to create a MapFishPrint request-object from a OpenLayers map-instance
  * @author thiloSchlemmer
@@ -115,13 +120,20 @@ export class BvvMfp3Encoder {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
-		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l));
+
+		const errors = [];
+		const collectErrors = (layer, error) => {
+			errors.push({ layer: layer.get('id'), error: error });
+		};
+
+		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
 		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
+
 		return {
 			layout: this._mfpProperties.layoutId,
 			attributes: {
@@ -136,7 +148,8 @@ export class BvvMfp3Encoder {
 				dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
 				shortLink: shortLinkUrl,
 				qrcodeurl: qrCodeUrl
-			}
+			},
+			errors: errors
 		};
 	}
 
@@ -170,12 +183,18 @@ export class BvvMfp3Encoder {
 		return getUniqueCopyrights(geoResources, getZoomLevel(map));
 	}
 
-	_encode(layer) {
+	_encode(layer, encodingErrorCallback) {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer);
 		}
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
+			encodingErrorCallback(layer, MFP_ENCODING_ERROR.MISSING_GEORESOURCE);
+			return false;
+		}
+
+		if (!geoResource.exportable) {
+			encodingErrorCallback(layer, MFP_ENCODING_ERROR.NOT_EXPORTABLE);
 			return false;
 		}
 		switch (geoResource.getType()) {

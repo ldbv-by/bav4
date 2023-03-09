@@ -3,7 +3,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 
 import { $injector } from '../../../../src/injection';
-import { BvvMfp3Encoder } from '../../../../src/modules/olMap/services/Mfp3Encoder';
+import { BvvMfp3Encoder, MFP_ENCODING_ERROR } from '../../../../src/modules/olMap/services/Mfp3Encoder';
 
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
@@ -97,9 +97,10 @@ describe('BvvMfp3Encoder', () => {
 	};
 
 	class TestGeoResource extends GeoResource {
-		constructor(type, label) {
+		constructor(type, label, exportable = true) {
 			super(`test_${label}`);
 			this._type = type;
+			this._exportable = exportable;
 		}
 
 		/**
@@ -204,7 +205,7 @@ describe('BvvMfp3Encoder', () => {
 		it('requests the corresponding geoResource for a layer', async () => {
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'byId')
 				.withArgs('foo')
-				.and.callFake(() => new TestGeoResource(null, 'something', 'something'));
+				.and.callFake(() => new TestGeoResource(null, 'something'));
 			const encoder = new BvvMfp3Encoder();
 
 			await encoder.encode(mapMock, getProperties());
@@ -349,10 +350,28 @@ describe('BvvMfp3Encoder', () => {
 				.and.callFake(() => null);
 			const encoder = new BvvMfp3Encoder();
 			const layerMock = { get: () => 'foo' };
+			const errorSpy = jasmine.createSpy();
 
-			const actualEncoded = encoder._encode(layerMock, getProperties());
+			const actualEncoded = encoder._encode(layerMock, errorSpy);
 
 			expect(actualEncoded).toBeFalse();
+			expect(errorSpy).toHaveBeenCalledWith(layerMock, MFP_ENCODING_ERROR.MISSING_GEORESOURCE);
+		});
+
+		it('does NOT encode a layer, if a geoResource is not exportable', () => {
+			const notExportableGeoResource = new TestGeoResource('something', 'something', false);
+
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo')
+				.and.callFake(() => notExportableGeoResource);
+			const encoder = new BvvMfp3Encoder();
+			const layerMock = { get: () => 'foo' };
+			const errorSpy = jasmine.createSpy();
+
+			const actualEncoded = encoder._encode(layerMock, errorSpy);
+
+			expect(actualEncoded).toBeFalse();
+			expect(errorSpy).toHaveBeenCalledWith(layerMock, MFP_ENCODING_ERROR.NOT_EXPORTABLE);
 		});
 
 		it('encodes two layers with attributions', async () => {
@@ -397,7 +416,65 @@ describe('BvvMfp3Encoder', () => {
 					dataOwner: 'Bar CopyRight,Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
-				}
+				},
+				errors: []
+			});
+		});
+
+		it('encodes and collect errors', async () => {
+			const tileGrid = {
+				getTileSize: () => 42
+			};
+			const sourceMock = {
+				getTileGrid: () => tileGrid,
+				getUrls: () => ['https://some.url/to/foo/{z}/{x}/{y}'],
+				getParams: () => []
+			};
+			const exportableGeoResource = new TestGeoResource(GeoResourceTypes.WMS);
+			const notExportableGeoResource = new TestGeoResource(GeoResourceTypes.WMS, 'something', false);
+
+			spyOn(geoResourceServiceMock, 'byId')
+				.withArgs('foo')
+				.and.callFake(() => exportableGeoResource)
+				.withArgs('bar')
+				.and.callFake(() => exportableGeoResource)
+				.withArgs('baz')
+				.and.callFake(() => notExportableGeoResource)
+				.withArgs('fuzz')
+				.and.callFake(() => notExportableGeoResource);
+			const encoder = new BvvMfp3Encoder();
+
+			spyOn(mapMock, 'getLayers').and.callFake(() => {
+				return {
+					getArray: () => [
+						{ get: () => 'foo', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'bar', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'baz', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true },
+						{ get: () => 'fuzz', getExtent: () => [20, 20, 50, 50], getSource: () => sourceMock, getOpacity: () => 1, getVisible: () => true }
+					]
+				};
+			});
+			const actualSpec = await encoder.encode(mapMock, getProperties());
+
+			expect(actualSpec).toEqual({
+				layout: 'foo',
+				attributes: {
+					map: {
+						layers: jasmine.any(Array),
+						center: jasmine.any(Array),
+						scale: jasmine.any(Number),
+						projection: 'EPSG:25832',
+						dpi: jasmine.any(Number),
+						rotation: null
+					},
+					dataOwner: jasmine.any(String),
+					shortLink: jasmine.any(String),
+					qrcodeurl: jasmine.any(String)
+				},
+				errors: [
+					{ layer: 'baz', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
+					{ layer: 'fuzz', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE }
+				]
 			});
 		});
 
@@ -446,7 +523,8 @@ describe('BvvMfp3Encoder', () => {
 					dataOwner: 'Baz CopyRight,Bar CopyRight,Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
-				}
+				},
+				errors: []
 			});
 		});
 
@@ -492,7 +570,8 @@ describe('BvvMfp3Encoder', () => {
 					dataOwner: 'Foo CopyRight',
 					shortLink: 'http://url.to/shorten',
 					qrcodeurl: 'http://url.to/shorten.png'
-				}
+				},
+				errors: []
 			});
 		});
 
