@@ -14,7 +14,7 @@ import { equals, getIntersection } from 'ol/extent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { unByKey } from 'ol/Observable';
 import { html } from 'lit-html';
-import { MFP_ENCODING_ERROR } from '../../services/Mfp3Encoder';
+import { MFP_ENCODING_ERROR_TYPE } from '../../services/Mfp3Encoder';
 
 const Points_Per_Inch = 72; // PostScript points 1/72"
 const MM_Per_Inches = 25.4;
@@ -377,11 +377,11 @@ export class OlMfpHandler extends OlLayerHandler {
 		const showGrid = this._storeService.getStore().getState().mfp.showGrid;
 		const pageCenter = this._getVisibleCenterPoint();
 		const encodingProperties = { layoutId: id, scale: scale, rotation: rotation, dpi: dpi, pageCenter: pageCenter, showGrid: showGrid };
-		const { errors, ...specs } = await this._encoder.encode(this._map, encodingProperties);
+		const encodingResult = await this._encoder.encode(this._map, encodingProperties);
 
-		startJob(specs);
+		startJob(encodingResult.specs);
 
-		const encodingErrors = errors.filter((e) => e.error === MFP_ENCODING_ERROR.NOT_EXPORTABLE);
+		const encodingErrors = encodingResult.errors.filter((e) => e.error === MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 		const notify = encodingErrors.length > 0 ? () => this._notifyAboutEncodingErrors(encodingErrors) : () => {};
 		notify();
 	}

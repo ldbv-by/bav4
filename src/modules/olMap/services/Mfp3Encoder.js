@@ -20,7 +20,7 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
-export const MFP_ENCODING_ERROR = Object.freeze({
+export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 	MISSING_GEORESOURCE: 'missing_georesource',
 	NOT_EXPORTABLE: 'not_exportable'
 });
@@ -32,13 +32,27 @@ export const MFP_ENCODING_ERROR = Object.freeze({
  */
 
 /**
+ * A Container-Object for the results of a encoding operation 
+ * @typedef {Object} EncodingError
+ * @param {String} layer the id of layer where encoding failed 
+ * @param {String} type the error type
+ * /
+
+/**
+ * A Container-Object for the results of a encoding operation 
+ * @typedef {Object} EncodingResult
+ * @param {Object} specs the id of a configured mfp template
+ * @param {Array<EncodingError>} errors the collected errors of the encoding operation 
+*/
+
+/**
  * Encodes the content of a ol {@see Map} to a MapFishPrint3 job request.
  * @function
  * @async
  * @name Mfp3Encoder#encode
  * @param {ol.Map} olMap the ol map
  * @param {EncodingProperties} encodingProperties
- * @returns {Object} the encoded mfp specs
+ * @returns {EncodingResult} the result of the encoding operation
  * /
 
 /**
@@ -135,19 +149,21 @@ export class BvvMfp3Encoder {
 		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
 
 		return {
-			layout: this._mfpProperties.layoutId,
-			attributes: {
-				map: {
-					center: mfpCenter.getCoordinates(),
-					scale: this._mfpProperties.scale,
-					projection: this._mfpProjection,
-					dpi: this._mfpProperties.dpi,
-					rotation: this._mfpProperties.rotation,
-					layers: layers
-				},
-				dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
-				shortLink: shortLinkUrl,
-				qrcodeurl: qrCodeUrl
+			specs: {
+				layout: this._mfpProperties.layoutId,
+				attributes: {
+					map: {
+						center: mfpCenter.getCoordinates(),
+						scale: this._mfpProperties.scale,
+						projection: this._mfpProjection,
+						dpi: this._mfpProperties.dpi,
+						rotation: this._mfpProperties.rotation,
+						layers: layers
+					},
+					dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
+					shortLink: shortLinkUrl,
+					qrcodeurl: qrCodeUrl
+				}
 			},
 			errors: errors
 		};
@@ -189,12 +205,12 @@ export class BvvMfp3Encoder {
 		}
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
-			encodingErrorCallback(layer, MFP_ENCODING_ERROR.MISSING_GEORESOURCE);
+			encodingErrorCallback(layer, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
 			return false;
 		}
 
 		if (!geoResource.exportable) {
-			encodingErrorCallback(layer, MFP_ENCODING_ERROR.NOT_EXPORTABLE);
+			encodingErrorCallback(layer, MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 			return false;
 		}
 		switch (geoResource.getType()) {

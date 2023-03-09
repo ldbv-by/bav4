@@ -24,7 +24,7 @@ import { setBeingMoved, setMoveStart as setMapMoveStart, setMoveEnd as setMapMov
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { observe } from '../../../../../src/utils/storeUtils';
 import { simulateMapEvent } from '../../mapTestUtils';
-import { MFP_ENCODING_ERROR } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
+import { MFP_ENCODING_ERROR_TYPE } from '../../../../../src/modules/olMap/services/Mfp3Encoder';
 import { isTemplateResult } from '../../../../../src/utils/checks';
 
 describe('OlMfpHandler', () => {
@@ -519,9 +519,9 @@ describe('OlMfpHandler', () => {
 			const handler = new OlMfpHandler();
 			const encodingResult = {
 				errors: [
-					{ layer: 'foo', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
-					{ layer: 'bar', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
-					{ layer: 'baz', error: MFP_ENCODING_ERROR.MISSING_GEORESOURCE }
+					{ layer: 'foo', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+					{ layer: 'bar', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+					{ layer: 'baz', error: MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE }
 				]
 			};
 
@@ -533,8 +533,8 @@ describe('OlMfpHandler', () => {
 			await TestUtils.timeout();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(notifySpy).toHaveBeenCalledWith([
-				{ layer: 'foo', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE },
-				{ layer: 'bar', error: MFP_ENCODING_ERROR.NOT_EXPORTABLE }
+				{ layer: 'foo', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
+				{ layer: 'bar', error: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
 			]);
 		});
 	});
