@@ -4,8 +4,9 @@ import { QueryParameters } from '../domain/queryParameters';
 
 export class ShareService {
 	constructor() {
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
 		this._environmentService = environmentService;
+		this._configService = configService;
 	}
 
 	/**
@@ -54,10 +55,10 @@ export class ShareService {
 			extraParams
 		);
 
+		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL');
 		const searchParams = new URLSearchParams(extractedState);
-		const location = this._environmentService.getWindow().location;
-		const mergedPathParameters = pathParameters.length ? ['', ...pathParameters] : [];
-		return `${location.protocol}//${location.host}${mergedPathParameters.join('/')}` + '?' + decodeURIComponent(searchParams.toString());
+		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
+		return `${baseUrl}${mergedPathParameters.join('/')}` + '?' + decodeURIComponent(searchParams.toString());
 	}
 
 	/**
