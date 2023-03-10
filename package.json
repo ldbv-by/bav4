@@ -6,7 +6,7 @@
 		"dompurify": "3.0.1",
 		"lit-html": "2.6.1",
 		"ol": "7.3.0",
-		"proj4": "2.8.1",
+		"proj4": "2.9.0",
 		"redux": "4.2.1",
 		"vanilla-swipe": "2.4.1"
 	},
