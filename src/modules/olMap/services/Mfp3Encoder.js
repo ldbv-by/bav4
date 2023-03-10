@@ -41,7 +41,7 @@ export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 /**
  * A Container-Object for the results of a encoding operation 
  * @typedef {Object} EncodingResult
- * @param {Object} specs the id of a configured mfp template
+ * @param {Object} specs the encoded map as a mfp spec
  * @param {Array<EncodingError>} errors the collected errors of the encoding operation 
 */
 
