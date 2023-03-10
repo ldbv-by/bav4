@@ -6,7 +6,7 @@
 		"dompurify": "3.0.1",
 		"lit-html": "2.6.1",
 		"ol": "7.3.0",
-		"proj4": "2.8.1",
+		"proj4": "2.9.0",
 		"redux": "4.2.1",
 		"vanilla-swipe": "2.4.1"
 	},
@@ -42,7 +42,7 @@
 		"stylelint": "15.2.0",
 		"stylelint-config-recommended": "10.0.1",
 		"to-string-loader": "1.2.0",
-		"webpack": "5.75.0",
+		"webpack": "5.76.0",
 		"webpack-bundle-analyzer": "4.8.0",
 		"webpack-cli": "5.0.1",
 		"webpack-dev-server": "4.11.1"

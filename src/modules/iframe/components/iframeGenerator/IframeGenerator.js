@@ -176,7 +176,7 @@ export class IframeGenerator extends MvuElement {
 			return this._copyValueToClipboard(getEmbedCode());
 		};
 
-		return html`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" readonly>${getEmbedCode()}</textarea>
+		return html`<textarea class="iframe__code_string" id="iframe_code" name="iframe_code" .value=${getEmbedCode()} readonly></textarea>
 			<ba-icon
 				class="iframe__copy_icon"
 				id="iframe_code_copy"

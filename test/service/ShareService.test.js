@@ -27,6 +27,9 @@ describe('ShareService', () => {
 	const environmentService = {
 		getWindow: () => {}
 	};
+	const configService = {
+		getValueAsPath: () => {}
+	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
@@ -38,7 +41,8 @@ describe('ShareService', () => {
 			.registerSingleton('CoordinateService', coordinateService)
 			.registerSingleton('MapService', mapService)
 			.registerSingleton('GeoResourceService', geoResourceService)
-			.registerSingleton('EnvironmentService', environmentService);
+			.registerSingleton('EnvironmentService', environmentService)
+			.registerSingleton('ConfigService', configService);
 
 		return store;
 	};
@@ -233,17 +237,12 @@ describe('ShareService', () => {
 		});
 
 		describe('encodeState', () => {
-			describe('for pathname "/"', () => {
-				const location = {
-					protocol: 'http:',
-					host: 'foo.bar',
-					pathname: '/'
-				};
+			const mockFrontendUrl = 'http://frontend.de/';
 
+			describe('for pathname "/"', () => {
 				it('encodes a state object to url', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
@@ -253,7 +252,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState();
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -263,8 +262,7 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
@@ -275,7 +273,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState(extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -286,8 +284,7 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
@@ -297,7 +294,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState({}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar/param0/param1?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/param0/param1?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -306,16 +303,11 @@ describe('ShareService', () => {
 			});
 
 			describe('for existing pathname', () => {
-				const location = {
-					protocol: 'http:',
-					host: 'foo.bar',
-					pathname: '/some'
-				};
+				const mockFrontendUrl = 'http://frontend.de/app/';
 
 				it('encodes a state object to url', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
@@ -325,7 +317,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState();
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -335,8 +327,7 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const extraParam = { foo: 'bar' };
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
@@ -347,7 +338,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState(extraParam);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
@@ -358,8 +349,7 @@ describe('ShareService', () => {
 
 				it('encodes a state object to url appending optional path parameters', () => {
 					setup();
-					const mockWindow = { location: location };
-					spyOn(environmentService, 'getWindow').and.returnValue(mockWindow);
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
 					const instanceUnderTest = new ShareService();
 					const pathParameters = ['param0', 'param1'];
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
@@ -369,7 +359,7 @@ describe('ShareService', () => {
 					const encoded = instanceUnderTest.encodeState({}, pathParameters);
 					const queryParams = new URLSearchParams(new URL(encoded).search);
 
-					expect(encoded.startsWith('http://foo.bar/param0/param1?')).toBeTrue();
+					expect(encoded.startsWith('http://frontend.de/app/param0/param1?')).toBeTrue();
 					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
 					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
 					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
