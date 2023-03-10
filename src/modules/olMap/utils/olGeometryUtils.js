@@ -1,4 +1,4 @@
-import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString } from 'ol/geom';
+import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
@@ -347,8 +347,8 @@ export const PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857 = 17.5; /**In map
 export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted from v3  */
 
 /**
- * Create a simplified version of this geometry.
- * For linestrings, this uses the Douglas Peucker algorithm.
+ * Creates a simplified version of this geometry.
+ * For linestrings it uses the Douglas-Peucker algorithm.
  * For polygons, a quantization-based simplification is used to preserve topology.
  * @param {Geometry} geometry
  * @param {number} maxCount max. count of coordinates on which the geometry won't be simplified
