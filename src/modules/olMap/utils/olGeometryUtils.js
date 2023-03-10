@@ -356,7 +356,7 @@ export const PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES = 1000; /**Adopted 
  * @returns A new, simplified version of the original geometry
  */
 export const simplify = (geometry, maxCount, tolerance) => {
-	if (maxCount && tolerance && geometry?.getCoordinates().length > maxCount) {
+	if (geometry instanceof Geometry && maxCount && tolerance && geometry?.getCoordinates().length > maxCount) {
 		return geometry.simplify(tolerance);
 	}
 	return geometry;

@@ -859,6 +859,12 @@ describe('getBoundingBoxFrom', () => {
 			expect(simplify(geom, 5)).toEqual(geom);
 			expect(simplify(null, 5, 5)).toBeNull();
 		});
+
+		it('does nothing when a geometry is not an ol geometry', () => {
+			const geom = {};
+
+			expect(simplify(geom, 3, 1)).toEqual(geom);
+		});
 	});
 
 	describe('constants', () => {
