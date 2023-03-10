@@ -150,7 +150,7 @@ export class IframeGenerator extends MvuElement {
 	}
 
 	_getIFrameContent(width, height) {
-		const iframeSrc = this._shareService.encodeState([], [PathParameters.EMBED]);
+		const iframeSrc = this._shareService.encodeState({}, [PathParameters.EMBED]);
 		return html` <div class="iframe__content">
 			<iframe
 				data-iframe-encoded-state
@@ -167,7 +167,7 @@ export class IframeGenerator extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const getEmbedCode = () => {
-			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState([], [PathParameters.EMBED])} width='${
+			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState({}, [PathParameters.EMBED])} width='${
 				width === Auto_Width ? Auto_Width : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 		};

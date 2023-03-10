@@ -1,3 +1,4 @@
+import { PathParameters } from '../../../../src/domain/pathParameters';
 import { $injector } from '../../../../src/injection';
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
 import { IframeGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
@@ -13,7 +14,7 @@ describe('IframeGenerator', () => {
 	let store;
 
 	const shareServiceMock = {
-		encodeState: () => 'https://myhost/app/embed.html?param=foo',
+		encodeState: () => {},
 		copyToClipboard() {}
 	};
 
@@ -43,22 +44,28 @@ describe('IframeGenerator', () => {
 		});
 
 		it('specifies correct iframe source', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
-			expect(iframeElement.src).toBe('https://myhost/app/embed.html?param=foo');
+			expect(iframeElement.src).toBe(expectedUrl);
+			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		});
 
 		it('shows a textarea with a embedable code', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 			const element = await setup();
 
 			const textAreaElement = element.shadowRoot.querySelector('textarea');
 
 			expect(textAreaElement.readOnly).toBeTrue();
 			expect(textAreaElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
+			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		});
 
 		it('shows a ba-icon to copy code to clipboard', async () => {
@@ -74,6 +81,8 @@ describe('IframeGenerator', () => {
 
 	describe('when user requests the iframe code', () => {
 		it('copies the example html code to clipboard', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callThrough();
 
@@ -81,7 +90,7 @@ describe('IframeGenerator', () => {
 			buttonElement.click();
 
 			expect(clipboardSpy).toHaveBeenCalledWith(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
@@ -111,6 +120,8 @@ describe('IframeGenerator', () => {
 
 	describe('when input values for size changes', () => {
 		it('renders iframe with the changed values', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
@@ -120,7 +131,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing width
@@ -129,7 +140,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('42px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='42px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
@@ -138,11 +149,13 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('420px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='42px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='42px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
 		it('renders iframe with the changed slider values', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -152,7 +165,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing width
@@ -161,7 +174,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('210px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='210px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
@@ -170,11 +183,13 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('420px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='210px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='210px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
 		it('renders iframe with the min slider values', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const widthInputElement = element.shadowRoot.querySelector('#iframe_slider_width');
@@ -184,7 +199,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing width
@@ -193,7 +208,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('100px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='100px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
@@ -202,11 +217,13 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('100px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='100px' height='100px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='100px' height='100px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
 		it('renders iframe with the max slider values', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -217,7 +234,7 @@ describe('IframeGenerator', () => {
 			// init values
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing width
@@ -226,7 +243,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.width).toBe('2000px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='2000px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
@@ -235,11 +252,13 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('2000px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='2000px' height='2000px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='2000px' height='2000px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
 		it('toggles auto width', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
@@ -251,7 +270,7 @@ describe('IframeGenerator', () => {
 			expect(widthInputElement.value).toBe('');
 			expect(iframeElement.width).toBe('100%');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			toggle.click();
@@ -259,20 +278,22 @@ describe('IframeGenerator', () => {
 			expect(widthInputElement.value).toBe('800');
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 	});
 
 	describe('when iframe source changes by user interaction (drag&zoom)', () => {
 		it('renders iframe with the changed values', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
 
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
 
 			expect(textElement.value).toBe(
-				"<iframe src=https://myhost/app/embed.html?param=foo width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>"
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			iframeElement.setAttribute(IFRAME_ENCODED_STATE, 'foo');

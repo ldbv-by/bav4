@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { PathParameters } from '../../src/domain/pathParameters';
 import { $injector } from '../../src/injection';
 import { MvuElement } from '../../src/modules/MvuElement';
 import { IframeStatePlugin } from '../../src/plugins/IframeStatePlugin';
@@ -60,7 +61,7 @@ describe('IframeState', () => {
 	it('registers postion.zoom change listeners and updates the iframes data attribute', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -70,13 +71,14 @@ describe('IframeState', () => {
 		increaseZoom();
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
 	it('registers postion.center change listeners and updates the window history state', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -86,13 +88,14 @@ describe('IframeState', () => {
 		changeCenter([1, 1]);
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
 	it('registers postion.rotation change listeners and updates the window history state', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -102,13 +105,14 @@ describe('IframeState', () => {
 		changeRotation(1);
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
 	it('registers layers.active change listeners and updates the window history state', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -118,13 +122,14 @@ describe('IframeState', () => {
 		addLayer('some');
 
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
 	it('updates the iframes data attribute in an asynchronous manner after plugin registration is done', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -133,13 +138,14 @@ describe('IframeState', () => {
 
 		await TestUtils.timeout(0);
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
 	it("does nothing when encoded state has'nt changed", async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
-		spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
+		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
@@ -156,6 +162,7 @@ describe('IframeState', () => {
 		// We always return the same encoded state from the ShareService,
 		// so the attribute should be updated only once
 		expect(iframeSpy).toHaveBeenCalledOnceWith(IFRAME_ENCODED_STATE, expectedEncodedState);
+		expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
 		await TestUtils.timeout(0);
 	});
 
