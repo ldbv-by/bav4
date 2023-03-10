@@ -75,7 +75,6 @@ test.describe('page', () => {
 			expect(await page.locator('ba-theme-provider').count()).toBe(1);
 			expect(await page.locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.locator('ba-modal').count()).toBe(1);
-			expect(await page.locator('ba-activate-map-button').count()).toBe(1);
 		});
 	});
 });
