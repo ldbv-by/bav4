@@ -1,7 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { ViewLargeMapChip } from '../../../../src/modules/iframe/components/viewLargeMapChip/ViewLargeMapChip';
 import { TestUtils } from '../../../test-utils';
-import { PathParameters } from '../../../../src/domain/pathParameters';
 
 window.customElements.define(ViewLargeMapChip.tag, ViewLargeMapChip);
 
@@ -25,21 +24,14 @@ describe('ViewLargeMapChip', () => {
 		return element;
 	};
 
-	describe('when instantiated', () => {
-		it('properly implements abstract methods', async () => {
-			const element = await setup();
-
-			expect(element.getLabel()).toBe('iframe_view_large_map_chip');
-		});
-	});
-
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const expectedUrl = 'http://this.is.a.url/?forTestCase';
 			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 			const element = await setup();
 
-			expect(element.isVisible()).toBeTrue();
+			expect(element.shadowRoot.styleSheets.length).toBe(2);
+			expect(element.shadowRoot.styleSheets[1].cssRules.item(0).cssText).toContain('.chips__icon {');
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(1);
 			const link = element.shadowRoot.querySelectorAll('.chips__button');
@@ -48,19 +40,15 @@ describe('ViewLargeMapChip', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
+
 			expect(shareServiceSpy).toHaveBeenCalled();
 		});
 
-		it('renders for default mode', async () => {
+		it('renders nothing when default mode', async () => {
 			const element = await setup({}, { embed: false });
 
-			expect(element.isVisible()).toBeFalse();
-		});
-
-		it('renders for embedded mode', async () => {
-			const element = await setup({}, { embed: true });
-
-			expect(element.isVisible()).toBeTrue();
+			expect(element.shadowRoot.children.length).toBe(0);
 		});
 	});
 });

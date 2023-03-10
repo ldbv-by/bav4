@@ -3,7 +3,6 @@ import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargeMapChip.css';
-// import { PathParameters } from '../../../../domain/pathParameters';
 
 /**
  *
@@ -26,46 +25,28 @@ export class ViewLargeMapChip extends MvuElement {
 	/**
 	 * @override
 	 */
-	getLabel() {
-		const translate = (key) => this._translationService.translate(key);
-		return translate('iframe_view_large_map_chip');
-	}
-
-	/**
-	 * @override
-	 */
-	isVisible() {
-		return this._environmentService.isEmbedded();
-	}
-
-	/**
-	 * @override
-	 */
 	createView() {
-		const iconClass = `.chips__icon {
-			height: 1.5em;
-			width: 1.5em;
-			position: relative;
-			top: -.1em;		
+		const translate = (key) => this._translationService.translate(key);
+
+		const iconClass = `.chips__icon {	
 			mask-size:cover;
 			mask : url("${baSvg}");			
 			-webkit-mask-image : url("${baSvg}");			
-			-webkit-mask-size:cover;
-			background: var(--secondary-color);
+			-webkit-mask-size:cover;			
 		}`;
 
 		const getHref = () => {
 			return this._shareService.encodeState();
 		};
 
-		return this.isVisible()
+		return this._environmentService.isEmbedded()
 			? html` <style>
 						${iconClass}
 							${css}
 					</style>
 					<a class="chips__button" href=${getHref()} target="_blank">
 						<span class="chips__icon"></span>
-						<span class="chips__button-text">${this.getLabel()}</span>
+						<span class="chips__button-text">${translate('iframe_view_large_map_chip')}</span>
 					</a>`
 			: nothing;
 	}

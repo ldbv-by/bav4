@@ -20,12 +20,8 @@
 .chips__button-text {
 	color: var(--text1);
 	font-weight: bold;
-	margin: auto 0.5em;
 	margin-left: 2em;
 	padding: 0.3em;
-}
-.chips__button:hover {
-	border: 1px solid var(--secondary-color);
 }
 .chips__button:hover .chips__button-text {
 	color: var(--primary-color);
