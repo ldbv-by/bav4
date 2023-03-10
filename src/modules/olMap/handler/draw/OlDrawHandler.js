@@ -19,7 +19,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
 import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
-import { create as createKML, readFeatures } from '../../formats/kml';
+import { create as createKML } from '../../formats/kml';
 import {
 	getModifyOptions,
 	getSelectableFeatures,
@@ -49,6 +49,7 @@ import { isString } from '../../../../utils/checks';
 import { hexToRgb } from '../../../../utils/colors';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
+import { KML } from 'ol/format';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -173,7 +174,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
 					 */
 					const data = await vgr.data;
-					const oldFeatures = readFeatures(data);
+					const oldFeatures = new KML().readFeatures(data);
 					const onFeatureChange = (event) => {
 						const geometry = event.target.getGeometry();
 						setGeometryIsValid(isValidGeometry(geometry));

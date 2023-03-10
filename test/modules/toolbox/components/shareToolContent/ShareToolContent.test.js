@@ -3,6 +3,8 @@ import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { IframeGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
+import { isTemplateResultOf } from '../../../../../src/utils/checks';
 
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -238,12 +240,11 @@ describe('ShareToolContent', () => {
 			const checkbox = element.shadowRoot.querySelector('ba-checkbox');
 			const button = element.shadowRoot.querySelector('.preview_button');
 
-			//temp hide iframe
-			expect(window.getComputedStyle(button).display).toBe('none');
+			expect(window.getComputedStyle(button).display).toBe('block');
 			const title = element.shadowRoot.querySelectorAll('.ba-tool-container__title');
-			expect(window.getComputedStyle(title[1]).display).toBe('none');
+			expect(window.getComputedStyle(title[1]).display).toBe('block');
 			const content = element.shadowRoot.querySelectorAll('.ba-tool-container__content');
-			expect(window.getComputedStyle(content[1]).display).toBe('none');
+			expect(window.getComputedStyle(content[1]).display).toBe('block');
 
 			expect(button.disabled).toBeTrue();
 			expect(checkbox.checked).toBeFalse();
@@ -263,6 +264,19 @@ describe('ShareToolContent', () => {
 				checkbox.click();
 
 				expect(button.disabled).toBeTrue();
+			});
+
+			it('opens the modal with IframeGenerator as content', async () => {
+				const element = await setup();
+				const checkbox = element.shadowRoot.querySelector('ba-checkbox');
+				const button = element.shadowRoot.querySelector('.preview_button');
+
+				checkbox.click();
+				button.click();
+
+				await TestUtils.timeout();
+				expect(store.getState().modal.data.title).toBe('BayernAtlas-IFrame');
+				expect(isTemplateResultOf(store.getState().modal.data.content, IframeGenerator.tag)).toBeTrue();
 			});
 		});
 	});

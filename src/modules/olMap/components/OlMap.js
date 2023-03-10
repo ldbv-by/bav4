@@ -46,7 +46,7 @@ export class OlMap extends MvuElement {
 			OlGeolocationHandler: geolocationHandler,
 			OlHighlightLayerHandler: olHighlightLayerHandler,
 			OlFeatureInfoHandler: olFeatureInfoHandler,
-			ElevationProfileHandler: elevationProfileHandler,
+			OlElevationProfileHandler: olElevationProfileHandler,
 			OlMfpHandler: olMfpHandler
 		} = $injector.inject(
 			'MapService',
@@ -59,7 +59,7 @@ export class OlMap extends MvuElement {
 			'OlGeolocationHandler',
 			'OlHighlightLayerHandler',
 			'OlFeatureInfoHandler',
-			'ElevationProfileHandler',
+			'OlElevationProfileHandler',
 			'OlMfpHandler'
 		);
 
@@ -78,7 +78,7 @@ export class OlMap extends MvuElement {
 		]);
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
-			[elevationProfileHandler.id, elevationProfileHandler]
+			[olElevationProfileHandler.id, olElevationProfileHandler]
 		]);
 		this._unsubscribers = [];
 	}

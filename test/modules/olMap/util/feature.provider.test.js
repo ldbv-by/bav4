@@ -71,7 +71,7 @@ describe('feature.provider', () => {
 		expect(expectedFeatures.length).toBe(1);
 	});
 
-	it('logs a warn statement when source could not be loaded', async () => {
+	it('logs an error statement when source could not be loaded', async () => {
 		const kmlUrl = 'https//:some.url';
 		const vectorSourceMock = {
 			getUrl() {
@@ -81,12 +81,12 @@ describe('feature.provider', () => {
 		spyOn(httpService, 'get')
 			.withArgs(kmlUrl, { timeout: 2000 })
 			.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
-		const warnSpy = spyOn(console, 'warn');
+		const errorSpy = spyOn(console, 'error');
 		//we have to bind the mocked vector source
 		const boundLoader = load.bind(vectorSourceMock);
 
 		await boundLoader([], 42, 'EPSG:3857');
 
-		expect(warnSpy).toHaveBeenCalledOnceWith('Source could not be loaded from ' + kmlUrl);
+		expect(errorSpy).toHaveBeenCalledOnceWith('Source could not be loaded: Http-Status 404');
 	});
 });

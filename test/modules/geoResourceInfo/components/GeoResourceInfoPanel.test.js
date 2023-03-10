@@ -74,15 +74,15 @@ describe('GeoResourceInfoPanel', () => {
 			spyOn(geoResourceInfoServiceMock, 'byId')
 				.withArgs('914c9263-5312-453e-b3eb-5104db1bf788')
 				.and.returnValue(Promise.reject('geoResourceInfo error object'));
-			const warnSpy = spyOn(console, 'warn');
+			const errorSpy = spyOn(console, 'error');
 
 			const element = await setup();
 			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
 
 			await TestUtils.timeout();
 			expect(store.getState().notifications.latest.payload.content).toBe('geoResourceInfo_geoResourceInfo_response_error');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-			expect(warnSpy).toHaveBeenCalledWith('geoResourceInfo error object');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledWith('geoResourceInfo error object');
 
 			const spinner = element.shadowRoot.querySelectorAll(Spinner.tag);
 			expect(spinner.length).toBe(1);

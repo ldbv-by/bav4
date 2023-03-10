@@ -85,7 +85,8 @@ export class StoreService {
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
 				ElevationProfilePlugin: elevationProfilePlugin,
-				HistoryStatePlugin: historyStatePlugin
+				HistoryStatePlugin: historyStatePlugin,
+				IframeStatePlugin: iframeStatePlugin
 			} = $injector.inject(
 				'TopicsPlugin',
 				'ChipsPlugin',
@@ -103,7 +104,8 @@ export class StoreService {
 				'SearchPlugin',
 				'ExportMfpPlugin',
 				'ElevationProfilePlugin',
-				'HistoryStatePlugin'
+				'HistoryStatePlugin',
+				'IframeStatePlugin'
 			);
 
 			setTimeout(async () => {
@@ -124,6 +126,7 @@ export class StoreService {
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
+				await iframeStatePlugin.register(this._store);
 				await historyStatePlugin.register(this._store); // should be registered as last plugin
 			});
 		});

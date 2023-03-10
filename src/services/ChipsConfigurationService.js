@@ -33,7 +33,7 @@ export class ChipsConfigurationService {
 					this._configurations.push(...this._newFallbackConfiguration());
 					console.warn('Chips configuration could not be fetched from backend. Using fallback configuration ...');
 				} else {
-					console.error('Chips configuration could not be fetched from backend.', e);
+					throw e;
 				}
 			}
 		}

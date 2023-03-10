@@ -31,7 +31,11 @@ export const _determinePreferredFormat = (arr) => {
  */
 export const bvvCapabilitiesProvider = async (url, options) => {
 	const { isAuthenticated } = options;
-	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const {
+		HttpService: httpService,
+		ConfigService: configService,
+		MapService: mapService
+	} = $injector.inject('HttpService', 'ConfigService', 'MapService');
 	const endpoint = configService.getValueAsPath('BACKEND_URL') + 'wms/getCapabilities';
 
 	const getExtraParams = (capabilities) => {
@@ -56,11 +60,12 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 					.setAuthenticationType(getAuthenticationType(options.isAuthenticated))
 					.setQueryable(layer.queryable)
 					.setExtraParams(getExtraParams(capabilities))
+					// WmsGeoResource should be only exportable if capabilities layer supports geodetic SRID
+					.setExportable(layer.referenceSystems.map((refs) => refs.code).includes(mapService.getDefaultGeodeticSrid()))
 			: null;
 	};
 
 	const readCapabilities = (capabilities) => {
-		const { MapService: mapService } = $injector.inject('MapService');
 		const containsSRID = (layer, srid) => layer.referenceSystems.some((srs) => srs.code === srid);
 		return (
 			capabilities.layers

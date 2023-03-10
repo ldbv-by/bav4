@@ -13,7 +13,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { observe } from '../../../../utils/storeUtils';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { create as createKML, readFeatures } from '../../formats/kml';
+import { create as createKML } from '../../formats/kml';
 import { debounced } from '../../../../utils/timer';
 import { VectorGeoResource, VectorSourceType } from '../../../../domain/geoResources';
 import { saveManualOverlayPosition } from '../../overlayStyle/MeasurementOverlayStyle';
@@ -39,6 +39,7 @@ import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
+import { KML } from 'ol/format';
 
 const Debounce_Delay = 1000;
 
@@ -145,7 +146,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 					 * To preserve the internal logic of this handler, we create a Promise by using 'await' anyway
 					 */
 					const data = await vgr.data;
-					const oldFeatures = readFeatures(data);
+					const oldFeatures = new KML().readFeatures(data);
 					const onFeatureChange = (event) => {
 						const measureGeometry = this._createMeasureGeometry(event.target);
 						this._styleService.updateStyle(event.target, olMap, { geometry: measureGeometry }, StyleTypes.MEASURE);

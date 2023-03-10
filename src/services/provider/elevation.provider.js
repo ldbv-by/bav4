@@ -22,12 +22,10 @@ export const loadBvvElevation = async (coordinate3857) => {
 
 	const result = await httpService.get(`${url}/${coordinate3857[0]}/${coordinate3857[1]}`);
 
-	if (result.ok) {
-		const payload = await result.json();
-		const elevation = payload.z;
-		if (Number.isFinite(elevation)) {
-			return elevation;
-		}
+	switch (result.status) {
+		case 200:
+			return (await result.json()).z;
+		default:
+			throw new Error(`Elevation could not be retrieved: Http-Status ${result.status}`);
 	}
-	throw new Error('Elevation could not be retrieved');
 };

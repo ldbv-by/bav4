@@ -4,7 +4,7 @@ export const requestData = async (term, provider, minQueryLength) => {
 			const result = await provider(term);
 			return result;
 		} catch (error) {
-			console.warn(error.message);
+			console.error(error);
 		}
 	}
 	return [];

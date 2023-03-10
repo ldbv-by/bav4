@@ -5,9 +5,9 @@ import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree 
 import { $injector } from '../../../injection';
 
 import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
-import { nothing } from 'lit-html';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
+import { toLocaleString } from '../../../utils/numberUtils';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -82,12 +82,14 @@ export class ElevationProfile extends MvuElement {
 		const {
 			ConfigService: configService,
 			ElevationService: elevationService,
-			TranslationService: translationService
-		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService');
+			TranslationService: translationService,
+			UnitsService: unitsService
+		} = $injector.inject('ConfigService', 'ElevationService', 'TranslationService', 'UnitsService');
 
 		this._translationService = translationService;
 		this._configService = configService;
 		this._elevationService = elevationService;
+		this._unitsService = unitsService;
 
 		this._drawSelectedAreaBorder = false;
 		this._mouseIsDown = false;
@@ -174,9 +176,6 @@ export class ElevationProfile extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		if (!model.profile) {
-			return nothing;
-		}
 		const sumUp = model.profile?.stats?.sumUp;
 		const sumDown = model.profile?.stats?.sumDown;
 
@@ -216,27 +215,27 @@ export class ElevationProfile extends MvuElement {
 				<div class="profile__data" id="route-altitude-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${sumUp} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${toLocaleString(sumUp)} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${sumDown} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${toLocaleString(sumDown)} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${highestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${toLocaleString(highestPoint)} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
 						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${lowestPoint} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${toLocaleString(lowestPoint)} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
 						<div class="profile__icon height"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${verticalHeight} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-verticalHeight">${toLocaleString(verticalHeight)} m</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_linearDistance')}">
 						<div class="profile__icon distance"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${linearDistance} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-linearDistance">${this._unitsService.formatDistance(linearDistance)}</div>
 					</div>
 				</div>
 			</div>
@@ -260,14 +259,6 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
-		profile.labels = profile.elevations.map((alt) => alt.dist);
-		profile.chartData = profile.elevations.map((alt) => alt.z);
-
-		profile.attrs.forEach((attr) => {
-			this._enrichAltsArrayWithAttributeData(attr, profile);
-		});
-		// add alt(itude) to attribute select
-		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
@@ -281,6 +272,16 @@ export class ElevationProfile extends MvuElement {
 			elevation.alt = elevation.z;
 		});
 		profile.labels = newLabels;
+
+		profile.chartData = profile.elevations.map((elevation) => elevation.z);
+
+		profile.attrs.forEach((attr) => {
+			this._enrichAltsArrayWithAttributeData(attr, profile);
+		});
+
+		// add alt(itude) to attribute select
+		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+
 		return;
 	}
 
@@ -288,8 +289,8 @@ export class ElevationProfile extends MvuElement {
 		const from = profile.elevations[0].dist;
 		const to = profile.elevations[profile.elevations.length - 1].dist;
 
-		const dist = to - from;
-		const distUnit = dist >= 10000 ? 'km' : 'm';
+		const dist = this._unitsService.formatDistance(to - from);
+		const distUnit = dist.includes('km') ? 'km' : 'm';
 		return distUnit;
 	}
 
@@ -446,6 +447,15 @@ export class ElevationProfile extends MvuElement {
 			const index = altitudeData.labels.indexOf(tooltipItem.parsed.x);
 			return altitudeData.elevations[index];
 		};
+		const convertToNumber = (numberOrString) => {
+			if (typeof numberOrString === 'string') {
+				return parseFloat(numberOrString.replace(',', '.'));
+			}
+
+			// If the input is not a string, return the input as-is.
+			return numberOrString;
+		};
+
 		const config = {
 			type: 'line',
 			data: this._getChartData(altitudeData, newDataLabels, newDataData),
@@ -534,32 +544,36 @@ export class ElevationProfile extends MvuElement {
 						callbacks: {
 							title: (tooltipItems) => {
 								const tooltipItem = tooltipItems[0];
-								// set highlight feature
 								const elevationEntry = getElevationEntry(tooltipItem);
 								this.setCoordinates([elevationEntry.e, elevationEntry.n]);
+								const distInM = distUnit === 'km' ? convertToNumber(tooltipItem.label) * 1000 : convertToNumber(tooltipItem.label);
 
-								return translate('elevationProfile_distance') + ': ' + tooltipItem.label + 'm';
+								const dist = this._unitsService.formatDistance(distInM);
+								return translate('elevationProfile_distance') + ': ' + dist;
 							},
 							label: (tooltipItem) => {
 								const retArray = [];
 								const selectedAttribute = this.getModel().selectedAttribute;
-								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
 								const elevationEntry = getElevationEntry(tooltipItem);
-								const attributeValue = elevationEntry[selectedAttribute];
-
+								let attributeValue = elevationEntry[selectedAttribute];
+								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
+								let selectedLabel = selectedAttributeTranslation + ': ';
 								const attribute = altitudeData.attrs.find((attr) => {
 									return attr.id === selectedAttribute;
 								});
-								let label = selectedAttributeTranslation + ': ';
+
+								if (typeof attributeValue !== 'string') {
+									attributeValue = toLocaleString(attributeValue);
+								}
 								if (attribute.prefix) {
-									label += attribute.prefix + ' ' + attributeValue;
+									selectedLabel += attribute.prefix + ' ' + attributeValue;
 								} else {
-									label += attributeValue;
+									selectedLabel += attributeValue;
 								}
 
 								if (selectedAttribute === Default_Selected_Attribute) {
-									label += ' m';
-									return label;
+									selectedLabel += ' m';
+									return selectedLabel;
 								} else {
 									const defaultAttributeTranslation = translate('elevationProfile_' + Default_Selected_Attribute);
 									const defaultAttributeValue = elevationEntry[Default_Selected_Attribute];
@@ -568,10 +582,10 @@ export class ElevationProfile extends MvuElement {
 								}
 
 								if (attribute.unit) {
-									label += ' ' + attribute.unit;
+									selectedLabel += ' ' + attribute.unit;
 								}
+								retArray.push(selectedLabel);
 
-								retArray.push(label);
 								return retArray;
 							}
 						}
@@ -609,40 +623,6 @@ export class ElevationProfile extends MvuElement {
 			media: { darkSchema }
 		} = StoreService.getStore().getState();
 		return darkSchema;
-	}
-
-	static get SLOPE_STEEP_THRESHOLD() {
-		return 2;
-	}
-
-	static get SLOPE_FLAT_COLOR_DARK() {
-		return 'lime';
-	}
-
-	static get SLOPE_FLAT_COLOR_LIGHT() {
-		return 'green';
-	}
-
-	static get SLOPE_FLAT_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.SLOPE_FLAT_COLOR_DARK;
-		}
-		return ElevationProfile.SLOPE_FLAT_COLOR_LIGHT;
-	}
-
-	static get SLOPE_STEEP_COLOR_DARK() {
-		return 'red';
-	}
-
-	static get SLOPE_STEEP_COLOR_LIGHT() {
-		return 'red';
-	}
-
-	static get SLOPE_STEEP_COLOR() {
-		if (ElevationProfile.IS_DARK) {
-			return ElevationProfile.SLOPE_STEEP_COLOR_DARK;
-		}
-		return ElevationProfile.SLOPE_STEEP_COLOR_LIGHT;
 	}
 
 	static get DEFAULT_TEXT_COLOR_DARK() {
