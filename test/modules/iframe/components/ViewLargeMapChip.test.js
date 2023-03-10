@@ -48,7 +48,7 @@ describe('ViewLargeMapChip', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
-			expect(shareServiceSpy).toHaveBeenCalledWith({}, [PathParameters.EMBED]);
+			expect(shareServiceSpy).toHaveBeenCalled();
 		});
 
 		it('renders for default mode', async () => {

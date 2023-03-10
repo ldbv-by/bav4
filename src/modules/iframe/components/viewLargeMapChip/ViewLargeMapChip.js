@@ -3,7 +3,7 @@ import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargeMapChip.css';
-import { PathParameters } from '../../../../domain/pathParameters';
+// import { PathParameters } from '../../../../domain/pathParameters';
 
 /**
  *
@@ -55,7 +55,7 @@ export class ViewLargeMapChip extends MvuElement {
 		}`;
 
 		const getHref = () => {
-			return this._shareService.encodeState({}, [PathParameters.EMBED]);
+			return this._shareService.encodeState();
 		};
 
 		return this.isVisible()
