@@ -727,12 +727,12 @@ describe('OlMfpHandler', () => {
 
 			await TestUtils.timeout(100);
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
-			expect(store.getState().notifications.latest.payload.content.values[1]).toEqual(jasmine.any(Array));
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][0])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[1][0].values).toEqual(['foo']);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][1])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[1][1].values).toEqual(['bar']);
+			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
+			expect(store.getState().notifications.latest.payload.content?.values[1]).toEqual(jasmine.any(Array));
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1][0].values).toEqual(['foo']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1][1].values).toEqual(['bar']);
 		});
 	});
 });
