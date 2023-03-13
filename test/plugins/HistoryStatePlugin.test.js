@@ -49,7 +49,8 @@ describe('HistoryState', () => {
 		const updateHistorySpy = spyOn(instanceUnderTest, '_updateHistory');
 		await instanceUnderTest.register(store);
 
-		await TestUtils.timeout(0);
+		indicateChange();
+
 		expect(updateHistorySpy).not.toHaveBeenCalled();
 	});
 });
