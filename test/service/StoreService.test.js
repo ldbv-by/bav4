@@ -64,6 +64,9 @@ describe('StoreService', () => {
 		const historyStatePluginMock = {
 			register: () => {}
 		};
+		const observeStateForEncodingPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -88,6 +91,7 @@ describe('StoreService', () => {
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 
 				.ready();
 		};
@@ -146,6 +150,7 @@ describe('StoreService', () => {
 			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
+			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -172,6 +177,7 @@ describe('StoreService', () => {
 			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
+			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });
