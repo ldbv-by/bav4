@@ -132,7 +132,7 @@ export class StoreService {
 				await elevationProfilePlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
 				await iframeStatePlugin.register(this._store);
-				await historyStatePlugin.register(this._store); // should be registered as last plugin
+				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});
