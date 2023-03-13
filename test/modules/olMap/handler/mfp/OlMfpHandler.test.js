@@ -725,7 +725,6 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			await TestUtils.timeout(50);
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
 			expect(store.getState().notifications.latest.payload.content?.values[1]).toEqual(jasmine.any(Array));
