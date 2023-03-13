@@ -531,6 +531,7 @@ describe('OlMfpHandler', () => {
 			requestJob();
 
 			await TestUtils.timeout(100);
+			await TestUtils.timeout(100);
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(notifySpy).toHaveBeenCalledWith([
 				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
