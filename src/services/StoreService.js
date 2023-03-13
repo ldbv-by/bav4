@@ -25,6 +25,7 @@ import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
 import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
+import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -62,7 +63,8 @@ export class StoreService {
 			mfp: mfpReducer,
 			bottomSheet: bottomSheetReducer,
 			elevationProfile: elevationProfileReducer,
-			chips: chipsReducer
+			chips: chipsReducer,
+			stateForEncoding: stateForEncodingReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -85,8 +87,9 @@ export class StoreService {
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
 				ElevationProfilePlugin: elevationProfilePlugin,
-				HistoryStatePlugin: historyStatePlugin,
-				IframeStatePlugin: iframeStatePlugin
+				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin,
+				IframeStatePlugin: iframeStatePlugin,
+				HistoryStatePlugin: historyStatePlugin
 			} = $injector.inject(
 				'TopicsPlugin',
 				'ChipsPlugin',
@@ -104,8 +107,9 @@ export class StoreService {
 				'SearchPlugin',
 				'ExportMfpPlugin',
 				'ElevationProfilePlugin',
+				'IframeStatePlugin',
 				'HistoryStatePlugin',
-				'IframeStatePlugin'
+				'ObserveStateForEncodingPlugin'
 			);
 
 			setTimeout(async () => {
@@ -126,8 +130,10 @@ export class StoreService {
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
+				await elevationProfilePlugin.register(this._store);
 				await iframeStatePlugin.register(this._store);
-				await historyStatePlugin.register(this._store); // should be registered as last plugin
+				await historyStatePlugin.register(this._store);
+				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
 		});
 	}

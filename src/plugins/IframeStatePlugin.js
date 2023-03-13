@@ -15,7 +15,6 @@ export class IframeStatePlugin extends BaPlugin {
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');
 		this._environmentService = environmentService;
 		this._shareService = shareService;
-		this._currentEncodedState = null;
 	}
 
 	/**
@@ -27,19 +26,15 @@ export class IframeStatePlugin extends BaPlugin {
 				this._updateAttribute();
 			};
 
-			observe(store, (state) => state.position.zoom, update);
-			observe(store, (state) => state.position.center, update);
-			observe(store, (state) => state.position.rotation, update);
-			observe(store, (state) => state.layers.active, update);
-			setTimeout(update, 0);
+			observe(store, (state) => state.stateForEncoding.changed, update);
 		}
 	}
 
 	_updateAttribute() {
-		const encodedState = this._shareService.encodeState({}, [PathParameters.EMBED]);
-		if (this._currentEncodedState !== encodedState) {
-			this._findIframe()?.setAttribute(IFRAME_ENCODED_STATE, encodedState);
-			this._currentEncodedState = encodedState;
+		const iframeElement = this._findIframe();
+		if (iframeElement) {
+			const encodedState = this._shareService.encodeState({}, [PathParameters.EMBED]);
+			iframeElement.setAttribute(IFRAME_ENCODED_STATE, encodedState);
 		}
 	}
 
