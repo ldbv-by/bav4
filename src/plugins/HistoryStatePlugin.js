@@ -12,7 +12,6 @@ export class HistoryStatePlugin extends BaPlugin {
 		const { EnvironmentService: environmentService, ShareService: shareService } = $injector.inject('EnvironmentService', 'ShareService');
 		this._environmentService = environmentService;
 		this._shareService = shareService;
-		this._currentEncodedState = null;
 	}
 
 	/**
@@ -24,19 +23,12 @@ export class HistoryStatePlugin extends BaPlugin {
 				this._updateHistory();
 			};
 
-			observe(store, (state) => state.position.zoom, updateHistory);
-			observe(store, (state) => state.position.center, updateHistory);
-			observe(store, (state) => state.position.rotation, updateHistory);
-			observe(store, (state) => state.layers.active, updateHistory);
-			setTimeout(updateHistory, 0);
+			observe(store, (state) => state.stateForEncoding.changed, updateHistory);
 		}
 	}
 
 	_updateHistory() {
 		const encodedState = this._shareService.encodeState();
-		if (this._currentEncodedState !== encodedState) {
-			this._environmentService.getWindow().history.replaceState(null, '', encodedState);
-			this._currentEncodedState = encodedState;
-		}
+		this._environmentService.getWindow().history.replaceState(null, '', encodedState);
 	}
 }
