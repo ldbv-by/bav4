@@ -513,8 +513,8 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('warns about encoding errors after jobRequest', async () => {
+			setup();
 			const map = setupMap();
-			const store = setup();
 
 			const handler = new OlMfpHandler();
 			const encodingResult = {
@@ -531,7 +531,6 @@ describe('OlMfpHandler', () => {
 			requestJob();
 
 			await TestUtils.timeout();
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(notifySpy).toHaveBeenCalledWith([
 				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
 				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
@@ -726,14 +725,13 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			await TestUtils.timeout();
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
-			expect(store.getState().notifications.latest.payload.content.values[1]).toEqual(jasmine.any(Array));
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][0])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[1][0].values).toEqual(['foo']);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content.values[1][1])).toBeTrue();
-			expect(store.getState().notifications.latest.payload.content.values[1][1].values).toEqual(['bar']);
+			expect(store.getState().notifications.latest.payload.content?.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
+			expect(store.getState().notifications.latest.payload.content?.values[1]).toEqual(jasmine.any(Array));
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][0])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1][0].values).toEqual(['foo']);
+			expect(isTemplateResult(store.getState().notifications.latest.payload.content?.values[1][1])).toBeTrue();
+			expect(store.getState().notifications.latest.payload.content?.values[1][1].values).toEqual(['bar']);
 		});
 	});
 });
