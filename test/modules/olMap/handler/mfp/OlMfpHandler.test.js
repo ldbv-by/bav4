@@ -513,8 +513,8 @@ describe('OlMfpHandler', () => {
 		});
 
 		it('warns about encoding errors after jobRequest', async () => {
+			setup();
 			const map = setupMap();
-			const store = setup();
 
 			const handler = new OlMfpHandler();
 			const encodingResult = {
@@ -530,9 +530,7 @@ describe('OlMfpHandler', () => {
 			handler.activate(map);
 			requestJob();
 
-			await TestUtils.timeout(100);
-			await TestUtils.timeout(100);
-			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
+			await TestUtils.timeout();
 			expect(notifySpy).toHaveBeenCalledWith([
 				{ label: 'foo', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE },
 				{ label: 'bar', type: MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE }
@@ -727,7 +725,7 @@ describe('OlMfpHandler', () => {
 
 			classUnderTest._notifyAboutEncodingErrors(errors);
 
-			await TestUtils.timeout();
+			await TestUtils.timeout(100);
 			expect(isTemplateResult(store.getState().notifications.latest.payload.content)).toBeTrue();
 			expect(store.getState().notifications.latest.payload.content.values[0]).toBe('olMap_handler_mfp_encoder_layer_not_exportable');
 			expect(store.getState().notifications.latest.payload.content.values[1]).toEqual(jasmine.any(Array));
