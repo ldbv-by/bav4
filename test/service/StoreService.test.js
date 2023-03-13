@@ -99,7 +99,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(25);
+			expect(reducerKeys.length).toBe(26);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -125,6 +125,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
 			expect(reducerKeys.includes('elevationProfile')).toBeTrue();
 			expect(reducerKeys.includes('chips')).toBeTrue();
+			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {

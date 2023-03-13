@@ -25,6 +25,7 @@ import { mfpReducer } from '../store/mfp/mfp.reducer';
 import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
 import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
+import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -62,7 +63,8 @@ export class StoreService {
 			mfp: mfpReducer,
 			bottomSheet: bottomSheetReducer,
 			elevationProfile: elevationProfileReducer,
-			chips: chipsReducer
+			chips: chipsReducer,
+			stateForEncoding: stateForEncodingReducer
 		});
 
 		this._store = createStore(rootReducer);
