@@ -30,7 +30,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		return store;
 	};
 
-	it('registers postion.zoom change listeners and indictate its changes', async () => {
+	it('registers position.zoom change listeners and indictate its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -44,7 +44,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('registers postion.center change listeners and and indictate its changes', async () => {
+	it('registers position.center change listeners and and indictate its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
@@ -58,7 +58,7 @@ describe('ObserveStateForEncodingPlugin', () => {
 		expect(store.getState().encodedState.changed).not.toEqual(initialState.changed);
 	});
 
-	it('registers postion.rotation change listeners and and indictate its changes', async () => {
+	it('registers position.rotation change listeners and and indictate its changes', async () => {
 		const store = setup();
 		spyOn(shareService, 'encodeState').and.callFake(() => {
 			// let's return a different state each call
