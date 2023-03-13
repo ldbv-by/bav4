@@ -1,6 +1,12 @@
 import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
-import { getLineString, getStats } from '../../utils/olGeometryUtils';
+import {
+	getLineString,
+	getStats,
+	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
+	simplify
+} from '../../utils/olGeometryUtils';
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
@@ -25,7 +31,12 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 		fromProjection: 'EPSG:' + mapService.getSrid(),
 		toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid()
 	});
-	const elevationProfileCoordinates = getLineString(olFeature.getGeometry())?.getCoordinates() ?? [];
+	const elevationProfileCoordinates =
+		simplify(
+			getLineString(olFeature.getGeometry()),
+			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
+		)?.getCoordinates() ?? [];
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
 		const geometryContent = html`</div><ba-geometry-info .statistics=${stats}></ba-geometry-info><div class='chips__container'><ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>`;

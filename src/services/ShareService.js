@@ -40,6 +40,7 @@ export class ShareService {
 
 	/**
 	 * Encodes the current state to a URL.
+	 * The generated URL is based on the `FRONTEND_URL` config parameter.
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
 	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks

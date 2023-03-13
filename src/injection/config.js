@@ -47,6 +47,7 @@ import { BvvMfp3Encoder } from '../modules/olMap/services/Mfp3Encoder';
 import { ElevationProfilePlugin } from '../plugins/ElevationProfilePlugin';
 import { ElevationService } from '../services/ElevationService';
 import { IframeStatePlugin } from '../plugins/IframeStatePlugin';
+import { ObserveStateForEncodingPlugin } from '../plugins/ObserveStateForEncodingPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -96,6 +97,7 @@ $injector
 	.registerSingleton('ElevationProfilePlugin', new ElevationProfilePlugin())
 	.registerSingleton('IframeStatePlugin', new IframeStatePlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
+	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)
 	.registerModule(topicsModule)
 	.ready();
