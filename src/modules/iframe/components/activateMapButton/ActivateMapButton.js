@@ -21,9 +21,17 @@ export class ActivateMapButton extends MvuElement {
 		//append common styles
 		const renderCommonStyle = () => {
 			return `
-			body *:not(ba-activate-map-button, ba-ol-map) {
+			body *:not(
+				ba-activate-map-button,
+				ba-ol-map,
+				ba-footer
+				 ) {
 				display: none;
-			}			
+			}	
+			ba-footer{
+				position:absolute;
+				z-index: calc(var(--z-disableall) + 1 );
+			}		
 			`;
 		};
 
