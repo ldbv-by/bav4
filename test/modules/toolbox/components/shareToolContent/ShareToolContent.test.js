@@ -5,7 +5,9 @@ import { Checkbox } from '../../../../../src/modules/commons/components/checkbox
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
 import { isTemplateResultOf } from '../../../../../src/utils/checks';
+import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
 
+window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
 
@@ -170,7 +172,7 @@ describe('ShareToolContent', () => {
 			});
 
 			describe('on share button click', () => {
-				it('opens the modal', async () => {
+				it('opens the modal with shareDialogContent', async () => {
 					const windowMock = {
 						navigator: {}
 					};
@@ -182,6 +184,7 @@ describe('ShareToolContent', () => {
 
 					await TestUtils.timeout();
 					expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
+					expect(isTemplateResultOf(store.getState().modal.data.content, ShareDialogContent.tag)).toBeTrue();
 				});
 			});
 
