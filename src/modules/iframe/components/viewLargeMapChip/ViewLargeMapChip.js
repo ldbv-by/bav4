@@ -4,6 +4,8 @@ import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargeMapChip.css';
 
+const Update_State_For_Encoding = 'update_state_for_encoding';
+
 /**
  *
  * @class
@@ -11,7 +13,9 @@ import css from './viewLargeMapChip.css';
  */
 export class ViewLargeMapChip extends MvuElement {
 	constructor() {
-		super({});
+		super({
+			href: ''
+		});
 		const {
 			EnvironmentService: environmentService,
 			TranslationService: translationService,
@@ -25,7 +29,29 @@ export class ViewLargeMapChip extends MvuElement {
 	/**
 	 * @override
 	 */
-	createView() {
+	onInitialize() {
+		this.observe(
+			(state) => state.stateForEncoding.changed,
+			() => {
+				const encodedState = this._shareService.encodeState();
+				this.signal(Update_State_For_Encoding, encodedState);
+			}
+		);
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_State_For_Encoding:
+				return { ...model, href: data };
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	createView(model) {
+		const { href } = model;
+
 		const translate = (key) => this._translationService.translate(key);
 
 		const iconClass = `.chips__icon {	
@@ -35,16 +61,12 @@ export class ViewLargeMapChip extends MvuElement {
 			-webkit-mask-size:cover;			
 		}`;
 
-		const getHref = () => {
-			return this._shareService.encodeState();
-		};
-
 		return this._environmentService.isEmbedded()
 			? html` <style>
 						${iconClass}
 							${css}
 					</style>
-					<a class="chips__button" href=${getHref()} target="_blank">
+					<a class="chips__button" href=${href} target="_blank">
 						<span class="chips__icon"></span>
 						<span class="chips__button-text">${translate('iframe_view_large_map_chip')}</span>
 					</a>`
