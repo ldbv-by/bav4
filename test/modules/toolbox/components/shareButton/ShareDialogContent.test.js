@@ -51,15 +51,18 @@ describe('ShareDialogContent', () => {
 		const element = await setup();
 		element.shareurls = shareUrls;
 
-		expect(element).toBeTruthy;
+		expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(1);
+		expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
+		expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 	});
 
-	it('renders the sharedUrl', async () => {
+	it('renders the url to share', async () => {
 		const element = await setup();
 		element.shareurls = shareUrls;
-		const shareItems = element.shadowRoot.querySelectorAll('.share_item');
+		const inputElements = element.shadowRoot.querySelectorAll('input');
 
-		expect(shareItems.length).toBe(1);
+		expect(inputElements).toHaveSize(1);
+		expect(inputElements[0].value).toBe(shareUrls.fileId);
 	});
 
 	it('renders the shareApi-Button', async () => {
@@ -194,5 +197,36 @@ describe('ShareDialogContent', () => {
 		expect(store.getState().notifications.latest.payload.content).toBe('toolbox_clipboard_error');
 		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 		expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+	});
+
+	describe('when only one shareUrl is provided', () => {
+		it('renders the component without toggle-button, showing the url to fileID', async () => {
+			const element = await setup();
+			element.shareurls = { ...shareUrls, adminId: null };
+
+			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(shareUrls.fileId);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+		});
+
+		it('renders the component without toggle-button, showing the url to adminID', async () => {
+			const element = await setup();
+			element.shareurls = { ...shareUrls, fileId: null };
+
+			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(shareUrls.adminId);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
+		});
+	});
+
+	describe('when anything except a shareUrl is provided', () => {
+		it('renders nothing', async () => {
+			const element = await setup();
+			element.shareurls = { something: 'something' };
+
+			expect(element.childElementCount).toBe(0);
+		});
 	});
 });

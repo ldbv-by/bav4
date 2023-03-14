@@ -7,6 +7,7 @@ import { emitNotification, LevelTypes } from '../../../../store/notifications/no
 import { MvuElement } from '../../../MvuElement';
 
 const Switch_Toggle = 'switch_toggle';
+const Update_Share_Urls = 'update_share_urls';
 
 /**
  * A content component to show and share perma-links of
@@ -18,7 +19,7 @@ const Switch_Toggle = 'switch_toggle';
  */
 export class ShareDialogContent extends MvuElement {
 	constructor() {
-		super({ checkedToggle: false });
+		super({ checkedToggle: false, shareUrls: null });
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
@@ -27,45 +28,65 @@ export class ShareDialogContent extends MvuElement {
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
-		this._shareUrls = null;
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Switch_Toggle:
 				return { ...model, checkedToggle: data };
+			case Update_Share_Urls:
+				return { ...model, shareUrls: data };
 		}
 	}
 
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { checkedToggle } = model;
+		const { shareUrls } = model;
 
-		if (this._shareUrls) {
-			const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
-
-			const editableContent = this._buildShareItem(this._shareUrls.adminId, useShareApi);
-			const readOnlyContent = this._buildShareItem(this._shareUrls.fileId, useShareApi);
-			const urlContent = checkedToggle === true ? editableContent : readOnlyContent;
-
-			const onToggle = (event) => {
-				this.signal(Switch_Toggle, event.detail.checked);
-			};
-
-			return html` <style>
+		if (shareUrls) {
+			return html`<style>
 					${css}
 				</style>
-				<div class="toggle">
-					<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					<span class="share_copy">${translate('toolbox_measureTool_share_link')}</span>
-				</div>
-				<div class="share_content">${urlContent}</div>`;
+				${this._getToggle(model)}
+				<div class="share_content">${this._getUrlContent(model)}</div>`;
 		}
 
 		return html.nothing;
 	}
 
-	_buildShareItem(url, useShareApi) {
+	_getUrlContent(model) {
+		const { checkedToggle, shareUrls } = model;
+		const getEditableContent = () => this._buildShareItem(shareUrls.adminId);
+		const getReadOnlyContent = () => this._buildShareItem(shareUrls.fileId);
+
+		if (shareUrls.fileId && shareUrls.adminId) {
+			return checkedToggle === true ? getEditableContent() : getReadOnlyContent();
+		}
+		if (shareUrls.adminId) {
+			return getEditableContent();
+		}
+		return getReadOnlyContent();
+	}
+
+	_getToggle(model) {
+		const translate = (key) => this._translationService.translate(key);
+		const { checkedToggle, shareUrls } = model;
+		const isToggleNeeded = shareUrls.fileId && shareUrls.adminId;
+
+		const onToggle = (event) => {
+			this.signal(Switch_Toggle, event.detail.checked);
+		};
+
+		return isToggleNeeded
+			? html`<div class="toggle">
+					<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+					<span class="share_copy">${translate('toolbox_measureTool_share_link')}</span>
+			  </div>`
+			: html.nothing;
+	}
+
+	_buildShareItem(url) {
+		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
+
 		const translate = (key) => this._translationService.translate(key);
 		const onCopyUrlToClipBoard = async () => this._copyValueToClipboard(url);
 
@@ -129,8 +150,8 @@ export class ShareDialogContent extends MvuElement {
 	}
 
 	set shareurls(value) {
-		this._shareUrls = value;
-		this.render();
+		const newUrls = value.fileId || value.adminId ? value : null;
+		this.signal(Update_Share_Urls, newUrls);
 	}
 
 	static get tag() {
