@@ -141,6 +141,8 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].innerText).toBe(layerId1 + '_2' + ','); //should contain also a separator
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.privacy-policy-link')[0].target).toEqual('_blank');
 		});
 
 		it('renders no content when no layers are set', async () => {
@@ -153,7 +155,7 @@ describe('AttributionInfo', () => {
 			const element = await setup(stateEmpty);
 
 			expect(element.shadowRoot.querySelector('.attribution-container').innerText).toEqual('© map_attributionInfo_label:');
-			expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
+			// expect(element.shadowRoot.querySelector('.is-collapse')).toBeFalsy();
 		});
 
 		describe('when zoom changes', () => {

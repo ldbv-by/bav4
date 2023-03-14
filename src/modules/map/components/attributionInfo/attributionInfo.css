@@ -65,3 +65,12 @@
 .is-collapse {
 	display: block;
 }
+.privacy-policy-link {
+	border-top: 1px solid var(--header-background-color);
+	display: none;
+	margin-top: 1em;
+	padding: 0.5em;
+}
+.isopen .privacy-policy-link {
+	display: block;
+}

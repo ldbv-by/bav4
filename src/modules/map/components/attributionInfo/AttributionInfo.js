@@ -14,6 +14,7 @@ const Update_ZoomLevel_Property = 'update_zoomLevel_property';
  * @class
  * @author bakir_en
  * @author taulinger
+ * @author alsturm
  */
 export class AttributionInfo extends MvuElement {
 	constructor() {
@@ -78,10 +79,6 @@ export class AttributionInfo extends MvuElement {
 			isopen: open
 		};
 
-		const getCollapseClass = () => {
-			return attributionTemplates.length > 1 || open ? 'is-collapse' : '';
-		};
-
 		const getTitle = () => {
 			return open ? 'map_attributionInfo_collapse_title_close' : 'map_attributionInfo_collapse_title_open';
 		};
@@ -92,9 +89,10 @@ export class AttributionInfo extends MvuElement {
 			</style>
 			<div class="attribution-container ${classMap(classes)}">
 				© ${translate('map_attributionInfo_label')}: ${attributionTemplates}
-				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
+				<div @click=${toggleVisibilitiy} class="collapse-button is-collapse" title="${translate(getTitle())}">
 					<i class="icon chevron  "></i>
 				</div>
+				<a class="privacy-policy-link" href="${translate('map_privacy_policy_url')}" target="_blank">${translate('map_privacy_policy_link')}</a>
 			</div>
 		`;
 	}

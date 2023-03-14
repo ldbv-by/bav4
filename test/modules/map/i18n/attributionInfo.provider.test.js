@@ -7,6 +7,8 @@ describe('i18n for attribution info', () => {
 		expect(map.map_attributionInfo_label).toBe('Data');
 		expect(map.map_attributionInfo_collapse_title_open).toBe('Show all');
 		expect(map.map_attributionInfo_collapse_title_close).toBe('Close');
+		expect(map.map_privacy_policy_link).toBe('Privacy Policy');
+		expect(map.map_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 	});
 
 	it('provides translation for de', () => {
@@ -15,10 +17,12 @@ describe('i18n for attribution info', () => {
 		expect(map.map_attributionInfo_label).toBe('Daten');
 		expect(map.map_attributionInfo_collapse_title_open).toBe('Alle anzeigen');
 		expect(map.map_attributionInfo_collapse_title_close).toBe('Schließen');
+		expect(map.map_privacy_policy_link).toBe('Datenschutzerklärung');
+		expect(map.map_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 3;
+		const expectedSize = 5;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
