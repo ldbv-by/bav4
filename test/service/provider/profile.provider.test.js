@@ -114,7 +114,7 @@ describe('profile provider', () => {
 			});
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(`${backendUrl}/`);
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON,{
+				.withArgs(`${backendUrl}/dem/profile`, expectedPayload, MediaType.JSON, {
 					timeout: 2000
 				})
 				.and.resolveTo(new Response(JSON.stringify({}), { status: 500 }));
