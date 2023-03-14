@@ -129,7 +129,7 @@ export class ShareToolContent extends AbstractToolContent {
 						return async () => {
 							const shortUrl = await this._generateShortUrl();
 							const title = translate('toolbox_shareTool_share');
-							const content = html`<ba-share-content .shareurls=${{ fileId: shortUrl }}></ba-share-content>`;
+							const content = html`<ba-share-content .urls=${shortUrl}></ba-share-content>`;
 							openModal(title, content);
 						};
 					}

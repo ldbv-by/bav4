@@ -51,14 +51,14 @@ describe('ShareDialogContent', () => {
 		it('has a model with default values', async () => {
 			const element = await setup();
 			const model = element.getModel();
-			expect(model).toEqual({ checkedToggle: false, shareUrls: null });
+			expect(model).toEqual({ checkedToggle: false, url: null, fileSaveUrl: null });
 		});
 	});
 
 	describe('when initialized', () => {
 		it('renders the component', async () => {
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
@@ -67,7 +67,7 @@ describe('ShareDialogContent', () => {
 
 		it('renders the url to share', async () => {
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 			const inputElements = element.shadowRoot.querySelectorAll('input');
 
 			expect(inputElements).toHaveSize(1);
@@ -76,7 +76,7 @@ describe('ShareDialogContent', () => {
 
 		it('renders the shareApi-Button', async () => {
 			const element = await setup({}, { share: true });
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(0);
@@ -84,7 +84,7 @@ describe('ShareDialogContent', () => {
 
 		it('checks the toggle default value to be not checked => false', async () => {
 			const element = await setup({}, { share: true });
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
 
@@ -95,7 +95,7 @@ describe('ShareDialogContent', () => {
 	describe('when toggle is switched', () => {
 		it('shows different urls ', async () => {
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
 
@@ -116,7 +116,7 @@ describe('ShareDialogContent', () => {
 				.withArgs(shareUrls.fileId)
 				.and.returnValue(() => Promise.resolve());
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
 
 			copyButton.click();
@@ -129,7 +129,7 @@ describe('ShareDialogContent', () => {
 				.withArgs(shareUrls.adminId)
 				.and.returnValue(() => Promise.resolve());
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
 			toggleElement.click();
@@ -145,7 +145,7 @@ describe('ShareDialogContent', () => {
 	describe('when ShareApi is missing', () => {
 		it('renders the CopyToClipboard-Button', async () => {
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
@@ -157,7 +157,7 @@ describe('ShareDialogContent', () => {
 			const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.resolve());
 
 			const element = await setup();
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
 
 			copyButton.click();
@@ -173,7 +173,7 @@ describe('ShareDialogContent', () => {
 		it('calls the shareApi', async () => {
 			const element = await setup({}, { share: () => Promise.resolve(true) });
 			const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
-			element.shareurls = shareUrls;
+			element.urls = shareUrls;
 			const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
 
 			shareButton.click();
@@ -188,7 +188,7 @@ describe('ShareDialogContent', () => {
 		const element = await setup({}, { share: () => Promise.resolve(true) });
 		const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
 		const errorSpy = spyOn(console, 'error');
-		element.shareurls = shareUrls;
+		element.urls = shareUrls;
 		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
 
 		shareButton.click();
@@ -202,7 +202,7 @@ describe('ShareDialogContent', () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
 		const warnSpy = spyOn(console, 'warn');
 		const element = await setup();
-		element.shareurls = shareUrls;
+		element.urls = shareUrls;
 		const copyElement = element.shadowRoot.querySelector('.share_item .share_copy');
 
 		copyElement.click();
@@ -215,34 +215,23 @@ describe('ShareDialogContent', () => {
 		expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
 	});
 
-	describe('when only one shareUrl is provided', () => {
-		it('renders the component without toggle-button, showing the url to fileID', async () => {
-			const element = await setup();
-			element.shareurls = { ...shareUrls, adminId: null };
-
-			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(shareUrls.fileId);
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-		});
-
-		it('renders the component without toggle-button, showing the url to adminID', async () => {
-			const element = await setup();
-			element.shareurls = { ...shareUrls, fileId: null };
-
-			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(shareUrls.adminId);
-			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
-		});
-	});
-
-	describe('when anything except a shareUrl is provided', () => {
+	describe('when anything except a FileSaveUrl is provided', () => {
 		it('renders nothing', async () => {
 			const element = await setup();
-			element.shareurls = { something: 'something' };
+			element.urls = { something: 'something' };
 
 			expect(element.childElementCount).toBe(0);
+		});
+
+		it('renders the component without toggle-button, showing the url', async () => {
+			const element = await setup();
+			const url = 'https://v.bayern.de/foobar';
+			element.urls = url;
+
+			expect(element.shadowRoot.querySelectorAll('ba-toggle')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('input')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('input')[0].value).toBe(url);
+			expect(element.shadowRoot.querySelectorAll('ba-icon')).toHaveSize(1);
 		});
 	});
 });

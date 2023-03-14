@@ -5,13 +5,24 @@ import shareIcon from './assets/share.svg';
 import css from './shareDialogContent.css';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { MvuElement } from '../../../MvuElement';
+import { isHttpUrl } from '../../../../utils/checks';
 
 const Switch_Toggle = 'switch_toggle';
-const Update_Share_Urls = 'update_share_urls';
+const Update_Clear = 'update_clear';
+const Update_Url = 'update_url';
+const Update_File_Save_Url = 'update_file_save_url';
 
 /**
- * A content component to show and share perma-links of
- * user-generated measurement- or drawing-data
+ * The published urls of a file (FileSaveResult).
+ * @typedef {Object} FileSaveUrl
+ * @property {string} adminId The url to the adminId version of a file
+ * @property {string} fileId The url to the fileId version of a file
+ */
+
+/**
+ * A content component to show and share urls of
+ * user-generated measurement- or drawing-data or the current encoded
+ * state of the map
  * @class
  * @author thiloSchlemmer
  * @author alsturm
@@ -19,7 +30,7 @@ const Update_Share_Urls = 'update_share_urls';
  */
 export class ShareDialogContent extends MvuElement {
 	constructor() {
-		super({ checkedToggle: false, shareUrls: null });
+		super({ checkedToggle: false, url: null, fileSaveUrl: null });
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
@@ -34,15 +45,19 @@ export class ShareDialogContent extends MvuElement {
 		switch (type) {
 			case Switch_Toggle:
 				return { ...model, checkedToggle: data };
-			case Update_Share_Urls:
-				return { ...model, shareUrls: data };
+			case Update_File_Save_Url:
+				return { ...model, fileSaveUrl: data, url: null };
+			case Update_Url:
+				return { ...model, url: data, fileSaveUrl: null };
+			case Update_Clear:
+				return { ...model, url: null, fileSaveUrl: null };
 		}
 	}
 
 	createView(model) {
-		const { shareUrls } = model;
+		const { url, fileSaveUrl } = model;
 
-		if (shareUrls) {
+		if (url || fileSaveUrl) {
 			return html`<style>
 					${css}
 				</style>
@@ -54,23 +69,20 @@ export class ShareDialogContent extends MvuElement {
 	}
 
 	_getUrlContent(model) {
-		const { checkedToggle, shareUrls } = model;
-		const getEditableContent = () => this._buildShareItem(shareUrls.adminId);
-		const getReadOnlyContent = () => this._buildShareItem(shareUrls.fileId);
+		const { checkedToggle, url, fileSaveUrl } = model;
+		const getEditableContent = () => this._buildShareItem(fileSaveUrl.adminId);
+		const getReadOnlyContent = () => this._buildShareItem(fileSaveUrl.fileId);
 
-		if (shareUrls.fileId && shareUrls.adminId) {
-			return checkedToggle === true ? getEditableContent() : getReadOnlyContent();
+		if (url) {
+			return this._buildShareItem(url);
 		}
-		if (shareUrls.adminId) {
-			return getEditableContent();
-		}
-		return getReadOnlyContent();
+		return checkedToggle === true ? getEditableContent() : getReadOnlyContent();
 	}
 
 	_getToggle(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { checkedToggle, shareUrls } = model;
-		const isToggleNeeded = shareUrls.fileId && shareUrls.adminId;
+		const { checkedToggle, fileSaveUrl } = model;
+		const isToggleNeeded = fileSaveUrl !== null;
 
 		const onToggle = (event) => {
 			this.signal(Switch_Toggle, event.detail.checked);
@@ -149,9 +161,18 @@ export class ShareDialogContent extends MvuElement {
 		}
 	}
 
-	set shareurls(value) {
-		const newUrls = value.fileId || value.adminId ? value : null;
-		this.signal(Update_Share_Urls, newUrls);
+	/**
+	 * sets the urls for the dialog to share
+	 * @param {String|FileSaveUrl} value the shared value; wether a plain string (is interpreted as a valid wellformed url) or a FileSaveUrl-Object
+	 */
+	set urls(value) {
+		if (isHttpUrl(value)) {
+			this.signal(Update_Url, value);
+		} else if (value.fileId && value.adminId) {
+			this.signal(Update_File_Save_Url, value);
+		} else {
+			this.signal(Update_Clear);
+		}
 	}
 
 	static get tag() {
