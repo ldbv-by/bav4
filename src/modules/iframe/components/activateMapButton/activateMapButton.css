@@ -25,3 +25,9 @@
 .hide {
 	display: none;
 }
+
+ba-attribution-info {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}

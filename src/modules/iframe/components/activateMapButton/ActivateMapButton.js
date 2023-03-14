@@ -1,9 +1,9 @@
 import { html } from 'lit-html';
-import { MvuElement } from '../../../MvuElement';
-import css from './activateMapButton.css';
-// import commonActivateMapCss from './activateMapCommonStyles.css';
-import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { $injector } from '../../../../injection';
+import { MvuElement } from '../../../MvuElement';
+import { OlMap } from '../../../olMap/components/OlMap';
+import css from './activateMapButton.css';
 
 /**
  * @class
@@ -13,8 +13,12 @@ export class ActivateMapButton extends MvuElement {
 	constructor() {
 		super();
 
-		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
+			'EnvironmentService',
+			'TranslationService'
+		);
 		this._environmentService = environmentService;
+		this._translationService = translationService;
 	}
 
 	onWindowLoad() {
@@ -22,16 +26,11 @@ export class ActivateMapButton extends MvuElement {
 		const renderCommonStyle = () => {
 			return `
 			body *:not(
-				ba-activate-map-button,
-				ba-ol-map,
-				ba-footer
+				${ActivateMapButton.tag},
+				${OlMap.tag}
 				 ) {
 				display: none;
-			}	
-			ba-footer{
-				position:absolute;
-				z-index: calc(var(--z-disableall) + 1 );
-			}		
+			}				
 			`;
 		};
 
@@ -44,6 +43,8 @@ export class ActivateMapButton extends MvuElement {
 	}
 
 	createView() {
+		const translate = (key) => this._translationService.translate(key);
+
 		const close = () => {
 			const commonStyle = document.getElementById(ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id);
 			commonStyle.remove();
@@ -61,10 +62,18 @@ export class ActivateMapButton extends MvuElement {
 			</style>
 			<div id="background" class="active-map__background">
 				<div class="active-map__button ${classMap(isTouch)}"">
-					<ba-button .type=${'primary'} .label=${'Karte Aktivieren'} @click=${close}></ba-button>
+					<ba-button .type=${'primary'} .label=${translate('iframe_activate_map_button')} @click=${close}></ba-button>
 				</div>
+				<ba-attribution-info></ba-attribution-info>
 			</div>
 		`;
+	}
+
+	/**
+	 * @override
+	 */
+	isRenderingSkipped() {
+		return !this._environmentService.isEmbedded();
 	}
 
 	static get tag() {
