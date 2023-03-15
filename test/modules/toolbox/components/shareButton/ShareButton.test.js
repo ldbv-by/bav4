@@ -37,6 +37,14 @@ describe('ShareButton', () => {
 		return TestUtils.render(ShareButton.tag);
 	};
 
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			const element = await setup();
+
+			expect(element.getModel()).toEqual({ fileSaveResult: null });
+		});
+	});
+
 	describe('when initialized', () => {
 		it('shows the share-button', async () => {
 			const fileSaveResult = { adminId: 'a_fooBar', fileId: 'f_fooBar' };
