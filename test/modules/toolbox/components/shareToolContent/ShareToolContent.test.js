@@ -5,7 +5,7 @@ import { Checkbox } from '../../../../../src/modules/commons/components/checkbox
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
 import { isTemplateResultOf } from '../../../../../src/utils/checks';
-import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
+import { ShareDialogContent } from '../../../../../src/modules/share/components/shareDialogContent/ShareDialogContent';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);

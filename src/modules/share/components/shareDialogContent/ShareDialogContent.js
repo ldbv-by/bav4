@@ -91,7 +91,7 @@ export class ShareDialogContent extends MvuElement {
 		return isToggleNeeded
 			? html`<div class="toggle">
 					<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					<span class="share_copy">${translate('toolbox_measureTool_share_link')}</span>
+					<span class="share_copy">${translate('share_shareDialogContent_link')}</span>
 			  </div>`
 			: html.nothing;
 	}
@@ -107,7 +107,7 @@ export class ShareDialogContent extends MvuElement {
 				const onClickWithApi = async () => {
 					try {
 						await this._environmentService.getWindow().navigator.share({
-							title: translate('toolbox_measureTool_share_link_title'),
+							title: translate('share_shareDialogContent_link_title'),
 							url: url
 						});
 					} catch (error) {
@@ -117,7 +117,7 @@ export class ShareDialogContent extends MvuElement {
 				return html`<ba-icon
 					class="share_api"
 					.icon="${shareIcon}"
-					.title=${translate('toolbox_measureTool_share_api')}
+					.title=${translate('share_shareDialogContent_api')}
 					.size=${2}
 					@click=${onClickWithApi}
 				>
@@ -126,7 +126,7 @@ export class ShareDialogContent extends MvuElement {
 			return html`<ba-icon
 				class="share_copy"
 				.icon="${clipboardIcon}"
-				.title=${translate('toolbox_copy_icon')}
+				.title=${translate('share_shareDialogContent_copy_icon')}
 				.size=${2}
 				@click=${onCopyUrlToClipBoard}
 			>
@@ -149,13 +149,13 @@ export class ShareDialogContent extends MvuElement {
 		try {
 			await this._shareService.copyToClipboard(value);
 			emitNotification(
-				`${this._translationService.translate('toolbox_clipboard_link_notification_text')} ${this._translationService.translate(
-					'toolbox_clipboard_success'
+				`${this._translationService.translate('share_clipboard_link_notification_text')} ${this._translationService.translate(
+					'share_clipboard_success'
 				)}`,
 				LevelTypes.INFO
 			);
 		} catch (error) {
-			const message = this._translationService.translate('toolbox_clipboard_error');
+			const message = this._translationService.translate('share_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
 			console.warn('Clipboard API not available');
 		}

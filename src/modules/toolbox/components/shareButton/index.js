@@ -1,4 +1,4 @@
-import { ShareDialogContent } from './ShareDialogContent';
+import { ShareDialogContent } from '../../../share/components/ShareDialogContent';
 import { ShareButton } from './ShareButton';
 
 if (!window.customElements.get(ShareButton.tag)) {

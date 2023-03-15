@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
-import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
+import { ShareDialogContent } from '../../../../../src/modules/share/components/shareDialogContent/ShareDialogContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
