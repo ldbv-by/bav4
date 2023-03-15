@@ -1,5 +1,4 @@
 import { html } from 'lit-html';
-import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
@@ -52,16 +51,12 @@ export class ActivateMapButton extends MvuElement {
 			background.classList.add('hide');
 		};
 
-		const isTouch = {
-			istouch: this._environmentService.isTouch()
-		};
-
 		return html`
 			<style>
 				${css}
 			</style>
 			<div id="background" class="active-map__background">
-				<div class="active-map__button ${classMap(isTouch)}"">
+				<div class="active-map__button">
 					<ba-button .type=${'primary'} .label=${translate('iframe_activate_map_button')} @click=${close}></ba-button>
 				</div>
 				<ba-attribution-info></ba-attribution-info>

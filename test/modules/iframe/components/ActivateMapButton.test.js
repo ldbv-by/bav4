@@ -9,11 +9,11 @@ window.customElements.define(OlMap.tag, OlMap);
 
 describe('ActivateMapButton', () => {
 	const setup = (config) => {
-		const { embed, isTouch } = config;
+		const { embed } = config;
 
 		TestUtils.setupStoreAndDi();
 		$injector
-			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isTouch: () => isTouch })
+			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ActivateMapButton.tag);
 	};
@@ -28,25 +28,10 @@ describe('ActivateMapButton', () => {
 			expect(element.shadowRoot.querySelectorAll('.active-map__button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.istouch')).toHaveSize(0);
 
 			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)).toHaveSize(1);
 			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)[0].innerText).toContain(ActivateMapButton.tag);
 			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)[0].innerText).toContain(OlMap.tag);
-		});
-
-		it('renders Button on touch', async () => {
-			const element = await setup({ embed: true, isTouch: true });
-
-			expect(element.shadowRoot.styleSheets.length).toBe(2);
-
-			expect(element.shadowRoot.querySelectorAll('.active-map__background')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.active-map__button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.istouch')).toHaveSize(1);
-
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)).toHaveSize(1);
 		});
 
 		it('renders nothing when normal', async () => {
