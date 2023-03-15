@@ -18,6 +18,10 @@ import { createUniqueId } from '../../../../utils/numberUtils';
  */
 export const OlFeatureInfoHandler_Query_Resolution_Delay_Ms = 300;
 /**
+ * Hit-detection tolerance in css pixels.
+ */
+export const OlFeatureInfoHandler_Hit_Tolerance_Px = 10;
+/**
  * MapHandler that publishes FeatureInfo and HighlightFeature items from ol vector sources.
  * @class
  * @author taulinger
@@ -41,7 +45,12 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		const translate = (key) => this._translationService.translate(key);
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
-			return map.forEachFeatureAtPixel(pixel, (feature) => feature, { layerFilter: (l) => l === olLayer }) || null;
+			return (
+				map.forEachFeatureAtPixel(pixel, (feature) => feature, {
+					layerFilter: (l) => l === olLayer,
+					hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
+				}) || null
+			);
 		};
 
 		//use only visible and unhidden layers
