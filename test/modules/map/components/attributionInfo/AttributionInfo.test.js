@@ -251,14 +251,17 @@ describe('AttributionInfo', () => {
 				const toggleButton = element.shadowRoot.querySelector('.collapse-button');
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.privacy-policy-link')).display).toBe('none');
 
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(1);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.privacy-policy-link')).display).toBe('block');
 
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.privacy-policy-link')).display).toBe('none');
 			});
 		});
 	});
