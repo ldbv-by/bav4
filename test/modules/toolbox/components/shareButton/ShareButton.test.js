@@ -1,10 +1,13 @@
 import { $injector } from '../../../../../src/injection';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
+import { ShareDialogContent } from '../../../../../src/modules/toolbox/components/shareButton/ShareDialogContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { isTemplateResultOf } from '../../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ShareButton.tag, ShareButton);
+window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 
 describe('ShareButton', () => {
 	let store;
@@ -64,6 +67,7 @@ describe('ShareButton', () => {
 			expect(shareButton).toBeTruthy();
 			expect(shortenerSpy).toHaveBeenCalledTimes(2);
 			expect(store.getState().modal.data.title).toBe('toolbox_measureTool_share');
+			expect(isTemplateResultOf(store.getState().modal.data.content, ShareDialogContent.tag)).toBeTrue();
 		});
 
 		it('logs a warning, when shortener fails', async () => {
