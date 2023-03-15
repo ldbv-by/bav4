@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { ViewLargeMapChip } from '../../../../src/modules/iframe/components/viewLargeMapChip/ViewLargeMapChip';
+import { indicateChange } from '../../../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../../../test-utils';
 
@@ -45,8 +46,8 @@ describe('ViewLargeMapChip', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.chips__button')).toHaveSize(1);
 			const link = element.shadowRoot.querySelectorAll('.chips__button');
-			expect(link[0].href).toEqual('http://this.is.a.url/?forTestCase');
-			expect(link[0].target).toEqual('_blank');
+			expect(link[0].href).toBe(expectedUrl);
+			expect(link[0].target).toBe('_blank');
 
 			expect(element.shadowRoot.querySelectorAll('.chips__icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('.chips__button-text')).toHaveSize(1);
@@ -59,6 +60,22 @@ describe('ViewLargeMapChip', () => {
 			const element = await setup({}, { embed: false });
 
 			expect(element.shadowRoot.children.length).toBe(0);
+		});
+	});
+
+	describe('when state changes', () => {
+		it('updates the view', async () => {
+			let count = 0;
+			spyOn(shareServiceMock, 'encodeState').and.callFake(() => {
+				return `http://this.is.a.url/${count++}`;
+			});
+			const element = await setup();
+			const link = element.shadowRoot.querySelectorAll('.chips__button');
+			expect(link[0].href).toBe('http://this.is.a.url/0');
+
+			indicateChange();
+
+			expect(link[0].href).toBe('http://this.is.a.url/1');
 		});
 	});
 });
