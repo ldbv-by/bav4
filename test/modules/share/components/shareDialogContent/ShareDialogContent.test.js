@@ -1,4 +1,4 @@
-import { ShareDialogContent } from '../../../../../src/modules/share/components/shareDialogContent/ShareDialogContent';
+import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
