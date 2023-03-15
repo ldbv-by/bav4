@@ -184,7 +184,10 @@ describe('ShareToolContent', () => {
 
 					await TestUtils.timeout();
 					expect(store.getState().modal.data.title).toBe('toolbox_shareTool_share');
-					expect(isTemplateResultOf(store.getState().modal.data.content, ShareDialogContent.tag)).toBeTrue();
+
+					const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+					const shareDialogContentElement = contentElement.querySelector('ba-share-content');
+					expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('https://short/url');
 				});
 			});
 
