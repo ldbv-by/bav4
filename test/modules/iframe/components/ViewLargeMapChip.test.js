@@ -1,5 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { ViewLargeMapChip } from '../../../../src/modules/iframe/components/viewLargeMapChip/ViewLargeMapChip';
+import { stateForEncodingReducer } from '../../../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(ViewLargeMapChip.tag, ViewLargeMapChip);
@@ -12,12 +13,10 @@ describe('ViewLargeMapChip', () => {
 	const setup = async (state = {}, config = {}) => {
 		const { embed = true } = config;
 
-		TestUtils.setupStoreAndDi(state, {});
+		TestUtils.setupStoreAndDi(state, { stateForEncoding: stateForEncodingReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed
-			})
+			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('ShareService', shareServiceMock);
 		const element = await TestUtils.render(ViewLargeMapChip.tag, config);
 
