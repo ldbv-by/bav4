@@ -1,12 +1,12 @@
 import { $injector } from '../../../../src/injection';
-import { ViewLargeMapChip } from '../../../../src/modules/iframe/components/viewLargeMapChip/ViewLargeMapChip';
+import { ViewLargerMapChip } from '../../../../src/modules/iframe/components/viewLargerMapChip/ViewLargerMapChip';
 import { indicateChange } from '../../../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(ViewLargeMapChip.tag, ViewLargeMapChip);
+window.customElements.define(ViewLargerMapChip.tag, ViewLargerMapChip);
 
-describe('ViewLargeMapChip', () => {
+describe('ViewLargerMapChip', () => {
 	const shareServiceMock = {
 		encodeState: () => {}
 	};
@@ -19,7 +19,7 @@ describe('ViewLargeMapChip', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
 			.registerSingleton('ShareService', shareServiceMock);
-		const element = await TestUtils.render(ViewLargeMapChip.tag, config);
+		const element = await TestUtils.render(ViewLargerMapChip.tag, config);
 
 		return element;
 	};
@@ -27,7 +27,7 @@ describe('ViewLargeMapChip', () => {
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
 			await setup();
-			const model = new ViewLargeMapChip().getModel();
+			const model = new ViewLargerMapChip().getModel();
 
 			expect(model).toEqual({
 				href: ''

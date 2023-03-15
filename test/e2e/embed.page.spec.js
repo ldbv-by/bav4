@@ -25,7 +25,7 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator('ba-theme-provider').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-context-menu').count()).toBe(1);
-			expect(await page.frameLocator('#wrapper').locator('view-large-map-chip').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('view-larger-map-chip').count()).toBe(1);
 		});
 	});
 });

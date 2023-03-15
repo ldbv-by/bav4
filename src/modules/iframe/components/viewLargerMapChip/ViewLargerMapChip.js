@@ -2,7 +2,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
-import css from './viewLargeMapChip.css';
+import css from './viewLargerMapChip.css';
 
 const Update_State_For_Encoding = 'update_state_for_encoding';
 
@@ -11,7 +11,7 @@ const Update_State_For_Encoding = 'update_state_for_encoding';
  * @class
  * @author alsturm
  */
-export class ViewLargeMapChip extends MvuElement {
+export class ViewLargerMapChip extends MvuElement {
 	constructor() {
 		super({
 			href: ''
@@ -68,12 +68,12 @@ export class ViewLargeMapChip extends MvuElement {
 					</style>
 					<a class="chips__button" href=${href} target="_blank">
 						<span class="chips__icon"></span>
-						<span class="chips__button-text">${translate('iframe_view_large_map_chip')}</span>
+						<span class="chips__button-text">${translate('iframe_view_larger_map_chip')}</span>
 					</a>`
 			: nothing;
 	}
 
 	static get tag() {
-		return 'view-large-map-chip';
+		return 'ba-view-larger-map-chip';
 	}
 }
