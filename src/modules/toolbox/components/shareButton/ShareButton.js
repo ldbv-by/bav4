@@ -66,8 +66,8 @@ export class ShareButton extends MvuElement {
 		if (isValidForSharing(fileSaveResult)) {
 			const title = translate('toolbox_measureTool_share');
 			const onClick = async () => {
-				const shareUrls = await generateShareUrls();
-				openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
+				const urls = await generateShareUrls();
+				openModal(title, html`<ba-share-content .urls=${urls}></ba-share-content>`);
 			};
 			return html`<ba-button id="share" data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
 		}

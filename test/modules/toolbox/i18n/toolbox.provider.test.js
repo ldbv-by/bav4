@@ -61,21 +61,17 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.toolbox_measureTool_measure_select).toBe('Eine bestehende Messung auswählen oder eine neue Messung beginnen');
 		expect(map.toolbox_measureTool_share).toBe('Teilen');
-		expect(map.toolbox_measureTool_share_api).toBe('Klicken, um zu teilen');
-		expect(map.toolbox_measureTool_share_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Fertig');
 		expect(map.toolbox_prevent_switching_tool).toBe('Bitte zuerst das aktuelle Werkzeug schließen/beenden');
 		expect(map.toolbox_toolbar_draw_button).toBe('Zeichnen');
 		expect(map.toolbox_toolbar_share_button).toBe('Teilen');
 		expect(map.toolbox_toolbar_measure_button).toBe('Messen');
 		expect(map.toolbox_toolbar_logo_badge).toBe('4.0');
-		expect(map.toolbox_clipboard_link_notification_text).toBe('Der Link');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('Die Fläche');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('Die Länge');
 		expect(map.toolbox_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.toolbox_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
 		expect(map.toolbox_copy_icon).toBe('In die Zwischenablage kopieren');
-		expect(map.toolbox_measureTool_share_link).toBe('Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten');
 		expect(map.toolbox_import_data_header).toBe('Datei Import');
 		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
 		expect(map.toolbox_import_data_button).toBe('Datei Auswählen');
@@ -167,21 +163,17 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.toolbox_measureTool_measure_select).toBe('Select an existing measurement or start a new one');
 		expect(map.toolbox_measureTool_share).toBe('Share');
-		expect(map.toolbox_measureTool_share_api).toBe('Click to share');
-		expect(map.toolbox_measureTool_share_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.toolbox_drawTool_finish).toBe('Finish');
 		expect(map.toolbox_prevent_switching_tool).toBe('Please close the current tool first');
 		expect(map.toolbox_toolbar_draw_button).toBe('Draw');
 		expect(map.toolbox_toolbar_share_button).toBe('Share');
 		expect(map.toolbox_toolbar_measure_button).toBe('Measure');
 		expect(map.toolbox_toolbar_logo_badge).toBe('4.0');
-		expect(map.toolbox_clipboard_link_notification_text).toBe('The link');
 		expect(map.toolbox_measureTool_clipboard_measure_area_notification_text).toBe('The area');
 		expect(map.toolbox_measureTool_clipboard_measure_distance_notification_text).toBe('The distance');
 		expect(map.toolbox_clipboard_error).toBe('"Copy to clipboard" is not available');
 		expect(map.toolbox_clipboard_success).toBe('was copied to clipboard');
 		expect(map.toolbox_copy_icon).toBe('Copy to clipboard');
-		expect(map.toolbox_measureTool_share_link).toBe('Anyone, who has this link, can edit this drawing');
 		expect(map.toolbox_import_data_header).toBe('Data Import');
 		expect(map.toolbox_import_data_subheader).toBe('KML, GPX, GeoJSON');
 		expect(map.toolbox_import_data_button).toBe('Choose a file');
@@ -218,7 +210,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 99;
+		const expectedSize = 95;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
