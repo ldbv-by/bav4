@@ -413,7 +413,8 @@ export class ElevationProfile extends MvuElement {
 			if (element.slope && element.slope !== 'missing') {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeValue = Math.abs(element.slope);
-				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
+				const slopeClass =
+					SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue) ?? SoterSlopeClasses[SoterSlopeClasses.length - 1];
 
 				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
