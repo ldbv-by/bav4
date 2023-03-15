@@ -23,6 +23,17 @@ describe('ViewLargeMapChip', () => {
 		return element;
 	};
 
+	describe('when instantiated', () => {
+		it('has a model with default values', async () => {
+			await setup();
+			const model = new ViewLargeMapChip().getModel();
+
+			expect(model).toEqual({
+				href: ''
+			});
+		});
+	});
+
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			const expectedUrl = 'http://this.is.a.url/?forTestCase';
