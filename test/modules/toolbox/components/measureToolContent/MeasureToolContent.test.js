@@ -231,7 +231,20 @@ describe('MeasureToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
-		it('shows only the lenght measurement statistics', async () => {
+		it('contains share data chip', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+		});
+
+		it('shows only the length measurement statistics', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: null },
