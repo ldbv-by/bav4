@@ -6,7 +6,6 @@ import { EventLike } from '../../../../../src/utils/storeUtils';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { ShareButton } from '../../../../../src/modules/toolbox/components/shareButton/ShareButton';
 import { ElevationProfileChip } from '../../../../../src/modules/chips/components/assistChips/ElevationProfileChip';
@@ -49,11 +48,6 @@ describe('MeasureToolContent', () => {
 			return 'http://this.is.a.url?forTestCase';
 		}
 	};
-	const urlServiceMock = {
-		shorten() {
-			return Promise.resolve('http://foo');
-		}
-	};
 	const setup = async (state = defaultState, config = {}) => {
 		const { embed = false, isTouch = false } = config;
 
@@ -77,7 +71,6 @@ describe('MeasureToolContent', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			measurement: measurementReducer,
 			modal: modalReducer,
-			shared: sharedReducer,
 			notifications: notificationReducer,
 			elevationProfile: elevationProfileReducer
 		});
@@ -89,7 +82,6 @@ describe('MeasureToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('UrlService', urlServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
@@ -367,21 +359,6 @@ describe('MeasureToolContent', () => {
 
 			expect(subTextElement).toBeTruthy();
 			expect(subTextElement.textContent).toBe('');
-		});
-
-		it('shows the measurement share-button', async () => {
-			const state = {
-				measurement: {
-					statistic: { length: 42, area: 0 },
-					fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' },
-					reset: null,
-					remove: null
-				}
-			};
-			const element = await setup(state);
-			const shareButton = element.shadowRoot.querySelector('ba-share-button');
-
-			expect(shareButton).toBeTruthy();
 		});
 
 		describe('with touch-device', () => {

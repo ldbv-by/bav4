@@ -12,7 +12,6 @@ import { AssetSourceType, getAssetSource } from '../../../../utils/assets';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
-const Update_FileSaveResult = 'update_fileSaveResult';
 const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
@@ -31,7 +30,6 @@ export class DrawToolContent extends AbstractToolContent {
 			description: null,
 			selectedStyle: null,
 			mode: null,
-			fileSaveResult: { adminId: 'init', fileId: 'init' },
 			validGeometry: null,
 			tools: null
 		});
@@ -39,14 +37,10 @@ export class DrawToolContent extends AbstractToolContent {
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
-			UrlService: urlService,
-			ShareService: shareService,
 			SecurityService: securityService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService', 'SecurityService');
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'SecurityService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
-		this._shareService = shareService;
-		this._urlService = urlService;
 		this._securityService = securityService;
 		this.signal(Update_Tools, this._buildTools());
 	}
@@ -55,10 +49,6 @@ export class DrawToolContent extends AbstractToolContent {
 		this.observe(
 			(state) => state.draw,
 			(data) => this.signal(Update, data)
-		);
-		this.observe(
-			(state) => state.shared,
-			(data) => this.signal(Update_FileSaveResult, data)
 		);
 	}
 
@@ -83,8 +73,6 @@ export class DrawToolContent extends AbstractToolContent {
 				};
 			case Update_Tools:
 				return { ...model, tools: data };
-			case Update_FileSaveResult:
-				return { ...model, fileSaveResult: data.fileSaveResult };
 			case Update_CollapsedInfo:
 				return { ...model, collapsedInfo: data };
 			case Update_CollapsedStyle:
@@ -208,9 +196,6 @@ export class DrawToolContent extends AbstractToolContent {
 			const onClick = () => remove();
 			buttons.push(getButton(id, title, onClick));
 		}
-
-		const getShareButton = () => html`<ba-share-button .share=${model.fileSaveResult}></ba-share-button>`;
-		buttons.push(getShareButton(model));
 
 		return buttons;
 	}
@@ -592,9 +577,7 @@ export class DrawToolContent extends AbstractToolContent {
 					</div>
 					<div class="tool-container__form">${getStyleTemplate(drawingType, drawingStyle)}</div>
 					<div class="sub-text">${subText}</div>
-					<div class="chips__container">
-						<ba-profile-chip></ba-profile-chip>
-					</div>
+					<div class="chips__container"><ba-profile-chip></ba-profile-chip><ba-share-data-chip></ba-share-data-chip></div>
 					<div class="ba-tool-container__actions">${buttons}</div>
 				</div>
 			</div>
