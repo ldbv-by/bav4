@@ -12,7 +12,7 @@ const Update = 'update';
  * @class
  * @author thiloSchlemmer
  */
-export class ShareStoredDataChip extends AbstractAssistChip {
+export class ShareDataChip extends AbstractAssistChip {
 	constructor() {
 		super({ fileSaveResult: null });
 		const {

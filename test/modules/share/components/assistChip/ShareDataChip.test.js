@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { ShareStoredDataChip } from '../../../../../src/modules/share/components/assistChip/ShareStoredDataChip';
+import { ShareDataChip } from '../../../../../src/modules/share/components/assistChip/ShareDataChip';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 import shareSvg from '../../../../../src/modules/share/components/assistChip/assets/share.svg';
@@ -7,9 +7,9 @@ import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
-window.customElements.define(ShareStoredDataChip.tag, ShareStoredDataChip);
+window.customElements.define(ShareDataChip.tag, ShareDataChip);
 
-describe('ShareStoredDataChip', () => {
+describe('ShareDataChip', () => {
 	const defaultSharedState = {
 		fileSaveResult: null,
 		coordinates: []
@@ -43,7 +43,7 @@ describe('ShareStoredDataChip', () => {
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 
-		return TestUtils.render(ShareStoredDataChip.tag);
+		return TestUtils.render(ShareDataChip.tag);
 	};
 
 	describe('when instantiated', () => {
