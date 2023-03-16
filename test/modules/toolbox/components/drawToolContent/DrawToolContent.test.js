@@ -627,6 +627,12 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
+		it('contains the share data chip', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
+
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+		});
+
 		it('finishes the drawing', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 			const finishButton = element.shadowRoot.querySelector('#finish-button');
