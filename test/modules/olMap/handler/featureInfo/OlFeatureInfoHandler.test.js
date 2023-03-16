@@ -4,6 +4,7 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import {
 	OlFeatureInfoHandler,
+	OlFeatureInfoHandler_Hit_Tolerance_Px,
 	OlFeatureInfoHandler_Query_Resolution_Delay_Ms
 } from '../../../../../src/modules/olMap/handler/featureInfo/OlFeatureInfoHandler';
 import { featureInfoReducer } from '../../../../../src/store/featureInfo/featureInfo.reducer';
@@ -20,8 +21,13 @@ import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
-	it('determines amount of time query resolution delayed.', async () => {
+	it('determines amount of time query resolution delayed', async () => {
 		expect(OlFeatureInfoHandler_Query_Resolution_Delay_Ms).toBe(300);
+	});
+});
+describe('OlFeatureInfoHandler_Hit_Tolerance_Px', () => {
+	it('determines hit-detection tolerance in css pixels', async () => {
+		expect(OlFeatureInfoHandler_Hit_Tolerance_Px).toBe(10);
 	});
 });
 
@@ -130,6 +136,7 @@ describe('OlFeatureInfoHandler', () => {
 			olVectorSource.addFeature(feature1);
 			vectorLayer0.setSource(olVectorSource);
 			const map = setupMap();
+			const forEachFeatureAtPixelSpy = spyOn(map, 'forEachFeatureAtPixel').and.callThrough();
 			map.addLayer(vectorLayer0);
 
 			handler.register(map);
@@ -149,6 +156,11 @@ describe('OlFeatureInfoHandler', () => {
 
 			expect(store.getState().featureInfo.current).toHaveSize(0);
 			expect(store.getState().highlight.features).toHaveSize(0);
+			expect(forEachFeatureAtPixelSpy).toHaveBeenCalledWith(
+				jasmine.any(Object),
+				jasmine.any(Function),
+				jasmine.objectContaining({ hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px })
+			);
 		});
 
 		it('removes outdated HighlightFeature items', async () => {
