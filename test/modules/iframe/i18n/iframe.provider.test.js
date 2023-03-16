@@ -32,7 +32,7 @@ describe('i18n for iframe module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 9;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
