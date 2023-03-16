@@ -1,0 +1,29 @@
+.active-map__background {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	z-index: var(--z-disableall);
+}
+.active-map__button {
+	opacity: 0;
+	background: var(--text3);
+	min-width: 13em;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	border: 2px solid var(--text3);
+	border-radius: 2em;
+	overflow: hidden;
+}
+.active-map__background:hover .active-map__button {
+	opacity: 1;
+}
+.hide {
+	display: none;
+}
+ba-attribution-info {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}

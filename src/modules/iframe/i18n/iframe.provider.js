@@ -11,6 +11,7 @@ export const provide = (lang) => {
 				iframe_generator_toggle_label: 'Auto-adjustment width',
 				iframe_generator_toggle_title: 'Embedded map will expand to fit the width of its container.',
 				iframe_generator_copy_icon: 'Copy to clipboard',
+				iframe_activate_map_button: 'Activate map',
 				iframe_view_larger_map_chip: 'View larger map'
 			};
 
@@ -25,6 +26,7 @@ export const provide = (lang) => {
 				iframe_generator_toggle_label: 'Auto-Anpassungsbreite',
 				iframe_generator_toggle_title: 'Eingebettete Karte wird sich erweitern, um sich der Breite seines Containers anzupassen.',
 				iframe_generator_copy_icon: 'In die Zwischenablage kopieren',
+				iframe_activate_map_button: 'Karte aktivieren',
 				iframe_view_larger_map_chip: 'Größere Karte ansehen'
 			};
 
