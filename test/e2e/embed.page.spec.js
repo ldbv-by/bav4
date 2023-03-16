@@ -16,7 +16,7 @@ test.describe('embed page', () => {
 
 		test('should contain 8 top level ba-components', async ({ page }) => {
 			// Get frame using the frame's name attribute
-			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(8);
+			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(9);
 
 			expect(await page.frameLocator('#wrapper').locator('ba-ol-map').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-button-container').count()).toBe(1);
@@ -26,6 +26,7 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-context-menu').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('ba-activate-map-button').count()).toBe(1);
 		});
 	});
 });
