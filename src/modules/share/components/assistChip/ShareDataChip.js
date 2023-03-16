@@ -61,13 +61,8 @@ export class ShareDataChip extends AbstractAssistChip {
 	 */
 	isVisible() {
 		const { fileSaveResult } = this.getModel();
-		if (!fileSaveResult) {
-			return false;
-		}
-		if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
-			return false;
-		}
-		return true;
+
+		return !!(fileSaveResult?.adminId && fileSaveResult?.fileId);
 	}
 
 	/**
