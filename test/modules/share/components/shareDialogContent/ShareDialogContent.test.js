@@ -180,7 +180,7 @@ describe('ShareDialogContent', () => {
 
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(shareSpy).toHaveBeenCalledWith({ title: 'share_shareDialogContent_link_title', url: shareUrls.fileId });
+			expect(shareSpy).toHaveBeenCalledWith({ title: 'share_dialog_link_title', url: shareUrls.fileId });
 		});
 	});
 
@@ -195,7 +195,7 @@ describe('ShareDialogContent', () => {
 
 		await TestUtils.timeout();
 		expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
-		expect(shareSpy).toHaveBeenCalledWith({ title: 'share_shareDialogContent_link_title', url: shareUrls.fileId });
+		expect(shareSpy).toHaveBeenCalledWith({ title: 'share_dialog_link_title', url: shareUrls.fileId });
 	});
 
 	it('logs a warning when copyToClipboard fails', async () => {

@@ -10,7 +10,6 @@ import { AbstractToolContent } from '../toolContainer/AbstractToolContent';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 
 const Update = 'update';
-const Update_FileSaveResult = 'update_fileSaveResult';
 
 /**
  * @class
@@ -21,7 +20,6 @@ export class MeasureToolContent extends AbstractToolContent {
 	constructor() {
 		super({
 			statistic: { length: null, area: null },
-			fileSaveResult: null,
 			mode: null
 		});
 
@@ -29,24 +27,18 @@ export class MeasureToolContent extends AbstractToolContent {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
 			UnitsService: unitsService,
-			UrlService: urlService,
 			ShareService: shareService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'UrlService', 'ShareService');
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'UnitsService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._unitsService = unitsService;
 		this._shareService = shareService;
-		this._urlService = urlService;
 	}
 
 	onInitialize() {
 		this.observe(
 			(state) => state.measurement,
 			(data) => this.signal(Update, data)
-		);
-		this.observe(
-			(state) => state.shared,
-			(data) => this.signal(Update_FileSaveResult, data)
 		);
 	}
 
@@ -58,8 +50,6 @@ export class MeasureToolContent extends AbstractToolContent {
 					statistic: data.statistic,
 					mode: data.mode
 				};
-			case Update_FileSaveResult:
-				return { ...model, fileSaveResult: data.fileSaveResult };
 		}
 	}
 
@@ -120,7 +110,7 @@ export class MeasureToolContent extends AbstractToolContent {
 					<div class='sub-text'>${subText}</div>	
 				</div>	
 				<div class='chips__container'> 
-					<ba-profile-chip></ba-profile-chip>
+					<ba-profile-chip></ba-profile-chip><ba-share-data-chip></ba-share-data-chip>
 				</div>				
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					
@@ -161,11 +151,7 @@ export class MeasureToolContent extends AbstractToolContent {
 			return mode !== 'draw' && removeAllowed ? getButton('remove', translate('toolbox_measureTool_delete_measure'), () => remove()) : nothing;
 		};
 
-		const getShare = () => {
-			return html`<ba-share-button .share=${model.fileSaveResult}></ba-share-button>`;
-		};
-
-		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}${getShare()}`;
+		return html`${getStartNew()}${getFinish()}${getRemovePoint()}${getRemoveMeasure()}`;
 	}
 
 	_getSubText(state) {

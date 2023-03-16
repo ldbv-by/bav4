@@ -6,7 +6,6 @@ import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { setSelectedStyle, setStyle, setType } from '../../../../../src/store/draw/draw.action';
 import { EventLike } from '../../../../../src/utils/storeUtils';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { IconResult } from '../../../../../src/services/IconService';
 import { IconSelect } from '../../../../../src/modules/iconSelect/components/IconSelect';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
@@ -24,20 +23,6 @@ describe('DrawToolContent', () => {
 	let store;
 	const windowMock = {
 		matchMedia() {}
-	};
-
-	const shareServiceMock = {
-		copyToClipboard() {
-			return Promise.resolve();
-		},
-		encodeState() {
-			return 'http://this.is.a.url?forTestCase';
-		}
-	};
-	const urlServiceMock = {
-		shorten() {
-			return Promise.resolve('http://foo');
-		}
 	};
 
 	const securityServiceMock = {
@@ -70,10 +55,6 @@ describe('DrawToolContent', () => {
 	const setup = async (drawState = drawDefaultState, config = {}) => {
 		const state = {
 			draw: drawState,
-			shared: {
-				termsOfUseAcknowledged: false,
-				fileSaveResult: null
-			},
 			media: {
 				portrait: false
 			}
@@ -84,7 +65,6 @@ describe('DrawToolContent', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer,
 			modal: modalReducer,
-			shared: sharedReducer,
 			media: createNoInitialStateMediaReducer(),
 			elevationProfile: elevationProfileReducer
 		});
@@ -95,9 +75,7 @@ describe('DrawToolContent', () => {
 				isTouch: () => isTouch
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('IconService', iconServiceMock)
-			.registerSingleton('UrlService', urlServiceMock)
 			.registerSingleton('SecurityService', securityServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
@@ -120,7 +98,6 @@ describe('DrawToolContent', () => {
 				description: null,
 				selectedStyle: null,
 				mode: null,
-				fileSaveResult: null,
 				validGeometry: null,
 				tools: jasmine.any(Array),
 				collapsedInfo: null,
@@ -650,6 +627,12 @@ describe('DrawToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
+		it('contains the share data chip', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
+
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+		});
+
 		it('finishes the drawing', async () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'line', validGeometry: true });
 			const finishButton = element.shadowRoot.querySelector('#finish-button');
@@ -692,13 +675,6 @@ describe('DrawToolContent', () => {
 
 			expect(subTextElement).toBeTruthy();
 			expect(subTextElement.textContent).toBe('');
-		});
-
-		it('shows the share-button', async () => {
-			const element = await setup({ ...drawDefaultState, fileSaveResult: { adminId: 'a_fooBar', fileId: 'f_fooBar' } });
-			const shareButton = element.shadowRoot.querySelector('ba-share-button');
-
-			expect(shareButton).toBeTruthy();
 		});
 
 		describe('with touch-device', () => {
