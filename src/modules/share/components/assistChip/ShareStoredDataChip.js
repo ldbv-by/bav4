@@ -97,4 +97,15 @@ export class ShareStoredDataChip extends AbstractAssistChip {
 		const urls = await generateShareUrls();
 		openModal(title, html`<ba-share-content .urls=${urls}></ba-share-content>`);
 	}
+
+	/**
+	 * @override
+	 */
+	onDisconnect() {
+		this._unsubscribeFromStore();
+	}
+
+	static get tag() {
+		return 'ba-share-data-chip';
+	}
 }
