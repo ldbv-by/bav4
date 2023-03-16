@@ -62,64 +62,6 @@ export const Empty_Profile_Data = Object.freeze({
 	}
 });
 
-const indenter = '|--';
-class logger {
-	static instance = new logger();
-	// static {}
-	static indent(header = '-') {
-		logger.instance.indent(header);
-	}
-	static outdent() {
-		logger.instance.outdent();
-	}
-	static onlyOnce(key, text = key) {
-		logger.instance.onlyOnce(key, text);
-	}
-	static write(...text) {
-		logger.instance.write(text);
-	}
-	_indentTimes = 0;
-	_onlyOnceValues = {};
-
-	constructor() {
-		if (!logger.instance) {
-			logger.instance = this;
-		}
-		return logger.instance;
-	}
-
-	indent(header = '-') {
-		const marker = '|  ';
-		this.write(marker, header);
-		this._indentTimes++;
-	}
-	outdent() {
-		this._indentTimes--;
-	}
-
-	onlyOnce(key, text = key) {
-		const onlyOncePrefix = '📌onlyOnce📌 ';
-		const onlyOnceSufix = ' 📌';
-		if (!this._onlyOnceValues[key]) {
-			this._onlyOnceValues[key] = text;
-			this.write(onlyOncePrefix, text, onlyOnceSufix);
-		}
-	}
-
-	write(...textParts) {
-		let indent = '';
-		let outText = '';
-		for (let index = 0; index < this._indentTimes; index++) {
-			indent += indenter;
-		}
-		outText = indent;
-		for (let i = 0; i < textParts.length; i++) {
-			outText += textParts[i];
-		}
-		console.log(indent, outText);
-	}
-}
-
 /**
  * @author nklein
  */
@@ -213,9 +155,7 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	onAfterRender() {
-		// logger.indent('onAfterRender');
 		this._updateOrCreateChart();
-		// logger.outdent();
 	}
 
 	/**
@@ -238,8 +178,6 @@ export class ElevationProfile extends MvuElement {
 			minWidth,
 			profile: { attrs }
 		} = model;
-		logger.indent('createView');
-		logger.write('attrs:', attrs);
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -258,45 +196,38 @@ export class ElevationProfile extends MvuElement {
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
-		const loadEP = () => {
-			const { StoreService } = $injector.inject('StoreService');
-			const {
-				elevationProfile: { coordinates }
-			} = StoreService.getStore().getState();
-			this._getElevationProfile(coordinates);
+		// const loadEP = () => {
+		// 	const { StoreService } = $injector.inject('StoreService');
+		// 	const {
+		// 		elevationProfile: { coordinates }
+		// 	} = StoreService.getStore().getState();
+		// 	this._getElevationProfile(coordinates);
 
-			console.log('🚀 ~ ElevationProfile ~ light ~ coordinates:', coordinates);
-		};
-		const destroy = () => {
-			// logger.indent('createView(model) ~ destroy');
-			this._destroyChart();
-			emitNotification('DESTROY', LevelTypes.INFO);
-			// logger.outdent();
-		};
-		const render = () => {
-			// logger.indent('createView(model) ~ render');
-			this._updateOrCreateChart();
-			emitNotification('RENDER', LevelTypes.INFO);
-			// logger.outdent();
-		};
-		const dark = () => {
-			setIsDarkSchema(true);
-			emitNotification('DARK', LevelTypes.INFO);
+		// };
+		// const destroy = () => {
+		// 	this._destroyChart();
+		// 	emitNotification('DESTROY', LevelTypes.INFO);
+		// };
+		// const render = () => {
+		// 	this._updateOrCreateChart();
+		// 	emitNotification('RENDER', LevelTypes.INFO);
+		// };
+		// const dark = () => {
+		// 	setIsDarkSchema(true);
+		// 	emitNotification('DARK', LevelTypes.INFO);
 
-			loadEP();
-		};
-		const light = () => {
-			setIsDarkSchema(false);
-			emitNotification('LIGHT', LevelTypes.INFO);
+		// 	loadEP();
+		// };
+		// const light = () => {
+		// 	setIsDarkSchema(false);
+		// 	emitNotification('LIGHT', LevelTypes.INFO);
 
-			loadEP();
-		};
+		// 	loadEP();
+		// };
 
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
-
-		logger.outdent();
 
 		return html`
 			<style>
@@ -316,14 +247,6 @@ export class ElevationProfile extends MvuElement {
 					<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-altitude-chart-footer">
-					<div class="profile__box" title="chart">
-						<div class="profile__text" @click=${destroy}>destroy</div>
-						<div class="profile__text" @click=${render}>render</div>
-					</div>
-					<div class="profile__box" title="theme">
-						<div class="profile__text" @click=${dark}>dark</div>
-						<div class="profile__text" @click=${light}>light</div>
-					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${toLocaleString(sumUp)} m</div>
@@ -386,16 +309,24 @@ export class ElevationProfile extends MvuElement {
 
 		profile.chartData = profile.elevations.map((elevation) => elevation.z);
 
-		if (ElevationProfile.IS_DARK) {
-			profile.attrs = [{ id: 'alt' }];
-		} else {
-			profile.attrs.forEach((attr) => {
-				this._enrichAltsArrayWithAttributeData(attr, profile);
-				// add alt(itude) to attribute select
-			});
-			profile.attrs = [{ id: 'alt' }, ...profile.attrs];
-		}
-		console.log();
+		/////////
+		profile.attrs.forEach((attr) => {
+			this._enrichAltsArrayWithAttributeData(attr, profile);
+		});
+		// add alt(itude) to attribute select
+		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+		///////// no attrs in dark mode
+		// if (ElevationProfile.IS_DARK) {
+		// 	profile.attrs = [{ id: 'alt' }];
+		// } else {
+		// 	profile.attrs.forEach((attr) => {
+		// 		this._enrichAltsArrayWithAttributeData(attr, profile);
+		// 	});
+		// 	// add alt(itude) to attribute select
+		// 	profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+		// }
+		/////////
+
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
 			return attr.id === selectedAttribute;
@@ -417,16 +348,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartData(altitudeData, newDataLabels, newDataData) {
-		// logger.indent('_getChartData');
-		// if (this._chart) {
-		// logger.write('this._chart.id:', this._chart.id);
-		// }
-
 		const translate = (key) => this._translationService.translate(key);
-
-		// if (!this._chart) {
-		// 	return;
-		// }
 
 		const _chartData = {
 			labels: newDataLabels,
@@ -440,7 +362,6 @@ export class ElevationProfile extends MvuElement {
 						return this._getBackground(context.chart, altitudeData);
 					},
 					borderColor: (context) => {
-						// logger.onlyOnce('_getChartData ~ context.chart.id: ' + context.chart.id);
 						return this._getBorder(context.chart, altitudeData);
 					},
 					tension: 0.1,
@@ -450,7 +371,6 @@ export class ElevationProfile extends MvuElement {
 				}
 			]
 		};
-		// logger.outdent();
 		return _chartData;
 	}
 
@@ -471,7 +391,6 @@ export class ElevationProfile extends MvuElement {
 	_getBorder(chart, altitudeData) {
 		if (chart.chartArea) {
 			const selectedAttribute = this.getModel().selectedAttribute;
-			// logger.onlyOnce('_getBorder ~ selectedAttribute: ' + selectedAttribute);
 			switch (selectedAttribute) {
 				case 'slope':
 					return this._getSlopeGradient(chart, altitudeData);
@@ -538,8 +457,6 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getSlopeGradient(chart, altitudeData) {
-		logger.onlyOnce('_getSlopeGradient(chart, altitudeData) ~ chart.id: ' + chart.id);
-		// console.log('🚀 ~ ElevationProfile ~ _getSlopeGradient ~ chart:', chart);
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
 		const numberOfPoints = altitudeData.elevations.length;
@@ -549,8 +466,6 @@ export class ElevationProfile extends MvuElement {
 			if (element.slope) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeValue = Math.abs(element.slope);
-				logger.onlyOnce('altitudeData?.elevations.forEach ~ slopeValue: ' + slopeValue);
-				// console.log('🚀 ~ ElevationProfile ~ altitudeData?.elevations.forEach ~ slopeValue:', slopeValue);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
 
 				gradientBg.addColorStop(xPoint, slopeClass.color);
@@ -744,35 +659,23 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
-		// logger.indent('_createChart');
-
 		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
 		this._noAnimation = false;
-		// logger.outdent();
 	}
 
 	_destroyChart() {
-		// logger.indent('_destroyChart');
 		if (this._chart) {
-			// logger.write('this._chart.id before:', this._chart.id);
-			// logger.write('clear(), destroy(), delete');
 			this._chart.clear();
 			this._chart.destroy();
 			delete this._chart;
-			// logger.write('this._chart after:', this._chart);
-		} else {
-			// logger.write('this._chart:', this._chart);
 		}
-		// logger.outdent();
 	}
 
 	_updateOrCreateChart() {
-		// logger.indent('_updateOrCreateChart');
 		const { profile, labels, data, distUnit } = this.getModel();
 		this._destroyChart();
 		this._createChart(profile, labels, data, distUnit);
-		// logger.outdent();
 	}
 
 	static get IS_DARK() {

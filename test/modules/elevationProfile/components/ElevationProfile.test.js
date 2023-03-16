@@ -146,15 +146,40 @@ describe('ElevationProfile', () => {
 					[0, 0, 1],
 					[1, 3, 20]
 				]
-			},
-			{
-				id: 'surface',
-				values: [
-					[0, 1, 'asphalt'],
-					[2, 3, 'gravel']
-				]
 			}
 		]
+	};
+
+	const _profileWithoutSlope = {
+		elevations: [
+			{
+				dist: 0,
+				z: 0,
+				e: 400,
+				n: 500
+			},
+			{
+				dist: 1,
+				z: 100,
+				e: 410,
+				n: 510
+			},
+			{
+				dist: 2,
+				z: 200,
+				e: 420,
+				n: 520
+			}
+		],
+		stats: {
+			sumUp: sumUp,
+			sumDown: sumDown,
+			verticalHeight: verticalHeight,
+			highestPoint: highestPoint,
+			lowestPoint: lowestPoint,
+			linearDistance: linearDistance
+		},
+		attrs: []
 	};
 
 	const profile = () => {
@@ -167,6 +192,11 @@ describe('ElevationProfile', () => {
 		return newLocalProfile;
 	};
 
+	const profileWithoutSlope = () => {
+		const newLocalProfile = JSON.parse(JSON.stringify(_profileWithoutSlope));
+		return newLocalProfile;
+	};
+
 	const coordinateServiceMock = {
 		stringify() {},
 		toLonLat() {}
@@ -176,7 +206,7 @@ describe('ElevationProfile', () => {
 		getProfile() {}
 	};
 
-	const configService = {
+	const configServiceMock = {
 		getValueAsPath: () => {}
 	};
 
@@ -218,7 +248,7 @@ describe('ElevationProfile', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('ConfigService', configService)
+			.registerSingleton('ConfigService', configServiceMock)
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
 
@@ -1206,6 +1236,48 @@ describe('ElevationProfile', () => {
 
 			// assert
 			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+	});
+
+	describe('when a profile with attribute slope (selected), is replaced by another without slope', () => {
+		it('should use the Default_Selected_Attribute instead', async () => {
+			// arrange
+			const initialCoordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			const secondCoordinates = [
+				[4, 5],
+				[6, 7]
+			];
+			spyOn(elevationServiceMock, 'getProfile').and.returnValues(profile(), profileWithoutSlope());
+
+			const element = await setup({
+				elevationProfile: {
+					active: true,
+					coordinates: initialCoordinates
+				}
+			});
+			const destroyChartJsSpy = spyOn(element._chart, 'destroy').and.callThrough();
+			const getElevationProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
+			const enrichProfileDataSpy = spyOn(element, '_enrichProfileData').and.callThrough();
+
+			//act
+			// updateCoordinates(initialCoordinates);
+			const attrs = element.shadowRoot.getElementById('attrs');
+			attrs.value = 'slope';
+			attrs.dispatchEvent(new Event('change'));
+			updateCoordinates(secondCoordinates);
+			await TestUtils.timeout();
+
+			// assert
+			expect(destroyChartJsSpy).toHaveBeenCalled();
+			expect(getElevationProfileSpy).toHaveBeenCalled();
+			expect(getElevationProfileSpy).toHaveBeenCalledTimes(1); // only once, first time happens before spy (in setup)
+			expect(enrichProfileDataSpy).toHaveBeenCalledTimes(1);
+
+			const attrsCheck = element.shadowRoot.getElementById('attrs');
+			expect(attrsCheck.value).toBe(Default_Selected_Attribute);
 		});
 	});
 });
