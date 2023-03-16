@@ -1,18 +1,20 @@
 import { html } from 'lit-html';
-import { $injector } from '../../../../injection';
 import { QueryParameters } from '../../../../domain/queryParameters';
+import { $injector } from '../../../../injection';
 import { openModal } from '../../../../store/modal/modal.action';
-import { MvuElement } from '../../../MvuElement';
+import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
+import shareIcon from './assets/share.svg';
 
 const Update = 'update';
 /**
- * Common ToolContent-Component to manage state of sharing usercreated drawings and measurements
+ * A chip to share a stored file. The file is stored by the backend and
+ * consist of drawings or measurements created within the application.
+ * @class
  * @author thiloSchlemmer
  */
-export class ShareButton extends MvuElement {
+export class ShareDataChip extends AbstractAssistChip {
 	constructor() {
 		super({ fileSaveResult: null });
-
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
@@ -23,6 +25,10 @@ export class ShareButton extends MvuElement {
 		this._environmentService = environmentService;
 		this._shareService = shareService;
 		this._urlService = urlService;
+		this._unsubscribeFromStore = this.observe(
+			(state) => state.shared,
+			(data) => this.signal(Update, data)
+		);
 	}
 
 	update(type, data, model) {
@@ -30,23 +36,42 @@ export class ShareButton extends MvuElement {
 			case Update:
 				return {
 					...model,
-					fileSaveResult: data
+					fileSaveResult: data.fileSaveResult
 				};
 		}
 	}
 
-	createView(model) {
-		const { fileSaveResult } = model;
+	/**
+	 * @override
+	 */
+	getIcon() {
+		return shareIcon;
+	}
+
+	/**
+	 * @override
+	 */
+	getLabel() {
 		const translate = (key) => this._translationService.translate(key);
-		const isValidForSharing = (fileSaveResult) => {
-			if (!fileSaveResult) {
-				return false;
-			}
-			if (!fileSaveResult.adminId || !fileSaveResult.fileId) {
-				return false;
-			}
-			return true;
-		};
+		return translate('share_assistChip_share_stored_data');
+	}
+
+	/**
+	 * @override
+	 */
+	isVisible() {
+		const { fileSaveResult } = this.getModel();
+
+		return !!(fileSaveResult?.adminId && fileSaveResult?.fileId);
+	}
+
+	/**
+	 * @override
+	 */
+	async onClick() {
+		const { fileSaveResult } = this.getModel();
+		const translate = (key) => this._translationService.translate(key);
+		const title = translate('share_assistChip_share_stored_data');
 		const buildShareUrl = async (id) => {
 			const extraParams = { [QueryParameters.LAYER]: id };
 			const url = this._shareService.encodeState(extraParams);
@@ -63,25 +88,19 @@ export class ShareButton extends MvuElement {
 			const forFileId = await buildShareUrl(fileSaveResult.fileId);
 			return { adminId: forAdminId, fileId: forFileId };
 		};
-		if (isValidForSharing(fileSaveResult)) {
-			const title = translate('toolbox_measureTool_share');
-			const onClick = async () => {
-				const shareUrls = await generateShareUrls();
-				openModal(title, html`<ba-share-content .shareurls=${shareUrls}></ba-share-content>`);
-			};
-			return html`<ba-button id="share" data-test-id class="tool-container__button" .label=${title} @click=${onClick}></ba-button>`;
-		}
-		return html.nothing;
+
+		const urls = await generateShareUrls();
+		openModal(title, html`<ba-share-content .urls=${urls}></ba-share-content>`);
 	}
 
 	/**
-	 * @property {FileSaveResult} value The FileSaveResult, which contains the data to generate share-urls
+	 * @override
 	 */
-	set share(value) {
-		this.signal(Update, value);
+	onDisconnect() {
+		this._unsubscribeFromStore();
 	}
 
 	static get tag() {
-		return 'ba-share-button';
+		return 'ba-share-data-chip';
 	}
 }

@@ -974,7 +974,7 @@ describe('ElevationProfile', () => {
 			expect(SoterSlopeClasses[2]).toEqual(jasmine.objectContaining({ type: SlopeType.UNDULATING, min: 5, max: 8, color: '#ffd10f' }));
 			expect(SoterSlopeClasses[3]).toEqual(jasmine.objectContaining({ type: SlopeType.ROLLING, min: 8, max: 15, color: '#fd7400' }));
 			expect(SoterSlopeClasses[4]).toEqual(jasmine.objectContaining({ type: SlopeType.MODERATELY_STEEP, min: 15, max: 30, color: '#d23600' }));
-			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: 60, color: '#691b00' }));
+			expect(SoterSlopeClasses[5]).toEqual(jasmine.objectContaining({ type: SlopeType.STEEP, min: 30, max: Infinity, color: '#691b00' }));
 		});
 	});
 

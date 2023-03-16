@@ -25,7 +25,6 @@
 .is-embedded .footer {
 	bottom: 0;
 	left: 0;
-	border-radius: 0 1em 0 0;
 }
 .is-portrait .content,
 .is-tablet .content,
@@ -40,7 +39,6 @@ ba-attribution-info {
 .is-portrait ba-attribution-info,
 .is-tablet ba-attribution-info,
 .is-embedded ba-attribution-info {
-	border-radius: 0 1.5em 0 0;
 	overflow: hidden;
 }
 .scale {

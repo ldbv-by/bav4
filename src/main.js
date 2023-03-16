@@ -26,3 +26,4 @@ import './modules/chips';
 import './modules/dndImport';
 import './modules/auth';
 import './modules/elevationProfile';
+import './modules/share';
