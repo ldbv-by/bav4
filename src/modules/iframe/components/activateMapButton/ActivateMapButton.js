@@ -33,10 +33,10 @@ export class ActivateMapButton extends MvuElement {
 			`;
 		};
 
-		if (!document.getElementById(ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id)) {
+		if (!document.getElementById(ActivateMapButton.STYLE_ID)) {
 			const style = document.createElement('style');
 			style.innerHTML = renderCommonStyle();
-			style.id = ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id;
+			style.id = ActivateMapButton.STYLE_ID;
 			document.head.appendChild(style);
 		}
 	}
@@ -45,7 +45,7 @@ export class ActivateMapButton extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const close = () => {
-			const commonStyle = document.getElementById(ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id);
+			const commonStyle = document.getElementById(ActivateMapButton.STYLE_ID);
 			commonStyle.remove();
 			const background = this.shadowRoot.getElementById('background');
 			background.classList.add('hide');
@@ -75,7 +75,7 @@ export class ActivateMapButton extends MvuElement {
 		return 'ba-activate-map-button';
 	}
 
-	static get ACTIVATE_MAP_COMMON_Style_Id() {
+	static get STYLE_ID() {
 		return 'activate_map_commons_kkfjrutmfjhwwww';
 	}
 }

@@ -29,9 +29,9 @@ describe('ActivateMapButton', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
 
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)).toHaveSize(1);
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)[0].innerText).toContain(ActivateMapButton.tag);
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)[0].innerText).toContain(OlMap.tag);
+			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
+			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(ActivateMapButton.tag);
+			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);
 		});
 
 		it('renders nothing when normal', async () => {
@@ -46,12 +46,12 @@ describe('ActivateMapButton', () => {
 			const button = element.shadowRoot.querySelectorAll('ba-button')[0];
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeFalse();
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)).toHaveSize(1);
+			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
 
 			button.click();
 
 			expect(element.shadowRoot.querySelectorAll('.active-map__background')[0].classList.contains('hide')).toBeTrue();
-			expect(document.querySelectorAll(`#${ActivateMapButton.ACTIVATE_MAP_COMMON_Style_Id}`)).toHaveSize(0);
+			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(0);
 		});
 	});
 });
