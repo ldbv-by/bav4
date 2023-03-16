@@ -218,7 +218,7 @@ describe('MeasureToolContent', () => {
 			expect(element.shadowRoot.querySelector('#remove').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 		});
 
-		it('contains elevation profile chip', async () => {
+		it('contains the elevation profile chip', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 0 },
@@ -231,7 +231,7 @@ describe('MeasureToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 		});
 
-		it('contains share data chip', async () => {
+		it('contains the share data chip', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: 42, area: 0 },
