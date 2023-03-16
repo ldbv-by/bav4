@@ -8,7 +8,6 @@ import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { toLocaleString } from '../../../utils/numberUtils';
-import { setIsDarkSchema } from '../../../store/media/media.action';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -196,34 +195,6 @@ export class ElevationProfile extends MvuElement {
 			this.signal(Update_Selected_Attribute, selectedAttribute);
 		};
 
-		const loadEP = () => {
-			const { StoreService } = $injector.inject('StoreService');
-			const {
-				elevationProfile: { coordinates }
-			} = StoreService.getStore().getState();
-			this._getElevationProfile(coordinates);
-		};
-		const destroy = () => {
-			this._destroyChart();
-			emitNotification('DESTROY', LevelTypes.INFO);
-		};
-		const render = () => {
-			this._updateOrCreateChart();
-			emitNotification('RENDER', LevelTypes.INFO);
-		};
-		const dark = () => {
-			setIsDarkSchema(true);
-			emitNotification('DARK', LevelTypes.INFO);
-
-			loadEP();
-		};
-		const light = () => {
-			setIsDarkSchema(false);
-			emitNotification('LIGHT', LevelTypes.INFO);
-
-			loadEP();
-		};
-
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
@@ -246,14 +217,6 @@ export class ElevationProfile extends MvuElement {
 					<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
 				</div>
 				<div class="profile__data" id="route-altitude-chart-footer">
-					<div class="profile__box" title="chart">
-						<div class="profile__text" @click=${destroy}>destroy</div>
-						<div class="profile__text" @click=${render}>render</div>
-					</div>
-					<div class="profile__box" title="theme">
-						<div class="profile__text" @click=${dark}>dark</div>
-						<div class="profile__text" @click=${light}>light</div>
-					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${toLocaleString(sumUp)} m</div>
@@ -316,23 +279,11 @@ export class ElevationProfile extends MvuElement {
 
 		profile.chartData = profile.elevations.map((elevation) => elevation.z);
 
-		///////// todo cleanup
-		// profile.attrs.forEach((attr) => {
-		// 	this._enrichAltsArrayWithAttributeData(attr, profile);
-		// });
-		// // add alt(itude) to attribute select
-		// profile.attrs = [{ id: 'alt' }, ...profile.attrs];
-		///////// no attrs in dark mode
-		if (ElevationProfile.IS_DARK) {
-			profile.attrs = [{ id: 'alt' }];
-		} else {
-			profile.attrs.forEach((attr) => {
-				this._enrichAltsArrayWithAttributeData(attr, profile);
-			});
-			// add alt(itude) to attribute select
-			profile.attrs = [{ id: 'alt' }, ...profile.attrs];
-		}
-		/////////
+		profile.attrs.forEach((attr) => {
+			this._enrichAltsArrayWithAttributeData(attr, profile);
+		});
+		// add alt(itude) to attribute select
+		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
 
 		const selectedAttribute = this.getModel().selectedAttribute;
 		const attribute = profile.attrs.find((attr) => {
