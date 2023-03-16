@@ -144,8 +144,8 @@ export class DrawToolContent extends AbstractToolContent {
 
 	_showActive(tools) {
 		tools.forEach((tool) => {
-			const id = tool.name;
-			const element = this._root.querySelector('#' + id);
+			const element = this._root.querySelector(`#${tool.name}-button`);
+
 			if (element) {
 				if (tool.active) {
 					element.classList.add('is-active');
