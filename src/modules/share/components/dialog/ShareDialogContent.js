@@ -91,7 +91,7 @@ export class ShareDialogContent extends MvuElement {
 		return isToggleNeeded
 			? html`<div class="toggle">
 					<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					<span class="share_copy">${translate('share_shareDialogContent_link')}</span>
+					<span class="share_copy">${translate('share_dialog_link')}</span>
 			  </div>`
 			: html.nothing;
 	}
@@ -107,26 +107,20 @@ export class ShareDialogContent extends MvuElement {
 				const onClickWithApi = async () => {
 					try {
 						await this._environmentService.getWindow().navigator.share({
-							title: translate('share_shareDialogContent_link_title'),
+							title: translate('share_dialog_link_title'),
 							url: url
 						});
 					} catch (error) {
 						console.error('Share-API failed:', error);
 					}
 				};
-				return html`<ba-icon
-					class="share_api"
-					.icon="${shareIcon}"
-					.title=${translate('share_shareDialogContent_api')}
-					.size=${2}
-					@click=${onClickWithApi}
-				>
+				return html`<ba-icon class="share_api" .icon="${shareIcon}" .title=${translate('share_dialog_api')} .size=${2} @click=${onClickWithApi}>
 				</ba-icon>`;
 			}
 			return html`<ba-icon
 				class="share_copy"
 				.icon="${clipboardIcon}"
-				.title=${translate('share_shareDialogContent_copy_icon')}
+				.title=${translate('share_dialog_copy_icon')}
 				.size=${2}
 				@click=${onCopyUrlToClipBoard}
 			>
