@@ -14,7 +14,7 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator("html[translate='no']")).toBeTruthy();
 		});
 
-		test('should contain 7 top level ba-components', async ({ page }) => {
+		test('should contain 8 top level ba-components', async ({ page }) => {
 			// Get frame using the frame's name attribute
 			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(8);
 
@@ -25,7 +25,7 @@ test.describe('embed page', () => {
 			expect(await page.frameLocator('#wrapper').locator('ba-theme-provider').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-notification-panel').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-context-menu').count()).toBe(1);
-			expect(await page.frameLocator('#wrapper').locator('ba-map-context-menu').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);
 		});
 	});
 });

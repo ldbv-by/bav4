@@ -38,6 +38,7 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 Hochformat');
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 Querformat');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 Hochformat');
+		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('Die folgenden Ebenen können nicht exportiert werden:');
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Daten');
 	});
 
@@ -74,11 +75,12 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_mfp_id_a4_portrait).toBe('DIN A4 portrait');
 		expect(map.olMap_handler_mfp_id_a3_landscape).toBe('DIN A3 landscape');
 		expect(map.olMap_handler_mfp_id_a3_portrait).toBe('DIN A3 portrait');
+		expect(map.olMap_handler_mfp_encoder_layer_not_exportable).toBe('The following layers cannot be exported:');
 		expect(map.olMap_vectorLayerService_default_layer_name_vector).toBe('Data');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 29;
+		const expectedSize = 30;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

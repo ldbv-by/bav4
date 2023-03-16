@@ -20,11 +20,30 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
+export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
+	MISSING_GEORESOURCE: 'missing_georesource',
+	NOT_EXPORTABLE: 'not_exportable'
+});
+
 /**
  * Encoder to create a MapFishPrint request-object from a OpenLayers map-instance
  * @author thiloSchlemmer
  * @interface Mfp3Encoder
  */
+
+/**
+ * A Container-Object for the results of a encoding operation 
+ * @typedef {Object} EncodingError
+ * @param {String} label the id or the geoResource label of the layer where encoding failed 
+ * @param {String} type the error type
+ * /
+
+/**
+ * A Container-Object for the results of a encoding operation 
+ * @typedef {Object} EncodingResult
+ * @param {Object} specs the encoded map as a mfp spec
+ * @param {Array<EncodingError>} errors the collected errors of the encoding operation 
+*/
 
 /**
  * Encodes the content of a ol {@see Map} to a MapFishPrint3 job request.
@@ -33,7 +52,7 @@ const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Prod
  * @name Mfp3Encoder#encode
  * @param {ol.Map} olMap the ol map
  * @param {EncodingProperties} encodingProperties
- * @returns {Object} the encoded mfp specs
+ * @returns {EncodingResult} the result of the encoding operation
  * /
 
 /**
@@ -115,28 +134,38 @@ export class BvvMfp3Encoder {
 				const layerExtent = layer.getExtent();
 				return layerExtent ? extentIntersects(layer.getExtent(), this._pageExtent) && layer.getVisible() : layer.getVisible();
 			});
-		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l));
+
+		const errors = [];
+		const collectErrors = (label, errorType) => {
+			errors.push({ label: label, type: errorType });
+		};
+
+		const encodedLayers = encodableLayers.flatMap((l) => this._encode(l, collectErrors));
 		const copyRights = this._getCopyrights(olMap, encodableLayers);
 		const encodedOverlays = this._encodeOverlays(olMap.getOverlays().getArray());
 		const encodedGridLayer = this._mfpProperties.showGrid ? this._encodeGridLayer(this._mfpProperties.scale) : {};
 		const shortLinkUrl = await this._generateShortUrl();
 		const qrCodeUrl = this._generateQrCode(shortLinkUrl);
 		const layers = [encodedGridLayer, encodedOverlays, ...encodedLayers.reverse()].filter((spec) => Object.hasOwn(spec, 'type'));
+
 		return {
-			layout: this._mfpProperties.layoutId,
-			attributes: {
-				map: {
-					center: mfpCenter.getCoordinates(),
-					scale: this._mfpProperties.scale,
-					projection: this._mfpProjection,
-					dpi: this._mfpProperties.dpi,
-					rotation: this._mfpProperties.rotation,
-					layers: layers
-				},
-				dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
-				shortLink: shortLinkUrl,
-				qrcodeurl: qrCodeUrl
-			}
+			specs: {
+				layout: this._mfpProperties.layoutId,
+				attributes: {
+					map: {
+						center: mfpCenter.getCoordinates(),
+						scale: this._mfpProperties.scale,
+						projection: this._mfpProjection,
+						dpi: this._mfpProperties.dpi,
+						rotation: this._mfpProperties.rotation,
+						layers: layers
+					},
+					dataOwner: Array.from(new Set(copyRights.map((c) => c.label))).join(','),
+					shortLink: shortLinkUrl,
+					qrcodeurl: qrCodeUrl
+				}
+			},
+			errors: errors
 		};
 	}
 
@@ -170,12 +199,18 @@ export class BvvMfp3Encoder {
 		return getUniqueCopyrights(geoResources, getZoomLevel(map));
 	}
 
-	_encode(layer) {
+	_encode(layer, encodingErrorCallback) {
 		if (layer instanceof LayerGroup) {
 			return this._encodeGroup(layer);
 		}
 		const geoResource = this._geoResourceService.byId(layer.get('geoResourceId'));
 		if (!geoResource) {
+			encodingErrorCallback(`[${layer.get('id')}]`, MFP_ENCODING_ERROR_TYPE.MISSING_GEORESOURCE);
+			return false;
+		}
+
+		if (!geoResource.exportable) {
+			encodingErrorCallback(geoResource.label, MFP_ENCODING_ERROR_TYPE.NOT_EXPORTABLE);
 			return false;
 		}
 		switch (geoResource.getType()) {

@@ -57,20 +57,21 @@ Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && 
 
 ### Configuration
 
+The app can be run without any configuration and uses default values and fallback mechanisms for that case.
+That is also the case when the `BACKEND_URL` property is missing.  
+To enable the showcase component, the `SOFTWARE_INFO` property must be set.
+
 Configuration properties are read at build time from an `.env` file located in the projects root directory.
 Currently used properties are:
 
-| key                      | default value | description                                          |
-| ------------------------ | ------------- | ---------------------------------------------------- |
-| `DEFAULT_LANG`           | `en`          | current locale (available locales are `en` and `de`) |
-| `BACKEND_URL`            |               |                                                      |
-| `PROXY_URL`              |               |                                                      |
-| `SHORTENING_SERVICE_URL` |               |                                                      |
-| `SOFTWARE_INFO`          |               | e.g. build information                               |
-
-The app can be run without any configuration and uses default values and fallback mechanisms for that case.  
-That is also the case when the `BACKEND_URL` property is missing.  
-To enable the showcase component, the `SOFTWARE_INFO` property must be set.
+| key                      | default value                            | description                                          |
+| ------------------------ | ---------------------------------------- | ---------------------------------------------------- |
+| `DEFAULT_LANG`           | `en`                                     | current locale (available locales are `en` and `de`) |
+| `FRONTEND_URL`           | `${location.protocol}//${location.host}` | (external) URL of the app                            |
+| `BACKEND_URL`            |                                          |                                                      |
+| `PROXY_URL`              |                                          |                                                      |
+| `SHORTENING_SERVICE_URL` |                                          |                                                      |
+| `SOFTWARE_INFO`          |                                          | e.g. build information                               |
 
 ### List of npm scripts
 

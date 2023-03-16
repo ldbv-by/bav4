@@ -64,6 +64,9 @@ describe('StoreService', () => {
 		const historyStatePluginMock = {
 			register: () => {}
 		};
+		const observeStateForEncodingPluginMock = {
+			register: () => {}
+		};
 
 		const setupInjector = () => {
 			$injector
@@ -88,6 +91,7 @@ describe('StoreService', () => {
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
+				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
 
 				.ready();
 		};
@@ -99,7 +103,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(25);
+			expect(reducerKeys.length).toBe(26);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -125,6 +129,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('bottomSheet')).toBeTrue();
 			expect(reducerKeys.includes('elevationProfile')).toBeTrue();
 			expect(reducerKeys.includes('chips')).toBeTrue();
+			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -145,6 +150,7 @@ describe('StoreService', () => {
 			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
+			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
 			const instanceUnderTest = new StoreService();
 
 			setupInjector();
@@ -171,6 +177,7 @@ describe('StoreService', () => {
 			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
+			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
 		});
 	});
 });

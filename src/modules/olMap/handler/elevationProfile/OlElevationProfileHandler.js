@@ -3,7 +3,12 @@ import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { observe } from '../../../../utils/storeUtils';
-import { getLineString } from '../../utils/olGeometryUtils';
+import {
+	getLineString,
+	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
+	simplify
+} from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
@@ -68,7 +73,11 @@ export class OlElevationProfileHandler extends OlMapHandler {
 
 		if (featureCount === 1) {
 			const feature = features.getArray()[0];
-			const geometry = getLineString(feature.getGeometry());
+			const geometry = simplify(
+				getLineString(feature.getGeometry()),
+				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
+			);
 			return geometry ? force2D(geometry.getCoordinates()) : Empty_Elevation_Profile_Coordinates;
 		}
 		return Empty_Elevation_Profile_Coordinates;
