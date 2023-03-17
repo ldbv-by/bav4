@@ -100,3 +100,11 @@
 .bmde_vector_relief {
 	background-image: url('assets/1.webp');
 }
+.settings {
+	mask-image: url('assets/settings.svg');
+	-webkit-mask-image: url('assets/settings.svg');
+	-webkit-mask-size: cover !important;
+	background: var(--text2) !important;
+	width: 1.5em !important;
+	height: 1.5em !important;
+}

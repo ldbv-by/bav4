@@ -235,7 +235,14 @@ export class LayerManager extends MvuElement {
 						@click=${expandOrCollapseAction}
 						style="border-right: 1px dotted var(--header-background-color);"
 					></ba-button>
-					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+					<ba-button
+						id="button_remove_all"
+						.label=${translate('layerManager_remove_all')}
+						.type=${'secondary'}
+						@click=${removeAll}
+						style="border-right: 1px dotted var(--header-background-color);"
+					></ba-button>
+					<ba-button id="button_remove_all" .label=${'Vergleichen'} .type=${'secondary'} @click=${removeAll}></ba-button>
 					<div></div>
 			  </div>`
 			: nothing;

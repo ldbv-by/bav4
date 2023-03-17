@@ -17,6 +17,22 @@
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
 }
+.person {
+	mask-image: url('assets/person.svg');
+	-webkit-mask-image: url('assets/person.svg');
+}
+.gear {
+	mask-image: url('assets/gear.svg');
+	-webkit-mask-image: url('assets/gear.svg');
+}
+.flag {
+	mask-image: url('assets/flag.svg');
+	-webkit-mask-image: url('assets/flag.svg');
+}
+.cardChecklist {
+	mask-image: url('assets/cardChecklist.svg');
+	-webkit-mask-image: url('assets/cardChecklist.svg');
+}
 .contact {
 	mask-image: url('assets/contact.svg');
 	-webkit-mask-image: url('assets/contact.svg');

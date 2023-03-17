@@ -2,6 +2,7 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import css from './baseLayerSwitcher.css';
+import css1 from './../../../menu/components/mainMenu/content/abstractContentPanel.css';
 import { MvuElement } from '../../../MvuElement';
 import { createUniqueId } from '../../../../utils/numberUtils';
 
@@ -102,6 +103,7 @@ export class BaseLayerSwitcher extends MvuElement {
 			return html`
 				<style>
 					${css}
+					${css1}
 				</style>
 				<div class="title">${translate('baselayer_switcher_header')}</div>
 				<div class="baselayer__container">
@@ -110,6 +112,17 @@ export class BaseLayerSwitcher extends MvuElement {
 							<div class="baselayer__label">${geoR.label}</div>
 						</button>`
 					)}
+				</div>
+				<div class="ba-list">
+					<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+						<span class="ba-list-item__pre">
+							<span class="ba-list-item__icon icon settings"> </span>
+						</span>
+						<span class="ba-list-item__text vertical-center">Basiskarten-Einstellungen</span>
+						<span class="ba-list-item__after vertical-center">
+							<span class="arrow arrow-right"></span>
+						</span>
+					</a>
 				</div>
 			`;
 		}

@@ -21,15 +21,55 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 
 		return html`
 			<style>
-				${css}
+				${css} .hide {
+					display: none;
+				}
 			</style>
 			<div class="ba-list">
-				<div class="ba-list-item  ba-list-item__header">
+				<div class="ba-list-item  ba-list-item__header hide">
+					<span class="ba-list-item__text ">
+						<span class="ba-list-item__primary-text">BayernAtlas-plus</span>
+					</span>
+				</div>
+				<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon person"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">BayernAtlas-plus Login</span>
+				</a>
+				<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon gear"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Einstellungen</span>
+					<span class="ba-list-item__after vertical-center">
+						<span class="arrow arrow-right"></span>
+					</span>
+				</a>
+				<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon flag"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Feedback zur Karte</span>
+					<span class="ba-list-item__after vertical-center">
+						<span class="arrow arrow-right"></span>
+					</span>
+				</a>
+				<a class="ba-list-item divider" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon cardChecklist"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Karten Legende</span>
+					<span class="ba-list-item__after vertical-center">
+						<span class="arrow arrow-right"></span>
+					</span>
+				</a>
+				<div class="ba-list-item  ba-list-item__header hide">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
 					</span>
 				</div>
-				<div class="ba-list-item divider">
+				<div class="ba-list-item divider hide">
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					<span class="ba-list-item__after">
 						<ba-theme-toggle></ba-theme-toggle>

@@ -218,7 +218,7 @@ export class Header extends MvuElement {
 						<div id='header__text' class='${getOverlayClass()} header__text'>
 						</div>
 						<div class='header__logo-badge'>										
-							${translate('header_logo_badge')}
+							plus
 						</div>	
 					</div>		
 					<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
@@ -229,6 +229,9 @@ export class Header extends MvuElement {
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
 						</button> 
+						<button  class="person" title=${translate('header_close_button_title')}">
+							<i class="person-icon "></i>
+						</button> 
 						<div class="header__background">
 						</div>
 						<div class='header__search-container'>
@@ -237,7 +240,7 @@ export class Header extends MvuElement {
 							)}' value="${searchTerm}" @focus="${onInputFocus}" @blur="${onInputBlur}" @input="${onInput}" class='header__search' type="search" placeholder="" />          
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
+							<button @click="${showModalInfo}" class="header__modal-button" title="modal">
 							&nbsp;
 							</button>
 						</div>
