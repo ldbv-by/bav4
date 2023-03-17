@@ -21,7 +21,7 @@ export const elevationProfileReducer = (state = initialState, action) => {
 			const { active, coordinates } = payload;
 			return {
 				...state,
-				coordinates: [...coordinates],
+				coordinates: coordinates ? [...coordinates] : [...state.coordinates],
 				active: active
 			};
 		}
