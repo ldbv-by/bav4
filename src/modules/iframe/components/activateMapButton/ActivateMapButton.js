@@ -20,7 +20,7 @@ export class ActivateMapButton extends MvuElement {
 		this._translationService = translationService;
 	}
 
-	onWindowLoad() {
+	onInitialize() {
 		//append common styles
 		const renderCommonStyle = () => {
 			return `
