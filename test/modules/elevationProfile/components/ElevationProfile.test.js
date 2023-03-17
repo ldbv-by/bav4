@@ -897,9 +897,7 @@ describe('ElevationProfile', () => {
 					}
 				]
 			};
-			await setup({
-				altitudeProfile
-			});
+			await setup();
 			const ap = new ElevationProfile();
 
 			//act
@@ -937,9 +935,7 @@ describe('ElevationProfile', () => {
 				],
 				attrs: []
 			};
-			await setup({
-				altitudeProfile
-			});
+			await setup();
 			const ap = new ElevationProfile();
 
 			//act
