@@ -830,29 +830,29 @@ describe('ElevationProfile', () => {
 	describe('when coordinates (slice-of-state) changes (from some coordinates)', () => {
 		it('calls _getElevationProfile with new coordinates', async () => {
 			// arrange
-			const coordinates = [
+			const initialCoordinates = [
 				[0, 1],
 				[2, 3]
 			];
-			const altitudeData = profileSlopeSteep();
-			spyOn(elevationServiceMock, 'getProfile').and.resolveTo(altitudeData);
+			const secondCoordinates = [
+				[4, 5],
+				[6, 7]
+			];
+			spyOn(elevationServiceMock, 'getProfile').and.returnValues(profile(), profileWithoutSlope());
+
 			const element = await setup({
 				elevationProfile: {
 					active: true,
-					coordinates: coordinates
+					coordinates: initialCoordinates
 				}
 			});
 			const getAltitudeProfileSpy = spyOn(element, '_getElevationProfile').and.callThrough();
 
 			//act
-			const newCoordinates = [
-				[7, 8],
-				[5, 6]
-			];
-			updateCoordinates(newCoordinates);
+			updateCoordinates(secondCoordinates);
 
 			// assert
-			expect(getAltitudeProfileSpy).toHaveBeenCalledWith(newCoordinates);
+			expect(getAltitudeProfileSpy).toHaveBeenCalledWith(secondCoordinates);
 		});
 	});
 
@@ -981,7 +981,7 @@ describe('ElevationProfile', () => {
 				labels: [],
 				chartData: [],
 				elevations: [],
-				attrs: [{ id: 'alt' }],
+				attrs: [],
 				distUnit: 'm',
 				stats: {
 					sumUp: 0,

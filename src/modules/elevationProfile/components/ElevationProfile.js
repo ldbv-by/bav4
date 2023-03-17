@@ -49,7 +49,7 @@ export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
-	attrs: [{ id: 'alt' }],
+	attrs: [],
 	distUnit: 'm',
 	stats: {
 		sumUp: 0,
