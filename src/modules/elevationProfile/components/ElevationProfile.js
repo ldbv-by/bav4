@@ -440,8 +440,12 @@ export class ElevationProfile extends MvuElement {
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
-				this._enrichProfileData(profile);
-				this.signal(Update_Profile_Data, profile);
+				if (!profile) {
+					this.signal(Update_Profile_Data, Empty_Profile_Data);
+				} else {
+					this._enrichProfileData(profile);
+					this.signal(Update_Profile_Data, profile);
+				}
 			} catch (e) {
 				console.error(e);
 				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
