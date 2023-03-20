@@ -48,7 +48,7 @@ describe('FeatureInfoResult provider', () => {
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
@@ -89,7 +89,7 @@ describe('FeatureInfoResult provider', () => {
 			});
 			const featureInfoResultPayload = { title: title, content: 'content' };
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 				.and.resolveTo(new Response(JSON.stringify(featureInfoResultPayload)));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
@@ -134,7 +134,7 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 				.and.resolveTo(new Response(null, { status: 204 }));
 
 			const featureInfoResult = await loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution);
@@ -160,7 +160,7 @@ describe('FeatureInfoResult provider', () => {
 				resolution: mapResolution
 			});
 			const httpServiceSpy = spyOn(httpService, 'post')
-				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 5000 })
+				.withArgs(`${backendUrl}getFeature`, expectedRequestPayload, MediaType.JSON, { timeout: 10000 })
 				.and.resolveTo(new Response(null, { status: 500 }));
 
 			await expectAsync(loadBvvFeatureInfo(geoResourceId, coordinate3857, mapResolution)).toBeRejectedWithError(
