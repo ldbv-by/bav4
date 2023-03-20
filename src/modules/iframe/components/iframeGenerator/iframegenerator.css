@@ -63,6 +63,3 @@ iframe[width='100%'] {
 	align-items: center;
 	padding-right: 0.3em;
 }
-#iframe_slider_width:disabled {
-	display: none;
-}
