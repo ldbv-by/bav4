@@ -105,7 +105,7 @@ export class IframeGenerator extends MvuElement {
 				  </div>`
 				: html`<div class="fieldset">						
 			<div class='iframe__input'>
-			<input type="number" id="iframe_width" .value=${width} min=${Range_Min} max=${Range_Max} @input=${onChangeWidth}></input>Pixel
+			<input type="number" id="iframe_width" max=${Range_Max} .value=${width} min=${Range_Min} @input=${onChangeWidth}></input>Pixel
 			</div>
 			<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
 			<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
@@ -124,8 +124,8 @@ export class IframeGenerator extends MvuElement {
 				</div>
 				${getWidthFieldset()}
 				<div class="fieldset">						
-					<div class='iframe__input'><input type="number" .value=${height} min=${Range_Min} max=${Range_Max} id="iframe_height" @input=${onChangeHeight}></input>Pixel</div>
-					<input type="range" id="iframe_slider_height" .value=${height} step=10 min=${Range_Min} max=${Range_Max} @input=${onChangeSliderHeight}>
+					<div class='iframe__input'><input type="number" id="iframe_height" min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeHeight}></input>Pixel</div>
+					<input type="range" id="iframe_slider_height" step=10 min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeSliderHeight}>
 					<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
 				</div>
 				</div>
