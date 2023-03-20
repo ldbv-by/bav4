@@ -49,7 +49,7 @@ export const Empty_Profile_Data = Object.freeze({
 	labels: [],
 	chartData: [],
 	elevations: [],
-	attrs: [{ id: 'alt' }],
+	attrs: [],
 	distUnit: 'm',
 	stats: {
 		sumUp: 0,
@@ -161,7 +161,7 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	onDisconnect() {
-		this._chart?.destroy();
+		this._destroyChart();
 		removeHighlightFeaturesById(ElevationProfile.HIGHLIGHT_FEATURE_ID);
 		while (this._unsubscribers.length > 0) {
 			this._unsubscribers.shift()();
@@ -172,7 +172,11 @@ export class ElevationProfile extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { portrait, minWidth } = model;
+		const {
+			portrait,
+			minWidth,
+			profile: { attrs }
+		} = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -202,7 +206,7 @@ export class ElevationProfile extends MvuElement {
 			<div class="profile ${getOrientationClass()} ${getMinWidthClass()}">
 				<span class="profile__options">
 					<select id="attrs" @change=${onChange}>
-						${model.profile.attrs.map(
+						${attrs.map(
 							(attr) => html`
 								<option value="${attr.id}" ?selected=${model.selectedAttribute === attr.id}>${translate('elevationProfile_' + attr.id)}</option>
 							`
@@ -278,9 +282,16 @@ export class ElevationProfile extends MvuElement {
 		profile.attrs.forEach((attr) => {
 			this._enrichAltsArrayWithAttributeData(attr, profile);
 		});
-
 		// add alt(itude) to attribute select
 		profile.attrs = [{ id: 'alt' }, ...profile.attrs];
+
+		const selectedAttribute = this.getModel().selectedAttribute;
+		const attribute = profile.attrs.find((attr) => {
+			return attr.id === selectedAttribute;
+		});
+		if (!attribute) {
+			this.signal(Update_Selected_Attribute, Default_Selected_Attribute);
+		}
 
 		return;
 	}
@@ -359,7 +370,7 @@ export class ElevationProfile extends MvuElement {
 		this._altitudeProfileAttributeTypes[attributeType._attribute].push(attributeType);
 	}
 
-	getAltitudeProfileAttributeType(attribute, typeString) {
+	_getAltitudeProfileAttributeType(attribute, typeString) {
 		const attributeType = this._altitudeProfileAttributeTypes[attribute].find((element) => {
 			return element._name === typeString;
 		});
@@ -378,7 +389,7 @@ export class ElevationProfile extends MvuElement {
 		const numberOfPoints = altitudeData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
 		const altitudeProfileAttributeString = altitudeData.elevations[0][selectedAttribute];
-		let currentAltitudeProfileAttributeType = this.getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
+		let currentAltitudeProfileAttributeType = this._getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
 		gradientBg.addColorStop(0, currentAltitudeProfileAttributeType.color);
 		let altitudeProfileAttributeType;
 		altitudeData.elevations.forEach((element, index) => {
@@ -391,7 +402,7 @@ export class ElevationProfile extends MvuElement {
 				return;
 			}
 			const attributeType = element[selectedAttribute];
-			altitudeProfileAttributeType = this.getAltitudeProfileAttributeType(selectedAttribute, attributeType);
+			altitudeProfileAttributeType = this._getAltitudeProfileAttributeType(selectedAttribute, attributeType);
 			if (currentAltitudeProfileAttributeType === altitudeProfileAttributeType) {
 				return;
 			}
@@ -410,7 +421,7 @@ export class ElevationProfile extends MvuElement {
 		const xPointWidth = chartArea.width / numberOfPoints;
 
 		altitudeData?.elevations.forEach((element, index) => {
-			if (element.slope && element.slope !== 'missing') {
+			if (element.slope) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeValue = Math.abs(element.slope);
 				const slopeClass = SoterSlopeClasses.find((c) => c.min <= slopeValue && c.max > slopeValue);
@@ -429,8 +440,12 @@ export class ElevationProfile extends MvuElement {
 		if (Array.isArray(coordinates) && coordinates.length >= 2) {
 			try {
 				const profile = await this._elevationService.getProfile(coordinates);
-				this._enrichProfileData(profile);
-				this.signal(Update_Profile_Data, profile);
+				if (!profile) {
+					this.signal(Update_Profile_Data, Empty_Profile_Data);
+				} else {
+					this._enrichProfileData(profile);
+					this.signal(Update_Profile_Data, profile);
+				}
 			} catch (e) {
 				console.error(e);
 				emitNotification(translate('elevationProfile_could_not_load'), LevelTypes.ERROR);
@@ -611,9 +626,17 @@ export class ElevationProfile extends MvuElement {
 		this._noAnimation = false;
 	}
 
+	_destroyChart() {
+		if (this._chart) {
+			this._chart.clear();
+			this._chart.destroy();
+			delete this._chart;
+		}
+	}
+
 	_updateOrCreateChart() {
 		const { profile, labels, data, distUnit } = this.getModel();
-		this._chart?.destroy();
+		this._destroyChart();
 		this._createChart(profile, labels, data, distUnit);
 	}
 
