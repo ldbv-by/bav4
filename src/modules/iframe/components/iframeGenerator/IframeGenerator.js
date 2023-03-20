@@ -97,6 +97,21 @@ export class IframeGenerator extends MvuElement {
 			this.signal(Update_Auto_Width, event.detail.checked);
 		};
 
+		const getWidthFieldset = () => {
+			return autoWidth
+				? html`<div class="fieldset">
+						<div class="iframe__input">${Auto_Width}</div>
+						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>
+				  </div>`
+				: html`<div class="fieldset">						
+			<div class='iframe__input'>
+			<input type="number" id="iframe_width" .value=${width} min=${Range_Min} max=${Range_Max} @input=${onChangeWidth}></input>Pixel
+			</div>
+			<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
+			<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
+		</div>`;
+		};
+
 		const currentWidth = autoWidth ? Auto_Width : width;
 		return html`
 		<style>${css}</style>		
@@ -107,13 +122,7 @@ export class IframeGenerator extends MvuElement {
 					<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
 					<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
 				</div>
-				<div class="fieldset">						
-					<div class='iframe__input'>
-					<input type="number" id="iframe_width" .value=${width} min=${Range_Min} max=${Range_Max} @input=${onChangeWidth}></input>Pixel
-					</div>
-					<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
-					<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
-				</div>
+				${getWidthFieldset()}
 				<div class="fieldset">						
 					<div class='iframe__input'><input type="number" .value=${height} min=${Range_Min} max=${Range_Max} id="iframe_height" @input=${onChangeHeight}></input>Pixel</div>
 					<input type="range" id="iframe_slider_height" .value=${height} step=10 min=${Range_Min} max=${Range_Max} @input=${onChangeSliderHeight}>
