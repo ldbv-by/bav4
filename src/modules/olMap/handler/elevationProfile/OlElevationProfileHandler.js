@@ -62,7 +62,7 @@ export class OlElevationProfileHandler extends OlMapHandler {
 			.find((interaction) => interaction instanceof Select);
 		const coordinates = select ? this._getCoordinates(select.getFeatures()) : Empty_Elevation_Profile_Coordinates;
 
-		if (isClosed && coordinates !== Empty_Elevation_Profile_Coordinates) {
+		if (isClosed) {
 			updateCoordinates(coordinates);
 		}
 	}
