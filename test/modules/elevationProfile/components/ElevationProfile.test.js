@@ -1259,7 +1259,6 @@ describe('ElevationProfile', () => {
 			const enrichProfileDataSpy = spyOn(element, '_enrichProfileData').and.callThrough();
 
 			//act
-			// updateCoordinates(initialCoordinates);
 			const attrs = element.shadowRoot.getElementById('attrs');
 			attrs.value = 'slope';
 			attrs.dispatchEvent(new Event('change'));
