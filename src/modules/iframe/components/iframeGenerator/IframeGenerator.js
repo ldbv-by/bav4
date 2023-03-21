@@ -12,7 +12,7 @@ const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
 const Update_Preview_Url = 'update_preview_url';
 
-const Auto_Width = '100%';
+const Auto_Width = '100';
 const Range_Min = 100;
 const Range_Max = 2000;
 
@@ -101,7 +101,10 @@ export class IframeGenerator extends MvuElement {
 			return autoWidth
 				? html` <div class="fieldset">
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>
-						<div class="iframe__input width_placeholder">${Auto_Width}</div>
+						<div class="iframe__input">
+							<div class="iframe__input width_placeholder">${Auto_Width}</div>
+							<span> % </span>
+						</div>
 				  </div>`
 				: html`
 					<div class="fieldset">		
@@ -169,7 +172,7 @@ export class IframeGenerator extends MvuElement {
 			<iframe
 				data-iframe-encoded-state
 				src=${iframeSrc}
-				width=${width === Auto_Width ? Auto_Width : width + 'px'}
+				width=${width === Auto_Width ? Auto_Width + '%' : width + 'px'}
 				height=${height + 'px'}
 				loading="lazy"
 				referrerpolicy="no-referrer-when-downgrade"
@@ -182,7 +185,7 @@ export class IframeGenerator extends MvuElement {
 
 		const getEmbedCode = () => {
 			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState({}, [PathParameters.EMBED])} width='${
-				width === Auto_Width ? Auto_Width : width + 'px'
+				width === Auto_Width ? Auto_Width + '%' : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 		};
 

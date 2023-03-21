@@ -109,6 +109,15 @@ iframe[width='100%'] {
 	margin: 1em 0;
 	max-width: 22.2em;
 }
+
+.width_placeholder {
+	font-size: 1.5rem;
+	margin: 0 0.2em 0 1em;
+	margin-left: 15.1em;
+	min-height: 1.6em;
+	margin-top: 0.4em;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
