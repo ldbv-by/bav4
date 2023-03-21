@@ -297,7 +297,7 @@ describe('IframeGenerator', () => {
 			toggle.click();
 
 			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(0);
-			expect(element.shadowRoot.querySelector('.iframe__input').textContent).toBe('100%');
+			expect(element.shadowRoot.querySelector('.width_placeholder').textContent).toBe('100');
 			expect(iframeElement.width).toBe('100%');
 			expect(textElement.value).toBe(
 				`<iframe src=${expectedUrl} width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
@@ -306,7 +306,7 @@ describe('IframeGenerator', () => {
 			toggle.click();
 
 			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('.iframe__input').textContent).not.toBe('100%');
+			expect(element.shadowRoot.querySelectorAll('.width_placeholder')).toHaveSize(0);
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
 				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
