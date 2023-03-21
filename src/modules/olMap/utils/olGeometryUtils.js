@@ -22,8 +22,38 @@ export const getLineString = (geometry) => {
 		return new LineString(geometry.getCoordinates());
 	} else if (geometry instanceof Polygon) {
 		return new LineString(geometry.getCoordinates(false)[0]);
+	} else if (geometry instanceof MultiLineString) {
+		return geometry.getLineStrings().length === 1 ? geometry.getLineStrings()[0] : multiLineStringToLineString(geometry);
 	}
 	return null;
+};
+
+export const multiLineStringToLineString = (multiLineString) => {
+	if (!(multiLineString instanceof MultiLineString)) {
+		return multiLineString;
+	}
+
+	const isConnected = (a, b) => {
+		const last = a.getLastCoordinate();
+		const first = b.getFirstCoordinate();
+		return last[0] === first[0] && last[1] === first[1];
+	};
+
+	const lineStrings = multiLineString.getLineStrings();
+	let coordinates = [];
+	for (let i = 0; i < lineStrings.length; i++) {
+		const current = lineStrings[i];
+		const next = lineStrings[i + 1];
+
+		if (!next || isConnected(current, next)) {
+			coordinates = coordinates.concat(current.getCoordinates());
+		} else {
+			// LineStrings are not connected.
+			coordinates.length = 0;
+			break;
+		}
+	}
+	return coordinates.length === 0 ? multiLineString : new LineString(coordinates);
 };
 
 /**
