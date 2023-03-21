@@ -37,14 +37,14 @@ export class SharePlugin extends BaPlugin {
 				.filter((gr) => gr.hidden)
 				.map((gr) => gr.label);
 
-			const warningContent = html`<div>
-				<p style="color: var(--text3);">${this._translationService.translate('global_share_unsupported_geoResource_warning')}</p>
-				<ul style="margin-left:2em;">
-					${grLabels.map((label) => html`<li style="color: var(--text3);">${label}</li>`)}
-				</ul>
-			</div>`;
-
 			if (grLabels.length) {
+				const warningContent = html`<div>
+					<p style="color: var(--text3);">${this._translationService.translate('global_share_unsupported_geoResource_warning')}</p>
+					<ul style="margin-left:2em;">
+						${grLabels.map((label) => html`<li style="color: var(--text3);">${label}</li>`)}
+					</ul>
+				</div>`;
+
 				emitNotification(warningContent, LevelTypes.WARN);
 			}
 		};
