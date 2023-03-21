@@ -14,7 +14,8 @@ export const provide = (lang) => {
 				global_import_unsupported_sourceType: 'Source type could not be detected or is not supported',
 				global_import_authenticationModal_title: 'Authentication required',
 				global_default_vector_georesource_name: 'Data',
-				global_locally_imported_dataset_copyright_label: 'Dataset and/or style provided by third party'
+				global_locally_imported_dataset_copyright_label: 'Dataset and/or style provided by third party',
+				global_share_unsupported_geoResource_warning: "The following layers won't be shared:"
 			};
 
 		case 'de':
@@ -31,7 +32,8 @@ export const provide = (lang) => {
 				global_import_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt',
 				global_import_authenticationModal_title: 'Anmeldung erforderlich',
 				global_default_vector_georesource_name: 'Daten',
-				global_locally_imported_dataset_copyright_label: 'Mit Darstellung durch den Anwender'
+				global_locally_imported_dataset_copyright_label: 'Mit Darstellung durch den Anwender',
+				global_share_unsupported_geoResource_warning: 'Folgende Ebenen werden nicht geteilt:'
 			};
 
 		default:

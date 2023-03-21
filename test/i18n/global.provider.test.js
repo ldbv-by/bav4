@@ -17,6 +17,7 @@ describe('global i18n', () => {
 		expect(map.global_import_authenticationModal_title).toBe('Authentication required');
 		expect(map.global_default_vector_georesource_name).toBe('Data');
 		expect(map.global_locally_imported_dataset_copyright_label).toBe('Dataset and/or style provided by third party');
+		expect(map.global_share_unsupported_geoResource_warning).toBe("The following layers won't be shared:");
 	});
 
 	it('provides translation for de', () => {
@@ -35,10 +36,11 @@ describe('global i18n', () => {
 		expect(map.global_import_authenticationModal_title).toBe('Anmeldung erforderlich');
 		expect(map.global_default_vector_georesource_name).toBe('Daten');
 		expect(map.global_locally_imported_dataset_copyright_label).toBe('Mit Darstellung durch den Anwender');
+		expect(map.global_share_unsupported_geoResource_warning).toBe('Folgende Ebenen werden nicht geteilt:');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 11;
+		const expectedSize = 12;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
