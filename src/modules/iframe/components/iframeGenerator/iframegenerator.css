@@ -99,7 +99,7 @@ iframe[width='100%'] {
 }
 .iframe__toggle_sub-text {
 	margin: 1em 0;
-	max-width: 22.8em;
+	width: 22.8em;
 }
 .width_placeholder {
 	font-size: 1.5rem;
