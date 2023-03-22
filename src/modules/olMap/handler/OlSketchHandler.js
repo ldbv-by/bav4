@@ -1,5 +1,6 @@
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
+import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
 
 /**
  * OlSketchHandler monitors changes for geometry based interactions of sketch-features and
@@ -44,6 +45,7 @@ export class OlSketchHandler {
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
+				sketchFeature.geodesic = new GeodesicGeometry(sketchFeature);
 				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;

@@ -1,4 +1,4 @@
-import { Geodesic, PolygonArea, math as geographicMath } from 'geographiclib-geodesic';
+import { Geodesic, PolygonArea, Math as geographicMath } from 'geographiclib-geodesic';
 import { LineString, MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
 import {
 	createOrUpdateFromFlatCoordinates /* Warning: private method of openlayers */,
@@ -174,7 +174,7 @@ export class GeodesicGeometry {
 					arcLength * i + this.rotation,
 					this.totalLength
 				);
-				circleCoords.autoPush({ lon: res.lon2, lat: res.lat2 });
+				circleCoords.add({ lon: res.lon2, lat: res.lat2 });
 			}
 			this.azimuthCircle = circleCoords.generateGeom();
 			this.azimuthCircleStyle = new Style({

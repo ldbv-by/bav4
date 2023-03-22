@@ -9,6 +9,7 @@ import tempLocationIcon from '../assets/temporaryLocation.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
+import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -318,7 +319,7 @@ export const polygonStyleFunction = (styleOption = { color: false, text: false }
 	];
 };
 
-const getRulerStyle = () => {
+const getRulerStyle = (feature) => {
 	const getCanvasContextRenderFunction = (state) => {
 		const renderContext = toCanvasContext(state.context, { pixelRatio: 1 });
 		return (geometry, fill, stroke) => {
@@ -326,7 +327,12 @@ const getRulerStyle = () => {
 			renderContext.drawGeometry(geometry);
 		};
 	};
+	if (!feature.geodesic) {
+		feature.geodesic = new GeodesicGeometry(feature);
+	}
+	console.log(feature.geodesic);
 	return new Style({
+		geometry: feature?.geodesic?.getGeodesicGeom(),
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -455,7 +461,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle() : getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
 	];
 	return styles;
 };
@@ -470,6 +476,7 @@ export const modifyStyleFunction = (feature) => {
 
 	return [
 		new Style({
+			geometry: feature?.geodesic?.getGeodesicGeom(),
 			image: new CircleStyle({
 				radius: 6,
 				stroke: new Stroke({
@@ -591,20 +598,22 @@ export const defaultStyleFunction = (color) => {
 };
 
 export const createSketchStyleFunction = (styleFunction) => {
-	const sketchPolygon = new Style({
-		fill: new Fill({
-			color: White_Color.concat([0.4])
-		}),
-		stroke: new Stroke({
-			color: White_Color,
-			width: 0
-		})
-	});
+	const getSketchPolygon = (feature) =>
+		new Style({
+			geometry: feature?.geodesic?.getGeodesicGeom(),
+			fill: new Fill({
+				color: White_Color.concat([0.4])
+			}),
+			stroke: new Stroke({
+				color: White_Color,
+				width: 0
+			})
+		});
 
 	return (feature, resolution) => {
 		let styles;
 		if (feature.getGeometry().getType() === 'Polygon') {
-			styles = [sketchPolygon];
+			styles = [getSketchPolygon(feature)];
 		} else if (feature.getGeometry().getType() === 'Point') {
 			const fill = new Fill({
 				color: Red_Color.concat([0.4])
