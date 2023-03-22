@@ -6,6 +6,8 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
+ * Checks if the current map contains layers that cannot be shared, e.g. locally imported data like KML, and GPX files.
+ * If so the user will be informed by a notification.
  * @class
  */
 export class SharePlugin extends BaPlugin {
