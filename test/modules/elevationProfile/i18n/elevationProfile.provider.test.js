@@ -10,7 +10,6 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_sumDown).toBe('Abstieg');
 		expect(map.elevationProfile_alt).toBe('Höhe');
 		expect(map.elevationProfile_surface).toBe('Untergrund');
-		expect(map.elevationProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
 		expect(map.elevationProfile_elevation_profile).toBe('Höhenprofil');
 		expect(map.elevationProfile_verticalHeight).toBe('Höhe');
 		expect(map.elevationProfile_highestPoint).toBe('Höchster Punkt');
@@ -29,7 +28,6 @@ describe('i18n for elevationProfile module', () => {
 		expect(map.elevationProfile_sumDown).toBe('Descent');
 		expect(map.elevationProfile_alt).toBe('Elevation');
 		expect(map.elevationProfile_surface).toBe('surface');
-		expect(map.elevationProfile_elevation_reference_system).toBe('DGM 25 / DHHN2016');
 		expect(map.elevationProfile_elevation_profile).toBe('Elevation Profile');
 		expect(map.elevationProfile_verticalHeight).toBe('Vertical Height');
 		expect(map.elevationProfile_highestPoint).toBe('Highest Point');
@@ -40,7 +38,7 @@ describe('i18n for elevationProfile module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

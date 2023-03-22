@@ -147,7 +147,8 @@ describe('ElevationProfile', () => {
 					[1, 3, 20]
 				]
 			}
-		]
+		],
+		refSystem: 'DGM 25 / DHHN2016'
 	};
 
 	const _profileWithoutSlope = {
@@ -179,7 +180,8 @@ describe('ElevationProfile', () => {
 			lowestPoint: lowestPoint,
 			linearDistance: linearDistance
 		},
-		attrs: []
+		attrs: [],
+		refSystem: 'DGM 25 / DHHN2016'
 	};
 
 	const profile = () => {
@@ -367,7 +369,7 @@ describe('ElevationProfile', () => {
 			// config.options.plugins.title
 			expect(config.options.plugins.title.align).toBe('end');
 			expect(config.options.plugins.title.display).toBe(true);
-			expect(config.options.plugins.title.text).toBe('elevationProfile_elevation_reference_system');
+			expect(config.options.plugins.title.text).toBe('elevationProfile_unknown');
 			expect(config.options.plugins.title.color).toBe(ElevationProfile.DEFAULT_TEXT_COLOR);
 			// config.options.plugins.legend
 			expect(config.options.plugins.legend.display).toBe(false);
@@ -404,6 +406,30 @@ describe('ElevationProfile', () => {
 			expect(profile__box[5].title).toBe('elevationProfile_linearDistance');
 			const linearDistanceElement = element.shadowRoot.getElementById('route-elevation-chart-footer-linearDistance');
 			expect(linearDistanceElement.innerText).toBe(linearDistanceAfterUnitsServiceEn);
+		});
+
+		it('uses refSystem if provided', async () => {
+			// arrange
+			const coordinates = [
+				[0, 1],
+				[2, 3]
+			];
+			spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profileSlopeSteep());
+			const element = await setup({
+				media: {
+					darkSchema: true
+				},
+				elevationProfile: {
+					active: true,
+					coordinates: coordinates
+				}
+			});
+			const chart = element._chart;
+			const config = chart.config;
+
+			// assert
+			// config.options.plugins.title
+			expect(config.options.plugins.title.text).toBe('DGM 25 / DHHN2016');
 		});
 	});
 
