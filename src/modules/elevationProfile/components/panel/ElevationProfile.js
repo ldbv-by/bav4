@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import css from './elevationProfile.css';
-import { MvuElement } from '../../MvuElement';
+import { MvuElement } from '../../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
-import { $injector } from '../../../injection';
+import { $injector } from '../../../../injection';
 
-import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import { toLocaleString } from '../../../utils/numberUtils';
+import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { toLocaleString } from '../../../../utils/numberUtils';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';

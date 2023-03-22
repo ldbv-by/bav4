@@ -1,22 +1,22 @@
-import { $injector } from '../../../../src/injection/index.js';
+import { $injector } from '../../../../../src/injection/index.js';
 import {
 	Default_Selected_Attribute,
 	ElevationProfile,
 	Empty_Profile_Data,
 	SlopeType,
 	SoterSlopeClasses
-} from '../../../../src/modules/elevationProfile/components/ElevationProfile.js';
-import { elevationProfileReducer } from '../../../../src/store/elevationProfile/elevationProfile.reducer.js';
-import { updateCoordinates } from '../../../../src/store/elevationProfile/elevationProfile.action.js';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer.js';
+} from '../../../../../src/modules/elevationProfile/components/panel/ElevationProfile.js';
+import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer.js';
+import { updateCoordinates } from '../../../../../src/store/elevationProfile/elevationProfile.action.js';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer.js';
 
-import { TestUtils } from '../../../test-utils.js';
-import { setIsDarkSchema } from '../../../../src/store/media/media.action.js';
-import { HighlightFeatureType } from '../../../../src/store/highlight/highlight.action.js';
-import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
+import { TestUtils } from '../../../../test-utils.js';
+import { setIsDarkSchema } from '../../../../../src/store/media/media.action.js';
+import { HighlightFeatureType } from '../../../../../src/store/highlight/highlight.action.js';
+import { highlightReducer } from '../../../../../src/store/highlight/highlight.reducer.js';
 import { fromLonLat } from 'ol/proj.js';
-import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer.js';
-import { LevelTypes } from '../../../../src/store/notifications/notifications.action.js';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer.js';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
