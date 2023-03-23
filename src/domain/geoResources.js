@@ -66,53 +66,85 @@ export class GeoResource {
 		this._exportable = true;
 	}
 
-	/**
-	 * protected
-	 * @param {*} value
-	 * @param {*} name
-	 */
 	checkDefined(value, name) {
 		if (!value) {
 			throw new TypeError(name + ' must not be undefined');
 		}
 	}
 
+	/**
+	 * The ID of this GeoResource
+	 * @type {string}
+	 */
 	get id() {
 		return this._id;
 	}
 
+	/**
+	 * The label of this GeoResource
+	 * @type {string}
+	 */
 	get label() {
 		return this._label;
 	}
 
+	/**
+	 * The opacity (0-1) of this GeoResource
+	 * @type {number}
+	 */
 	get opacity() {
 		return this._opacity;
 	}
 
+	/**
+	 * The minimal zoom level of this GeoResource
+	 *  @type {number}
+	 */
 	get minZoom() {
 		return this._minZoom;
 	}
-
+	/**
+	 * The maximal zoom level of this GeoResource
+	 *  @type {number}
+	 */
 	get maxZoom() {
 		return this._maxZoom;
 	}
-
+	/**
+	 * `true` if this GeoResource should not be exposed externally and is not allowed for some use cases (e.g. sharing)
+	 *  @type {boolean}
+	 */
 	get hidden() {
 		return this._hidden;
 	}
 
+	/**
+	 *  @type {Attribution}
+	 */
 	get attribution() {
 		return this._attribution;
 	}
 
+	/**
+	 * The authentication type of  this GeoResource (may be `null`)
+	 *  @type {GeoResourceAuthenticationType}
+	 */
 	get authenticationType() {
 		return this._authenticationType;
 	}
 
+	/**
+	 * `true` if this GeoResource is allowed to be listed as a result for a query.
+	 *  @type {boolean}
+	 */
 	get queryable() {
 		return this._queryable;
 	}
 
+	/**
+	 * `true` if this GeoResource is allowed to be listed as a result for a query.
+	 *  @type {boolean}
+	 */
 	get exportable() {
 		return this._exportable;
 	}
@@ -210,7 +242,9 @@ export class GeoResource {
 	}
 
 	/**
+	 * Returns the type of this GeoResouce
 	 * @abstract
+	 * @type {GeoResourceTypes}
 	 */
 	getType() {
 		// The child has not implemented this method.
