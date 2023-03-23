@@ -8,7 +8,8 @@
 		"ol": "7.3.0",
 		"proj4": "2.9.0",
 		"redux": "4.2.1",
-		"vanilla-swipe": "2.4.1"
+		"vanilla-swipe": "2.4.1",
+		"geographiclib-geodesic": "^2.0.0"
 	},
 	"devDependencies": {
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
