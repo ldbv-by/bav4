@@ -97,21 +97,23 @@ export class GeoResource {
 	}
 
 	/**
-	 * The minimal zoom level of this GeoResource
+	 * The minimum zoom level of this GeoResource
 	 *  @type {number}
 	 */
 	get minZoom() {
 		return this._minZoom;
 	}
+
 	/**
-	 * The maximal zoom level of this GeoResource
+	 * The maximum zoom level of this GeoResource
 	 *  @type {number}
 	 */
 	get maxZoom() {
 		return this._maxZoom;
 	}
+
 	/**
-	 * `true` if this GeoResource should or cannot not be exposed externally and is therefore not available for some use cases (e.g. sharing)
+	 * `true` if this GeoResource should not or cannot be exposed externally and is therefore not available for some use cases (e.g. sharing)
 	 *  @type {boolean}
 	 */
 	get hidden() {
@@ -126,7 +128,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * The authentication type of  this GeoResource (may be `null`)
+	 * The authentication type of this GeoResource (may be `null`)
 	 *  @type {GeoResourceAuthenticationType}
 	 */
 	get authenticationType() {
