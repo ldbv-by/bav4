@@ -1,6 +1,6 @@
 import './i18n';
 import { IframeGenerator } from './components/generator/IframeGenerator';
-import { NonEmbeddedHint } from './components/NonEmbeddedHint';
+import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { ActivateMapButton } from './components/activateMapButton/ActivateMapButton';
 import { ViewLargerMapChip } from './components/viewLargerMapChip/ViewLargerMapChip';
 if (!window.customElements.get(IframeGenerator.tag)) {
