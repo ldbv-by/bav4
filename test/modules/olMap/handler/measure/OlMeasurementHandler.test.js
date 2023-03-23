@@ -141,7 +141,7 @@ describe('OlMeasurementHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
+			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => [5, -80, 14, 80] })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)

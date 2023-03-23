@@ -30,7 +30,7 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	const stats = getStats(olFeature.getGeometry(), {
 		fromProjection: 'EPSG:' + mapService.getSrid(),
 		toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid(),
-		toProjectionExtent: [5, -60, 14, 60]
+		toProjectionExtent: mapService.getDefaultGeodeticExtent()
 	});
 	const elevationProfileCoordinates =
 		simplify(
