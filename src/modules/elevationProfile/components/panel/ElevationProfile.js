@@ -263,6 +263,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
+		const translate = (key) => this._translationService.translate(key);
+		if (profile.refSystem === undefined) {
+			profile.refSystem = translate('elevationProfile_unknown');
+		}
+
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
@@ -548,7 +553,7 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('elevationProfile_elevation_reference_system'),
+						text: elevationData.refSystem,
 						color: ElevationProfile.DEFAULT_TEXT_COLOR
 					},
 					legend: { display: false },
