@@ -91,7 +91,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid()
+			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
+			toProjectionExtent: [5, -60, 14, 60]
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;

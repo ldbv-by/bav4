@@ -1319,7 +1319,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			feature.getGeometry().dispatchEvent('change');
-			expect(store.getState().measurement.statistic.length).toBeCloseTo(506, 0);
+			expect(store.getState().measurement.statistic.length).toBeCloseTo(500, 0);
 			expect(store.getState().measurement.statistic.area).toBeCloseTo(0, 1);
 		});
 
