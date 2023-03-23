@@ -159,25 +159,16 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 
 /**
  * calculates the geodesic length of a geometry
- * @param {Geometry} wgs84Geometry the geometry (in WGS84), to calculate with
+ * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
-const getGeodesicLength = (wgs84Geometry) => {
-	const getGeodesicPerimeter = (lineString) => {
-		const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
-		for (const coordinate of lineString.getCoordinates()) {
-			geodesicPolygon.AddPoint(coordinate[1], coordinate[0]);
-		}
-		const res = geodesicPolygon.Compute(false, true);
-		return res.perimeter;
-	};
-
-	if (wgs84Geometry) {
-		const lineString = getLineString(wgs84Geometry);
-		return lineString ? getGeodesicPerimeter(lineString) : 0;
+const getGeodesicLength = (wgs84LineString) => {
+	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
+	for (const coordinate of wgs84LineString.getCoordinates()) {
+		geodesicPolygon.AddPoint(coordinate[1], coordinate[0]);
 	}
-
-	return 0;
+	const res = geodesicPolygon.Compute(false, true);
+	return res.perimeter;
 };
 
 /**
