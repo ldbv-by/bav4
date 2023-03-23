@@ -130,7 +130,6 @@ export class StoreService {
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
-				await elevationProfilePlugin.register(this._store);
 				await iframeStatePlugin.register(this._store);
 				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
