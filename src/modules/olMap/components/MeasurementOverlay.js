@@ -42,11 +42,15 @@ export const MeasurementOverlayTypes = {
 export class MeasurementOverlay extends BaOverlay {
 	constructor() {
 		super();
-		const { UnitsService } = $injector.inject('UnitsService');
+		const { UnitsService, MapService } = $injector.inject('UnitsService', 'MapService');
 		this._unitsService = UnitsService;
+		this._mapService = MapService;
 		this._static = false;
 		this._type = MeasurementOverlayTypes.TEXT;
-		this._projectionHints = false;
+		this._projectionHints = {
+			fromProjection: 'EPSG:' + this._mapService.getSrid(),
+			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid()
+		};
 		this._isDraggable = false;
 		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };
 	}
