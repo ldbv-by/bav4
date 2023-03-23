@@ -4,7 +4,7 @@
 		"@geoblocks/ol-maplibre-layer": "0.0.6",
 		"chart.js": "4.2.1",
 		"dompurify": "3.0.1",
-		"lit-html": "2.6.1",
+		"lit-html": "2.7.0",
 		"ol": "7.3.0",
 		"proj4": "2.9.0",
 		"redux": "4.2.1",

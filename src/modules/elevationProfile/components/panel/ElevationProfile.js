@@ -1,13 +1,13 @@
 import { html } from 'lit-html';
 import css from './elevationProfile.css';
-import { MvuElement } from '../../MvuElement';
+import { MvuElement } from '../../../MvuElement';
 import Chart from 'chart.js/auto'; // Todo: Import single dependencies for tree shaking
-import { $injector } from '../../../injection';
+import { $injector } from '../../../../injection';
 
-import { SurfaceType } from '../utils/elevationProfileAttributeTypes';
-import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../store/highlight/highlight.action';
-import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
-import { toLocaleString } from '../../../utils/numberUtils';
+import { SurfaceType } from '../../utils/elevationProfileAttributeTypes';
+import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
+import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
+import { toLocaleString } from '../../../../utils/numberUtils';
 
 const Update_Schema = 'update_schema';
 const Update_Selected_Attribute = 'update_selected_attribute';
@@ -77,7 +77,7 @@ export class ElevationProfile extends MvuElement {
 			minWidth: false
 		});
 		this._chart = null;
-		this._altitudeProfileAttributeTypes = [];
+		this._elevationProfileAttributeTypes = [];
 
 		const {
 			ConfigService: configService,
@@ -214,9 +214,9 @@ export class ElevationProfile extends MvuElement {
 					</select>
 				</span>
 				<div class="chart-container" style="">
-					<canvas class="altitudeprofile" id="route-altitude-chart"></canvas>
+					<canvas class="elevationprofile" id="route-elevation-chart"></canvas>
 				</div>
-				<div class="profile__data" id="route-altitude-chart-footer">
+				<div class="profile__data" id="route-elevation-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
 						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${toLocaleString(sumUp)} m</div>
@@ -263,6 +263,11 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_enrichProfileData(profile) {
+		const translate = (key) => this._translationService.translate(key);
+		if (profile.refSystem === undefined) {
+			profile.refSystem = translate('elevationProfile_unknown');
+		}
+
 		// check m or km
 		profile.distUnit = this._getDistUnit(profile);
 		const newLabels = [];
@@ -305,7 +310,7 @@ export class ElevationProfile extends MvuElement {
 		return distUnit;
 	}
 
-	_getChartData(altitudeData, newDataLabels, newDataData) {
+	_getChartData(elevationData, newDataLabels, newDataData) {
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -317,10 +322,10 @@ export class ElevationProfile extends MvuElement {
 					fill: true,
 					borderWidth: 4,
 					backgroundColor: (context) => {
-						return this._getBackground(context.chart, altitudeData);
+						return this._getBackground(context.chart, elevationData);
 					},
 					borderColor: (context) => {
-						return this._getBorder(context.chart, altitudeData);
+						return this._getBorder(context.chart, elevationData);
 					},
 					tension: 0.1,
 					pointRadius: 0,
@@ -332,12 +337,12 @@ export class ElevationProfile extends MvuElement {
 		return _chartData;
 	}
 
-	_getBackground(chart, altitudeData) {
+	_getBackground(chart, elevationData) {
 		if (chart.chartArea) {
 			const selectedAttribute = this.getModel().selectedAttribute;
 			switch (selectedAttribute) {
 				case 'surface':
-					return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
+					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 				default:
 					return ElevationProfile.BACKGROUND_COLOR;
@@ -346,15 +351,15 @@ export class ElevationProfile extends MvuElement {
 		return ElevationProfile.BACKGROUND_COLOR;
 	}
 
-	_getBorder(chart, altitudeData) {
+	_getBorder(chart, elevationData) {
 		if (chart.chartArea) {
 			const selectedAttribute = this.getModel().selectedAttribute;
 			switch (selectedAttribute) {
 				case 'slope':
-					return this._getSlopeGradient(chart, altitudeData);
+					return this._getSlopeGradient(chart, elevationData);
 
 				case 'surface':
-					return this._getTextTypeGradient(chart, altitudeData, selectedAttribute);
+					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 				default:
 					return ElevationProfile.BORDER_COLOR;
@@ -364,14 +369,14 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_addAttributeType(attributeType) {
-		if (!this._altitudeProfileAttributeTypes[attributeType._attribute]) {
-			this._altitudeProfileAttributeTypes[attributeType._attribute] = [];
+		if (!this._elevationProfileAttributeTypes[attributeType._attribute]) {
+			this._elevationProfileAttributeTypes[attributeType._attribute] = [];
 		}
-		this._altitudeProfileAttributeTypes[attributeType._attribute].push(attributeType);
+		this._elevationProfileAttributeTypes[attributeType._attribute].push(attributeType);
 	}
 
-	_getAltitudeProfileAttributeType(attribute, typeString) {
-		const attributeType = this._altitudeProfileAttributeTypes[attribute].find((element) => {
+	_getElevationProfileAttributeType(attribute, typeString) {
+		const attributeType = this._elevationProfileAttributeTypes[attribute].find((element) => {
 			return element._name === typeString;
 		});
 		return attributeType;
@@ -383,44 +388,44 @@ export class ElevationProfile extends MvuElement {
 		this._addAttributeType(new SurfaceType('missing', '#2222ee', '#ee2222'));
 	}
 
-	_getTextTypeGradient(chart, altitudeData, selectedAttribute) {
+	_getTextTypeGradient(chart, elevationData, selectedAttribute) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.elevations.length;
+		const numberOfPoints = elevationData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
-		const altitudeProfileAttributeString = altitudeData.elevations[0][selectedAttribute];
-		let currentAltitudeProfileAttributeType = this._getAltitudeProfileAttributeType(selectedAttribute, altitudeProfileAttributeString);
-		gradientBg.addColorStop(0, currentAltitudeProfileAttributeType.color);
-		let altitudeProfileAttributeType;
-		altitudeData.elevations.forEach((element, index) => {
+		const elevationProfileAttributeString = elevationData.elevations[0][selectedAttribute];
+		let currentElevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, elevationProfileAttributeString);
+		gradientBg.addColorStop(0, currentElevationProfileAttributeType.color);
+		let elevationProfileAttributeType;
+		elevationData.elevations.forEach((element, index) => {
 			if (index === 0) {
 				return;
 			}
-			if (index === altitudeData.elevations.length - 1) {
+			if (index === elevationData.elevations.length - 1) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
-				gradientBg.addColorStop(xPoint, currentAltitudeProfileAttributeType.color);
+				gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 				return;
 			}
 			const attributeType = element[selectedAttribute];
-			altitudeProfileAttributeType = this._getAltitudeProfileAttributeType(selectedAttribute, attributeType);
-			if (currentAltitudeProfileAttributeType === altitudeProfileAttributeType) {
+			elevationProfileAttributeType = this._getElevationProfileAttributeType(selectedAttribute, attributeType);
+			if (currentElevationProfileAttributeType === elevationProfileAttributeType) {
 				return;
 			}
 			const xPoint = (xPointWidth / chartArea.width) * index;
-			gradientBg.addColorStop(xPoint, currentAltitudeProfileAttributeType.color);
-			currentAltitudeProfileAttributeType = altitudeProfileAttributeType;
-			gradientBg.addColorStop(xPoint, currentAltitudeProfileAttributeType.color);
+			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
+			currentElevationProfileAttributeType = elevationProfileAttributeType;
+			gradientBg.addColorStop(xPoint, currentElevationProfileAttributeType.color);
 		});
 		return gradientBg;
 	}
 
-	_getSlopeGradient(chart, altitudeData) {
+	_getSlopeGradient(chart, elevationData) {
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = altitudeData.elevations.length;
+		const numberOfPoints = elevationData.elevations.length;
 		const xPointWidth = chartArea.width / numberOfPoints;
 
-		altitudeData?.elevations.forEach((element, index) => {
+		elevationData?.elevations.forEach((element, index) => {
 			if (element.slope) {
 				const xPoint = (xPointWidth / chartArea.width) * index;
 				const slopeValue = Math.abs(element.slope);
@@ -456,11 +461,11 @@ export class ElevationProfile extends MvuElement {
 		}
 	}
 
-	_getChartConfig(altitudeData, newDataLabels, newDataData, distUnit) {
+	_getChartConfig(elevationData, newDataLabels, newDataData, distUnit) {
 		const translate = (key) => this._translationService.translate(key);
 		const getElevationEntry = (tooltipItem) => {
-			const index = altitudeData.labels.indexOf(tooltipItem.parsed.x);
-			return altitudeData.elevations[index];
+			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
+			return elevationData.elevations[index];
 		};
 		const convertToNumber = (numberOrString) => {
 			if (typeof numberOrString === 'string') {
@@ -473,7 +478,7 @@ export class ElevationProfile extends MvuElement {
 
 		const config = {
 			type: 'line',
-			data: this._getChartData(altitudeData, newDataLabels, newDataData),
+			data: this._getChartData(elevationData, newDataLabels, newDataData),
 			plugins: [
 				{
 					id: 'terminateHighlightFeatures',
@@ -548,7 +553,7 @@ export class ElevationProfile extends MvuElement {
 					title: {
 						align: 'end',
 						display: true,
-						text: translate('elevationProfile_elevation_reference_system'),
+						text: elevationData.refSystem,
 						color: ElevationProfile.DEFAULT_TEXT_COLOR
 					},
 					legend: { display: false },
@@ -573,7 +578,7 @@ export class ElevationProfile extends MvuElement {
 								let attributeValue = elevationEntry[selectedAttribute];
 								const selectedAttributeTranslation = translate('elevationProfile_' + selectedAttribute);
 								let selectedLabel = selectedAttributeTranslation + ': ';
-								const attribute = altitudeData.attrs.find((attr) => {
+								const attribute = elevationData.attrs.find((attr) => {
 									return attr.id === selectedAttribute;
 								});
 
@@ -621,7 +626,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_createChart(profile, newDataLabels, newDataData, distUnit) {
-		const ctx = this.shadowRoot.querySelector('.altitudeprofile').getContext('2d');
+		const ctx = this.shadowRoot.querySelector('.elevationprofile').getContext('2d');
 		this._chart = new Chart(ctx, this._getChartConfig(profile, newDataLabels, newDataData, distUnit));
 		this._noAnimation = false;
 	}

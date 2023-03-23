@@ -14,27 +14,44 @@
 	margin-top: 0.5em;
 	resize: none;
 	min-height: 6em;
+	position: relative;
+	padding-right: 3em;
 }
-
 .iframe__copy_icon {
-	padding-left: 0.5em;
+	position: absolute;
+	right: 0.77em;
 }
-
 .iframe__input {
 	display: flex;
 	align-items: baseline;
+	width: 11em;
+}
+.iframe__input input {
+	text-align: right;
+}
+.iframe__input span {
+	text-align: left;
+	display: inline-block;
+	min-width: 1.2em;
+}
+.iframe__input input:read-only {
+	content: '100';
+}
+input[type='range']:focus {
+	box-shadow: none !important;
+}
+.fieldset .control-label {
+	top: -1rem;
 }
 .fieldset {
-	padding-left: 1em;
+	display: flex;
 }
 iframe {
 	border: 0;
 	transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
 }
 iframe[width='100%'] {
-	width: 1000px;
-	border-right: 2em solid var(--secondary-color);
-	border-left: 2em solid var(--secondary-color);
+	width: 800px;
 }
 .iframe__section {
 	border-bottom: 1px solid var(--header-background-color);
@@ -42,24 +59,64 @@ iframe[width='100%'] {
 .iframe__controls {
 	position: fixed;
 	z-index: 999999;
-	padding: 1em 0.8em;
+	padding: 0.8em 1.5em;
 	background: var(--primary-bg-color);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 	transition: all var(--animation-duration-medium-close) var(--animation-easing-open);
-	width: 37em;
-	top: 70vh;
+	width: 30em;
+	top: 100vh;
+	margin-top: -24em;
 }
 .iframe__controls-section {
 	display: flex;
 	align-content: space-evenly;
+	flex-direction: column;
 }
 .iframe__code {
 	width: 100%;
 	display: flex;
 	align-items: center;
+	position: relative;
 }
 .iframe__toggle {
 	display: flex;
-	align-items: center;
-	padding-right: 0.3em;
+	flex-direction: column;
+}
+#iframe_slider_width:disabled {
+	visibility: hidden;
+}
+.iframe__toggle_text {
+	position: absolute;
+	top: -1rem;
+	pointer-events: none;
+	padding-left: 0.125rem;
+	z-index: 1;
+	color: var(--text2);
+	font-size: 1rem;
+	font-weight: normal;
+	-webkit-transition: all 0.28s ease;
+	transition: all 0.28s ease;
+}
+.iframe__toggle_sub-text {
+	margin: 1em 0;
+	width: 22.8em;
+}
+.width_placeholder {
+	font-size: 1.5rem;
+	margin: 0 0.2em 0 1em;
+	margin-left: 15.1em;
+	min-height: 1.6em;
+	margin-top: 0.4em;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+input[type='number'] {
+	-moz-appearance: textfield;
+}
+.iframe__input input[type='number'] {
+	font-size: 1.5rem;
+	margin: 0 0.2em 0 1em;
 }

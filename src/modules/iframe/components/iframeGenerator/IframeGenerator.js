@@ -12,7 +12,7 @@ const Update_Size_Height = 'update_size_height';
 const Update_Auto_Width = 'update_auto_width';
 const Update_Preview_Url = 'update_preview_url';
 
-const Auto_Width = '100%';
+const Auto_Width = '100';
 const Range_Min = 100;
 const Range_Max = 2000;
 
@@ -99,17 +99,24 @@ export class IframeGenerator extends MvuElement {
 
 		const getWidthFieldset = () => {
 			return autoWidth
-				? html`<div class="fieldset">
-						<div class="iframe__input">${Auto_Width}</div>
+				? html` <div class="fieldset">
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>
+						<div class="iframe__input">
+							<div class="iframe__input width_placeholder">${Auto_Width}</div>
+							<span> % </span>
+						</div>
 				  </div>`
-				: html`<div class="fieldset">						
-			<div class='iframe__input'>
-			<input type="number" id="iframe_width" max=${Range_Max} .value=${width} min=${Range_Min} @input=${onChangeWidth}></input>Pixel
-			</div>
-			<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
-			<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>			
-		</div>`;
+				: html`
+					<div class="fieldset">		
+						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>							
+						<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
+						<div class='iframe__input'>
+							<input type="number" id="iframe_width" max=${Range_Max} .value=${width} min=${Range_Min} @input=${onChangeWidth}></input>
+							<span>
+								px		
+							</span>
+						</div>
+					</div>`;
 		};
 
 		const currentWidth = autoWidth ? Auto_Width : width;
@@ -117,23 +124,36 @@ export class IframeGenerator extends MvuElement {
 		<style>${css}</style>		
         <div class='container'>
 			<div class='iframe__controls'>
-			<div class='iframe__controls-section'>
-				<div class='iframe__toggle'>
-					<span class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}</span>
-					<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
+				<div class='iframe__controls-section'>					
+					<div class="fieldset">						
+						<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
+						<input type="range" id="iframe_slider_height" step=10 min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeSliderHeight}>
+						<div class='iframe__input'>
+							<input type="number" id="iframe_height" min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeHeight}></input>
+							<span>
+								 px		
+							</span>
+						</div>
+					</div>
+					${getWidthFieldset()}
+					<div class="fieldset">	
+						<div class='iframe__toggle'>
+							<div class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}
+							</div>
+							<div class='iframe__toggle_sub-text'>							
+								${translate('iframe_generator_toggle_text')}
+							</div>							
+						</div>
+						<ba-toggle id='toggleAutoWidth' .title=${translate('iframe_generator_toggle_title')} @toggle=${onToggleAutoWidth}></ba-toggle>
+					</div>					
+					<div class='iframe__controls-section'>
+						<div class='iframe__code'>${this._getEmbedContent(currentWidth, height, previewUrl)}
+						</div>
+					</div>
 				</div>
-				${getWidthFieldset()}
-				<div class="fieldset">						
-					<div class='iframe__input'><input type="number" id="iframe_height" min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeHeight}></input>Pixel</div>
-					<input type="range" id="iframe_slider_height" step=10 min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeSliderHeight}>
-					<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
-				</div>
-				</div>
-				<div class='iframe__controls-section'>
-				<div class='iframe__code'>${this._getEmbedContent(currentWidth, height, previewUrl)}</div>
-				</div>
-				</div>
-			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}</div>
+			</div>
+			<div class='iframe__preview'>${this._getIFrameContent(currentWidth, height)}
+			</div>
 		</div>
         `;
 	}
@@ -152,7 +172,7 @@ export class IframeGenerator extends MvuElement {
 			<iframe
 				data-iframe-encoded-state
 				src=${iframeSrc}
-				width=${width === Auto_Width ? Auto_Width : width + 'px'}
+				width=${width === Auto_Width ? Auto_Width + '%' : width + 'px'}
 				height=${height + 'px'}
 				loading="lazy"
 				referrerpolicy="no-referrer-when-downgrade"
@@ -165,7 +185,7 @@ export class IframeGenerator extends MvuElement {
 
 		const getEmbedCode = () => {
 			return `<iframe src=${previewUrl ? previewUrl : this._shareService.encodeState({}, [PathParameters.EMBED])} width='${
-				width === Auto_Width ? Auto_Width : width + 'px'
+				width === Auto_Width ? Auto_Width + '%' : width + 'px'
 			}' height='${height + 'px'}' loading='lazy' frameborder='0' style='border:0'></iframe>`;
 		};
 
