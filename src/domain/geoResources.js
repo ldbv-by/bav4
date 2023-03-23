@@ -111,7 +111,7 @@ export class GeoResource {
 		return this._maxZoom;
 	}
 	/**
-	 * `true` if this GeoResource should not be exposed externally and is not allowed for some use cases (e.g. sharing)
+	 * `true` if this GeoResource should or cannot not be exposed externally and is therefore not available for some use cases (e.g. sharing)
 	 *  @type {boolean}
 	 */
 	get hidden() {
