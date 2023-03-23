@@ -2,7 +2,7 @@ import './i18n';
 import { IframeGenerator } from './components/generator/IframeGenerator';
 import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { ActivateMapButton } from './components/activateMapButton/ActivateMapButton';
-import { ViewLargerMapChip } from './components/viewLargerMapChip/ViewLargerMapChip';
+import { ViewLargerMapChip } from './components/chips/ViewLargerMapChip';
 if (!window.customElements.get(IframeGenerator.tag)) {
 	window.customElements.define(IframeGenerator.tag, IframeGenerator);
 }
