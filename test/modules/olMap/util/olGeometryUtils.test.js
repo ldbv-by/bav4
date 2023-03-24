@@ -417,6 +417,39 @@ describe('getArea', () => {
 		expect(lineStringArea).toBe(0);
 		expect(linearRingArea).toBe(0);
 	});
+
+	describe('when calculationHints with extent are provided', () => {
+		it('calculates the geodesic area of a transformed polygon', () => {
+			const utm32Area = 8327453871.901;
+			const geodesicArea = 8333081687.76;
+			const lineString = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
+			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+			// within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			// partially within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			// outside
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+		});
+
+		it('calculates the geodesic area of a transformed polygon with hole', () => {
+			const utm32Area = 8322890782.498;
+			const geodesicArea = 8328516236.574;
+			const lineString = new Polygon([
+				[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
+				[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
+			]);
+			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+			// within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			// partially within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			// outside
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+		});
+	});
 });
 
 describe('isVertexOfGeometry', () => {

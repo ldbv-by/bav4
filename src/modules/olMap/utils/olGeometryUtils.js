@@ -133,12 +133,10 @@ export const getArea = (geometry, calculationHints = {}) => {
 		return calculationGeometry.getArea();
 	};
 
-	if (wgs84LineString) {
-		const isWithinProjectionExtent = calculationHints.toProjectionExtent
-			? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
-			: true;
-		return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
-	}
+	const isWithinProjectionExtent = calculationHints.toProjectionExtent
+		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+		: true;
+	return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
 };
 
 /**
@@ -191,14 +189,14 @@ const getGeodesicLength = (wgs84LineString) => {
  */
 const getGeodesicArea = (wgs84Polygon) => {
 	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
-	return wgs84Polygon.getLinearRing().reduce((aggregatedArea, linearRing, index) => {
-		geodesicPolygon.clear();
+	return wgs84Polygon.getLinearRings().reduce((aggregatedArea, linearRing, index) => {
+		geodesicPolygon.Clear();
 		for (const [lon, lat] of linearRing.getCoordinates()) {
 			geodesicPolygon.AddPoint(lat, lon);
 		}
 		const res = geodesicPolygon.Compute(false, true);
 		const isExteriorRing = index === 0;
-		return isExteriorRing ? aggregatedArea + res.area : aggregatedArea - res.area;
+		return isExteriorRing ? aggregatedArea + Math.abs(res.area) : aggregatedArea - Math.abs(res.area);
 	}, 0);
 };
 
