@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { ViewLargerMapChip } from '../../../../src/modules/iframe/components/viewLargerMapChip/ViewLargerMapChip';
+import { ViewLargerMapChip } from '../../../../src/modules/iframe/components/chips/ViewLargerMapChip';
 import { indicateChange } from '../../../../src/store/stateForEncoding/stateForEncoding.action';
 import { stateForEncodingReducer } from '../../../../src/store/stateForEncoding/stateForEncoding.reducer';
 import { TestUtils } from '../../../test-utils';
