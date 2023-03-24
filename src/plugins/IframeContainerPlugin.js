@@ -21,7 +21,7 @@ export class IframeContainerPlugin extends BaPlugin {
 				if (current.length === 0) {
 					closeContainer();
 				} else {
-					openContainer(html`<ba-feature-info-panel></ba-feature-info-panel>`);
+					openContainer(html`<ba-feature-info-iframe-panel></ba-feature-info-iframe-panel>`);
 				}
 			}
 		};
