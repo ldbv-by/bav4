@@ -1,5 +1,9 @@
+import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
+import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
+
+const EPSG_WGS84 = 'EPSG:4326';
 
 const transformGeometry = (geometry, fromProjection, toProjection) => {
 	if (fromProjection && toProjection) {
@@ -107,6 +111,7 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  * @typedef {Object} CalculationHints
  * @property {string} fromProjection the 'source' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
  * @property {string} toProjection the 'destination' ProjectionLike-object for usage in ol/geometry.transform() as String like 'EPSG:3875'
+ * @property {Extent} [toProjectionExtent] an extent in WGS84, which defines whether or not a geometry with coordinates outside this extent should be handled
  */
 
 /**
@@ -119,26 +124,80 @@ export const getArea = (geometry, calculationHints = {}) => {
 	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
 		return 0;
 	}
-	const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-	return calculationGeometry.getArea();
+
+	const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
+	const wgs84LineString = getLineString(wgs84Geometry);
+
+	const getLength = (geometry, calculationHints) => {
+		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+		return calculationGeometry.getArea();
+	};
+
+	const isWithinProjectionExtent = calculationHints.toProjectionExtent
+		? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+		: true;
+	return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
 };
 
 /**
  * Calculates the length of the geometry.
+ * If the calculationHints provides a toProjectionExtent, any provided geometry with coordinates outside this extent
+ * results in a calculation of a geodesic length, instead of a length in the provided toProjection.
  * @param {Geometry} geometry the geometry, to calculate with
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
 export const getGeometryLength = (geometry, calculationHints = {}) => {
 	if (geometry) {
-		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-		const lineString = getLineString(calculationGeometry);
+		const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
+		const wgs84LineString = getLineString(wgs84Geometry);
 
-		if (lineString) {
+		const getLength = (geometry, calculationHints) => {
+			const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+			const lineString = getLineString(calculationGeometry);
 			return lineString.getLength();
+		};
+
+		if (wgs84LineString) {
+			const isWithinProjectionExtent = calculationHints.toProjectionExtent
+				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+				: true;
+			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
 	}
 	return 0;
+};
+
+/**
+ * Calculates the geodesic length of a geometry
+ * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
+ * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
+ */
+const getGeodesicLength = (wgs84LineString) => {
+	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
+	for (const [lon, lat] of wgs84LineString.getCoordinates()) {
+		geodesicPolygon.AddPoint(lat, lon);
+	}
+	const res = geodesicPolygon.Compute(false, true);
+	return res.perimeter;
+};
+
+/**
+ * Calculates the geodesic area of a geometry
+ * @param {Polygon} wgs84Polygon the Polygon (in WGS84), to calculate with
+ * @returns {number} the calculated area or 0 if the geometry-object is not a Polygon
+ */
+const getGeodesicArea = (wgs84Polygon) => {
+	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
+	return wgs84Polygon.getLinearRings().reduce((aggregatedArea, linearRing, index) => {
+		geodesicPolygon.Clear();
+		for (const [lon, lat] of linearRing.getCoordinates()) {
+			geodesicPolygon.AddPoint(lat, lon);
+		}
+		const res = geodesicPolygon.Compute(false, true);
+		const isExteriorRing = index === 0;
+		return isExteriorRing ? aggregatedArea + Math.abs(res.area) : aggregatedArea - Math.abs(res.area);
+	}, 0);
 };
 
 /**

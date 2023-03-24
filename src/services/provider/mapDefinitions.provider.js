@@ -7,6 +7,7 @@ import { $injector } from '../../injection';
  * Map related meta data
  * @typedef {Object} MapDefinitions
  * @property {Extent} defaultExtent
+ * @property {Extent} defaultGeodeticExtent
  * @property {number} srid internal SRID of the map
  * @property {number} defaultSridForView default SRID in which coordinates should be displayed within the UI
  * @property {function(Coordinate):(Array<SridDefinition>)} sridDefinitionsForView function which can take a coordinate and returns an array of SridDefinition
@@ -31,6 +32,7 @@ import { $injector } from '../../injection';
 export const getBvvMapDefinitions = () => {
 	return {
 		defaultExtent: [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462],
+		defaultGeodeticExtent: [5, -80, 14, 80],
 		srid: 3857,
 		defaultSridForView: 25832,
 		sridDefinitionsForView: getBvvSridDefinitionsForView,

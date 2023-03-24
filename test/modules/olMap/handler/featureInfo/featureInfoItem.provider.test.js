@@ -15,7 +15,8 @@ window.customElements.define(GeometryInfo.tag, GeometryInfo);
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832
+		getDefaultGeodeticSrid: () => 25832,
+		getDefaultGeodeticExtent: () => null
 	};
 
 	const securityServiceMock = {
