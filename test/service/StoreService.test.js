@@ -61,6 +61,9 @@ describe('StoreService', () => {
 		const iframeStatePluginMock = {
 			register: () => {}
 		};
+		const iframeContainerPluginMock = {
+			register: () => {}
+		};
 		const sharePluginMock = {
 			register: () => {}
 		};
@@ -93,6 +96,7 @@ describe('StoreService', () => {
 				.registerSingleton('ElevationProfilePlugin', elevationProfilePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
+				.registerSingleton('IframeContainerPlugin', iframeContainerPluginMock)
 				.registerSingleton('SharePlugin', sharePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
@@ -154,6 +158,7 @@ describe('StoreService', () => {
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
 			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
+			const iframeContainerPluginSpy = spyOn(iframeContainerPluginMock, 'register');
 			const sharePluginSpy = spyOn(sharePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
@@ -182,6 +187,7 @@ describe('StoreService', () => {
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
 			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
+			expect(iframeContainerPluginSpy).toHaveBeenCalledWith(store);
 			expect(sharePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);

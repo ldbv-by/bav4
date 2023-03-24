@@ -91,6 +91,7 @@ export class StoreService {
 				ElevationProfilePlugin: elevationProfilePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin,
 				IframeStatePlugin: iframeStatePlugin,
+				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
 				HistoryStatePlugin: historyStatePlugin
 			} = $injector.inject(
@@ -111,6 +112,7 @@ export class StoreService {
 				'ExportMfpPlugin',
 				'ElevationProfilePlugin',
 				'IframeStatePlugin',
+				'IframeContainerPlugin',
 				'SharePlugin',
 				'HistoryStatePlugin',
 				'ObserveStateForEncodingPlugin'
@@ -135,6 +137,7 @@ export class StoreService {
 				await exportMfpPlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
 				await iframeStatePlugin.register(this._store);
+				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
 				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
