@@ -12,10 +12,19 @@ describe('MapDefinitions provider', () => {
 		});
 
 		it('provides map related meta data', () => {
-			const { defaultExtent, srid, defaultSridForView, sridDefinitionsForView, defaultGeodeticSrid, minZoomLevel, maxZoomLevel } =
-				getBvvMapDefinitions();
+			const {
+				defaultExtent,
+				defaultGeodeticExtent,
+				srid,
+				defaultSridForView,
+				sridDefinitionsForView,
+				defaultGeodeticSrid,
+				minZoomLevel,
+				maxZoomLevel
+			} = getBvvMapDefinitions();
 
 			expect(defaultExtent).toEqual([995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]);
+			expect(defaultGeodeticExtent).toEqual([5, -80, 14, 80]);
 			expect(srid).toBe(3857);
 			expect(defaultSridForView).toBe(25832);
 			expect(sridDefinitionsForView()).toEqual([

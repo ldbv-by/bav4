@@ -77,6 +77,14 @@ export class MapService {
 	}
 
 	/**
+	 * Return the default extent for geodetic tasks.
+	 * @returns {Extent} extent
+	 */
+	getDefaultGeodeticExtent() {
+		return this._definitions.defaultGeodeticExtent;
+	}
+
+	/**
 	 * Return the minimal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
