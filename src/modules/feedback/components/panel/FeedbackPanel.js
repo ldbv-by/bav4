@@ -4,6 +4,7 @@ import css from './feedbackPanel.css';
 
 const Update_EMail = 'update_email';
 const Update_Topic = 'update_topic';
+const Update_Reason = 'update_reason';
 
 export class FeedbackPanel extends MvuElement {
 	constructor() {
@@ -11,10 +12,16 @@ export class FeedbackPanel extends MvuElement {
 			age: 21,
 			topic: 'one text',
 			message: 'another text',
-			aSelection: ['one', 'two', 'three'],
-			selected: 'two',
-			email: 'mail@some.com'
+			email: 'mail@some.com',
+			reason: ''
 		});
+
+		this.reasonOptions = [
+			{ value: '', label: '-' },
+			{ value: 'error', label: 'Error' },
+			{ value: 'missing', label: 'Missing' },
+			{ value: 'wrong type', label: 'Wrong Type' }
+		];
 	}
 
 	onInitialize() {
@@ -41,11 +48,17 @@ export class FeedbackPanel extends MvuElement {
 				return { ...model, topic: data };
 			case Update_EMail:
 				return { ...model, email: data };
+			case Update_Reason:
+				return { ...model, reason: data };
 		}
 	}
 
 	createView(model) {
-		const { email, topic, message, age } = model;
+		const { email, topic, message, age, reason } = model;
+
+		const selectedReason = this.reasonOptions.find((aReason) => {
+			return aReason.value === reason;
+		});
 
 		const handleTopicChange = (event) => {
 			const { value } = event.target;
@@ -57,8 +70,15 @@ export class FeedbackPanel extends MvuElement {
 			this.signal(Update_EMail, value);
 		};
 
+		const handleReasonChange = (event) => {
+			const { value } = event.target;
+
+			this.signal(Update_Reason, value);
+		};
+
 		const _handleInputChange = (event) => {
 			const { name, value } = event.target;
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ todo: handle ', name, value);
 		};
 
@@ -66,8 +86,9 @@ export class FeedbackPanel extends MvuElement {
 			event.preventDefault();
 			const formdata = new FormData(event.target);
 			const data = Object.fromEntries(formdata.entries());
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ FeedbackPanel ~ handleSubmit ~ data:', data);
-			// this.dispatchEvent(new CustomEvent('my-form-submit', { detail: data }));
+			// this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
 		};
 
 		return html`
@@ -87,10 +108,23 @@ export class FeedbackPanel extends MvuElement {
 						<input type="email" id="email" name="email" .value="${email}" @input="${handleEmailChange}" required />
 
 						<label for="message">Message:</label>
-						<textarea id="message" name="message" .value="${message}" @input="${_handleInputChange}" required></textarea>
+						<textarea
+							id="message"
+							name="message"
+							.value="${message}"
+							@input="${_handleInputChange}"
+							minlength="10"
+							maxlength="40"
+							required
+						></textarea>
 
 						<label for="age">Age:</label>
 						<input type="number" id="age" name="age" .value="${age}" @input="${_handleInputChange}" required />
+
+						<label for="reason">Reason:</label>
+						<select id="reason" name="reason" .value="${reason}" @input="${handleReasonChange}" required>
+							${this.reasonOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
+						</select>
 
 						<button type="submit">Submit</button>
 					</form>
@@ -100,7 +134,7 @@ export class FeedbackPanel extends MvuElement {
 					<p>Email: ${email}</p>
 					<p></p>
 					<p></p>
-					<p></p>
+					<p>Reason: ${selectedReason?.label}</p>
 				</div>
 			</div>
 		`;
