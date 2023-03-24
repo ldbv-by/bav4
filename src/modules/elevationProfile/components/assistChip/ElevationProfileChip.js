@@ -1,6 +1,6 @@
 import { $injector } from '../../../../injection';
 import { openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
-import { AbstractAssistChip } from './AbstractAssistChip';
+import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import profileSvg from './assets/profile.svg';
 
 const Update_Profile_Coordinates = 'update_profile_coordinates';
