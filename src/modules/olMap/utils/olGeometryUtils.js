@@ -169,7 +169,7 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 };
 
 /**
- * calculates the geodesic length of a geometry
+ * Calculates the geodesic length of a geometry
  * @param {LineString} wgs84LineString the LineString (in WGS84), to calculate with
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
@@ -183,7 +183,7 @@ const getGeodesicLength = (wgs84LineString) => {
 };
 
 /**
- * calculates the geodesic area of a geometry
+ * Calculates the geodesic area of a geometry
  * @param {Polygon} wgs84Polygon the Polygon (in WGS84), to calculate with
  * @returns {number} the calculated area or 0 if the geometry-object is not a Polygon
  */
