@@ -1,5 +1,5 @@
-import { $injector } from '../../../injection';
-import { MvuElement } from '../../MvuElement';
+import { $injector } from '../../../../injection';
+import { MvuElement } from '../../../MvuElement';
 
 /**
  * Displays a hint if the app is in embedded mode, but not used within an iframe
