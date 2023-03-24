@@ -124,8 +124,21 @@ export const getArea = (geometry, calculationHints = {}) => {
 	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
 		return 0;
 	}
-	const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
-	return calculationGeometry.getArea();
+
+	const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
+	const wgs84LineString = getLineString(wgs84Geometry);
+
+	const getLength = (geometry, calculationHints) => {
+		const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
+		return calculationGeometry.getArea();
+	};
+
+	if (wgs84LineString) {
+		const isWithinProjectionExtent = calculationHints.toProjectionExtent
+			? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
+			: true;
+		return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicArea(wgs84Geometry);
+	}
 };
 
 /**
@@ -164,11 +177,29 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
  */
 const getGeodesicLength = (wgs84LineString) => {
 	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
-	for (const coordinate of wgs84LineString.getCoordinates()) {
-		geodesicPolygon.AddPoint(coordinate[1], coordinate[0]);
+	for (const [lon, lat] of wgs84LineString.getCoordinates()) {
+		geodesicPolygon.AddPoint(lat, lon);
 	}
 	const res = geodesicPolygon.Compute(false, true);
 	return res.perimeter;
+};
+
+/**
+ * calculates the geodesic area of a geometry
+ * @param {Polygon} wgs84Polygon the Polygon (in WGS84), to calculate with
+ * @returns {number} the calculated area or 0 if the geometry-object is not a Polygon
+ */
+const getGeodesicArea = (wgs84Polygon) => {
+	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84);
+	return wgs84Polygon.getLinearRing().reduce((aggregatedArea, linearRing, index) => {
+		geodesicPolygon.clear();
+		for (const [lon, lat] of linearRing.getCoordinates()) {
+			geodesicPolygon.AddPoint(lat, lon);
+		}
+		const res = geodesicPolygon.Compute(false, true);
+		const isExteriorRing = index === 0;
+		return isExteriorRing ? aggregatedArea + res.area : aggregatedArea - res.area;
+	}, 0);
 };
 
 /**
