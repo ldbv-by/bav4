@@ -13,7 +13,7 @@
 	},
 	"devDependencies": {
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
-		"@playwright/test": "1.31.1",
+		"@playwright/test": "1.32.1",
 		"copy-webpack-plugin": "11.0.0",
 		"css-loader": "6.7.3",
 		"dotenv-webpack": "8.0.1",
