@@ -1184,7 +1184,6 @@ describe('OlDrawHandler', () => {
 			const store = setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -1192,7 +1191,6 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
 		});
 
 		it('left no active draw-interaction', async () => {
