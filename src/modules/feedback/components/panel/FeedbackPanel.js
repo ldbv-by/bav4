@@ -9,18 +9,18 @@ const Update_Reason = 'update_reason';
 export class FeedbackPanel extends MvuElement {
 	constructor() {
 		super({
-			age: 21,
-			topic: 'one text',
-			message: 'another text',
-			email: 'mail@some.com',
+			age: '',
+			topic: '',
+			message: '',
+			email: '',
 			reason: ''
 		});
 
 		this.reasonOptions = [
 			{ value: '', label: '-' },
-			{ value: 'error', label: 'Error' },
 			{ value: 'missing', label: 'Missing' },
-			{ value: 'wrong type', label: 'Wrong Type' }
+			{ value: 'wrong type', label: 'Wrong Type' },
+			{ value: 'error', label: 'Error' }
 		];
 	}
 
@@ -66,14 +66,22 @@ export class FeedbackPanel extends MvuElement {
 		};
 
 		const handleEmailChange = (event) => {
+			console.log('🚀 ~ FeedbackPanel ~ handleEmailChange ');
 			const { value } = event.target;
 			this.signal(Update_EMail, value);
 		};
 
-		const handleReasonChange = (event) => {
-			const { value } = event.target;
+		// const handleReasonChange = (event) => {  @input="${handleReasonChange}
+		// 	const { value } = event.target;
+		// 	this.signal(Update_Reason, value);
+		// };
 
-			this.signal(Update_Reason, value);
+		const onChange = () => {
+			this._noAnimation = true;
+			const select = this.shadowRoot.getElementById('reason');
+			const selectedReason = select.options[select.selectedIndex].value;
+			console.log('🚀 ~ FeedbackPanel ~ onChange ~ selectedReason:', selectedReason);
+			this.signal(Update_Reason, selectedReason);
 		};
 
 		const _handleInputChange = (event) => {
@@ -86,9 +94,7 @@ export class FeedbackPanel extends MvuElement {
 			event.preventDefault();
 			const formdata = new FormData(event.target);
 			const data = Object.fromEntries(formdata.entries());
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ FeedbackPanel ~ handleSubmit ~ data:', data);
-			// this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
+			this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
 		};
 
 		return html`
@@ -96,7 +102,7 @@ export class FeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanel">Feedback</h2>
+			<h2 id="feedbackPanelTitle">Feedback</h2>
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
@@ -122,7 +128,7 @@ export class FeedbackPanel extends MvuElement {
 						<input type="number" id="age" name="age" .value="${age}" @input="${_handleInputChange}" required />
 
 						<label for="reason">Reason:</label>
-						<select id="reason" name="reason" .value="${reason}" @input="${handleReasonChange}" required>
+						<select id="reason" name="reason" .value="${reason}" @change="${onChange}" required>
 							${this.reasonOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
 						</select>
 
