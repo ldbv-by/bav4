@@ -77,18 +77,6 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const fileStorageServiceMock = {
-		async save() {
-			return { fileId: 'saveFooBarBazId' };
-		},
-		isFileId(id) {
-			return id.startsWith('f_');
-		},
-		isAdminId(id) {
-			return id.startsWith('a_');
-		}
-	};
-
 	const translationServiceMock = { translate: (key) => key };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
@@ -153,7 +141,6 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
-			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars

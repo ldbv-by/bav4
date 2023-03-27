@@ -77,7 +77,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			EnvironmentService,
 			StoreService,
 			GeoResourceService,
-			FileStorageService,
 			OverlayService,
 			StyleService,
 			InteractionStorageService,
@@ -88,7 +87,6 @@ export class OlDrawHandler extends OlLayerHandler {
 			'EnvironmentService',
 			'StoreService',
 			'GeoResourceService',
-			'FileStorageService',
 			'OverlayService',
 			'StyleService',
 			'InteractionStorageService',
@@ -99,7 +97,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._environmentService = EnvironmentService;
 		this._storeService = StoreService;
 		this._geoResourceService = GeoResourceService;
-		this._fileStorageService = FileStorageService;
 		this._overlayService = OverlayService;
 		this._styleService = StyleService;
 		this._storageHandler = InteractionStorageService;
