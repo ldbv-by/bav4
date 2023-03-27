@@ -1,17 +1,13 @@
 import { html } from 'lit-html';
-import { BaElement } from '../../../BaElement';
+import { MvuElement } from '../../../MvuElement';
 import css from './mapInfo.css';
 
 /**
- * Demo-Element to show some information and do some action on the map
+ * Container for child components.
  * @class
  * @author taulinger
  */
-export class MapInfo extends BaElement {
-	constructor() {
-		super();
-	}
-
+export class MapInfo extends MvuElement {
 	createView() {
 		return html`
 			<style>
