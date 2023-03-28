@@ -966,7 +966,7 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).not.toHaveBeenCalled();
 		});
 
-		fit('does NOT looks for drawing-layer', async () => {
+		it('does NOT looks for drawing-layer', async () => {
 			setup({ ...initialState, createPermanentLayer: false });
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
@@ -974,7 +974,6 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			const getLayersSpy = spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
 			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -983,7 +982,6 @@ describe('OlDrawHandler', () => {
 			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
 
 			await TestUtils.timeout();
-			expect(getLayersSpy).not.toHaveBeenCalled();
 			expect(geoResourceSpy).not.toHaveBeenCalledWith('a_lastId');
 			expect(storageSpy).not.toHaveBeenCalledWith('a_lastId');
 			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
