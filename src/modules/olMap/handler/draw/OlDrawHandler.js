@@ -334,9 +334,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
-		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
-			this._convertToPermanentLayer();
-		}
+
+		this._convertToPermanentLayer();
+
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -828,10 +828,6 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 	}
 
-	/**
-	 *
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
-	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
@@ -846,18 +842,20 @@ export class OlDrawHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const id = this._storageHandler.getStorageId();
-		const getOrCreateVectorGeoResource = () => {
-			const fromService = this._geoResourceService.byId(id);
-			return fromService
-				? fromService
-				: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
-		};
-		const vgr = getOrCreateVectorGeoResource();
-		vgr.setSource(this._storedContent, 4326);
+		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+			const id = this._storageHandler.getStorageId();
+			const getOrCreateVectorGeoResource = () => {
+				const fromService = this._geoResourceService.byId(id);
+				return fromService
+					? fromService
+					: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+			};
+			const vgr = getOrCreateVectorGeoResource();
+			vgr.setSource(this._storedContent, 4326);
 
-		// register the stored data as new georesource
-		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { constraints: { cloneable: false, metaData: false } });
+			// register the stored data as new georesource
+			this._geoResourceService.addOrReplace(vgr);
+			addLayer(id, { constraints: { cloneable: false, metaData: false } });
+		}
 	}
 }
