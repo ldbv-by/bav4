@@ -198,9 +198,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		const getOrCreateLayer = () => {
-			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
-			addOldFeatures(layer, oldLayer);
+			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+				const oldLayer = getOldLayer(this._map);
+				addOldFeatures(layer, oldLayer);
+			}
+
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
@@ -331,7 +334,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
-		this._convertToPermanentLayer();
+		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+			this._convertToPermanentLayer();
+		}
 		this._vectorLayer
 			.getSource()
 			.getFeatures()

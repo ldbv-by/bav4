@@ -93,6 +93,7 @@ describe('OlDrawHandler', () => {
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
 		active: false,
+		createPermanentLayer: true,
 		mode: null,
 		type: null,
 		style: INITIAL_STYLE,
