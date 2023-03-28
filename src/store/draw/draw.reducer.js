@@ -40,7 +40,7 @@ export const initialState = {
 	/**
 	 * @type {boolean}
 	 */
-	geometryIsValid: false,
+	validGeometry: false,
 	/**
 	 * @type {Object}
 	 */
