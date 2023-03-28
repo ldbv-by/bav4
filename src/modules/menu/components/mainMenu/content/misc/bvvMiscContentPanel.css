@@ -21,6 +21,10 @@
 	mask-image: url('assets/person.svg');
 	-webkit-mask-image: url('assets/person.svg');
 }
+.chat {
+	mask-image: url('assets/chat.svg');
+	-webkit-mask-image: url('assets/chat.svg');
+}
 .gear {
 	mask-image: url('assets/gear.svg');
 	-webkit-mask-image: url('assets/gear.svg');
