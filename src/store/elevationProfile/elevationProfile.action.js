@@ -38,15 +38,14 @@ export const updateCoordinates = (coordinates) => {
 };
 
 /**
- * Closes the profile component and resets the coordinates.
+ * Closes the profile component.
  * @function
  */
 export const closeProfile = () => {
 	getStore().dispatch({
 		type: ELEVATION_PROFILE_ACTIVE_CHANGED,
 		payload: {
-			active: false,
-			coordinates: []
+			active: false
 		}
 	});
 };

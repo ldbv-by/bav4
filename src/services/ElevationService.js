@@ -6,7 +6,8 @@ import { $injector } from '../injection';
 /**
  * @typedef {Object} Profile
  * @property {Array<Elevation>} elevations elevations objects of this profile
- * @property {ProfileStats} stats  [stats] objects of this profile
+ * @property {string} refSystem label of the underlying height reference system
+ * @property {ProfileStats} [stats] objects of this profile
  * @property {Array<ProfileAttribute>} attrs available attributes of this profile (may be empty)
  */
 
@@ -76,7 +77,7 @@ export class ElevationService {
 	/**
 	 * Returns a profile for an array of two or more coordinates
 	 * @param {Array<Coordinate>} coordinates3857
-	 * @returns the profile
+	 * @returns {Profile} the profile
 	 */
 	async getProfile(coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {

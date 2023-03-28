@@ -77,18 +77,6 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const fileStorageServiceMock = {
-		async save() {
-			return { fileId: 'saveFooBarBazId' };
-		},
-		isFileId(id) {
-			return id.startsWith('f_');
-		},
-		isAdminId(id) {
-			return id.startsWith('a_');
-		}
-	};
-
 	const translationServiceMock = { translate: (key) => key };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
@@ -149,11 +137,10 @@ describe('OlDrawHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 })
+			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => null })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
-			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -1197,7 +1184,6 @@ describe('OlDrawHandler', () => {
 			const store = setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -1205,7 +1191,6 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
 		});
 
 		it('left no active draw-interaction', async () => {

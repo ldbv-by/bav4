@@ -15,17 +15,20 @@ import {
 	getBoundingBoxFrom,
 	simplify,
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
-	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES
+	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+	getLineString,
+	multiLineStringToLineString
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
+import { fromLonLat } from 'ol/proj';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
 
 describe('getGeometryLength', () => {
-	it('calculates length of LineString', () => {
+	it('calculates the length of a LineString', () => {
 		const lineString = new LineString([
 			[0, 0],
 			[1, 0]
@@ -35,7 +38,7 @@ describe('getGeometryLength', () => {
 		expect(length).toBe(1);
 	});
 
-	it('calculates length of LinearRing', () => {
+	it('calculates the length of a LinearRing', () => {
 		const linearRing = new LinearRing([
 			[0, 0],
 			[1, 0],
@@ -48,7 +51,7 @@ describe('getGeometryLength', () => {
 		expect(length).toBe(4);
 	});
 
-	it('calculates length of Polygon', () => {
+	it('calculates the length of a Polygon', () => {
 		const polygon = new Polygon([
 			[
 				[0, 0],
@@ -63,17 +66,56 @@ describe('getGeometryLength', () => {
 		expect(length).toBe(4);
 	});
 
-	it('calculates not length of Circle', () => {
+	it('does NOT calculates the length of Circle', () => {
 		const circle = new Circle([0, 0], 1);
 		const length = getGeometryLength(circle);
 
 		expect(length).toBe(0);
 	});
 
-	it('calculates not length of null', () => {
+	it('does NOT calculates the length of null', () => {
 		const length = getGeometryLength(null);
 
 		expect(length).toBe(0);
+	});
+
+	describe('when calculationHints are provided', () => {
+		it('calculates the length of a transformed geometry', () => {
+			const geometry = new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			]);
+			const cloneMock = { transform: () => {} };
+			spyOn(geometry, 'clone').and.callFake(() => cloneMock);
+			const calculationHints = { fromProjection: 'foo', toProjection: 'bar' };
+
+			const transformSpy = spyOn(cloneMock, 'transform').and.callFake(() => geometry);
+			getGeometryLength(geometry, calculationHints);
+
+			expect(transformSpy).toHaveBeenCalledWith('foo', 'EPSG:4326');
+			expect(transformSpy).toHaveBeenCalledWith('foo', 'bar');
+		});
+	});
+
+	describe('when calculationHints with extent are provided', () => {
+		it('calculates the geodesic length of a transformed geometry', () => {
+			const utm32Distance = 149200.428;
+			const geodesicDistance = 149246.522;
+			const lineString = new LineString([fromLonLat([9, 48]), fromLonLat([11, 48])]);
+			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+			// within
+			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Distance);
+			// partially within
+			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicDistance);
+			// outside
+			expect(getGeometryLength(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicDistance);
+		});
 	});
 });
 
@@ -374,6 +416,39 @@ describe('getArea', () => {
 		expect(pointArea).toBe(0);
 		expect(lineStringArea).toBe(0);
 		expect(linearRingArea).toBe(0);
+	});
+
+	describe('when calculationHints with extent are provided', () => {
+		it('calculates the geodesic area of a transformed polygon', () => {
+			const utm32Area = 8327453871.901;
+			const geodesicArea = 8333081687.76;
+			const lineString = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
+			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+			// within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			// partially within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			// outside
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+		});
+
+		it('calculates the geodesic area of a transformed polygon with hole', () => {
+			const utm32Area = 8322890782.498;
+			const geodesicArea = 8328516236.574;
+			const lineString = new Polygon([
+				[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])],
+				[fromLonLat([9.5, 47.5]), fromLonLat([10.5, 47.5]), fromLonLat([10, 47.5])]
+			]);
+			const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+
+			// within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [9, -60, 11, 60] })).toBeCloseTo(utm32Area);
+			// partially within
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [10, -60, 12, 60] })).toBeCloseTo(geodesicArea);
+			// outside
+			expect(getArea(lineString, { ...calculationHints, toProjectionExtent: [12, -60, 13, 60] })).toBeCloseTo(geodesicArea);
+		});
 	});
 });
 
@@ -871,6 +946,186 @@ describe('getBoundingBoxFrom', () => {
 		it('defines constant values', () => {
 			expect(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857).toBe(17.5);
 			expect(PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES).toBe(1000);
+		});
+	});
+
+	describe('getLineString', () => {
+		const point = new Point([0, 0]);
+		const lineString = new LineString([
+			[0, 0],
+			[15, 0]
+		]);
+
+		const linearRing = new LinearRing([
+			[0, 0],
+			[15, 0],
+			[15, 15]
+		]);
+		const polygon = new Polygon([
+			[
+				[16, 16],
+				[16, 0],
+				[0, 0]
+			]
+		]);
+
+		const pseudoMultLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			])
+		]);
+
+		const multLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
+			])
+		]);
+
+		it('creates a LineString', () => {
+			expect(getLineString(lineString)).toBe(lineString);
+
+			const fromLinearRing = getLineString(linearRing);
+			expect(fromLinearRing).toBeInstanceOf(LineString);
+			expect(fromLinearRing.getCoordinates()).toEqual([
+				[0, 0],
+				[15, 0],
+				[15, 15]
+			]);
+
+			const fromPolygon = getLineString(polygon);
+			expect(fromPolygon).toBeInstanceOf(LineString);
+			expect(fromPolygon.getCoordinates()).toEqual([
+				[16, 16],
+				[16, 0],
+				[0, 0]
+			]);
+
+			const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
+			expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
+			expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]);
+
+			const fromMultiLineString = getLineString(multLineString);
+			expect(fromMultiLineString).toBeInstanceOf(LineString);
+			expect(fromMultiLineString.getCoordinates()).toEqual([
+				[0, 0],
+				[42, 42],
+				[3, 5],
+				[3, 5],
+				[21, 21],
+				[1, 1]
+			]);
+		});
+
+		it('does NOT create a LineString', () => {
+			expect(getLineString(point)).toBeNull();
+		});
+	});
+
+	describe('multiLineStringToLineString', () => {
+		const point = new Point([0, 0]);
+		const lineString = new LineString([
+			[0, 0],
+			[15, 0]
+		]);
+
+		const linearRing = new LinearRing([
+			[0, 0],
+			[15, 0],
+			[15, 15]
+		]);
+		const polygon = new Polygon([
+			[
+				[16, 16],
+				[16, 0],
+				[0, 0]
+			]
+		]);
+		const pseudoMultLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			])
+		]);
+
+		const connectedMultLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
+			]),
+			new LineString([
+				[1, 1],
+				[12, 12],
+				[7, 1]
+			])
+		]);
+
+		const disconnectedMultLineString = new MultiLineString([
+			new LineString([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]),
+			new LineString([
+				[3, 5],
+				[21, 21],
+				[1, 1]
+			]),
+			new LineString([
+				[4, 1],
+				[12, 12],
+				[7, 1]
+			])
+		]);
+		it('does NOT create a LineString', () => {
+			expect(multiLineStringToLineString(point)).toBe(point);
+			expect(multiLineStringToLineString(lineString)).toBe(lineString);
+			expect(multiLineStringToLineString(linearRing)).toBe(linearRing);
+			expect(multiLineStringToLineString(polygon)).toBe(polygon);
+			expect(multiLineStringToLineString(disconnectedMultLineString)).toBe(disconnectedMultLineString);
+		});
+
+		it('creates a LineString', () => {
+			const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
+			expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
+			expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
+				[0, 0],
+				[42, 42],
+				[3, 5]
+			]);
+
+			const fromConnectedMultiLineString = getLineString(connectedMultLineString);
+			expect(fromConnectedMultiLineString).toBeInstanceOf(LineString);
+			expect(fromConnectedMultiLineString.getCoordinates()).toEqual([
+				[0, 0],
+				[42, 42],
+				[3, 5],
+				[3, 5],
+				[21, 21],
+				[1, 1],
+				[1, 1],
+				[12, 12],
+				[7, 1]
+			]);
 		});
 	});
 });

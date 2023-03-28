@@ -48,6 +48,7 @@ import { ElevationProfilePlugin } from '../plugins/ElevationProfilePlugin';
 import { ElevationService } from '../services/ElevationService';
 import { IframeStatePlugin } from '../plugins/IframeStatePlugin';
 import { ObserveStateForEncodingPlugin } from '../plugins/ObserveStateForEncodingPlugin';
+import { SharePlugin } from '../plugins/SharePlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -96,6 +97,7 @@ $injector
 	.registerSingleton('ExportMfpPlugin', new ExportMfpPlugin())
 	.registerSingleton('ElevationProfilePlugin', new ElevationProfilePlugin())
 	.registerSingleton('IframeStatePlugin', new IframeStatePlugin())
+	.registerSingleton('SharePlugin', new SharePlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)

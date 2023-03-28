@@ -49,10 +49,28 @@ describe('ElevationProfilePlugin', () => {
 	});
 
 	describe('when property `active` of slice-of-state `bottomSheet` changes', () => {
-		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
+		it('unsubscribes an previously registered bottomSheet observer', async () => {
 			const store = setup({
 				elevationProfile: {
+					active: true,
+					coordinates: []
+				},
+				bottomSheet: {
 					active: true
+				}
+			});
+			const instanceUnderTest = new ElevationProfilePlugin();
+			const bottomSheetUnsubscribeFnSpy = spyOn(instanceUnderTest, '_bottomSheetUnsubscribeFn');
+			await instanceUnderTest.register(store);
+
+			expect(bottomSheetUnsubscribeFnSpy).toHaveBeenCalled();
+		});
+
+		it('closes the ElevationProfile component when BottomSheet was closed', async () => {
+			const store = setup({
+				elevationProfile: {
+					active: true,
+					coordinates: []
 				},
 				bottomSheet: {
 					active: true
@@ -73,7 +91,8 @@ describe('ElevationProfilePlugin', () => {
 		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
 			const store = setup({
 				elevationProfile: {
-					active: true
+					active: true,
+					coordinates: []
 				},
 				draw: {
 					active: true
@@ -94,7 +113,8 @@ describe('ElevationProfilePlugin', () => {
 		it('closes the ElevationProfile component and unsubscribes the bottomSheet observer', async () => {
 			const store = setup({
 				elevationProfile: {
-					active: true
+					active: true,
+					coordinates: []
 				},
 				measurement: {
 					active: true
