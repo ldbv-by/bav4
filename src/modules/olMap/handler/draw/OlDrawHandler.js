@@ -335,7 +335,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		setSelection([]);
 
-		this._convertToPermanentLayer();
+		this._saveAndOptionallyConvertToPermanentLayer();
 
 		this._vectorLayer
 			.getSource()
@@ -828,7 +828,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 	}
 
-	async _convertToPermanentLayer() {
+	async _saveAndOptionallyConvertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
