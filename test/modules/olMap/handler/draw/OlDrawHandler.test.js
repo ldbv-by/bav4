@@ -923,7 +923,7 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
-		it('looks for drawing-layer and adds the feature for update/copy on save', async () => {
+		it('looks for an existing drawing-layer and adds the feature for update/copy on save', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
@@ -946,7 +946,7 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('looks for drawing-layer and gets no georesource', async () => {
+		it('looks for an existing drawing-layer and gets no georesource', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
@@ -966,7 +966,7 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).not.toHaveBeenCalled();
 		});
 
-		it('does NOT looks for drawing-layer', async () => {
+		it('does NOT look for an existing drawing-layer', async () => {
 			setup({ ...initialState, createPermanentLayer: false });
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
