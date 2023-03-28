@@ -28,6 +28,7 @@ describe('drawReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 		expect(store.getState().draw.mode).toBeNull();
 		expect(store.getState().draw.type).toBeNull();
 		expect(store.getState().draw.style).toBe(INITIAL_STYLE);
@@ -43,10 +44,22 @@ describe('drawReducer', () => {
 		activate();
 
 		expect(store.getState().draw.active).toBeTrue();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 
 		deactivate();
 
 		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+
+		activate(false);
+
+		expect(store.getState().draw.active).toBeTrue();
+		expect(store.getState().draw.createPermanentLayer).toBeFalse();
+
+		deactivate();
+
+		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 	});
 
 	it('updates the mode property', () => {
