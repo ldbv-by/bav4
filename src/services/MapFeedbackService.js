@@ -8,6 +8,7 @@
  */
 
 /**
+ * It's a stub!
  * @class
  */
 export class MapFeedbackService {
