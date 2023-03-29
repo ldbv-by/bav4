@@ -92,9 +92,6 @@
 .ba-section .ba-list-item > *:first-child {
 	padding-left: 1.2em;
 }
-.ba-section:hover .ba-list-item__header .ba-list-item__text {
-	color: var(--secondary-color);
-}
 .ba-section:hover {
 	border-left: 0.3em solid var(--secondary-color);
 }
@@ -181,7 +178,7 @@ img {
 	height: auto;
 }
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
-	color: var(--primary-color) 0.3;
+	color: var(--primary-color);
 }
 .content {
 	margin: 0 0 1em 0;
