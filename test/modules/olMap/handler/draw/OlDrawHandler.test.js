@@ -77,22 +77,11 @@ describe('OlDrawHandler', () => {
 		}
 	};
 
-	const fileStorageServiceMock = {
-		async save() {
-			return { fileId: 'saveFooBarBazId' };
-		},
-		isFileId(id) {
-			return id.startsWith('f_');
-		},
-		isAdminId(id) {
-			return id.startsWith('a_');
-		}
-	};
-
 	const translationServiceMock = { translate: (key) => key };
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
 		active: false,
+		createPermanentLayer: true,
 		mode: null,
 		type: null,
 		style: INITIAL_STYLE,
@@ -153,7 +142,6 @@ describe('OlDrawHandler', () => {
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
-			.registerSingleton('FileStorageService', fileStorageServiceMock)
 			.registerSingleton('IconService', { getDefault: () => new IconResult('foo', 'bar') })
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars
@@ -922,7 +910,7 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
-		it('looks for drawing-layer and adds the feature for update/copy on save', async () => {
+		it('looks for an existing drawing-layer and adds the feature for update/copy on save', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
@@ -945,7 +933,7 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('looks for drawing-layer and gets no georesource', async () => {
+		it('looks for an existing drawing-layer and gets no georesource', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
@@ -963,6 +951,27 @@ describe('OlDrawHandler', () => {
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(storageSpy).not.toHaveBeenCalled();
 			expect(addFeatureSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT look for an existing drawing-layer', async () => {
+			setup({ ...initialState, createPermanentLayer: false });
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).not.toHaveBeenCalledWith('a_lastId');
+			expect(storageSpy).not.toHaveBeenCalledWith('a_lastId');
+			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
 		});
 
 		it('adds style on old features', async () => {
@@ -1197,7 +1206,6 @@ describe('OlDrawHandler', () => {
 			const store = setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
-			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -1205,7 +1213,6 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
 		});
 
 		it('left no active draw-interaction', async () => {
