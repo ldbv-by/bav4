@@ -834,7 +834,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
 		if (isEmpty) {
-			console.warn('Cannot store empty layer');
 			return;
 		}
 
