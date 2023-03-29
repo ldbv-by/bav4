@@ -33,8 +33,10 @@ describe('IframeContainerPlugin', () => {
 
 			registerQuery(queryId);
 
-			expect(store.getState().featureInfo.current).toHaveSize(1);
+			const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
+			expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
 			expect(store.getState().iframeContainer.active).toBeFalse();
+			expect(store.getState().featureInfo.current).toHaveSize(1);
 		});
 
 		describe('and we have FeatureInfo items', () => {
@@ -52,8 +54,10 @@ describe('IframeContainerPlugin', () => {
 
 				resolveQuery(queryId);
 
-				expect(store.getState().featureInfo.current).toHaveSize(1);
+				const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
+				expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
 				expect(store.getState().iframeContainer.active).toBeTrue();
+				expect(store.getState().featureInfo.current).toHaveSize(1);
 			});
 
 			describe('and we have NO FeatureInfo items', () => {
