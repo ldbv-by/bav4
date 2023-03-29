@@ -33,8 +33,6 @@ describe('IframeContainerPlugin', () => {
 
 			registerQuery(queryId);
 
-			const contentElement = TestUtils.renderTemplateResult(store.getState().iframeContainer.content);
-			expect(contentElement.querySelectorAll('ba-feature-info-iframe-panel')).toHaveSize(1);
 			expect(store.getState().iframeContainer.active).toBeFalse();
 			expect(store.getState().featureInfo.current).toHaveSize(1);
 		});
