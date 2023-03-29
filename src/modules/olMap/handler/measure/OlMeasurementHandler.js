@@ -91,7 +91,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid()
+			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
+			toProjectionExtent: this._mapService.getDefaultGeodeticExtent()
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
@@ -660,16 +661,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._storedContent = newContent;
 	}
 
-	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a statefull _storageHandler
-	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
 		const isEmpty = this._vectorLayer.getSource().getFeatures().length === 0;
 		if (isEmpty) {
-			console.warn('Cannot store empty layer');
 			return;
 		}
 

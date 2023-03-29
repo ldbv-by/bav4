@@ -16,6 +16,7 @@ describe('MapService', () => {
 		const definitionsProvider = () => {
 			return {
 				defaultExtent: [0, 1, 2, 3],
+				defaultGeodeticExtent: [4, 5, 6, 7],
 				srid: 3857,
 				defaultSridForView: 4326,
 				sridDefinitionsForView: () => [
@@ -59,6 +60,12 @@ describe('MapService', () => {
 				instanceUnderTest.getDefaultMapExtent(21);
 			}).toThrowError(/Unsupported SRID 21/);
 		});
+	});
+
+	it('provides a default geodetic extent', () => {
+		const instanceUnderTest = setup();
+
+		expect(instanceUnderTest.getDefaultGeodeticExtent()).toEqual([4, 5, 6, 7]);
 	});
 
 	it('provides a default srid for the view', () => {

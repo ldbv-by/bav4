@@ -53,10 +53,10 @@ const getStore = () => {
  * Activates the draw tool.
  * @function
  */
-export const activate = () => {
+export const activate = (createPermanentLayer = true) => {
 	getStore().dispatch({
 		type: ACTIVE_CHANGED,
-		payload: true
+		payload: { active: true, createPermanentLayer: createPermanentLayer }
 	});
 };
 
@@ -67,7 +67,7 @@ export const activate = () => {
 export const deactivate = () => {
 	getStore().dispatch({
 		type: ACTIVE_CHANGED,
-		payload: false
+		payload: { active: false, createPermanentLayer: true }
 	});
 };
 

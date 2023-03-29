@@ -21,7 +21,6 @@ describe('ExportMfpPlugin', () => {
 	};
 
 	const translationService = {
-		register() {},
 		translate: (key) => key
 	};
 

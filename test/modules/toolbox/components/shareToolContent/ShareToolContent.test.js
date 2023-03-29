@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
-import { IframeGenerator } from '../../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
+import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { isTemplateResultOf } from '../../../../../src/utils/checks';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 

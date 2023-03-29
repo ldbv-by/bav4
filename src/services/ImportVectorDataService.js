@@ -104,7 +104,8 @@ export class ImportVectorDataService {
 		if (resultingSourceType) {
 			const vgr = new VectorGeoResource(id, label, vectorSourceType)
 				.setSource(data, resultingSourceType.srid ?? 4326 /**valid for kml, gpx and geoJson**/)
-				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+				.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource)
+				.setHidden(true);
 			return this._geoResourceService.addOrReplace(vgr);
 		}
 		console.warn(`SourceType for '${id}' could not be detected`);

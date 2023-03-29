@@ -1,8 +1,11 @@
 import './i18n';
-import './components/iframeGenerator';
-import { NonEmbeddedHint } from './components/NonEmbeddedHint';
+import { IframeGenerator } from './components/generator/IframeGenerator';
+import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { ActivateMapButton } from './components/activateMapButton/ActivateMapButton';
-import { ViewLargerMapChip } from './components/viewLargerMapChip/ViewLargerMapChip';
+import { ViewLargerMapChip } from './components/chips/ViewLargerMapChip';
+if (!window.customElements.get(IframeGenerator.tag)) {
+	window.customElements.define(IframeGenerator.tag, IframeGenerator);
+}
 if (!window.customElements.get(NonEmbeddedHint.tag)) {
 	window.customElements.define(NonEmbeddedHint.tag, NonEmbeddedHint);
 }

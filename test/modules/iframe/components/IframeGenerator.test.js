@@ -1,7 +1,7 @@
 import { PathParameters } from '../../../../src/domain/pathParameters';
 import { $injector } from '../../../../src/injection';
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
-import { IframeGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
+import { IframeGenerator } from '../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
@@ -37,13 +37,43 @@ describe('IframeGenerator', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders iframe content', async () => {
+		it('renders the input elements with correct attributes', async () => {
+			const element = await setup();
+			const iframeWidthInput = element.shadowRoot.querySelector('#iframe_width');
+			const iframeWidthSliderInput = element.shadowRoot.querySelector('#iframe_slider_width');
+			const iframeHeightInput = element.shadowRoot.querySelector('#iframe_height');
+			const iframeHeightSliderInput = element.shadowRoot.querySelector('#iframe_slider_height');
+
+			expect(iframeWidthInput.value).toBe('800');
+			expect(iframeWidthInput.getAttribute('type')).toBe('number');
+			expect(iframeWidthInput.getAttribute('min')).toBe('100');
+			expect(iframeWidthInput.getAttribute('max')).toBe('2000');
+
+			expect(iframeWidthSliderInput.value).toBe('800');
+			expect(iframeWidthSliderInput.getAttribute('type')).toBe('range');
+			expect(iframeWidthSliderInput.getAttribute('min')).toBe('100');
+			expect(iframeWidthSliderInput.getAttribute('max')).toBe('2000');
+			expect(iframeWidthSliderInput.getAttribute('step')).toBe('10');
+
+			expect(iframeHeightInput.value).toBe('600');
+			expect(iframeHeightInput.getAttribute('type')).toBe('number');
+			expect(iframeHeightInput.getAttribute('min')).toBe('100');
+			expect(iframeHeightInput.getAttribute('max')).toBe('2000');
+
+			expect(iframeHeightSliderInput.value).toBe('600');
+			expect(iframeHeightSliderInput.getAttribute('type')).toBe('range');
+			expect(iframeHeightSliderInput.getAttribute('min')).toBe('100');
+			expect(iframeHeightSliderInput.getAttribute('max')).toBe('2000');
+			expect(iframeHeightSliderInput.getAttribute('step')).toBe('10');
+		});
+
+		it('renders the iframe content', async () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('iframe')).toHaveSize(1);
 		});
 
-		it('specifies correct iframe source', async () => {
+		it('specifies the correct iframe source', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
 			const shareServiceSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(expectedUrl);
 			const element = await setup();
@@ -263,11 +293,11 @@ describe('IframeGenerator', () => {
 			const toggle = element.shadowRoot.querySelector('#toggleAutoWidth');
 			const textElement = element.shadowRoot.querySelector('#iframe_code');
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
 
 			toggle.click();
 
-			expect(widthInputElement.value).toBe('');
+			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('.width_placeholder').textContent).toBe('100');
 			expect(iframeElement.width).toBe('100%');
 			expect(textElement.value).toBe(
 				`<iframe src=${expectedUrl} width='100%' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
@@ -275,7 +305,8 @@ describe('IframeGenerator', () => {
 
 			toggle.click();
 
-			expect(widthInputElement.value).toBe('800');
+			expect(element.shadowRoot.querySelectorAll('#iframe_width')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.width_placeholder')).toHaveSize(0);
 			expect(iframeElement.width).toBe('800px');
 			expect(textElement.value).toBe(
 				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`

@@ -345,7 +345,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const geometry = state.geometry.clone();
 	const resolution = state.resolution;
 	const pixelRatio = state.pixelRatio;
-	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' };
+	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
 	const partition = getPartitionDelta(geometry, resolution, calculationHints);
 	const partitionLength = partition * getGeometryLength(geometry);
