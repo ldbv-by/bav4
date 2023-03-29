@@ -42,18 +42,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__icon icon chat"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">Feedback geben</span>
-					<span class="ba-list-item__after vertical-center">
-						<span class="arrow arrow-right"></span>
-					</span>
 				</a>
-				<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+				<a class="ba-list-item hide" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon flag"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">Kartenfehler melden</span>
-					<span class="ba-list-item__after vertical-center">
-						<span class="arrow arrow-right"></span>
-					</span>
 				</a>
 				<a class="ba-list-item " href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
 					<span class="ba-list-item__pre">
@@ -69,9 +63,6 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 						<span class="ba-list-item__icon icon gear"> </span>
 					</span>
 					<span class="ba-list-item__text vertical-center">Einstellungen</span>
-					<span class="ba-list-item__after vertical-center">
-						<span class="arrow arrow-right"></span>
-					</span>
 				</a>
 				<div class="ba-list-item  ba-list-item__header hide">
 					<span class="ba-list-item__text ">
