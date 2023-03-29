@@ -26,6 +26,10 @@ export const initialState = {
 	 */
 	active: false,
 	/**
+	 * @type {Boolean}
+	 */
+	createPermanentLayer: true,
+	/**
 	 * @type {String}
 	 */
 	mode: null,
@@ -36,7 +40,7 @@ export const initialState = {
 	/**
 	 * @type {boolean}
 	 */
-	geometryIsValid: false,
+	validGeometry: false,
 	/**
 	 * @type {Object}
 	 */
@@ -75,9 +79,11 @@ export const drawReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case ACTIVE_CHANGED: {
+			const { active, createPermanentLayer } = payload;
 			return {
 				...state,
-				active: payload
+				active: active,
+				createPermanentLayer: createPermanentLayer
 			};
 		}
 		case MODE_CHANGED: {
