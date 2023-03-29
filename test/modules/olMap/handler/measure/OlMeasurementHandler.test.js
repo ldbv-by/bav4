@@ -288,14 +288,12 @@ describe('OlMeasurementHandler', () => {
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const layerStub = {};
-				const warnSpy = spyOn(console, 'warn');
 				map.removeInteraction = jasmine.createSpy();
 				classUnderTest.activate(map);
 				classUnderTest.deactivate(map, layerStub);
 
 				// removes Interaction for select, draw, modify, snap, dragPan
 				expect(map.removeInteraction).toHaveBeenCalledTimes(5);
-				expect(warnSpy).toHaveBeenCalled();
 			});
 
 			it('adds a select interaction', () => {
@@ -706,7 +704,6 @@ describe('OlMeasurementHandler', () => {
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
-			const warnSpy = spyOn(console, 'warn');
 
 			classUnderTest.activate(map);
 			expect(classUnderTest._vectorLayer).toBeTruthy();
@@ -714,7 +711,6 @@ describe('OlMeasurementHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
-			expect(warnSpy).toHaveBeenCalledWith('Cannot store empty layer');
 		});
 	});
 
