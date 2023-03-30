@@ -1,7 +1,7 @@
 import { PathParameters } from '../../../../src/domain/pathParameters';
 import { $injector } from '../../../../src/injection';
 import { Toggle } from '../../../../src/modules/commons/components/toggle/Toggle';
-import { IframeGenerator } from '../../../../src/modules/iframe/components/iframeGenerator/IframeGenerator';
+import { IframeGenerator } from '../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE } from '../../../../src/utils/markup';
