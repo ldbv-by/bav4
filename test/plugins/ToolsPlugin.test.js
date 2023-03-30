@@ -1,7 +1,5 @@
-import { TopicsPlugin } from '../../src/plugins/TopicsPlugin';
 import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection';
-import { Topic } from '../../src/domain/topic';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { initialState, toolsReducer } from '../../src/store/tools/tools.reducer';
 import { ToolId } from '../../src/store/tools/tools.action';
