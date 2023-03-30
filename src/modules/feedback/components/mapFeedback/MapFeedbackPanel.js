@@ -3,21 +3,17 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 
-const Update_EMail = 'update_email';
-const Update_Topic = 'update_topic';
-const Update_Reason = 'update_reason';
-//const Update_Topic = 'update_topic';
+const Update_Type = 'update_type';
 const Update_Category = 'update_category';
+const Update_Message = 'update_message';
+const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
-			age: '',
-			topic: '',
 			message: '',
 			email: '',
-			reason: '',
 			category: '',
 			categoryOptions: []
 		});
@@ -32,16 +28,6 @@ export class MapFeedbackPanel extends MvuElement {
 		this._translationService = translationService;
 		this._mapFeedbackService = mapFeedbackService;
 
-		// this.categoryOptions = [
-		// 	{ value: '', label: 'Bitte wählen ...' },
-		// 	{ value: 'trafic', label: 'Verkehr' },
-		// 	{ value: 'settlement', label: 'Siedlung' },
-		// 	{ value: 'waters', label: 'Gewässer' },
-		// 	{ value: 'label', label: 'Beschriftung' },
-		// 	{ value: 'poi', label: 'Points of Interest' },
-		// 	{ value: 'other', label: 'sonstiges' }
-		// ];
-
 		this.reasonOptions = [
 			{ value: '', label: '-' },
 			{ value: 'missing', label: 'Missing' },
@@ -52,88 +38,65 @@ export class MapFeedbackPanel extends MvuElement {
 
 	onInitialize() {
 		this._getCategorieOptions();
-		// this._unsubscribers = [
-		// 	this.observe(
-		// 		(state) => state.media.darkSchema,
-		// 		(darkSchema) => this.signal(Update_Schema, darkSchema)
-		// 	)
-		// ];
-		// this._unsubscribers = [
-		// 	this.observe(
-		// 		(state) => state.media,
-		// 		(data) => this.signal(Update_Media, data),
-		// 		true
-		// 	)
-		// ];
 	}
 
 	async _getCategorieOptions() {
 		try {
 			const categorieOptions = await this._mapFeedbackService.getCategories();
-			console.log('🚀 ~ MapFeedbackPanel ~ _getCategorieOptions ~ categorieOptions:', categorieOptions);
 			this.signal(Update_CategoryOptions, categorieOptions);
 		} catch (e) {
 			console.error(e);
-			this.signal(Update_CategoryOptions, null);
+			this.signal(Update_CategoryOptions, []);
 		}
 	}
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Topic:
-				return { ...model, topic: data };
-			case Update_EMail:
-				return { ...model, email: data };
-			case Update_Reason:
-				return { ...model, reason: data };
+			case Update_Type:
+				return { ...model, type: data };
 			case Update_Category:
 				return { ...model, category: data };
+			case Update_Message:
+				return { ...model, message: data };
+			case Update_EMail:
+				return { ...model, email: data };
 			case Update_CategoryOptions:
-				return { ...model, categoryOptions: data };
+				return { ...model, categoryOptions: ['', ...data] };
 		}
 	}
 
 	createView(model) {
 		const { email, message, category, categoryOptions } = model;
+		const translate = (key) => this._translationService.translate(key);
 
-		// const selectedCategory = this.categoryOptions.find((aCategory) => {
-		// 	return aCategory.value === category;
-		// });
+		const handleTypeChange = (event) => {
+			const selectedType = event.target.value;
+			this.signal(Update_Type, selectedType);
+		};
 
-		// const handleTopicChange = (event) => {
-		// 	const { value } = event.target;
-		// 	this.signal(Update_Topic, value);
-		// };
+		const handleCategoryChange = () => {
+			this._noAnimation = true;
+			const select = this.shadowRoot.getElementById('category');
+			const selectedCategory = select.options[select.selectedIndex].value;
+			this.signal(Update_Category, selectedCategory);
+		};
 
 		const handleEmailChange = (event) => {
-			// console.log('🚀 ~ FeedbackPanel ~ handleEmailChange ');
 			const { value } = event.target;
 			this.signal(Update_EMail, value);
 		};
 
-		// const handleReasonChange = (event) => {  @input="${handleReasonChange}
-		// 	const { value } = event.target;
-		// 	this.signal(Update_Reason, value);
-		// };
-
-		const onChangeCategory = () => {
-			this._noAnimation = true;
-			const select = this.shadowRoot.getElementById('category');
-			const selectedCategory = select.options[select.selectedIndex].value;
-			// console.log('🚀 ~ FeedbackPanel ~ onChange ~ selectedCategory:', selectedCategory);
-			this.signal(Update_Category, selectedCategory);
-		};
-
-		const _handleInputChange = (event) => {
-			const { name, value } = event.target;
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ todo: handle ', name, value);
+		const handleMessageChange = (event) => {
+			const { value } = event.target;
+			this.signal(Update_Message, value);
 		};
 
 		const handleSubmit = (event) => {
 			event.preventDefault();
 			const formdata = new FormData(event.target);
 			const data = Object.fromEntries(formdata.entries());
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ MapFeedbackPanel ~ handleSubmit ~ data:', data);
 			this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
 		};
 
@@ -142,47 +105,50 @@ export class MapFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">Feedback zur Karte</h2>
+			<h2 id="feedbackPanelTitle">${translate('feedback_header')}</h2>
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
 					<form @submit="${handleSubmit}">
 						<br />
-						<label>1. Markierung Ihrer Änderungsmeldung</label>
+
+						<label for="category">${translate('feedback_markChangeNotice')}</label>
 						<div>
-							<input type="radio" id="symbol" name="type" value="symbol" @change="${this._handleTypeChange}" />
-							<label for="symbol">Symbol</label>
+							<label for="symbol" class="icon-label">
+								<input type="radio" id="symbol" name="type" value="symbol" @change="${handleTypeChange}" required />
+								Symbol
+							</label>
 						</div>
 						<div>
-							<input type="radio" id="line" name="type" value="line" @change="${this._handleTypeChange}" />
-							<label for="line">Line</label>
+							<label for="line" class="icon-label">
+								<input type="radio" id="line" name="type" value="line" @change="${handleTypeChange}" required />
+								Line
+							</label>
 						</div>
 						<br />
 
-						<label for="category">2. Auswahl der Kategorie</label>
-						<select id="category" name="category" .value="${category}" @change="${onChangeCategory}" required>
-							${categoryOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
+						<label for="category">${translate('feedback_categorySelection')}</label>
+						<select id="category" name="category" .value="${category}" @change="${handleCategoryChange}" required>
+							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 
-						<label for="message">3. Beschreibung der Änderung</label>
+						<label for="message">${translate('feedback_changeDescription')}</label>
 						<textarea
 							id="message"
 							name="message"
 							.value="${message}"
-							@input="${_handleInputChange}"
+							@input="${handleMessageChange}"
 							minlength="10"
 							maxlength="40"
 							required
 						></textarea>
 
-						<label for="email">4. Ihre E-Mail-Adresse</label>
+						<label for="email">${translate('feedback_eMail')}</label>
 						<input type="email" id="email" name="email" .value="${email}" @input="${handleEmailChange}" required />
 						<br />
-
-						Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere
-						Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse (<a
+						${translate('feedback_disclaimer')} (<a
 							href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
-							>Hinweis zum Datenschutz</a
+							>${translate('feedback_privacyPolicy')}</a
 						>).
 						<br />
 
