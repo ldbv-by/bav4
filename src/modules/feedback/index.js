@@ -1,5 +1,5 @@
-import { FeedbackPanel } from './components/panel/FeedbackPanel';
+import { MapFeedbackPanel } from './components/mapFeedback/MapFeedbackPanel';
 
-if (!window.customElements.get(FeedbackPanel.tag)) {
-	window.customElements.define(FeedbackPanel.tag, FeedbackPanel);
+if (!window.customElements.get(MapFeedbackPanel.tag)) {
+	window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 }

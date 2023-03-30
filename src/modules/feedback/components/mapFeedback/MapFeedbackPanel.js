@@ -1,14 +1,16 @@
 import { html } from 'lit-html';
+import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from './feedbackPanel.css';
+import css from './mapFeedbackPanel.css';
 
 const Update_EMail = 'update_email';
 const Update_Topic = 'update_topic';
 const Update_Reason = 'update_reason';
 //const Update_Topic = 'update_topic';
 const Update_Category = 'update_category';
+const Update_CategoryOptions = 'update_categoryoptions';
 
-export class FeedbackPanel extends MvuElement {
+export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
 			age: '',
@@ -16,18 +18,29 @@ export class FeedbackPanel extends MvuElement {
 			message: '',
 			email: '',
 			reason: '',
-			category: ''
+			category: '',
+			categoryOptions: []
 		});
 
-		this.categoryOptions = [
-			{ value: '', label: 'Bitte wählen ...' },
-			{ value: 'trafic', label: 'Verkehr' },
-			{ value: 'settlement', label: 'Siedlung' },
-			{ value: 'waters', label: 'Gewässer' },
-			{ value: 'label', label: 'Beschriftung' },
-			{ value: 'poi', label: 'Points of Interest' },
-			{ value: 'other', label: 'sonstiges' }
-		];
+		const {
+			ConfigService: configService,
+			TranslationService: translationService,
+			MapFeedbackService: mapFeedbackService
+		} = $injector.inject('ConfigService', 'TranslationService', 'MapFeedbackService');
+
+		this._configService = configService;
+		this._translationService = translationService;
+		this._mapFeedbackService = mapFeedbackService;
+
+		// this.categoryOptions = [
+		// 	{ value: '', label: 'Bitte wählen ...' },
+		// 	{ value: 'trafic', label: 'Verkehr' },
+		// 	{ value: 'settlement', label: 'Siedlung' },
+		// 	{ value: 'waters', label: 'Gewässer' },
+		// 	{ value: 'label', label: 'Beschriftung' },
+		// 	{ value: 'poi', label: 'Points of Interest' },
+		// 	{ value: 'other', label: 'sonstiges' }
+		// ];
 
 		this.reasonOptions = [
 			{ value: '', label: '-' },
@@ -38,21 +51,31 @@ export class FeedbackPanel extends MvuElement {
 	}
 
 	onInitialize() {
+		this._getCategorieOptions();
 		// this._unsubscribers = [
 		// 	this.observe(
 		// 		(state) => state.media.darkSchema,
 		// 		(darkSchema) => this.signal(Update_Schema, darkSchema)
-		// 	),
-		// 	this.observe(
-		// 		(state) => state.elevationProfile.coordinates,
-		// 		(coordinates) => this._getElevationProfile(coordinates)
-		// 	),
+		// 	)
+		// ];
+		// this._unsubscribers = [
 		// 	this.observe(
 		// 		(state) => state.media,
 		// 		(data) => this.signal(Update_Media, data),
 		// 		true
 		// 	)
 		// ];
+	}
+
+	async _getCategorieOptions() {
+		try {
+			const categorieOptions = await this._mapFeedbackService.getCategories();
+			console.log('🚀 ~ MapFeedbackPanel ~ _getCategorieOptions ~ categorieOptions:', categorieOptions);
+			this.signal(Update_CategoryOptions, categorieOptions);
+		} catch (e) {
+			console.error(e);
+			this.signal(Update_CategoryOptions, null);
+		}
 	}
 
 	update(type, data, model) {
@@ -65,26 +88,25 @@ export class FeedbackPanel extends MvuElement {
 				return { ...model, reason: data };
 			case Update_Category:
 				return { ...model, category: data };
+			case Update_CategoryOptions:
+				return { ...model, categoryOptions: data };
 		}
 	}
 
 	createView(model) {
-		const { email, topic, message, age, reason, category } = model;
+		const { email, message, category, categoryOptions } = model;
 
-		const selectedReason = this.reasonOptions.find((aReason) => {
-			return aReason.value === reason;
-		});
-		const selectedCategory = this.categoryOptions.find((aCategory) => {
-			return aCategory.value === category;
-		});
+		// const selectedCategory = this.categoryOptions.find((aCategory) => {
+		// 	return aCategory.value === category;
+		// });
 
-		const handleTopicChange = (event) => {
-			const { value } = event.target;
-			this.signal(Update_Topic, value);
-		};
+		// const handleTopicChange = (event) => {
+		// 	const { value } = event.target;
+		// 	this.signal(Update_Topic, value);
+		// };
 
 		const handleEmailChange = (event) => {
-			console.log('🚀 ~ FeedbackPanel ~ handleEmailChange ');
+			// console.log('🚀 ~ FeedbackPanel ~ handleEmailChange ');
 			const { value } = event.target;
 			this.signal(Update_EMail, value);
 		};
@@ -94,19 +116,11 @@ export class FeedbackPanel extends MvuElement {
 		// 	this.signal(Update_Reason, value);
 		// };
 
-		const onChange = () => {
-			this._noAnimation = true;
-			const select = this.shadowRoot.getElementById('reason');
-			const selectedReason = select.options[select.selectedIndex].value;
-			console.log('🚀 ~ FeedbackPanel ~ onChange ~ selectedReason:', selectedReason);
-			this.signal(Update_Reason, selectedReason);
-		};
-
 		const onChangeCategory = () => {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
-			console.log('🚀 ~ FeedbackPanel ~ onChange ~ selectedCategory:', selectedCategory);
+			// console.log('🚀 ~ FeedbackPanel ~ onChange ~ selectedCategory:', selectedCategory);
 			this.signal(Update_Category, selectedCategory);
 		};
 
@@ -128,48 +142,6 @@ export class FeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">Feedback</h2>
-
-			<div class="feedback-form-container">
-				<div class="feedback-form-left">
-					<form @submit="${handleSubmit}">
-						<label for="topic">Topic:</label>
-						<input type="text" id="topic" name="topic" .value="${topic}" @input="${handleTopicChange}" required />
-
-						<label for="email">Email:</label>
-						<input type="email" id="email" name="email" .value="${email}" @input="${handleEmailChange}" required />
-
-						<label for="message">Message:</label>
-						<textarea
-							id="message"
-							name="message"
-							.value="${message}"
-							@input="${_handleInputChange}"
-							minlength="10"
-							maxlength="40"
-							required
-						></textarea>
-
-						<label for="age">Age:</label>
-						<input type="number" id="age" name="age" .value="${age}" @input="${_handleInputChange}" required />
-
-						<label for="reason">Reason:</label>
-						<select id="reason" name="reason" .value="${reason}" @change="${onChange}" required>
-							${this.reasonOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
-						</select>
-
-						<button type="submit">Submit</button>
-					</form>
-				</div>
-				<div class="feedback-form-right">
-					<p>Topic: ${topic}</p>
-					<p>Email: ${email}</p>
-					<p></p>
-					<p></p>
-					<p>Reason: ${selectedReason?.label}</p>
-				</div>
-			</div>
-
 			<h2 id="feedbackPanelTitle">Feedback zur Karte</h2>
 
 			<div class="feedback-form-container">
@@ -189,7 +161,7 @@ export class FeedbackPanel extends MvuElement {
 
 						<label for="category">2. Auswahl der Kategorie</label>
 						<select id="category" name="category" .value="${category}" @change="${onChangeCategory}" required>
-							${this.categoryOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
+							${categoryOptions.map((option) => html` <option value="${option.value}">${option.label}</option> `)}
 						</select>
 
 						<label for="message">3. Beschreibung der Änderung</label>
@@ -217,12 +189,7 @@ export class FeedbackPanel extends MvuElement {
 						<button type="submit">Submit</button>
 					</form>
 				</div>
-				<div class="feedback-form-right">
-					<p>Category: ${selectedCategory?.label}</p>
-					<p></p>
-					<p>Email: ${email}</p>
-					<p></p>
-				</div>
+				<div class="feedback-form-right"></div>
 			</div>
 		`;
 	}

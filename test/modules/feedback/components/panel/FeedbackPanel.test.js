@@ -1,7 +1,7 @@
-import { FeedbackPanel } from '../../../../../src/modules/feedback/components/panel/FeedbackPanel';
+import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
-window.customElements.define(FeedbackPanel.tag, FeedbackPanel);
+window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 
 const setupStoreAndDi = () => {
 	TestUtils.setupStoreAndDi();
@@ -13,12 +13,12 @@ describe('FeedbackPanel', () => {
 
 	it('should render Title of the component', async () => {
 		const expectedTitle = 'Feedback';
-		const element = await TestUtils.render(FeedbackPanel.tag);
+		const element = await TestUtils.render(MapFeedbackPanel.tag);
 		expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 	});
 
 	it('does not submit the form data if required fields are not filled', async () => {
-		const element = await TestUtils.render(FeedbackPanel.tag);
+		const element = await TestUtils.render(MapFeedbackPanel.tag);
 		const spy = jasmine.createSpy('feedback-form-submit');
 		element.addEventListener('feedback-form-submit', spy);
 
@@ -29,7 +29,7 @@ describe('FeedbackPanel', () => {
 	});
 
 	it('submits the form data when the submit button is clicked', async () => {
-		const element = await TestUtils.render(FeedbackPanel.tag);
+		const element = await TestUtils.render(MapFeedbackPanel.tag);
 		const spy = jasmine.createSpy('feedback-form-submit');
 		element.addEventListener('feedback-form-submit', spy);
 
@@ -64,7 +64,7 @@ describe('FeedbackPanel', () => {
 	});
 
 	it('does not submit the form when the submit button is clicked, but email is invalid', async () => {
-		const element = await TestUtils.render(FeedbackPanel.tag);
+		const element = await TestUtils.render(MapFeedbackPanel.tag);
 		const spy = jasmine.createSpy('feedback-form-submit');
 		element.addEventListener('feedback-form-submit', spy);
 
