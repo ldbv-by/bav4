@@ -61,6 +61,9 @@ describe('StoreService', () => {
 		const iframeStatePluginMock = {
 			register: () => {}
 		};
+		const iframeContainerPluginMock = {
+			register: () => {}
+		};
 		const sharePluginMock = {
 			register: () => {}
 		};
@@ -93,6 +96,7 @@ describe('StoreService', () => {
 				.registerSingleton('ElevationProfilePlugin', elevationProfilePluginMock)
 				.registerSingleton('ChipsPlugin', chipsPlugin)
 				.registerSingleton('IframeStatePlugin', iframeStatePluginMock)
+				.registerSingleton('IframeContainerPlugin', iframeContainerPluginMock)
 				.registerSingleton('SharePlugin', sharePluginMock)
 				.registerSingleton('HistoryStatePlugin', historyStatePluginMock)
 				.registerSingleton('ObserveStateForEncodingPlugin', observeStateForEncodingPluginMock)
@@ -107,7 +111,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(26);
+			expect(reducerKeys.length).toBe(27);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -134,6 +138,7 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('elevationProfile')).toBeTrue();
 			expect(reducerKeys.includes('chips')).toBeTrue();
 			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
+			expect(reducerKeys.includes('iframeContainer')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
@@ -153,6 +158,7 @@ describe('StoreService', () => {
 			const exportMfpPluginSpy = spyOn(exportMfpPluginMock, 'register');
 			const elevationProfilePluginSpy = spyOn(elevationProfilePluginMock, 'register');
 			const iframeStatePluginSpy = spyOn(iframeStatePluginMock, 'register');
+			const iframeContainerPluginSpy = spyOn(iframeContainerPluginMock, 'register');
 			const sharePluginSpy = spyOn(sharePluginMock, 'register');
 			const historyStatePluginSpy = spyOn(historyStatePluginMock, 'register');
 			const observeStateForEncodingPluginSpy = spyOn(observeStateForEncodingPluginMock, 'register');
@@ -181,6 +187,7 @@ describe('StoreService', () => {
 			expect(exportMfpPluginSpy).toHaveBeenCalledWith(store);
 			expect(elevationProfilePluginSpy).toHaveBeenCalledWith(store);
 			expect(iframeStatePluginSpy).toHaveBeenCalledWith(store);
+			expect(iframeContainerPluginSpy).toHaveBeenCalledWith(store);
 			expect(sharePluginSpy).toHaveBeenCalledWith(store);
 			expect(historyStatePluginSpy).toHaveBeenCalledWith(store);
 			expect(observeStateForEncodingPluginSpy).toHaveBeenCalledWith(store);
