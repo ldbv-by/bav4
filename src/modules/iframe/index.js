@@ -3,6 +3,7 @@ import { IframeGenerator } from './components/generator/IframeGenerator';
 import { NonEmbeddedHint } from './components/hint/NonEmbeddedHint';
 import { ActivateMapButton } from './components/activateMapButton/ActivateMapButton';
 import { ViewLargerMapChip } from './components/chips/ViewLargerMapChip';
+import { DrawTool } from './components/tools/DrawTool';
 if (!window.customElements.get(IframeGenerator.tag)) {
 	window.customElements.define(IframeGenerator.tag, IframeGenerator);
 }
@@ -14,4 +15,7 @@ if (!window.customElements.get(ActivateMapButton.tag)) {
 }
 if (!window.customElements.get(ViewLargerMapChip.tag)) {
 	window.customElements.define(ViewLargerMapChip.tag, ViewLargerMapChip);
+}
+if (!window.customElements.get(DrawTool.tag)) {
+	window.customElements.define(DrawTool.tag, DrawTool);
 }
