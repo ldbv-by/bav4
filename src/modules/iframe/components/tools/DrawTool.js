@@ -4,6 +4,10 @@ import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
+import undoSvg from './assets/arrow-counterclockwise.svg';
+import cancelSvg from './assets/close-lg.svg';
+import finishSvg from './assets/checked.svg';
+
 import css from './drawTool.css';
 
 const Update_Tools = 'update_tools';
@@ -82,53 +86,45 @@ export class DrawTool extends MvuElement {
 		});
 	}
 
-	_getButtons(model) {
-		const buttons = [];
+	_getIcons(model) {
+		const icons = [];
 		const translate = (key) => this._translationService.translate(key);
 		const { mode, validGeometry } = model;
 
-		const getButton = (id, title, onClick, disabled = false) => {
-			return html`<ba-button
-				id=${id + '-button'}
-				data-test-id
-				class="draw-tool__button"
-				.disabled=${disabled}
-				.label=${title}
-				@click=${onClick}
-			></ba-button>`;
+		const getIcon = (icon, title, onClick, disabled = false) => {
+			return html`<ba-icon .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
 		};
 
 		const activeTool = this._getActiveTool(model);
 		const activeToolName = activeTool ? activeTool.name : 'noTool';
 
-		// Cancel-Button
-		const getButtonOptions = () => {
+		// Cancel-Icon
+		const getIconOptions = () => {
 			if (validGeometry) {
-				// alternate Finish-Button
-				return { id: 'finish', title: translate('iframe_drawTool_finish'), onClick: () => finish() };
+				// alternate Finish-Icon
+				return { icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish() };
 			}
 			return {
-				id: 'cancel',
+				icon: cancelSvg,
 				title: translate('iframe_drawTool_cancel'),
 				onClick: () => reset()
 			};
 		};
-		const options = getButtonOptions();
+		const options = getIconOptions();
 
-		buttons.push(getButton(options.id, options.title, options.onClick, mode !== 'draw'));
+		icons.push(getIcon(options.icon, options.title, options.onClick, mode !== 'draw'));
 
-		// Remove-Button
+		// Remove-Icon
 		const removeAllowed = ['draw', 'modify'].includes(mode);
 
-		const id = 'remove';
 		const title =
 			mode === 'draw' && activeToolName === 'line' && validGeometry
 				? translate('iframe_drawTool_delete_point')
 				: translate('iframe_drawTool_delete_drawing');
+		const icon = mode === 'draw' && activeToolName === 'line' && validGeometry ? undoSvg : cancelSvg;
+		icons.push(getIcon(icon, title, () => remove(), !removeAllowed));
 
-		buttons.push(getButton(id, title, () => remove(), !removeAllowed));
-
-		return buttons;
+		return icons;
 	}
 
 	createView(model) {
@@ -153,7 +149,7 @@ export class DrawTool extends MvuElement {
 			`;
 		};
 
-		const buttons = this._getButtons(model);
+		const icons = this._getIcons(model);
 
 		return html`
 			<style>
@@ -168,7 +164,7 @@ export class DrawTool extends MvuElement {
 							(tool) => toolTemplate(tool)
 						)}
 					</div>
-					<div class="draw-tool__actions">${buttons}</div>
+					<div class="draw-tool__actions">${icons}</div>
 				</div>
 			</div>
 		`;

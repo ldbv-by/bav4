@@ -7,6 +7,11 @@
 	background: var(--primary-bg-color);
 }
 
+.draw-tool__content {
+	display: flex;
+	justify-content: center;
+}
+
 .draw-tool__buttons {
 	font-size: 1.2rem;
 	display: flex;
