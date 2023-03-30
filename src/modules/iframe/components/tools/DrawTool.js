@@ -1,6 +1,6 @@
 import { html } from 'lit-html';
-import { classMap } from 'lit-html/directives/class-map';
-import { repeat } from 'lit-html/directives/repeat';
+import { classMap } from 'lit-html/directives/class-map.js';
+import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
 import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
@@ -43,25 +43,21 @@ export class DrawTool extends MvuElement {
 				id: 1,
 				name: 'marker',
 				active: false,
-				title: translate('toolbox_drawTool_symbol'),
+				title: translate('iframe_drawTool_symbol'),
 				icon: 'symbol',
 				activate: () => {
 					reset();
-					// clearText();
-					// clearDescription();
 					setType('marker');
 				}
 			},
 			{
-				id: 3,
+				id: 2,
 				name: 'line',
 				active: false,
-				title: translate('toolbox_drawTool_line'),
+				title: translate('iframe_drawTool_line'),
 				icon: 'line',
 				activate: () => {
 					reset();
-					// clearText();
-					// clearDescription();
 					setType('line');
 				}
 			}
@@ -91,47 +87,51 @@ export class DrawTool extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { mode, validGeometry } = model;
 
-		const getButton = (id, title, onClick) => {
-			return html`<ba-button id=${id + '-button'} data-test-id class="iframe-drawtool__button" .label=${title} @click=${onClick}></ba-button>`;
+		const getButton = (id, title, onClick, disabled = false) => {
+			return html`<ba-button
+				id=${id + '-button'}
+				data-test-id
+				class="draw-tool__button"
+				.disabled=${disabled}
+				.label=${title}
+				@click=${onClick}
+			></ba-button>`;
 		};
 
 		const activeTool = this._getActiveTool(model);
 		const activeToolName = activeTool ? activeTool.name : 'noTool';
+
 		// Cancel-Button
-
-		if (mode === 'draw') {
-			const getButtonOptions = () => {
-				if (validGeometry) {
-					// alternate Finish-Button
-					return { id: 'finish', title: translate('toolbox_drawTool_finish'), onClick: () => finish() };
-				}
-				return {
-					id: 'cancel',
-					title: translate('toolbox_drawTool_cancel'),
-					onClick: () => reset()
-				};
+		const getButtonOptions = () => {
+			if (validGeometry) {
+				// alternate Finish-Button
+				return { id: 'finish', title: translate('iframe_drawTool_finish'), onClick: () => finish() };
+			}
+			return {
+				id: 'cancel',
+				title: translate('iframe_drawTool_cancel'),
+				onClick: () => reset()
 			};
-			const options = getButtonOptions();
+		};
+		const options = getButtonOptions();
 
-			buttons.push(getButton(options.id, options.title, options.onClick));
-		}
+		buttons.push(getButton(options.id, options.title, options.onClick, mode !== 'draw'));
+
 		// Remove-Button
 		const removeAllowed = ['draw', 'modify'].includes(mode);
-		if (removeAllowed) {
-			const id = 'remove';
-			const title =
-				mode === 'draw' && ['polygon', 'line'].includes(activeToolName) && validGeometry
-					? translate('toolbox_drawTool_delete_point')
-					: translate('toolbox_drawTool_delete_drawing');
-			const onClick = () => remove();
-			buttons.push(getButton(id, title, onClick));
-		}
+
+		const id = 'remove';
+		const title =
+			mode === 'draw' && activeToolName === 'line' && validGeometry
+				? translate('iframe_drawTool_delete_point')
+				: translate('iframe_drawTool_delete_drawing');
+
+		buttons.push(getButton(id, title, () => remove(), !removeAllowed));
 
 		return buttons;
 	}
 
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
 		const { tools } = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
@@ -145,10 +145,10 @@ export class DrawTool extends MvuElement {
 			};
 
 			return html`
-				<button id=${tool.name + '-button'} data-test-id class="tool-container__button ${classMap(classes)}" title=${tool.title} @click=${toggle}>
-					<div class="tool-container__background"></div>
-					<div class="tool-container__icon ${tool.icon}"></div>
-					<div class="tool-container__button-text">${tool.title}</div>
+				<button id=${tool.name + '-button'} data-test-id class="draw-tool__button ${classMap(classes)}" title=${tool.title} @click=${toggle}>
+					<div class="draw-tool__background"></div>
+					<div class="draw-tool__icon ${tool.icon}"></div>
+					<div class="draw-tool__button-text">${tool.title}</div>
 				</button>
 			`;
 		};
@@ -159,25 +159,22 @@ export class DrawTool extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="ba-tool-container">
-				<div class="ba-tool-container__item ba-tool-menu__draw">
-					<div class="ba-tool-container__title">${translate('toolbox_drawTool_header')}</div>
-					<div class="ba-tool-container__content">
-						<div class="tool-container__buttons">
-							${repeat(
-								tools,
-								(tool) => tool.id,
-								(tool) => toolTemplate(tool)
-							)}
-						</div>
+			<div class="draw-tool">
+				<div class="draw-tool__content">
+					<div class="draw-tool__buttons">
+						${repeat(
+							tools,
+							(tool) => tool.id,
+							(tool) => toolTemplate(tool)
+						)}
 					</div>
-					<div class="ba-tool-container__actions">${buttons}</div>
+					<div class="draw-tool__actions">${buttons}</div>
 				</div>
 			</div>
 		`;
 	}
 
 	static get tag() {
-		return 'ba-iframe-draw-tool';
+		return 'ba-draw-tool';
 	}
 }

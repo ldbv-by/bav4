@@ -1,5 +1,105 @@
-.tool-container__buttons {
+.draw-tool {
+	position: absolute;
+	z-index: var(--z-header);
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--primary-bg-color);
+}
+
+.draw-tool__buttons {
 	font-size: 1.2rem;
 	display: flex;
 	justify-content: center;
+}
+
+.draw-tool__buttons > button {
+	position: relative;
+	background: transparent;
+	cursor: pointer;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	color: rgba(255, 255, 255, 0.8);
+	padding: 0 0.5em;
+	border: 0;
+	border-right: 1px dotted var(--header-background-color);
+}
+
+.draw-tool__buttons > button:last-child {
+	border-right: none;
+}
+
+.draw-tool__background {
+	height: 0em;
+	width: 0em;
+	border-radius: 2.5em;
+	position: absolute;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	left: 2.3em;
+	transform: translate(-50%, -50%);
+	top: 1.8em;
+}
+
+.is-active .draw-tool__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--primary-color) !important;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
+}
+
+.draw-tool__icon {
+	background: var(--primary-color);
+	-webkit-mask-size: cover;
+	mask-size: cover;
+	height: 2em;
+	width: 2em;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	margin: 0.8em 0.8em;
+	position: absolute;
+}
+
+.is-active .draw-tool__icon {
+	background: var(--text3);
+}
+
+.draw-tool__button:hover:not(.disabled-tool__button) .draw-tool__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--secondary-color);
+}
+
+.draw-tool__button:hover:not(.disabled-tool__button) .draw-tool__icon {
+	background: var(--text3);
+}
+
+.draw-tool__button:focus-visible:not(.disabled-tool__button) .draw-tool__background {
+	height: 3.4em;
+	width: 3.4em;
+	background-color: var(--secondary-color);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
+}
+
+.draw-tool__button:focus-visible {
+	box-shadow: none;
+}
+
+.draw-tool__button:focus-visible:not(.disabled-tool__button) .draw-tool__icon {
+	background: var(--text3);
+}
+
+.draw-tool__button-text {
+	font-size: 0.8rem;
+	margin: 5.5em 0.3em 0.5em 0.3em;
+	user-select: none;
+	text-align: center;
+	min-width: 5em;
+}
+
+.line {
+	mask-image: url('assets/line.svg');
+	-webkit-mask-image: url('assets/line.svg');
+}
+
+.symbol {
+	mask-image: url('assets/symbol.svg');
+	-webkit-mask-image: url('assets/symbol.svg');
 }
