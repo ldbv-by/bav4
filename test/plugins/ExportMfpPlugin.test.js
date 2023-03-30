@@ -1,5 +1,5 @@
 import { TestUtils } from '../test-utils.js';
-import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action.js';
+import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { mfpReducer } from '../../src/store/mfp/mfp.reducer.js';
 import { ExportMfpPlugin, MFP_LAYER_ID } from '../../src/plugins/ExportMfpPlugin.js';
@@ -9,6 +9,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { positionReducer } from '../../src/store/position/position.reducer.js';
+import { Tools } from '../../src/domain/tools.js';
 
 describe('ExportMfpPlugin', () => {
 	const mfpService = {
@@ -58,7 +59,7 @@ describe('ExportMfpPlugin', () => {
 			await instanceUnderTest.register(store);
 			spyOn(mfpService, 'init').and.resolveTo(getMockCapabilities());
 
-			setCurrentTool(ToolId.EXPORT);
+			setCurrentTool(Tools.EXPORT);
 
 			// we have to wait for two async operations
 			await TestUtils.timeout();
@@ -77,7 +78,7 @@ describe('ExportMfpPlugin', () => {
 			spyOn(mfpService, 'init').and.rejectWith(new Error(message));
 			const errorSpy = spyOn(console, 'error');
 
-			setCurrentTool(ToolId.EXPORT);
+			setCurrentTool(Tools.EXPORT);
 
 			// we have to wait for two async operations
 			await TestUtils.timeout();
@@ -99,7 +100,7 @@ describe('ExportMfpPlugin', () => {
 			instanceUnderTest._initialized = true;
 			await instanceUnderTest.register(store);
 
-			setCurrentTool(ToolId.EXPORT);
+			setCurrentTool(Tools.EXPORT);
 
 			// we have to wait for two async operations
 			await TestUtils.timeout();

@@ -1,8 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { ToolId } from '../store/tools/tools.action';
 import { activate, deactivate } from '../store/draw/draw.action';
+import { Tools } from '../domain/tools';
 
 /**
  * Id of the layer used for draw interaction.
@@ -35,7 +35,7 @@ export class DrawPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onToolChanged = (toolId) => {
-			if (toolId !== ToolId.DRAWING) {
+			if (toolId !== Tools.DRAWING) {
 				deactivate();
 			} else {
 				// we activate the tool after another possible active tool was deactivated

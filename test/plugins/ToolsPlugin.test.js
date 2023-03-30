@@ -2,8 +2,8 @@ import { TestUtils } from '../test-utils.js';
 import { $injector } from '../../src/injection';
 import { QueryParameters } from '../../src/domain/queryParameters';
 import { initialState, toolsReducer } from '../../src/store/tools/tools.reducer';
-import { ToolId } from '../../src/store/tools/tools.action';
 import { ToolsPlugin } from '../../src/plugins/ToolsPlugin';
+import { Tools } from '../../src/domain/tools.js';
 
 describe('ToolsPlugin', () => {
 	const windowMock = {
@@ -29,13 +29,13 @@ describe('ToolsPlugin', () => {
 	describe('register', () => {
 		it('updates the "tools" slice-of-state', async () => {
 			const store = setup();
-			const queryParam = `${QueryParameters.TOOL_ID}=${ToolId.EXPORT}`;
+			const queryParam = `${QueryParameters.TOOL_ID}=${Tools.EXPORT}`;
 			const instanceUnderTest = new ToolsPlugin();
 			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().tools.current).toBe(ToolId.EXPORT);
+			expect(store.getState().tools.current).toBe(Tools.EXPORT);
 		});
 
 		it('does NOTHING when the ToolId is not available', async () => {
