@@ -47,7 +47,7 @@ describe('FeatureInfoIframePanel', () => {
 		});
 
 		describe('and featureInfo items are available', () => {
-			it('renders a close icon-button, a container and no items', async () => {
+			it('renders a close icon-button, a container and two items', async () => {
 				const element = await setup({
 					featureInfo: {
 						//content may be a String or a TemplateResult
@@ -89,7 +89,7 @@ describe('FeatureInfoIframePanel', () => {
 		});
 
 		describe('and featureInfo items are available', () => {
-			it('renders a close icon-button, a container and no items', async () => {
+			it('renders a close icon-button, a container and two items', async () => {
 				const element = await setup({
 					featureInfo: {
 						current: [
@@ -110,7 +110,7 @@ describe('FeatureInfoIframePanel', () => {
 	});
 
 	describe('when featureInfo items are added', () => {
-		it('renders renders the items', async () => {
+		it('renders the items', async () => {
 			const element = await setup();
 
 			addFeatureInfoItems({ title: 'title0', content: 'content0' });
@@ -192,7 +192,7 @@ describe('FeatureInfoIframePanel', () => {
 		});
 
 		describe('when clear button clicked', () => {
-			it('clear the featureInfo in store', async () => {
+			it('clears the featureInfo in store', async () => {
 				const element = await setup({
 					featureInfo: {
 						current: [
