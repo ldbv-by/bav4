@@ -104,11 +104,8 @@ export class MapFeedbackPanel extends MvuElement {
 			event.preventDefault();
 			const formdata = new FormData(event.target);
 			const data = Object.fromEntries(formdata.entries());
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ MapFeedbackPanel ~ handleSubmit ~ data:', data);
-
 			this._saveMapFeedback(data.category, data.description, data.email);
-			// this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
+			this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
 		};
 
 		return html`
@@ -123,7 +120,7 @@ export class MapFeedbackPanel extends MvuElement {
 					<form @submit="${handleSubmit}">
 						<br />
 
-						<label for="category">${translate('feedback_markChangeNotice')}</label>
+						<label>${translate('feedback_markChangeNotice')}</label>
 						<div>
 							<label for="symbol" class="icon-label">
 								<input type="radio" id="symbol" name="type" value="symbol" @change="${handleTypeChange}" required />
