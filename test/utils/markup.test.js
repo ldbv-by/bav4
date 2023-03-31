@@ -6,6 +6,7 @@ import {
 	findAllBySelector,
 	forEachBySelector,
 	IFRAME_ENCODED_STATE,
+	IFRAME_GEOMETRY_REFERENCE_ID,
 	LOG_LIFECYLE_ATTRIBUTE_NAME,
 	REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME,
 	TEST_ID_ATTRIBUTE_NAME
@@ -92,6 +93,9 @@ describe('markup utils', () => {
 		});
 		it('provides an attribute name for iframes to enable exposing the current state of an embedded BA app', () => {
 			expect(IFRAME_ENCODED_STATE).toBe('data-iframe-encoded-state');
+		});
+		it('provides an attribute name for iframes to enable exposing the reference id of an user-generated geometry', () => {
+			expect(IFRAME_GEOMETRY_REFERENCE_ID).toBe('data-iframe-geometry-reference-id');
 		});
 	});
 
