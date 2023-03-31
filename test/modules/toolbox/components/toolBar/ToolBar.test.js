@@ -7,8 +7,8 @@ import { $injector } from '../../../../../src/injection';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { setFetching } from '../../../../../src/store/network/network.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
+import { Tools } from '../../../../../src/domain/tools';
 
 window.customElements.define(ToolBar.tag, ToolBar);
 
@@ -156,34 +156,34 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(6);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURING);
 			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBeNull();
 			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[1].click();
-			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAWING);
 			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBeNull();
 			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[2].click();
-			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
+			expect(store.getState().tools.current).toBe(Tools.IMPORT);
 			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBeNull();
 			expect(element.shadowRoot.querySelector('#import-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[3].click();
-			expect(store.getState().tools.current).toBe(ToolId.EXPORT);
+			expect(store.getState().tools.current).toBe(Tools.EXPORT);
 			expect(element.shadowRoot.querySelector('#export-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[3].click();
 			expect(element.shadowRoot.querySelector('#export-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[4].click();
-			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			expect(store.getState().tools.current).toBe(Tools.SHARING);
 			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[4].click();
 			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeFalse();
@@ -204,15 +204,15 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(6);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURING);
 			toolButtons[1].click();
-			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAWING);
 			toolButtons[2].click();
-			expect(store.getState().tools.current).toBe(ToolId.IMPORT);
+			expect(store.getState().tools.current).toBe(Tools.IMPORT);
 			toolButtons[3].click();
-			expect(store.getState().tools.current).toBe(ToolId.EXPORT);
+			expect(store.getState().tools.current).toBe(Tools.EXPORT);
 			toolButtons[4].click();
-			expect(store.getState().tools.current).toBe(ToolId.SHARING);
+			expect(store.getState().tools.current).toBe(Tools.SHARING);
 		});
 	});
 

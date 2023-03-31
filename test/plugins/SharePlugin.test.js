@@ -1,6 +1,6 @@
 import { TestUtils } from '../test-utils.js';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
-import { setCurrentTool, ToolId } from '../../src/store/tools/tools.action.js';
+import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { $injector } from '../../src/injection/index.js';
 import { SharePlugin } from '../../src/plugins/SharePlugin.js';
@@ -8,6 +8,7 @@ import { addLayer } from '../../src/store/layers/layers.action.js';
 import { XyzGeoResource } from '../../src/domain/geoResources.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
+import { Tools } from '../../src/domain/tools.js';
 
 describe('SharePlugin', () => {
 	const geoResourceService = {
@@ -46,7 +47,7 @@ describe('SharePlugin', () => {
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 
-				setCurrentTool(ToolId.SHARING);
+				setCurrentTool(Tools.SHARING);
 
 				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).toContain(
 					'global_share_unsupported_geoResource_warning'
@@ -75,7 +76,7 @@ describe('SharePlugin', () => {
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 
-				setCurrentTool(ToolId.IMPORT);
+				setCurrentTool(Tools.IMPORT);
 
 				expect(store.getState().notifications.latest).toBeNull();
 			});
@@ -91,7 +92,7 @@ describe('SharePlugin', () => {
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 
-				setCurrentTool(ToolId.SHARING);
+				setCurrentTool(Tools.SHARING);
 
 				expect(store.getState().notifications.latest).toBeNull();
 			});

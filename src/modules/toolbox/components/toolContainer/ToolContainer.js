@@ -5,11 +5,12 @@ import { MeasureToolContent } from '../measureToolContent/MeasureToolContent';
 import { ShareToolContent } from '../shareToolContent/ShareToolContent';
 import { ImportToolContent } from '../importToolContent/ImportToolContent';
 import css from './toolContainer.css';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import closeIcon from './assets/x-square.svg';
 import { MvuElement } from '../../../MvuElement';
 import { ExportMfpToolContent } from '../exportMfpToolContent/ExportMfpToolContent';
+import { Tools } from '../../../../domain/tools';
 
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_tooId';
@@ -69,15 +70,15 @@ export class ToolContainer extends MvuElement {
 
 		const getContentPanel = (toolId) => {
 			switch (toolId) {
-				case ToolId.DRAWING:
+				case Tools.DRAWING:
 					return html`${unsafeHTML(`<${DrawToolContent.tag}/>`)}`;
-				case ToolId.MEASURING:
+				case Tools.MEASURING:
 					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
-				case ToolId.SHARING:
+				case Tools.SHARING:
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
-				case ToolId.IMPORT:
+				case Tools.IMPORT:
 					return html`${unsafeHTML(`<${ImportToolContent.tag}/>`)}`;
-				case ToolId.EXPORT:
+				case Tools.EXPORT:
 					return html`${unsafeHTML(`<${ExportMfpToolContent.tag}/>`)}`;
 				default:
 					return nothing;

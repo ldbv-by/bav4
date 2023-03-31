@@ -1,8 +1,8 @@
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { ToolId } from '../store/tools/tools.action';
 import { activate, deactivate } from '../store/measurement/measurement.action';
+import { Tools } from '../domain/tools';
 
 /**
  * Id of the layer used for measurement interaction.
@@ -34,7 +34,7 @@ export class MeasurementPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onToolChanged = (toolId) => {
-			if (toolId !== ToolId.MEASURING) {
+			if (toolId !== Tools.MEASURING) {
 				deactivate();
 			} else {
 				// we activate the tool after another possible active tool was deactivated

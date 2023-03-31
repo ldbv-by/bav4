@@ -51,7 +51,7 @@ describe('Modal', () => {
 		});
 	});
 
-	describe('when modal changes', () => {
+	describe('when model changes', () => {
 		describe('modal.portrait', () => {
 			it('adds the corresponding css class and ids', async () => {
 				const state = {

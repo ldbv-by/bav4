@@ -26,6 +26,7 @@ import { bottomSheetReducer } from '../store/bottomSheet/bottomSheet.reducer';
 import { elevationProfileReducer } from '../store/elevationProfile/elevationProfile.reducer';
 import { chipsReducer } from '../store/chips/chips.reducer';
 import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
+import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -64,7 +65,8 @@ export class StoreService {
 			bottomSheet: bottomSheetReducer,
 			elevationProfile: elevationProfileReducer,
 			chips: chipsReducer,
-			stateForEncoding: stateForEncodingReducer
+			stateForEncoding: stateForEncodingReducer,
+			iframeContainer: iframeContainerReducer
 		});
 
 		this._store = createStore(rootReducer);
@@ -89,7 +91,9 @@ export class StoreService {
 				ElevationProfilePlugin: elevationProfilePlugin,
 				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin,
 				IframeStatePlugin: iframeStatePlugin,
+				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
+				ToolsPlugin: toolsPlugin,
 				HistoryStatePlugin: historyStatePlugin
 			} = $injector.inject(
 				'TopicsPlugin',
@@ -109,7 +113,9 @@ export class StoreService {
 				'ExportMfpPlugin',
 				'ElevationProfilePlugin',
 				'IframeStatePlugin',
+				'IframeContainerPlugin',
 				'SharePlugin',
+				'ToolsPlugin',
 				'HistoryStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
@@ -132,9 +138,10 @@ export class StoreService {
 				await searchPlugin.register(this._store);
 				await exportMfpPlugin.register(this._store);
 				await elevationProfilePlugin.register(this._store);
-				await elevationProfilePlugin.register(this._store);
 				await iframeStatePlugin.register(this._store);
+				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
+				await toolsPlugin.register(this._store);
 				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
