@@ -32,6 +32,7 @@ export class MapFeedbackService {
 	 */
 	// eslint-disable-next-line no-unused-vars
 	async save(mapFeedback) {
+		console.log('🚀 ~ MapFeedbackService ~ save ~ mapFeedback:', mapFeedback);
 		return true;
 	}
 }

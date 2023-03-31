@@ -12,9 +12,9 @@ const Update_CategoryOptions = 'update_categoryoptions';
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
+			category: '',
 			description: '',
 			email: '',
-			category: '',
 			categoryOptions: []
 		});
 
@@ -27,13 +27,6 @@ export class MapFeedbackPanel extends MvuElement {
 		this._configService = configService;
 		this._translationService = translationService;
 		this._mapFeedbackService = mapFeedbackService;
-
-		this.reasonOptions = [
-			{ value: '', label: '-' },
-			{ value: 'missing', label: 'Missing' },
-			{ value: 'wrong type', label: 'Wrong Type' },
-			{ value: 'error', label: 'Error' }
-		];
 	}
 
 	onInitialize() {
@@ -47,6 +40,22 @@ export class MapFeedbackPanel extends MvuElement {
 		} catch (e) {
 			console.error(e);
 			this.signal(Update_CategoryOptions, []);
+		}
+	}
+
+	async _saveMapFeedback(category, description, email = undefined, state = '', fileId = undefined) {
+		try {
+			const mapFeedback = {
+				state: state,
+				category: category,
+				description: description,
+				email: email,
+				fileId: fileId
+			};
+			// const success =
+			await this._mapFeedbackService.save(mapFeedback);
+		} catch (e) {
+			console.error(e);
 		}
 	}
 
@@ -97,7 +106,9 @@ export class MapFeedbackPanel extends MvuElement {
 			const data = Object.fromEntries(formdata.entries());
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ MapFeedbackPanel ~ handleSubmit ~ data:', data);
-			this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
+
+			this._saveMapFeedback(data.category, data.description, data.email);
+			// this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: data }));
 		};
 
 		return html`
@@ -144,7 +155,7 @@ export class MapFeedbackPanel extends MvuElement {
 						></textarea>
 
 						<label for="email">${translate('feedback_eMail')}</label>
-						<input type="email" id="email" name="email" .value="${email}" @input="${handleEmailChange}" required />
+						<input type="email" id="email" name="email" .value="${email}" @input="${handleEmailChange}" />
 						<br />
 						${translate('feedback_disclaimer')} (<a
 							href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
