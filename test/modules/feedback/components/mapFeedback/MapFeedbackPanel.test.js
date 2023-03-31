@@ -72,9 +72,9 @@ describe('MapFeedbackPanel', () => {
 		categorySelect.value = 'Foo';
 		categorySelect.dispatchEvent(new Event('change'));
 
-		const messageInput = element.shadowRoot.querySelector('#message');
-		messageInput.value = 'this is some text';
-		messageInput.dispatchEvent(new Event('input'));
+		const descriptionInput = element.shadowRoot.querySelector('#description');
+		descriptionInput.value = 'this is some text';
+		descriptionInput.dispatchEvent(new Event('input'));
 
 		const emailInput = element.shadowRoot.querySelector('#email');
 		emailInput.value = 'mail@some.com';
@@ -89,7 +89,7 @@ describe('MapFeedbackPanel', () => {
 			type: 'symbol',
 			category: 'Foo',
 			email: 'mail@some.com',
-			message: 'this is some text'
+			description: 'this is some text'
 		});
 	});
 
@@ -100,11 +100,11 @@ describe('MapFeedbackPanel', () => {
 		element.addEventListener('feedback-form-submit', spy);
 
 		const emailInput = element.shadowRoot.querySelector('#email');
-		const messageInput = element.shadowRoot.querySelector('#message');
+		const descriptionInput = element.shadowRoot.querySelector('#description');
 		const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
 
 		emailInput.value = 'mail.some.com';
-		messageInput.value = 'another text';
+		descriptionInput.value = 'another text';
 
 		submitButton.click();
 

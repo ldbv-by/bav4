@@ -5,14 +5,14 @@ import css from './mapFeedbackPanel.css';
 
 const Update_Type = 'update_type';
 const Update_Category = 'update_category';
-const Update_Message = 'update_message';
+const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
-			message: '',
+			description: '',
 			email: '',
 			category: '',
 			categoryOptions: []
@@ -56,8 +56,8 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, type: data };
 			case Update_Category:
 				return { ...model, category: data };
-			case Update_Message:
-				return { ...model, message: data };
+			case Update_Description:
+				return { ...model, description: data };
 			case Update_EMail:
 				return { ...model, email: data };
 			case Update_CategoryOptions:
@@ -66,7 +66,7 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { email, message, category, categoryOptions } = model;
+		const { email, description, category, categoryOptions } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleTypeChange = (event) => {
@@ -86,9 +86,9 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_EMail, value);
 		};
 
-		const handleMessageChange = (event) => {
+		const handleDescriptionChange = (event) => {
 			const { value } = event.target;
-			this.signal(Update_Message, value);
+			this.signal(Update_Description, value);
 		};
 
 		const handleSubmit = (event) => {
@@ -132,12 +132,12 @@ export class MapFeedbackPanel extends MvuElement {
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 
-						<label for="message">${translate('feedback_changeDescription')}</label>
+						<label for="description">${translate('feedback_changeDescription')}</label>
 						<textarea
-							id="message"
-							name="message"
-							.value="${message}"
-							@input="${handleMessageChange}"
+							id="description"
+							name="description"
+							.value="${description}"
+							@input="${handleDescriptionChange}"
 							minlength="10"
 							maxlength="40"
 							required
