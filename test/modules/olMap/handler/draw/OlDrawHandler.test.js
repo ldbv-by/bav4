@@ -26,11 +26,11 @@ import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.action';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
+import { Tools } from '../../../../../src/domain/tools';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -1826,7 +1826,7 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(store.getState().measurement.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURING);
 		});
 
 		it('does NOT switch to measure-tool, if clickposition is in anyinteract to selected unknown feature (not measure or draw)', () => {
@@ -1858,7 +1858,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
-			expect(store.getState().tools.current).not.toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).not.toBe(Tools.MEASURING);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {

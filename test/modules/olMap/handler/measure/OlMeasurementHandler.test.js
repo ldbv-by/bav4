@@ -27,12 +27,12 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
+import { Tools } from '../../../../../src/domain/tools';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -1830,7 +1830,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
 
 			expect(store.getState().draw.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAWING);
 		});
 
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {

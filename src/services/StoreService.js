@@ -93,6 +93,7 @@ export class StoreService {
 				IframeStatePlugin: iframeStatePlugin,
 				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
+				ToolsPlugin: toolsPlugin,
 				HistoryStatePlugin: historyStatePlugin
 			} = $injector.inject(
 				'TopicsPlugin',
@@ -114,6 +115,7 @@ export class StoreService {
 				'IframeStatePlugin',
 				'IframeContainerPlugin',
 				'SharePlugin',
+				'ToolsPlugin',
 				'HistoryStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
@@ -139,6 +141,7 @@ export class StoreService {
 				await iframeStatePlugin.register(this._store);
 				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
+				await toolsPlugin.register(this._store);
 				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
