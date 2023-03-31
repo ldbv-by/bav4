@@ -9,7 +9,9 @@ import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 
 import css from './drawTool.css';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 
+const Update = 'update';
 const Update_Tools = 'update_tools';
 
 export class DrawTool extends MvuElement {
@@ -33,8 +35,31 @@ export class DrawTool extends MvuElement {
 		this.signal(Update_Tools, this._buildTools());
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.draw,
+			(data) => this.signal(Update, data)
+		);
+	}
+
 	update(type, data, model) {
+		const setActiveToolByType = (tools, type) => {
+			return tools.map((tool) => {
+				return { ...tool, active: tool.name === type };
+			});
+		};
 		switch (type) {
+			case Update:
+				return {
+					...model,
+					type: data.type ? data.type : null,
+					style: data.style ? data.style : null,
+					description: data.description ? data.description : null,
+					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
+					mode: data.mode ? data.mode : null,
+					validGeometry: data.validGeometry ? data.validGeometry : null,
+					tools: setActiveToolByType(model.tools, data.type)
+				};
 			case Update_Tools:
 				return { ...model, tools: data };
 		}
@@ -136,6 +161,7 @@ export class DrawTool extends MvuElement {
 				if (tool.active) {
 					setType(null);
 				} else {
+					setCurrentTool('drawing');
 					tool.activate();
 				}
 			};

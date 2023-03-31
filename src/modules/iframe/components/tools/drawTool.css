@@ -4,7 +4,7 @@
 	top: 0;
 	left: 50%;
 	transform: translateX(-50%);
-	background: var(--primary-bg-color);
+	/* background: var(--primary-bg-color); */
 }
 
 .draw-tool__content {
@@ -12,10 +12,17 @@
 	justify-content: center;
 }
 
+.draw-tool__actions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
 .draw-tool__buttons {
 	font-size: 1.2rem;
 	display: flex;
 	justify-content: center;
+	background: var(--primary-bg-color);
 }
 
 .draw-tool__buttons > button {
