@@ -5,7 +5,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setSelection } from '../../../../store/measurement/measurement.action';
+import { setStatistic, setMode, setSelection, setFileSaveResult } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
 import { getStats } from '../../utils/olGeometryUtils';
@@ -658,8 +658,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		features.forEach((f) => saveManualOverlayPosition(f));
 
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 		this._storedContent = newContent;
+		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult({ fileSaveResult, content: newContent });
 	}
 
 	async _convertToPermanentLayer() {
