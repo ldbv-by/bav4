@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const ACTIVE_CHANGED = 'measurement/active';
 export const STATISTIC_CHANGED = 'measurement/statistic';
 export const MODE_CHANGED = 'measurement/mode';
@@ -23,7 +25,7 @@ export const initialState = {
 	/**
 	 * @type {MeasureFileSaveResult}
 	 */
-	fileSaveResult: null,
+	fileSaveResult: new EventLike(null),
 	/**
 	 * @type {Array<String>}
 	 */
