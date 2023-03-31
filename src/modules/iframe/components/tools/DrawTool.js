@@ -127,7 +127,6 @@ export class DrawTool extends MvuElement {
 		const removeAllowed = ['draw', 'modify'].includes(mode);
 		const unfinishedLine = mode === 'draw' && activeToolName === 'line' && validGeometry;
 
-		// Cancel-Icon
 		const getActiveIconTypes = () => {
 			const iconTypes = {
 				finish: { id: 'finish', icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish(), disabled: mode !== 'draw' },
