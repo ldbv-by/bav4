@@ -8,10 +8,11 @@ import { MeasureToolContent } from '../../../../../src/modules/toolbox/component
 import { ShareToolContent } from '../../../../../src/modules/toolbox/components/shareToolContent/ShareToolContent';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
-import { setCurrentTool, ToolId } from '../../../../../src/store/tools/tools.action';
+import { setCurrentTool } from '../../../../../src/store/tools/tools.action';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { ExportMfpToolContent } from '../../../../../src/modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent';
 import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
+import { Tools } from '../../../../../src/domain/tools';
 
 window.customElements.define(ToolContainer.tag, ToolContainer);
 
@@ -99,24 +100,24 @@ describe('ToolContainer', () => {
 		it('renders the correct content panel', async () => {
 			const element = await setup();
 
-			Object.entries(ToolId).forEach(([, value]) => {
+			Object.entries(Tools).forEach(([, value]) => {
 				setCurrentTool(value);
 				const content = element.shadowRoot.querySelector('.tool-container__content');
 
 				switch (value) {
-					case ToolId.MEASURING:
+					case Tools.MEASURING:
 						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBeTrue();
 						break;
-					case ToolId.DRAWING:
+					case Tools.DRAWING:
 						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBeTrue();
 						break;
-					case ToolId.SHARING:
+					case Tools.SHARING:
 						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
 						break;
-					case ToolId.IMPORT:
+					case Tools.IMPORT:
 						expect(content.innerHTML.toString().includes(ImportToolContent.tag)).toBeTrue();
 						break;
-					case ToolId.EXPORT:
+					case Tools.EXPORT:
 						expect(content.innerHTML.toString().includes(ExportMfpToolContent.tag)).toBeTrue();
 						break;
 				}

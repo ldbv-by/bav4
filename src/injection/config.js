@@ -51,6 +51,7 @@ import { ObserveStateForEncodingPlugin } from '../plugins/ObserveStateForEncodin
 import { SharePlugin } from '../plugins/SharePlugin';
 import { MapFeedbackService } from '../services/MapFeedbackService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
+import { ToolsPlugin } from '../plugins/ToolsPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -102,6 +103,7 @@ $injector
 	.registerSingleton('IframeStatePlugin', new IframeStatePlugin())
 	.registerSingleton('IframeContainerPlugin', new IframeContainerPlugin())
 	.registerSingleton('SharePlugin', new SharePlugin())
+	.registerSingleton('ToolsPlugin', new ToolsPlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
 	.registerModule(mapModule)

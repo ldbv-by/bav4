@@ -42,7 +42,7 @@ import { setMode } from '../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
@@ -50,6 +50,7 @@ import { hexToRgb } from '../../../../utils/colors';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
+import { Tools } from '../../../../domain/tools';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -234,7 +235,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (changeToMeasureTool(features)) {
 					const measurementIds = features.filter((f) => f.getId().startsWith('measure_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
-					setCurrentTool(ToolId.MEASURING);
+					setCurrentTool(Tools.MEASURING);
 				}
 			};
 
