@@ -19,20 +19,18 @@ export class DrawTool extends MvuElement {
 	constructor() {
 		super({
 			type: null,
-			style: null,
 			mode: null,
 			validGeometry: null,
 			tools: null
 		});
 
-		const {
-			TranslationService: translationService,
-			EnvironmentService: environmentService,
-			SecurityService: securityService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'SecurityService');
+		const { TranslationService: translationService, EnvironmentService: environmentService } = $injector.inject(
+			'TranslationService',
+			'EnvironmentService'
+		);
 		this._translationService = translationService;
 		this._environmentService = environmentService;
-		this._securityService = securityService;
+
 		this.signal(Update_Tools, this._buildTools());
 	}
 
@@ -54,9 +52,6 @@ export class DrawTool extends MvuElement {
 				return {
 					...model,
 					type: data.type ? data.type : null,
-					style: data.style ? data.style : null,
-					description: data.description ? data.description : null,
-					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
 					tools: setActiveToolByType(model.tools, data.type)
@@ -128,8 +123,8 @@ export class DrawTool extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { mode, validGeometry } = model;
 
-		const getIcon = (icon, title, onClick, disabled = false) => {
-			return html`<ba-icon .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
+		const getIcon = (id, icon, title, onClick, disabled = false) => {
+			return html`<ba-icon id=${id + '_icon'} .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
 		};
 
 		const activeTool = this._getActiveTool(model);
@@ -139,9 +134,10 @@ export class DrawTool extends MvuElement {
 		const getIconOptions = () => {
 			if (validGeometry) {
 				// alternate Finish-Icon
-				return { icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish() };
+				return { id: 'finish', icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish() };
 			}
 			return {
+				id: 'cancel',
 				icon: cancelSvg,
 				title: translate('iframe_drawTool_cancel'),
 				onClick: () => reset()
@@ -149,7 +145,7 @@ export class DrawTool extends MvuElement {
 		};
 		const options = getIconOptions();
 
-		icons.push(getIcon(options.icon, options.title, options.onClick, mode !== 'draw'));
+		icons.push(getIcon(options.id, options.icon, options.title, options.onClick, mode !== 'draw'));
 
 		// Remove-Icon
 		const removeAllowed = ['draw', 'modify'].includes(mode);
@@ -159,7 +155,8 @@ export class DrawTool extends MvuElement {
 				? translate('iframe_drawTool_delete_point')
 				: translate('iframe_drawTool_delete_drawing');
 		const icon = mode === 'draw' && activeToolName === 'line' && validGeometry ? undoSvg : cancelSvg;
-		icons.push(getIcon(icon, title, () => remove(), !removeAllowed));
+		const iconId = mode === 'draw' && activeToolName === 'line' && validGeometry ? 'undo' : 'remove';
+		icons.push(getIcon(iconId, icon, title, () => remove(), !removeAllowed));
 
 		return icons;
 	}
