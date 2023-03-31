@@ -5,7 +5,7 @@ import { BaPlugin } from './BaPlugin';
 
 /**
  * Checks if a surrounding iframe exists and contains the {@link IFRAME_GEOMETRY_REFERENCE_ID } data attribute.
- * If so, it updates the value of the attribute on changes of the fileSaveResult property of the draw slice-of-state
+ * If so, it updates the attribute's value on changes in the fileSaveResult property of the draw slice-of-state.
  * @author taulinger
  */
 export class IframeGeometryIdPlugin extends BaPlugin {
