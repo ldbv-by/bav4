@@ -119,46 +119,49 @@ export class DrawTool extends MvuElement {
 	}
 
 	_getIcons(model) {
-		const icons = [];
 		const translate = (key) => this._translationService.translate(key);
 		const { mode, validGeometry } = model;
+
+		const activeTool = this._getActiveTool(model);
+		const activeToolName = activeTool ? activeTool.name : 'noTool';
+		const removeAllowed = ['draw', 'modify'].includes(mode);
+		const unfinishedLine = mode === 'draw' && activeToolName === 'line' && validGeometry;
+
+		// Cancel-Icon
+		const getActiveIconTypes = () => {
+			const iconTypes = {
+				finish: { id: 'finish', icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish(), disabled: mode !== 'draw' },
+				cancel: {
+					id: 'cancel',
+					icon: cancelSvg,
+					title: translate('iframe_drawTool_cancel'),
+					onClick: () => reset(),
+					disabled: mode !== 'draw'
+				},
+				undo: {
+					id: 'undo',
+					icon: undoSvg,
+					title: translate('iframe_drawTool_delete_point'),
+					onClick: () => remove(),
+					disabled: !removeAllowed
+				},
+				remove: {
+					id: 'remove',
+					icon: cancelSvg,
+					title: translate('iframe_drawTool_delete_drawing'),
+					onClick: () => remove(),
+					disabled: !removeAllowed
+				}
+			};
+
+			return [validGeometry ? iconTypes.finish : iconTypes.cancel, unfinishedLine ? iconTypes.undo : iconTypes.remove];
+		};
 
 		const getIcon = (id, icon, title, onClick, disabled = false) => {
 			return html`<ba-icon id=${id + '_icon'} .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
 		};
 
-		const activeTool = this._getActiveTool(model);
-		const activeToolName = activeTool ? activeTool.name : 'noTool';
-
-		// Cancel-Icon
-		const getIconOptions = () => {
-			if (validGeometry) {
-				// alternate Finish-Icon
-				return { id: 'finish', icon: finishSvg, title: translate('iframe_drawTool_finish'), onClick: () => finish() };
-			}
-			return {
-				id: 'cancel',
-				icon: cancelSvg,
-				title: translate('iframe_drawTool_cancel'),
-				onClick: () => reset()
-			};
-		};
-		const options = getIconOptions();
-
-		icons.push(getIcon(options.id, options.icon, options.title, options.onClick, mode !== 'draw'));
-
-		// Remove-Icon
-		const removeAllowed = ['draw', 'modify'].includes(mode);
-
-		const title =
-			mode === 'draw' && activeToolName === 'line' && validGeometry
-				? translate('iframe_drawTool_delete_point')
-				: translate('iframe_drawTool_delete_drawing');
-		const icon = mode === 'draw' && activeToolName === 'line' && validGeometry ? undoSvg : cancelSvg;
-		const iconId = mode === 'draw' && activeToolName === 'line' && validGeometry ? 'undo' : 'remove';
-		icons.push(getIcon(iconId, icon, title, () => remove(), !removeAllowed));
-
-		return icons;
+		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.icon, iconType.title, iconType.onClick, iconType.disabled));
 	}
 
 	createView(model) {
