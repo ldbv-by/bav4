@@ -13,7 +13,13 @@ export const provide = (lang) => {
 				iframe_generator_toggle_title: 'Embedded map will expand to fit the width of its container.',
 				iframe_generator_copy_icon: 'Copy to clipboard',
 				iframe_activate_map_button: 'Activate map',
-				iframe_view_larger_map_chip: 'View larger map'
+				iframe_view_larger_map_chip: 'View larger map',
+				iframe_drawTool_symbol: 'Point',
+				iframe_drawTool_line: 'Line',
+				iframe_drawTool_cancel: 'Cancel',
+				iframe_drawTool_finish: 'Finish',
+				iframe_drawTool_delete_point: 'Remove point',
+				iframe_drawTool_delete_drawing: 'Remove drawing'
 			};
 
 		case 'de':
@@ -29,7 +35,13 @@ export const provide = (lang) => {
 				iframe_generator_toggle_title: 'Eingebettete Karte wird sich erweitern, um sich der Breite seines Containers anzupassen.',
 				iframe_generator_copy_icon: 'In die Zwischenablage kopieren',
 				iframe_activate_map_button: 'Karte aktivieren',
-				iframe_view_larger_map_chip: 'Größere Karte ansehen'
+				iframe_view_larger_map_chip: 'Größere Karte ansehen',
+				iframe_drawTool_symbol: 'Punkt',
+				iframe_drawTool_line: 'Linie',
+				iframe_drawTool_cancel: 'Abbrechen',
+				iframe_drawTool_finish: 'Fertig',
+				iframe_drawTool_delete_point: 'Punkt entfernen',
+				iframe_drawTool_delete_drawing: 'Zeichnung entfernen'
 			};
 
 		default:
