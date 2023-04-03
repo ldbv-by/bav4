@@ -150,6 +150,11 @@ input[type='range']:focus {
 	transition: all 0.28s ease;
 	left: 1em;
 }
+
+.error .control-label {
+	color: var(--error-color) !important;
+}
+
 .fieldset .helper-label {
 	position: absolute;
 	pointer-events: none;
@@ -182,7 +187,6 @@ input[type='range']:focus {
 	left: 0%;
 	bottom: -0.0625rem;
 	position: absolute;
-	background: #337ab7;
 	background: var(--primary-color);
 	-webkit-transition: left 0.28s ease, width 0.28s ease;
 	transition: left 0.28s ease, width 0.28s ease;
@@ -191,21 +195,14 @@ input[type='range']:focus {
 .fieldset input,
 .fieldset textarea {
 	display: block;
-	background: none;
-	padding: 1.3em 1em 0.6em;
 	padding: 0 1em 0.6em !important;
 	font-size: 1.1rem;
 	border-width: 0;
 	border-color: transparent;
 	line-height: 1.9;
 	width: 100%;
-	color: transparent;
 	color: var(--text1);
-	box-shadow: 2px 2px 1px var(--text2);
 	box-shadow: none;
-
-	/* border-radius: 0.3em 0.2em 0 0; */
-	background: var(--secondary-bg-color);
 	background: var(--header-background-color);
 	border-top: 1.5em solid var(--header-background-color);
 }
@@ -237,9 +234,7 @@ input[type='range']:focus {
 .fieldset select:focus ~ .control-label,
 .fieldset input:focus ~ .control-label,
 .fieldset textarea:focus ~ .control-label {
-	color: var(--secondary-color);
 	color: var(--primary-color);
-	/* font-weight: bold; */
 }
 .fieldset select:focus ~ .bar::before,
 .fieldset input:focus ~ .bar::before,
@@ -265,7 +260,6 @@ input[type='range']:focus {
 	color: var(--text1);
 	font-size: 2em;
 	transition: all 0.28s ease;
-	/* border-left: 1px dotted var(--primary-bg-color); */
 }
 .clear {
 	background: var(--primary-bg--color);
@@ -294,12 +288,7 @@ input[type='range']:focus {
 	background-position: center;
 	background-image: url('./assets/exclamationcircle.svg');
 }
-.error .control-label {
-	color: var(--error-color) !important;
-}
 
-.fieldset .icon:hover {
-}
 .fieldset .icon:focus {
 	opacity: 1;
 }
