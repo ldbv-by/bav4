@@ -223,6 +223,10 @@ describe('Modal', () => {
 				await setup(state);
 				openModal('title', 'content');
 
+				document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); //should do nothing
+
+				expect(store.getState().modal.active).toBeTrue();
+
 				document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
 				expect(store.getState().modal.active).toBeFalse();
