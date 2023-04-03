@@ -95,87 +95,55 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 		});
+
+		it('has an email input field with type email and its parent is a form', async () => {
+			// arrange
+			const element = await setup();
+
+			const emailInput = element.shadowRoot.querySelector('input[name="email"]');
+			const parentForm = emailInput.closest('form');
+
+			// assert
+			expect(emailInput).not.toBeNull();
+			expect(emailInput.type).toBe('email');
+			expect(parentForm).not.toBeNull();
+			expect(parentForm.tagName).toBe('FORM');
+		});
+
+		it('the fields category and description are required fields of the correct type', async () => {
+			// arrange
+			const element = await setup();
+
+			const category = element.shadowRoot.querySelector('select[name="category"]');
+			const description = element.shadowRoot.querySelector('textarea[name="description"]');
+
+			// assert
+			expect(category).not.toBeNull();
+			expect(category.type).toBe('select-one');
+			expect(category.getAttribute('required')).toBe('');
+			expect(description).not.toBeNull();
+			expect(description.type).toBe('textarea');
+			expect(description.getAttribute('required')).toBe('');
+		});
 	});
 
 	describe('when submit is pressed', () => {
-		it('does not submit the form data if required fields are not filled', async () => {
+		it('does not call MapFeedbackService.save if required fields are not filled', async () => {
 			// arrange
 			const element = await setup();
-			const spy = jasmine.createSpy('feedback-form-submit');
-			element.addEventListener('feedback-form-submit', spy);
+			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
 			submitButton.click();
 
-			expect(spy).not.toHaveBeenCalled();
+			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('submits the form data when the submit button is clicked after all fields are filled', async () => {
-			// arrange
-			const element = await setup();
-			const spy = jasmine.createSpy('feedback-form-submit');
-			element.addEventListener('feedback-form-submit', spy);
-
-			const typeInput = element.shadowRoot.querySelector('#symbol');
-			typeInput.checked = true;
-			typeInput.dispatchEvent(new Event('change'));
-
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Foo';
-			categorySelect.dispatchEvent(new Event('change'));
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'this is some text';
-			descriptionInput.dispatchEvent(new Event('input'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
-			emailInput.dispatchEvent(new Event('input'));
-
-			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
-
-			// act
-			submitButton.click();
-
-			// assert
-			expect(spy).toHaveBeenCalled();
-			expect(spy.calls.mostRecent().args[0].detail).toEqual({
-				type: 'symbol',
-				category: 'Foo',
-				email: 'mail@some.com',
-				description: 'this is some text'
-			});
-		});
-
-		it('does not submit the form when the submit button is clicked, but email is invalid', async () => {
-			// arrange
-			const element = await setup();
-
-			const spy = jasmine.createSpy('feedback-form-submit');
-			element.addEventListener('feedback-form-submit', spy);
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
-
-			emailInput.value = 'mail.some.com';
-			descriptionInput.value = 'another text';
-
-			// act
-			submitButton.click();
-
-			// assert
-			expect(spy).not.toHaveBeenCalled();
-		});
-
-		it('calls MapFeedbackService.', async () => {
+		it('calls MapFeedbackService.save after all fields are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
-
-			const spy = jasmine.createSpy('feedback-form-submit');
-			element.addEventListener('feedback-form-submit', spy);
 
 			const typeInput = element.shadowRoot.querySelector('#symbol');
 			typeInput.checked = true;
@@ -200,7 +168,6 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(spy).toHaveBeenCalled();
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
 				state: '',
 				category: 'Foo',
