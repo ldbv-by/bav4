@@ -356,12 +356,14 @@ export class DrawToolContent extends AbstractToolContent {
 							style.text
 						} @input=${onChangeText}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
-									</div>
-									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
+										<label class="helper-label">in der Karte</label>
+										</div>
+										<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
 										<textarea required="required"  id="style_desc" name="${translate(
 											'toolbox_drawTool_style_desc'
 										)}" .value=${description} @input=${onChangeDescription}></textarea>
-										<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
+											<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
+											<label class="helper-label">in der Objekt-Info </label>
 									</div>
 								</div>
 							</div>

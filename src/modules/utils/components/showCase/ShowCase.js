@@ -338,10 +338,64 @@ export class ShowCase extends BaElement {
 			<div class='example row'>		
 				<input placeholder='input' ></input>		
 				<input value='input readonly' readonly></input>
+			</div>
+			<h3> Feedback</h3>
+			<div style="background: gray; ">
+			</div>
+
+			
+			<div class='example'>
+				<div style='display: flex'>		
+				<div style='margin-right:2em;'>	
+				<iframe style='border:0' data-iframe-encoded-state="http://localhost:8080/embed.html?c=677751,5422939&amp;z=8&amp;l=atkis&amp;t=ba" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="http://localhost:8080/embed.html?c=677751,5422939&amp;z=8&amp;l=atkis&amp;t=ba" width="900px" height="700px"></iframe>
+				</div>	
+			
+			
+			<div class=' collum' style='max-width:30em;'>	
+				<div class='hint'>							
+					Bitte markieren Sie Ihrer Änderung in der <span class='highlight'>Karte</span> und Füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.
+
+				</div>		
+				<div class="fieldset">
+					<select>
+					<option value="" class="">Bitte wählen ...</option><option label="Verkehr" value="string:Verkehr">Verkehr</option><option label="Siedlung" value="string:Siedlung">Siedlung</option><option label="Gewässer" value="string:Gewässer">Gewässer</option><option label="Beschriftung" value="string:Beschriftung">Beschriftung</option><option label="Points of Interest" value="string:Points of Interest">Points of Interest</option><option label="sonstiges" value="string:sonstiges">sonstiges</option>
+					</select>
+					<label for="select" class="control-label">Auswahl der Kategorie</label><i class="bar"></i>
+					<i class='icon select-icon'></i>
+				</div>
+				<div  class="fieldset" style='display: none'>						
+					<input type="text"  required="required"  id="textarea-foo" ></input>
+					<label for="textarea-foo" class="control-label">Auswahl der Kategorrie</label><i class="bar"></i>
+					<i class='icon clear'></i>
+				</div>
+				<div  class="fieldset">						
+					<textarea type="text" required="required"  id="textarea-foo" ></textarea>
+					<label for="textarea-foo" class="control-label">Beschreibung der Änderung</label><i class="bar"></i>
+					<label class="helper-label">Pflichtfeld</label>
+				</div>
 				<div  class="fieldset">						
 					<input type="text"  required="required"  id="textarea-foo" ></input>
-					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
+					<label for="textarea-foo" class="control-label">Ihre E-Mail-Adresse</label><i class="bar"></i>
+					<i class='icon check'></i>
+					<label class="helper-label">optional</label>
 				</div>
+				<div  class="fieldset error" style='display: none'>						
+					<input type="text"  required="required"  id="textarea-foo" ></input>
+					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
+					<label class="helper-label error-label">Helper text error</label>
+					<i class='icon error'></i>
+				</div>
+				<p style="max-width:30em;margin-top:5.5em; color:var(--text2);">
+				Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse (<a'>Hinweis zum Datenschutz</a>).
+				</p>
+				<div>
+				<ba-button .type=${'primary'} .label=${'Senden'} ></ba-button
+				</div>
+
+
+			</div>
+			</div>
+			</div>
 			</div>
 							
 			<h3> textarea</h3>

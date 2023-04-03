@@ -139,20 +139,41 @@ input[type='range']:focus {
 /* label */
 .fieldset .control-label {
 	position: absolute;
-	top: 0.25rem;
+	top: 1.5rem;
 	pointer-events: none;
 	padding-left: 0.125rem;
 	z-index: 1;
-	color: var(--text2);
-	font-size: 1rem;
+	color: var(--text1);
+	font-size: 1.1rem;
 	font-weight: normal;
 	-webkit-transition: all 0.28s ease;
 	transition: all 0.28s ease;
+	left: 1em;
+}
+.fieldset .helper-label {
+	position: absolute;
+	pointer-events: none;
+	padding-left: 0.125rem;
+	z-index: 1;
+	color: var(--text1);
+	font-weight: normal;
+	-webkit-transition: all 0.28s ease;
+	transition: all 0.28s ease;
+	left: 1.3em;
+	font-size: 0.8rem;
+	bottom: -1.2rem;
+}
+.fieldset .helper-label.error-label {
+	color: var(--error-color);
 }
 .fieldset .bar {
 	position: relative;
-	border-bottom: 1px solid var(--text2);
+	/* border-bottom: 1px solid var(--text2); */
+	border-bottom: 2px solid var(--secondary-color);
 	display: block;
+}
+.error.fieldset .bar {
+	border-bottom: 1px solid var(--error-color) !important;
 }
 .fieldset .bar::before {
 	content: '';
@@ -171,19 +192,30 @@ input[type='range']:focus {
 .fieldset textarea {
 	display: block;
 	background: none;
-	padding: 0.125rem 0.125rem 0.0625rem;
-	font-size: 1rem;
+	padding: 1.3em 1em 0.6em;
+	padding: 0 1em 0.6em !important;
+	font-size: 1.1rem;
 	border-width: 0;
 	border-color: transparent;
 	line-height: 1.9;
 	width: 100%;
 	color: transparent;
 	color: var(--text1);
+	box-shadow: 2px 2px 1px var(--text2);
 	box-shadow: none;
+
+	/* border-radius: 0.3em 0.2em 0 0; */
+	background: var(--secondary-bg-color);
+	background: var(--header-background-color);
+	border-top: 1.5em solid var(--header-background-color);
 }
 
 .fieldset select {
 	border-bottom: 0;
+	background: var(--header-background-color);
+	font-size: 1.1rem;
+	padding: 1.5em 1em;
+	box-shadow: none;
 }
 
 .fieldset select ~ .control-label,
@@ -192,19 +224,22 @@ input[type='range']:focus {
 .fieldset textarea:focus ~ .control-label,
 .fieldset textarea:valid ~ .control-label {
 	font-size: 0.8rem;
-	color: gray;
-	top: -1rem;
-	left: 0;
+	color: var(--text2);
+	top: 0.4rem;
+	left: 1.2em;
+	/* font-weight: bold; */
 }
 .fieldset select:focus,
 .fieldset input:focus,
 .fieldset textarea:focus {
-	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+	/* box-shadow: 0 1px 2px rgb(0 0 0 / 50%); */
 }
 .fieldset select:focus ~ .control-label,
 .fieldset input:focus ~ .control-label,
 .fieldset textarea:focus ~ .control-label {
-	color: var(--text2);
+	color: var(--primary-color);
+	color: var(--secondary-color);
+	/* font-weight: bold; */
 }
 .fieldset select:focus ~ .bar::before,
 .fieldset input:focus ~ .bar::before,
@@ -215,6 +250,70 @@ input[type='range']:focus {
 
 .fieldset {
 	position: relative;
-	margin-top: 1.5em;
+	margin: 2.5em 0 1em 0;
 	width: 100%;
+}
+
+.fieldset .icon {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 1.8em;
+	background-size: 0.7em;
+	color: var(--text1);
+	font-size: 2em;
+	transition: all 0.28s ease;
+	/* border-left: 1px dotted var(--primary-bg-color); */
+}
+.clear {
+	background: var(--primary-bg--color);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/xcircle.svg');
+}
+.select-icon {
+	opacity: 1 !important;
+	background: var(--primary-bg--color);
+	background-image: url('./assets/caret-down-fill.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - 0.5em) center;
+	font-size: 1.5em !important;
+	width: 2em !important;
+}
+.check .icon {
+	background: var(--sucess-color);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/checkcircle.svg');
+}
+.error .icon {
+	opacity: 1;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/exclamationcircle.svg');
+}
+.error .control-label {
+	color: var(--error-color) !important;
+}
+
+.fieldset .icon:hover {
+}
+.fieldset .icon:focus {
+	opacity: 1;
+}
+.fieldset input:valid ~ .icon {
+	opacity: 1;
+}
+
+.hint {
+	padding: 1em 0;
+	width: 100%;
+}
+.highlight {
+	display: inline-block;
+	font-weight: bold;
+	color: var(--primary-color);
+	cursor: default;
 }
