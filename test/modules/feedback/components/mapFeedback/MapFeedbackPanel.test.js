@@ -178,15 +178,22 @@ describe('MapFeedbackPanel', () => {
 			element.addEventListener('feedback-form-submit', spy);
 
 			const typeInput = element.shadowRoot.querySelector('#symbol');
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			const emailInput = element.shadowRoot.querySelector('#email');
-			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
-
 			typeInput.checked = true;
+			typeInput.dispatchEvent(new Event('change'));
+
+			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
+			categorySelect.dispatchEvent(new Event('change'));
+
+			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'another text';
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			const emailInput = element.shadowRoot.querySelector('#email');
 			emailInput.value = 'mail@some.com';
+			emailInput.dispatchEvent(new Event('input'));
+
+			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
 
 			// act
 			submitButton.click();
@@ -199,7 +206,7 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: 'mail@some.com',
-				fileId: undefined
+				fileId: ''
 			});
 		});
 	});
