@@ -156,7 +156,7 @@ export class DrawTool extends MvuElement {
 			return [validGeometry ? iconTypes.finish : iconTypes.cancel, unfinishedLine ? iconTypes.undo : iconTypes.remove];
 		};
 
-		const getIcon = (id, icon, title, onClick, disabled = false) => {
+		const getIcon = (id, icon, title, onClick, disabled) => {
 			return html`<ba-icon id=${id + '_icon'} .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
 		};
 
