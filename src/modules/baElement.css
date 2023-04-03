@@ -237,8 +237,8 @@ input[type='range']:focus {
 .fieldset select:focus ~ .control-label,
 .fieldset input:focus ~ .control-label,
 .fieldset textarea:focus ~ .control-label {
-	color: var(--primary-color);
 	color: var(--secondary-color);
+	color: var(--primary-color);
 	/* font-weight: bold; */
 }
 .fieldset select:focus ~ .bar::before,
