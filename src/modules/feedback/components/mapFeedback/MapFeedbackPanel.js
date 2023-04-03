@@ -99,7 +99,6 @@ export class MapFeedbackPanel extends MvuElement {
 		const handleSubmit = (event) => {
 			event.preventDefault();
 			this._saveMapFeedback(mapFeedback);
-			this.dispatchEvent(new CustomEvent('feedback-form-submit', { detail: mapFeedback }));
 		};
 
 		return html`
