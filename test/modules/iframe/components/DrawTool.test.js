@@ -2,7 +2,6 @@ import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { Tools } from '../../../../src/domain/tools';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
-import { MvuElement } from '../../../../src/modules/MvuElement';
 import { drawReducer } from '../../../../src/store/draw/draw.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';

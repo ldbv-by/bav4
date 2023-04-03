@@ -1,4 +1,5 @@
 import { html } from 'lit-html';
+import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
@@ -21,23 +22,25 @@ export class ActivateMapButton extends MvuElement {
 	}
 
 	onInitialize() {
-		//append common styles
-		const renderCommonStyle = () => {
-			return `
-			body *:not(
+		if (this._isVisible()) {
+			//append common styles
+			const renderCommonStyle = () => {
+				return `
+				body *:not(
 				${ActivateMapButton.tag},
 				${OlMap.tag}
-				 ) {
-				display: none;
-			}				
-			`;
-		};
+				) {
+					display: none;
+				}				
+				`;
+			};
 
-		if (!document.getElementById(ActivateMapButton.STYLE_ID)) {
-			const style = document.createElement('style');
-			style.innerHTML = renderCommonStyle();
-			style.id = ActivateMapButton.STYLE_ID;
-			document.head.appendChild(style);
+			if (!document.getElementById(ActivateMapButton.STYLE_ID)) {
+				const style = document.createElement('style');
+				style.innerHTML = renderCommonStyle();
+				style.id = ActivateMapButton.STYLE_ID;
+				document.head.appendChild(style);
+			}
 		}
 	}
 
@@ -68,7 +71,12 @@ export class ActivateMapButton extends MvuElement {
 	 * @override
 	 */
 	isRenderingSkipped() {
-		return !this._environmentService.isEmbedded();
+		return !this._isVisible();
+	}
+
+	_isVisible() {
+		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
+		return this._environmentService.isEmbedded() && queryParams.get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) !== 'true';
 	}
 
 	static get tag() {
