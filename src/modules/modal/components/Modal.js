@@ -43,11 +43,14 @@ export class Modal extends MvuElement {
 				closeModal();
 			}
 		};
-		document.addEventListener('keydown', this._escKeyListener);
-	}
 
-	onDisconnect() {
-		document.removeEventListener('keydown', this._escKeyListener);
+		this.observeModel('active', (active) => {
+			if (active) {
+				document.addEventListener('keydown', this._escKeyListener);
+			} else {
+				document.removeEventListener('keydown', this._escKeyListener);
+			}
+		});
 	}
 
 	update(type, data, model) {
