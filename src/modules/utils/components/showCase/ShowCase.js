@@ -353,7 +353,7 @@ export class ShowCase extends BaElement {
 			
 			<div class=' collum' style='max-width:30em;'>	
 				<div class='hint'>							
-					Bitte markieren Sie Ihrer Änderung in der <span class='highlight'>Karte</span> und Füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.
+					Bitte markieren Sie Ihrer Änderung in der <span class='highlight'>Karte</span> und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.
 
 				</div>		
 				<div class="fieldset">
