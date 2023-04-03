@@ -137,68 +137,108 @@ describe('Modal', () => {
 				expect(element.shadowRoot.childElementCount).toBe(0);
 			});
 		});
+	});
 
-		describe('when close button clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when close button clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const closeBtn = element.shadowRoot.querySelector('ba-button');
-				closeBtn.click();
+			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			closeBtn.click();
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				expect(store.getState().modal.active).toBeFalse();
-			});
+			expect(store.getState().modal.active).toBeFalse();
 		});
+	});
 
-		describe('when back button clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when back button clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const backIcon = element.shadowRoot.querySelector('ba-icon');
-				backIcon.click();
+			const backIcon = element.shadowRoot.querySelector('ba-icon');
+			backIcon.click();
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				expect(store.getState().modal.active).toBeFalse();
-			});
+			expect(store.getState().modal.active).toBeFalse();
 		});
+	});
 
-		describe('when background clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when background clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const background = element.shadowRoot.querySelector('.modal__background');
-				background.click();
+			const background = element.shadowRoot.querySelector('.modal__background');
+			background.click();
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				expect(store.getState().modal.active).toBeFalse();
-			});
+			expect(store.getState().modal.active).toBeFalse();
+		});
+	});
+
+	describe('when "ESC" key is pressed', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			await setup(state);
+			openModal('title', 'content');
+
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); //should do nothing
+
+			expect(store.getState().modal.active).toBeTrue();
+
+			document.dispatchEvent(escEvent);
+
+			expect(store.getState().modal.active).toBeFalse();
+			expect(preventDefaultSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when modal is closed', () => {
+		it('removes the keyDown-listener', async () => {
+			const spy = spyOn(document, 'removeEventListener').and.callThrough();
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
+			openModal('title', 'content');
+
+			closeModal();
+
+			expect(spy).toHaveBeenCalledWith('keydown', element._escKeyListener);
 		});
 	});
 });

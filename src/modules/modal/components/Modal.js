@@ -24,6 +24,7 @@ export class Modal extends MvuElement {
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+		this._escKeyListener = null;
 	}
 
 	onInitialize() {
@@ -35,6 +36,21 @@ export class Modal extends MvuElement {
 			(state) => state.media.portrait,
 			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
 		);
+
+		this._escKeyListener = (e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+			}
+		};
+
+		this.observeModel('active', (active) => {
+			if (active) {
+				document.addEventListener('keydown', this._escKeyListener);
+			} else {
+				document.removeEventListener('keydown', this._escKeyListener);
+			}
+		});
 	}
 
 	update(type, data, model) {
