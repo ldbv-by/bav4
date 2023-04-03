@@ -51,6 +51,17 @@ describe('Modal', () => {
 		});
 	});
 
+	describe('when disconnected', () => {
+		it('removes the keyDown-listener', async () => {
+			const spy = spyOn(document, 'removeEventListener').and.callThrough();
+			const element = await setup();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(spy).toHaveBeenCalledWith('keydown', element._escKeyListener);
+		});
+	});
+
 	describe('when model changes', () => {
 		describe('modal.portrait', () => {
 			it('adds the corresponding css class and ids', async () => {
@@ -196,6 +207,23 @@ describe('Modal', () => {
 
 				const elementModal = element.shadowRoot.querySelector('.modal__container');
 				elementModal.dispatchEvent(new Event('animationend'));
+
+				expect(store.getState().modal.active).toBeFalse();
+			});
+		});
+
+		describe('when "ESC" key is pressed', () => {
+			it('closes the modal', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+
+				await setup(state);
+				openModal('title', 'content');
+
+				document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
 
 				expect(store.getState().modal.active).toBeFalse();
 			});
