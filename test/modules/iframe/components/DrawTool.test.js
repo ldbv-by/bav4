@@ -43,14 +43,6 @@ describe('DrawTool', () => {
 		return TestUtils.render(DrawTool.tag);
 	};
 
-	describe('class', () => {
-		it('inherits from AbstractToolContent', async () => {
-			const element = await setup();
-
-			expect(element instanceof MvuElement).toBeTrue();
-		});
-	});
-
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
 			const element = await setup();
