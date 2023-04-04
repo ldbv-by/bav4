@@ -7,7 +7,7 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '../../../../src/utils/markup';
 
 window.customElements.define(Modal.tag, Modal);
 
@@ -60,7 +60,6 @@ describe('Modal', () => {
 						observeResponsiveParameter: true
 					}
 				};
-
 				const element = await setup(state);
 
 				openModal('title', 'content');
@@ -86,7 +85,6 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 
 				openModal('title', 'content');
@@ -105,12 +103,9 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 
-				const template = (str) => html`${str}`;
-
-				openModal('title', template('content'));
+				openModal('title', html`'content`);
 
 				expect(store.getState().modal.data.title).toBe('title');
 				expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
@@ -118,6 +113,20 @@ describe('Modal', () => {
 				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 				//Note: Webkit appends a line break to the 'content' in this case
 				expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+			});
+
+			it('puts the focus on the first element containing the "autofocus" attribute', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state);
+
+				openModal('title', html`<input type="button" autofocus value="Foo"></input>`);
+
+				await TestUtils.timeout();
+				expect(findAllBySelector(element, 'input')[0]?.matches(':focus')).toBeTrue();
 			});
 		});
 
@@ -128,7 +137,6 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 				openModal('title', 'content');
 
@@ -146,7 +154,6 @@ describe('Modal', () => {
 					portrait: false
 				}
 			};
-
 			const element = await setup(state);
 			openModal('title', 'content');
 
@@ -167,7 +174,6 @@ describe('Modal', () => {
 					portrait: false
 				}
 			};
-
 			const element = await setup(state);
 			openModal('title', 'content');
 
@@ -188,7 +194,6 @@ describe('Modal', () => {
 					portrait: false
 				}
 			};
-
 			const element = await setup(state);
 			openModal('title', 'content');
 

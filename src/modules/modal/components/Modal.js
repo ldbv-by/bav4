@@ -4,6 +4,7 @@ import { $injector } from '../../../injection';
 import { closeModal } from '../../../store/modal/modal.action';
 import arrowLeftShort from '../assets/arrowLeftShort.svg';
 import { MvuElement } from '../../MvuElement';
+import { findAllBySelector } from '../../../utils/markup';
 
 const Update_Modal_Data = 'update_modal_data';
 const Update_IsPortrait_Value = 'update_isportrait_value';
@@ -47,6 +48,10 @@ export class Modal extends MvuElement {
 		this.observeModel('active', (active) => {
 			if (active) {
 				document.addEventListener('keydown', this._escKeyListener);
+				setTimeout(() => {
+					//focus the first element containing the autofocus attribute
+					findAllBySelector(this, '*[autofocus]')[0]?.focus();
+				});
 			} else {
 				document.removeEventListener('keydown', this._escKeyListener);
 			}
