@@ -8,7 +8,6 @@ import { createNoInitialStateMediaReducer } from '../../../../src/store/media/me
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
 import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '../../../../src/utils/markup';
-import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 
 window.customElements.define(Modal.tag, Modal);
 
