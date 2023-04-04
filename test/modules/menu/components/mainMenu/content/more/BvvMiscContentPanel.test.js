@@ -51,7 +51,7 @@ describe('MiscContentPanel', () => {
 			expect(links[1].target).toEqual('_blank');
 			expect(links[1].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_Contact');
 
-			expect(links[2].href).toEqual('https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen-BayernAtlas-Grundsteuer.pdf');
+			expect(links[2].href).toEqual('https://www.geodaten.bayern.de/bayernatlas-info/grundsteuer-nutzungsbedingungen/Nutzungsbedingungen_BayernAtlas-Grundsteuer_31032023.pdf');
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 
