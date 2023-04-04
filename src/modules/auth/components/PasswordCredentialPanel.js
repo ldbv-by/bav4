@@ -114,16 +114,6 @@ export class PasswordCredentialPanel extends MvuElement {
 		);
 	}
 
-	/**
-	 * @override
-	 */
-	onAfterRender(firsttime) {
-		if (firsttime) {
-			const credential_username = this.shadowRoot.getElementById('credential_username');
-			credential_username.focus();
-		}
-	}
-
 	update(type, data, model) {
 		switch (type) {
 			case Update_URL:
@@ -190,7 +180,7 @@ export class PasswordCredentialPanel extends MvuElement {
             </div>
             <div class='credential_form'>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
-					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
+					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} autofocus >
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
