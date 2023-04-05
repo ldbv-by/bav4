@@ -31,6 +31,7 @@ import { measurementReducer } from '../../../../../src/store/measurement/measure
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -171,6 +172,21 @@ describe('OlDrawHandler', () => {
 		document.dispatchEvent(keyEvent);
 	};
 
+	const createFeature = () => {
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+		return feature;
+	};
+
 	it('has two methods', () => {
 		setup();
 		const handler = new OlDrawHandler();
@@ -279,6 +295,27 @@ describe('OlDrawHandler', () => {
 				await TestUtils.timeout();
 				//check notification
 				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('_save', () => {
+			it('calls the InteractionService and updates the draw slice-of-state ', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				await TestUtils.timeout();
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 			});
 		});
 
@@ -1110,28 +1147,14 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when deactivated over olMap', () => {
-		const createFeature = () => {
-			const feature = new Feature({
-				geometry: new Polygon([
-					[
-						[0, 0],
-						[1, 0],
-						[1, 1],
-						[0, 1],
-						[0, 0]
-					]
-				])
-			});
-			return feature;
-		};
-
 		it('writes features to kml format for persisting purpose', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
-			setup(state);
+			const fileSaveResultMock = { fileId: 'barId', adminId: null };
+			const state = { ...initialState, fileSaveResult: new EventLike(null) };
+			const store = setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1139,6 +1162,8 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+			expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
 		it('uses already written features for persisting purpose', () => {

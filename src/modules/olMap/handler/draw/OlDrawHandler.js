@@ -17,7 +17,15 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
+import {
+	setSelectedStyle,
+	setStyle,
+	setType,
+	setGeometryIsValid,
+	setSelection,
+	setDescription,
+	setFileSaveResult
+} from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML } from '../../formats/kml';
 import {
@@ -823,7 +831,8 @@ export class OlDrawHandler extends OlLayerHandler {
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		this._storedContent = newContent;
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult({ fileSaveResult, content: newContent });
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {

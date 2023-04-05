@@ -39,7 +39,7 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
 		expect(store.getState().draw.selection).toEqual([]);
-		expect(store.getState().draw.fileSaveResult).toBeNull();
+		expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 		expect(store.getState().draw.validGeometry).toBeFalse();
 	});
 
@@ -127,13 +127,13 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.description).toBeNull();
 	});
 
-	it('updates the fileSaveResult property', () => {
+	it('updates the drawFileSaveResult property', () => {
 		const store = setup();
-		const fileSaveResult = { adminId: 'fooBarId', fileId: 'barBazId' };
+		const drawFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
 
-		setFileSaveResult(fileSaveResult);
+		setFileSaveResult(drawFileSaveResult);
 
-		expect(store.getState().draw.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
+		expect(store.getState().draw.fileSaveResult.payload).toEqual(drawFileSaveResult);
 	});
 
 	it('updates the reset property', () => {

@@ -5,6 +5,7 @@ import { MvuElement } from '../modules/MvuElement';
  * An element containing this attribute will be provided with a generated test id.
  */
 export const TEST_ID_ATTRIBUTE_NAME = 'data-test-id';
+
 /**
  * An element containing this attribute registers for taking part in viewport calculation.
  */
@@ -19,6 +20,11 @@ export const LOG_LIFECYLE_ATTRIBUTE_NAME = 'data-log-lifecycle';
  * An iframe element containing this attribute will expose the current encoded state of an embedded BA app.
  */
 export const IFRAME_ENCODED_STATE = 'data-iframe-encoded-state';
+
+/**
+ *An iframe element containing this attribute will expose the reference id of an user-generated geometry.
+ */
+export const IFRAME_GEOMETRY_REFERENCE_ID = 'data-iframe-geometry-reference-id';
 
 /**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
