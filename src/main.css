@@ -81,7 +81,6 @@ body {
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
 	--secondary-color: var(--brand-secondary-light);
-	--tertiary-color: var(--brand-secondary-light);
 	/* background */
 	--primary-bg-color: var(--surface1-light);
 	--primary-bg-color-05: hsla(var(--brand-hue), 20%, 99%, 0.9);
@@ -93,6 +92,7 @@ body {
 	--text1: var(--text1-light);
 	--text2: var(--text2-light);
 	--text3: var(--text3-light);
+	--text4: var(--brand-secondary-light);
 }
 
 .dark-theme {
@@ -100,7 +100,6 @@ body {
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
 	--secondary-color: var(--brand-secondary-dark);
-	--tertiary-color: var(--brand-dark-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-dark);
 	--primary-bg-color-05: rgba(0, 0, 0, 0.6);
@@ -112,6 +111,7 @@ body {
 	--text1: var(--text1-dark);
 	--text2: var(--text2-dark);
 	--text3: var(--text3-dark);
+	--text4: var(--brand-dark-lighter);
 }
 
 *,

@@ -24,5 +24,5 @@
 	border: 1px solid var(--secondary-color);
 }
 .chips__button:hover .chips__button-text {
-	color: var(--secondary-color);
+	color: var(--text4);
 }

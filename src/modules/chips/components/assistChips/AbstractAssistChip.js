@@ -37,7 +37,7 @@ export class AbstractAssistChip extends MvuElement {
 			mask : url("${icon}");			
 			-webkit-mask-image : url("${icon}");			
 			-webkit-mask-size:cover;
-			background: var(--tertiary-color);
+			background: var(--text4);
 		}`;
 
 		return this.isVisible()
