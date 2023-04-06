@@ -17,14 +17,14 @@ describe('MapService', () => {
 		const definitionsProvider = () => {
 			return {
 				defaultExtent: [0, 1, 2, 3],
-				defaultGeodeticExtent: [4, 5, 6, 7],
+				localProjectedSridExtent: [4, 5, 6, 7],
 				srid: 3857,
 				defaultSridForView: 4326,
 				sridDefinitionsForView: () => [
 					{ label: 'WGS88', code: 4326 },
 					{ label: 'Something', code: 9999 }
 				],
-				defaultGeodeticSrid: 9999,
+				localProjectedSrid: 9999,
 				minZoomLevel: 5,
 				maxZoomLevel: 21
 			};

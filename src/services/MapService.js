@@ -59,7 +59,7 @@ export class MapService {
 	 * @returns {number} srid
 	 */
 	getLocalProjectedSrid() {
-		return this._definitions.defaultGeodeticSrid;
+		return this._definitions.localProjectedSrid;
 	}
 
 	/**
@@ -75,9 +75,9 @@ export class MapService {
 	getLocalProjectedSridExtent(srid = this.getSrid()) {
 		switch (srid) {
 			case 3857:
-				return this._coordinateService.fromLonLatExtent(this._definitions.defaultGeodeticExtent);
+				return this._coordinateService.fromLonLatExtent(this._definitions.localProjectedSridExtent);
 			case 4326:
-				return this._definitions.defaultGeodeticExtent;
+				return this._definitions.localProjectedSridExtent;
 		}
 		throw new Error('Unsupported SRID ' + srid);
 	}
@@ -125,7 +125,7 @@ export class MapService {
 	/**
 	 * Calculates the resolution at a specific degree of latitude in meters per pixel.
 	 * @param {number} zoom  Zoom level to calculate resolution at
-	 * @param {Coordinate} [coordinate] Coordinate to calculate resolution at (required for non-geodetic map projections like `3857`)
+	 * @param {Coordinate} [coordinate] Coordinate to calculate a resolution (required for global map projections like `3857`)
 	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
 	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
 	 */
