@@ -363,14 +363,14 @@ export class ShowCase extends BaElement {
 			<div class='example row' >	
 				<div class=' collum' style='width:40em;'>		
 					<div class="ba-form-element">						
-						<input type="text" placeholder='Auswahl der Kategorrie'  id="textarea-foo" ></input>
-						<label for="textarea-foo" class="control-label">Auswahl der Kategorrie</label>
+						<input type="text" placeholder='Choose category'  id="textarea-foo" ></input>
+						<label for="textarea-foo" class="control-label">Choose category</label>
 						<i class="bar"></i>
 						<i class='icon clear'></i>
 					</div>
 					<div  class="ba-form-element">						
-						<textarea type="text" placeholder='Beschreibung der Änderung'></textarea>
-						<label class="control-label">Beschreibung der Änderung</label>
+						<textarea type="text" placeholder='Description'></textarea>
+						<label class="control-label">Description</label>
 						<i class="bar"></i>
 						<label class="helper-label">Helper text</label>
 					</div>
@@ -382,8 +382,8 @@ export class ShowCase extends BaElement {
 						<label class="helper-label">Helper text</label>						
 					</div>
 					<div class="ba-form-element">						
-						<input name="email" type="email"  placeholder='Ihre E-Mail-Adresse'></input>
-						<label for="tttttttt" class="control-label">Ihre E-Mail-Adresse</label>
+						<input name="email" type="email"  placeholder='Your email address'></input>
+						<label for="tttttttt" class="control-label">Your email address</label>
 						<i class="bar"></i>
 						<i class='icon error'></i>
 						<label class="helper-label">Helper text</label>
