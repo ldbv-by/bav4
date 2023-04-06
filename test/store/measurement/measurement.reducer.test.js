@@ -26,7 +26,7 @@ describe('measurementReducer', () => {
 		expect(store.getState().measurement.statistic).toEqual({ length: null, area: null });
 		expect(store.getState().measurement.reset).toBeNull();
 		expect(store.getState().measurement.finish).toBeNull();
-		expect(store.getState().measurement.fileSaveResult).toBeNull();
+		expect(store.getState().measurement.fileSaveResult.payload).toBeNull();
 		expect(store.getState().measurement.mode).toBeNull();
 		expect(store.getState().measurement.selection).toEqual([]);
 	});
@@ -54,11 +54,11 @@ describe('measurementReducer', () => {
 
 	it('updates the fileSaveResult property', () => {
 		const store = setup();
-		const fileSaveResult = { adminId: 'fooBarId', fileId: 'barBazId' };
+		const measurementFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
 
-		setFileSaveResult(fileSaveResult);
+		setFileSaveResult(measurementFileSaveResult);
 
-		expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
+		expect(store.getState().measurement.fileSaveResult.payload).toEqual(measurementFileSaveResult);
 	});
 
 	it('updates the reset property', () => {

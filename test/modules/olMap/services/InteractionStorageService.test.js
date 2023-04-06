@@ -110,26 +110,28 @@ describe('InteractionStorageService', () => {
 	});
 
 	it('stores initial content in the fileStorage', async () => {
+		const fileSaveResult = { fileId: 'fooBarId', adminId: 'barBazId' };
 		const store = setup({ ...initialState, fileSaveResult: null });
 		const content = 'someContent';
-		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' }));
+		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.resolveTo(fileSaveResult);
 
 		const classUnderTest = new InteractionStorageService();
-		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
+		await expectAsync(classUnderTest.store(content, FileStorageServiceDataTypes.KML)).toBeResolvedTo(fileSaveResult);
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith(null, content, FileStorageServiceDataTypes.KML);
 	});
 
 	it('stores new content in the fileStorage', async () => {
+		const fileSaveResult = { fileId: 'fooBarId', adminId: 'barBazId' };
 		const store = setup({ ...initialState, fileSaveResult: { fileId: 'f_someId', adminId: 'a_someId' } });
 		const content = 'someContent';
-		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.returnValue(Promise.resolve({ fileId: 'fooBarId', adminId: 'barBazId' }));
+		const saveSpy = spyOn(fileStorageServiceMock, 'save').and.resolveTo(fileSaveResult);
 
 		const classUnderTest = new InteractionStorageService();
-		await classUnderTest.store(content, FileStorageServiceDataTypes.KML);
 
+		await expectAsync(classUnderTest.store(content, FileStorageServiceDataTypes.KML)).toBeResolvedTo(fileSaveResult);
 		expect(store.getState().shared.fileSaveResult).toEqual({ fileId: 'fooBarId', adminId: 'barBazId' });
 		expect(saveSpy).toHaveBeenCalledTimes(1);
 		expect(saveSpy).toHaveBeenCalledWith('a_someId', content, FileStorageServiceDataTypes.KML);
@@ -140,8 +142,8 @@ describe('InteractionStorageService', () => {
 		const emptyContent = null;
 
 		const classUnderTest = new InteractionStorageService();
-		await classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML);
 
+		await expectAsync(classUnderTest.store(emptyContent, FileStorageServiceDataTypes.KML)).toBeResolvedTo(null);
 		expect(store.getState().shared.fileSaveResult).toBeNull();
 	});
 

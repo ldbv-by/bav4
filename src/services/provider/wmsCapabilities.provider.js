@@ -1,5 +1,4 @@
 import { $injector } from '../../injection';
-import { createUniqueId } from '../../utils/numberUtils';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../HttpService';
 
@@ -51,7 +50,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 
 		return format.length > 0
 			? new WmsGeoResource(
-					options.ids[index] ?? createUniqueId().toString(),
+					options.ids[index] ?? `${url}||${layer.name}||${layer.title}`,
 					layer.title,
 					`${capabilities.onlineResourceGetMap}`,
 					`${layer.name}`,

@@ -89,12 +89,13 @@ export class StoreService {
 				SearchPlugin: searchPlugin,
 				ExportMfpPlugin: exportMfpPlugin,
 				ElevationProfilePlugin: elevationProfilePlugin,
-				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin,
 				IframeStatePlugin: iframeStatePlugin,
 				IframeContainerPlugin: iframeContainerPlugin,
 				SharePlugin: sharePlugin,
 				ToolsPlugin: toolsPlugin,
-				HistoryStatePlugin: historyStatePlugin
+				IframeGeometryIdPlugin: iframeGeometryIdPlugin,
+				HistoryStatePlugin: historyStatePlugin,
+				ObserveStateForEncodingPlugin: observeStateForEncodingPlugin
 			} = $injector.inject(
 				'TopicsPlugin',
 				'ChipsPlugin',
@@ -116,6 +117,7 @@ export class StoreService {
 				'IframeContainerPlugin',
 				'SharePlugin',
 				'ToolsPlugin',
+				'IframeGeometryIdPlugin',
 				'HistoryStatePlugin',
 				'ObserveStateForEncodingPlugin'
 			);
@@ -142,6 +144,7 @@ export class StoreService {
 				await iframeContainerPlugin.register(this._store);
 				await sharePlugin.register(this._store);
 				await toolsPlugin.register(this._store);
+				await iframeGeometryIdPlugin.register(this._store);
 				await historyStatePlugin.register(this._store);
 				await observeStateForEncodingPlugin.register(this._store); // should be registered as last plugin
 			});
