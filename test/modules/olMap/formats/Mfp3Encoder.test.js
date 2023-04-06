@@ -44,7 +44,7 @@ describe('BvvMfp3Encoder', () => {
 
 	const mapServiceMock = {
 		getDefaultMapExtent() {},
-		getDefaultGeodeticSrid: () => 25832,
+		getLocalProjectedSrid: () => 25832,
 		getSrid: () => 3857
 	};
 
