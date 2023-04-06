@@ -7,7 +7,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 describe('PositionPlugin', () => {
 	const mapServiceMock = {
 		getDefaultMapExtent() {},
-		getDefaultGeodeticSrid() {},
+		getLocalProjectedSrid() {},
 		getSrid() {},
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
@@ -139,7 +139,7 @@ describe('PositionPlugin', () => {
 				const expectedRotationValue = 0;
 				const queryParam = `${QueryParameters.CENTER}=${geodeticCoord.join(',')}&${QueryParameters.ZOOM}=${expectedZoomLevel}`;
 				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
-				spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.returnValue(4242);
+				spyOn(mapServiceMock, 'getLocalProjectedSrid').and.returnValue(4242);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 				spyOn(coordinateServiceMock, 'transform').withArgs(geodeticCoord, 4242, 3857).and.returnValue(expextedCoordinate);
 
