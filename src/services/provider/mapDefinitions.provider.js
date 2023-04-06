@@ -6,12 +6,12 @@ import { $injector } from '../../injection';
 /**
  * Map related meta data
  * @typedef {Object} MapDefinitions
- * @property {Extent} defaultExtent
- * @property {Extent} defaultGeodeticExtent
- * @property {number} srid internal SRID of the map
+ * @property {Extent} defaultExtent default extent of the map
+ * @property {Extent} localProjectedSridExtent the extent of the local projected system
+ * @property {number} srid the internal SRID of the map
  * @property {number} defaultSridForView default SRID in which coordinates should be displayed within the UI
  * @property {function(Coordinate):(Array<SridDefinition>)} sridDefinitionsForView function which can take a coordinate and returns an array of SridDefinition
- * @property {number} defaultGeodeticSrid default SRID for geodetic tasks
+ * @property {number} localProjectedSrid the SRID of the local projected system.
  * @property {number} minZoomLevel the minimal zoom level the map should support
  * @property {number} maxZoomLevel the maximal zoom level the map should support
  */
@@ -32,11 +32,11 @@ import { $injector } from '../../injection';
 export const getBvvMapDefinitions = () => {
 	return {
 		defaultExtent: [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462],
-		defaultGeodeticExtent: [5, -80, 14, 80],
+		localProjectedSridExtent: [5, -80, 14, 80],
 		srid: 3857,
 		defaultSridForView: 25832,
 		sridDefinitionsForView: getBvvSridDefinitionsForView,
-		defaultGeodeticSrid: 25832,
+		localProjectedSrid: 25832,
 		minZoomLevel: 0,
 		maxZoomLevel: 20
 	};
