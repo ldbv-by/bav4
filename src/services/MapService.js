@@ -67,7 +67,8 @@ export class MapService {
 	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
 	 * Within this extent all calculations can be done in the euclidean space.
 	 * Outside of this extent all calculations should be done geodesically.
-	 * @returns {Extent} extent
+	 * Can be `null` when no extent is defined.
+	 * @returns {Extent|null} extent
 	 * @throws Unsupported SRID error
 	 */
 	getLocalProjectedSridExtent(srid = this.getSrid()) {
