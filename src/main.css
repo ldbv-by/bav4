@@ -19,7 +19,7 @@
 
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
-	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.2) calc(var(--brand-lightness) / 1.6));
+	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
 	--brand-secondary-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 0.3) 30%);
 	--text1-dark: hsl(var(--brand-hue) 15% 95%);
 	--text2-dark: hsl(var(--brand-hue) 10% 80%);
@@ -92,6 +92,7 @@ body {
 	--text1: var(--text1-light);
 	--text2: var(--text2-light);
 	--text3: var(--text3-light);
+	--text4: var(--brand-secondary-light);
 }
 
 .dark-theme {
@@ -110,6 +111,7 @@ body {
 	--text1: var(--text1-dark);
 	--text2: var(--text2-dark);
 	--text3: var(--text3-dark);
+	--text4: var(--brand-dark-lighter);
 }
 
 *,

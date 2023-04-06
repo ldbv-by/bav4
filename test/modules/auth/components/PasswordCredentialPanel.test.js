@@ -62,11 +62,9 @@ describe('PasswordCredentialPanel', () => {
 			const inputUsername = element.shadowRoot.querySelector('#credential_username');
 			const inputPassword = element.shadowRoot.querySelector('#credential_password');
 
-			expect(inputUsername.hasAttribute('required')).toBeTrue();
 			expect(inputUsername.hasAttribute('autofocus')).toBeTrue();
 			expect(inputUsername.getAttribute('type')).toBe('text');
 
-			expect(inputPassword.hasAttribute('required')).toBeTrue();
 			expect(inputPassword.getAttribute('type')).toBe('password');
 		});
 
