@@ -355,7 +355,7 @@ export class DrawToolContent extends AbstractToolContent {
 										<input  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label>
 										<i class="bar"></i>
-										<label class="helper-label">Text in der Karte</label>
+										<label class="helper-label">${translate('toolbox_drawTool_style_text_helper')}</label>
 									</div>
 									<div  class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">						
 										<textarea   id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
@@ -417,7 +417,7 @@ export class DrawToolContent extends AbstractToolContent {
 							style.text
 						} @input=${onChangeText} @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
-										<label class="helper-label">Text in der Karte</label>
+										<label class="helper-label">${translate('toolbox_drawTool_style_text_helper')}</label>
 									</div>
 									<div  class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">						
 										<textarea   id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
