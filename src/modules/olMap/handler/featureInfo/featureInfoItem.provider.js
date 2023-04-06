@@ -29,8 +29,8 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	} = $injector.inject('MapService', 'SecurityService', 'GeoResourceService');
 	const stats = getStats(olFeature.getGeometry(), {
 		fromProjection: 'EPSG:' + mapService.getSrid(),
-		toProjection: 'EPSG:' + mapService.getDefaultGeodeticSrid(),
-		toProjectionExtent: mapService.getDefaultGeodeticExtent()
+		toProjection: 'EPSG:' + mapService.getLocalProjectedSrid(),
+		toProjectionExtent: mapService.getLocalProjectedSridExtent()
 	});
 	const elevationProfileCoordinates =
 		simplify(
