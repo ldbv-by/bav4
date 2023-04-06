@@ -21,7 +21,7 @@ describe('MeasurementOverlay', () => {
 					return 'THE AREA IN m²';
 				}
 			})
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => null });
+			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null });
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
 	});
