@@ -1,7 +1,3 @@
-/**
- * Action creators to change the list of active layers and update properties of a layer.
- * @module layers/action
- */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';

@@ -1,6 +1,3 @@
-/**
- * @module service/provider
- */
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType } from '../../domain/geoResources';
 import { FeatureInfoResult } from '../FeatureInfoService';

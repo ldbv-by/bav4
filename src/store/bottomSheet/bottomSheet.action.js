@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the properties of bottom sheet state.
- * @module bottomSheet/action
- */
 import { BOTTOM_SHEET_CHANGED } from './bottomSheet.reducer';
 import { $injector } from '../../injection';
 

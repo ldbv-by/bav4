@@ -1,6 +1,3 @@
-/**
- * @module service/provider
- */
 import { createStringXY } from 'ol/coordinate';
 import { $injector } from '../../injection';
 

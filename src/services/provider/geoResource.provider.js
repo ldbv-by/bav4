@@ -1,6 +1,3 @@
-/**
- * @module service/provider
- */
 import {
 	AggregateGeoResource,
 	VectorGeoResource,
