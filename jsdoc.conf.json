@@ -23,7 +23,6 @@
 		"template": "./node_modules/docdash"
 	},
 	"docdash": {
-		"search": true,
-		"scripts": ["https://unpkg.com/mermaid/dist/mermaid.js", "docs-init.js"]
+		"search": true
 	}
 }
