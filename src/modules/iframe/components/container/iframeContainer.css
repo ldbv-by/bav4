@@ -1,0 +1,12 @@
+.container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	max-width: 33vw;
+	min-width: 30em;
+	font-size: 0.9rem;
+	overflow: hidden;
+	z-index: calc(var(--z-header) + 30);
+	margin-bottom: 0.5em;
+	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+}

@@ -99,19 +99,20 @@ export class IframeGenerator extends MvuElement {
 
 		const getWidthFieldset = () => {
 			return autoWidth
-				? html` <div class="fieldset">
+				? html` <div class="iframe__container iframe__container-width">
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>
-						<div class="iframe__input">
+						<div class="iframe__input ">
 							<div class="iframe__input width_placeholder">${Auto_Width}</div>
-							<span> % </span>
+							<span class="width_placeholder-sub"> % </span>
 						</div>
 				  </div>`
 				: html`
-					<div class="fieldset">		
+					<div class="iframe__container iframe__container-width">		
 						<label for="iframe_width" class="control-label">${translate('iframe_generator_width')}</label>							
 						<input type="range" id="iframe_slider_width" step=10 min=${Range_Min} max=${Range_Max} .value=${width} @input=${onChangeSliderWidth}>
-						<div class='iframe__input'>
+						<div class='iframe__input ba-form-element'>
 							<input type="number" id="iframe_width" max=${Range_Max} .value=${width} min=${Range_Min} @input=${onChangeWidth}></input>
+							<i class="bar"></i>
 							<span>
 								px		
 							</span>
@@ -125,18 +126,19 @@ export class IframeGenerator extends MvuElement {
         <div class='container'>
 			<div class='iframe__controls'>
 				<div class='iframe__controls-section'>					
-					<div class="fieldset">						
+					<div class="iframe__container">							
 						<label for="iframe_height" class="control-label">${translate('iframe_generator_height')}</label>			
 						<input type="range" id="iframe_slider_height" step=10 min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeSliderHeight}>
-						<div class='iframe__input'>
+						<div class='iframe__input ba-form-element '>
 							<input type="number" id="iframe_height" min=${Range_Min} max=${Range_Max} .value=${height} @input=${onChangeHeight}></input>
+							<i class="bar"></i>
 							<span>
 								 px		
 							</span>
-						</div>
+							</div>
 					</div>
 					${getWidthFieldset()}
-					<div class="fieldset">	
+					<div  class="iframe__container">
 						<div class='iframe__toggle'>
 							<div class='iframe__toggle_text'>${translate('iframe_generator_toggle_label')}
 							</div>

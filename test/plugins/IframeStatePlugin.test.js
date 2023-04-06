@@ -19,7 +19,7 @@ class MvuElementParent extends MvuElement {
 }
 window.customElements.define(MvuElementParent.tag, MvuElementParent);
 
-describe('IframeState', () => {
+describe('IframeStatePlugin', () => {
 	const shareService = {
 		encodeState() {}
 	};

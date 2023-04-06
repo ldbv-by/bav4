@@ -5,7 +5,7 @@ import { unByKey } from 'ol/Observable';
 import { LineString, Polygon } from 'ol/geom';
 import { $injector } from '../../../../injection';
 import { OlLayerHandler } from '../OlLayerHandler';
-import { setStatistic, setMode, setSelection } from '../../../../store/measurement/measurement.action';
+import { setStatistic, setMode, setSelection, setFileSaveResult } from '../../../../store/measurement/measurement.action';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';
 import { createSketchStyleFunction, selectStyleFunction } from '../../utils/olStyleUtils';
 import { getStats } from '../../utils/olGeometryUtils';
@@ -35,11 +35,12 @@ import { OlSketchHandler } from '../OlSketchHandler';
 import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../plugins/MeasurementPlugin';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setDrawSelection } from '../../../../store/draw/draw.action';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
+import { Tools } from '../../../../domain/tools';
 
 const Debounce_Delay = 1000;
 
@@ -222,7 +223,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				if (changeToMeasureTool(features)) {
 					const drawIds = features.filter((f) => f.getId().startsWith('draw_')).map((f) => f.getId());
 					setDrawSelection(drawIds);
-					setCurrentTool(ToolId.DRAWING);
+					setCurrentTool(Tools.DRAWING);
 				}
 			};
 
@@ -657,13 +658,11 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		features.forEach((f) => saveManualOverlayPosition(f));
 
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
 		this._storedContent = newContent;
+		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult({ fileSaveResult, content: newContent });
 	}
 
-	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a statefull _storageHandler
-	 */
 	async _convertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');

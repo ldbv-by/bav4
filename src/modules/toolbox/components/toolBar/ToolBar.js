@@ -1,8 +1,9 @@
 import { html } from 'lit-html';
 import css from './toolBar.css';
 import { $injector } from '../../../../injection';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
+import { Tools } from '../../../../domain/tools';
 
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
@@ -129,44 +130,29 @@ export class ToolBar extends MvuElement {
 					<button
 						id="measure-button"
 						data-test-id
-						@click="${() => toggleTool(ToolId.MEASURING)}"
-						class="tool-bar__button ${getActiveClass(ToolId.MEASURING)}"
+						@click="${() => toggleTool(Tools.MEASURING)}"
+						class="tool-bar__button ${getActiveClass(Tools.MEASURING)}"
 					>
 						<div class="tool-bar__button_icon measure"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_measure_button')}</div>
 					</button>
-					<button
-						id="draw-button"
-						data-test-id
-						@click="${() => toggleTool(ToolId.DRAWING)}"
-						class="tool-bar__button ${getActiveClass(ToolId.DRAWING)}"
-					>
+					<button id="draw-button" data-test-id @click="${() => toggleTool(Tools.DRAWING)}" class="tool-bar__button ${getActiveClass(Tools.DRAWING)}">
 						<div class="tool-bar__button_icon pencil"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_draw_button')}</div>
 					</button>
-					<button
-						id="import-button"
-						data-test-id
-						@click="${() => toggleTool(ToolId.IMPORT)}"
-						class="tool-bar__button ${getActiveClass(ToolId.IMPORT)}"
-					>
+					<button id="import-button" data-test-id @click="${() => toggleTool(Tools.IMPORT)}" class="tool-bar__button ${getActiveClass(Tools.IMPORT)}">
 						<div class="tool-bar__button_icon import"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_import_button')}</div>
 					</button>
-					<button
-						id="export-button"
-						data-test-id
-						@click="${() => toggleTool(ToolId.EXPORT)}"
-						class="tool-bar__button ${getActiveClass(ToolId.EXPORT)}"
-					>
+					<button id="export-button" data-test-id @click="${() => toggleTool(Tools.EXPORT)}" class="tool-bar__button ${getActiveClass(Tools.EXPORT)}">
 						<div class="tool-bar__button_icon export"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_export_button')}</div>
 					</button>
 					<button
 						id="share-button"
 						data-test-id
-						@click="${() => toggleTool(ToolId.SHARING)}"
-						class="tool-bar__button ${getActiveClass(ToolId.SHARING)}"
+						@click="${() => toggleTool(Tools.SHARING)}"
+						class="tool-bar__button ${getActiveClass(Tools.SHARING)}"
 					>
 						<div class="tool-bar__button_icon share"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_share_button')}</div>

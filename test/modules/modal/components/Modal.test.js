@@ -7,7 +7,7 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
 import { isTemplateResult } from '../../../../src/utils/checks';
-import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
+import { TEST_ID_ATTRIBUTE_NAME, findAllBySelector } from '../../../../src/utils/markup';
 
 window.customElements.define(Modal.tag, Modal);
 
@@ -51,7 +51,7 @@ describe('Modal', () => {
 		});
 	});
 
-	describe('when modal changes', () => {
+	describe('when model changes', () => {
 		describe('modal.portrait', () => {
 			it('adds the corresponding css class and ids', async () => {
 				const state = {
@@ -60,7 +60,6 @@ describe('Modal', () => {
 						observeResponsiveParameter: true
 					}
 				};
-
 				const element = await setup(state);
 
 				openModal('title', 'content');
@@ -86,7 +85,6 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 
 				openModal('title', 'content');
@@ -105,12 +103,9 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 
-				const template = (str) => html`${str}`;
-
-				openModal('title', template('content'));
+				openModal('title', html`'content`);
 
 				expect(store.getState().modal.data.title).toBe('title');
 				expect(isTemplateResult(store.getState().modal.data.content)).toBeTrue();
@@ -118,6 +113,20 @@ describe('Modal', () => {
 				expect(element.shadowRoot.querySelector('.modal__title').innerText).toMatch(/title[\r\n]?/);
 				//Note: Webkit appends a line break to the 'content' in this case
 				expect(element.shadowRoot.querySelector('.modal__content').innerText).toMatch(/content[\r\n]?/);
+			});
+
+			it('puts the focus on the first element containing the "autofocus" attribute', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state);
+
+				openModal('title', html`<input type="button" autofocus value="Foo"></input>`);
+
+				await TestUtils.timeout();
+				expect(findAllBySelector(element, 'input')[0]?.matches(':focus')).toBeTrue();
 			});
 		});
 
@@ -128,7 +137,6 @@ describe('Modal', () => {
 						portrait: false
 					}
 				};
-
 				const element = await setup(state);
 				openModal('title', 'content');
 
@@ -137,68 +145,105 @@ describe('Modal', () => {
 				expect(element.shadowRoot.childElementCount).toBe(0);
 			});
 		});
+	});
 
-		describe('when close button clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when close button clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			closeBtn.click();
 
-				const closeBtn = element.shadowRoot.querySelector('ba-button');
-				closeBtn.click();
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
-
-				expect(store.getState().modal.active).toBeFalse();
-			});
+			expect(store.getState().modal.active).toBeFalse();
 		});
+	});
 
-		describe('when back button clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when back button clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const backIcon = element.shadowRoot.querySelector('ba-icon');
+			backIcon.click();
 
-				const backIcon = element.shadowRoot.querySelector('ba-icon');
-				backIcon.click();
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
-
-				expect(store.getState().modal.active).toBeFalse();
-			});
+			expect(store.getState().modal.active).toBeFalse();
 		});
+	});
 
-		describe('when background clicked', () => {
-			it('closes the modal', async () => {
-				const state = {
-					media: {
-						portrait: false
-					}
-				};
+	describe('when background clicked', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
+			openModal('title', 'content');
 
-				const element = await setup(state);
-				openModal('title', 'content');
+			const background = element.shadowRoot.querySelector('.modal__background');
+			background.click();
 
-				const background = element.shadowRoot.querySelector('.modal__background');
-				background.click();
+			const elementModal = element.shadowRoot.querySelector('.modal__container');
+			elementModal.dispatchEvent(new Event('animationend'));
 
-				const elementModal = element.shadowRoot.querySelector('.modal__container');
-				elementModal.dispatchEvent(new Event('animationend'));
+			expect(store.getState().modal.active).toBeFalse();
+		});
+	});
 
-				expect(store.getState().modal.active).toBeFalse();
-			});
+	describe('when "ESC" key is pressed', () => {
+		it('closes the modal', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			await setup(state);
+			openModal('title', 'content');
+
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); //should do nothing
+
+			expect(store.getState().modal.active).toBeTrue();
+
+			document.dispatchEvent(escEvent);
+
+			expect(store.getState().modal.active).toBeFalse();
+			expect(preventDefaultSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('when modal is closed', () => {
+		it('removes the keyDown-listener', async () => {
+			const spy = spyOn(document, 'removeEventListener').and.callThrough();
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+			const element = await setup(state);
+			openModal('title', 'content');
+
+			closeModal();
+
+			expect(spy).toHaveBeenCalledWith('keydown', element._escKeyListener);
 		});
 	});
 });

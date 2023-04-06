@@ -10,7 +10,10 @@ import {
 	setStyle,
 	setSelectedStyle,
 	setDescription,
-	clearDescription
+	clearDescription,
+	clearText,
+	setSelection,
+	setGeometryIsValid
 } from '../../../src/store/draw/draw.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
@@ -28,13 +31,16 @@ describe('drawReducer', () => {
 	it('initiales the store with default values', () => {
 		const store = setup();
 		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 		expect(store.getState().draw.mode).toBeNull();
 		expect(store.getState().draw.type).toBeNull();
 		expect(store.getState().draw.style).toBe(INITIAL_STYLE);
 		expect(store.getState().draw.selectedStyle).toBeNull();
 		expect(store.getState().draw.description).toBeNull();
 		expect(store.getState().draw.reset).toBeNull();
-		expect(store.getState().draw.fileSaveResult).toBeNull();
+		expect(store.getState().draw.selection).toEqual([]);
+		expect(store.getState().draw.fileSaveResult.payload).toBeNull();
+		expect(store.getState().draw.validGeometry).toBeFalse();
 	});
 
 	it('updates the active property', () => {
@@ -43,10 +49,22 @@ describe('drawReducer', () => {
 		activate();
 
 		expect(store.getState().draw.active).toBeTrue();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 
 		deactivate();
 
 		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
+
+		activate(false);
+
+		expect(store.getState().draw.active).toBeTrue();
+		expect(store.getState().draw.createPermanentLayer).toBeFalse();
+
+		deactivate();
+
+		expect(store.getState().draw.active).toBeFalse();
+		expect(store.getState().draw.createPermanentLayer).toBeTrue();
 	});
 
 	it('updates the mode property', () => {
@@ -109,13 +127,13 @@ describe('drawReducer', () => {
 		expect(store.getState().draw.description).toBeNull();
 	});
 
-	it('updates the fileSaveResult property', () => {
+	it('updates the drawFileSaveResult property', () => {
 		const store = setup();
-		const fileSaveResult = { adminId: 'fooBarId', fileId: 'barBazId' };
+		const drawFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
 
-		setFileSaveResult(fileSaveResult);
+		setFileSaveResult(drawFileSaveResult);
 
-		expect(store.getState().draw.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
+		expect(store.getState().draw.fileSaveResult.payload).toEqual(drawFileSaveResult);
 	});
 
 	it('updates the reset property', () => {
@@ -140,5 +158,46 @@ describe('drawReducer', () => {
 		finish();
 
 		expect(store.getState().draw.finish).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the style.text property', () => {
+		const store = setup();
+
+		clearText();
+
+		expect(store.getState().draw.style).toEqual(jasmine.objectContaining({ text: null }));
+		expect(store.getState().draw.selectedStyle).toBeNull();
+	});
+
+	it('updates the style.text and selectedStyle.text property', () => {
+		const store = setup();
+
+		const style = { text: 'something', color: '#ff0000', scale: StyleSizeTypes.SMALL };
+		const selectedStyle = { type: StyleTypes.TEXT, style: style };
+		setSelectedStyle(selectedStyle);
+
+		expect(store.getState().draw.selectedStyle).toEqual(selectedStyle);
+
+		clearText();
+
+		expect(store.getState().draw.style).toEqual(jasmine.objectContaining({ text: null }));
+		expect(store.getState().draw.selectedStyle.style).toEqual(jasmine.objectContaining({ text: null }));
+	});
+
+	it('updates the selection property', () => {
+		const store = setup();
+		const selection = ['42', 'foo', 'bar'];
+		setSelection(selection);
+
+		expect(store.getState().draw.selection).not.toBe(selection);
+		expect(store.getState().draw.selection).toEqual(selection);
+	});
+
+	it('updates the validGeometry property', () => {
+		const store = setup();
+
+		setGeometryIsValid(true);
+
+		expect(store.getState().draw.validGeometry).toBeTrue();
 	});
 });

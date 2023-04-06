@@ -1,4 +1,14 @@
-import { activate, deactivate, setStatistic, reset, remove, setFileSaveResult } from '../../../src/store/measurement/measurement.action';
+import {
+	activate,
+	deactivate,
+	setStatistic,
+	reset,
+	remove,
+	setFileSaveResult,
+	setSelection,
+	finish,
+	setMode
+} from '../../../src/store/measurement/measurement.action';
 import { TestUtils } from '../../test-utils.js';
 import { EventLike } from '../../../src/utils/storeUtils';
 import { measurementReducer } from '../../../src/store/measurement/measurement.reducer';
@@ -15,7 +25,10 @@ describe('measurementReducer', () => {
 		expect(store.getState().measurement.active).toBeFalse();
 		expect(store.getState().measurement.statistic).toEqual({ length: null, area: null });
 		expect(store.getState().measurement.reset).toBeNull();
-		expect(store.getState().measurement.fileSaveResult).toBeNull();
+		expect(store.getState().measurement.finish).toBeNull();
+		expect(store.getState().measurement.fileSaveResult.payload).toBeNull();
+		expect(store.getState().measurement.mode).toBeNull();
+		expect(store.getState().measurement.selection).toEqual([]);
 	});
 
 	it('updates the active property', () => {
@@ -41,11 +54,11 @@ describe('measurementReducer', () => {
 
 	it('updates the fileSaveResult property', () => {
 		const store = setup();
-		const fileSaveResult = { adminId: 'fooBarId', fileId: 'barBazId' };
+		const measurementFileSaveResult = { content: 'content', fileSaveResult: { adminId: 'fooBarId', fileId: 'barBazId' } };
 
-		setFileSaveResult(fileSaveResult);
+		setFileSaveResult(measurementFileSaveResult);
 
-		expect(store.getState().measurement.fileSaveResult).toEqual({ adminId: 'fooBarId', fileId: 'barBazId' });
+		expect(store.getState().measurement.fileSaveResult.payload).toEqual(measurementFileSaveResult);
 	});
 
 	it('updates the reset property', () => {
@@ -62,5 +75,30 @@ describe('measurementReducer', () => {
 		remove();
 
 		expect(store.getState().measurement.remove).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the finish property', () => {
+		const store = setup();
+
+		finish();
+
+		expect(store.getState().measurement.finish).toBeInstanceOf(EventLike);
+	});
+
+	it('updates the selection property', () => {
+		const store = setup();
+		const selection = ['42', 'foo', 'bar'];
+		setSelection(selection);
+
+		expect(store.getState().measurement.selection).not.toBe(selection);
+		expect(store.getState().measurement.selection).toEqual(selection);
+	});
+
+	it('updates the mode property', () => {
+		const store = setup();
+
+		setMode('foo');
+
+		expect(store.getState().measurement.mode).toBe('foo');
 	});
 });

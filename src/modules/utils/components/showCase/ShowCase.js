@@ -338,20 +338,12 @@ export class ShowCase extends BaElement {
 			<div class='example row'>		
 				<input placeholder='input' ></input>		
 				<input value='input readonly' readonly></input>
-				<div  class="fieldset">						
-					<input type="text"  required="required"  id="textarea-foo" ></input>
-					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
-				</div>
 			</div>
 							
 			<h3> textarea</h3>
 				<div class='example row'>										
 				<textarea placeholder='textarea'></textarea>		
-				<textarea readonly> textarea readonly</textarea>		
-				<div  class="fieldset">						
-					<textarea  required="required"  id="textarea-foo" ></textarea>
-					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
-				</div>	
+				<textarea readonly> textarea readonly</textarea>			
 			</div>
 
 			<h3> select</h3>
@@ -365,14 +357,57 @@ export class ShowCase extends BaElement {
 					<option>Value 1</option>
 					<option>Value 2</option>
 				</select>
-				<div class="fieldset">
-					<select>
-						<option>Value 1</option>
-						<option>Value 2</option>
-					</select>
-					<label for="select" class="control-label">with label</label><i class="bar"></i>
-			 	 </div>
 			</div>
+
+			<h3> ba-form-element</h3>
+			<div class='example row' >	
+				<div class=' collum' style='width:40em;'>		
+					<div class="ba-form-element">						
+						<input type="text" placeholder='Choose category'  id="textarea-foo" ></input>
+						<label for="textarea-foo" class="control-label">Choose category</label>
+						<i class="bar"></i>
+						<i class='icon clear'></i>
+					</div>
+					<div  class="ba-form-element">						
+						<textarea type="text" placeholder='Description'></textarea>
+						<label class="control-label">Description</label>
+						<i class="bar"></i>
+						<label class="helper-label">Helper text</label>
+					</div>
+					<div class="ba-form-element">						
+						<input type="text"    id="textarea-foo" placeholder='Test' pattern="[a-z]+"></input>
+						<label for="textarea-foo" class="control-label" >Test</label>
+						<i class="bar"></i>
+						<i class='icon error'></i>
+						<label class="helper-label">Helper text</label>						
+					</div>
+					<div class="ba-form-element">						
+						<input name="email" type="email"  placeholder='Your email address'></input>
+						<label for="tttttttt" class="control-label">Your email address</label>
+						<i class="bar"></i>
+						<i class='icon error'></i>
+						<label class="helper-label">Helper text</label>
+						<label class="error-label">Error text</label>
+					</div>
+					<div class="ba-form-element error" >						
+						<input type="mail"  id="textarea-foo" placeholder='with label' ></input>
+						<label for="textarea-foo" class="control-label">with label</label>
+						<i class="bar"></i>
+						<label class="helper-label error-label">Helper text error</label>						
+					</div>
+					<div class="ba-form-element">
+						<select select required >
+							<option value="" > </option>
+							<option value="1" >Value 1</option>
+							<option value="2" >Value 2</option>
+						</select>
+						<label for="select" class="control-label">with label</label><i class="bar"></i>
+			 		 </div>
+				</div>
+			</div>
+
+
+
 
 			<h3> slider</h3>
 			<div class='example row'>

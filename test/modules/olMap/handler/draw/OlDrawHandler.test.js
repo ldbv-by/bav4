@@ -26,11 +26,12 @@ import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.action';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
+import { Tools } from '../../../../../src/domain/tools';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -81,6 +82,7 @@ describe('OlDrawHandler', () => {
 	const environmentServiceMock = { isTouch: () => false, isStandalone: () => false };
 	const initialState = {
 		active: false,
+		createPermanentLayer: true,
 		mode: null,
 		type: null,
 		style: INITIAL_STYLE,
@@ -168,6 +170,21 @@ describe('OlDrawHandler', () => {
 		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
+	};
+
+	const createFeature = () => {
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+		return feature;
 	};
 
 	it('has two methods', () => {
@@ -278,6 +295,27 @@ describe('OlDrawHandler', () => {
 				await TestUtils.timeout();
 				//check notification
 				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('_save', () => {
+			it('calls the InteractionService and updates the draw slice-of-state ', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				await TestUtils.timeout();
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 			});
 		});
 
@@ -909,7 +947,7 @@ describe('OlDrawHandler', () => {
 			});
 		});
 
-		it('looks for drawing-layer and adds the feature for update/copy on save', async () => {
+		it('looks for an existing drawing-layer and adds the feature for update/copy on save', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
@@ -932,7 +970,7 @@ describe('OlDrawHandler', () => {
 			expect(addFeatureSpy).toHaveBeenCalledTimes(1);
 		});
 
-		it('looks for drawing-layer and gets no georesource', async () => {
+		it('looks for an existing drawing-layer and gets no georesource', async () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
@@ -950,6 +988,27 @@ describe('OlDrawHandler', () => {
 			expect(geoResourceSpy).toHaveBeenCalledWith('a_lastId');
 			expect(storageSpy).not.toHaveBeenCalled();
 			expect(addFeatureSpy).not.toHaveBeenCalled();
+		});
+
+		it('does NOT look for an existing drawing-layer', async () => {
+			setup({ ...initialState, createPermanentLayer: false });
+			const classUnderTest = new OlDrawHandler();
+			const lastData =
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+			const map = setupMap();
+			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
+
+			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
+
+			const geoResourceSpy = spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
+			const storageSpy = spyOn(classUnderTest._storageHandler, 'setStorageId').and.callFake(() => {});
+			classUnderTest.activate(map);
+			const addFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'addFeature');
+
+			await TestUtils.timeout();
+			expect(geoResourceSpy).not.toHaveBeenCalledWith('a_lastId');
+			expect(storageSpy).not.toHaveBeenCalledWith('a_lastId');
+			expect(addFeatureSpy).not.toHaveBeenCalledTimes(1);
 		});
 
 		it('adds style on old features', async () => {
@@ -1088,28 +1147,14 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when deactivated over olMap', () => {
-		const createFeature = () => {
-			const feature = new Feature({
-				geometry: new Polygon([
-					[
-						[0, 0],
-						[1, 0],
-						[1, 1],
-						[0, 1],
-						[0, 0]
-					]
-				])
-			});
-			return feature;
-		};
-
 		it('writes features to kml format for persisting purpose', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
-			setup(state);
+			const fileSaveResultMock = { fileId: 'barId', adminId: null };
+			const state = { ...initialState, fileSaveResult: new EventLike(null) };
+			const store = setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1117,6 +1162,8 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+			expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
 		it('uses already written features for persisting purpose', () => {
@@ -1804,7 +1851,7 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(store.getState().measurement.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURING);
 		});
 
 		it('does NOT switch to measure-tool, if clickposition is in anyinteract to selected unknown feature (not measure or draw)', () => {
@@ -1836,7 +1883,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
-			expect(store.getState().tools.current).not.toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).not.toBe(Tools.MEASURING);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {

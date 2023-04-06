@@ -17,7 +17,15 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
+import {
+	setSelectedStyle,
+	setStyle,
+	setType,
+	setGeometryIsValid,
+	setSelection,
+	setDescription,
+	setFileSaveResult
+} from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML } from '../../formats/kml';
 import {
@@ -42,7 +50,7 @@ import { setMode } from '../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
@@ -50,6 +58,7 @@ import { hexToRgb } from '../../../../utils/colors';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
+import { Tools } from '../../../../domain/tools';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -195,9 +204,12 @@ export class OlDrawHandler extends OlLayerHandler {
 		};
 
 		const getOrCreateLayer = () => {
-			const oldLayer = getOldLayer(this._map);
 			const layer = createLayer();
-			addOldFeatures(layer, oldLayer);
+			if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+				const oldLayer = getOldLayer(this._map);
+				addOldFeatures(layer, oldLayer);
+			}
+
 			const saveDebounced = debounced(Debounce_Delay, () => this._save());
 			const setSelectedAndSave = (event) => {
 				if (this._drawState.type === InteractionStateType.DRAW) {
@@ -231,7 +243,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				if (changeToMeasureTool(features)) {
 					const measurementIds = features.filter((f) => f.getId().startsWith('measure_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
-					setCurrentTool(ToolId.MEASURING);
+					setCurrentTool(Tools.MEASURING);
 				}
 			};
 
@@ -328,7 +340,9 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._keyActionMapper.deactivate();
 
 		setSelection([]);
-		this._convertToPermanentLayer();
+
+		this._saveAndOptionallyConvertToPermanentLayer();
+
 		this._vectorLayer
 			.getSource()
 			.getFeatures()
@@ -817,14 +831,11 @@ export class OlDrawHandler extends OlLayerHandler {
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		this._storedContent = newContent;
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult({ fileSaveResult, content: newContent });
 	}
 
-	/**
-	 *
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
-	 */
-	async _convertToPermanentLayer() {
+	async _saveAndOptionallyConvertToPermanentLayer() {
 		const translate = (key) => this._translationService.translate(key);
 		const label = translate('olMap_handler_draw_layer_label');
 
@@ -837,18 +848,20 @@ export class OlDrawHandler extends OlLayerHandler {
 			await this._save();
 		}
 
-		const id = this._storageHandler.getStorageId();
-		const getOrCreateVectorGeoResource = () => {
-			const fromService = this._geoResourceService.byId(id);
-			return fromService
-				? fromService
-				: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
-		};
-		const vgr = getOrCreateVectorGeoResource();
-		vgr.setSource(this._storedContent, 4326);
+		if (this._storeService.getStore().getState().draw.createPermanentLayer) {
+			const id = this._storageHandler.getStorageId();
+			const getOrCreateVectorGeoResource = () => {
+				const fromService = this._geoResourceService.byId(id);
+				return fromService
+					? fromService
+					: new VectorGeoResource(id, label, VectorSourceType.KML).setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
+			};
+			const vgr = getOrCreateVectorGeoResource();
+			vgr.setSource(this._storedContent, 4326);
 
-		// register the stored data as new georesource
-		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { constraints: { cloneable: false, metaData: false } });
+			// register the stored data as new georesource
+			this._geoResourceService.addOrReplace(vgr);
+			addLayer(id, { constraints: { cloneable: false, metaData: false } });
+		}
 	}
 }

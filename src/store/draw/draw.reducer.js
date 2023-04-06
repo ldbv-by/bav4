@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
@@ -26,6 +28,10 @@ export const initialState = {
 	 */
 	active: false,
 	/**
+	 * @type {Boolean}
+	 */
+	createPermanentLayer: true,
+	/**
 	 * @type {String}
 	 */
 	mode: null,
@@ -36,7 +42,7 @@ export const initialState = {
 	/**
 	 * @type {boolean}
 	 */
-	geometryIsValid: false,
+	validGeometry: false,
 	/**
 	 * @type {Object}
 	 */
@@ -50,9 +56,9 @@ export const initialState = {
 	 */
 	description: null,
 	/**
-	 * @type {DrawFileSaveResult}
+	 * @type {EventLike<DrawFileSaveResult>}
 	 */
-	fileSaveResult: null,
+	fileSaveResult: new EventLike(null),
 	/**
 	 * @type {Array<String>}
 	 */
@@ -75,9 +81,11 @@ export const drawReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
 		case ACTIVE_CHANGED: {
+			const { active, createPermanentLayer } = payload;
 			return {
 				...state,
-				active: payload
+				active: active,
+				createPermanentLayer: createPermanentLayer
 			};
 		}
 		case MODE_CHANGED: {

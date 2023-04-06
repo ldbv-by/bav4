@@ -9,3 +9,4 @@ import './modules/utils';
 import './modules/iframe';
 import './modules/uiTheme';
 import './modules/stackables';
+import './modules/featureInfo';
