@@ -4,6 +4,7 @@ import { $injector } from '../../src/injection';
 
 describe('MapService', () => {
 	const coordinateServiceMock = {
+		fromLonLatExtent() {},
 		toLonLatExtent() {},
 		toLonLat() {}
 	};
@@ -53,7 +54,7 @@ describe('MapService', () => {
 			expect(instanceUnderTest.getDefaultMapExtent(4326)).toEqual([4, 5, 6, 7]);
 		});
 
-		it('throws an exception for an unsupporteed srid', () => {
+		it('throws an exception for a unsupported SRID', () => {
 			const instanceUnderTest = setup();
 
 			expect(() => {
@@ -62,10 +63,27 @@ describe('MapService', () => {
 		});
 	});
 
-	it('provides a default geodetic extent', () => {
-		const instanceUnderTest = setup();
+	describe('provides the extent of the local projected system', () => {
+		it('for 3857', () => {
+			const instanceUnderTest = setup();
+			spyOn(coordinateServiceMock, 'fromLonLatExtent').withArgs([4, 5, 6, 7]).and.returnValue([0, 1, 2, 3]);
 
-		expect(instanceUnderTest.getDefaultGeodeticExtent()).toEqual([4, 5, 6, 7]);
+			expect(instanceUnderTest.getLocalProjectedSridExtent()).toEqual([0, 1, 2, 3]);
+		});
+
+		it('for 4326', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.getLocalProjectedSridExtent(4326)).toEqual([4, 5, 6, 7]);
+		});
+
+		it('throws an exception for an unsupported SRID', () => {
+			const instanceUnderTest = setup();
+
+			expect(() => {
+				instanceUnderTest.getLocalProjectedSridExtent(21);
+			}).toThrowError(/Unsupported SRID 21/);
+		});
 	});
 
 	it('provides a default srid for the view', () => {
@@ -89,10 +107,10 @@ describe('MapService', () => {
 		expect(instanceUnderTest.getSrid()).toBe(3857);
 	});
 
-	it('provides a srid for geodetic tasks', () => {
+	it('provides the SRID of the local projected system', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(9999);
+		expect(instanceUnderTest.getLocalProjectedSrid()).toBe(9999);
 	});
 
 	it('provides the min zoom level', () => {

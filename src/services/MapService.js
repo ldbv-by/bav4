@@ -28,7 +28,7 @@ export class MapService {
 	}
 
 	/**
-	 * Internal srid of the map
+	 * Returns the internal srid of the map (typically 3857)
 	 * @returns {number} srid
 	 */
 	getSrid() {
@@ -54,17 +54,37 @@ export class MapService {
 	}
 
 	/**
-	 * Default SRID for geodetic tasks.
+	 * Returns the SRID of the local projected system.
+	 * For the corresponding call {@link MapService#getLocalProjectedSridExtent}.
 	 * @returns {number} srid
 	 */
-	getDefaultGeodeticSrid() {
+	getLocalProjectedSrid() {
 		return this._definitions.defaultGeodeticSrid;
 	}
 
 	/**
-	 * Return the default extent of the map.
+	 * Returns the extent of the local projected system.
+	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
+	 * Within this extent all calculations can be done in the euclidean space.
+	 * Outside of this extent all calculations should be done geodesically.
+	 * @returns {Extent} extent
+	 * @throws Unsupported SRID error
+	 */
+	getLocalProjectedSridExtent(srid = this.getSrid()) {
+		switch (srid) {
+			case 3857:
+				return this._coordinateService.fromLonLatExtent(this._definitions.defaultGeodeticExtent);
+			case 4326:
+				return this._definitions.defaultGeodeticExtent;
+		}
+		throw new Error('Unsupported SRID ' + srid);
+	}
+
+	/**
+	 * Returns the default extent of the map.
 	 * @param {number}  srid
 	 * @returns {Extent} extent
+	 * @throws Unsupported SRID error
 	 */
 	getDefaultMapExtent(srid = this.getSrid()) {
 		switch (srid) {
@@ -77,15 +97,7 @@ export class MapService {
 	}
 
 	/**
-	 * Return the default extent for geodetic tasks.
-	 * @returns {Extent} extent
-	 */
-	getDefaultGeodeticExtent() {
-		return this._definitions.defaultGeodeticExtent;
-	}
-
-	/**
-	 * Return the minimal zoom level the map supports
+	 * Returns the minimal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
 	getMinZoomLevel() {
@@ -93,7 +105,7 @@ export class MapService {
 	}
 
 	/**
-	 * Return the maximal zoom level the map supports
+	 * Returns the maximal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
 	getMaxZoomLevel() {
