@@ -8,7 +8,10 @@
 		"includePattern": ".+\\.js(doc|x)?$",
 		"excludePattern": "(^|\\/|\\\\)_"
 	},
-	"plugins": ["plugins/markdown"],
+	"plugins": ["plugins/markdown", "jsdoc-plugin-typescript"],
+	"typescript": {
+		"moduleRoot": "src"
+	},
 	"templates": {
 		"cleverLinks": true,
 		"monospaceLinks": true
