@@ -180,13 +180,13 @@ export class PasswordCredentialPanel extends MvuElement {
 					${getHeaderContent(url)}
 				</div>
 				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
-					<input required="required" autofocus  placeholder='${translate(
+					<input autofocus  placeholder='${translate(
 						'auth_passwordCredentialPanel_credential_username'
 					)}' type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
 				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input required="required" placeholder='${translate('auth_passwordCredentialPanel_credential_password')}'  type=${
+					<input placeholder='${translate('auth_passwordCredentialPanel_credential_password')}'  type=${
 			showPassword ? 'text' : 'password'
 		} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
