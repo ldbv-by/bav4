@@ -68,6 +68,7 @@ export class MapService {
 	 * Within this extent all calculations can be done in the euclidean space.
 	 * Outside of this extent all calculations should be done geodesically.
 	 * Can be `null` when no extent is defined.
+	 * @param {number} srid the desired SRID of the returned extent
 	 * @returns {Extent|null} extent
 	 * @throws Unsupported SRID error
 	 */
@@ -83,7 +84,7 @@ export class MapService {
 
 	/**
 	 * Returns the default extent of the map.
-	 * @param {number}  srid
+	 * @param {number} srid the desired SRID of the returned extent
 	 * @returns {Extent} extent
 	 * @throws Unsupported SRID error
 	 */
