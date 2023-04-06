@@ -19,7 +19,7 @@
 
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
-	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.2) calc(var(--brand-lightness) / 1.6));
+	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
 	--brand-secondary-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 0.3) 30%);
 	--text1-dark: hsl(var(--brand-hue) 15% 95%);
 	--text2-dark: hsl(var(--brand-hue) 10% 80%);
@@ -81,6 +81,7 @@ body {
 	--primary-color: var(--brand-light);
 	--primary-color-lighter: var(--brand-light-lighter);
 	--secondary-color: var(--brand-secondary-light);
+	--tertiary-color: var(--brand-secondary-light);
 	/* background */
 	--primary-bg-color: var(--surface1-light);
 	--primary-bg-color-05: hsla(var(--brand-hue), 20%, 99%, 0.9);
@@ -99,6 +100,7 @@ body {
 	--primary-color: var(--brand-dark);
 	--primary-color-lighter: var(--brand-dark-lighter);
 	--secondary-color: var(--brand-secondary-dark);
+	--tertiary-color: var(--brand-dark-lighter);
 	/* background */
 	--primary-bg-color: var(--surface1-dark);
 	--primary-bg-color-05: rgba(0, 0, 0, 0.6);

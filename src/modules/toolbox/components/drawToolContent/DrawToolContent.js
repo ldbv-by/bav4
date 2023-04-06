@@ -351,16 +351,14 @@ export class DrawToolContent extends AbstractToolContent {
 									</i>
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
-									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${
-							style.text
-						} @input=${onChangeText}>
-										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
+									<div class="ba-form-element" title="${translate('toolbox_drawTool_style_text')}"">								
+										<input  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${style.text} @input=${onChangeText}>
+										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label>
+										<i class="bar"></i>
+										<label class="helper-label">Text in der Karte</label>
 									</div>
-									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
-										<textarea required="required"  id="style_desc" name="${translate(
-											'toolbox_drawTool_style_desc'
-										)}" .value=${description} @input=${onChangeDescription}></textarea>
+									<div  class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">						
+										<textarea   id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
 										<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 									</div>
 								</div>
@@ -414,16 +412,15 @@ export class DrawToolContent extends AbstractToolContent {
 									</i>
 								</div>
 								<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
-									<div class="fieldset" title="${translate('toolbox_drawTool_style_text')}"">								
-										<input  required="required"  type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${
+									<div class="ba-form-element" title="${translate('toolbox_drawTool_style_text')}"">								
+										<input   type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${
 							style.text
 						} @input=${onChangeText} @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
+										<label class="helper-label">Text in der Karte</label>
 									</div>
-									<div  class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">						
-										<textarea required="required"  id="style_desc" name="${translate(
-											'toolbox_drawTool_style_desc'
-										)}" .value=${description} @input=${onChangeDescription}></textarea>
+									<div  class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">						
+										<textarea   id="style_desc" name="${translate('toolbox_drawTool_style_desc')}" .value=${description} @input=${onChangeDescription}></textarea>
 										<label for="style_desc" class="control-label">${translate('toolbox_drawTool_style_desc')}</label><i class="bar"></i>
 									</div>
 								</div>
@@ -467,9 +464,8 @@ export class DrawToolContent extends AbstractToolContent {
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
-										<div class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">
+										<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
 											<textarea
-												required="required"
 												id="style_desc"
 												name="${translate('toolbox_drawTool_style_desc')}"
 												.value=${description}
@@ -512,9 +508,8 @@ export class DrawToolContent extends AbstractToolContent {
 										<i class="icon chevron ${classMap(iconCollapseInfoClass)}"> </i>
 									</div>
 									<div class="collapse-content ${classMap(bodyCollapseClassInfo)}">
-										<div class="fieldset" title="${translate('toolbox_drawTool_style_desc')}">
+										<div class="ba-form-element" title="${translate('toolbox_drawTool_style_desc')}">
 											<textarea
-												required="required"
 												id="style_desc"
 												name="${translate('toolbox_drawTool_style_desc')}"
 												.value=${description}
