@@ -24,13 +24,20 @@ const findInDir = (dir, fileList = []) => {
 };
 
 findInDir('./src').forEach((fp) => {
-	// path from src (excluded) + filename (without extension)
-	const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0]}`;
-
-	try {
+	const moduleNameIdentifier = '/**\n * @module';
+	if (process.env.DOC_CHECK /** just check */) {
 		const content = fs.readFileSync(fp, 'utf8');
-		// check if we already have a @module comment
-		if (content.startsWith('/**\n * @module')) {
+		// check if we already have a @module name
+		if (!content.startsWith(moduleNameIdentifier)) {
+			throw new Error(`${fp} does not contain a JSDoc module name. Please run "npm run doc:apply"`);
+		}
+	} else {
+		// path from src (excluded) + filename (without extension)
+		const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0]}`;
+
+		const content = fs.readFileSync(fp, 'utf8');
+		// check if we already have a @module name
+		if (content.startsWith(moduleNameIdentifier)) {
 			const regex = /\* @module.*/;
 			fs.writeFileSync(fp, content.replace(regex, `* @module ${moduleName}`));
 		} else {
@@ -39,7 +46,5 @@ findInDir('./src').forEach((fp) => {
  */\n`;
 			fs.writeFileSync(fp, template.concat(content));
 		}
-	} catch (e) {
-		console.error(e);
 	}
 });
