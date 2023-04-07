@@ -24,7 +24,8 @@ const findInDir = (dir, filter, fileList = []) => {
 };
 
 findInDir('./src').forEach((fp) => {
-	const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0].replace('.', '_')}`;
+	// path from src (excluded) + filename (without extension)
+	const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0]}`;
 
 	try {
 		const content = fs.readFileSync(fp, 'utf8');
