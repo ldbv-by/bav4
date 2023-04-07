@@ -3,7 +3,7 @@ const path = require('path');
 
 const excludesFiles = ['index.js', 'setupPage.js', 'embed.js', 'main.js', 'config.js'];
 
-const findInDir = (dir, filter, fileList = []) => {
+const findInDir = (dir, fileList = []) => {
 	const files = fs.readdirSync(dir);
 
 	files.forEach((file) => {
@@ -11,7 +11,7 @@ const findInDir = (dir, filter, fileList = []) => {
 		const fileStat = fs.lstatSync(filePath);
 
 		if (fileStat.isDirectory()) {
-			findInDir(filePath, filter, fileList);
+			findInDir(filePath, fileList);
 		}
 		fileList.push(filePath);
 	});
