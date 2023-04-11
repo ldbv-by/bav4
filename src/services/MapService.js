@@ -54,6 +54,8 @@ export class MapService {
 	/**
 	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
 	 * suitable SridDefinition regarding this coordinate.
+	 *
+	 * Note: The returned list is dependent on whether we are inside or outside the supported local projected system
 	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
 	 * @returns {Array<SridDefinition>} srids
 	 */
