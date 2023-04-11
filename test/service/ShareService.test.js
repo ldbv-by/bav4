@@ -16,7 +16,6 @@ describe('ShareService', () => {
 	};
 	const mapService = {
 		getSridDefinitionsForView: () => {},
-		getDefaultSridForView: () => {},
 		getSrid: () => {},
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
@@ -154,7 +153,6 @@ describe('ShareService', () => {
 					setup();
 					const instanceUnderTest = new ShareService();
 					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
-					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
@@ -176,7 +174,6 @@ describe('ShareService', () => {
 					setup();
 					const instanceUnderTest = new ShareService();
 					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
-					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
@@ -187,6 +184,25 @@ describe('ShareService', () => {
 					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
 					expect(extract[QueryParameters.CENTER]).toEqual(['44.123', '88.123']);
 					expect(extract[QueryParameters.ROTATION]).toBe(round(rotationValue, ShareService.ROTATION_VALUE_PRECISION));
+				});
+			});
+
+			describe('CoordinateRepresentatin has no SRID code', () => {
+				it('extracts the position state', () => {
+					const zoomLevel = 5.35;
+					const mapSrid = 3857;
+					setup();
+					const instanceUnderTest = new ShareService();
+					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: null, digits: 3 }]);
+					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
+					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, mapSrid).and.returnValue([11111.111111, 22222.222222]);
+					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
+
+					const extract = instanceUnderTest._extractPosition();
+
+					expect(extract[QueryParameters.ZOOM]).toBe(round(zoomLevel, ShareService.ZOOM_LEVEL_PRECISION));
+					expect(extract[QueryParameters.CENTER]).toEqual(['11111.111', '22222.222']);
+					expect(extract[QueryParameters.ROTATION]).toBeUndefined();
 				});
 			});
 		});

@@ -88,11 +88,9 @@ export class ShareService {
 			position: { rotation }
 		} = state;
 
-		const digits = mapService.getSridDefinitionsForView().find((df) => df.code === mapService.getDefaultSridForView()).digits;
+		const { digits, code } = mapService.getSridDefinitionsForView()[0];
 
-		const transformedCenter = coordinateService
-			.transform(center, mapService.getSrid(), mapService.getDefaultSridForView())
-			.map((n) => n.toFixed(digits));
+		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code ?? mapService.getSrid()).map((n) => n.toFixed(digits));
 
 		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
 		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);
