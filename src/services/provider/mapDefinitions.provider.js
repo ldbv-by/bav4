@@ -1,6 +1,7 @@
 /**
  * @module service/provider
  */
+import { CoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { $injector } from '../../injection';
 
 /**
@@ -31,10 +32,7 @@ export const getBvvMapDefinitions = () => {
 		localProjectedSrid: 25832,
 		localProjectedSridExtent: [5, -80, 14, 80],
 		localProjectedSridDefinitionsForView: getBvvSridDefinitionsForView,
-		globalSridDefinitionsForView: [
-			{ label: 'UTM', code: null /**global UTM */, digits: 0 },
-			{ label: 'WGS84', code: 4326, digits: 5 }
-		],
+		globalSridDefinitionsForView: [CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84, CoordinateRepresentations.MGRS],
 		defaultSridForView: 25832
 	};
 };

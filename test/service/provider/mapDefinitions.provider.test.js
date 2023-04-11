@@ -1,3 +1,4 @@
+import { CoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
 import { $injector } from '../../../src/injection';
 import { getBvvMapDefinitions } from '../../../src/services/provider/mapDefinitions.provider';
 
@@ -35,10 +36,7 @@ describe('MapDefinitions provider', () => {
 			expect(localProjectedSrid).toEqual(25832);
 			expect(minZoomLevel).toBe(0);
 			expect(maxZoomLevel).toBe(20);
-			expect(globalSridDefinitionsForView).toEqual([
-				{ label: 'UTM', code: null, digits: 0 },
-				{ label: 'WGS84', code: 4326, digits: 5 }
-			]);
+			expect(globalSridDefinitionsForView).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84, CoordinateRepresentations.MGRS]);
 		});
 
 		it('localProjectedSridDefinitionsForView provides coordinate dependent definitions for a 25832 coordinate', () => {
