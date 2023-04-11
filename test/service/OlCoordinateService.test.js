@@ -150,5 +150,15 @@ describe('OlCoordinateService', () => {
 				expect(buffededExtent).toEqual([0, 0, 30, 30]);
 			});
 		});
+
+		describe('containsCoordinate', () => {
+			it('checks if the passed coordinate is contained or on the edge of the extent', () => {
+				const extent = [10, 10, 20, 20];
+
+				expect(instanceUnderTest.containsCoordinate(extent, [10, 10])).toBeTrue();
+				expect(instanceUnderTest.containsCoordinate(extent, [15, 15])).toBeTrue();
+				expect(instanceUnderTest.containsCoordinate(extent, [9, 9])).toBeFalse();
+			});
+		});
 	});
 });
