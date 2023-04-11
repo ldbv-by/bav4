@@ -12,14 +12,6 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
  */
 
 /**
- * Metadata of a SRID.
- * @typedef {Object} SridDefinition
- * @property {string} label label
- * @property {number} [code] the SRID or `null` which means consumer should use the particular suitable UTM zone
- * @property {number} digits decimal places for rounding
- */
-
-/**
  * Service for managing map related meta data.
  * @class
  * @author taulinger
@@ -53,11 +45,11 @@ export class MapService {
 
 	/**
 	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
-	 * suitable SridDefinition regarding this coordinate.
+	 * suitable CoordinateRepresentation regarding this coordinate.
 	 *
-	 * Note: The returned list is dependent on whether we are inside or outside the supported local projected system
+	 * Note: The returned list is dependent on whether the provided corrdinate is inside or outside the supported local projected system.
 	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
-	 * @returns {Array<SridDefinition>} srids
+	 * @returns {Array<CoordinateRepresentation>} srids
 	 */
 	getSridDefinitionsForView(coordinateInMapProjection) {
 		// we have no projected extent defined or no coordinate is provided
