@@ -12,6 +12,14 @@ import { getBvvMapDefinitions } from './provider/mapDefinitions.provider';
  */
 
 /**
+ * Metadata of a SRID.
+ * @typedef {Object} SridDefinition
+ * @property {string} label label
+ * @property {number} [code] the SRID or `null` which means consumer should use the particular suitable UTM zone
+ * @property {number} digits decimal places for rounding
+ */
+
+/**
  * Service for managing map related meta data.
  * @class
  * @author taulinger
@@ -50,20 +58,29 @@ export class MapService {
 	 * @returns {Array<SridDefinition>} srids
 	 */
 	getSridDefinitionsForView(coordinateInMapProjection) {
-		return this._definitions.sridDefinitionsForView(coordinateInMapProjection);
+		// we have no projected extent defined or no coordinate is provided
+		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
+			return this._definitions.globalSridDefinitionsForView;
+		}
+		// we are outside the projected extent
+		else if (!this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), coordinateInMapProjection)) {
+			return this._definitions.globalSridDefinitionsForView;
+		}
+
+		return this._definitions.localProjectedSridDefinitionsForView(coordinateInMapProjection);
 	}
 
 	/**
-	 * Returns the SRID of the local projected system.
+	 * Returns the SRID of the supported local projected system.
 	 * For the corresponding call {@link MapService#getLocalProjectedSridExtent}.
-	 * @returns {number} srid
+	 * @returns {number|null} SRID ir `null` when no local projected SRID is supported
 	 */
 	getLocalProjectedSrid() {
 		return this._definitions.localProjectedSrid;
 	}
 
 	/**
-	 * Returns the extent of the local projected system.
+	 * Returns the extent of the supported local projected system.
 	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
 	 * Within this extent all calculations can be done in the euclidean space.
 	 * Outside of this extent all calculations should be done geodesically.
