@@ -36,14 +36,6 @@ export class MapService {
 	}
 
 	/**
-	 * Default SRID suitable for the UI.
-	 * @returns {number} srid
-	 */
-	getDefaultSridForView() {
-		return this._definitions.defaultSridForView;
-	}
-
-	/**
 	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
 	 * suitable CoordinateRepresentation regarding this coordinate.
 	 * The first entry of the list should be considered as the current "default" CoordinateRepresentation.

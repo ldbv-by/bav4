@@ -85,12 +85,6 @@ describe('MapService', () => {
 		});
 	});
 
-	it('provides a default srid for the view', () => {
-		const instanceUnderTest = setup();
-
-		expect(instanceUnderTest.getDefaultSridForView()).toBe(4326);
-	});
-
 	describe('Returns a list with all SridDefinition suitable for the UI', () => {
 		it('provides an array of global SridDefintions when called without argument', () => {
 			const instanceUnderTest = setup();
