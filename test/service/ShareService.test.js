@@ -16,6 +16,7 @@ describe('ShareService', () => {
 	};
 	const mapService = {
 		getSridDefinitionsForView: () => {},
+		getDefaultSridForView: () => {},
 		getSrid: () => {},
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
@@ -153,6 +154,7 @@ describe('ShareService', () => {
 					setup();
 					const instanceUnderTest = new ShareService();
 					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
@@ -174,6 +176,7 @@ describe('ShareService', () => {
 					setup();
 					const instanceUnderTest = new ShareService();
 					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getDefaultSridForView').and.returnValue(viewSrid);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });

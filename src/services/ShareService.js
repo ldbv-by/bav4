@@ -88,7 +88,7 @@ export class ShareService {
 			position: { rotation }
 		} = state;
 
-		const digits = mapService.getSridDefinitionsForView()[0].digits;
+		const digits = mapService.getSridDefinitionsForView().find((df) => df.code === mapService.getDefaultSridForView()).digits;
 
 		const transformedCenter = coordinateService
 			.transform(center, mapService.getSrid(), mapService.getDefaultSridForView())
