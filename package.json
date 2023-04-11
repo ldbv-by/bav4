@@ -17,7 +17,7 @@
 		"copy-webpack-plugin": "11.0.0",
 		"css-loader": "6.7.3",
 		"dotenv-webpack": "8.0.1",
-		"es-check": "7.1.0",
+		"es-check": "7.1.1",
 		"eslint": "8.37.0",
 		"eslint-plugin-import": "2.27.5",
 		"eslint-plugin-promise": "6.1.1",
