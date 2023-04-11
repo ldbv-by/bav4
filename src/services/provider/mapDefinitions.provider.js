@@ -12,7 +12,7 @@ import { $injector } from '../../injection';
  * @property {number} srid the internal SRID of the map
  * @property {number} localProjectedSrid the SRID of the supported local projected system
  * @property {Extent} localProjectedSridExtent the extent of the local supported projected system
- * @property {function(Coordinate):(Array<SridDefinition>)} localProjectedSridDefinitionsForView function which can take a coordinate and returns an array of SridDefinitions
+ * @property {function(Coordinate):(Array<CoordinateRepresentation>)} localProjectedSridDefinitionsForView function which can take a coordinate and returns an array of SridDefinitions
  * @property {Array<SridDefinition>} globalSridDefinitionsForView array of global SridDefinitions
  * @property {number} defaultSridForView default SRID in which coordinates should be displayed within the UI
  */
