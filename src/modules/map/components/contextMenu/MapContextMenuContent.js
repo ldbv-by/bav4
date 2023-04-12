@@ -110,7 +110,7 @@ export class MapContextMenuContent extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		if (coordinate) {
-			const sridDefinitions = this._mapService.getSridDefinitionsForView(coordinate);
+			const sridDefinitions = this._mapService.getCoordinateRepresentations(coordinate);
 			const stringifiedCoords = sridDefinitions.map((definition) => {
 				const { label, code } = definition;
 				const transformedCoordinate = this._coordinateService.transform(coordinate, this._mapService.getSrid(), code);
