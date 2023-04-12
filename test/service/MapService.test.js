@@ -20,9 +20,8 @@ describe('MapService', () => {
 				defaultExtent: [0, 1, 2, 3],
 				localProjectedSridExtent: [4, 5, 6, 7],
 				srid: 3857,
-				defaultSridForView: 4326,
-				localProjectedSridDefinitionsForView: () => [{ label: 'Local projected SRID', code: 9999 }],
-				globalSridDefinitionsForView: [{ label: 'Global SRID', code: 1111 }],
+				localProjectedCoordinateRepresentations: () => [{ label: 'Local projected SRID', code: 9999 }],
+				globalCoordinateRepresentations: [{ label: 'Global SRID', code: 1111 }],
 				localProjectedSrid: 9999,
 				minZoomLevel: 5,
 				maxZoomLevel: 21

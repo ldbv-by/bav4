@@ -47,14 +47,14 @@ export class MapService {
 	getSridDefinitionsForView(coordinateInMapProjection) {
 		// we have no projected extent defined or no coordinate is provided
 		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
-			return this._definitions.globalSridDefinitionsForView;
+			return this._definitions.globalCoordinateRepresentations;
 		}
 		// we are outside the projected extent
 		else if (!this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), coordinateInMapProjection)) {
-			return this._definitions.globalSridDefinitionsForView;
+			return this._definitions.globalCoordinateRepresentations;
 		}
 
-		return this._definitions.localProjectedSridDefinitionsForView(coordinateInMapProjection);
+		return this._definitions.localProjectedCoordinateRepresentations(coordinateInMapProjection);
 	}
 
 	/**
