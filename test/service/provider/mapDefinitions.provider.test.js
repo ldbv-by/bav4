@@ -28,7 +28,7 @@ describe('MapDefinitions provider', () => {
 			expect(localProjectedSridExtent).toEqual([5, -80, 14, 80]);
 			expect(srid).toBe(3857);
 			expect(localProjectedCoordinateRepresentations()).toEqual([
-				{ label: 'UTM', code: 25832, digits: 0, global: false },
+				{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
 				CoordinateRepresentations.WGS84
 			]);
 			expect(localProjectedSrid).toEqual(25832);
@@ -48,7 +48,7 @@ describe('MapDefinitions provider', () => {
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In32)).toEqual([
-					{ label: 'UTM', code: 25832, digits: 0, global: false },
+					{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
 					CoordinateRepresentations.WGS84
 				]);
 			});
@@ -59,8 +59,8 @@ describe('MapDefinitions provider', () => {
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
-					{ label: 'UTM', code: 25833, digits: 0, global: false },
-					{ label: 'UTM', code: 25832, digits: 0, global: false },
+					{ label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' },
+					{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
 					CoordinateRepresentations.WGS84
 				]);
 			});

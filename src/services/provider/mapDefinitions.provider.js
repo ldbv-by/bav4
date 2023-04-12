@@ -37,7 +37,7 @@ export const getBvvMapDefinitions = () => {
 };
 
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
-	const definitions = [{ label: 'UTM', code: 25832, digits: 0, global: false }, CoordinateRepresentations.WGS84];
+	const definitions = [{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' }, CoordinateRepresentations.WGS84];
 	if (coordinateInMapProjection) {
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 		//BVV uses 3857
@@ -46,7 +46,7 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 		if (coord4326[0] > 18 || coord4326[0] < 6) {
 			return [definitions.pop()];
 		} else if (coord4326[0] < 18 && coord4326[0] >= 12) {
-			definitions.splice(0, 0, { label: 'UTM', code: 25833, digits: 0, global: false });
+			definitions.splice(0, 0, { label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' });
 		}
 	}
 	return definitions;
