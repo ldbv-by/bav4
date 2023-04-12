@@ -114,16 +114,6 @@ export class PasswordCredentialPanel extends MvuElement {
 		);
 	}
 
-	/**
-	 * @override
-	 */
-	onAfterRender(firsttime) {
-		if (firsttime) {
-			const credential_username = this.shadowRoot.getElementById('credential_username');
-			credential_username.focus();
-		}
-	}
-
 	update(type, data, model) {
 		switch (type) {
 			case Update_URL:
@@ -185,20 +175,23 @@ export class PasswordCredentialPanel extends MvuElement {
 		return html`
 		<style>${css}</style>
 		<div class='credential_container ${getOrientationClass()}'>
-			<div class='credential_header'>
-            	${getHeaderContent(url)}
-            </div>
-            <div class='credential_form'>
-				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
-					<input required="required"  type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
+		<div class='credential_form'>
+				<div class='credential_header'>
+					${getHeaderContent(url)}
+				</div>
+				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_username')}">								
+					<input autofocus  placeholder='${translate(
+						'auth_passwordCredentialPanel_credential_username'
+					)}' type="text" id="credential_username"  @input=${onChangeUserName} @keydown=${onEnterAuthenticate} >
 					<label for="credential_username" class="control-label">${translate('auth_passwordCredentialPanel_credential_username')}</label><i class="bar"></i>
 				</div>
-				<div class="fieldset" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
-					<input required="required"   type=${
-						showPassword ? 'text' : 'password'
-					} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
+				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
+					<input placeholder='${translate('auth_passwordCredentialPanel_credential_password')}'  type=${
+			showPassword ? 'text' : 'password'
+		} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
-				</div><i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
+					<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
+				</div>
 			</div>
 			<div class='credential_footer'>
 			${this._getSubmitOrSpinner(model)}
@@ -227,8 +220,8 @@ export class PasswordCredentialPanel extends MvuElement {
 				id="authenticating-button"
 				class="credential_footer__button"
 				.disabled=${true}
-				.label=${html`<ba-spinner .label=${translate('auth_passwordCredentialPanel_authenticate')}></ba-spinner>`}
-				.type=${'primary'}
+				.label=${translate('auth_passwordCredentialPanel_authenticate')}
+				.type=${'loading'}
 			></ba-button>`;
 		};
 		return authenticating ? getSpinnerButton() : getSubmitButton();

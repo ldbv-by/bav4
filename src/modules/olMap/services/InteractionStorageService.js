@@ -7,6 +7,7 @@ const Temp_Session_Id = 'temp_session_id';
  * Facade for FileStorageService and StoreService,
  * to provide interaction-based LayerHandlers a simplified access for storage-functionality
  *
+ * Todo: Let's move the synchronization of the shared slice-of-state to a plugin (e.g. SharePlugin)
  * @class
  * @author thiloSchlemmer
  */
@@ -93,6 +94,7 @@ export class InteractionStorageService {
 				try {
 					const fileSaveResult = await fileStorageService.save(shared.fileSaveResult.adminId, content, type);
 					setSharedFileSaveResult(fileSaveResult);
+					return fileSaveResult;
 				} catch (error) {
 					console.warn('Could not store content:', error);
 				}
@@ -100,6 +102,7 @@ export class InteractionStorageService {
 				try {
 					const fileSaveResult = await fileStorageService.save(null, content, type);
 					setSharedFileSaveResult(fileSaveResult);
+					return fileSaveResult;
 				} catch (error) {
 					console.warn('Could not store content initially:', error);
 					setSharedFileSaveResult(null);
@@ -108,5 +111,6 @@ export class InteractionStorageService {
 		} else {
 			setSharedFileSaveResult(null);
 		}
+		return null;
 	}
 }

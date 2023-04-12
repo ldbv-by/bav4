@@ -56,13 +56,16 @@ describe('PasswordCredentialPanel', () => {
 	});
 
 	describe('when panel is rendered', () => {
-		describe('the first time', () => {
-			it('displays the username-input with focus', async () => {
-				const element = await setup();
-				const inputUsername = element.shadowRoot.querySelector('#credential_username');
+		it('shows two properly configured input fields', async () => {
+			const element = await setup();
 
-				expect(element.shadowRoot.activeElement).toBe(inputUsername);
-			});
+			const inputUsername = element.shadowRoot.querySelector('#credential_username');
+			const inputPassword = element.shadowRoot.querySelector('#credential_password');
+
+			expect(inputUsername.hasAttribute('autofocus')).toBeTrue();
+			expect(inputUsername.getAttribute('type')).toBe('text');
+
+			expect(inputPassword.getAttribute('type')).toBe('password');
 		});
 
 		it('displays the optional url', async () => {

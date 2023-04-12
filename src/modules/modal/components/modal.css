@@ -28,7 +28,7 @@
 	background-color: var(--primary-bg-color);
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 	z-index: calc(var(--z-modal) + 10);
-	min-width: 38.2vw;
+	min-width: 36em;
 	margin: auto;
 }
 

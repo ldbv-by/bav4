@@ -231,178 +231,220 @@ export class ShowCase extends BaElement {
 		];
 
 		return html`
-		<style>
-		${css}
-		</style>		
-		<div>
-			<div class='divider'>
-				<p>Here we present components in random order that:</p>
-				<ul>
-					<li>are <i>common and reusable</i> components or <i>functional behaviors</i>, who can be added to or extend other components</li>
-					<li><i>feature</i> components, which have already been implemented, but have not yet been given the most suitable place...</li>
-				</ul>
-			</div>			
-			
-			<h2> Specific components</h2>
-
-			<div class='section' >
-			<h3> Theme-Toggle</h3>		
-			<div class='example'>
-				<div class='theme-toggle' style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
-			</div>	
-
-			<h3>Feedback</h3>
-			<div class='example row'>
-			<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
-			</div>
-
-			<h3>Profile</h3>
-			<div class='example row'>
-			<ba-button id='button1' .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
-			</div>
-						
-			<h3>Measure Distance</h3>
-			<div class='example row'>
-				<ba-button id='buttonActivateMeasureDistance' .label=${'Measure Distance'} .type=${'primary'} @click=${activateMeasurementTool}></ba-button>	
-				<ba-button id='buttonDeactivateMeasureDistance' .label=${'Deactivate Measure Distance'} .type=${'secondary'} @click=${deactivateMeasurementTool}></ba-button>	
-			</div>
-
-			<h3>BaseLayer Switcher</h3>
-			<div class='example'>
-				<ba-base-layer-switcher></ba-base-layer-switcher>
-			</div>
-
-			<h3>Url of State</h3>
-			<div class='example row'>
-				<ba-button id='copyurlbutton' .label=${'Copy Url'} .type=${'primary'} @click=${onGenerateUrlButtonClick}></ba-button>	
-				<input type='text' readonly='readonly' value=${this._url}></input>	
-				<input type='text' readonly='readonly' value=${this._shortUrl}></input>	
-			</div>
-
-			<h3>Layer Manager</h3>
-			<div class='example'>
-				<ba-layer-manager></ba-layer-manager>
-			</div>
-
-			<h3>Notifications</h3>
-			<div class='example row'>									
-				<ba-button id='notification0' .label=${'Info Notification'} .type=${'primary'} @click=${onClickEmitInfo}></ba-button>
-				<ba-button id='notification1' .label=${'Warn Notification'} .type=${'primary'} @click=${onClickEmitWarn}></ba-button>
-				<ba-button id='notification2' .label=${'Error Notification'} .type=${'primary'} @click=${onClickEmitError}></ba-button>
-				<ba-button id='notification3' .label=${'Open Bottom Sheet'} .type=${'primary'} @click=${onClickOpenBottomSheet}></ba-button>			
-			</div>	
-
-			</div>	
-
-			<h2>Common components or functional behaviors</h2>
-			
-			<div class='section' >
-
-			<h3>ba-buttons</h3>
-			<div class='example'>		
-				<div class='row'>		
-				<ba-button id='button0' .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
-				<ba-button id='button1' .label=${'secondary style'} @click=${onClick1}></ba-button>
-				<ba-button id='button2' .label=${'disabled'} .type=${'primary'} .disabled=${true} ></ba-button>
-				<ba-button id='button3' .label=${'disabled'} .disabled=${true}></ba-button>
-				<ba-button id='button3' .label=${'loading style'} .type=${'loading'}></ba-button>
+			<style>
+				${css}
+			</style>
+			<div>
+				<div class="divider">
+					<p>Here we present components in random order that:</p>
+					<ul>
+						<li>are <i>common and reusable</i> components or <i>functional behaviors</i>, who can be added to or extend other components</li>
+						<li><i>feature</i> components, which have already been implemented, but have not yet been given the most suitable place...</li>
+					</ul>
 				</div>
-				<div class='row'style='margin-top:2em'>		
-				<ba-button id='button0' .label=${'primary style'} .icon=${arrowUpSvg} .type=${'primary'} @click=${onClick0}></ba-button>
-				<ba-button id='button1' .label=${'secondary style'} .icon=${arrowUpSvg} @click=${onClick1}></ba-button>
-				<ba-button id='button2' .label=${'disabled'} .icon=${arrowUpSvg} .type=${'primary'} .disabled=${true} ></ba-button>
-				<ba-button id='button3' .label=${'disabled'} .icon=${arrowUpSvg} .disabled=${true}></ba-button>
-				<ba-button id='button3' .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
+
+				<h2>Specific components</h2>
+
+				<div class="section">
+					<h3>Theme-Toggle</h3>
+					<div class="example">
+						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
+					</div>
+
+					<h3>Feedback</h3>
+					<div class="example row">
+						<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
+					</div>
+
+					<h3>Profile</h3>
+					<div class="example row">
+						<ba-button id="button1" .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
+					</div>
+
+					<h3>Measure Distance</h3>
+					<div class="example row">
+						<ba-button
+							id="buttonActivateMeasureDistance"
+							.label=${'Measure Distance'}
+							.type=${'primary'}
+							@click=${activateMeasurementTool}
+						></ba-button>
+						<ba-button
+							id="buttonDeactivateMeasureDistance"
+							.label=${'Deactivate Measure Distance'}
+							.type=${'secondary'}
+							@click=${deactivateMeasurementTool}
+						></ba-button>
+					</div>
+
+					<h3>BaseLayer Switcher</h3>
+					<div class="example">
+						<ba-base-layer-switcher></ba-base-layer-switcher>
+					</div>
+
+					<h3>Url of State</h3>
+					<div class="example row">
+						<ba-button id="copyurlbutton" .label=${'Copy Url'} .type=${'primary'} @click=${onGenerateUrlButtonClick}></ba-button>
+						<input type="text" readonly="readonly" value=${this._url} />
+						<input type="text" readonly="readonly" value=${this._shortUrl} />
+					</div>
+
+					<h3>Layer Manager</h3>
+					<div class="example">
+						<ba-layer-manager></ba-layer-manager>
+					</div>
+
+					<h3>Notifications</h3>
+					<div class="example row">
+						<ba-button id="notification0" .label=${'Info Notification'} .type=${'primary'} @click=${onClickEmitInfo}></ba-button>
+						<ba-button id="notification1" .label=${'Warn Notification'} .type=${'primary'} @click=${onClickEmitWarn}></ba-button>
+						<ba-button id="notification2" .label=${'Error Notification'} .type=${'primary'} @click=${onClickEmitError}></ba-button>
+						<ba-button id="notification3" .label=${'Open Bottom Sheet'} .type=${'primary'} @click=${onClickOpenBottomSheet}></ba-button>
+					</div>
+				</div>
+
+				<h2>Common components or functional behaviors</h2>
+
+				<div class="section">
+					<h3>ba-buttons</h3>
+					<div class="example">
+						<div class="row">
+							<ba-button id="button0" .label=${'primary style'} .type=${'primary'} @click=${onClick0}></ba-button>
+							<ba-button id="button1" .label=${'secondary style'} @click=${onClick1}></ba-button>
+							<ba-button id="button2" .label=${'disabled'} .type=${'primary'} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'disabled'} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'loading style'} .type=${'loading'}></ba-button>
+						</div>
+						<div class="row" style="margin-top:2em">
+							<ba-button id="button0" .label=${'primary style'} .icon=${arrowUpSvg} .type=${'primary'} @click=${onClick0}></ba-button>
+							<ba-button id="button1" .label=${'secondary style'} .icon=${arrowUpSvg} @click=${onClick1}></ba-button>
+							<ba-button id="button2" .label=${'disabled'} .icon=${arrowUpSvg} .type=${'primary'} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'disabled'} .icon=${arrowUpSvg} .disabled=${true}></ba-button>
+							<ba-button id="button3" .label=${'loading style'} .icon=${arrowUpSvg} .type=${'loading'}></ba-button>
+						</div>
+					</div>
+
+					<h3>ba-icons</h3>
+					<div class="example icons">
+						<ba-icon .icon="${arrowUpSvg}" .title=${'some'} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${arrowUpSvg}" .disabled=${true} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${arrowUpSvg}" .size=${1} @click=${onClick0}></ba-icon>
+						<ba-icon .icon="${arrowUpSvg}" .size=${2.5} @click=${onClick0}></ba-icon>
+					</div>
+
+					<h3>Overflow-Menu</h3>
+					<div class="example menu">
+						<div><ba-overflow-menu .items=${menuitems}></ba-overflow-menu>Type:(Default)</div>
+						<div><ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems}></ba-overflow-menu>Type:Meatball</div>
+						<div><ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>
+					</div>
+
+					<h3>Checkbox</h3>
+					<div class="example row">
+						<ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox>
+						<ba-checkbox .checked=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox>
+						<ba-checkbox .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox>
+						<ba-checkbox .checked=${true} .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}
+							><span>checkbox checked disabled</span></ba-checkbox
+						>
+					</div>
+
+					<h3>input</h3>
+					<div class="example row">
+						<input placeholder="input" />
+						<input value="input readonly" readonly />
+					</div>
+
+					<h3>textarea</h3>
+					<div class="example row">
+						<textarea placeholder="textarea"></textarea>
+						<textarea readonly> textarea readonly</textarea>
+					</div>
+
+					<h3>select</h3>
+					<div class="example row">
+						<select name="pets">
+							<option>Value 1</option>
+							<option>Value 2</option>
+						</select>
+						<select disabled>
+							<option>Value 1</option>
+							<option>Value 2</option>
+						</select>
+					</div>
+
+					<h3>ba-form-element</h3>
+					<div class="example row">
+						<div class=" collum" style="width:40em;">
+							<div class="ba-form-element">
+								<input type="text" placeholder="Choose category" id="textarea-foo" />
+								<label for="textarea-foo" class="control-label">Choose category</label>
+								<i class="bar"></i>
+								<i class="icon clear"></i>
+							</div>
+							<div class="ba-form-element">
+								<textarea type="text" placeholder="Description"></textarea>
+								<label class="control-label">Description</label>
+								<i class="bar"></i>
+								<label class="helper-label">Helper text</label>
+							</div>
+							<div class="ba-form-element">
+								<input type="text" id="textarea-foo" placeholder="Test" pattern="[a-z]+" />
+								<label for="textarea-foo" class="control-label">Test</label>
+								<i class="bar"></i>
+								<i class="icon error"></i>
+								<label class="helper-label">Helper text</label>
+							</div>
+							<div class="ba-form-element">
+								<input name="email" type="email" placeholder="Your email address" />
+								<label for="tttttttt" class="control-label">Your email address</label>
+								<i class="bar"></i>
+								<i class="icon error"></i>
+								<label class="helper-label">Helper text</label>
+								<label class="error-label">Error text</label>
+							</div>
+							<div class="ba-form-element error">
+								<input type="mail" id="textarea-foo" placeholder="with label" />
+								<label for="textarea-foo" class="control-label">with label</label>
+								<i class="bar"></i>
+								<label class="helper-label error-label">Helper text error</label>
+							</div>
+							<div class="ba-form-element">
+								<select select required>
+									<option value=""></option>
+									<option value="1">Value 1</option>
+									<option value="2">Value 2</option>
+								</select>
+								<label for="select" class="control-label">with label</label><i class="bar"></i>
+							</div>
+						</div>
+					</div>
+
+					<h3>slider</h3>
+					<div class="example row">
+						<input type="range" />
+					</div>
+
+					<h3>Toggle-Button</h3>
+					<div class="example row">
+						<div>Toggle me!</div>
+						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+					</div>
+
+					<h3>Loading hint</h3>
+					<div class="example row">
+						<ba-spinner></ba-spinner>
+						<ba-spinner .label=${'Waiting'}></ba-spinner>
+					</div>
+
+					<h3>Credentials</h3>
+					<div class="example row">
+						<ba-button id="button0" .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
+						<div>Hint: Demo Credentials are foo/bar</div>
+					</div>
 				</div>
 			</div>
-
-			<h3>ba-icons</h3>
-			<div class='example icons'>		
-				<ba-icon .icon='${arrowUpSvg}' .title=${'some'} @click=${onClick0}></ba-icon>
-				<ba-icon .icon='${arrowUpSvg}' .disabled=${true} @click=${onClick0}></ba-icon>
-				<ba-icon .icon='${arrowUpSvg}' .size=${1} @click=${onClick0}></ba-icon>
-				<ba-icon .icon='${arrowUpSvg}' .size=${2.5} @click=${onClick0}></ba-icon>		
-			</div>
-
-			<h3>Overflow-Menu</h3>
-			<div class='example menu'>		
-				<div><ba-overflow-menu .items=${menuitems} ></ba-overflow-menu>Type:(Default)</div>
-				<div><ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems} ></ba-overflow-menu>Type:Meatball</div>
-				<div><ba-overflow-menu .type=${MenuTypes.KEBAB} .items=${menuitems}></ba-overflow-menu>Type:Kebab</div>				
-			</div>
-
-			<h3>Checkbox</h3>
-			<div class='example row'>									
-				<ba-checkbox .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox</span></ba-checkbox>
-				<ba-checkbox .checked=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked</span></ba-checkbox>
-				<ba-checkbox .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox disabled</span></ba-checkbox>
-				<ba-checkbox .checked=${true} .disabled=${true} .title=${'checkbox title'} @toggle=${onToggle}><span>checkbox checked disabled</span></ba-checkbox>
-			</div>
-									
-			<h3> input</h3>
-			<div class='example row'>		
-				<input placeholder='input' ></input>		
-				<input value='input readonly' readonly></input>
-				<div  class="fieldset">						
-					<input type="text"  required="required"  id="textarea-foo" ></input>
-					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
-				</div>
-			</div>
-							
-			<h3> textarea</h3>
-				<div class='example row'>										
-				<textarea placeholder='textarea'></textarea>		
-				<textarea readonly> textarea readonly</textarea>		
-				<div  class="fieldset">						
-					<textarea  required="required"  id="textarea-foo" ></textarea>
-					<label for="textarea-foo" class="control-label">with label</label><i class="bar"></i>
-				</div>	
-			</div>
-
-			<h3> select</h3>
-			<div class='example row'>
-				<select name="pets">
-					<option>Value 1</option>
-					<option>Value 2</option>
-				</select>
-				<select  disabled >
-					
-					<option>Value 1</option>
-					<option>Value 2</option>
-				</select>
-				<div class="fieldset">
-					<select>
-						<option>Value 1</option>
-						<option>Value 2</option>
-					</select>
-					<label for="select" class="control-label">with label</label><i class="bar"></i>
-			 	 </div>
-			</div>
-
-			<h3> slider</h3>
-			<div class='example row'>
-				<input type='range'></input>
-			</div>
-
-			<h3>Toggle-Button</h3>
-			<div class='example row'>		
-				<div>Toggle me!</div><ba-toggle id='toggle' .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-			</div>
-			
-			<h3>Loading hint</h3>
-			<div class='example row'>									
-			<ba-spinner></ba-spinner>
-			<ba-spinner .label=${'Waiting'}></ba-spinner>				
-			</div>
-
-			<h3>Credentials</h3>
-			<div class='example row'>
-			<ba-button id='button0' .label=${'Authenticate by password'} .type=${'primary'} @click=${onClickAuthenticate}></ba-button>
-			<div>Hint: Demo Credentials are foo/bar</div>
-			</div>
-
-			</div>	
-		</div > `;
+		`;
 	}
 
 	static get tag() {

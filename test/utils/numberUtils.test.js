@@ -47,15 +47,15 @@ describe('Unit test functions from numberUtils.js', () => {
 	});
 
 	describe('toLocaleString', () => {
+		const configService = {
+			getValue: () => {}
+		};
+
+		beforeAll(() => {
+			$injector.registerSingleton('ConfigService', configService);
+		});
+
 		describe('DI is available', () => {
-			const configService = {
-				getValue: () => {}
-			};
-
-			beforeAll(() => {
-				$injector.registerSingleton('ConfigService', configService);
-			});
-
 			it('formates a number according to the current "DEFAULT_LANG" property', () => {
 				spyOn(configService, 'getValue').withArgs('DEFAULT_LANG').and.returnValue('de');
 				expect(toLocaleString(5.5)).toBe('5,5');
@@ -69,6 +69,7 @@ describe('Unit test functions from numberUtils.js', () => {
 
 		describe('DI is NOT available', () => {
 			it('formates a number according to the current "DEFAULT_LANG" property', () => {
+				spyOn(configService, 'getValue').and.throwError();
 				expect(toLocaleString(5.5)).toBe('5.5');
 			});
 

@@ -136,85 +136,193 @@ input[type='range']:focus {
 	--thumb-highlight-size: 0.3em;
 }
 
-/* label */
-.fieldset .control-label {
+.ba-form-element {
+	position: relative;
+	margin: 1em 0 1.5em 0;
+	width: 100%;
+}
+.ba-form-element:last-of-type {
+	margin: 1em 0 0em 0;
+}
+.ba-form-element .control-label {
+	font-size: 0.8rem;
+	top: 0.4em;
+	left: 1.2em;
 	position: absolute;
-	top: 0.25rem;
+	pointer-events: none;
+	color: var(--text1);
+	z-index: 1;
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+}
+.ba-form-element textarea::placeholder,
+.ba-form-element input::placeholder {
+	color: transparent;
+}
+.error-label {
+	display: none;
+}
+.ba-form-element .helper-label,
+.ba-form-element .error-label {
+	position: relative;
+	font-size: 0.8rem;
+	left: 0.9em;
+	top: 0;
 	pointer-events: none;
 	padding-left: 0.125rem;
 	z-index: 1;
-	color: var(--text2);
-	font-size: 1rem;
+	color: var(--text1);
 	font-weight: normal;
-	-webkit-transition: all 0.28s ease;
-	transition: all 0.28s ease;
+	/* bottom: -1.2rem; */
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-.fieldset .bar {
+.ba-form-element .bar {
 	position: relative;
-	border-bottom: 1px solid var(--text2);
 	display: block;
+	border-bottom: 0.2em solid var(--secondary-color);
 }
-.fieldset .bar::before {
+.ba-form-element .bar::before {
 	content: '';
-	height: 0.125rem;
+	height: 0.2em;
 	width: 0;
 	left: 0%;
-	bottom: -0.0625rem;
+	bottom: -0.2em;
 	position: absolute;
-	background: #337ab7;
 	background: var(--primary-color);
-	-webkit-transition: left 0.28s ease, width 0.28s ease;
-	transition: left 0.28s ease, width 0.28s ease;
 	z-index: 2;
+	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
+		width var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
+		width var(--animation-duration-medium-open) var(--animation-easing-linea);
 }
-.fieldset input,
-.fieldset textarea {
+.ba-form-element input,
+.ba-form-element textarea {
 	display: block;
-	background: none;
-	padding: 0.125rem 0.125rem 0.0625rem;
+	padding: 0 1em 0.6em;
 	font-size: 1rem;
 	border-width: 0;
 	border-color: transparent;
 	line-height: 1.9;
 	width: 100%;
-	color: transparent;
 	color: var(--text1);
 	box-shadow: none;
+	background: var(--header-background-color);
+	border-top: 1.5em solid var(--header-background-color);
 }
-
-.fieldset select {
+.ba-form-element select {
 	border-bottom: 0;
+	background: var(--header-background-color);
+	font-size: 1.1rem;
+	padding: 1.5em 1em 0.6em;
+	box-shadow: none;
+	background-image: url('./assets/caret-down-fill.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - 1em) center;
+	background-size: 1em;
+}
+.ba-form-element select:focus {
+	background-image: url('./assets/caret-up-fill.svg');
 }
 
-.fieldset select ~ .control-label,
-.fieldset input:focus ~ .control-label,
-.fieldset input:valid ~ .control-label,
-.fieldset textarea:focus ~ .control-label,
-.fieldset textarea:valid ~ .control-label {
-	font-size: 0.8rem;
-	color: gray;
-	top: -1rem;
-	left: 0;
-}
-.fieldset select:focus,
-.fieldset input:focus,
-.fieldset textarea:focus {
-	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
-}
-.fieldset select:focus ~ .control-label,
-.fieldset input:focus ~ .control-label,
-.fieldset textarea:focus ~ .control-label {
+.ba-form-element select:invalid ~ .control-label,
+.ba-form-element input:placeholder-shown ~ .control-label,
+.ba-form-element textarea:placeholder-shown ~ .control-label {
+	font-size: 1.1rem;
+	top: 1.2em;
+	left: 0.9em;
 	color: var(--text2);
 }
-.fieldset select:focus ~ .bar::before,
-.fieldset input:focus ~ .bar::before,
-.fieldset textarea:focus ~ .bar::before {
+
+.ba-form-element input:focus ~ .control-label,
+.ba-form-element textarea:focus ~ .control-label {
+	font-size: 0.8rem;
+	color: var(--text2);
+	top: 0.4em;
+	left: 1.2em;
+}
+.ba-form-element select:focus ~ .control-label,
+.ba-form-element input:focus ~ .control-label,
+.ba-form-element textarea:focus ~ .control-label {
+	color: var(--primary-color);
+	color: var(--text4);
+}
+.ba-form-element select:focus ~ .bar::before,
+.ba-form-element input:focus ~ .bar::before,
+.ba-form-element textarea:focus ~ .bar::before {
 	width: 100%;
 	left: 0;
 }
-
-.fieldset {
-	position: relative;
-	margin-top: 1.5em;
+.ba-form-element input:invalid ~ .bar::before,
+.ba-form-element textarea:invalid ~ .bar::before,
+.ba-form-element select:invalid ~ .bar::before {
 	width: 100%;
+	left: 0;
+	background: var(--error-color);
+}
+.ba-form-element input:invalid ~ .control-label,
+.ba-form-element textarea:invalid ~ .control-label {
+	color: var(--error-color);
+}
+.ba-form-element input:invalid ~ .helper-label,
+.ba-form-element textarea:invalid ~ .helper-label {
+	display: none;
+}
+.ba-form-element input:invalid ~ .error-label,
+.ba-form-element textarea:invalid ~ .error-label {
+	display: block;
+	color: var(--error-color);
+	top: 0.2em;
+}
+.ba-form-element input:invalid ~ .error,
+.ba-form-element textarea:invalid ~ .error {
+	opacity: 1;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/exclamationcircle.svg');
+}
+.ba-form-element .icon {
+	opacity: 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	height: 2em;
+	width: 1.8em;
+	background-size: 0.7em;
+	color: var(--text1);
+	font-size: 2em;
+}
+.check .icon {
+	background: var(--sucess-color);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/checkcircle.svg');
+}
+.ba-form-element .icon:focus {
+	opacity: 1;
+}
+.clear {
+	background: var(--primary-bg--color);
+	background-repeat: no-repeat;
+	background-position: center;
+	background-image: url('./assets/xcircle.svg');
+}
+.select-icon {
+	opacity: 1 !important;
+	background: var(--primary-bg--color);
+	background-image: url('./assets/caret-down-fill.svg');
+	background-repeat: no-repeat;
+	background-position: calc(100% - 0.5em) center;
+	font-size: 1.5em !important;
+	width: 2em !important;
+}
+.hint {
+	padding: 1em 0;
+	width: 100%;
+}
+.highlight {
+	display: inline-block;
+	font-weight: bold;
+	color: var(--primary-color);
+	cursor: default;
 }

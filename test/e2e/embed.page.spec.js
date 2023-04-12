@@ -16,10 +16,11 @@ test.describe('embed page', () => {
 
 		test('should contain 10 top level ba-components', async ({ page }) => {
 			// Get frame using the frame's name attribute
-			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(10);
+			expect(await page.frameLocator('#wrapper').locator('body > *').count()).toBe(11);
 
 			expect(await page.frameLocator('#wrapper').locator('ba-ol-map').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-view-larger-map-chip').count()).toBe(1);
+			expect(await page.frameLocator('#wrapper').locator('ba-draw-tool').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-map-button-container').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-footer').count()).toBe(1);
 			expect(await page.frameLocator('#wrapper').locator('ba-nonembedded-hint').count()).toBe(1);

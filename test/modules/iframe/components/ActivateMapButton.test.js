@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { ActivateMapButton } from '../../../../src/modules/iframe/components/activateMapButton/ActivateMapButton';
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
@@ -8,12 +9,19 @@ window.customElements.define(ActivateMapButton.tag, ActivateMapButton);
 window.customElements.define(OlMap.tag, OlMap);
 
 describe('ActivateMapButton', () => {
+	const windowMock = {
+		location: {
+			get search() {
+				return null;
+			}
+		}
+	};
 	const setup = (config) => {
 		const { embed } = config;
 
 		TestUtils.setupStoreAndDi();
 		$injector
-			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
+			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ActivateMapButton.tag);
 	};
@@ -34,8 +42,16 @@ describe('ActivateMapButton', () => {
 			expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);
 		});
 
-		it('renders nothing when normal', async () => {
+		it('renders nothing when not embedded', async () => {
 			const element = await setup({}, { embed: false });
+
+			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
+		it('renders nothing when not embedded', async () => {
+			const queryParam = `${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`;
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});

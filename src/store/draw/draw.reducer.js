@@ -1,3 +1,5 @@
+import { EventLike } from '../../utils/storeUtils';
+
 export const ACTIVE_CHANGED = 'draw/active';
 export const MODE_CHANGED = 'draw/mode';
 export const TYPE_CHANGED = 'draw/type';
@@ -54,9 +56,9 @@ export const initialState = {
 	 */
 	description: null,
 	/**
-	 * @type {DrawFileSaveResult}
+	 * @type {EventLike<DrawFileSaveResult>}
 	 */
-	fileSaveResult: null,
+	fileSaveResult: new EventLike(null),
 	/**
 	 * @type {Array<String>}
 	 */
