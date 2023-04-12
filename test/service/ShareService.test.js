@@ -15,7 +15,7 @@ describe('ShareService', () => {
 		transform: () => {}
 	};
 	const mapService = {
-		getSridDefinitionsForView: () => {},
+		getCoordinateRepresentations: () => {},
 		getSrid: () => {},
 		getMinZoomLevel: () => {},
 		getMaxZoomLevel: () => {}
@@ -152,7 +152,7 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
@@ -173,7 +173,7 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: viewSrid, digits: 3 }]);
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: viewSrid, digits: 3 }]);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, viewSrid).and.returnValue([44.12345, 88.12345]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
@@ -193,7 +193,7 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getSridDefinitionsForView').and.returnValue([{ code: null, digits: 3 }]);
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ code: null, digits: 3 }]);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, mapSrid).and.returnValue([11111.111111, 22222.222222]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
