@@ -59,8 +59,8 @@ export class MapService {
 
 	/**
 	 * Returns the SRID of the supported local projected system.
-	 * For the corresponding call {@link MapService#getLocalProjectedSridExtent}.
-	 * @returns {number|null} SRID ir `null` when no local projected SRID is supported
+	 * For the corresponding extent call {@link MapService#getLocalProjectedSridExtent}.
+	 * @returns {number|null} SRID or `null` when no local projected SRID is supported
 	 */
 	getLocalProjectedSrid() {
 		return this._definitions.localProjectedSrid;
