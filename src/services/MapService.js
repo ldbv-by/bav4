@@ -36,15 +36,15 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
+	 * Returns a list with all CoordinateRepresentation suitable for the UI. When a coordinate is provided, the list contains
 	 * suitable CoordinateRepresentation regarding this coordinate.
 	 * The first entry of the list should be considered as the current "default" CoordinateRepresentation.
 	 *
-	 * Note: The returned list is dependent on whether the provided corrdinate is inside or outside the supported local projected system.
+	 * Note: The returned list is dependent on whether the provided coordinate is inside or outside the extent of the supported local projected system (if definded),
 	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
 	 * @returns {Array<CoordinateRepresentation>} srids
 	 */
-	getSridDefinitionsForView(coordinateInMapProjection) {
+	getCoordinateRepresentations(coordinateInMapProjection) {
 		// we have no projected extent defined or no coordinate is provided
 		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
 			return this._definitions.globalCoordinateRepresentations;

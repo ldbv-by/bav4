@@ -89,14 +89,14 @@ describe('MapService', () => {
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue([5, -80, 14, 80]);
 
-			expect(instanceUnderTest.getSridDefinitionsForView()).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			expect(instanceUnderTest.getCoordinateRepresentations()).toEqual([{ label: 'Global SRID', code: 1111 }]);
 		});
 
 		it('provides an array of global SridDefintions when local projected extent is not defined', () => {
 			const instanceUnderTest = setup();
 			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
 
-			expect(instanceUnderTest.getSridDefinitionsForView([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			expect(instanceUnderTest.getCoordinateRepresentations([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
 		});
 
 		it('provides an array of local projected SridDefintions when coordinate is within local projected extent', () => {
@@ -106,7 +106,7 @@ describe('MapService', () => {
 			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
 			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
 
-			expect(instanceUnderTest.getSridDefinitionsForView(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
 		});
 
 		it('provides an array of global SridDefintions when when coordinate is outside local projected extent', () => {
@@ -116,7 +116,7 @@ describe('MapService', () => {
 			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
 			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(false);
 
-			expect(instanceUnderTest.getSridDefinitionsForView(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
 		});
 	});
 
