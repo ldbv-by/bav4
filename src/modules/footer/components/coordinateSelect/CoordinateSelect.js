@@ -24,7 +24,7 @@ export class CoordinateSelect extends BaElement {
 		this._mapService = MapService;
 		this._translationService = TranslationService;
 
-		this._items = this._mapService.getSridDefinitionsForView();
+		this._items = this._mapService.getCoordinateRepresentations();
 		// set selected coordinate system initially
 		this._selectedCode = String(this._items[0].code);
 	}

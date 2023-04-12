@@ -14,7 +14,7 @@ describe('CoordinateSelect', () => {
 	};
 
 	const mapServiceMock = {
-		getSridDefinitionsForView: () => {
+		getCoordinateRepresentations: () => {
 			return [
 				{ label: 'TEST', code: 99999 },
 				{ label: 'WGS84', code: 1111 }
