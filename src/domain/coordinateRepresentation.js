@@ -2,7 +2,7 @@
  * Defines how a coordinate should be represented within the UI.
  * @typedef {Object} CoordinateRepresentation
  * @property {string} label label
- * @property {number} [code] the SRID or `null` which means consumer should use the particular suitable UTM zone
+ * @property {number} [code] the SRID or `null`
  * @property {number} digits decimal places for rounding
  * @property {boolean} global suitable for global usage
  */
