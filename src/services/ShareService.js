@@ -1,6 +1,7 @@
 import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
+import { CoordinateRepresentations } from '../domain/coordinateRepresentation';
 
 export class ShareService {
 	constructor() {
@@ -88,9 +89,10 @@ export class ShareService {
 			position: { rotation }
 		} = state;
 
-		const { digits, code } = mapService.getCoordinateRepresentations()[0];
+		// we use the first returned local! CoordinateRepresentation otherwise WGS84
+		const { digits, code } = mapService.getCoordinateRepresentations(center).filter((cr) => !cr.global)[0] ?? CoordinateRepresentations.WGS84;
 
-		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code ?? mapService.getSrid()).map((n) => n.toFixed(digits));
+		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
 		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
 		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);
