@@ -43,7 +43,7 @@
 		"stylelint": "15.4.0",
 		"stylelint-config-recommended": "11.0.0",
 		"to-string-loader": "1.2.0",
-		"webpack": "5.78.0",
+		"webpack": "5.79.0",
 		"webpack-bundle-analyzer": "4.8.0",
 		"webpack-cli": "5.0.1",
 		"webpack-dev-server": "4.13.2"
