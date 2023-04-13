@@ -44,7 +44,7 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 
 		if (coord4326[0] > 18 || coord4326[0] < 6) {
 			/**
-			 * The BVV localProjectedSridExtent defines slightly other western / eastern boundaries than UTM32 and UTM33.
+			 * The BVV localProjectedSridExtent defines slightly other western / eastern boundaries than the UTM32 and UTM33 zones.
 			 * Here we have to be strict an we replace the local UTM32 CoordinateRepresentation by the global UTM CoordinateRepresentation
 			 * when we are over the particular zone boundary.
 			 */
