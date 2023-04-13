@@ -96,20 +96,6 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 		});
 
-		it('has an email input field with type email and its parent is a form', async () => {
-			// arrange
-			const element = await setup();
-
-			const emailInput = element.shadowRoot.querySelector('input[name="email"]');
-			const parentForm = emailInput.closest('form');
-
-			// assert
-			expect(emailInput).not.toBeNull();
-			expect(emailInput.type).toBe('email');
-			expect(parentForm).not.toBeNull();
-			expect(parentForm.tagName).toBe('FORM');
-		});
-
 		it('the fields category and description are required fields of the correct type', async () => {
 			// arrange
 			const element = await setup();
@@ -134,7 +120,7 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			// act
-			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
+			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
@@ -144,10 +130,6 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
-
-			const typeInput = element.shadowRoot.querySelector('#symbol');
-			typeInput.checked = true;
-			typeInput.dispatchEvent(new Event('change'));
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -161,7 +143,7 @@ describe('MapFeedbackPanel', () => {
 			emailInput.value = 'mail@some.com';
 			emailInput.dispatchEvent(new Event('input'));
 
-			const submitButton = element.shadowRoot.querySelector('button[type="submit"]');
+			const submitButton = element.shadowRoot.querySelector('#button0');
 
 			// act
 			submitButton.click();

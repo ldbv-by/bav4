@@ -74,11 +74,6 @@ export class MapFeedbackPanel extends MvuElement {
 		const { mapFeedback, categoryOptions } = model;
 		const translate = (key) => this._translationService.translate(key);
 
-		const handleTypeChange = (event) => {
-			const selectedType = event.target.value;
-			this.signal(Update_Type, selectedType);
-		};
-
 		const handleCategoryChange = () => {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
@@ -97,7 +92,8 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = (event) => {
-			event.preventDefault();
+			console.log('🚀 ~ MapFeedbackPanel ~ handleSubmit ~ event:', event);
+			// event.preventDefault();
 			this._saveMapFeedback(mapFeedback);
 		};
 
@@ -110,61 +106,42 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
-					<form @submit="${handleSubmit}">
-						<br />
+					<div class="ba-form-element">
+						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label>
+						<select id="category" name="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+						</select>
+					</div>
 
-						<div class="ba-form-element">
-							<label>${translate('feedback_markChangeNotice')}</label>
-							<div>
-								<label for="symbol" class="icon-label">
-									<input type="radio" id="symbol" name="type" value="symbol" @change="${handleTypeChange}" required />
-									Symbol
-								</label>
-							</div>
-						</div>
-						<div class="ba-form-element">
-							<div>
-								<label for="line" class="icon-label">
-									<input type="radio" id="line" name="type" value="line" @change="${handleTypeChange}" required />
-									Line
-								</label>
-							</div>
-						</div>
-						<br />
+					<div class="ba-form-element">
+						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
+						<textarea
+							id="description"
+							name="description"
+							.value="${mapFeedback.description}"
+							@input="${handleDescriptionChange}"
+							minlength="10"
+							maxlength="40"
+							required
+						></textarea>
+					</div>
 
-						<div class="ba-form-element">
-							<label for="category">${translate('feedback_categorySelection')}</label>
-							<select id="category" name="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
-								${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
-							</select>
-						</div>
+					<div class="ba-form-element">
+						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
+						<input type="email" id="email" name="email" placeholder="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" />
 
-						<div class="ba-form-element">
-							<label for="description">${translate('feedback_changeDescription')}</label>
-							<textarea
-								id="description"
-								name="description"
-								.value="${mapFeedback.description}"
-								@input="${handleDescriptionChange}"
-								minlength="10"
-								maxlength="40"
-								required
-							></textarea>
-						</div>
+						<i class="bar"></i>
+						<label class="helper-label error-label">Helper text error</label>
+					</div>
 
-						<div class="ba-form-element">
-							<label for="email">${translate('feedback_eMail')}</label>
-							<input type="email" id="email" name="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" />
-							<br />
-							${translate('feedback_disclaimer')} (<a
-								href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
-								>${translate('feedback_privacyPolicy')}</a
-							>).
-							<br />
-						</div>
+					<div class="ba-form-element">
+						${translate('feedback_disclaimer')} (<a
+							href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
+							>${translate('feedback_privacyPolicy')}</a
+						>).
+					</div>
 
-						<button type="submit">Submit</button>
-					</form>
+					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 				</div>
 				<div class="feedback-form-right"></div>
 			</div>

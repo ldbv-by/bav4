@@ -14,20 +14,3 @@
 	border: 1px solid black;
 	padding: 10px;
 }
-
-/* label {
-	display: block;
-	margin-top: 1em;
-} */
-
-select:valid,
-input:valid,
-textarea:valid {
-	background-color: rgb(34, 112, 34);
-}
-
-select:invalid,
-input:invalid,
-textarea:invalid {
-	background-color: rgb(110, 9, 39);
-}
