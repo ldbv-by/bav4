@@ -5,6 +5,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
 import { $injector } from '../../src/injection';
+import { CoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 
 describe('OlCoordinateService', () => {
 	const projectionServiceMock = {
@@ -36,18 +37,16 @@ describe('OlCoordinateService', () => {
 	describe('methods', () => {
 		let instanceUnderTest;
 
-		beforeEach(() => {
+		const setup = (stringifyCoordsProvider = () => {}) => {
 			spyOn(projectionServiceMock, 'getProjections').and.returnValue([4326, 3857, 25832, 25833]);
-			const stringifyCoordsProvider = () => {
-				return (coordinate) => coordinate[0] + ', ' + coordinate[1];
-			};
 
 			instanceUnderTest = new OlCoordinateService(stringifyCoordsProvider);
-		});
+		};
 
 		describe('transforms coordinates', () => {
 			describe('with default projection', () => {
 				it('from EPSG:4326 to EPSG:3857', () => {
+					setup();
 					const initialCooord4326 = [11.57245, 48.14021];
 					const coord3857 = fromLonLat(initialCooord4326);
 
@@ -58,6 +57,7 @@ describe('OlCoordinateService', () => {
 				});
 
 				it('from EPSG:3857 to EPSG:4326', () => {
+					setup();
 					const initialCooord3857 = [1288239.2412306187, 6130212.561641981];
 					const coord4326 = toLonLat(initialCooord3857);
 
@@ -70,6 +70,7 @@ describe('OlCoordinateService', () => {
 
 			describe('with custom projection', () => {
 				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
+					setup();
 					const coord25832 = [1288239.2412306187, 6130212.561641981];
 					const coord25833 = instanceUnderTest.transform(coord25832, 25832, 25833);
 
@@ -78,6 +79,7 @@ describe('OlCoordinateService', () => {
 				});
 
 				it('throws an error when srid is not supported', () => {
+					setup();
 					const coord25832 = [1288239.2412306187, 6130212.561641981];
 
 					expect(() => {
@@ -89,6 +91,7 @@ describe('OlCoordinateService', () => {
 
 		describe('transforms extents', () => {
 			it('from EPSG:4326 to EPSG:3857', () => {
+				setup();
 				const initialExtent4326 = [11.57245, 48.14021, 11.67245, 48.24021];
 				const extent3857 = transformExtent(initialExtent4326, 'EPSG:4326', 'EPSG:3857');
 
@@ -101,6 +104,7 @@ describe('OlCoordinateService', () => {
 			});
 
 			it('transforms from EPSG:3857 to EPSG:4326', () => {
+				setup();
 				const initialExtent3857 = [1288239.2412306187, 6130212.561641981, 1299371.190309946, 6146910.663709761];
 				const extent4326 = transformExtent(initialExtent3857, 'EPSG:3857', 'EPSG:4326');
 
@@ -114,6 +118,7 @@ describe('OlCoordinateService', () => {
 
 			describe('with custom projection', () => {
 				it('from custom EPSG (here 25823) to custom EPSG (here 25833)', () => {
+					setup();
 					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
 					const extent25833 = instanceUnderTest.transformExtent(extent25832, 25832, 25833);
 
@@ -122,6 +127,7 @@ describe('OlCoordinateService', () => {
 				});
 
 				it('throws an error when srid is not supported', () => {
+					setup();
 					const extent25832 = [1288239.2412306187, 6130212.561641981, 1289239.2412306187, 6132212.561641981];
 
 					expect(() => {
@@ -132,17 +138,26 @@ describe('OlCoordinateService', () => {
 		});
 
 		describe('stringifiy', () => {
-			it('stringifies with the default provider lon/lat coordinates', () => {
-				const initialCooord4326 = [11.57245, 48.14021];
+			it('stringifies a coordinate', () => {
+				const stringifyCoordProvider = jasmine.createSpy().and.callFake((coordinate, coordinateRepresentation, transformFn) => {
+					transformFn(); /**Fake call of the transformFn */
+					return '21, 42';
+				});
+				setup(stringifyCoordProvider);
+				const transformMethodSpy = spyOn(instanceUnderTest, 'transform');
+				const coord3857 = [11111, 22222];
 
-				const string = instanceUnderTest.stringify(initialCooord4326, 4326, 3);
+				const string = instanceUnderTest.stringify(coord3857, CoordinateRepresentations.UTM, { digits: 2 });
 
-				expect(string).toBe('11.57245, 48.14021');
+				expect(string).toBe('21, 42');
+				expect(stringifyCoordProvider).toHaveBeenCalledOnceWith(coord3857, CoordinateRepresentations.UTM, jasmine.any(Function), { digits: 2 });
+				expect(transformMethodSpy).toHaveBeenCalled();
 			});
 		});
 
 		describe('buffer', () => {
 			it('increases an extent by the provided value', () => {
+				setup();
 				const extent = [10, 10, 20, 20];
 
 				const buffededExtent = instanceUnderTest.buffer(extent, 10);
@@ -153,6 +168,7 @@ describe('OlCoordinateService', () => {
 
 		describe('containsCoordinate', () => {
 			it('checks if the passed coordinate is contained or on the edge of the extent', () => {
+				setup();
 				const extent = [10, 10, 20, 20];
 
 				expect(instanceUnderTest.containsCoordinate(extent, [10, 10])).toBeTrue();

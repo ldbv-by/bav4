@@ -97,13 +97,18 @@ export class OlCoordinateService {
 
 	/**
 	 * Stringifies a coordinate.
-	 * @param {Coordinate} coordinate the coordinate
-	 * @param {number} srid srid of this coordinate
+	 * @param {Coordinate} coordinate the coordinate (in map projection)
+	 * @param {CoordinateRepresentation} coordinateRepresentation the target CoordinateRepresentation
 	 * @param {Object} [options] stringify function specific options
 	 * @returns {string} stringified coordinate
 	 */
-	stringify(coordinate, srid, options) {
-		return this._stringifyFunction(srid, options)(coordinate);
+	stringify(coordinate, coordinateRepresentation, options) {
+		return this._stringifyFunction(
+			coordinate,
+			coordinateRepresentation,
+			(coordinate, sourceSrid, targetSrid) => this.transform(coordinate, sourceSrid, targetSrid),
+			options
+		);
 	}
 
 	/**
