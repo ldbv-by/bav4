@@ -15,8 +15,7 @@ describe('OlMapContextMenuContent', () => {
 		getSrid() {}
 	};
 	const coordinateServiceMock = {
-		stringify() {},
-		transform() {}
+		stringify() {}
 	};
 	const shareServiceMock = {
 		copyToClipboard() {}
@@ -58,12 +57,10 @@ describe('OlMapContextMenuContent', () => {
 	describe('when screen coordinate available', () => {
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
+			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
 			const stringifiedCoord = 'stringified coordinate';
-			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
-				{ label: 'code42', code: 42, digits: 7 }
-			]);
+			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
@@ -91,19 +88,18 @@ describe('OlMapContextMenuContent', () => {
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
-			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
-			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
+			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, coordinateRepresentationMock);
 			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
+			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
@@ -122,10 +118,10 @@ describe('OlMapContextMenuContent', () => {
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
+			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
