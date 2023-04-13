@@ -126,6 +126,66 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
+		it('does not call MapFeedbackService.save if category is not valid', async () => {
+			// arrange
+			const element = await setup();
+			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = 'another text';
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = 'mail@some.com';
+			emailInput.dispatchEvent(new Event('input'));
+
+			// act
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			submitButton.click();
+
+			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not call MapFeedbackService.save if description is not valid', async () => {
+			// arrange
+			const element = await setup();
+			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = 'Foo';
+			categorySelect.dispatchEvent(new Event('change'));
+
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = 'mail@some.com';
+			emailInput.dispatchEvent(new Event('input'));
+
+			// act
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			submitButton.click();
+
+			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+		});
+
+		it('does not call MapFeedbackService.save if email is not valid', async () => {
+			// arrange
+			const element = await setup();
+			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = 'Foo';
+			categorySelect.dispatchEvent(new Event('change'));
+
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = 'another text';
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// act
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			submitButton.click();
+
+			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+		});
+
 		it('calls MapFeedbackService.save after all fields are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');

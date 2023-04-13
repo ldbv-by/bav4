@@ -3,7 +3,6 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 
-const Update_Type = 'update_type';
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
@@ -57,8 +56,6 @@ export class MapFeedbackPanel extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Type:
-				return { ...model, type: data };
 			case Update_Category:
 				return { ...model, mapFeedback: { ...model.mapFeedback, category: data } };
 			case Update_Description:
@@ -91,12 +88,35 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Description, value);
 		};
 
-		const handleSubmit = (event) => {
-			console.log('🚀 ~ MapFeedbackPanel ~ handleSubmit ~ event:', event);
-			// event.preventDefault();
-			this._saveMapFeedback(mapFeedback);
+		const isValidCategory = (category) => {
+			if (category && categoryOptions.includes(category)) {
+				return true;
+			}
+			return false;
 		};
 
+		const isValidDescription = (description) => {
+			if (description) {
+				return true;
+			}
+			return false;
+		};
+
+		const isValidEmail = (email) => {
+			// pattern for validating email
+			const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			return pattern.test(email);
+		};
+
+		const handleSubmit = () => {
+			const email = this.shadowRoot.getElementById('email');
+			const category = this.shadowRoot.getElementById('category');
+			const description = this.shadowRoot.getElementById('description');
+
+			if (isValidEmail(email.value) && isValidCategory(category.value) && isValidDescription(description.value)) {
+				this._saveMapFeedback(mapFeedback);
+			}
+		};
 		return html`
 			<style>
 				${css}
