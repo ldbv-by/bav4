@@ -89,8 +89,12 @@ export class ShareService {
 			position: { rotation }
 		} = state;
 
-		// we use the first returned local! CoordinateRepresentation otherwise WGS84
-		const { digits, code } = mapService.getCoordinateRepresentations(center).filter((cr) => !cr.global)[0] ?? CoordinateRepresentations.WGS84;
+		// we use the defined SRID for local projected tasks (if available) otherwise WGS84
+		const { digits, code } =
+			mapService
+				.getCoordinateRepresentations(center)
+				.filter((cr) => cr.code)
+				.filter((cr) => cr.code === mapService.getLocalProjectedSrid())[0] ?? CoordinateRepresentations.WGS84;
 
 		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
