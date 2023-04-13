@@ -36,11 +36,17 @@ export class MapService {
 	}
 
 	/**
-	 * Returns a list with all CoordinateRepresentation suitable for the UI. When a coordinate is provided, the list contains
-	 * suitable CoordinateRepresentation regarding this coordinate.
-	 * The first entry of the list should be considered as the current "default" CoordinateRepresentation.
+	 * Returns a list with all available CoordinateRepresentation.
 	 *
-	 * Note: The returned list is dependent on whether the provided coordinate is inside or outside the extent of the supported local projected system (if definded),
+	 * When a coordinate is given the list contains
+	 * suitable CoordinateRepresentation regarding this coordinate,
+	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
+	 * of the supported local projected system (if definded).
+	 *
+	 * If no coordinate is provided the list contains all globally available CoordinateRepresentations.
+	 *
+	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
+	 *
 	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
 	 * @returns {Array<CoordinateRepresentation>} srids
 	 */
