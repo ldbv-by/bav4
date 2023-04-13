@@ -44,7 +44,8 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 		const coord4326 = coordinateService.toLonLat(coordinateInMapProjection);
 
 		if (coord4326[0] > 18 || coord4326[0] < 6) {
-			return [definitions.pop()];
+			//when we are over the western border of 32 or eastern border of 33 we replace the local UTM32 by the global UTM representation
+			definitions.splice(0, 1, CoordinateRepresentations.UTM);
 		} else if (coord4326[0] < 18 && coord4326[0] >= 12) {
 			definitions.splice(0, 0, { label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' });
 		}

@@ -70,7 +70,7 @@ describe('MapDefinitions provider', () => {
 				spyOn(coordinateService, 'toLonLat').and.returnValue([5.18526, 48.64087]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
-				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.WGS84]);
+				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
 			});
 
 			it('provides coordinate dependent definitions for a coordinate with a longitude value > 18°', () => {
@@ -78,7 +78,7 @@ describe('MapDefinitions provider', () => {
 				spyOn(coordinateService, 'toLonLat').and.returnValue([18.18526, 48.64087]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
-				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.WGS84]);
+				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
 			});
 		});
 	});
