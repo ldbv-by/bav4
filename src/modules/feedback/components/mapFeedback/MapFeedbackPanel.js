@@ -89,31 +89,39 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const isValidCategory = (category) => {
-			if (category && categoryOptions.includes(category)) {
+			if (category && category.value && categoryOptions.includes(category.value)) {
 				return true;
 			}
+
+			// category.setCustomValidity('xxxxxx');
+			category.reportValidity();
 			return false;
 		};
 
 		const isValidDescription = (description) => {
-			if (description) {
+			if (description && description.value) {
 				return true;
 			}
+			description.reportValidity();
 			return false;
 		};
 
 		const isValidEmail = (email) => {
 			// pattern for validating email
 			const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			return pattern.test(email);
+			if (pattern.test(email.value)) {
+				return true;
+			}
+			email.reportValidity();
+			return false;
 		};
 
 		const handleSubmit = () => {
-			const email = this.shadowRoot.getElementById('email');
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
+			const email = this.shadowRoot.getElementById('email');
 
-			if (isValidEmail(email.value) && isValidCategory(category.value) && isValidDescription(description.value)) {
+			if (isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
 				this._saveMapFeedback(mapFeedback);
 			}
 		};
@@ -131,19 +139,12 @@ export class MapFeedbackPanel extends MvuElement {
 						<select id="category" name="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
+						<label class="helper-label error-label">Helper text error</label>
 					</div>
 
 					<div class="ba-form-element">
 						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
-						<textarea
-							id="description"
-							name="description"
-							.value="${mapFeedback.description}"
-							@input="${handleDescriptionChange}"
-							minlength="10"
-							maxlength="40"
-							required
-						></textarea>
+						<textarea id="description" name="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required></textarea>
 					</div>
 
 					<div class="ba-form-element">
