@@ -67,7 +67,7 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a longitude value < 6°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([5.18526, 48.64087]);
+				spyOn(coordinateService, 'toLonLat').and.returnValue([5.9, 48]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
@@ -75,7 +75,23 @@ describe('MapDefinitions provider', () => {
 
 			it('provides coordinate dependent definitions for a coordinate with a longitude value > 18°', () => {
 				const fakeCoord3857In33 = [42, 42];
-				spyOn(coordinateService, 'toLonLat').and.returnValue([18.18526, 48.64087]);
+				spyOn(coordinateService, 'toLonLat').and.returnValue([18.1, 48]);
+				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
+
+				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			});
+
+			it('provides coordinate dependent definitions for a coordinate with a latitude value > 54°', () => {
+				const fakeCoord3857In33 = [42, 42];
+				spyOn(coordinateService, 'toLonLat').and.returnValue([10, 54.1]);
+				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
+
+				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			});
+
+			it('provides coordinate dependent definitions for a coordinate with a latitude value < 42°', () => {
+				const fakeCoord3857In33 = [42, 42];
+				spyOn(coordinateService, 'toLonLat').and.returnValue([10, 41.9]);
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);

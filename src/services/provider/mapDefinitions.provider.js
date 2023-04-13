@@ -42,14 +42,16 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 		const coord4326 = coordinateService.toLonLat(coordinateInMapProjection);
 
-		if (coord4326[0] > 18 || coord4326[0] < 6) {
+		if (coord4326[0] > 18 || coord4326[0] < 6 || coord4326[1] > 54 || coord4326[1] < 42) {
 			/**
 			 * The BVV localProjectedSridExtent defines slightly other western / eastern boundaries than the UTM32 and UTM33 zones.
 			 * Here we have to be strict an we replace the local UTM32 CoordinateRepresentation by the global UTM CoordinateRepresentation
 			 * when we are over the particular zone boundary.
+			 * The northern / southern boundary is limited to zone band "U" / "T".
 			 */
-			definitions.splice(0, 1, CoordinateRepresentations.UTM);
-		} else if (coord4326[0] < 18 && coord4326[0] >= 12) {
+			return [CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84];
+		}
+		if (coord4326[0] < 18 && coord4326[0] >= 12) {
 			definitions.splice(0, 0, { label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' });
 		}
 	}
