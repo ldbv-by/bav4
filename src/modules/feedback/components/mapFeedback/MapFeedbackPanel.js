@@ -7,6 +7,8 @@ const Update_Category = 'update_category';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
+const Update_Geometry_Error_Display = 'update_geometry_error_display';
+const Update_Geometry_Valid = 'update_geometry_valid';
 
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
@@ -18,7 +20,9 @@ export class MapFeedbackPanel extends MvuElement {
 				email: '',
 				fileId: ''
 			},
-			categoryOptions: []
+			categoryOptions: [],
+			geometryErrorDisplay: 'none',
+			geometryIsValid: false
 		});
 
 		const {
@@ -64,17 +68,25 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, email: data } };
 			case Update_CategoryOptions:
 				return { ...model, categoryOptions: ['', ...data] };
+			case Update_Geometry_Error_Display:
+				return { ...model, geometryErrorDisplay: data };
+			case Update_Geometry_Valid:
+				return { ...model, geometryIsValid: data };
 		}
 	}
 
-	hasValidGeometry(geometry) {
-		geometry.setCustomValidity('no geometry');
-		geometry.reportValidity();
+	// todo hasValidGeometry(geometry) {
+	hasValidGeometry(geometryIsValid) {
+		if (geometryIsValid) {
+			this.signal(Update_Geometry_Error_Display, 'none');
+			return true;
+		}
+		this.signal(Update_Geometry_Error_Display, 'block');
 		return false;
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions } = model;
+		const { mapFeedback, categoryOptions, geometryErrorDisplay, geometryIsValid } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleCategoryChange = () => {
@@ -94,10 +106,6 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Description, value);
 		};
 
-		const hasValidGeometry = (geometry) => {
-			return this.hasValidGeometry(geometry);
-		};
-
 		const isValidCategory = (category) => {
 			return category.reportValidity();
 		};
@@ -111,16 +119,22 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			const geometry = this.shadowRoot.getElementById('geometry');
+			// todo const geometry = this.shadowRoot.getElementById('geometry');
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
 
-			if (hasValidGeometry(geometry) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			// todo if (this.hasValidGeometry(geometry) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			if (this.hasValidGeometry(geometryIsValid) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
 				this._saveMapFeedback(mapFeedback);
 			}
 		};
+
+		const onToggle = (event) => {
+			this.signal(Update_Geometry_Valid, event.detail.checked);
+		};
+
 		return html`
 			<style>
 				${css}
@@ -158,15 +172,16 @@ export class MapFeedbackPanel extends MvuElement {
 						>).
 					</div>
 
-					<div class="ba-form-element" style="margin-bottom: 10px;">
-						<input type="text" id="geometry" name="geometry" style="height: 1px;" />
-						<i class="bar"></i>
-						<label class="helper-label error-label">${translate('feedback_pleaseSelect')}</label>
+					<div class="ba-form-element" style="margin-bottom: 10px; display: ${geometryErrorDisplay};">
+						<label style="color: red; ">${translate('feedback_pleaseSelect')}</label>
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 				</div>
-				<div class="feedback-form-right"></div>
+				<div class="feedback-form-right">
+					<div style="margin-bottom: 10px;">Toggle if Geometry appears to be Valid</div>
+					<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+				</div>
 			</div>
 		`;
 	}
