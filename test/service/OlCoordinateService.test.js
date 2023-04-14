@@ -5,7 +5,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { bvvStringifyFunction } from '../../src/services/provider/stringifyCoords.provider';
 import { $injector } from '../../src/injection';
-import { CoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 
 describe('OlCoordinateService', () => {
 	const projectionServiceMock = {
@@ -147,10 +147,10 @@ describe('OlCoordinateService', () => {
 				const transformMethodSpy = spyOn(instanceUnderTest, 'transform');
 				const coord3857 = [11111, 22222];
 
-				const string = instanceUnderTest.stringify(coord3857, CoordinateRepresentations.UTM, { digits: 2 });
+				const string = instanceUnderTest.stringify(coord3857, GlobalCoordinateRepresentations.UTM, { digits: 2 });
 
 				expect(string).toBe('21, 42');
-				expect(stringifyCoordProvider).toHaveBeenCalledOnceWith(coord3857, CoordinateRepresentations.UTM, jasmine.any(Function), { digits: 2 });
+				expect(stringifyCoordProvider).toHaveBeenCalledOnceWith(coord3857, GlobalCoordinateRepresentations.UTM, jasmine.any(Function), { digits: 2 });
 				expect(transformMethodSpy).toHaveBeenCalled();
 			});
 		});

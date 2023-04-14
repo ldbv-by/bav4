@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { CoordinateRepresentations } from '../../domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { $injector } from '../../injection';
 
 /**
@@ -31,13 +31,17 @@ export const getBvvMapDefinitions = () => {
 		localProjectedSrid: 25832,
 		localProjectedSridExtent: [5, -80, 14, 80],
 		localProjectedCoordinateRepresentations: getBvvLocalProjectedCoordinateRepresentations,
-		globalCoordinateRepresentations: [CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84, CoordinateRepresentations.MGRS],
+		globalCoordinateRepresentations: [
+			GlobalCoordinateRepresentations.UTM,
+			GlobalCoordinateRepresentations.WGS84,
+			GlobalCoordinateRepresentations.MGRS
+		],
 		defaultSridForView: 25832
 	};
 };
 
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
-	const definitions = [{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' }, CoordinateRepresentations.WGS84];
+	const definitions = [{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' }, GlobalCoordinateRepresentations.WGS84];
 	if (coordinateInMapProjection) {
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 		const coord4326 = coordinateService.toLonLat(coordinateInMapProjection);
@@ -49,7 +53,7 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 			 * when we are over the particular zone boundary.
 			 * The northern / southern boundary is limited to zone band "U" / "T".
 			 */
-			return [CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84];
+			return [GlobalCoordinateRepresentations.UTM, GlobalCoordinateRepresentations.WGS84];
 		}
 		if (coord4326[0] < 18 && coord4326[0] >= 12) {
 			definitions.splice(0, 0, { label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' });

@@ -9,7 +9,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
 import { round } from '../../src/utils/numberUtils';
-import { CoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -197,11 +197,11 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.WGS84]);
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
 					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(25832);
 					spyOn(coordinateService, 'transform')
-						.withArgs([21, 42], mapSrid, CoordinateRepresentations.WGS84.code)
+						.withArgs([21, 42], mapSrid, GlobalCoordinateRepresentations.WGS84.code)
 						.and.returnValue([11111.111111, 22222.222222]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 

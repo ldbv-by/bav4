@@ -1,4 +1,4 @@
-import { CoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
 import { bvvStringifyFunction } from '../../../src/services/provider/stringifyCoords.provider';
 
 describe('StringifyCoord provider', () => {
@@ -6,14 +6,14 @@ describe('StringifyCoord provider', () => {
 		const coordinateService = {
 			transform() {}
 		};
-		describe('for global CoordinateRepresentations', () => {
+		describe('for global GlobalCoordinateRepresentations', () => {
 			it('stringifies a coordinate for WGS84', () => {
 				const coord3857 = [10000, 20000];
 				const coord4326 = [11.572457, 48.140212, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, CoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140, 11.572');
-				expect(bvvStringifyFunction(coord3857, CoordinateRepresentations.WGS84, transformFn)).toBe('48.14021, 11.57246');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140, 11.572');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn)).toBe('48.14021, 11.57246');
 			});
 
 			it('stringifies a coordinate for MGRS', () => {
@@ -21,11 +21,13 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [11.572457, 48.140212, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, CoordinateRepresentations.MGRS, transformFn, { digits: 3 })).toBe('pending support for global MGRS');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.MGRS, transformFn, { digits: 3 })).toBe(
+					'pending support for global MGRS'
+				);
 			});
 		});
 
-		describe('for local projected CoordinateRepresentations', () => {
+		describe('for local projected GlobalCoordinateRepresentations', () => {
 			it('stringifies a coordinate for 25832 zone U', () => {
 				const coord3857 = [10000, 20000];
 				spyOn(coordinateService, 'transform').and.returnValue([9.94835, 50.0021]);

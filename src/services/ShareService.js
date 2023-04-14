@@ -1,7 +1,7 @@
 import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
-import { CoordinateRepresentations } from '../domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 
 export class ShareService {
 	constructor() {
@@ -94,7 +94,7 @@ export class ShareService {
 			mapService
 				.getCoordinateRepresentations(center)
 				.filter((cr) => cr.code)
-				.filter((cr) => cr.code === mapService.getLocalProjectedSrid())[0] ?? CoordinateRepresentations.WGS84;
+				.filter((cr) => cr.code === mapService.getLocalProjectedSrid())[0] ?? GlobalCoordinateRepresentations.WGS84;
 
 		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code).map((n) => n.toFixed(digits));
 

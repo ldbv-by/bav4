@@ -3,7 +3,7 @@ import { $injector } from '../../../../../src/injection';
 import { TestUtils } from '../../../../test-utils.js';
 import { setPointerMove } from '../../../../../src/store/pointer/pointer.action';
 import { pointerReducer } from '../../../../../src/store/pointer/pointer.reducer';
-import { CoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
+import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 
 window.customElements.define(CoordinateSelect.tag, CoordinateSelect);
 
@@ -33,7 +33,10 @@ describe('CoordinateSelect', () => {
 
 	describe('constructor', () => {
 		it('sets a default model', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			setup();
 			const element = new CoordinateSelect();
 
@@ -46,26 +49,35 @@ describe('CoordinateSelect', () => {
 
 	describe('when initialized', () => {
 		it('renders nothing when pointer position equals null', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('.coordinate-label')).toHaveSize(0);
 		});
 		it('adds select element', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('select')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('select')[0].title).toBe('footer_coordinate_select');
-			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toBe(CoordinateRepresentations.UTM.label);
-			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual(CoordinateRepresentations.WGS84.label);
+			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[0].value).toBe(GlobalCoordinateRepresentations.UTM.label);
+			expect(element.shadowRoot.querySelectorAll('.select-coordinate-option')[1].value).toEqual(GlobalCoordinateRepresentations.WGS84.label);
 			expect(element.shadowRoot.querySelectorAll('.coordinate-label')).toHaveSize(0);
 		});
 	});
 
 	describe('on pointer move', () => {
 		it('updates the coordinates', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			const element = await setup();
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const testCoordinate = [1211817.6233080907, 6168328.021915435];
@@ -73,11 +85,11 @@ describe('CoordinateSelect', () => {
 			setPointerMove({ coordinate: testCoordinate, screenCoordinate: [] });
 
 			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe('stringified coordinate');
-			expect(stringifyMock).toHaveBeenCalledOnceWith(testCoordinate, CoordinateRepresentations.UTM);
+			expect(stringifyMock).toHaveBeenCalledOnceWith(testCoordinate, GlobalCoordinateRepresentations.UTM);
 		});
 		it('displays "-" when no CoordinateReference is available', async () => {
 			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.callFake((coordinate) => {
-				return coordinate ? [] : [CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84];
+				return coordinate ? [] : [GlobalCoordinateRepresentations.UTM, GlobalCoordinateRepresentations.WGS84];
 			});
 			const element = await setup();
 			const testCoordinate = [1211817.6233080907, 6168328.021915435];
@@ -90,7 +102,10 @@ describe('CoordinateSelect', () => {
 
 	describe('on selection change', () => {
 		it('updates the coordinate', async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			spyOn(coordinateServiceMock, 'stringify').and.callFake((coordinate, cr) => `stringified coordinate for ${cr.label}`);
 			const element = await setup();
 			const testCoordinate = [1211817.6233080907, 6168328.021915435];
@@ -100,7 +115,7 @@ describe('CoordinateSelect', () => {
 
 			// change selection
 			const select = element.shadowRoot.querySelector('select');
-			select.value = CoordinateRepresentations.WGS84.label;
+			select.value = GlobalCoordinateRepresentations.WGS84.label;
 			select.dispatchEvent(new Event('change'));
 
 			expect(element.shadowRoot.querySelector('.coordinate-label').innerText).toBe('stringified coordinate for WGS84');
@@ -109,7 +124,10 @@ describe('CoordinateSelect', () => {
 
 	describe('on touch devices', () => {
 		it("doesn't show select and label", async () => {
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([CoordinateRepresentations.UTM, CoordinateRepresentations.WGS84]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			const element = await setup({ touch: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
