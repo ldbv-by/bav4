@@ -1,4 +1,4 @@
-import { GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../../src/domain/coordinateRepresentation';
 import { $injector } from '../../../src/injection';
 import { getBvvMapDefinitions } from '../../../src/services/provider/mapDefinitions.provider';
 
@@ -27,10 +27,7 @@ describe('MapDefinitions provider', () => {
 			expect(defaultExtent).toEqual([995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]);
 			expect(localProjectedSridExtent).toEqual([5, -80, 14, 80]);
 			expect(srid).toBe(3857);
-			expect(localProjectedCoordinateRepresentations()).toEqual([
-				{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
-				GlobalCoordinateRepresentations.WGS84
-			]);
+			expect(localProjectedCoordinateRepresentations()).toEqual([BvvCoordinateRepresentations.UTM32, GlobalCoordinateRepresentations.WGS84]);
 			expect(localProjectedSrid).toEqual(25832);
 			expect(minZoomLevel).toBe(0);
 			expect(maxZoomLevel).toBe(20);
@@ -48,7 +45,7 @@ describe('MapDefinitions provider', () => {
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In32)).toEqual([
-					{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
+					BvvCoordinateRepresentations.UTM32,
 					GlobalCoordinateRepresentations.WGS84
 				]);
 			});
@@ -59,8 +56,8 @@ describe('MapDefinitions provider', () => {
 				const { localProjectedCoordinateRepresentations } = getBvvMapDefinitions();
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
-					{ label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' },
-					{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' },
+					BvvCoordinateRepresentations.UTM33,
+					BvvCoordinateRepresentations.UTM32,
 					GlobalCoordinateRepresentations.WGS84
 				]);
 			});

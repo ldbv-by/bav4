@@ -1,7 +1,7 @@
 /**
  * @module service/provider
  */
-import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { $injector } from '../../injection';
 
 /**
@@ -41,7 +41,7 @@ export const getBvvMapDefinitions = () => {
 };
 
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
-	const definitions = [{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' }, GlobalCoordinateRepresentations.WGS84];
+	const definitions = [BvvCoordinateRepresentations.UTM32, GlobalCoordinateRepresentations.WGS84];
 	if (coordinateInMapProjection) {
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 		const coord4326 = coordinateService.toLonLat(coordinateInMapProjection);
@@ -56,7 +56,7 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 			return [GlobalCoordinateRepresentations.UTM, GlobalCoordinateRepresentations.WGS84];
 		}
 		if (coord4326[0] < 18 && coord4326[0] >= 12) {
-			definitions.splice(0, 0, { label: 'UTM33', code: 25833, digits: 0, global: false, type: 'utm' });
+			definitions.splice(0, 0, BvvCoordinateRepresentations.UTM33);
 		}
 	}
 	return definitions;
