@@ -5,6 +5,7 @@ import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
 window.customElements.define(Icon.tag, Icon);
@@ -57,9 +58,10 @@ describe('OlMapContextMenuContent', () => {
 	describe('when screen coordinate available', () => {
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
-			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
 			const stringifiedCoord = 'stringified coordinate';
-			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
+			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.WGS84
+			]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
@@ -74,7 +76,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
+			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
 			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_elevation_label');
 
 			window.requestAnimationFrame(() => {
@@ -88,16 +90,15 @@ describe('OlMapContextMenuContent', () => {
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
 			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
-			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, coordinateRepresentationMock);
+			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
-			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
@@ -118,8 +119,7 @@ describe('OlMapContextMenuContent', () => {
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			const coordinateRepresentationMock = { label: 'code42', code: 42, digits: 7, type: 'custom' };
-			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([coordinateRepresentationMock]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
