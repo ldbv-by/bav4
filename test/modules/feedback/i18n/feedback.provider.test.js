@@ -10,6 +10,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_changeDescription).toBe('Beschreibung der Änderung');
 		expect(map.feedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
+		expect(map.feedback_pleaseSelect).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung. ');
 		expect(map.feedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
@@ -24,13 +25,14 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_changeDescription).toBe('Beschreibung der Änderung');
 		expect(map.feedback_eMail).toBe('eMail');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
+		expect(map.feedback_pleaseSelect).toBe('Please select at least one Point');
 		expect(map.feedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 7;
+		const expectedSize = 8;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -67,6 +67,12 @@ export class MapFeedbackPanel extends MvuElement {
 		}
 	}
 
+	hasValidGeometry(geometry) {
+		geometry.setCustomValidity('no geometry');
+		geometry.reportValidity();
+		return false;
+	}
+
 	createView(model) {
 		const { mapFeedback, categoryOptions } = model;
 		const translate = (key) => this._translationService.translate(key);
@@ -88,12 +94,14 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Description, value);
 		};
 
+		const hasValidGeometry = (geometry) => {
+			return this.hasValidGeometry(geometry);
+		};
+
 		const isValidCategory = (category) => {
 			if (category && category.value && categoryOptions.includes(category.value)) {
 				return true;
 			}
-
-			// category.setCustomValidity('xxxxxx');
 			category.reportValidity();
 			return false;
 		};
@@ -117,16 +125,13 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			const dummy = this.shadowRoot.getElementById('dummy');
-
-			dummy.setCustomValidity('xxxxxx');
-			dummy.reportValidity();
+			const geometry = this.shadowRoot.getElementById('geometry');
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
 
-			if (isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			if (hasValidGeometry(geometry) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
 				this._saveMapFeedback(mapFeedback);
 			}
 		};
@@ -167,8 +172,8 @@ export class MapFeedbackPanel extends MvuElement {
 						>).
 					</div>
 
-					<div class="ba-form-element">
-						<input type="text" id="dummy" name="dummy" />
+					<div class="ba-form-element" style="margin-bottom: 10px;">
+						<input type="text" id="geometry" name="geometry" style="height: 1px;" />
 						<i class="bar"></i>
 						<label class="helper-label error-label">${translate('feedback_pleaseSelect')}</label>
 					</div>
