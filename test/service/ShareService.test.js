@@ -9,7 +9,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { ShareService } from '../../src/services/ShareService';
 import { TestUtils } from '../test-utils';
 import { round } from '../../src/utils/numberUtils';
-import { GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
+import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../src/domain/coordinateRepresentation';
 
 describe('ShareService', () => {
 	const coordinateService = {
@@ -218,10 +218,12 @@ describe('ShareService', () => {
 					const mapSrid = 3857;
 					setup();
 					const instanceUnderTest = new ShareService();
-					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([{ label: 'UTM32', code: 25832, digits: 0, global: false, type: 'utm' }]);
+					spyOn(mapService, 'getCoordinateRepresentations').and.returnValue([BvvCoordinateRepresentations.UTM32]);
 					spyOn(mapService, 'getSrid').and.returnValue(mapSrid);
-					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(25832);
-					spyOn(coordinateService, 'transform').withArgs([21, 42], mapSrid, 25832).and.returnValue([11111.111111, 22222.222222]);
+					spyOn(mapService, 'getLocalProjectedSrid').and.returnValue(BvvCoordinateRepresentations.UTM32.code);
+					spyOn(coordinateService, 'transform')
+						.withArgs([21, 42], mapSrid, BvvCoordinateRepresentations.UTM32.code)
+						.and.returnValue([11111.111111, 22222.222222]);
 					changeZoomAndCenter({ zoom: zoomLevel, center: [21, 42] });
 
 					const extract = instanceUnderTest._extractPosition();
