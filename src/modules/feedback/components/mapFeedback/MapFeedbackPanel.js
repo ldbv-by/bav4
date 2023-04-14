@@ -117,6 +117,11 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
+			const dummy = this.shadowRoot.getElementById('dummy');
+
+			dummy.setCustomValidity('xxxxxx');
+			dummy.reportValidity();
+
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
@@ -160,6 +165,12 @@ export class MapFeedbackPanel extends MvuElement {
 							href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
 							>${translate('feedback_privacyPolicy')}</a
 						>).
+					</div>
+
+					<div class="ba-form-element">
+						<input type="text" id="dummy" name="dummy" />
+						<i class="bar"></i>
+						<label class="helper-label error-label">${translate('feedback_pleaseSelect')}</label>
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
