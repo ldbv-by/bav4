@@ -99,29 +99,15 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const isValidCategory = (category) => {
-			if (category && category.value && categoryOptions.includes(category.value)) {
-				return true;
-			}
-			category.reportValidity();
-			return false;
+			return category.reportValidity();
 		};
 
 		const isValidDescription = (description) => {
-			if (description && description.value) {
-				return true;
-			}
-			description.reportValidity();
-			return false;
+			return description.reportValidity();
 		};
 
 		const isValidEmail = (email) => {
-			// pattern for validating email
-			const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-			if (pattern.test(email.value)) {
-				return true;
-			}
-			email.reportValidity();
-			return false;
+			return email.reportValidity();
 		};
 
 		const handleSubmit = () => {

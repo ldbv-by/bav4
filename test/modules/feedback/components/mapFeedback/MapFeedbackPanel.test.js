@@ -181,7 +181,7 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call MapFeedbackService.save if email is not valid', async () => {
+		it('does not call MapFeedbackService.save if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
 			spyOn(element, 'hasValidGeometry').and.returnValue(true);
@@ -194,6 +194,10 @@ describe('MapFeedbackPanel', () => {
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'another text';
 			descriptionInput.dispatchEvent(new Event('input'));
+
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = 'no email';
+			emailInput.dispatchEvent(new Event('input'));
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -232,6 +236,36 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: 'mail@some.com',
+				fileId: ''
+			});
+		});
+
+		it('calls MapFeedbackService.save after all fields besides email are filled', async () => {
+			// arrange
+			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const element = await setup();
+			spyOn(element, 'hasValidGeometry').and.returnValue(true);
+
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = 'Foo';
+			categorySelect.dispatchEvent(new Event('change'));
+
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = 'another text';
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			const submitButton = element.shadowRoot.querySelector('#button0');
+
+			// act
+			submitButton.click();
+
+			// assert
+			expect(saveMapFeedbackSpy).toHaveBeenCalled();
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
+				state: '',
+				category: 'Foo',
+				description: 'another text',
+				email: '',
 				fileId: ''
 			});
 		});
