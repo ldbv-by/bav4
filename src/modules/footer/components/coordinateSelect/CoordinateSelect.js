@@ -75,8 +75,8 @@ export class CoordinateSelect extends MvuElement {
 			// the first CoordinateReference returned from MapService#getCoordinateRepresentations() is the current "default" CoordinateReference
 			const coordinateRepresentation = this._mapService
 				.getCoordinateRepresentations(pointerPosition)
-				//we filter by 'type'
-				.filter((cr) => cr.type === selectedCr.type)[0];
+				//the CR must just be of the same group here
+				.filter((cr) => cr.group === selectedCr.group)[0];
 
 			return coordinateRepresentation ? this._coordinateService.stringify(pointerPosition, coordinateRepresentation) : ' - ';
 		};
