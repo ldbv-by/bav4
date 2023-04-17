@@ -8,7 +8,7 @@
 		"includePattern": ".+\\.js(doc|x)?$",
 		"excludePattern": "(^|\\/|\\\\)_"
 	},
-	"plugins": ["plugins/markdown", "jsdoc-plugin-typescript"],
+	"plugins": ["plugins/markdown", "jsdoc-ts-utils"],
 	"typescript": {
 		"moduleRoot": "src"
 	},
@@ -24,6 +24,6 @@
 	},
 	"docdash": {
 		"search": true,
-		"sectionOrder": ["Modules"]
+		"sectionOrder": ["Modules", "Global", "Interfaces"]
 	}
 }
