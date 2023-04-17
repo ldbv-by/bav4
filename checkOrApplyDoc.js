@@ -26,7 +26,7 @@ const findInDir = (dir, fileList = []) => {
 findInDir('./src').forEach((fp) => {
 	const moduleNameIdentifier = '/**\n * @module';
 	// path from src (excluded) + filename (without extension)
-	const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0]}`;
+	const moduleName = `${path.dirname(fp).split('src/')[1]}/${path.basename(fp).split('.js')[0]}`.replace('.', '_');
 	if (process.env.DOC_CHECK /** just check */) {
 		const content = fs.readFileSync(fp, 'utf8');
 		// check if we already have a @module name
