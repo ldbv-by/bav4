@@ -18,7 +18,7 @@ import { createStringXY } from 'ol/coordinate';
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code } = coordinateRepresentation;
 	if (global && code !== 4326) {
-		return `pending support for global ${coordinateRepresentation.label}`;
+		return code === 3857 ? `${coordinate[0]}, ${coordinate[1]}` : `pending support for global ${coordinateRepresentation.label}`;
 	}
 
 	if (code === 4326) {
