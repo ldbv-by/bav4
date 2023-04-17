@@ -25,7 +25,7 @@
 		"html-webpack-plugin": "5.5.0",
 		"jasmine": "4.6.0",
 		"jsdoc": "4.0.2",
-		"jsdoc-plugin-typescript": "^2.2.1",
+		"jsdoc-ts-utils": "^4.0.0",
 		"karma": "6.4.1",
 		"karma-chrome-launcher": "3.1.1",
 		"karma-coverage-istanbul-reporter": "3.0.3",
