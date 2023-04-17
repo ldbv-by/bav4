@@ -27,14 +27,19 @@ describe('MapDefinitions provider', () => {
 			expect(defaultExtent).toEqual([995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]);
 			expect(localProjectedSridExtent).toEqual([5, -80, 14, 80]);
 			expect(srid).toBe(3857);
-			expect(localProjectedCoordinateRepresentations()).toEqual([BvvCoordinateRepresentations.UTM32, GlobalCoordinateRepresentations.WGS84]);
+			expect(localProjectedCoordinateRepresentations()).toEqual([
+				BvvCoordinateRepresentations.UTM32,
+				GlobalCoordinateRepresentations.WGS84,
+				GlobalCoordinateRepresentations.SphericalMercator
+			]);
 			expect(localProjectedSrid).toEqual(25832);
 			expect(minZoomLevel).toBe(0);
 			expect(maxZoomLevel).toBe(20);
 			expect(globalCoordinateRepresentations).toEqual([
 				GlobalCoordinateRepresentations.UTM,
 				GlobalCoordinateRepresentations.WGS84,
-				GlobalCoordinateRepresentations.MGRS
+				GlobalCoordinateRepresentations.MGRS,
+				GlobalCoordinateRepresentations.SphericalMercator
 			]);
 		});
 
@@ -46,7 +51,8 @@ describe('MapDefinitions provider', () => {
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In32)).toEqual([
 					BvvCoordinateRepresentations.UTM32,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 
@@ -58,7 +64,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					BvvCoordinateRepresentations.UTM33,
 					BvvCoordinateRepresentations.UTM32,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 
@@ -69,7 +76,8 @@ describe('MapDefinitions provider', () => {
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 
@@ -80,7 +88,8 @@ describe('MapDefinitions provider', () => {
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 
@@ -91,7 +100,8 @@ describe('MapDefinitions provider', () => {
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 
@@ -102,7 +112,8 @@ describe('MapDefinitions provider', () => {
 
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
-					GlobalCoordinateRepresentations.WGS84
+					GlobalCoordinateRepresentations.WGS84,
+					GlobalCoordinateRepresentations.SphericalMercator
 				]);
 			});
 		});
