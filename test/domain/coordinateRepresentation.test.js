@@ -6,7 +6,7 @@ describe('GlobalCoordinateRepresentations', () => {
 		expect(GlobalCoordinateRepresentations.WGS84).toEqual({ label: 'WGS84', code: 4326, digits: 5, global: true, group: 'wgs84' });
 		expect(GlobalCoordinateRepresentations.UTM).toEqual({ label: 'UTM', code: null, digits: 0, global: true, group: 'utm' });
 		expect(GlobalCoordinateRepresentations.MGRS).toEqual({ label: 'MGRS', code: null, digits: 0, global: true, group: 'mgrs' });
-		expect(GlobalCoordinateRepresentations.SphericalMercator).toEqual({ label: '3857', code: 3857, digits: 0, global: true, group: 'sm' });
+		expect(GlobalCoordinateRepresentations.SphericalMercator).toEqual({ label: '3857', code: 3857, digits: 6, global: true, group: 'sm' });
 	});
 });
 
