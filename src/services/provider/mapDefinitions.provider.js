@@ -36,8 +36,7 @@ export const getBvvMapDefinitions = () => {
 			GlobalCoordinateRepresentations.WGS84,
 			GlobalCoordinateRepresentations.MGRS,
 			GlobalCoordinateRepresentations.SphericalMercator
-		],
-		defaultSridForView: 25832
+		]
 	};
 };
 
