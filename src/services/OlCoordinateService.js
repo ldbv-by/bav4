@@ -1,6 +1,6 @@
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
-import { buffer } from 'ol/extent';
+import { buffer, containsCoordinate } from 'ol/extent';
 import { $injector } from '../injection';
 
 /**
@@ -29,7 +29,6 @@ export class OlCoordinateService {
 
 	/**
 	 * Transforms a 3857 coordinate to longitude/latitude.
-	 * @public
 	 * @param {Coordinate} coordinate3857
 	 * @returns {Coordinate} coordinate4326
 	 */
@@ -39,7 +38,6 @@ export class OlCoordinateService {
 
 	/**
 	 * Transforms a coordinate from longitude/latitude to 3857 coordinate
-	 * @public
 	 * @param {Coordinate} coordinate4326
 	 * @returns {Coordinate} coordinate3857
 	 */
@@ -49,7 +47,6 @@ export class OlCoordinateService {
 
 	/**
 	 * Transforms an extent from 3857 to longitude/latitude
-	 * @public
 	 * @param {Extent} extent3857
 	 * @returns {Extent} a new extent in 4326
 	 */
@@ -59,7 +56,6 @@ export class OlCoordinateService {
 
 	/**
 	 * Transforms an extent from longitude/latitude to 3857
-	 * @public
 	 * @param {Extent} extent4326
 	 * @returns {Extent} a new extent in 3857
 	 */
@@ -85,7 +81,6 @@ export class OlCoordinateService {
 
 	/**
 	 * Transforms an extent in the source srid to an extent in the target srid
-	 * @public
 	 * @param {Extent}  extent
 	 * @param {number} sourceSrid srid of the current coordinate
 	 * @param {number} targetSrid srid of the transformed coordinate
@@ -102,25 +97,36 @@ export class OlCoordinateService {
 
 	/**
 	 * Stringifies a coordinate.
-	 * @public
-	 * @param {Coordinate} coordinate the coordinate
-	 * @param {number} srid srid of this coordinate
+	 * @param {Coordinate} coordinate the coordinate (in map projection)
+	 * @param {CoordinateRepresentation} coordinateRepresentation the target CoordinateRepresentation
 	 * @param {Object} [options] stringify function specific options
 	 * @returns {string} stringified coordinate
 	 */
-	stringify(coordinate, srid, options) {
-		return this._stringifyFunction(srid, options)(coordinate);
+	stringify(coordinate, coordinateRepresentation, options) {
+		return this._stringifyFunction(
+			coordinate,
+			coordinateRepresentation,
+			(coordinate, sourceSrid, targetSrid) => this.transform(coordinate, sourceSrid, targetSrid),
+			options
+		);
 	}
 
 	/**
 	 * Returns an extent increased by the provided value.
-	 * Use only for coordinates in a geodetic SRS.
-	 * @public
 	 * @param {Extent} extend
 	 * @param {number} value
 	 * @returns {Extent} new extent with the applied buffer
 	 */
 	buffer(extend, value) {
 		return [...buffer(extend, value)];
+	}
+
+	/**
+	 * Check if the passed coordinate is contained or on the edge of the extent.
+	 * @param {Extent} extent
+	 * @param {Coordinate} coordinate
+	 */
+	containsCoordinate(extent, coordinate) {
+		return containsCoordinate(extent, coordinate);
 	}
 }

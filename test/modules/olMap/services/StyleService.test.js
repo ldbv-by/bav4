@@ -19,7 +19,7 @@ describe('StyleService', () => {
 		reset: null,
 		fileSaveResult: { adminId: 'init', fileId: 'init' }
 	};
-	const mapServiceMock = { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832 };
+	const mapServiceMock = { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 };
 
 	const environmentServiceMock = {
 		isTouch() {},

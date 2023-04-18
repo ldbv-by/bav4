@@ -1,17 +1,22 @@
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
-import { BaElement } from '../../../BaElement';
 import css from './coordinateSelect.css';
+import { MvuElement } from '../../../MvuElement';
 
+const Update_Pointer_Coordinate = 'update_pointer_coordinate';
+const Selected_Cr_Changed = 'selected_cr_changed';
 /**
- * Dropdown for selecting the coordinate system
+ * Dropdown element for displaying the current mouse-over coordinate.
  * @class
  * @author bakir_en
+ * @author taulinger
  */
-
-export class CoordinateSelect extends BaElement {
+export class CoordinateSelect extends MvuElement {
 	constructor() {
-		super();
+		super({
+			selectedCr: null,
+			pointerPosition: []
+		});
 
 		const { CoordinateService, EnvironmentService, MapService, TranslationService } = $injector.inject(
 			'CoordinateService',
@@ -23,10 +28,32 @@ export class CoordinateSelect extends BaElement {
 		this._environmentService = EnvironmentService;
 		this._mapService = MapService;
 		this._translationService = TranslationService;
+	}
 
-		this._items = this._mapService.getSridDefinitionsForView();
-		// set selected coordinate system initially
-		this._selectedCode = String(this._items[0].code);
+	/**
+	 * @override
+	 */
+	update(type, data, model) {
+		switch (type) {
+			case Update_Pointer_Coordinate:
+				return { ...model, pointerPosition: [...data] };
+			case Selected_Cr_Changed:
+				return { ...model, selectedCr: data };
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this._items = this._mapService.getCoordinateRepresentations();
+		// initially set selected CoordinateRepresentation
+		this.signal(Selected_Cr_Changed, this._items[0]);
+		this.observe(
+			(state) => state.pointer.move,
+			(move) => this.signal(Update_Pointer_Coordinate, move.payload.coordinate),
+			false
+		);
 	}
 
 	/**
@@ -39,55 +66,38 @@ export class CoordinateSelect extends BaElement {
 	/**
 	 *@override
 	 */
-	createView(state) {
+	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
 
-		const { pointerPosition } = state;
+		const { pointerPosition, selectedCr } = model;
 
-		const getPointerPositionChange = () => {
-			switch (this._selectedCode) {
-				case String(this._items[0].code): //25832
-					return this._coordinateService.stringify(
-						this._coordinateService.transform(pointerPosition, this._mapService.getSrid(), this._items[0].code),
-						this._items[0].code
-					);
-				case String(this._items[1].code): //4326
-					return this._coordinateService.stringify(this._coordinateService.toLonLat(pointerPosition), this._items[1].code, { digits: 5 });
-				default:
-					return nothing;
-			}
+		const getStringifiedCoordinate = () => {
+			// the first CoordinateReference returned from MapService#getCoordinateRepresentations() is the current "default" CoordinateReference
+			const coordinateRepresentation = this._mapService
+				.getCoordinateRepresentations(pointerPosition)
+				//the CR must just be of the same group here
+				.filter((cr) => cr.group === selectedCr.group)[0];
+
+			return coordinateRepresentation ? this._coordinateService.stringify(pointerPosition, coordinateRepresentation) : ' - ';
 		};
 
-		const onChange = () => {
-			this._selectedCode = this.shadowRoot.querySelector('.select-coordinate').value;
-			this.render();
+		const onChange = (event) => {
+			this.signal(
+				Selected_Cr_Changed,
+				this._items.find((cr) => cr.label === event.target.value)
+			);
 		};
-
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="coordinate-container">
 				<select class="select-coordinate" @change="${onChange}" title="${translate('footer_coordinate_select')}">
-					${this._items.map((item) => html` <option class="select-coordinate-option" value="${item.code}">${item.label}</option> `)}
+					${this._items.map((item) => html`<option class="select-coordinate-option" value="${item.label}">${item.label}</option>`)}
 				</select>
-				${pointerPosition ? html`<div class="coordinate-label">${getPointerPositionChange()}</div>` : nothing}
+				${pointerPosition.length ? html`<div class="coordinate-label">${getStringifiedCoordinate()}</div>` : nothing}
 			</div>
 		`;
-	}
-
-	/**
-	 * @override
-	 */
-	extractState(globalState) {
-		let pointerPosition = undefined;
-		const {
-			pointer: { move }
-		} = globalState;
-		if (move) {
-			pointerPosition = move.payload.coordinate;
-		}
-		return { pointerPosition };
 	}
 
 	static get tag() {

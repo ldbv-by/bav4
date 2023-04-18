@@ -154,7 +154,7 @@ describe('bvvCapabilitiesProvider', () => {
 
 	const mapService = {
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832
+		getLocalProjectedSrid: () => 25832
 	};
 
 	const baaCredentialService = {
