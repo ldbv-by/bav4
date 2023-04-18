@@ -828,7 +828,7 @@ describe('OlMeasurementHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/measure_[0-9]{13}/g);
+			expect(id).toMatch(/measuring_[0-9]{13}/g);
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {

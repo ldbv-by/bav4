@@ -32,7 +32,7 @@ import {
 } from '../../utils/olInteractionUtils';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
-import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../plugins/MeasurementPlugin';
+import { MEASUREMENT_LAYER_ID } from '../../../../plugins/MeasurementPlugin';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
@@ -460,7 +460,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature, MEASUREMENT_TOOL_ID + '_');
+			this._sketchHandler.activate(event.feature, Tools.MEASURING + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
