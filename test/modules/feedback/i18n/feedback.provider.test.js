@@ -5,6 +5,8 @@ describe('i18n for feedback module', () => {
 		const map = provide('de');
 
 		expect(map.feedback_header).toBe('Feedback zur Karte');
+		expect(map.feedback_could_not_save).toBe('Feedback konnte nicht gespeichert werden');
+		expect(map.feedback_saved_successfully).toBe('Feedback wurde gespeichert');
 		expect(map.feedback_markChangeNotice).toBe('Markierung Ihrer Änderungsmeldung');
 		expect(map.feedback_categorySelection).toBe('Auswahl der Kategorie');
 		expect(map.feedback_changeDescription).toBe('Beschreibung der Änderung');
@@ -20,6 +22,8 @@ describe('i18n for feedback module', () => {
 		const map = provide('en');
 
 		expect(map.feedback_header).toBe('Map Feedback');
+		expect(map.feedback_could_not_save).toBe('Feedback could not be saved');
+		expect(map.feedback_saved_successfully).toBe('Feedback saved');
 		expect(map.feedback_markChangeNotice).toBe('Markierung Ihrer Änderungsmeldung');
 		expect(map.feedback_categorySelection).toBe('Auswahl der Kategorie');
 		expect(map.feedback_changeDescription).toBe('Beschreibung der Änderung');
@@ -32,7 +36,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 8;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

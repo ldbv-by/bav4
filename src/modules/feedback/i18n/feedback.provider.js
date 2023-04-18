@@ -3,6 +3,8 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				feedback_header: 'Map Feedback',
+				feedback_could_not_save: 'Feedback could not be saved',
+				feedback_saved_successfully: 'Feedback saved',
 				feedback_markChangeNotice: 'Markierung Ihrer Änderungsmeldung',
 				feedback_categorySelection: 'Auswahl der Kategorie',
 				feedback_changeDescription: 'Beschreibung der Änderung',
@@ -16,6 +18,8 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				feedback_header: 'Feedback zur Karte',
+				feedback_could_not_save: 'Feedback konnte nicht gespeichert werden',
+				feedback_saved_successfully: 'Feedback wurde gespeichert',
 				feedback_markChangeNotice: 'Markierung Ihrer Änderungsmeldung',
 				feedback_categorySelection: 'Auswahl der Kategorie',
 				feedback_changeDescription: 'Beschreibung der Änderung',

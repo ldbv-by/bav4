@@ -1,5 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
@@ -13,12 +15,16 @@ const mapFeedbackServiceMock = {
 	save: () => {}
 };
 
+let store;
+
 const setup = (state = {}) => {
 	const initialState = {
 		...state
 	};
 
-	TestUtils.setupStoreAndDi(initialState, {});
+	store = TestUtils.setupStoreAndDi(initialState, {
+		notifications: notificationReducer
+	});
 
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
@@ -58,6 +64,24 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
+
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_could_not_save');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('emits a success notification if save succeeds', async () => {
+			// arrange
+			const mapFeedbackSaveSpy = spyOn(mapFeedbackServiceMock, 'save').and.resolveTo(true);
+			const element = await setup();
+
+			// act
+			await element._saveMapFeedback('', '', '');
+
+			// assert
+			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
+
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
 		it('calls MapFeedbackService.getCategories()', async () => {

@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -50,10 +51,13 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	async _saveMapFeedback(mapFeedback) {
+		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._mapFeedbackService.save(mapFeedback);
+			emitNotification(translate('feedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
+			emitNotification(translate('feedback_could_not_save'), LevelTypes.ERROR);
 		}
 	}
 
