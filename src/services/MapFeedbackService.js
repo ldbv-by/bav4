@@ -21,7 +21,7 @@ export class MapFeedbackService {
 	/**
 	 * Returns all possible categories for a MapFeedback.
 	 * @throws an {@link Error} when categories are not available.
-	 * @returns {Array<String>}
+	 * @returns {Array<string>}
 	 */
 	async getCategories() {
 		return [...this._categories];
@@ -30,8 +30,9 @@ export class MapFeedbackService {
 	/**
 	 *
 	 * Saves a MapFeedback object.
-	 * @param {MapFeedback} mapFeedback
+	 * @param {module:services/MapFeedbackService~MapFeedback} mapFeedback
 	 * @throws an {@link Error} when saving was not succesfull
+	 * @returns {boolean} `true` when storing was successful
 	 */
 	// eslint-disable-next-line no-unused-vars
 	async save(mapFeedback) {
