@@ -3,7 +3,6 @@
  * @enum
  */
 export const IFrameComponents = Object.freeze({
-	// official parameters
 	DRAWING: 'drawing',
 	ACTIVATE_BUTTON: 'abtn'
 });
