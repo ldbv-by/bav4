@@ -7,8 +7,10 @@ const Update_Category = 'update_category';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
+const Update_Geometry_Id = 'update_geometry_id';
+// todo remove before pull request ...
 const Update_Geometry_Error_Display = 'update_geometry_error_display';
-const Update_Geometry_Valid = 'update_geometry_valid';
+// ... todo remove before pull request
 
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
@@ -18,11 +20,12 @@ export class MapFeedbackPanel extends MvuElement {
 				category: '',
 				description: '',
 				email: '',
-				fileId: ''
+				fileId: null
 			},
 			categoryOptions: [],
-			geometryErrorDisplay: 'none',
-			geometryIsValid: false
+			// todo remove before pull request ...
+			geometryErrorDisplay: 'none'
+			// ... todo remove before pull request
 		});
 
 		const {
@@ -68,14 +71,16 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, email: data } };
 			case Update_CategoryOptions:
 				return { ...model, categoryOptions: ['', ...data] };
+			case Update_Geometry_Id:
+				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
+			// todo remove before pull request
 			case Update_Geometry_Error_Display:
 				return { ...model, geometryErrorDisplay: data };
-			case Update_Geometry_Valid:
-				return { ...model, geometryIsValid: data };
+			// todo remove before pull request
 		}
 	}
 
-	// todo hasValidGeometry(geometry) {
+	// todo remove before pull request ...
 	hasValidGeometry(geometryIsValid) {
 		if (geometryIsValid) {
 			this.signal(Update_Geometry_Error_Display, 'none');
@@ -84,9 +89,23 @@ export class MapFeedbackPanel extends MvuElement {
 		this.signal(Update_Geometry_Error_Display, 'block');
 		return false;
 	}
+	// ... todo remove before pull request
+
+	toggleFileId(id) {
+		this.signal(Update_Geometry_Id, id);
+	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions, geometryErrorDisplay, geometryIsValid } = model;
+		// todo remove before pull request: geometryErrorDisplay
+		const { mapFeedback, categoryOptions, geometryErrorDisplay } = model;
+
+		// todo uncomment before pull request ...
+		// let geometryErrorDisplay = 'none';
+		// if (mapFeedback.fileId !== null) {
+		// 	geometryErrorDisplay = 'block';
+		// }
+		// ... todo uncomment before pull request
+
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleCategoryChange = () => {
@@ -119,21 +138,28 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			// todo const geometry = this.shadowRoot.getElementById('geometry');
+			const geometryIsValid = mapFeedback.fileId !== null;
+			// todo remove before pull request ...
+			this.hasValidGeometry(geometryIsValid);
+			// ... todo remove before pull request
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
-
-			// todo if (this.hasValidGeometry(geometry) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
-			if (this.hasValidGeometry(geometryIsValid) && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			if (geometryIsValid && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
 				this._saveMapFeedback(mapFeedback);
 			}
 		};
 
+		// todo remove before pull request ...
 		const onToggle = (event) => {
-			this.signal(Update_Geometry_Valid, event.detail.checked);
+			let id = null;
+			if (event.detail.checked) {
+				id = '123';
+			}
+			this.toggleFileId(id);
 		};
+		// ... todo remove before pull request
 
 		return html`
 			<style>
@@ -179,7 +205,7 @@ export class MapFeedbackPanel extends MvuElement {
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 				</div>
 				<div class="feedback-form-right">
-					<div style="margin-bottom: 10px;">Toggle if Geometry appears to be Valid</div>
+					<div style="margin-bottom: 10px;">todo remove before pull request - set fileId</div>
 					<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 				</div>
 			</div>

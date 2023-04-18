@@ -129,7 +129,6 @@ describe('MapFeedbackPanel', () => {
 		it('does not call MapFeedbackService.save if geometry is not set', async () => {
 			// arrange
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(false);
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			// act
@@ -142,7 +141,6 @@ describe('MapFeedbackPanel', () => {
 		it('does not call MapFeedbackService.save if category is not valid', async () => {
 			// arrange
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(true);
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
@@ -163,7 +161,6 @@ describe('MapFeedbackPanel', () => {
 		it('does not call MapFeedbackService.save if description is not valid', async () => {
 			// arrange
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(true);
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
@@ -184,7 +181,6 @@ describe('MapFeedbackPanel', () => {
 		it('does not call MapFeedbackService.save if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(true);
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
@@ -210,7 +206,8 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(true);
+
+			element.toggleFileId(123);
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -236,7 +233,7 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: 'mail@some.com',
-				fileId: ''
+				fileId: 123
 			});
 		});
 
@@ -244,7 +241,8 @@ describe('MapFeedbackPanel', () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
-			spyOn(element, 'hasValidGeometry').and.returnValue(true);
+
+			element.toggleFileId(123);
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -266,7 +264,7 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: '',
-				fileId: ''
+				fileId: 123
 			});
 		});
 	});
