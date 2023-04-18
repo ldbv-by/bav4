@@ -21,10 +21,10 @@ export class ChipsConfigurationService {
 
 	/**
 	 * Loads all available Chip configurations and caches them internally.
-	 * If loading fails a fallback is delivered if app is in standalone mode
+	 * If loading fails and the app is in standalone mode a fallback will be delivered.
 	 * @public
 	 * @async
-	 * @returns {Promise<Array<ChipConfiguration>>}
+	 * @returns {Promise<Array<module:domain/chipConfigurationTypeDef~ChipConfiguration>>}
 	 */
 	async all() {
 		if (!this._configurations) {
