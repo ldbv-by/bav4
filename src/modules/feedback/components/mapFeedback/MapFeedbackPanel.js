@@ -8,9 +8,7 @@ const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
-// todo remove before pull request ...
-const Update_Geometry_Error_Display = 'update_geometry_error_display';
-// ... todo remove before pull request
+const Remember_Submit = 'remember_submit';
 
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
@@ -23,9 +21,7 @@ export class MapFeedbackPanel extends MvuElement {
 				fileId: null
 			},
 			categoryOptions: [],
-			// todo remove before pull request ...
-			geometryErrorDisplay: 'none'
-			// ... todo remove before pull request
+			submitWasClicked: false
 		});
 
 		const {
@@ -73,39 +69,22 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, categoryOptions: ['', ...data] };
 			case Update_Geometry_Id:
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
-			// todo remove before pull request
-			case Update_Geometry_Error_Display:
-				return { ...model, geometryErrorDisplay: data };
-			// todo remove before pull request
+			case Remember_Submit:
+				return { ...model, submitWasClicked: data };
 		}
 	}
-
-	// todo remove before pull request ...
-	hasValidGeometry(geometryIsValid) {
-		if (geometryIsValid) {
-			this.signal(Update_Geometry_Error_Display, 'none');
-			return true;
-		}
-		this.signal(Update_Geometry_Error_Display, 'block');
-		return false;
-	}
-	// ... todo remove before pull request
 
 	toggleFileId(id) {
 		this.signal(Update_Geometry_Id, id);
 	}
 
 	createView(model) {
-		// todo remove before pull request: geometryErrorDisplay
-		const { mapFeedback, categoryOptions, geometryErrorDisplay } = model;
+		const { mapFeedback, categoryOptions, submitWasClicked } = model;
 
-		// todo uncomment before pull request ...
-		// let geometryErrorDisplay = 'none';
-		// if (mapFeedback.fileId !== null) {
-		// 	geometryErrorDisplay = 'block';
-		// }
-		// ... todo uncomment before pull request
-
+		let geometryErrorDisplay = 'none';
+		if (submitWasClicked && mapFeedback.fileId === null) {
+			geometryErrorDisplay = 'block';
+		}
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleCategoryChange = () => {
@@ -138,20 +117,17 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			const geometryIsValid = mapFeedback.fileId !== null;
-			// todo remove before pull request ...
-			this.hasValidGeometry(geometryIsValid);
-			// ... todo remove before pull request
+			this.signal(Remember_Submit, true);
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
-			if (geometryIsValid && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			if (mapFeedback.fileId !== null && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
 				this._saveMapFeedback(mapFeedback);
 			}
 		};
 
-		// todo remove before pull request ...
+		// todo remove before final pull request ...
 		const onToggle = (event) => {
 			let id = null;
 			if (event.detail.checked) {
