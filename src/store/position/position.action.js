@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the properties concerning the zoom level and center of a map.
- * @module position/action
- */
 import {
 	ZOOM_CHANGED,
 	CENTER_CHANGED,

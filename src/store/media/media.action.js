@@ -1,8 +1,3 @@
-/**
- * Action creators for media actions.
- * @module media/action
- */
-
 import { $injector } from '../../injection';
 import { COLOR_SCHEMA_CHANGED, MIN_WIDTH_CHANGED, ORIENTATION_CHANGED, RESPONSIVE_PARAMETER_OBSERVATION_CHANGED } from './media.reducer';
 

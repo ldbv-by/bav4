@@ -1,7 +1,3 @@
-/**
- * Action creators to update the current chips
- * @module chips/action
- */
 import { CHIPS_CHANGED } from './chips.reducer';
 import { $injector } from '../../injection';
 

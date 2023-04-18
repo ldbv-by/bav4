@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the state of the Toolbox.
- * @module toolContainer/action
- */
 import { CURRENT_TOOL_CHANGED } from './tools.reducer';
 import { $injector } from '../../injection';
 

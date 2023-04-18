@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the state of the topics content panel.
- * @module topics/topicsContentPanel/action
- */
 import { INDEX_CHANGED } from './topicsContentPanel.reducer';
 import { $injector } from '../../injection';
 

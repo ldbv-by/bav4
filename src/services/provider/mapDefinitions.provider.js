@@ -1,6 +1,3 @@
-/**
- * @module service/provider
- */
 import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { $injector } from '../../injection';
 

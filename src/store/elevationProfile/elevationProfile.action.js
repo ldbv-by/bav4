@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the properties of elevationProfile state.
- * @module elevationProfile/action
- */
 import { $injector } from '../../injection';
 import { ELEVATION_PROFILE_ACTIVE_CHANGED, ELEVATION_PROFILE_COORDINATES_CHANGED } from './elevationProfile.reducer';
 
