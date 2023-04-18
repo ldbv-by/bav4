@@ -11,12 +11,6 @@ import { Tools } from '../domain/tools';
 export const DRAW_LAYER_ID = 'draw_layer';
 
 /**
- * Id of the tool used for drawing interaction.
- * Feature of a layer will also use this id as part their id.
- */
-export const DRAW_TOOL_ID = 'draw';
-
-/**
  * This plugin observes the 'active' property of the drawing store.
  * On changes, it adds a layer with a specific and constant id
  * to the layers store or removes this layer from the store (see: {@link DRAW_LAYER_ID}).

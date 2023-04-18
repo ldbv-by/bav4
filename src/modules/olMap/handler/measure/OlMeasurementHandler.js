@@ -218,17 +218,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith('draw_'));
+					return features.some((f) => f.getId().startsWith(Tools.DRAWING + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith('draw_')).map((f) => f.getId());
+					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAWING + '_')).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAWING);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith('measure_'));
+				return features.some((f) => !f.getId().startsWith(Tools.MEASURING + '_'));
 			};
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
