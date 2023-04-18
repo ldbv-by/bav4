@@ -1,6 +1,3 @@
-/**
- * @module service/provider
- */
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 

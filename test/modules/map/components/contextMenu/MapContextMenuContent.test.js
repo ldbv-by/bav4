@@ -5,18 +5,18 @@ import { $injector } from '../../../../../src/injection';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
 window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
 	const mapServiceMock = {
-		getSridDefinitionsForView() {},
+		getCoordinateRepresentations() {},
 		getSrid() {}
 	};
 	const coordinateServiceMock = {
-		stringify() {},
-		transform() {}
+		stringify() {}
 	};
 	const shareServiceMock = {
 		copyToClipboard() {}
@@ -59,11 +59,10 @@ describe('OlMapContextMenuContent', () => {
 		it('renders the content', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			const getSridDefinitionsForViewMock = spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([
-				{ label: 'code42', code: 42, digits: 7 }
+			const getCoordinateRepresentationsMock = spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([
+				GlobalCoordinateRepresentations.WGS84
 			]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-			const transformMock = spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			const stringifyMock = spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			const elevationMock = spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			const administrationMock = spyOn(administrationServiceMock, 'getAdministration')
@@ -77,7 +76,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelector('.content')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.label')[0].innerText).toBe('map_contextMenuContent_community_label');
 			expect(element.shadowRoot.querySelectorAll('.label')[1].innerText).toBe('map_contextMenuContent_district_label');
-			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe('code42');
+			expect(element.shadowRoot.querySelectorAll('.label')[2].innerText).toBe(GlobalCoordinateRepresentations.WGS84.label);
 			expect(element.shadowRoot.querySelectorAll('.label')[3].innerText).toBe('map_contextMenuContent_elevation_label');
 
 			window.requestAnimationFrame(() => {
@@ -90,9 +89,8 @@ describe('OlMapContextMenuContent', () => {
 			const copyIcon = element.shadowRoot.querySelector(Icon.tag);
 			expect(copyIcon).toBeTruthy();
 			expect(copyIcon.title).toBe('map_contextMenuContent_copy_icon');
-			expect(getSridDefinitionsForViewMock).toHaveBeenCalledWith([1000, 2000]);
-			expect(transformMock).toHaveBeenCalledWith([1000, 2000], 3857, 42);
-			expect(stringifyMock).toHaveBeenCalledWith([21, 21], 42, { digits: 7 });
+			expect(getCoordinateRepresentationsMock).toHaveBeenCalledWith([1000, 2000]);
+			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 		});
@@ -100,10 +98,9 @@ describe('OlMapContextMenuContent', () => {
 		it('copies a coordinate to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			const copyToClipboardMock = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.resolve());
-			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
 			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
 			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
@@ -122,10 +119,9 @@ describe('OlMapContextMenuContent', () => {
 		});
 
 		it('fires a notification and logs a warn statement when Clipboard API is not available and disables all copyToClipboard buttons', async () => {
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 			spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(Promise.reject(new Error('something got wrong')));
-			spyOn(coordinateServiceMock, 'transform').and.returnValue([21, 21]);
 			spyOn(coordinateServiceMock, 'stringify').and.returnValue('stringified coordinate');
 			const warnSpy = spyOn(console, 'warn');
 			const element = await setup();
@@ -145,7 +141,7 @@ describe('OlMapContextMenuContent', () => {
 
 		it('logs an error statement when Elevation Service is not available', async () => {
 			const error = new Error('Elevation Error');
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(elevationServiceMock, 'getElevation').and.returnValue(Promise.reject(error));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
@@ -159,7 +155,7 @@ describe('OlMapContextMenuContent', () => {
 
 		it('logs an error statement when Administration Service is not available', async () => {
 			const error = new Error('Administration Error');
-			spyOn(mapServiceMock, 'getSridDefinitionsForView').and.returnValue([{ label: 'code42', code: 42 }]);
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([{ label: 'code42', code: 42 }]);
 			spyOn(administrationServiceMock, 'getAdministration').and.returnValue(Promise.reject(error));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();

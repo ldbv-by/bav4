@@ -3,10 +3,6 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
- * @module notification/action
- */
-
-/**
  * Enum for notification levels.
  * @readonly
  * @enum {string}

@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the properties of featureInfo state.
- * @module featureInfo/action
- */
 import { FEATURE_INFO_REQUEST_START, FEATURE_INFO_ADDED, FEATURE_INFO_REQUEST_ABORT, QUERY_REGISTERED, QUERY_RESOLVED } from './featureInfo.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';

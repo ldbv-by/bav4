@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update network state.
- * @module network/action
- */
 import { FETCHING_CHANGED, OFFLINE_CHANGED } from './network.reducer';
 import { $injector } from '../../injection';
 

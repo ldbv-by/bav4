@@ -1,7 +1,3 @@
-/**
- * Action creators to activate/deactive the measurement tool
- * @module measurement/action
- */
 import {
 	ACTIVE_CHANGED,
 	STATISTIC_CHANGED,

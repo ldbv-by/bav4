@@ -1,7 +1,3 @@
-/**
- * @module service/provider
- */
-
 import { $injector } from '../../injection';
 
 /**

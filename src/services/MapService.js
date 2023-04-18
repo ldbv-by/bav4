@@ -28,7 +28,7 @@ export class MapService {
 	}
 
 	/**
-	 * Internal srid of the map
+	 * Returns the internal srid of the map (typically 3857)
 	 * @returns {number} srid
 	 */
 	getSrid() {
@@ -36,35 +36,67 @@ export class MapService {
 	}
 
 	/**
-	 * Default SRID suitable for the UI.
-	 * @returns {number} srid
-	 */
-	getDefaultSridForView() {
-		return this._definitions.defaultSridForView;
-	}
-
-	/**
-	 * Returns a list with all SridDefinition suitable for the UI. When a coordinate is provided, the list contains
-	 * suitable SridDefinition regarding this coordinate.
+	 * Returns a list with all available CoordinateRepresentation.
+	 *
+	 * When a coordinate is given the list contains
+	 * suitable CoordinateRepresentation regarding this coordinate,
+	 * which means the returned list is dependent on whether this coordinate is inside or outside the extent
+	 * of the supported local projected system (if definded).
+	 *
+	 * If no coordinate is provided the list contains all globally available CoordinateRepresentations.
+	 *
+	 * Note: The first entry of the list should be considered as the current "default" CoordinateRepresentation.
+	 *
 	 * @param {Coordinate} [coordinateInMapProjection] - coordinate in map projection
-	 * @returns {Array<SridDefinition>} srids
+	 * @returns {Array<CoordinateRepresentation>} srids
 	 */
-	getSridDefinitionsForView(coordinateInMapProjection) {
-		return this._definitions.sridDefinitionsForView(coordinateInMapProjection);
+	getCoordinateRepresentations(coordinateInMapProjection) {
+		// we have no projected extent defined or no coordinate is provided
+		if (!this.getLocalProjectedSridExtent() || !coordinateInMapProjection) {
+			return this._definitions.globalCoordinateRepresentations;
+		}
+		// we are outside the projected extent
+		else if (!this._coordinateService.containsCoordinate(this.getLocalProjectedSridExtent(), coordinateInMapProjection)) {
+			return this._definitions.globalCoordinateRepresentations;
+		}
+
+		return this._definitions.localProjectedCoordinateRepresentations(coordinateInMapProjection);
 	}
 
 	/**
-	 * Default SRID for geodetic tasks.
-	 * @returns {number} srid
+	 * Returns the SRID of the supported local projected system.
+	 * For the corresponding extent call {@link MapService#getLocalProjectedSridExtent}.
+	 * @returns {number|null} SRID or `null` when no local projected SRID is supported
 	 */
-	getDefaultGeodeticSrid() {
-		return this._definitions.defaultGeodeticSrid;
+	getLocalProjectedSrid() {
+		return this._definitions.localProjectedSrid;
 	}
 
 	/**
-	 * Return the default extent of the map.
-	 * @param {number}  srid
+	 * Returns the extent of the supported local projected system.
+	 * For the corresponding SRID call {@link MapService#getLocalProjectedSrid}.
+	 * Within this extent all calculations can be done in the euclidean space.
+	 * Outside of this extent all calculations should be done geodesically.
+	 * Can be `null` when no extent is defined.
+	 * @param {number} srid the desired SRID of the returned extent
+	 * @returns {Extent|null} extent
+	 * @throws Unsupported SRID error
+	 */
+	getLocalProjectedSridExtent(srid = this.getSrid()) {
+		switch (srid) {
+			case 3857:
+				return this._coordinateService.fromLonLatExtent(this._definitions.localProjectedSridExtent);
+			case 4326:
+				return this._definitions.localProjectedSridExtent;
+		}
+		throw new Error('Unsupported SRID ' + srid);
+	}
+
+	/**
+	 * Returns the default extent of the map.
+	 * @param {number} srid the desired SRID of the returned extent
 	 * @returns {Extent} extent
+	 * @throws Unsupported SRID error
 	 */
 	getDefaultMapExtent(srid = this.getSrid()) {
 		switch (srid) {
@@ -77,15 +109,7 @@ export class MapService {
 	}
 
 	/**
-	 * Return the default extent for geodetic tasks.
-	 * @returns {Extent} extent
-	 */
-	getDefaultGeodeticExtent() {
-		return this._definitions.defaultGeodeticExtent;
-	}
-
-	/**
-	 * Return the minimal zoom level the map supports
+	 * Returns the minimal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
 	getMinZoomLevel() {
@@ -93,7 +117,7 @@ export class MapService {
 	}
 
 	/**
-	 * Return the maximal zoom level the map supports
+	 * Returns the maximal zoom level the map supports
 	 * @returns {Number} zoom level
 	 */
 	getMaxZoomLevel() {
@@ -111,7 +135,7 @@ export class MapService {
 	/**
 	 * Calculates the resolution at a specific degree of latitude in meters per pixel.
 	 * @param {number} zoom  Zoom level to calculate resolution at
-	 * @param {Coordinate} [coordinate] Coordinate to calculate resolution at (required for non-geodetic map projections like `3857`)
+	 * @param {Coordinate} [coordinate] Coordinate to calculate a resolution (required for global map projections like `3857`)
 	 * @param {number} [srid] Spatial Reference Id. Default is `3857`
 	 * @param {number} [tileSize] tileSize The size of the tiles in the tile pyramid. Default is `256`
 	 */

@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update search state.
- * @module search/action
- */
 import { QUERY_CHANGED } from './search.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';

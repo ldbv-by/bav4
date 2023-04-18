@@ -1,7 +1,3 @@
-/**
- * Action creators to change/update the properties of contextMenu state.
- * @module contextMenu/action
- */
 import { MAP_CONTEXT_MENU_CLICKED } from './mapContextMenu.reducer';
 import { $injector } from '../../injection';
 

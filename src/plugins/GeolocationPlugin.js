@@ -51,10 +51,10 @@ export class GeolocationPlugin extends BaPlugin {
 
 		const positionEpsg3857 = this._transformPositionTo3857(position);
 		const extent3857 = [...positionEpsg3857, ...positionEpsg3857];
-		const geodeticExtent = coordinateService.transformExtent(extent3857, mapService.getSrid(), mapService.getDefaultGeodeticSrid());
+		const geodeticExtent = coordinateService.transformExtent(extent3857, mapService.getSrid(), mapService.getLocalProjectedSrid());
 		const extent = coordinateService.transformExtent(
 			coordinateService.buffer(geodeticExtent, position.coords.accuracy),
-			mapService.getDefaultGeodeticSrid(),
+			mapService.getLocalProjectedSrid(),
 			mapService.getSrid()
 		);
 		fit(extent, { maxZoom: 16 });
