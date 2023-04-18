@@ -2,8 +2,8 @@
  * Enum which holds all valid values for the query parameter key 'IFRAME_COMPONENTS'.
  * @enum
  */
-export const IFrameComponentsValues = Object.freeze({
+export const IFrameComponents = Object.freeze({
 	// official parameters
-	DRAW: 'draw',
+	DRAWING: 'drawing',
 	ACTIVATE_BUTTON: 'abtn'
 });
