@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/InteractionStorageService
+ */
 import { $injector } from '../../../injection';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import { setFileSaveResult as setSharedFileSaveResult } from '../../../store/shared/shared.action';

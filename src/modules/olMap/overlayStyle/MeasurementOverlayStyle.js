@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/overlayStyle/MeasurementOverlayStyle
+ */
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';

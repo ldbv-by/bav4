@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/topics_provider
+ */
 import { $injector } from '../../injection';
 import { Topic } from '../../domain/topic';
 /**

@@ -1,3 +1,6 @@
+/**
+ * @module modules/iframe/components/hint/NonEmbeddedHint
+ */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 

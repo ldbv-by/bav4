@@ -1,3 +1,6 @@
+/**
+ * @module modules/baseLayer/components/switcher/BaseLayerSwitcher
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { addLayer, removeLayer } from '../../../../store/layers/layers.action';

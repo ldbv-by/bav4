@@ -1,3 +1,6 @@
+/**
+ * @module modules/dndImport/components/DndImportPanel
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { MvuElement } from '../../MvuElement';

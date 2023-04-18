@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/toolContainer/ToolContainer
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { DrawToolContent } from '../drawToolContent/DrawToolContent';

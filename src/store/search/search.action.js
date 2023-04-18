@@ -1,3 +1,6 @@
+/**
+ * @module store/search/search_action
+ */
 import { QUERY_CHANGED } from './search.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';

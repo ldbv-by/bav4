@@ -1,3 +1,6 @@
+/**
+ * @module modules/modal/components/Modal
+ */
 import { html, nothing } from 'lit-html';
 import css from './modal.css';
 import { $injector } from '../../../injection';

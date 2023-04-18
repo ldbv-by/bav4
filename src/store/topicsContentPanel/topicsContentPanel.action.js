@@ -1,3 +1,6 @@
+/**
+ * @module store/topicsContentPanel/topicsContentPanel_action
+ */
 import { INDEX_CHANGED } from './topicsContentPanel.reducer';
 import { $injector } from '../../injection';
 

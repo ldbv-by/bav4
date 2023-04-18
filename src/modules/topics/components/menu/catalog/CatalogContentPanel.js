@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/components/menu/catalog/CatalogContentPanel
+ */
 import { html, nothing } from 'lit-html';
 import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { $injector } from '../../../../../injection';

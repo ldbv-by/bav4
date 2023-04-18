@@ -1,3 +1,6 @@
+/**
+ * @module plugins/SharePlugin
+ */
 import { html } from 'lit-html';
 import { Tools } from '../domain/tools';
 import { $injector } from '../injection';

@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ImportPlugin
+ */
 import { $injector } from '../injection';
 import { addLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';

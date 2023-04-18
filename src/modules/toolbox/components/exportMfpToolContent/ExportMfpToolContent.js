@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/exportMfpToolContent/ExportMfpToolContent
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';

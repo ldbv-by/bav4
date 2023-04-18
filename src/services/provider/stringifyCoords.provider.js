@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/stringifyCoords_provider
+ */
 import { createStringXY } from 'ol/coordinate';
 
 /**

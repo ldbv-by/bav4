@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/featureInfo/OlFeatureInfoHandler
+ */
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../utils/storeUtils';

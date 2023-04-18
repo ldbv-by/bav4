@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/olStyleUtils
+ */
 import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';

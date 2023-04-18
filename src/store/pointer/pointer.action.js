@@ -1,3 +1,6 @@
+/**
+ * @module store/pointer/pointer_action
+ */
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { BEING_DRAGGED_CHANGED, CLICK_CHANGED, CONTEXT_CLICK_CHANGED, POINTER_MOVE_CHANGED } from './pointer.reducer';

@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/mapDefinitions_provider
+ */
 import { BvvCoordinateRepresentations, GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 import { $injector } from '../../injection';
 

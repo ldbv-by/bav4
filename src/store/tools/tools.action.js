@@ -1,3 +1,6 @@
+/**
+ * @module store/tools/tools_action
+ */
 import { CURRENT_TOOL_CHANGED } from './tools.reducer';
 import { $injector } from '../../injection';
 

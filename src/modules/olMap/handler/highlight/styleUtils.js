@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/highlight/styleUtils
+ */
 import { getVectorContext } from 'ol/render';
 import { easeIn, easeOut } from 'ol/easing';
 import { Style, Icon, Stroke, Fill } from 'ol/style';

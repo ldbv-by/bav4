@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/contextMenu/MapContextMenuContent
+ */
 import { html, nothing } from 'lit-html';
 import css from './mapContextMenuContent.css';
 import { $injector } from '../../../../injection';

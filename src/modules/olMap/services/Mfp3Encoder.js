@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/Mfp3Encoder
+ */
 import Point from 'ol/geom/Point';
 import { getBottomRight, getTopLeft, intersects as extentIntersects } from 'ol/extent';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';

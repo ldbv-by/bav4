@@ -1,3 +1,6 @@
+/**
+ * @module services/Proj4JsService
+ */
 import { loadBvvDefinitions } from './provider/proj4.provider';
 
 /**

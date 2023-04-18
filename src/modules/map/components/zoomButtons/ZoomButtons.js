@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/zoomButtons/ZoomButtons
+ */
 import { html } from 'lit-html';
 import css from './zoomButtons.css';
 import { $injector } from '../../../../injection';

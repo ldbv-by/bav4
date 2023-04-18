@@ -1,3 +1,6 @@
+/**
+ * @module services/MapService
+ */
 import { $injector } from '../injection';
 import { calc3857MapResolution } from '../utils/mapUtils';
 import { findAllBySelector, REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME } from '../utils/markup';

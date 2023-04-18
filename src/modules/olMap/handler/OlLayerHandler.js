@@ -1,4 +1,7 @@
 /**
+ * @module modules/olMap/handler/OlLayerHandler
+ */
+/**
  * Configuration for a layer handler
  * @typedef {Object} LayerHandlerOptions
  * @property {boolean} [preventDefaultClickHandling=true]  `true` if default click event handling on map should be disabled

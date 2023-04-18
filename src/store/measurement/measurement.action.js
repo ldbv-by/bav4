@@ -1,3 +1,6 @@
+/**
+ * @module store/measurement/measurement_action
+ */
 import {
 	ACTIVE_CHANGED,
 	STATISTIC_CHANGED,

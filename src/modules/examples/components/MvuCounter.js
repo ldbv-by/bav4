@@ -1,3 +1,6 @@
+/**
+ * @module modules/examples/components/MvuCounter
+ */
 import { html } from 'lit-html';
 import { setCurrent } from './../../../store/topics/topics.action';
 import { MvuElement } from './../../MvuElement';

@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/featureInfo/featureInfoItem_provider
+ */
 import { FeatureInfoGeometryTypes } from '../../../../store/featureInfo/featureInfo.action';
 import GeoJSON from 'ol/format/GeoJSON';
 import {

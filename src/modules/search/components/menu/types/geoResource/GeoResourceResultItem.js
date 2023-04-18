@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/types/geoResource/GeoResourceResultItem
+ */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';

@@ -1,3 +1,6 @@
+/**
+ * @module utils/storeUtils
+ */
 import { createUniqueId } from './numberUtils';
 
 /**

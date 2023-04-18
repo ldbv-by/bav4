@@ -1,3 +1,6 @@
+/**
+ * @module services/UrlService
+ */
 import { $injector } from '../injection';
 import { isHttpUrl } from '../utils/checks';
 import { bvvProxifyUrlProvider } from './provider/proxifyUrl.provider';

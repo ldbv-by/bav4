@@ -1,4 +1,7 @@
 /**
+ * @module services/MapFeedbackService
+ */
+/**
  * @typedef {Object} MapFeedback
  * @property {string} state the encoded state of the map
  * @property {string} category the category of this feedback message

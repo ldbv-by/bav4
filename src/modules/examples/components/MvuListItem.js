@@ -1,3 +1,6 @@
+/**
+ * @module modules/examples/components/MvuListItem
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import topicItemCss from './mvuListItem.css';

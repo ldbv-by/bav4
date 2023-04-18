@@ -1,3 +1,6 @@
+/**
+ * @module store/iframeContainer/iframeContainer_action
+ */
 import { IFRAME_CONTAINER_CHANGED } from './iframeContainer.reducer';
 import { $injector } from '../../injection';
 
