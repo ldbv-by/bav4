@@ -49,8 +49,8 @@ export class MeasurementOverlay extends BaOverlay {
 		this._type = MeasurementOverlayTypes.TEXT;
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
-			toProjectionExtent: this._mapService.getDefaultGeodeticExtent()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._isDraggable = false;
 		this._placement = { sector: 'init', positioning: 'top-center', offset: [0, -25] };

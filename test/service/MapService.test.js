@@ -4,8 +4,10 @@ import { $injector } from '../../src/injection';
 
 describe('MapService', () => {
 	const coordinateServiceMock = {
+		fromLonLatExtent() {},
 		toLonLatExtent() {},
-		toLonLat() {}
+		toLonLat() {},
+		containsCoordinate() {}
 	};
 
 	beforeAll(() => {
@@ -16,14 +18,11 @@ describe('MapService', () => {
 		const definitionsProvider = () => {
 			return {
 				defaultExtent: [0, 1, 2, 3],
-				defaultGeodeticExtent: [4, 5, 6, 7],
+				localProjectedSridExtent: [4, 5, 6, 7],
 				srid: 3857,
-				defaultSridForView: 4326,
-				sridDefinitionsForView: () => [
-					{ label: 'WGS88', code: 4326 },
-					{ label: 'Something', code: 9999 }
-				],
-				defaultGeodeticSrid: 9999,
+				localProjectedCoordinateRepresentations: () => [{ label: 'Local projected SRID', code: 9999 }],
+				globalCoordinateRepresentations: [{ label: 'Global SRID', code: 1111 }],
+				localProjectedSrid: 9999,
 				minZoomLevel: 5,
 				maxZoomLevel: 21
 			};
@@ -53,7 +52,7 @@ describe('MapService', () => {
 			expect(instanceUnderTest.getDefaultMapExtent(4326)).toEqual([4, 5, 6, 7]);
 		});
 
-		it('throws an exception for an unsupporteed srid', () => {
+		it('throws an exception for a unsupported SRID', () => {
 			const instanceUnderTest = setup();
 
 			expect(() => {
@@ -62,25 +61,63 @@ describe('MapService', () => {
 		});
 	});
 
-	it('provides a default geodetic extent', () => {
-		const instanceUnderTest = setup();
+	describe('provides the extent of the local projected system', () => {
+		it('for 3857', () => {
+			const instanceUnderTest = setup();
+			spyOn(coordinateServiceMock, 'fromLonLatExtent').withArgs([4, 5, 6, 7]).and.returnValue([0, 1, 2, 3]);
 
-		expect(instanceUnderTest.getDefaultGeodeticExtent()).toEqual([4, 5, 6, 7]);
+			expect(instanceUnderTest.getLocalProjectedSridExtent()).toEqual([0, 1, 2, 3]);
+		});
+
+		it('for 4326', () => {
+			const instanceUnderTest = setup();
+
+			expect(instanceUnderTest.getLocalProjectedSridExtent(4326)).toEqual([4, 5, 6, 7]);
+		});
+
+		it('throws an exception for an unsupported SRID', () => {
+			const instanceUnderTest = setup();
+
+			expect(() => {
+				instanceUnderTest.getLocalProjectedSridExtent(21);
+			}).toThrowError(/Unsupported SRID 21/);
+		});
 	});
 
-	it('provides a default srid for the view', () => {
-		const instanceUnderTest = setup();
+	describe('Returns a list with all SridDefinition suitable for the UI', () => {
+		it('provides an array of global SridDefintions when called without argument', () => {
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue([5, -80, 14, 80]);
 
-		expect(instanceUnderTest.getDefaultSridForView()).toBe(4326);
-	});
+			expect(instanceUnderTest.getCoordinateRepresentations()).toEqual([{ label: 'Global SRID', code: 1111 }]);
+		});
 
-	it('provides an array of srids for the view', () => {
-		const instanceUnderTest = setup();
+		it('provides an array of global SridDefintions when local projected extent is not defined', () => {
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(null);
 
-		expect(instanceUnderTest.getSridDefinitionsForView()).toEqual([
-			{ label: 'WGS88', code: 4326 },
-			{ label: 'Something', code: 9999 }
-		]);
+			expect(instanceUnderTest.getCoordinateRepresentations([0, 0])).toEqual([{ label: 'Global SRID', code: 1111 }]);
+		});
+
+		it('provides an array of local projected SridDefintions when coordinate is within local projected extent', () => {
+			const coordinate = [0, 0];
+			const localProjectedSridExtent = [5, -80, 14, 80];
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(true);
+
+			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Local projected SRID', code: 9999 }]);
+		});
+
+		it('provides an array of global SridDefintions when when coordinate is outside local projected extent', () => {
+			const coordinate = [0, 0];
+			const localProjectedSridExtent = [5, -80, 14, 80];
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'getLocalProjectedSridExtent').and.returnValue(localProjectedSridExtent);
+			spyOn(coordinateServiceMock, 'containsCoordinate').withArgs(localProjectedSridExtent, coordinate).and.returnValue(false);
+
+			expect(instanceUnderTest.getCoordinateRepresentations(coordinate)).toEqual([{ label: 'Global SRID', code: 1111 }]);
+		});
 	});
 
 	it('provides the internal srid of the map', () => {
@@ -89,10 +126,10 @@ describe('MapService', () => {
 		expect(instanceUnderTest.getSrid()).toBe(3857);
 	});
 
-	it('provides a srid for geodetic tasks', () => {
+	it('provides the SRID of the local projected system', () => {
 		const instanceUnderTest = setup();
 
-		expect(instanceUnderTest.getDefaultGeodeticSrid()).toBe(9999);
+		expect(instanceUnderTest.getLocalProjectedSrid()).toBe(9999);
 	});
 
 	it('provides the min zoom level', () => {
