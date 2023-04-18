@@ -1,5 +1,5 @@
+import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { Tools } from '../../../../src/domain/tools';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
 import { drawReducer } from '../../../../src/store/draw/draw.reducer';
@@ -64,7 +64,7 @@ describe('DrawTool', () => {
 		});
 
 		describe('when queryParam for drawTool is set', () => {
-			const drawToolQueryParam = QueryParameters.TOOL_ID + '=' + Tools.DRAWING;
+			const drawToolQueryParam = QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAWING + ',foo,bar';
 
 			beforeEach(() => {
 				spyOnProperty(windowMock.location, 'search').and.returnValue(drawToolQueryParam);

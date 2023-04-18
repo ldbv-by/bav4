@@ -7,10 +7,10 @@ import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
 import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
-import { Tools } from '../../../../domain/tools';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
 import css from './drawTool.css';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
@@ -67,9 +67,9 @@ export class DrawTool extends MvuElement {
 	isRenderingSkipped() {
 		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
 
-		// check if we have a query parameter defining the tab id
-		const toolId = queryParams.get(QueryParameters.TOOL_ID);
-		return toolId !== Tools.DRAWING;
+		// check if we have a query parameter defining the iframe drawtool
+		const iframeComponent = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+		return iframeComponent ? !iframeComponent.split(',').includes(IFrameComponents.DRAWING) : true;
 	}
 
 	_buildTools() {
