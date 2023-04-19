@@ -45,7 +45,7 @@ describe('OlMfpHandler', () => {
 			return { top: 10, right: 20, bottom: 30, left: 40 };
 		},
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832,
+		getLocalProjectedSrid: () => 25832,
 		getMinZoomLevel: () => 0,
 		getMaxZoomLevel: () => 42
 	};

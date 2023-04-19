@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/sourceType_provider
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';

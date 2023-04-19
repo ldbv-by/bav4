@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/wmsCapabilities_provider
+ */
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../HttpService';
@@ -60,7 +63,7 @@ export const bvvCapabilitiesProvider = async (url, options) => {
 					.setQueryable(layer.queryable)
 					.setExtraParams(getExtraParams(capabilities))
 					// WmsGeoResource should be only exportable if capabilities layer supports geodetic SRID
-					.setExportable(layer.referenceSystems.map((refs) => refs.code).includes(mapService.getDefaultGeodeticSrid()))
+					.setExportable(layer.referenceSystems.map((refs) => refs.code).includes(mapService.getLocalProjectedSrid()))
 			: null;
 	};
 

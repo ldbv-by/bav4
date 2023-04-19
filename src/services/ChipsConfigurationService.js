@@ -1,3 +1,6 @@
+/**
+ * @module services/ChipsConfigurationService
+ */
 import { $injector } from '../injection';
 import { FALLBACK_GEORESOURCE_ID_2, FALLBACK_GEORESOURCE_ID_3 } from './GeoResourceService';
 import { loadBvvChipConfiguration } from './provider/chipsConfiguration.provider';
@@ -18,10 +21,10 @@ export class ChipsConfigurationService {
 
 	/**
 	 * Loads all available Chip configurations and caches them internally.
-	 * If loading fails a fallback is delivered if app is in standalone mode
+	 * If loading fails and the app is in standalone mode a fallback will be delivered.
 	 * @public
 	 * @async
-	 * @returns {Promise<Array<ChipConfiguration>>}
+	 * @returns {Promise<Array<module:domain/chipConfigurationTypeDef~ChipConfiguration>>}
 	 */
 	async all() {
 		if (!this._configurations) {

@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/types/geoResource/GeoResourceResultsPanel
+ */
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../../../../injection';

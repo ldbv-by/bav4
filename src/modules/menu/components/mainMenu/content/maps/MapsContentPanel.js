@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mainMenu/content/maps/MapsContentPanel
+ */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 

@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/measureToolContent/MeasureToolContent
+ */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { classMap } from 'lit-html/directives/class-map.js';

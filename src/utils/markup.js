@@ -1,3 +1,6 @@
+/**
+ * @module utils/markup
+ */
 import { BaElement } from '../modules/BaElement';
 import { MvuElement } from '../modules/MvuElement';
 

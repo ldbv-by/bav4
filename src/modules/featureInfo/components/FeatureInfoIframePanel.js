@@ -1,3 +1,6 @@
+/**
+ * @module modules/featureInfo/components/FeatureInfoIframePanel
+ */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../injection';

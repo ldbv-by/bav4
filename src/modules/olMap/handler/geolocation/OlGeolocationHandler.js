@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/geolocation/OlGeolocationHandler
+ */
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
 import { OlLayerHandler } from '../OlLayerHandler';

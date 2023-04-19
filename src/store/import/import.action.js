@@ -1,3 +1,6 @@
+/**
+ * @module store/import/import_action
+ */
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { IMPORT_ADDED } from './import.reducer';

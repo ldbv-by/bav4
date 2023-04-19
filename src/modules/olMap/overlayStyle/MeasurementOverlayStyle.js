@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/overlayStyle/MeasurementOverlayStyle
+ */
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
@@ -40,7 +43,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		this._storeService = StoreService;
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid()
 		};
 	}
 

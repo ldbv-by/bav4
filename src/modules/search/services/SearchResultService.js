@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/services/SearchResultService
+ */
 import { $injector } from '../../../injection';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';
 import { isHttpUrl } from '../../../utils/checks';

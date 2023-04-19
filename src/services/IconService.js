@@ -1,3 +1,6 @@
+/**
+ * @module services/IconService
+ */
 import { loadBvvIcons } from './provider/icons.provider';
 import { getBvvIconColor } from './provider/iconColor.provider';
 import { $injector } from '../injection';

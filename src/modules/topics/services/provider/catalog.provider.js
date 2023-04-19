@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/services/provider/catalog_provider
+ */
 import { $injector } from '../../../../injection';
 import {
 	FALLBACK_GEORESOURCE_ID_0,

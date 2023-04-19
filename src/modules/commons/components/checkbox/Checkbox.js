@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/checkbox/Checkbox
+ */
 import { html } from 'lit-html';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 import { MvuElement } from '../../../MvuElement';

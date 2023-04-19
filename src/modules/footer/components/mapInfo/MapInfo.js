@@ -1,3 +1,6 @@
+/**
+ * @module modules/footer/components/mapInfo/MapInfo
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapInfo.css';

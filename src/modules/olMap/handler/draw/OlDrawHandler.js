@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/draw/OlDrawHandler
+ */
 import { DRAW_LAYER_ID } from '../../../../plugins/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
@@ -125,8 +128,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
-			toProjectionExtent: this._mapService.getDefaultGeodeticExtent()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;

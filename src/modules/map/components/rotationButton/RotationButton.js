@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/rotationButton/RotationButton
+ */
 import { html, nothing } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './rotationButton.css';

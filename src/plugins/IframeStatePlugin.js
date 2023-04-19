@@ -1,3 +1,6 @@
+/**
+ * @module plugins/IframeStatePlugin
+ */
 import { PathParameters } from '../domain/pathParameters';
 import { $injector } from '../injection';
 import { findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';

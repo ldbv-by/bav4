@@ -1,3 +1,6 @@
+/**
+ * @module services/HttpService
+ */
 import { setFetching } from '../store/network/network.action';
 
 /**

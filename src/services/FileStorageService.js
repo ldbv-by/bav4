@@ -1,3 +1,6 @@
+/**
+ * @module services/FileStorageService
+ */
 import { $injector } from '../injection';
 
 /**

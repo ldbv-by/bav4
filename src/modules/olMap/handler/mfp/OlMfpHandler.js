@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/mfp/OlMfpHandler
+ */
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';
 import { setScale, startJob } from '../../../../store/mfp/mfp.action';

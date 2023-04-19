@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/autocomplete/AutocompleteSearch
+ */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { repeat } from 'lit-html/directives/repeat.js';

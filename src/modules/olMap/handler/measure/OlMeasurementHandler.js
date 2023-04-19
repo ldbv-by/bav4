@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/measure/OlMeasurementHandler
+ */
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -92,8 +95,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
-			toProjectionExtent: this._mapService.getDefaultGeodeticExtent()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;

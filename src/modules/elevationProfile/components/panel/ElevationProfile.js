@@ -1,3 +1,6 @@
+/**
+ * @module modules/elevationProfile/components/panel/ElevationProfile
+ */
 import { html } from 'lit-html';
 import css from './elevationProfile.css';
 import { MvuElement } from '../../../MvuElement';

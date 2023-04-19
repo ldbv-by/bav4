@@ -1,4 +1,7 @@
 /**
+ * @module services/ProcessEnvConfigService
+ */
+/**
  * Service provides all configuration properties.
  * Properties are loaded from the process.env object,
  * External config properties may be optionally set by the config.js resource  (see `/src/assets/config.js`).

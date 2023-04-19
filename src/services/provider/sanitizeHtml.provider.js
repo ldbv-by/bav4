@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/sanitizeHtml_provider
+ */
 import DOMPurify from 'dompurify';
 
 const Black_List = [

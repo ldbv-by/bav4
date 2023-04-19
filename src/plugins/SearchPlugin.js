@@ -1,3 +1,6 @@
+/**
+ * @module plugins/SearchPlugin
+ */
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { setQuery } from '../store/search/search.action';

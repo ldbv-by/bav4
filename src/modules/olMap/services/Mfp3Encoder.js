@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/Mfp3Encoder
+ */
 import Point from 'ol/geom/Point';
 import { getBottomRight, getTopLeft, intersects as extentIntersects } from 'ol/extent';
 import { GeoJSON as GeoJSONFormat } from 'ol/format';
@@ -104,7 +107,7 @@ export class BvvMfp3Encoder {
 		this._mfpProperties = encodingProperties;
 		this._mfpProjection = this._mfpProperties.targetSRID
 			? `EPSG:${this._mfpProperties.targetSRID}`
-			: `EPSG:${this._mapService.getDefaultGeodeticSrid()}`;
+			: `EPSG:${this._mapService.getLocalProjectedSrid()}`;
 
 		const validEncodingProperties = (properties) => {
 			return properties.layoutId != null && properties.scale != null && properties.scale !== 0 && properties.dpi != null;

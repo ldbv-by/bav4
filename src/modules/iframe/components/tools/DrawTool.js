@@ -1,3 +1,6 @@
+/**
+ * @module modules/iframe/components/tools/DrawTool
+ */
 import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';

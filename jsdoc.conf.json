@@ -8,7 +8,10 @@
 		"includePattern": ".+\\.js(doc|x)?$",
 		"excludePattern": "(^|\\/|\\\\)_"
 	},
-	"plugins": ["plugins/markdown"],
+	"plugins": ["plugins/markdown", "jsdoc-ts-utils"],
+	"typescript": {
+		"moduleRoot": "src"
+	},
 	"templates": {
 		"cleverLinks": true,
 		"monospaceLinks": true
@@ -16,6 +19,11 @@
 	"opts": {
 		"destination": "docs",
 		"recurse": true,
-		"readme": "README.md"
+		"readme": "README.md",
+		"template": "./node_modules/docdash"
+	},
+	"docdash": {
+		"search": true,
+		"sectionOrder": ["Modules", "Global", "Interfaces"]
 	}
 }

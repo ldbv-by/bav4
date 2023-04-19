@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/olMapUtils
+ */
 export const updateOlLayer = (olLayer, layer) => {
 	olLayer.setVisible(layer.visible);
 	olLayer.setOpacity(layer.opacity);

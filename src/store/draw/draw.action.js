@@ -1,6 +1,5 @@
 /**
- * Action creators to activate/deactive the draw tool
- * @module draw/action
+ * @module store/draw/draw_action
  */
 import {
 	ACTIVE_CHANGED,

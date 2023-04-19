@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/types/location/LocationResultItem
+ */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import css from './locationResultItem.css';
