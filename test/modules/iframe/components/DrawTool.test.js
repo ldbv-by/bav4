@@ -118,7 +118,23 @@ describe('DrawTool', () => {
 				expect(lastButton.classList.contains('is-active')).toBeFalse();
 			});
 
-			it('toggles a tool', async () => {
+			it('toggles the marker tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#marker-button');
+
+				toolButton.click();
+				await TestUtils.timeout();
+
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('marker');
+
+				toolButton.click();
+				await TestUtils.timeout();
+
+				expect(store.getState().draw.active).toBeFalse();
+			});
+
+			it('toggles the line tool', async () => {
 				const element = await setup();
 				const toolButton = element.shadowRoot.querySelector('#line-button');
 
