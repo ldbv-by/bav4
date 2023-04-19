@@ -70,9 +70,9 @@ export class DrawTool extends MvuElement {
 	isRenderingSkipped() {
 		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
 
-		// check if we have a query parameter defining the iframe drawtool
-		const iframeComponent = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
-		return iframeComponent ? !iframeComponent.split(',').includes(IFrameComponents.DRAWING) : true;
+		// check if we have a query parameter defining the iframe drawTool
+		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+		return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.DRAWING) : true;
 	}
 
 	_buildTools() {
