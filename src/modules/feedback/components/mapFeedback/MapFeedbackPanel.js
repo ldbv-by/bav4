@@ -155,7 +155,6 @@ export class MapFeedbackPanel extends MvuElement {
 						<select id="category" name="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
-						<label class="helper-label error-label">Helper text error</label>
 					</div>
 
 					<div class="ba-form-element">
@@ -166,9 +165,6 @@ export class MapFeedbackPanel extends MvuElement {
 					<div class="ba-form-element">
 						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
 						<input type="email" id="email" name="email" placeholder="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" />
-
-						<i class="bar"></i>
-						<label class="helper-label error-label">Helper text error</label>
 					</div>
 
 					<div class="ba-form-element">
