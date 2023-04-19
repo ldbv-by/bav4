@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/geoResource_provider
+ */
 import {
 	AggregateGeoResource,
 	VectorGeoResource,

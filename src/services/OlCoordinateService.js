@@ -1,3 +1,6 @@
+/**
+ * @module services/OlCoordinateService
+ */
 import { fromLonLat, toLonLat, transformExtent, transform } from 'ol/proj';
 import { bvvStringifyFunction } from './provider/stringifyCoords.provider';
 import { buffer, containsCoordinate } from 'ol/extent';

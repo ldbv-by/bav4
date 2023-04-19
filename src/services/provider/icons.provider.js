@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/icons_provider
+ */
 import { $injector } from '../../injection';
 import { IconResult } from '../IconService';
 

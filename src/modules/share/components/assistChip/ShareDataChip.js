@@ -1,3 +1,6 @@
+/**
+ * @module modules/share/components/assistChip/ShareDataChip
+ */
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';

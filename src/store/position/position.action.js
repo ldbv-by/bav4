@@ -1,3 +1,6 @@
+/**
+ * @module store/position/position_action
+ */
 import {
 	ZOOM_CHANGED,
 	CENTER_CHANGED,

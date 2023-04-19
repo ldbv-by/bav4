@@ -1,3 +1,6 @@
+/**
+ * @module services/ShareService
+ */
 import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';

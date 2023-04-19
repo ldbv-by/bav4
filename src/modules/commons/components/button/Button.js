@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/button/Button
+ */
 import { html, nothing } from 'lit-html';
 import css from './button.css';
 import { classMap } from 'lit-html/directives/class-map.js';

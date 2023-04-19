@@ -1,3 +1,6 @@
+/**
+ * @module store/network/network_action
+ */
 import { FETCHING_CHANGED, OFFLINE_CHANGED } from './network.reducer';
 import { $injector } from '../../injection';
 

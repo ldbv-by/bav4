@@ -1,4 +1,7 @@
 /**
+ * @module domain/tools
+ */
+/**
  * Enum which holds all valid tool ids.
  * @enum
  */

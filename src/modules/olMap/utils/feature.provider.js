@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/feature_provider
+ */
 import { $injector } from '../../../injection';
 
 /**

@@ -1,3 +1,6 @@
+/**
+ * @module modules/uiTheme/components/provider/ThemeProvider
+ */
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';
 

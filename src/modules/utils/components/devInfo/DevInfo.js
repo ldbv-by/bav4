@@ -1,3 +1,6 @@
+/**
+ * @module modules/utils/components/devInfo/DevInfo
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import css from './devInfo.css';

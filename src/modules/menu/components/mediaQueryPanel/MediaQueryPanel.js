@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mediaQueryPanel/MediaQueryPanel
+ */
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import cssmain from '../../../../main.css';

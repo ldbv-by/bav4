@@ -1,3 +1,6 @@
+/**
+ * @module plugins/HighlightPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';

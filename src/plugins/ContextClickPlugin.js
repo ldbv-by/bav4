@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ContextClickPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { html } from 'lit-html';

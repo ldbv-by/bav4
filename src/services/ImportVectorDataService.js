@@ -1,3 +1,6 @@
+/**
+ * @module services/ImportVectorDataService
+ */
 import { $injector } from '../injection';
 import { createUniqueId } from '../utils/numberUtils';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../domain/geoResources';

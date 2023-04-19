@@ -1,3 +1,6 @@
+/**
+ * @module utils/PromiseQueue
+ */
 /* eslint-disable promise/prefer-await-to-then */
 
 /**

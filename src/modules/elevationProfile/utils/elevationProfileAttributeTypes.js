@@ -1,3 +1,6 @@
+/**
+ * @module modules/elevationProfile/utils/elevationProfileAttributeTypes
+ */
 import { $injector } from '../../../injection';
 
 export class ElevationProfileAttributeType {

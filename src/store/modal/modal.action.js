@@ -1,3 +1,6 @@
+/**
+ * @module store/modal/modal_action
+ */
 import { MODAL_CHANGED } from './modal.reducer';
 import { $injector } from '../../injection';
 

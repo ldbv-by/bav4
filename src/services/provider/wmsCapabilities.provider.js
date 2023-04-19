@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/wmsCapabilities_provider
+ */
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
 import { MediaType } from '../HttpService';

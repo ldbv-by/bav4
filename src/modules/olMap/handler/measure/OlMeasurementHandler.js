@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/measure/OlMeasurementHandler
+ */
 import { DragPan, Draw, Modify, Select, Snap } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';

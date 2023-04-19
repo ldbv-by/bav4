@@ -1,3 +1,6 @@
+/**
+ * @module modules/footer/components/coordinateSelect/CoordinateSelect
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import css from './coordinateSelect.css';

@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/StyleService
+ */
 import { getUid } from 'ol';
 import { $injector } from '../../../injection';
 import { rgbToHex } from '../../../utils/colors';

@@ -1,4 +1,7 @@
 /**
+ * @module domain/chipConfigurationTypeDef
+ */
+/**
  * Configuration of a Chip.
  * @typedef ChipConfiguration
  * @property {string} id The id of this chip

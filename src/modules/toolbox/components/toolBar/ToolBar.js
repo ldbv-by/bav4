@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/toolBar/ToolBar
+ */
 import { html } from 'lit-html';
 import css from './toolBar.css';
 import { $injector } from '../../../../injection';

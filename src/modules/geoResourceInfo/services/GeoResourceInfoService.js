@@ -1,3 +1,6 @@
+/**
+ * @module modules/geoResourceInfo/services/GeoResourceInfoService
+ */
 import { loadBvvGeoResourceInfo } from './provider/geoResourceInfoResult.provider';
 import { $injector } from '../../../injection';
 

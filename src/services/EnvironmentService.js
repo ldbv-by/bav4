@@ -1,3 +1,6 @@
+/**
+ * @module services/EnvironmentService
+ */
 import { $injector } from '../injection';
 
 /**

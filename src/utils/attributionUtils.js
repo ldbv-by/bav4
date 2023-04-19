@@ -1,4 +1,7 @@
 /**
+ * @module utils/attributionUtils
+ */
+/**
  * Returns a unique array of Copyright object from an array of GeoResources.
  * @param {GeoResource} geoResources
  * @param {number} [zoomLevel=0] zoomLevel

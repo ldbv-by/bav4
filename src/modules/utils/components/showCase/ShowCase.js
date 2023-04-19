@@ -1,3 +1,6 @@
+/**
+ * @module modules/utils/components/showCase/ShowCase
+ */
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import { $injector } from '../../../../injection';

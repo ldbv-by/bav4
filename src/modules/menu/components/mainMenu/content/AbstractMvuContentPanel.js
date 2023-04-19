@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mainMenu/content/AbstractMvuContentPanel
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../../MvuElement';
 import contentPanelCss from './abstractContentPanel.css';

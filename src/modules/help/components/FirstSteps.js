@@ -1,3 +1,6 @@
+/**
+ * @module modules/help/components/FirstSteps
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './firststeps.css';

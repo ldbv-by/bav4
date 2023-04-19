@@ -1,3 +1,6 @@
+/**
+ * @module store/mainMenu/mainMenu_action
+ */
 import { OPEN_CLOSED_CHANGED, TAB_CHANGED } from './mainMenu.reducer';
 import { $injector } from '../../injection';
 

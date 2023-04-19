@@ -1,4 +1,7 @@
 /**
+ * @module utils/mapUtils
+ */
+/**
  * Calculates the resolution at a specific degree of latitude in meters per pixel based on the 3857 projection.
  * @param {number} latitude Degree of latitude to calculate resolution at
  * @param {number} zoom Zoom level to calculate resolution at

@@ -1,3 +1,6 @@
+/**
+ * @module plugins/TopicsPlugin
+ */
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';

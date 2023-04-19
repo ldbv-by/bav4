@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/fileStorage_provider
+ */
 import { $injector } from '../../injection';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
