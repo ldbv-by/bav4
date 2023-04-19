@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/types/resultPanelUtils
+ */
 export const requestData = async (term, provider, minQueryLength) => {
 	if (term && term.trim().length >= minQueryLength) {
 		try {

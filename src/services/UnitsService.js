@@ -1,3 +1,6 @@
+/**
+ * @module services/UnitsService
+ */
 import { bvvAreaUnitsProvider, bvvDistanceUnitsProvider } from './provider/units.provider';
 
 /**

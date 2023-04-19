@@ -1,3 +1,6 @@
+/**
+ * @module modules/iframe/components/chips/ViewLargerMapChip
+ */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';

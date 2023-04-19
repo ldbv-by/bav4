@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/profile_provider
+ */
 import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
 

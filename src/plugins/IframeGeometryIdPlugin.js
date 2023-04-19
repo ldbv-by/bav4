@@ -1,3 +1,6 @@
+/**
+ * @module plugins/IframeGeometryIdPlugin
+ */
 import { $injector } from '../injection';
 import { findAllBySelector, IFRAME_GEOMETRY_REFERENCE_ID } from '../utils/markup';
 import { observe } from '../utils/storeUtils';

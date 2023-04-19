@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/LayerService
+ */
 import { $injector } from '../../../injection';
 import { GeoResourceAuthenticationType, GeoResourceTypes } from '../../../domain/geoResources';
 import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';

@@ -1,4 +1,7 @@
 /**
+ * @module domain/queryParameters
+ */
+/**
  * Enum which holds all valid query parameter keys.
  * @enum
  */

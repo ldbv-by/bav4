@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/contextMenu/MapContextMenu
+ */
 import { html, nothing } from 'lit-html';
 import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';

@@ -1,3 +1,6 @@
+/**
+ * @module store/mapContextMenu/mapContextMenu_action
+ */
 import { MAP_CONTEXT_MENU_CLICKED } from './mapContextMenu.reducer';
 import { $injector } from '../../injection';
 

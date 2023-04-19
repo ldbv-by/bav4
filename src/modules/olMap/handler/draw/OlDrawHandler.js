@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/draw/OlDrawHandler
+ */
 import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../plugins/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';

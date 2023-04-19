@@ -1,4 +1,7 @@
 /**
+ * @module services/GeoResourceService
+ */
+/**
  * An async function that provides an array of {@link GeoResource}s.
  *
  * @async

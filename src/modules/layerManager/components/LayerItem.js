@@ -1,3 +1,6 @@
+/**
+ * @module modules/layerManager/components/LayerItem
+ */
 import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';

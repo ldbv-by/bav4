@@ -25,6 +25,7 @@ jobs:
           npm run prettier:check
           npm run lint
           npm run es-check
+          npm run doc:check
           npm run doc
 
       - name: Run tests

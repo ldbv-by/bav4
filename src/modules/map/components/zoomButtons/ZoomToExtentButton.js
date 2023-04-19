@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/zoomButtons/ZoomToExtentButton
+ */
 import { html } from 'lit-html';
 import { BaElement } from '../../../BaElement';
 import css from './zoomToExtentButton.css';

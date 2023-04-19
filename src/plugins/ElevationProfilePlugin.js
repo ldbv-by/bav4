@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ElevationProfilePlugin
+ */
 import { html } from 'lit-html';
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 import { closeProfile } from '../store/elevationProfile/elevationProfile.action';

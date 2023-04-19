@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/services/CatalogService
+ */
 import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadFallbackCatalog, loadBvvCatalog } from './provider/catalog.provider';
 

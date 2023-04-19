@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/components/menu/catalog/CatalogNode
+ */
 import { html, nothing } from 'lit-html';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import { classMap } from 'lit-html/directives/class-map.js';

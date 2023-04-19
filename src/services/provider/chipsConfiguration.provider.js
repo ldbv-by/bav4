@@ -1,4 +1,7 @@
 /**
+ * @module services/provider/chipsConfiguration_provider
+ */
+/**
  * A function that returns a promise resolving to an array of `ChipConfiguration`.
  *
  * @typedef {function() : (Promise<Array<ChipConfiguration>>)} chipsConfigurationProvider

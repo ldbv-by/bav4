@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/OlSketchHandler
+ */
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 

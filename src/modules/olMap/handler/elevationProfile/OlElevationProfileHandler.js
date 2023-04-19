@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/elevationProfile/OlElevationProfileHandler
+ */
 import { Modify, Select } from 'ol/interaction';
 import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';

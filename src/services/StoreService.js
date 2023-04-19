@@ -1,3 +1,6 @@
+/**
+ * @module services/StoreService
+ */
 import { combineReducers, createStore } from 'redux';
 import { positionReducer } from '../store/position/position.reducer';
 import { layersReducer } from '../store/layers/layers.reducer';

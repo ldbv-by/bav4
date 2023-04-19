@@ -1,3 +1,6 @@
+/**
+ * @module store/chips/chips_action
+ */
 import { CHIPS_CHANGED } from './chips.reducer';
 import { $injector } from '../../injection';
 

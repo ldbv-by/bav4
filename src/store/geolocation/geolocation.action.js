@@ -1,3 +1,6 @@
+/**
+ * @module store/geolocation/geolocation_action
+ */
 import { ACTIVE_CHANGED, DENIED_CHANGED, TRACKING_CHANGED, ACCURACY_CHANGED, POSITION_CHANGED } from './geolocation.reducer';
 import { $injector } from '../../injection';
 

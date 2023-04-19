@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/formats/kml
+ */
 import { Feature } from 'ol';
 import { LineString, Polygon } from 'ol/geom';
 import { Icon, Style } from 'ol/style';

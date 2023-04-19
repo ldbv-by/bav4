@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/geolocation/styleUtils
+ */
 import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style';
 import { easeOut } from 'ol/easing';
 import { getVectorContext } from 'ol/render';

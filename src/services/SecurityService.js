@@ -1,3 +1,6 @@
+/**
+ * @module services/SecurityService
+ */
 import { domPurifySanitizeHtml } from './provider/sanitizeHtml.provider';
 
 export class SecurityService {

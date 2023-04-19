@@ -1,3 +1,6 @@
+/**
+ * @module plugins/FeatureInfoPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { abortOrReset, addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../store/featureInfo/featureInfo.action';

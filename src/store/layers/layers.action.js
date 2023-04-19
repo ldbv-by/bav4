@@ -1,3 +1,6 @@
+/**
+ * @module store/layers/layers_action
+ */
 import { LAYER_MODIFIED, LAYER_ADDED, LAYER_REMOVED, LAYER_RESOURCES_READY, LAYER_GEORESOURCE_CHANGED } from './layers.reducer';
 import { $injector } from '../../injection';
 import { GeoResource } from '../../domain/geoResources';

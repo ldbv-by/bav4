@@ -1,3 +1,6 @@
+/**
+ * @module modules/geoResourceInfo/services/provider/geoResourceInfoResult_provider
+ */
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../services/HttpService';

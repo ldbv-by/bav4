@@ -1,3 +1,6 @@
+/**
+ * @module store/shared/shared_action
+ */
 import { $injector } from '../../injection';
 import { FILE_SAVE_RESULT_CHANGED, TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';
 

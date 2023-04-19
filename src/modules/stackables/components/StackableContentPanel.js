@@ -1,3 +1,6 @@
+/**
+ * @module modules/stackables/components/StackableContentPanel
+ */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import css from './stackableContentPanel.css';

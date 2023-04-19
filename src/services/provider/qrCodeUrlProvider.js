@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/qrCodeUrlProvider
+ */
 import { $injector } from '../../injection';
 
 /**

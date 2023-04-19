@@ -1,3 +1,6 @@
+/**
+ * @module modules/MvuElement
+ */
 import { render as renderLitHtml, html, nothing } from 'lit-html';
 import { $injector } from '../injection';
 import { generateTestIds, LOG_LIFECYLE_ATTRIBUTE_NAME } from '../utils/markup';

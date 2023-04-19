@@ -1,3 +1,6 @@
+/**
+ * @module modules/stackables/components/BottomSheet
+ */
 import { html, nothing } from 'lit-html';
 import css from './bottomSheet.css';
 import { MvuElement } from '../../MvuElement';

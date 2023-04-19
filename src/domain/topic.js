@@ -1,4 +1,7 @@
 /**
+ * @module domain/topic
+ */
+/**
  * Defines style properties for a topic.
  * @typedef {Object} TopicStyle
  * @property {number} [hue=null] css hue value (0-360)

@@ -1,4 +1,7 @@
 /**
+ * @module services/provider/attribution_provider
+ */
+/**
  * A function that returns an attribution (or an array of them).
  * @typedef {Function} attributionProvider
  * @param {GeoResource} geoResource

@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/mapButtonsContainer/MapButtonsContainer
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';

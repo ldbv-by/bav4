@@ -1,3 +1,6 @@
+/**
+ * @module store/draw/draw_action
+ */
 import {
 	ACTIVE_CHANGED,
 	MODE_CHANGED,

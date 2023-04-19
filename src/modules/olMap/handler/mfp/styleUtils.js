@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/mfp/styleUtils
+ */
 import { Style, Fill, Circle } from 'ol/style';
 import { DEVICE_PIXEL_RATIO } from 'ol/has';
 

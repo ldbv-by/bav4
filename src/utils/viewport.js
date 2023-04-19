@@ -1,4 +1,7 @@
 /**
+ * @module utils/viewport
+ */
+/**
  * Calculates a rectangle, where the element, which defines the viewport, is not overlapped by any specified element
  * @param {HTMLElement} viewportElement the HTMLElement, which defines the max. available viewport
  * @param {Array<HTMLElement>} overlappingElements

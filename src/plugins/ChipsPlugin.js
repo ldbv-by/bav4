@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ChipsPlugin
+ */
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';

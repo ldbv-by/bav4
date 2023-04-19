@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/overlayStyle/OverlayStyle
+ */
 export const getOverlays = (layer) => {
 	const overlays = [];
 	layer

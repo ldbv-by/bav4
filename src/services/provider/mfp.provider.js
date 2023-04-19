@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/mfp_provider
+ */
 import { $injector } from '../../injection';
 import { HttpService, MediaType } from '../HttpService';
 

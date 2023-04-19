@@ -1,4 +1,7 @@
 /**
+ * @module services/provider/iconColor_provider
+ */
+/**
  * A function that returns a rgb-color as Array of numbers from a icon-url.
  *
  * @typedef {Function} iconColorProvider
