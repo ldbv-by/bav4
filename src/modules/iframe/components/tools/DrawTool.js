@@ -2,7 +2,7 @@ import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
-import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
+import { deactivate as deactivateDrawing, activate as activateDrawing, finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
 import cancelSvg from './assets/close-lg.svg';
@@ -82,8 +82,12 @@ export class DrawTool extends MvuElement {
 				title: translate('iframe_drawTool_symbol'),
 				icon: 'symbol',
 				activate: () => {
+					activateDrawing();
+					setTimeout(() => setType('marker'));
+				},
+				deactivate: () => {
 					reset();
-					setType('marker');
+					deactivateDrawing();
 				}
 			},
 			{
@@ -93,8 +97,12 @@ export class DrawTool extends MvuElement {
 				title: translate('iframe_drawTool_line'),
 				icon: 'line',
 				activate: () => {
+					activateDrawing();
+					setTimeout(() => setType('line'));
+				},
+				deactivate: () => {
 					reset();
-					setType('line');
+					deactivateDrawing();
 				}
 			}
 		];
@@ -170,7 +178,7 @@ export class DrawTool extends MvuElement {
 			const classes = { 'is-active': tool.active };
 			const toggle = () => {
 				if (tool.active) {
-					setType(null);
+					tool.deactivate();
 				} else {
 					tool.activate();
 				}

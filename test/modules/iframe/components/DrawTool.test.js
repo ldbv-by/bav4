@@ -86,9 +86,9 @@ describe('DrawTool', () => {
 				const toolButton = element.shadowRoot.querySelector('#line-button');
 
 				toolButton.click();
+				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
-				expect(store.getState().draw.reset).toBeTruthy();
 				expect(store.getState().draw.type).toBe('line');
 			});
 
@@ -98,9 +98,9 @@ describe('DrawTool', () => {
 				const toolButton = element.shadowRoot.querySelector('#marker-button');
 
 				toolButton.click();
+				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
-				expect(store.getState().draw.reset).toBeTruthy();
 				expect(store.getState().draw.type).toBe('marker');
 			});
 
@@ -112,6 +112,7 @@ describe('DrawTool', () => {
 
 				const toolButton = element.shadowRoot.querySelector('#line-button');
 				toolButton.click();
+				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
 				expect(lastButton.classList.contains('is-active')).toBeFalse();
@@ -122,12 +123,15 @@ describe('DrawTool', () => {
 				const toolButton = element.shadowRoot.querySelector('#line-button');
 
 				toolButton.click();
+				await TestUtils.timeout();
 
-				expect(toolButton.classList.contains('is-active')).toBeTrue();
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('line');
 
 				toolButton.click();
+				await TestUtils.timeout();
 
-				expect(toolButton.classList.contains('is-active')).toBeFalse();
+				expect(store.getState().draw.active).toBeFalse();
 			});
 
 			it('displays the finish-button for line', async () => {
