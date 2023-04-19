@@ -7,5 +7,5 @@
  */
 export const IFrameComponents = Object.freeze({
 	DRAWING: 'drawing',
-	ACTIVATE_BUTTON: 'abtn'
+	HIDE_ACTIVATE_MAP_BUTTON: 'hide-activate-map-button'
 });

@@ -2,6 +2,7 @@
  * @module modules/iframe/components/activateMapButton/ActivateMapButton
  */
 import { html } from 'lit-html';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
@@ -79,7 +80,13 @@ export class ActivateMapButton extends MvuElement {
 
 	_isVisible() {
 		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
-		return this._environmentService.isEmbedded() && queryParams.get(QueryParameters.T_DISABLE_INITIAL_UI_HINTS) !== 'true';
+		const showActivateMapButton = () => {
+			// check if we have a query parameter overdrive the iframe activateMapButton
+			const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+			return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.HIDE_ACTIVATE_MAP_BUTTON) : true;
+		};
+
+		return this._environmentService.isEmbedded() && showActivateMapButton();
 	}
 
 	static get tag() {

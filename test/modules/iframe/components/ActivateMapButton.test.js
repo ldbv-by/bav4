@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { QueryParameters } from '../../../../src/domain/queryParameters';
+import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { $injector } from '../../../../src/injection';
 import { ActivateMapButton } from '../../../../src/modules/iframe/components/activateMapButton/ActivateMapButton';
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
@@ -49,7 +50,7 @@ describe('ActivateMapButton', () => {
 		});
 
 		it('renders nothing when not embedded', async () => {
-			const queryParam = `${QueryParameters.T_DISABLE_INITIAL_UI_HINTS}=true`;
+			const queryParam = `${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.HIDE_ACTIVATE_MAP_BUTTON}`;
 			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 			const element = await setup({}, { embed: true });
 
