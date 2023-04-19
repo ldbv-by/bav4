@@ -9,7 +9,7 @@
 	z-index: var(--z-footer);
 	bottom: 0.7em;
 	left: 1em;
-	transition: transform var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .content {
 	margin-left: 25em;

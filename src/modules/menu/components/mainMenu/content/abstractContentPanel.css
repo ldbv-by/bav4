@@ -116,7 +116,7 @@
 	mask: url('../assets/info-lg.svg');
 	-webkit-mask-image: url('../assets/info-lg.svg');
 	mask-image: url('../assets/info-lg.svg');
-	transition: all var(--animation-duration-small-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
 	margin-right: 0.2em;
 	background: var(--primary-color);
 }
@@ -141,7 +141,7 @@
 	background-color: var(--secondary-bg-color);
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	transform: translate(-50%, -50%);
 	display: inline-block;
 }

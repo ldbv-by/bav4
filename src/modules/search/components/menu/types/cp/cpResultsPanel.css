@@ -25,7 +25,7 @@
 }
 .cp-items {
 	overflow: hidden;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .cp-label__collapse {
 	padding: 0.8em 1.5em 0.8em 1.3em;
@@ -40,7 +40,7 @@
 	-moz-transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	transform: rotate(90deg);
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .chevron {
 	position: relative;
