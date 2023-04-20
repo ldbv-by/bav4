@@ -53,7 +53,7 @@ describe('MiscContentPanel', () => {
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 
-			expect(links[3].href).toEqual('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
+			expect(links[3].href).toContain('global_privacy_policy_url');
 			expect(links[3].target).toEqual('_blank');
 			expect(links[3].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_privacy_policy');
 
