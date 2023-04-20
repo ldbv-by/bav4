@@ -21,7 +21,7 @@
 }
 
 .draw-tool__actions > ba-icon {
-	opacity: 0;
+	opacity: 0.5;
 }
 
 .draw-tool__actions > ba-icon.is-enabled {
