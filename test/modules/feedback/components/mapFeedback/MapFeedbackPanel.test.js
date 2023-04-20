@@ -231,7 +231,7 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element.toggleFileId(123);
+			element.toggleFileId('123');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -257,7 +257,7 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: 'mail@some.com',
-				fileId: 123
+				fileId: '123'
 			});
 		});
 
@@ -266,7 +266,7 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element.toggleFileId(123);
+			element.toggleFileId('123');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -288,7 +288,7 @@ describe('MapFeedbackPanel', () => {
 				category: 'Foo',
 				description: 'another text',
 				email: '',
-				fileId: 123
+				fileId: '123'
 			});
 		});
 	});
