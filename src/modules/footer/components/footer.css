@@ -57,7 +57,6 @@ ba-attribution-info {
 }
 .ol-scale-line-inner {
 	padding: 0.2em 0.5em;
-	color: var(--secondary-color);
 	color: var(--text3);
 	height: 1.6em;
 	max-height: 1.6em;
