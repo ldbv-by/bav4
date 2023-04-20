@@ -3,12 +3,12 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				feedback_header: 'Send Feedback',
-				feedback_could_not_save: 'Feedback could not be saved',
-				feedback_saved_successfully: 'Feedback was successfully submitted',
+				feedback_could_not_save: 'Your feedback could not be saved',
+				feedback_saved_successfully: 'Your feedback was successfully submitted',
 				feedback_markChangeNotice: 'Edit the map',
-				feedback_categorySelection: 'Choose your category',
+				feedback_categorySelection: 'Please choose your category',
 				feedback_changeDescription: 'Your message',
-				feedback_eMail: 'eMail',
+				feedback_eMail: 'Your email address',
 				feedback_privacyPolicy: 'Privacy Policy',
 				feedback_pleaseSelect: 'Please draw at least one Point to mark the location of your feedback',
 				feedback_disclaimer:
@@ -20,8 +20,8 @@ export const provide = (lang) => {
 				feedback_header: 'Feedback zur Karte',
 				feedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
 				feedback_saved_successfully: 'Ihr Feedback wurde gespeichert',
-				feedback_markChangeNotice: 'Auf welche Stelle in der Karte bezieht sich ihr Feedback (bitte markieren)?',
-				feedback_categorySelection: 'Zu welcher Kategorie passt ihr Feedback am Besten (bitte wählen)?',
+				feedback_markChangeNotice: 'Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?',
+				feedback_categorySelection: 'Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?',
 				feedback_changeDescription: 'Ihre Nachricht',
 				feedback_eMail: 'Ihre E-Mail-Adresse',
 				feedback_privacyPolicy: 'Hinweis zum Datenschutz',

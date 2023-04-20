@@ -7,8 +7,8 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_header).toBe('Feedback zur Karte');
 		expect(map.feedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
-		expect(map.feedback_markChangeNotice).toBe('Auf welche Stelle in der Karte bezieht sich ihr Feedback (bitte markieren)?');
-		expect(map.feedback_categorySelection).toBe('Zu welcher Kategorie passt ihr Feedback am Besten (bitte wählen)?');
+		expect(map.feedback_markChangeNotice).toBe('Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?');
+		expect(map.feedback_categorySelection).toBe('Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?');
 		expect(map.feedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.feedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
@@ -22,12 +22,12 @@ describe('i18n for feedback module', () => {
 		const map = provide('en');
 
 		expect(map.feedback_header).toBe('Send Feedback');
-		expect(map.feedback_could_not_save).toBe('Feedback could not be saved');
-		expect(map.feedback_saved_successfully).toBe('Feedback was successfully submitted');
+		expect(map.feedback_could_not_save).toBe('Your feedback could not be saved');
+		expect(map.feedback_saved_successfully).toBe('Your feedback was successfully submitted');
 		expect(map.feedback_markChangeNotice).toBe('Edit the map');
-		expect(map.feedback_categorySelection).toBe('Choose your category');
+		expect(map.feedback_categorySelection).toBe('Please choose your category');
 		expect(map.feedback_changeDescription).toBe('Your message');
-		expect(map.feedback_eMail).toBe('eMail');
+		expect(map.feedback_eMail).toBe('Your email address');
 		expect(map.feedback_privacyPolicy).toBe('Privacy Policy');
 		expect(map.feedback_pleaseSelect).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_disclaimer).toBe(
