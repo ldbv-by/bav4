@@ -152,8 +152,8 @@ input[type='range']:focus {
 	pointer-events: none;
 	color: var(--text1);
 	z-index: 1;
-	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element textarea::placeholder,
 .ba-form-element input::placeholder {
@@ -174,8 +174,8 @@ input[type='range']:focus {
 	color: var(--text1);
 	font-weight: normal;
 	/* bottom: -1.2rem; */
-	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element .bar {
 	position: relative;
@@ -191,10 +191,10 @@ input[type='range']:focus {
 	position: absolute;
 	background: var(--primary-color);
 	z-index: 2;
-	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
-		width var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
-		width var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+		width var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+		width var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element input,
 .ba-form-element textarea {

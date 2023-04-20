@@ -3,7 +3,7 @@
 	top: 0.8em;
 	left: 7.5em;
 	display: flex;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	margin-left: 0;
 	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
@@ -88,7 +88,7 @@ a.first_steps__notification-link {
 	background: transparent;
 	border: none;
 	font-weight: bold;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	text-decoration: none;
 }
 a.first_steps__notification-link:hover {

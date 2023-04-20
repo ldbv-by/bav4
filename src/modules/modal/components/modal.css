@@ -8,7 +8,7 @@
 	width: 100%;
 	height: 100%;
 	background-color: var(--modal-background-color);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .modal__container {
 	display: flex;
