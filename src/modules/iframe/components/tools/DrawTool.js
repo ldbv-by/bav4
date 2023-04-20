@@ -17,7 +17,9 @@ import { IFrameComponents } from '../../../../domain/iframeComponents';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
-
+/**
+ *  IFrame component to draw simple geometries (Point, Line)
+ */
 export class DrawTool extends MvuElement {
 	constructor() {
 		super({
@@ -66,9 +68,6 @@ export class DrawTool extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	isRenderingSkipped() {
 		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
 
