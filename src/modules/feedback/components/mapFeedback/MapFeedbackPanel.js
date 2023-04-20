@@ -61,10 +61,10 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._mapFeedbackService.save(mapFeedback);
-			emitNotification(translate('feedback_saved_successfully'), LevelTypes.INFO);
+			emitNotification(translate('mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
-			emitNotification(translate('feedback_could_not_save'), LevelTypes.ERROR);
+			emitNotification(translate('mapFeedback_could_not_save'), LevelTypes.ERROR);
 		}
 	}
 
@@ -143,7 +143,7 @@ export class MapFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">${translate('feedback_header')}</h2>
+			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
@@ -151,12 +151,12 @@ export class MapFeedbackPanel extends MvuElement {
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
-						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
+						<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
 					</div>
 
 					<div class="ba-form-element">
 						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
+						<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
 						<i class="bar"></i>
 						<label class="helper-label">Helper text</label>
 						<i class="icon error"></i>
@@ -164,17 +164,18 @@ export class MapFeedbackPanel extends MvuElement {
 
 					<div class="ba-form-element">
 						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
+						<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
 					</div>
 
-					<div class="ba-form-element" id="feedback_disclaimer">
-						${translate('feedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('feedback_privacyPolicy')}</a>).
+					<div class="ba-form-element" id="mapFeedback_disclaimer">
+						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
+						>).
 					</div>
 
 					<div class="ba-form-element" style="margin-bottom: 10px; display: ${geometryErrorDisplay};">
-						<label style="color: red; ">${translate('feedback_pleaseSelect')}</label>
+						<label style="color: red; ">${translate('mapFeedback_pleaseSelect')}</label>
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
