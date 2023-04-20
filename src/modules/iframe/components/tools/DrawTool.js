@@ -21,6 +21,7 @@ const Update_Tools = 'update_tools';
 export class DrawTool extends MvuElement {
 	constructor() {
 		super({
+			active: false,
 			type: null,
 			mode: null,
 			validGeometry: null,
@@ -54,6 +55,7 @@ export class DrawTool extends MvuElement {
 			case Update:
 				return {
 					...model,
+					active: data.active ? data.active : false,
 					type: data.type ? data.type : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
@@ -84,14 +86,8 @@ export class DrawTool extends MvuElement {
 				active: false,
 				title: translate('iframe_drawTool_symbol'),
 				icon: 'symbol',
-				activate: () => {
-					activateDrawing();
-					setTimeout(() => setType('marker'));
-				},
-				deactivate: () => {
-					reset();
-					deactivateDrawing();
-				}
+				activate: () => setType('marker'),
+				deactivate: () => reset()
 			},
 			{
 				id: 2,
@@ -99,14 +95,8 @@ export class DrawTool extends MvuElement {
 				active: false,
 				title: translate('iframe_drawTool_line'),
 				icon: 'line',
-				activate: () => {
-					activateDrawing();
-					setTimeout(() => setType('line'));
-				},
-				deactivate: () => {
-					reset();
-					deactivateDrawing();
-				}
+				activate: () => setType('line'),
+				deactivate: () => reset()
 			}
 		];
 	}
@@ -168,17 +158,26 @@ export class DrawTool extends MvuElement {
 		};
 
 		const getIcon = (id, icon, title, onClick, disabled) => {
-			return html`<ba-icon id=${id + '_icon'} .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
+			const classes = { 'is-enabled': !disabled };
+			return html`<ba-icon
+				id=${id + '_icon'}
+				class=${classMap(classes)}
+				.icon="${icon}"
+				.title=${title}
+				.disabled=${disabled}
+				@click=${onClick}
+			></ba-icon>`;
 		};
 
 		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.icon, iconType.title, iconType.onClick, iconType.disabled));
 	}
 
 	createView(model) {
-		const { tools } = model;
+		const { active, tools } = model;
 		this._showActive(tools);
+		const translate = (key) => this._translationService.translate(key);
 		const toolTemplate = (tool) => {
-			const classes = { 'is-active': tool.active };
+			const classes = { 'is-active': tool.active, 'is-enabled': active };
 			const toggle = () => {
 				if (tool.active) {
 					tool.deactivate();
@@ -188,7 +187,14 @@ export class DrawTool extends MvuElement {
 			};
 
 			return html`
-				<button id=${tool.name + '-button'} data-test-id class="draw-tool__button ${classMap(classes)}" title=${tool.title} @click=${toggle}>
+				<button
+					id=${tool.name + '-button'}
+					data-test-id
+					class="draw-tool__button ${classMap(classes)}"
+					?disabled=${!active}
+					title=${tool.title}
+					@click=${toggle}
+				>
 					<div class="draw-tool__background"></div>
 					<div class="draw-tool__icon ${tool.icon}"></div>
 					<div class="draw-tool__button-text">${tool.title}</div>
@@ -197,6 +203,7 @@ export class DrawTool extends MvuElement {
 		};
 
 		const icons = this._getIcons(model);
+		const classes = { 'is-enabled': active };
 
 		return html`
 			<style>
@@ -204,6 +211,14 @@ export class DrawTool extends MvuElement {
 			</style>
 			<div class="draw-tool">
 				<div class="draw-tool__content">
+					<div class="draw-tool__toggle">
+						<div>${translate('iframe_drawTool_activate')}</div>
+						<ba-toggle
+							id="toggle"
+							.title=${translate('iframe_drawTool_activate')}
+							@toggle=${active ? deactivateDrawing : activateDrawing}
+						></ba-toggle>
+					</div>
 					<div class="draw-tool__buttons">
 						${repeat(
 							tools,
@@ -211,7 +226,7 @@ export class DrawTool extends MvuElement {
 							(tool) => toolTemplate(tool)
 						)}
 					</div>
-					<div class="draw-tool__actions">${icons}</div>
+					<div class="draw-tool__actions ${classMap(classes)}">${icons}</div>
 				</div>
 			</div>
 		`;

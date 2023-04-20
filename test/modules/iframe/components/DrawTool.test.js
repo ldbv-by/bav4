@@ -2,6 +2,7 @@ import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
+import { activate } from '../../../../src/store/draw/draw.action';
 import { drawReducer } from '../../../../src/store/draw/draw.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
@@ -47,6 +48,7 @@ describe('DrawTool', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
+				active: false,
 				type: null,
 				mode: null,
 				validGeometry: null,
@@ -82,11 +84,10 @@ describe('DrawTool', () => {
 
 			it('activates the Line draw tool', async () => {
 				const element = await setup();
-
 				const toolButton = element.shadowRoot.querySelector('#line-button');
+				activate();
 
 				toolButton.click();
-				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
 				expect(store.getState().draw.type).toBe('line');
@@ -94,11 +95,10 @@ describe('DrawTool', () => {
 
 			it('activates the Marker draw tool', async () => {
 				const element = await setup();
-
 				const toolButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
 
 				toolButton.click();
-				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
 				expect(store.getState().draw.type).toBe('marker');
@@ -106,13 +106,13 @@ describe('DrawTool', () => {
 
 			it('deactivates last tool, when activate another', async () => {
 				const element = await setup();
-
 				const lastButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
+
 				lastButton.click();
 
 				const toolButton = element.shadowRoot.querySelector('#line-button');
 				toolButton.click();
-				await TestUtils.timeout();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
 				expect(lastButton.classList.contains('is-active')).toBeFalse();
@@ -121,33 +121,31 @@ describe('DrawTool', () => {
 			it('toggles the marker tool', async () => {
 				const element = await setup();
 				const toolButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
 
 				toolButton.click();
-				await TestUtils.timeout();
 
 				expect(store.getState().draw.active).toBeTrue();
 				expect(store.getState().draw.type).toBe('marker');
 
 				toolButton.click();
-				await TestUtils.timeout();
 
-				expect(store.getState().draw.active).toBeFalse();
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
 			});
 
 			it('toggles the line tool', async () => {
 				const element = await setup();
 				const toolButton = element.shadowRoot.querySelector('#line-button');
+				activate();
 
 				toolButton.click();
-				await TestUtils.timeout();
 
 				expect(store.getState().draw.active).toBeTrue();
 				expect(store.getState().draw.type).toBe('line');
 
 				toolButton.click();
-				await TestUtils.timeout();
 
-				expect(store.getState().draw.active).toBeFalse();
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
 			});
 
 			it('displays the finish-button for line', async () => {

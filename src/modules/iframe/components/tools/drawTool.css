@@ -10,6 +10,7 @@
 .draw-tool__content {
 	display: flex;
 	justify-content: center;
+	background: var(--primary-bg-color);
 }
 
 .draw-tool__actions {
@@ -40,6 +41,14 @@
 	border-right: none;
 }
 
+.draw-tool__buttons > button {
+	opacity: 0.5;
+}
+
+.draw-tool__buttons > button.is-enabled {
+	opacity: 1;
+}
+
 .draw-tool__background {
 	height: 0em;
 	width: 0em;
@@ -58,6 +67,22 @@
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
 }
 
+.draw-tool__actions {
+	opacity: 0.5;
+}
+
+.draw-tool__actions > ba-icon {
+	opacity: 0;
+}
+
+.draw-tool__actions > ba-icon.is-enabled {
+	opacity: 1;
+}
+
+.draw-tool__actions.is-enabled {
+	opacity: 1;
+}
+
 .draw-tool__icon {
 	background: var(--primary-color);
 	-webkit-mask-size: cover;
@@ -67,6 +92,7 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
 	margin: 0.8em 0.8em;
 	position: absolute;
+	opacity: 0.5;
 }
 
 .is-active .draw-tool__icon {
