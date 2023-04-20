@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/baaImageLoadFunction_provider
+ */
 import { $injector } from '../../../injection';
 
 /**

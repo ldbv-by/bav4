@@ -1,3 +1,6 @@
+/**
+ * @module plugins/MediaPlugin
+ */
 import { $injector } from '../injection';
 import { BaPlugin } from './BaPlugin';
 import { setIsDarkSchema, setIsMinWidth, setIsPortrait } from '../store/media/media.action';

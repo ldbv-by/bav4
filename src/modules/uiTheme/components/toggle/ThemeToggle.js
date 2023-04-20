@@ -1,3 +1,6 @@
+/**
+ * @module modules/uiTheme/components/toggle/ThemeToggle
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import css from './themeToggle.css';

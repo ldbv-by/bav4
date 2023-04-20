@@ -104,7 +104,6 @@
 	z-index: 0;
 }
 .header {
-	background-color: var(--primary-color);
 	background-color: var(--primary-bg-color);
 	color: var(--text1);
 	padding: 0.8em 1.5em;

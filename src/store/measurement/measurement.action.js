@@ -1,6 +1,5 @@
 /**
- * Action creators to activate/deactive the measurement tool
- * @module measurement/action
+ * @module store/measurement/measurement_action
  */
 import {
 	ACTIVE_CHANGED,

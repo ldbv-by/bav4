@@ -25,7 +25,7 @@
 }
 .georesource-items {
 	overflow: hidden;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .georesource-label__collapse {
 	padding: 0.8em 1.5em 0.8em 1.3em;

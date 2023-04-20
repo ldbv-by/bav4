@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ExportMfpPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';

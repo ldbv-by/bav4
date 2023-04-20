@@ -1,7 +1,7 @@
 .chips__container {
 	margin-left: 7em;
 	display: flex;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	position: absolute;
 	scroll-behavior: smooth;
 	overflow: hidden;
@@ -77,7 +77,7 @@
 	padding: 0.5em 0.9em;
 	cursor: pointer;
 	border: 1px solid var(--text1);
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 	box-shadow: 0px 0px 4px rgb(0 0 0 / 50%);
 }
 .show .chips__scroll-button {

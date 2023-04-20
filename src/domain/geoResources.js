@@ -1,3 +1,6 @@
+/**
+ * @module domain/geoResources
+ */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { isHttpUrl } from '../utils/checks';

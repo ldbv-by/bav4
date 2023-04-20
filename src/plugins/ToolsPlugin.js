@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ToolsPlugin
+ */
 import { BaPlugin } from './BaPlugin';
 import { setCurrentTool } from '../store/tools/tools.action';
 import { QueryParameters } from '../domain/queryParameters';

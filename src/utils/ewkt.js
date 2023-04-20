@@ -1,3 +1,6 @@
+/**
+ * @module utils/ewkt
+ */
 import { isString } from './checks';
 
 /**

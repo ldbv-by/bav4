@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/icon/Icon
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './icon.css';

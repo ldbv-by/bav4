@@ -4,7 +4,7 @@
 	background: transparent;
 	border: none;
 	font-weight: bold;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: var(--primary-color);
 	width: 100%;
 }
@@ -83,7 +83,7 @@
 	position: absolute;
 	left: 0.4em;
 	top: 0.3em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .primary .icon {
 	background: var(--text3);

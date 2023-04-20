@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/attributionInfo/AttributionInfo
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { classMap } from 'lit-html/directives/class-map.js';

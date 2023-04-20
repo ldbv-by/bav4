@@ -1,3 +1,6 @@
+/**
+ * @module utils/numberUtils
+ */
 import { $injector } from '../injection';
 import { isNumber } from './checks';
 

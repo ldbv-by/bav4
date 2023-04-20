@@ -1,3 +1,6 @@
+/**
+ * @module injection/core/injector
+ */
 import { forEachPropertyDoAction } from './utils';
 
 /**

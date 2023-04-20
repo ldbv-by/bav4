@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/tooltip/HelpTooltip
+ */
 import { BaOverlay, BaOverlayTypes } from '../components/BaOverlay';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../injection';

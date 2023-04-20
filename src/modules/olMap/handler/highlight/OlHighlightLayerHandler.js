@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/highlight/OlHighlightLayerHandler
+ */
 import { OlLayerHandler } from '../OlLayerHandler';
 import { $injector } from '../../../../injection';
 import { observe } from '../../../../utils/storeUtils';

@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/components/menu/TopicsContentPanel
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';

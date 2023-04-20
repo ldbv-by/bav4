@@ -1,4 +1,7 @@
 /**
+ * @module domain/styles
+ */
+/**
  * @enum
  */
 export const StyleSizeTypes = Object.freeze({

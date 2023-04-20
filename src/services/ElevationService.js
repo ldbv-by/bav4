@@ -1,3 +1,6 @@
+/**
+ * @module services/ElevationService
+ */
 import { loadBvvElevation } from './provider/elevation.provider';
 import { isCoordinate } from '../utils/checks';
 import { getBvvProfile } from './provider/profile.provider';

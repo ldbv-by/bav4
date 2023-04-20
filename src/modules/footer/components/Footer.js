@@ -1,3 +1,6 @@
+/**
+ * @module modules/footer/components/Footer
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './footer.css';

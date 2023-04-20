@@ -9,7 +9,7 @@
 	overflow: visible;
 	transition-property: transform;
 	transition-duration: var(--animation-duration-large-open);
-	transition-timing-function: var(--animation-easing-linea);
+	transition-timing-function: var(--animation-easing-linear);
 }
 
 .main-menu__container {
@@ -37,7 +37,7 @@
 	transition-property: left;
 	transition-duration: var(--animation-duration-large-open);
 	transition-delay: var(--animation-duration-large-open);
-	transition-timing-function: var(--animation-easing-linea);
+	transition-timing-function: var(--animation-easing-linear);
 }
 
 .main-menu__close-button:hover {
@@ -64,7 +64,6 @@
 	opacity: 0.8;
 }
 .main-menu__close-button-text {
-	display: block;
 	display: none;
 }
 

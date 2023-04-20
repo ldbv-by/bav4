@@ -1,6 +1,5 @@
 /**
- * Action creators to change/update the properties of modal state.
- * @module modal/action
+ * @module store/modal/modal_action
  */
 import { MODAL_CHANGED } from './modal.reducer';
 import { $injector } from '../../injection';

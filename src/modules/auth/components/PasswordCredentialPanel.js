@@ -1,3 +1,6 @@
+/**
+ * @module modules/auth/components/PasswordCredentialPanel
+ */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { $injector } from '../../../injection';

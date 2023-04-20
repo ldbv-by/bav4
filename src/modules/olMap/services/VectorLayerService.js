@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/VectorLayerService
+ */
 import { VectorSourceType } from '../../../domain/geoResources';
 import VectorSource from 'ol/source/Vector';
 import { $injector } from '../../../injection';

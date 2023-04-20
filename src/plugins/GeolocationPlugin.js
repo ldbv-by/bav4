@@ -1,3 +1,6 @@
+/**
+ * @module plugins/GeolocationPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { $injector } from '../injection';
 import { setPosition, setAccuracy, setDenied, setTracking } from '../store/geolocation/geolocation.action';

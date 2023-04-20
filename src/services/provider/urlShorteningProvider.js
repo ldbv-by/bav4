@@ -1,5 +1,5 @@
 /**
- * @module service/provider
+ * @module services/provider/urlShorteningProvider
  */
 import { $injector } from '../../injection';
 

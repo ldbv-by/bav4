@@ -1,3 +1,6 @@
+/**
+ * @module modules/layerManager/components/LayerManager
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../injection';
 import { repeat } from 'lit-html/directives/repeat.js';

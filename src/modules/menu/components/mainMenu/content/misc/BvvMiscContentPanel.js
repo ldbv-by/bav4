@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel
+ */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';

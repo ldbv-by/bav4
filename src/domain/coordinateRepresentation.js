@@ -1,4 +1,7 @@
 /**
+ * @module domain/coordinateRepresentation
+ */
+/**
  * Defines the (target) representation for a coordinate.
  * @typedef {Object} CoordinateRepresentation
  * @property {string} label label

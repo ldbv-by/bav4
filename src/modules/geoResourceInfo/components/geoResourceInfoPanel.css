@@ -43,7 +43,6 @@ table {
 
 td {
 	padding: 1em 0.8em;
-	border-right: 1px dotted var(--primary-color);
 	border-right: 1px dotted var(--primary-bg-color);
 }
 

@@ -1,4 +1,7 @@
 /**
+ * @module modules/search/services/domain/searchResult
+ */
+/**
  * @enum
  */
 export const SearchResultTypes = Object.freeze({

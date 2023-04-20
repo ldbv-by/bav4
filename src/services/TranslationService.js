@@ -1,3 +1,6 @@
+/**
+ * @module services/TranslationService
+ */
 import { $injector } from '../injection';
 
 /**

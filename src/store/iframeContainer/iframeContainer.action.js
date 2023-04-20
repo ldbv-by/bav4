@@ -1,6 +1,5 @@
 /**
- * Action creators to change/update the properties of the slice-of-state 'iframeContainer'.
- * @module iframeContainer/action
+ * @module store/iframeContainer/iframeContainer_action
  */
 import { IFRAME_CONTAINER_CHANGED } from './iframeContainer.reducer';
 import { $injector } from '../../injection';

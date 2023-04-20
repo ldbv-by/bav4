@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/services/provider/searchResult_provider
+ */
 import { CadastralParcelSearchResult, GeoResourceSearchResult, LocationSearchResult } from '../domain/searchResult';
 import { $injector } from '../../../../injection';
 

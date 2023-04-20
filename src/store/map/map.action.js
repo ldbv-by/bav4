@@ -1,9 +1,6 @@
 /**
- * Action creators concerning interactions of a user with the map.
- * This actions are typically called by map implementations only.
- * @module map/action
+ * @module store/map/map_action
  */
-
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 import { BEING_MOVED_CHANGED, MOVE_START_CHANGED, MOVE_END_CHANGED } from './map.reducer';
