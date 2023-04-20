@@ -17,6 +17,19 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	opacity: 0.5;
+}
+
+.draw-tool__actions > ba-icon {
+	opacity: 0;
+}
+
+.draw-tool__actions > ba-icon.is-enabled {
+	opacity: 1;
+}
+
+.draw-tool__actions.is-enabled {
+	opacity: 1;
 }
 
 .draw-tool__buttons {
@@ -35,14 +48,11 @@
 	padding: 0 0.5em;
 	border: 0;
 	border-right: 1px dotted var(--header-background-color);
+	opacity: 0.5;
 }
 
 .draw-tool__buttons > button:last-child {
 	border-right: none;
-}
-
-.draw-tool__buttons > button {
-	opacity: 0.5;
 }
 
 .draw-tool__buttons > button.is-enabled {
@@ -65,22 +75,6 @@
 	width: 3.4em;
 	background-color: var(--primary-color) !important;
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
-}
-
-.draw-tool__actions {
-	opacity: 0.5;
-}
-
-.draw-tool__actions > ba-icon {
-	opacity: 0;
-}
-
-.draw-tool__actions > ba-icon.is-enabled {
-	opacity: 1;
-}
-
-.draw-tool__actions.is-enabled {
-	opacity: 1;
 }
 
 .draw-tool__icon {
