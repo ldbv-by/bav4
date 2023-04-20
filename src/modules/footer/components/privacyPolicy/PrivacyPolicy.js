@@ -1,3 +1,6 @@
+/**
+ * @module modules/footer/components/privacyPolicy/PrivacyPolicy
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
