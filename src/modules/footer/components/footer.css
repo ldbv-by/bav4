@@ -14,6 +14,7 @@
 	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .content {
+	display: flex;
 	font-size: 0.8rem;
 	background-color: var(--primary-bg-color-05);
 }
