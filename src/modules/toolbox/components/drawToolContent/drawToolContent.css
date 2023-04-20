@@ -8,7 +8,7 @@
 	position: relative;
 	background: transparent;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 0.5em;
 	border: 0;
@@ -24,7 +24,7 @@
 	width: 0em;
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	left: 2.3em;
 	transform: translate(-50%, -50%);
 	top: 1.8em;
@@ -43,7 +43,7 @@
 	mask-size: cover;
 	height: 2em;
 	width: 2em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	margin: 0.8em 0.8em;
 	position: absolute;
 }

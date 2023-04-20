@@ -9,7 +9,6 @@
 	flex-direction: column;
 	margin: 0.1em auto;
 	padding: 0.8em 1.5em;
-	width: -moz-min-content;
 	width: min-content;
 	min-width: 25em;
 }

@@ -40,5 +40,5 @@
 
 .is-area {
 	opacity: 1;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
