@@ -244,7 +244,7 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element.toggleFileId('123');
+			element._updateFileId('123');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -279,7 +279,7 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element.toggleFileId('123');
+			element._updateFileId('123');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';

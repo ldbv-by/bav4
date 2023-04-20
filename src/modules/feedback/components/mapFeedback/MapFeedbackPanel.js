@@ -85,7 +85,7 @@ export class MapFeedbackPanel extends MvuElement {
 		}
 	}
 
-	toggleFileId(id) {
+	_updateFileId(id) {
 		this.signal(Update_Geometry_Id, id);
 	}
 
@@ -138,16 +138,6 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		};
 
-		// todo remove before final pull request ...
-		const onToggle = (event) => {
-			let id = null;
-			if (event.detail.checked) {
-				id = '123';
-			}
-			this.toggleFileId(id);
-		};
-		// ... todo remove before pull request
-
 		return html`
 			<style>
 				${css}
@@ -188,10 +178,6 @@ export class MapFeedbackPanel extends MvuElement {
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
-				</div>
-				<div class="feedback-form-right">
-					<div style="margin-bottom: 10px;">todo remove before pull request - set fileId</div>
-					<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 				</div>
 			</div>
 		`;
