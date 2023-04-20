@@ -10,7 +10,8 @@ import { getMinimalAttribution } from '../../../../../src/services/provider/attr
 
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
 
-describe('AttributionInfo', () => {
+describe('AttributionInfo', (config = {}) => {
+	const { embed = false } = config;
 	const geoResourceServiceMock = {
 		byId: () => {}
 	};
@@ -27,7 +28,10 @@ describe('AttributionInfo', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MapService', mapServiceMock);
+			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('EnvironmentService', {
+				isEmbedded: () => embed
+			});
 
 		return TestUtils.render(AttributionInfo.tag);
 	};

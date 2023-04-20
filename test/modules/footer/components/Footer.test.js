@@ -137,7 +137,9 @@ describe('Footer', () => {
 			const element = await setup({ media: { portrait: false, minWidth: true } }, { embed: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-map-info')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('inline');
 		});
 	});
 });
