@@ -120,20 +120,33 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 		});
 
-		it('the fields category and description are required fields of the correct type', async () => {
+		it('renders form elements containing correct attributes', async () => {
 			// arrange
 			const element = await setup();
 
-			const category = element.shadowRoot.querySelector('select[name="category"]');
-			const description = element.shadowRoot.querySelector('textarea[name="description"]');
+			const categoryElement = element.shadowRoot.querySelector('#category');
+			const descriptionElement = element.shadowRoot.querySelector('#description');
+			const emailElement = element.shadowRoot.querySelector('#email');
 
 			// assert
-			expect(category).not.toBeNull();
-			expect(category.type).toBe('select-one');
-			expect(category.getAttribute('required')).toBe('');
-			expect(description).not.toBeNull();
-			expect(description.type).toBe('textarea');
-			expect(description.getAttribute('required')).toBe('');
+			expect(categoryElement.type).toBe('select-one');
+			expect(categoryElement.hasAttribute('required')).toBeTrue;
+			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
+
+			expect(descriptionElement.type).toBe('textarea');
+			expect(descriptionElement.hasAttribute('required')).toBeTrue;
+			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+
+			expect(emailElement.type).toBe('email');
+			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+		});
+
+		it('renders a privacy policy disclaimer', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#feedback_disclaimer').innerText).toContain('feedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#feedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#feedback_disclaimer a').innerText).toBe('feedback_privacyPolicy');
 		});
 	});
 

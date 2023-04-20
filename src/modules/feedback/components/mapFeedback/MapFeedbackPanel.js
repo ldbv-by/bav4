@@ -14,6 +14,10 @@ const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Remember_Submit = 'remember_submit';
 
+/**
+ * Contains a map-iframe and a form for submitting a {@link module:services/MapFeedbackService~MapFeedback}.
+ * @class
+ */
 export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
@@ -154,27 +158,29 @@ export class MapFeedbackPanel extends MvuElement {
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
 					<div class="ba-form-element">
-						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label>
-						<select id="category" name="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
+						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
 					</div>
 
 					<div class="ba-form-element">
+						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
 						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
-						<textarea id="description" name="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required></textarea>
+						<i class="bar"></i>
+						<label class="helper-label">Helper text</label>
+						<i class="icon error"></i>
 					</div>
 
 					<div class="ba-form-element">
+						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
 						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
-						<input type="email" id="email" name="email" placeholder="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" />
+						<i class="bar"></i>
+						<i class="icon error"></i>
 					</div>
 
-					<div class="ba-form-element">
-						${translate('feedback_disclaimer')} (<a
-							href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
-							>${translate('feedback_privacyPolicy')}</a
-						>).
+					<div class="ba-form-element" id="feedback_disclaimer">
+						${translate('feedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('feedback_privacyPolicy')}</a>).
 					</div>
 
 					<div class="ba-form-element" style="margin-bottom: 10px; display: ${geometryErrorDisplay};">
