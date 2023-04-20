@@ -35,6 +35,81 @@ const setup = (state = {}) => {
 };
 
 describe('MapFeedbackPanel', () => {
+	describe('constructor', () => {
+		it('sets a  default model', async () => {
+			setup();
+			const element = new MapFeedbackPanel();
+
+			expect(element.getModel()).toEqual({
+				mapFeedback: {
+					state: '',
+					category: '',
+					description: '',
+					email: '',
+					fileId: null
+				},
+				categoryOptions: [],
+				submitWasClicked: false
+			});
+		});
+	});
+
+	describe('when initialized', () => {
+		it('renders the view', async () => {
+			// arrange
+			const expectedTitle = 'mapFeedback_header';
+			const expectedCategory = '';
+			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
+			const expectedDescription = '';
+			const expectedEmail = '';
+
+			const element = await setup();
+
+			// assert
+			expect(element.shadowRoot.children.length).toBe(4);
+			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
+
+			const category = element.shadowRoot.querySelector('#category');
+			expect(category.value).toBe(expectedCategory);
+			const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
+			expect(actualOptions).toEqual(expectedCategoryOptions);
+			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
+			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
+		});
+
+		it('renders form elements containing correct attributes', async () => {
+			// arrange
+			const element = await setup();
+
+			const categoryElement = element.shadowRoot.querySelector('#category');
+			const descriptionElement = element.shadowRoot.querySelector('#description');
+			const emailElement = element.shadowRoot.querySelector('#email');
+
+			// assert
+			expect(categoryElement.type).toBe('select-one');
+			expect(categoryElement.hasAttribute('required')).toBeTrue;
+			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
+
+			expect(descriptionElement.type).toBe('textarea');
+			expect(descriptionElement.hasAttribute('required')).toBeTrue;
+			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
+
+			expect(emailElement.type).toBe('email');
+			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+		});
+
+		it('renders a privacy policy disclaimer', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
+		});
+	});
+
 	describe('when using MapFeedbackService', () => {
 		it('logs an error when getCategories fails', async () => {
 			// arrange
@@ -94,62 +169,6 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
-		});
-	});
-
-	describe('when initialized', () => {
-		it('renders the view', async () => {
-			// arrange
-			const expectedTitle = 'mapFeedback_header';
-			const expectedCategory = '';
-			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
-			const expectedDescription = '';
-			const expectedEmail = '';
-
-			const element = await setup();
-
-			// assert
-			expect(element.shadowRoot.children.length).toBe(4);
-			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
-
-			const category = element.shadowRoot.querySelector('#category');
-			expect(category.value).toBe(expectedCategory);
-			const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
-			expect(actualOptions).toEqual(expectedCategoryOptions);
-			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
-			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-		});
-
-		it('renders form elements containing correct attributes', async () => {
-			// arrange
-			const element = await setup();
-
-			const categoryElement = element.shadowRoot.querySelector('#category');
-			const descriptionElement = element.shadowRoot.querySelector('#description');
-			const emailElement = element.shadowRoot.querySelector('#email');
-
-			// assert
-			expect(categoryElement.type).toBe('select-one');
-			expect(categoryElement.hasAttribute('required')).toBeTrue;
-			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
-
-			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue;
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
-
-			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
-		});
-
-		it('renders a privacy policy disclaimer', async () => {
-			const element = await setup();
-
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
 		});
 	});
 
