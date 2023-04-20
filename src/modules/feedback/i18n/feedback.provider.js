@@ -10,7 +10,7 @@ export const provide = (lang) => {
 				feedback_changeDescription: 'Your message',
 				feedback_eMail: 'eMail',
 				feedback_privacyPolicy: 'Privacy Policy',
-				feedback_pleaseSelect: 'Please select at least one Point',
+				feedback_pleaseSelect: 'Please draw at least one Point to mark the location of your feedback',
 				feedback_disclaimer:
 					'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 			};
@@ -25,7 +25,7 @@ export const provide = (lang) => {
 				feedback_changeDescription: 'Ihre Nachricht',
 				feedback_eMail: 'Ihre E-Mail-Adresse',
 				feedback_privacyPolicy: 'Hinweis zum Datenschutz',
-				feedback_pleaseSelect: 'Please draw at least one Point to mark the location of your feedback',
+				feedback_pleaseSelect: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
 				feedback_disclaimer:
 					'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 			};
