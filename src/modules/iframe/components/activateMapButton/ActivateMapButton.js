@@ -83,7 +83,7 @@ export class ActivateMapButton extends MvuElement {
 		const showActivateMapButton = () => {
 			// check if we have a query parameter overdrive the iframe activateMapButton
 			const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
-			return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.ACTIVATE_MAP_BUTTON) : true;
+			return iframeComponents ? iframeComponents.split(',').includes(IFrameComponents.ACTIVATE_MAP_BUTTON) : true;
 		};
 
 		return this._environmentService.isEmbedded() && showActivateMapButton();
