@@ -1,5 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/services/HttpService';
+import { MapFeedback } from '../../../src/services/MapFeedbackService';
 import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../../src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {
@@ -22,12 +23,7 @@ describe('bvvFeedbackStorageProvider', () => {
 	it('stores a MapFeedback', async () => {
 		const backendUrl = 'https://backend.url/';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
-		const mapFeedback = {
-			state: 'http://foo.bar',
-			category: 'cat',
-			description: 'desc',
-			fileId: 'fileId'
-		};
+		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		const httpServiceSpy = spyOn(httpService, 'post')
 			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response());
@@ -43,12 +39,7 @@ describe('bvvFeedbackStorageProvider', () => {
 		const backendUrl = 'https://backend.url/';
 		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const statusCode = 400;
-		const mapFeedback = {
-			state: 'http://foo.bar',
-			category: 'cat',
-			description: 'desc',
-			fileId: 'fileId'
-		};
+		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		spyOn(httpService, 'post')
 			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response(null, { status: statusCode }));
