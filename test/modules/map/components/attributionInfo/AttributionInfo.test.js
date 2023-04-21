@@ -10,8 +10,7 @@ import { getMinimalAttribution } from '../../../../../src/services/provider/attr
 
 window.customElements.define(AttributionInfo.tag, AttributionInfo);
 
-describe('AttributionInfo', (config = {}) => {
-	const { embed = false } = config;
+describe('AttributionInfo', () => {
 	const geoResourceServiceMock = {
 		byId: () => {}
 	};
@@ -20,7 +19,9 @@ describe('AttributionInfo', (config = {}) => {
 		getMaxZoomLevel: () => {}
 	};
 
-	const setup = (state) => {
+	const setup = (state, config = {}) => {
+		const { embed = false } = config;
+
 		TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer
@@ -261,6 +262,19 @@ describe('AttributionInfo', (config = {}) => {
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+			});
+		});
+
+		describe('embedded layout ', () => {
+			it('layouts for default mode', async () => {
+				const element = await setup({}, { embed: false });
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(0);
+			});
+
+			it('layouts for embedded mode', async () => {
+				const element = await setup({}, { embed: true });
+
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(1);
 			});
 		});
 	});

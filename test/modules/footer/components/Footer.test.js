@@ -131,6 +131,7 @@ describe('Footer', () => {
 
 			expect(element.shadowRoot.querySelectorAll('.is-embedded')).toHaveSize(0);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content')).display).toBe('flex');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.content ba-privacy-policy')).display).toBe('none');
 		});
 
 		it('layouts for embedded mode', async () => {
