@@ -161,7 +161,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		// todo: update with Enum-values for QueryParameter and IFrameComponents
-		const iframeSrc = this._shareService.encodeState({ tid: 'drawing', l: 'timLayer' }, [PathParameters.EMBED]);
+		const iframeSrc = this._shareService.encodeState({ tid: 'drawing', l: '914c9263-5312-453e-b3eb-5104db1bf788' }, [PathParameters.EMBED]);
 		return html`
 			<style>
 				${css}
