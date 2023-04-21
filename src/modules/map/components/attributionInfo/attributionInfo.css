@@ -12,7 +12,7 @@
 	position: relative;
 }
 .attribution-container.isembedded:not(.isopen) {
-	width: 14em;
+	width: 13.5em;
 }
 
 .attribution-link {
