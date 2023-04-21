@@ -1,15 +1,15 @@
-export const coordinateSelectProvider = (lang) => {
+export const privacyPolicyProvider = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				footer_coordinate_select: 'Choose coordinate system'
+				footer_privacy_policy_link: 'Privacy Policy'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				footer_coordinate_select: 'Koordinatensystem auswählen'
+				footer_privacy_policy_link: 'Datenschutzerklärung'
 			};
 
 		default:

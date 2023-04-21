@@ -5,22 +5,25 @@ import { html } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { $injector } from '../../../../injection';
-import { finish, remove, reset, setType } from '../../../../store/draw/draw.action';
+import { deactivate as deactivateDrawing, activate as activateDrawing, finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
 import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
-import { Tools } from '../../../../domain/tools';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
 import css from './drawTool.css';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
 
 const Update = 'update';
 const Update_Tools = 'update_tools';
-
+/**
+ *  IFrame component to draw simple geometries (Point, Line)
+ */
 export class DrawTool extends MvuElement {
 	constructor() {
 		super({
+			active: false,
 			type: null,
 			mode: null,
 			validGeometry: null,
@@ -54,6 +57,7 @@ export class DrawTool extends MvuElement {
 			case Update:
 				return {
 					...model,
+					active: data.active ? data.active : false,
 					type: data.type ? data.type : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
@@ -64,15 +68,72 @@ export class DrawTool extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	isRenderingSkipped() {
-		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
+		const queryParams = this._environmentService.getUrlParams();
 
-		// check if we have a query parameter defining the tab id
-		const toolId = queryParams.get(QueryParameters.TOOL_ID);
-		return toolId !== Tools.DRAWING;
+		// check if we have a query parameter defining the iframe drawTool
+		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+		return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.DRAW_TOOL) : true;
+	}
+
+	createView(model) {
+		const { active, tools } = model;
+		this._showActive(tools);
+		const translate = (key) => this._translationService.translate(key);
+		const toolTemplate = (tool) => {
+			const classes = { 'is-active': tool.active, 'is-enabled': active };
+			const toggle = () => {
+				if (tool.active) {
+					tool.deactivate();
+				} else {
+					tool.activate();
+				}
+			};
+
+			return html`
+				<button
+					id=${tool.name + '-button'}
+					data-test-id
+					class="draw-tool__button ${classMap(classes)}"
+					?disabled=${!active}
+					title=${tool.title}
+					@click=${toggle}
+				>
+					<div class="draw-tool__background"></div>
+					<div class="draw-tool__icon ${tool.icon}"></div>
+					<div class="draw-tool__button-text">${tool.title}</div>
+				</button>
+			`;
+		};
+
+		const icons = this._getIcons(model);
+		const classes = { 'is-enabled': active };
+
+		return html`
+			<style>
+				${css}
+			</style>
+			<div class="draw-tool">
+				<div class="draw-tool__content">
+					<div class="draw-tool__toggle">
+						<div>${translate('iframe_drawTool_activate')}</div>
+						<ba-toggle
+							id="toggle"
+							.title=${translate('iframe_drawTool_activate')}
+							@toggle=${active ? deactivateDrawing : activateDrawing}
+						></ba-toggle>
+					</div>
+					<div class="draw-tool__buttons">
+						${repeat(
+							tools,
+							(tool) => tool.id,
+							(tool) => toolTemplate(tool)
+						)}
+					</div>
+					<div class="draw-tool__actions ${classMap(classes)}">${icons}</div>
+				</div>
+			</div>
+		`;
 	}
 
 	_buildTools() {
@@ -84,10 +145,8 @@ export class DrawTool extends MvuElement {
 				active: false,
 				title: translate('iframe_drawTool_symbol'),
 				icon: 'symbol',
-				activate: () => {
-					reset();
-					setType('marker');
-				}
+				activate: () => setType('marker'),
+				deactivate: () => reset()
 			},
 			{
 				id: 2,
@@ -95,10 +154,8 @@ export class DrawTool extends MvuElement {
 				active: false,
 				title: translate('iframe_drawTool_line'),
 				icon: 'line',
-				activate: () => {
-					reset();
-					setType('line');
-				}
+				activate: () => setType('line'),
+				deactivate: () => reset()
 			}
 		];
 	}
@@ -160,53 +217,18 @@ export class DrawTool extends MvuElement {
 		};
 
 		const getIcon = (id, icon, title, onClick, disabled) => {
-			return html`<ba-icon id=${id + '_icon'} .icon="${icon}" .title=${title} .disabled=${disabled} @click=${onClick}></ba-icon>`;
+			const classes = { 'is-enabled': !disabled };
+			return html`<ba-icon
+				id=${id + '_icon'}
+				class=${classMap(classes)}
+				.icon="${icon}"
+				.title=${title}
+				.disabled=${disabled}
+				@click=${onClick}
+			></ba-icon>`;
 		};
 
 		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.icon, iconType.title, iconType.onClick, iconType.disabled));
-	}
-
-	createView(model) {
-		const { tools } = model;
-		this._showActive(tools);
-		const toolTemplate = (tool) => {
-			const classes = { 'is-active': tool.active };
-			const toggle = () => {
-				if (tool.active) {
-					setType(null);
-				} else {
-					tool.activate();
-				}
-			};
-
-			return html`
-				<button id=${tool.name + '-button'} data-test-id class="draw-tool__button ${classMap(classes)}" title=${tool.title} @click=${toggle}>
-					<div class="draw-tool__background"></div>
-					<div class="draw-tool__icon ${tool.icon}"></div>
-					<div class="draw-tool__button-text">${tool.title}</div>
-				</button>
-			`;
-		};
-
-		const icons = this._getIcons(model);
-
-		return html`
-			<style>
-				${css}
-			</style>
-			<div class="draw-tool">
-				<div class="draw-tool__content">
-					<div class="draw-tool__buttons">
-						${repeat(
-							tools,
-							(tool) => tool.id,
-							(tool) => toolTemplate(tool)
-						)}
-					</div>
-					<div class="draw-tool__actions">${icons}</div>
-				</div>
-			</div>
-		`;
 	}
 
 	static get tag() {

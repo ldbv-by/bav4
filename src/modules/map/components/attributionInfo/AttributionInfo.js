@@ -25,9 +25,15 @@ export class AttributionInfo extends MvuElement {
 			activeLayers: null,
 			zoomLevel: null
 		});
-		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService, GeoResourceService, EnvironmentService } = $injector.inject(
+			'TranslationService',
+			'GeoResourceService',
+			'EnvironmentService'
+		);
+
 		this._translationService = TranslationService;
 		this._georesourceService = GeoResourceService;
+		this._environmentService = EnvironmentService;
 	}
 
 	onInitialize() {
@@ -78,28 +84,27 @@ export class AttributionInfo extends MvuElement {
 		const toggleVisibilitiy = () => this.signal(Update_Open_Property, !open);
 
 		const classes = {
-			isopen: open
+			isopen: open,
+			isembedded: this._environmentService.isEmbedded()
 		};
 
 		const getCollapseClass = () => {
-			return attributionTemplates.length > 1 || open ? 'is-collapse' : '';
+			return attributionTemplates.length > 0 || open ? 'is-collapse' : '';
 		};
 
 		const getTitle = () => {
 			return open ? 'map_attributionInfo_collapse_title_close' : 'map_attributionInfo_collapse_title_open';
 		};
 
-		return html`
-			<style>
+		return html` <style>
 				${css}
 			</style>
 			<div class="attribution-container ${classMap(classes)}">
 				© ${translate('map_attributionInfo_label')}: ${attributionTemplates}
 				<div @click=${toggleVisibilitiy} class="collapse-button ${getCollapseClass()}" title="${translate(getTitle())}">
-					<i class="icon chevron  "></i>
+					<i class="icon chevron"></i>
 				</div>
-			</div>
-		`;
+			</div>`;
 	}
 
 	static get tag() {
