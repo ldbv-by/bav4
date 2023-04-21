@@ -19,7 +19,9 @@ describe('AttributionInfo', () => {
 		getMaxZoomLevel: () => {}
 	};
 
-	const setup = (state) => {
+	const setup = (state, config = {}) => {
+		const { embed = false } = config;
+
 		TestUtils.setupStoreAndDi(state, {
 			layers: layersReducer,
 			position: positionReducer
@@ -27,7 +29,10 @@ describe('AttributionInfo', () => {
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
-			.registerSingleton('MapService', mapServiceMock);
+			.registerSingleton('MapService', mapServiceMock)
+			.registerSingleton('EnvironmentService', {
+				isEmbedded: () => embed
+			});
 
 		return TestUtils.render(AttributionInfo.tag);
 	};
@@ -257,6 +262,19 @@ describe('AttributionInfo', () => {
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+			});
+		});
+
+		describe('embedded layout ', () => {
+			it('layouts for default mode', async () => {
+				const element = await setup({}, { embed: false });
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(0);
+			});
+
+			it('layouts for embedded mode', async () => {
+				const element = await setup({}, { embed: true });
+
+				expect(element.shadowRoot.querySelectorAll('.isembedded')).toHaveSize(1);
 			});
 		});
 	});

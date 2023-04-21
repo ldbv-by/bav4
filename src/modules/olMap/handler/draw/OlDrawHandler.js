@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/draw/OlDrawHandler
  */
-import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../plugins/DrawPlugin';
+import { DRAW_LAYER_ID } from '../../../../plugins/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -241,17 +241,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith('measure_'));
+					return features.some((f) => f.getId().startsWith(Tools.MEASURING + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const measurementIds = features.filter((f) => f.getId().startsWith('measure_')).map((f) => f.getId());
+					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURING + '_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
 					setCurrentTool(Tools.MEASURING);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith('draw_'));
+				return features.some((f) => !f.getId().startsWith(Tools.DRAWING + '_'));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
@@ -447,7 +447,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, DRAW_TOOL_ID + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, Tools.DRAWING + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {
