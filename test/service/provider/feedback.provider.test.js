@@ -1,8 +1,8 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/services/HttpService';
-import { bvvMapFeedbackCategoriesProvider, bvvMapFeedbackStorageProvider } from '../../../src/services/provider/mapFeedbackStorage.provider';
+import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../../src/services/provider/feedback.provider';
 
-describe('bvvMapFeedbackStorageProvider', () => {
+describe('bvvFeedbackStorageProvider', () => {
 	const configService = {
 		getValueAsPath: () => {}
 	};
@@ -32,7 +32,7 @@ describe('bvvMapFeedbackStorageProvider', () => {
 			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response());
 
-		const result = await bvvMapFeedbackStorageProvider(mapFeedback);
+		const result = await bvvFeedbackStorageProvider(mapFeedback);
 
 		expect(result).toBeTrue();
 		expect(configServiceSpy).toHaveBeenCalled();
@@ -53,7 +53,7 @@ describe('bvvMapFeedbackStorageProvider', () => {
 			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
-		await expectAsync(bvvMapFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`MapFeedback could not be stored: Http-Status ${statusCode}`);
+		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`MapFeedback could not be stored: Http-Status ${statusCode}`);
 	});
 });
 

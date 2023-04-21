@@ -6,9 +6,9 @@ import { MediaType } from '../HttpService';
 
 /**
  * Bvv specific immplementation of {@link module:services/MapFeedbackService~mapFeedbackStorageProvider}
- * @implements {module:services/MapFeedbackService~mapFeedbackStorageProvider}
+ * @implements {module:services/MapFeedbackService~feedbackStorageProvider}
  */
-export const bvvMapFeedbackStorageProvider = async (mapFeedback) => {
+export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = `${configService.getValueAsPath('BACKEND_URL')}tim/message`;
 
