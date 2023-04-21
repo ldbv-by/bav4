@@ -2,6 +2,7 @@ import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
@@ -42,7 +43,7 @@ const setup = (state = {}) => {
 
 describe('MapFeedbackPanel', () => {
 	describe('constructor', () => {
-		it('sets a  default model', async () => {
+		it('sets a default model', async () => {
 			setup();
 			const element = new MapFeedbackPanel();
 
@@ -113,6 +114,33 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
+		});
+
+		it('creates an iframeObserver', async () => {
+			const element = await setup();
+
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+		});
+
+		it('listen to iframe-attribute changes', async () => {
+			const fileId = 'f_foo';
+			const element = await setup();
+
+			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
+
+			// no calls by changes on any other attribute
+			iframe.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+
+			await TestUtils.timeout();
+
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
