@@ -1,5 +1,5 @@
 /**
- * @module services/provider/mapFeedbackStorage_provider
+ * @module services/provider/feedback_provider
  */
 import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
