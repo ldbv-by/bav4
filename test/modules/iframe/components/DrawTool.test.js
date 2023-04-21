@@ -11,19 +11,14 @@ window.customElements.define(DrawTool.tag, DrawTool);
 
 describe('DrawTool', () => {
 	let store;
-	const windowMock = {
-		matchMedia() {},
-		location: {
-			get search() {
-				return null;
-			}
-		}
-	};
 	const drawDefaultState = {
 		active: false,
 		mode: null,
 		type: null,
 		reset: null
+	};
+	const environmentServiceMock = {
+		getUrlParams: () => new URLSearchParams()
 	};
 
 	const setup = async (drawState = drawDefaultState) => {
@@ -34,11 +29,7 @@ describe('DrawTool', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer
 		});
-		$injector
-			.registerSingleton('EnvironmentService', {
-				getWindow: () => windowMock
-			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(DrawTool.tag);
 	};
@@ -66,10 +57,10 @@ describe('DrawTool', () => {
 		});
 
 		describe('when queryParam for drawTool is set', () => {
-			const drawToolQueryParam = QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAWING + ',foo,bar';
+			const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
 
 			beforeEach(() => {
-				spyOnProperty(windowMock.location, 'search').and.returnValue(drawToolQueryParam);
+				spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(drawToolQueryParams);
 			});
 
 			it('shows a list of tools', async () => {

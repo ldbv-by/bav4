@@ -10,20 +10,15 @@ window.customElements.define(ActivateMapButton.tag, ActivateMapButton);
 window.customElements.define(OlMap.tag, OlMap);
 
 describe('ActivateMapButton', () => {
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		isEmbedded: () => {},
+		getUrlParams: () => new URLSearchParams()
 	};
 	const setup = (config) => {
 		const { embed } = config;
-
+		environmentServiceMock.isEmbedded = () => embed;
 		TestUtils.setupStoreAndDi();
-		$injector
-			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, getWindow: () => windowMock })
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ActivateMapButton.tag);
 	};
 
@@ -50,8 +45,8 @@ describe('ActivateMapButton', () => {
 		});
 
 		it('renders nothing when not embedded', async () => {
-			const queryParam = `${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.HIDE_ACTIVATE_MAP_BUTTON}`;
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.ACTIVATE_MAP_BUTTON}`);
+			spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
 			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);

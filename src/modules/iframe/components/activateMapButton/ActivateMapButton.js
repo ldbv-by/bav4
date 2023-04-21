@@ -79,11 +79,11 @@ export class ActivateMapButton extends MvuElement {
 	}
 
 	_isVisible() {
-		const queryParams = new URLSearchParams(this._environmentService.getWindow().location.search);
+		const queryParams = this._environmentService.getUrlParams();
 		const showActivateMapButton = () => {
 			// check if we have a query parameter overdrive the iframe activateMapButton
 			const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
-			return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.HIDE_ACTIVATE_MAP_BUTTON) : true;
+			return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.ACTIVATE_MAP_BUTTON) : true;
 		};
 
 		return this._environmentService.isEmbedded() && showActivateMapButton();

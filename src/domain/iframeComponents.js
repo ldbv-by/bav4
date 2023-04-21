@@ -6,6 +6,6 @@
  * @enum
  */
 export const IFrameComponents = Object.freeze({
-	DRAWING: 'drawing',
-	HIDE_ACTIVATE_MAP_BUTTON: 'hide-activate-map-button'
+	DRAW_TOOL: 'draw-tool',
+	ACTIVATE_MAP_BUTTON: 'activate-map-button'
 });
