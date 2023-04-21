@@ -1,5 +1,5 @@
 /**
- * @module services/MapFeedbackService
+ * @module services/FeedbackService
  */
 
 import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from './provider/feedback.provider';
