@@ -13,7 +13,6 @@ import { FeatureInfoResult } from '../../src/services/FeatureInfoService.js';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../src/store/notifications/notifications.action.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
-import { DRAW_TOOL_ID } from '../../src/plugins/DrawPlugin.js';
 import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 
 describe('FeatureInfoPlugin', () => {
@@ -253,7 +252,7 @@ describe('FeatureInfoPlugin', () => {
 				addFeatureInfoItems({ title: 'title', content: 'content' });
 				expect(store.getState().featureInfo.current).toHaveSize(1);
 
-				setCurrentTool(DRAW_TOOL_ID);
+				setCurrentTool('foo');
 
 				expect(store.getState().featureInfo.current).toHaveSize(0);
 			});

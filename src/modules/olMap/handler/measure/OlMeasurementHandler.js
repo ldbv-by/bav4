@@ -35,7 +35,7 @@ import {
 } from '../../utils/olInteractionUtils';
 import { emitNotification, LevelTypes } from '../../../../store/notifications/notifications.action';
 import { OlSketchHandler } from '../OlSketchHandler';
-import { MEASUREMENT_LAYER_ID, MEASUREMENT_TOOL_ID } from '../../../../plugins/MeasurementPlugin';
+import { MEASUREMENT_LAYER_ID } from '../../../../plugins/MeasurementPlugin';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
@@ -221,17 +221,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith('draw_'));
+					return features.some((f) => f.getId().startsWith(Tools.DRAWING + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith('draw_')).map((f) => f.getId());
+					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAWING + '_')).map((f) => f.getId());
 					setDrawSelection(drawIds);
 					setCurrentTool(Tools.DRAWING);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith('measure_'));
+				return features.some((f) => !f.getId().startsWith(Tools.MEASURING + '_'));
 			};
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
@@ -463,7 +463,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature, MEASUREMENT_TOOL_ID + '_');
+			this._sketchHandler.activate(event.feature, Tools.MEASURING + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);
