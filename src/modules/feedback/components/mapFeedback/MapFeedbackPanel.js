@@ -6,6 +6,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import { MapFeedback } from '../../../../services/MapFeedbackService';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -25,7 +26,7 @@ export class MapFeedbackPanel extends MvuElement {
 				state: '',
 				category: '',
 				description: '',
-				email: '',
+				email: null,
 				fileId: null
 			},
 			categoryOptions: [],
@@ -134,7 +135,9 @@ export class MapFeedbackPanel extends MvuElement {
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
 			if (mapFeedback.fileId !== null && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
-				this._saveMapFeedback(mapFeedback);
+				this._saveMapFeedback(
+					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
+				);
 			}
 		};
 

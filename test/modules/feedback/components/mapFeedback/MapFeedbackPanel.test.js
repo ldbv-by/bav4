@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
+import { MapFeedback } from '../../../../../src/services/MapFeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../../test-utils';
@@ -45,7 +46,7 @@ describe('MapFeedbackPanel', () => {
 					state: '',
 					category: '',
 					description: '',
-					email: '',
+					email: null,
 					fileId: null
 				},
 				categoryOptions: [],
@@ -99,6 +100,7 @@ describe('MapFeedbackPanel', () => {
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
@@ -266,18 +268,18 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element._updateFileId('123');
+			element._updateFileId('geometryId');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
+			descriptionInput.value = 'description';
 			descriptionInput.dispatchEvent(new Event('input'));
 
 			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
+			emailInput.value = 'email@some.com';
 			emailInput.dispatchEvent(new Event('input'));
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -287,13 +289,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
-				state: '',
-				category: 'Foo',
-				description: 'another text',
-				email: 'mail@some.com',
-				fileId: '123'
-			});
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId', 'email@some.com'));
 		});
 
 		it('calls MapFeedbackService.save after all fields besides email are filled', async () => {
@@ -301,14 +297,14 @@ describe('MapFeedbackPanel', () => {
 			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
 			const element = await setup();
 
-			element._updateFileId('123');
+			element._updateFileId('geometryId');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
+			descriptionInput.value = 'description';
 			descriptionInput.dispatchEvent(new Event('input'));
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -318,13 +314,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
-				state: '',
-				category: 'Foo',
-				description: 'another text',
-				email: '',
-				fileId: '123'
-			});
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId'));
 		});
 	});
 });
