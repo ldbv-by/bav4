@@ -36,7 +36,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('BaaCredentialService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('MfpService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ChipsConfigurationService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('MapFeedbackService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
 
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);

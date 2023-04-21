@@ -1,4 +1,4 @@
-import { GeneralFeedback, MapFeedback, MapFeedbackService } from '../../src/services/MapFeedbackService';
+import { GeneralFeedback, MapFeedback, FeedbackService } from '../../src/services/FeedbackService';
 import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../src/services/provider/feedback.provider';
 
 describe('Entities', () => {
@@ -21,14 +21,14 @@ describe('Entities', () => {
 	});
 });
 
-describe('MapFeedbackService', () => {
+describe('FeedbackService', () => {
 	const setup = (mapFeedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) => {
-		return new MapFeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider);
+		return new FeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
-			const instanceUnderTest = new MapFeedbackService();
+			const instanceUnderTest = new FeedbackService();
 			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 		});

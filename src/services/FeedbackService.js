@@ -57,7 +57,7 @@ export class MapFeedback {
 /**
  * @class
  */
-export class MapFeedbackService {
+export class FeedbackService {
 	/**
 	 *
 	 * @param {module:services/MapFeedbackService~feedbackStorageProvider} feedbackStorageProvider

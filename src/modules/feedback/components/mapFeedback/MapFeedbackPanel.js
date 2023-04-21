@@ -6,7 +6,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import { MapFeedback } from '../../../../services/MapFeedbackService';
+import { MapFeedback } from '../../../../services/FeedbackService';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -36,12 +36,12 @@ export class MapFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
-			MapFeedbackService: mapFeedbackService
-		} = $injector.inject('ConfigService', 'TranslationService', 'MapFeedbackService');
+			FeedbackService: feedbackService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService');
 
 		this._configService = configService;
 		this._translationService = translationService;
-		this._mapFeedbackService = mapFeedbackService;
+		this._feedbackService = feedbackService;
 	}
 
 	onInitialize() {
@@ -50,7 +50,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 	async _getCategorieOptions() {
 		try {
-			const categorieOptions = await this._mapFeedbackService.getCategories();
+			const categorieOptions = await this._feedbackService.getCategories();
 			this.signal(Update_CategoryOptions, categorieOptions);
 		} catch (e) {
 			console.error(e);
@@ -61,7 +61,7 @@ export class MapFeedbackPanel extends MvuElement {
 	async _saveMapFeedback(mapFeedback) {
 		const translate = (key) => this._translationService.translate(key);
 		try {
-			await this._mapFeedbackService.save(mapFeedback);
+			await this._feedbackService.save(mapFeedback);
 			emitNotification(translate('mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
