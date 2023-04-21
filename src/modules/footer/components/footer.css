@@ -9,7 +9,7 @@
 	z-index: var(--z-footer);
 	bottom: 0.7em;
 	left: 1em;
-	transition: transform var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .content {
 	margin-left: 25em;
@@ -57,7 +57,6 @@ ba-attribution-info {
 }
 .ol-scale-line-inner {
 	padding: 0.2em 0.5em;
-	color: var(--secondary-color);
 	color: var(--text3);
 	height: 1.6em;
 	max-height: 1.6em;
