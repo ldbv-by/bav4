@@ -15,6 +15,11 @@ const mapFeedbackServiceMock = {
 	save: () => {}
 };
 
+const shareServiceMock = {
+	encodeState: () => {},
+	copyToClipboard() {}
+};
+
 let store;
 
 const setup = (state = {}) => {
@@ -29,6 +34,7 @@ const setup = (state = {}) => {
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
+		.registerSingleton('ShareService', shareServiceMock)
 		.registerSingleton('MapFeedbackService', mapFeedbackServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
@@ -119,7 +125,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._getCategorieOptions();
+			await element._getCategoryOptions();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
@@ -165,7 +171,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._getCategorieOptions();
+			await element._getCategoryOptions();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();

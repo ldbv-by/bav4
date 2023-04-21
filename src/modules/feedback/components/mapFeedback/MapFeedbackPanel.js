@@ -6,6 +6,8 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import { PathParameters } from '../../../../domain/pathParameters';
+import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -35,16 +37,36 @@ export class MapFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
-			MapFeedbackService: mapFeedbackService
-		} = $injector.inject('ConfigService', 'TranslationService', 'MapFeedbackService');
+			MapFeedbackService: mapFeedbackService,
+			ShareService: shareService
+		} = $injector.inject('ConfigService', 'TranslationService', 'MapFeedbackService', 'ShareService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._mapFeedbackService = mapFeedbackService;
+		this._shareService = shareService;
+		this._iframeObserver = null;
 	}
 
 	onInitialize() {
 		this._getCategoryOptions();
+	}
+
+	onAfterRender(firstTime) {
+		const onIFrameChanged = (mutationList) => {
+			for (const mutation of mutationList) {
+				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_GEOMETRY_REFERENCE_ID) {
+					const fileId = mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID);
+					this._updateFileId(fileId);
+				}
+			}
+		};
+		if (firstTime) {
+			const iframeElement = this.shadowRoot.querySelector('iframe');
+			const config = { attributes: true, childList: false, subtree: false };
+			this._iframeObserver = new MutationObserver(onIFrameChanged);
+			this._iframeObserver.observe(iframeElement, config);
+		}
 	}
 
 	async _getCategoryOptions() {
@@ -138,6 +160,8 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		};
 
+		// todo: update with Enum-values for QueryParameter and IFrameComponents
+		const iframeSrc = this._shareService.encodeState({ tid: 'drawing', l: 'timLayer' }, [PathParameters.EMBED]);
 		return html`
 			<style>
 				${css}
@@ -147,6 +171,17 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
+					<div class="iframe__content">
+						<iframe
+							data-iframe-geometry-reference-id
+							src=${iframeSrc}
+							width=100%'
+							height=600px'
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+						></iframe>
+					</div>
+
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
