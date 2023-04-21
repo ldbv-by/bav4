@@ -180,7 +180,10 @@ export class MapFeedbackPanel extends MvuElement {
 							loading="lazy"
 							referrerpolicy="no-referrer-when-downgrade"
 						></iframe>
+						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
 					</div>
+
+					
 
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>

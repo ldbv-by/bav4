@@ -16,6 +16,7 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
+		expect(map.mapFeedback_geometry_missing).toBe('Eine Geometrie zum Feedback erstellen');
 	});
 
 	it('provides translation for en', () => {
@@ -33,10 +34,11 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
+		expect(map.mapFeedback_geometry_missing).toBe('Create a geometry for your feedback');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 10;
+		const expectedSize = 11;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
