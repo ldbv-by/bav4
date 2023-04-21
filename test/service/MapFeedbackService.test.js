@@ -1,15 +1,35 @@
-import { MapFeedbackService } from '../../src/services/MapFeedbackService';
-import { bvvMapFeedbackCategoriesProvider, bvvMapFeedbackStorageProvider } from '../../src/services/provider/mapFeedbackStorage.provider';
+import { GeneralFeedback, MapFeedback, MapFeedbackService } from '../../src/services/MapFeedbackService';
+import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../src/services/provider/feedback.provider';
+
+describe('Entities', () => {
+	it('MapFeedback', async () => {
+		const instanceUnderTest = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
+		expect(instanceUnderTest.state).toBe('state');
+		expect(instanceUnderTest.category).toBe('category');
+		expect(instanceUnderTest.description).toBe('description');
+		expect(instanceUnderTest.geometryId).toBe('geometryId');
+		expect(instanceUnderTest.email).toBe('email');
+		expect(new MapFeedback('state', 'category', 'description', 'geometryId').email).toBeNull();
+	});
+	it('GeneralFeedback', async () => {
+		const instanceUnderTest = new GeneralFeedback('description', 'email', 'rating');
+		expect(instanceUnderTest.description).toBe('description');
+		expect(instanceUnderTest.email).toBe('email');
+		expect(instanceUnderTest.rating).toBe('rating');
+		expect(new GeneralFeedback('description').email).toBeNull();
+		expect(new GeneralFeedback('description').rating).toBeNull();
+	});
+});
 
 describe('MapFeedbackService', () => {
-	const setup = (mapFeedbackStorageProvider = bvvMapFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) => {
+	const setup = (mapFeedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) => {
 		return new MapFeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
 			const instanceUnderTest = new MapFeedbackService();
-			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(bvvMapFeedbackStorageProvider);
+			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 		});
 
@@ -43,7 +63,15 @@ describe('MapFeedbackService', () => {
 
 	describe('save', () => {
 		it('saves a MapFeedback entity', async () => {
-			const mockFeedback = { foo: 'bar' };
+			const mockFeedback = new MapFeedback('state', 'category', 'description', 'geometryId');
+			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.resolveTo(true);
+			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
+
+			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(true);
+		});
+
+		it('saves a GeneralFeedback entity', async () => {
+			const mockFeedback = new GeneralFeedback('description');
 			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.resolveTo(true);
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
@@ -51,11 +79,18 @@ describe('MapFeedbackService', () => {
 		});
 
 		it('rejects when the provider rejects', async () => {
-			const mockFeedback = { foo: 'bar' };
+			const mockFeedback = new MapFeedback('state', 'category', 'description', 'geometryId');
 			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.rejectWith('Error');
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
 			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeRejectedWith('Error');
+		});
+
+		it('resolves to "false" when no feedback object available', async () => {
+			const mockFeedback = { fpp: 'bar' };
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(false);
 		});
 	});
 });
