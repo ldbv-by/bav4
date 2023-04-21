@@ -39,15 +39,25 @@ describe('ActivateMapButton', () => {
 		});
 
 		it('renders nothing when not embedded', async () => {
-			const element = await setup({}, { embed: false });
+			const element = await setup({ embed: false });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('renders nothing when not embedded', async () => {
-			const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.ACTIVATE_MAP_BUTTON}`);
+		it('renders when QueryParameters.IFRAME_COMPONENTS includes IFrameComponents.ACTIVATE_MAP_BUTTON', async () => {
+			const queryParam = new URLSearchParams(
+				`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.ACTIVATE_MAP_BUTTON},${IFrameComponents.DRAW_TOOL}`
+			);
 			spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
-			const element = await setup({}, { embed: true });
+			const element = await setup({ embed: true });
+
+			expect(element.shadowRoot.children.length).toBe(3);
+		});
+
+		it('does NOT renders when QueryParameters.IFRAME_COMPONENTS NOT includes IFrameComponents.ACTIVATE_MAP_BUTTON', async () => {
+			const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.DRAW_TOOL}`);
+			spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
+			const element = await setup({ embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
