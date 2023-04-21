@@ -7,7 +7,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './privacyPolicy.css';
 
 /**
- * Displays the privacy policy
+ * Displays the privacy policy.
  * @class
  * @author alsturm
  */
