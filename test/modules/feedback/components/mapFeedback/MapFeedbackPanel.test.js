@@ -1,5 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
+import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
@@ -11,7 +12,7 @@ const configServiceMock = {
 	getValueAsPath: () => {}
 };
 
-const mapFeedbackServiceMock = {
+const feedbackServiceMock = {
 	getCategories: () => ['Foo', 'Bar'],
 	save: () => {}
 };
@@ -35,8 +36,7 @@ const setup = (state = {}) => {
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
-		.registerSingleton('ShareService', shareServiceMock)
-		.registerSingleton('MapFeedbackService', mapFeedbackServiceMock);
+		.registerSingleton('FeedbackService', feedbackServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
@@ -52,7 +52,7 @@ describe('MapFeedbackPanel', () => {
 					state: '',
 					category: '',
 					description: '',
-					email: '',
+					email: null,
 					fileId: null
 				},
 				categoryOptions: [],
@@ -106,6 +106,7 @@ describe('MapFeedbackPanel', () => {
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
@@ -144,11 +145,11 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
-	describe('when using MapFeedbackService', () => {
+	describe('when using FeedbackService', () => {
 		it('logs an error when getCategories fails', async () => {
 			// arrange
 			const message = 'error message';
-			const getMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'getCategories').and.rejectWith(new Error(message));
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.rejectWith(new Error(message));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
@@ -163,7 +164,7 @@ describe('MapFeedbackPanel', () => {
 		it('logs an error when save fails', async () => {
 			// arrange
 			const message = 'error message';
-			const mapFeedbackSaveSpy = spyOn(mapFeedbackServiceMock, 'save').and.rejectWith(new Error(message));
+			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.rejectWith(new Error(message));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
@@ -180,7 +181,7 @@ describe('MapFeedbackPanel', () => {
 
 		it('emits a success notification if save succeeds', async () => {
 			// arrange
-			const mapFeedbackSaveSpy = spyOn(mapFeedbackServiceMock, 'save').and.resolveTo(true);
+			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
 			const element = await setup();
 
 			// act
@@ -193,9 +194,9 @@ describe('MapFeedbackPanel', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 
-		it('calls MapFeedbackService.getCategories()', async () => {
+		it('calls FeedbackService.getCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'getCategories');
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories');
 			const element = await setup();
 
 			// act
@@ -207,10 +208,10 @@ describe('MapFeedbackPanel', () => {
 	});
 
 	describe('when submit is pressed', () => {
-		it('does not call MapFeedbackService.save if required fields are not filled', async () => {
+		it('does not call FeedbackService.save if required fields are not filled', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -219,10 +220,10 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call MapFeedbackService.save if geometry is not set', async () => {
+		it('does not call FeedbackService.save if geometry is not set', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -231,10 +232,10 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call MapFeedbackService.save if category is not valid', async () => {
+		it('does not call FeedbackService.save if category is not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'another text';
@@ -251,10 +252,10 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call MapFeedbackService.save if description is not valid', async () => {
+		it('does not call FeedbackService.save if description is not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -271,10 +272,10 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call MapFeedbackService.save if email is set and not valid', async () => {
+		it('does not call FeedbackService.save if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
@@ -295,23 +296,23 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('calls MapFeedbackService.save after all fields are filled', async () => {
+		it('calls FeedbackService.save after all fields are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			const element = await setup();
 
-			element._updateFileId('123');
+			element._updateFileId('geometryId');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
+			descriptionInput.value = 'description';
 			descriptionInput.dispatchEvent(new Event('input'));
 
 			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
+			emailInput.value = 'email@some.com';
 			emailInput.dispatchEvent(new Event('input'));
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -321,28 +322,22 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
-				state: '',
-				category: 'Foo',
-				description: 'another text',
-				email: 'mail@some.com',
-				fileId: '123'
-			});
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId', 'email@some.com'));
 		});
 
-		it('calls MapFeedbackService.save after all fields besides email are filled', async () => {
+		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(mapFeedbackServiceMock, 'save');
+			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			const element = await setup();
 
-			element._updateFileId('123');
+			element._updateFileId('geometryId');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
 			categorySelect.value = 'Foo';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
+			descriptionInput.value = 'description';
 			descriptionInput.dispatchEvent(new Event('input'));
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -352,13 +347,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith({
-				state: '',
-				category: 'Foo',
-				description: 'another text',
-				email: '',
-				fileId: '123'
-			});
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId'));
 		});
 	});
 });

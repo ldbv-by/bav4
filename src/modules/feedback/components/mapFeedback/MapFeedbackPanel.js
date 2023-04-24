@@ -6,6 +6,7 @@ import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
 import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 
@@ -27,7 +28,7 @@ export class MapFeedbackPanel extends MvuElement {
 				state: '',
 				category: '',
 				description: '',
-				email: '',
+				email: null,
 				fileId: null
 			},
 			categoryOptions: [],
@@ -37,13 +38,13 @@ export class MapFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
-			MapFeedbackService: mapFeedbackService,
+			feedbackService: feedbackService,
 			ShareService: shareService
-		} = $injector.inject('ConfigService', 'TranslationService', 'MapFeedbackService', 'ShareService');
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
 
 		this._configService = configService;
 		this._translationService = translationService;
-		this._mapFeedbackService = mapFeedbackService;
+		this._feedbackService = feedbackService;
 		this._shareService = shareService;
 		this._iframeObserver = null;
 	}
@@ -71,7 +72,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 	async _getCategoryOptions() {
 		try {
-			const categoryOptions = await this._mapFeedbackService.getCategories();
+			const categoryOptions = await this._feedbackService.getCategories();
 			this.signal(Update_CategoryOptions, categoryOptions);
 		} catch (e) {
 			console.error(e);
@@ -82,7 +83,7 @@ export class MapFeedbackPanel extends MvuElement {
 	async _saveMapFeedback(mapFeedback) {
 		const translate = (key) => this._translationService.translate(key);
 		try {
-			await this._mapFeedbackService.save(mapFeedback);
+			await this._feedbackService.save(mapFeedback);
 			emitNotification(translate('mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
@@ -156,7 +157,9 @@ export class MapFeedbackPanel extends MvuElement {
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
 			if (mapFeedback.fileId !== null && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
-				this._saveMapFeedback(mapFeedback);
+				this._saveMapFeedback(
+					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
+				);
 			}
 		};
 
