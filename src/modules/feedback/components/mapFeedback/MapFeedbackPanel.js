@@ -38,7 +38,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
-			feedbackService: feedbackService,
+			FeedbackService: feedbackService,
 			ShareService: shareService
 		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
 

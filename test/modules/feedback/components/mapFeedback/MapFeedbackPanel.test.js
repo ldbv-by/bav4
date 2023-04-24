@@ -36,7 +36,8 @@ const setup = (state = {}) => {
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
-		.registerSingleton('FeedbackService', feedbackServiceMock);
+		.registerSingleton('FeedbackService', feedbackServiceMock)
+		.registerSingleton('ShareService', shareServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
