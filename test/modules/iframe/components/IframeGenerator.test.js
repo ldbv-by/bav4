@@ -46,23 +46,23 @@ describe('IframeGenerator', () => {
 
 			expect(iframeWidthInput.value).toBe('800');
 			expect(iframeWidthInput.getAttribute('type')).toBe('number');
-			expect(iframeWidthInput.getAttribute('min')).toBe('100');
+			expect(iframeWidthInput.getAttribute('min')).toBe('250');
 			expect(iframeWidthInput.getAttribute('max')).toBe('2000');
 
 			expect(iframeWidthSliderInput.value).toBe('800');
 			expect(iframeWidthSliderInput.getAttribute('type')).toBe('range');
-			expect(iframeWidthSliderInput.getAttribute('min')).toBe('100');
+			expect(iframeWidthSliderInput.getAttribute('min')).toBe('250');
 			expect(iframeWidthSliderInput.getAttribute('max')).toBe('2000');
 			expect(iframeWidthSliderInput.getAttribute('step')).toBe('10');
 
 			expect(iframeHeightInput.value).toBe('600');
 			expect(iframeHeightInput.getAttribute('type')).toBe('number');
-			expect(iframeHeightInput.getAttribute('min')).toBe('100');
+			expect(iframeHeightInput.getAttribute('min')).toBe('250');
 			expect(iframeHeightInput.getAttribute('max')).toBe('2000');
 
 			expect(iframeHeightSliderInput.value).toBe('600');
 			expect(iframeHeightSliderInput.getAttribute('type')).toBe('range');
-			expect(iframeHeightSliderInput.getAttribute('min')).toBe('100');
+			expect(iframeHeightSliderInput.getAttribute('min')).toBe('250');
 			expect(iframeHeightSliderInput.getAttribute('max')).toBe('2000');
 			expect(iframeHeightSliderInput.getAttribute('step')).toBe('10');
 		});
@@ -165,21 +165,55 @@ describe('IframeGenerator', () => {
 			);
 
 			// changing width
-			widthInputElement.value = 42;
+			widthInputElement.value = 420;
 			widthInputElement.dispatchEvent(new Event('input'));
 
-			expect(iframeElement.width).toBe('42px');
+			expect(iframeElement.width).toBe('420px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='42px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='420px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
-			heightInputElement.value = 420;
+			heightInputElement.value = 620;
 			heightInputElement.dispatchEvent(new Event('input'));
 
-			expect(iframeElement.height).toBe('420px');
+			expect(iframeElement.height).toBe('620px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='42px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='420px' height='620px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+			);
+		});
+
+		it('does NOT renders iframe with the values out of range', async () => {
+			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
+			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
+			const element = await setup();
+			const textElement = element.shadowRoot.querySelector('#iframe_code');
+			const widthInputElement = element.shadowRoot.querySelector('#iframe_width');
+			const heightInputElement = element.shadowRoot.querySelector('#iframe_height');
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+
+			// init values
+			expect(iframeElement.width).toBe('800px');
+			expect(textElement.value).toBe(
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+			);
+
+			// changing width
+			widthInputElement.value = 42;
+			widthInputElement.dispatchEvent(new Event('input'));
+
+			expect(iframeElement.width).toBe('800px');
+			expect(textElement.value).toBe(
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+			);
+
+			// changing height
+			heightInputElement.value = 4200;
+			heightInputElement.dispatchEvent(new Event('input'));
+
+			expect(iframeElement.height).toBe('600px');
+			expect(textElement.value).toBe(
+				`<iframe src=${expectedUrl} width='800px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
@@ -199,12 +233,12 @@ describe('IframeGenerator', () => {
 			);
 
 			// changing width
-			widthInputElement.value = 210;
+			widthInputElement.value = 310;
 			widthInputElement.dispatchEvent(new Event('input'));
 
-			expect(iframeElement.width).toBe('210px');
+			expect(iframeElement.width).toBe('310px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='210px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='310px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
@@ -213,7 +247,7 @@ describe('IframeGenerator', () => {
 
 			expect(iframeElement.height).toBe('420px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='210px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='310px' height='420px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 
@@ -236,18 +270,18 @@ describe('IframeGenerator', () => {
 			widthInputElement.value = 42;
 			widthInputElement.dispatchEvent(new Event('input'));
 
-			expect(iframeElement.width).toBe('100px');
+			expect(iframeElement.width).toBe('250px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='100px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='250px' height='600px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 
 			// changing height
 			heightInputElement.value = 42;
 			heightInputElement.dispatchEvent(new Event('input'));
 
-			expect(iframeElement.height).toBe('100px');
+			expect(iframeElement.height).toBe('250px');
 			expect(textElement.value).toBe(
-				`<iframe src=${expectedUrl} width='100px' height='100px' loading='lazy' frameborder='0' style='border:0'></iframe>`
+				`<iframe src=${expectedUrl} width='250px' height='250px' loading='lazy' frameborder='0' style='border:0'></iframe>`
 			);
 		});
 

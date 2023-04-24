@@ -16,7 +16,7 @@ const Update_Auto_Width = 'update_auto_width';
 const Update_Preview_Url = 'update_preview_url';
 
 const Auto_Width = '100';
-const Range_Min = 100;
+const Range_Min = 250;
 const Range_Max = 2000;
 
 /**
@@ -82,11 +82,19 @@ export class IframeGenerator extends MvuElement {
 		const { size, autoWidth, previewUrl } = model;
 		const [width, height] = size;
 
+		const inRange = (value) => Range_Min < value && value < Range_Max;
+
 		const onChangeWidth = (event) => {
-			this.signal(Update_Size_Width, parseInt(event.target.value));
+			const width = parseInt(event.target.value);
+			if (inRange(width)) {
+				this.signal(Update_Size_Width, width);
+			}
 		};
 		const onChangeHeight = (event) => {
-			this.signal(Update_Size_Height, parseInt(event.target.value));
+			const height = parseInt(event.target.value);
+			if (inRange(height)) {
+				this.signal(Update_Size_Height, height);
+			}
 		};
 
 		const onChangeSliderWidth = (event) => {
