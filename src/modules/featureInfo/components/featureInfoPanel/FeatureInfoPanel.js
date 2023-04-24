@@ -8,8 +8,8 @@ import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
-import shareIcon from './assets/share.svg';
-import printerIcon from './assets/printer.svg';
+import shareIcon from '../assets/share.svg';
+import printerIcon from '../assets/printer.svg';
 import {
 	addHighlightFeatures,
 	HighlightFeatureType,
