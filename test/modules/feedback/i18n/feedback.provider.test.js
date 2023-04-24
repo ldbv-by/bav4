@@ -12,11 +12,10 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
-		expect(map.mapFeedback_pleaseSelect).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 		expect(map.mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
-		expect(map.mapFeedback_geometry_missing).toBe('Eine Geometrie zum Feedback erstellen');
+		expect(map.mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 	});
 
 	it('provides translation for en', () => {
@@ -30,15 +29,14 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_changeDescription).toBe('Your message');
 		expect(map.mapFeedback_eMail).toBe('Your email address');
 		expect(map.mapFeedback_privacyPolicy).toBe('Privacy Policy');
-		expect(map.mapFeedback_pleaseSelect).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.mapFeedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
-		expect(map.mapFeedback_geometry_missing).toBe('Create a geometry for your feedback');
+		expect(map.mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 11;
+		const expectedSize = 10;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

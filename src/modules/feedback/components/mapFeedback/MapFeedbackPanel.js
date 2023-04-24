@@ -120,12 +120,8 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions, submitWasClicked } = model;
+		const { mapFeedback, categoryOptions } = model;
 
-		let geometryErrorDisplay = 'none';
-		if (submitWasClicked && mapFeedback.fileId === null) {
-			geometryErrorDisplay = 'block';
-		}
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleCategoryChange = () => {
@@ -224,10 +220,6 @@ export class MapFeedbackPanel extends MvuElement {
 					<div class="ba-form-element" id="mapFeedback_disclaimer">
 						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
 						>).
-					</div>
-
-					<div class="ba-form-element" style="margin-bottom: 10px; display: ${geometryErrorDisplay};">
-						<label style="color: red; ">${translate('mapFeedback_pleaseSelect')}</label>
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
