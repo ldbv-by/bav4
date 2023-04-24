@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';

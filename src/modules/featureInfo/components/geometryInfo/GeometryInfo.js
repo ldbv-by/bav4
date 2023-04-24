@@ -1,11 +1,11 @@
 /**
- * @module modules/featureInfo/components/GeometryInfo
+ * @module modules/featureInfo/components/geometryInfo/GeometryInfo
  */
 import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../injection';
+import { $injector } from '../../../../injection';
 import css from './geometryInfo.css';
-import { MvuElement } from '../../MvuElement';
+import { MvuElement } from '../../../MvuElement';
 
 const Update_Statistics = 'update_statistics';
 

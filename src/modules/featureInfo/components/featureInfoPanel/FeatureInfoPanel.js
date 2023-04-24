@@ -1,11 +1,11 @@
 /**
- * @module modules/featureInfo/components/FeatureInfoPanel
+ * @module modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../injection';
-import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
-import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { $injector } from '../../../../injection';
+import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './featureInfoPanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import shareIcon from '../assets/share.svg';
@@ -15,9 +15,9 @@ import {
 	HighlightFeatureType,
 	HighlightGeometryType,
 	removeHighlightFeaturesById
-} from '../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { isTemplateResult } from '../../../utils/checks';
+} from '../../../../store/highlight/highlight.action';
+import { createUniqueId } from '../../../../utils/numberUtils';
+import { isTemplateResult } from '../../../../utils/checks';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 const Update_IsPortrait = 'update_isPortrait_hasMinWidth';

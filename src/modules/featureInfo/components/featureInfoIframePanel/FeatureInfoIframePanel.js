@@ -1,10 +1,10 @@
 /**
- * @module modules/featureInfo/components/FeatureInfoIframePanel
+ * @module modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../injection';
-import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
+import { $injector } from '../../../../injection';
+import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import css from './featureInfoIframePanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import {
@@ -12,10 +12,10 @@ import {
 	HighlightFeatureType,
 	HighlightGeometryType,
 	removeHighlightFeaturesById
-} from '../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { isTemplateResult } from '../../../utils/checks';
-import { MvuElement } from '../../MvuElement';
+} from '../../../../store/highlight/highlight.action';
+import { createUniqueId } from '../../../../utils/numberUtils';
+import { isTemplateResult } from '../../../../utils/checks';
+import { MvuElement } from '../../../MvuElement';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;

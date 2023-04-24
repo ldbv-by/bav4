@@ -1,7 +1,7 @@
 import './i18n';
-import { FeatureInfoPanel } from './components/FeatureInfoPanel';
-import { GeometryInfo } from './components/GeometryInfo';
-import { FeatureInfoIframePanel } from './components/FeatureInfoIframePanel';
+import { FeatureInfoPanel } from './components/featureInfoPanel/FeatureInfoPanel';
+import { GeometryInfo } from './components/geometryInfo/GeometryInfo';
+import { FeatureInfoIframePanel } from './components/featureInfoIframePanel/FeatureInfoIframePanel';
 if (!window.customElements.get(FeatureInfoPanel.tag)) {
 	window.customElements.define(FeatureInfoPanel.tag, FeatureInfoPanel);
 }

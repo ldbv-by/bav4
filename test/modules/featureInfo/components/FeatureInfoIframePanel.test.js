@@ -6,7 +6,10 @@ import { html } from 'lit-html';
 import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
-import { FeatureInfoIframePanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/FeatureInfoIframePanel.js';
+import {
+	FeatureInfoIframePanel,
+	TEMPORARY_FEATURE_HIGHLIGHT_ID
+} from '../../../../src/modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel.js';
 
 window.customElements.define(FeatureInfoIframePanel.tag, FeatureInfoIframePanel);
 
