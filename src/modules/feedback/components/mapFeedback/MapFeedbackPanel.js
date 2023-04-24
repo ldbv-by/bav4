@@ -9,6 +9,8 @@ import { LevelTypes, emitNotification } from '../../../../store/notifications/no
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
 import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
+import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -163,8 +165,14 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		};
 
-		// todo: update with Enum-values for QueryParameter and IFrameComponents
-		const iframeSrc = this._shareService.encodeState({ tid: 'drawing', l: '914c9263-5312-453e-b3eb-5104db1bf788' }, [PathParameters.EMBED]);
+		const getExtraParameters = () => {
+			const queryParameters = {};
+			queryParameters[QueryParameters.LAYER] = '914c9263-5312-453e-b3eb-5104db1bf788'; // TODO: replace with layer from FeedbackService
+			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL, IFrameComponents.ACTIVATE_MAP_BUTTON];
+			return queryParameters;
+		};
+
+		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
 		return html`
 			<style>
 				${css}
@@ -184,9 +192,7 @@ export class MapFeedbackPanel extends MvuElement {
 							referrerpolicy="no-referrer-when-downgrade"
 						></iframe>
 						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
-					</div>
-
-					
+					</div>					
 
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
