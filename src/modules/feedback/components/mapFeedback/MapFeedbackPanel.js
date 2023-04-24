@@ -72,6 +72,11 @@ export class MapFeedbackPanel extends MvuElement {
 		}
 	}
 
+	onDisconnect() {
+		this._iframeObserver?.disconnect();
+		this._iframeObserver = null;
+	}
+
 	async _getCategoryOptions() {
 		try {
 			const categoryOptions = await this._feedbackService.getCategories();
@@ -168,7 +173,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const getExtraParameters = () => {
 			const queryParameters = {};
 			queryParameters[QueryParameters.LAYER] = '914c9263-5312-453e-b3eb-5104db1bf788'; // TODO: replace with layer from FeedbackService
-			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL, IFrameComponents.ACTIVATE_MAP_BUTTON];
+			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL];
 			return queryParameters;
 		};
 

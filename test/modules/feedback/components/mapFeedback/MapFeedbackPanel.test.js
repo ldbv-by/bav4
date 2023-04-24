@@ -1,3 +1,4 @@
+import { PathParameters } from '../../../../../src/domain/pathParameters';
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '../../../../../src/services/FeedbackService';
@@ -122,6 +123,13 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+		});
+
+		it('calls shareService for iframe-source', async () => {
+			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
+			await setup();
+
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: ['draw-tool'], l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
 		it('listen to iframe-attribute changes', async () => {
@@ -349,6 +357,18 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId'));
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._iframeObserver).toBeNull();
 		});
 	});
 });
