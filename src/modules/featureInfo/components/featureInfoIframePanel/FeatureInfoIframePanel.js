@@ -6,7 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { $injector } from '../../../../injection';
 import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
 import css from './featureInfoIframePanel.css';
-import arrowLeftShortIcon from './assets/arrowLeftShort.svg';
+import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
 import {
 	addHighlightFeatures,
 	HighlightFeatureType,
