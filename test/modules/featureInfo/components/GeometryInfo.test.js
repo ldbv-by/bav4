@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { EMPTY_GEOMETRY_STATISTICS, GeometryInfo } from '../../../../src/modules/featureInfo/components/GeometryInfo';
+import { EMPTY_GEOMETRY_STATISTICS, GeometryInfo } from '../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { TestUtils } from '../../../test-utils';
 
