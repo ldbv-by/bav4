@@ -1,0 +1,9 @@
+.privacy_policy-container {
+	user-select: none;
+	font-size: 0.8rem;
+	display: inline-block;
+	position: relative;
+	border-left: 1px dotted var(--text1);
+	padding: 0 1em;
+	margin: 0.4em 0;
+}

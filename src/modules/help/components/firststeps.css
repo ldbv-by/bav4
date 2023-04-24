@@ -8,7 +8,6 @@
 	z-index: calc(var(--z-header) + 20);
 	border-radius: 2em;
 	padding: 0.5em 0.9em;
-	background: var(--info-color);
 	background: var(--primary-bg-color);
 	cursor: pointer;
 	border: 0;

@@ -27,3 +27,4 @@ import './modules/dndImport';
 import './modules/auth';
 import './modules/elevationProfile';
 import './modules/share';
+import './modules/feedback';

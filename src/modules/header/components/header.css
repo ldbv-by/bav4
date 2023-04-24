@@ -32,7 +32,6 @@
 	z-index: calc(var(--z-header) + 10);
 }
 .header__logo-badge {
-	background: var(--secondary-color);
 	background: var(--error-color);
 	font-weight: bold;
 	color: #fff;
@@ -131,7 +130,6 @@
 	right: 0;
 	z-index: 99999;
 	top: 0;
-	background: var(--header-background-color);
 	background: var(--primary-bg-color);
 	height: 2.7em;
 	width: 2.7em;
@@ -142,7 +140,6 @@
 	background: var(--header-background-color);
 }
 .resize-icon {
-	background: var(--secondary-color);
 	background: var(--text2);
 	display: block;
 	height: 2em;

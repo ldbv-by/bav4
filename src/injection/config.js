@@ -49,7 +49,7 @@ import { ElevationService } from '../services/ElevationService';
 import { IframeStatePlugin } from '../plugins/IframeStatePlugin';
 import { ObserveStateForEncodingPlugin } from '../plugins/ObserveStateForEncodingPlugin';
 import { SharePlugin } from '../plugins/SharePlugin';
-import { MapFeedbackService } from '../services/MapFeedbackService';
+import { FeedbackService } from '../services/FeedbackService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
@@ -83,7 +83,7 @@ $injector
 	.registerSingleton('BaaCredentialService', new BaaCredentialService())
 	.registerSingleton('MfpService', new BvvMfpService())
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
-	.registerSingleton('MapFeedbackService', new MapFeedbackService())
+	.registerSingleton('FeedbackService', new FeedbackService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

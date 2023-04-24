@@ -1,7 +1,8 @@
+import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
-import { Tools } from '../../../../src/domain/tools';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
+import { activate } from '../../../../src/store/draw/draw.action';
 import { drawReducer } from '../../../../src/store/draw/draw.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
@@ -10,19 +11,14 @@ window.customElements.define(DrawTool.tag, DrawTool);
 
 describe('DrawTool', () => {
 	let store;
-	const windowMock = {
-		matchMedia() {},
-		location: {
-			get search() {
-				return null;
-			}
-		}
-	};
 	const drawDefaultState = {
 		active: false,
 		mode: null,
 		type: null,
 		reset: null
+	};
+	const environmentServiceMock = {
+		getUrlParams: () => new URLSearchParams()
 	};
 
 	const setup = async (drawState = drawDefaultState) => {
@@ -33,11 +29,7 @@ describe('DrawTool', () => {
 		store = TestUtils.setupStoreAndDi(state, {
 			draw: drawReducer
 		});
-		$injector
-			.registerSingleton('EnvironmentService', {
-				getWindow: () => windowMock
-			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(DrawTool.tag);
 	};
@@ -47,6 +39,7 @@ describe('DrawTool', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({
+				active: false,
 				type: null,
 				mode: null,
 				validGeometry: null,
@@ -64,10 +57,10 @@ describe('DrawTool', () => {
 		});
 
 		describe('when queryParam for drawTool is set', () => {
-			const drawToolQueryParam = QueryParameters.TOOL_ID + '=' + Tools.DRAWING;
+			const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
 
 			beforeEach(() => {
-				spyOnProperty(windowMock.location, 'search').and.returnValue(drawToolQueryParam);
+				spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(drawToolQueryParams);
 			});
 
 			it('shows a list of tools', async () => {
@@ -82,32 +75,31 @@ describe('DrawTool', () => {
 
 			it('activates the Line draw tool', async () => {
 				const element = await setup();
-
 				const toolButton = element.shadowRoot.querySelector('#line-button');
+				activate();
 
 				toolButton.click();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
-				expect(store.getState().draw.reset).toBeTruthy();
 				expect(store.getState().draw.type).toBe('line');
 			});
 
 			it('activates the Marker draw tool', async () => {
 				const element = await setup();
-
 				const toolButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
 
 				toolButton.click();
 
 				expect(toolButton.classList.contains('is-active')).toBeTrue();
-				expect(store.getState().draw.reset).toBeTruthy();
 				expect(store.getState().draw.type).toBe('marker');
 			});
 
 			it('deactivates last tool, when activate another', async () => {
 				const element = await setup();
-
 				const lastButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
+
 				lastButton.click();
 
 				const toolButton = element.shadowRoot.querySelector('#line-button');
@@ -117,17 +109,34 @@ describe('DrawTool', () => {
 				expect(lastButton.classList.contains('is-active')).toBeFalse();
 			});
 
-			it('toggles a tool', async () => {
+			it('toggles the marker tool', async () => {
+				const element = await setup();
+				const toolButton = element.shadowRoot.querySelector('#marker-button');
+				activate();
+
+				toolButton.click();
+
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('marker');
+
+				toolButton.click();
+
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
+			});
+
+			it('toggles the line tool', async () => {
 				const element = await setup();
 				const toolButton = element.shadowRoot.querySelector('#line-button');
+				activate();
 
 				toolButton.click();
 
-				expect(toolButton.classList.contains('is-active')).toBeTrue();
+				expect(store.getState().draw.active).toBeTrue();
+				expect(store.getState().draw.type).toBe('line');
 
 				toolButton.click();
 
-				expect(toolButton.classList.contains('is-active')).toBeFalse();
+				expect(store.getState().draw.reset).toEqual(jasmine.any(EventLike));
 			});
 
 			it('displays the finish-button for line', async () => {

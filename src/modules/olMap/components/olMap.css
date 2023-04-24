@@ -6,12 +6,10 @@
 }
 
 .grab {
-	cursor: -webkit-grab;
 	cursor: grab;
 }
 
 .dragging,
 .grabbing {
-	cursor: -webkit-grabbing;
 	cursor: grabbing;
 }
