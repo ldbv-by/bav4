@@ -82,7 +82,7 @@ export class IframeGenerator extends MvuElement {
 		const { size, autoWidth, previewUrl } = model;
 		const [width, height] = size;
 
-		const inRange = (value) => Range_Min < value && value < Range_Max;
+		const inRange = (value) => Range_Min <= value && value <= Range_Max;
 
 		const onChangeWidth = (event) => {
 			const width = parseInt(event.target.value);
