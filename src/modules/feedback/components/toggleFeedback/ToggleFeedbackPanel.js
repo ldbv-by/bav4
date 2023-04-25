@@ -38,7 +38,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 
 	createView(model) {
 		const { selectedFeedbackPanel } = model;
-		// const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this._translationService.translate(key);
 		let displayButtons, displayMap, displayGeneral;
 
 		switch (selectedFeedbackPanel) {
@@ -74,11 +74,23 @@ export class ToggleFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
+			<h2 id="toggleFeedbackPanelTitle" style="display: ${displayButtons};">${translate('feedback_toggleFeedback_header')}</h2>
+
 			<div style="display: ${displayButtons};margin-bottom: 10px;">
-				<ba-button id="selectFeedbackMapButton" .label=${'Map Feedback'} .type=${'primary'} @click=${selectedFeedbackTypeMap} />
+				<ba-button
+					id="selectFeedbackMapButton"
+					.label=${translate('feedback_toggleFeedback_mapButton')}
+					.type=${'primary'}
+					@click=${selectedFeedbackTypeMap}
+				/>
 			</div>
 			<div style="display: ${displayButtons};">
-				<ba-button id="selectFeedbackGeneralButton" .label=${'General Feedback'} .type=${'primary'} @click=${selectFeedbackTypeGeneral} />
+				<ba-button
+					id="selectFeedbackGeneralButton"
+					.label=${translate('feedback_toggleFeedback_generalButton')}
+					.type=${'primary'}
+					@click=${selectFeedbackTypeGeneral}
+				/>
 			</div>
 			<div style="display: ${displayGeneral};">
 				<ba-mvu-generalfeedbackpanel></ba-mvu-generalfeedbackpanel>

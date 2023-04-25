@@ -4,36 +4,14 @@ import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
 
-// const configServiceMock = {
-// 	getValueAsPath: () => {}
-// };
-
-// const feedbackServiceMock = {
-// 	getCategories: () => ['Foo', 'Bar'],
-// 	save: () => {}
-// };
-
-// const shareServiceMock = {
-// 	encodeState: () => {},
-// 	copyToClipboard() {}
-// };
-
-let store;
-
 const setup = (state = {}) => {
 	const initialState = {
 		...state
 	};
 
-	store = TestUtils.setupStoreAndDi(initialState);
-	// , {
-	// 		notifications: notificationReducer
-	// 	}
+	TestUtils.setupStoreAndDi(initialState);
 
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
-	// .registerSingleton('ConfigService', configServiceMock)
-	// .registerSingleton('FeedbackService', feedbackServiceMock)
-	// .registerSingleton('ShareService', shareServiceMock)
 
 	return TestUtils.renderAndLogLifecycle(ToggleFeedbackPanel.tag);
 };
@@ -50,92 +28,89 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
-	// describe('when initialized', () => {
-	// 	it('renders the view', async () => {
-	// 		// arrange
-	// 		const expectedTitle = 'mapFeedback_header';
+	describe('when initialized', () => {
+		it('renders the view', async () => {
+			// arrange
+			const expectedTitle = 'feedback_toggleFeedback_header';
+			const expectedMapButton = 'feedback_toggleFeedback_mapButton';
+			const expectedGeneralButton = 'feedback_toggleFeedback_generalButton';
 
-	// 		const element = await setup();
+			const element = await setup();
 
-	// 		// assert
-	// 		expect(element.shadowRoot.children.length).toBe(4);
-	// 		expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
+			// assert
+			expect(element.shadowRoot.children.length).toBe(7);
+			expect(element.shadowRoot.querySelector('#toggleFeedbackPanelTitle').textContent).toBe(expectedTitle);
+			expect(element.shadowRoot.querySelector('#selectFeedbackMapButton').label).toBe(expectedMapButton);
+			expect(element.shadowRoot.querySelector('#selectFeedbackGeneralButton').label).toBe(expectedGeneralButton);
+		});
 
-	// 		const category = element.shadowRoot.querySelector('#category');
-	// 		expect(category.value).toBe(expectedCategory);
-	// 		const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
-	// 		expect(actualOptions).toEqual(expectedCategoryOptions);
-	// 		expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
-	// 		expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-	// 	});
+		// 	it('renders form elements containing correct attributes', async () => {
+		// 		// arrange
+		// 		const element = await setup();
 
-	// 	it('renders form elements containing correct attributes', async () => {
-	// 		// arrange
-	// 		const element = await setup();
+		// 		const categoryElement = element.shadowRoot.querySelector('#category');
+		// 		const descriptionElement = element.shadowRoot.querySelector('#description');
+		// 		const emailElement = element.shadowRoot.querySelector('#email');
 
-	// 		const categoryElement = element.shadowRoot.querySelector('#category');
-	// 		const descriptionElement = element.shadowRoot.querySelector('#description');
-	// 		const emailElement = element.shadowRoot.querySelector('#email');
+		// 		// assert
+		// 		expect(categoryElement.type).toBe('select-one');
+		// 		expect(categoryElement.hasAttribute('required')).toBeTrue;
+		// 		expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
+		// 		expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
 
-	// 		// assert
-	// 		expect(categoryElement.type).toBe('select-one');
-	// 		expect(categoryElement.hasAttribute('required')).toBeTrue;
-	// 		expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
-	// 		expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
+		// 		expect(descriptionElement.type).toBe('textarea');
+		// 		expect(descriptionElement.hasAttribute('required')).toBeTrue;
+		// 		expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+		// 		expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
 
-	// 		expect(descriptionElement.type).toBe('textarea');
-	// 		expect(descriptionElement.hasAttribute('required')).toBeTrue;
-	// 		expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
-	// 		expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
+		// 		expect(emailElement.type).toBe('email');
+		// 		expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+		// 		expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+		// 		expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
+		// 	});
 
-	// 		expect(emailElement.type).toBe('email');
-	// 		expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-	// 		expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
-	// 		expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
-	// 	});
+		// 	it('renders a privacy policy disclaimer', async () => {
+		// 		const element = await setup();
 
-	// 	it('renders a privacy policy disclaimer', async () => {
-	// 		const element = await setup();
+		// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
+		// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+		// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
+		// 	});
 
-	// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
-	// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-	// 		expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
-	// 	});
+		// 	it('creates an iframeObserver', async () => {
+		// 		const element = await setup();
 
-	// 	it('creates an iframeObserver', async () => {
-	// 		const element = await setup();
+		// 		expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+		// 	});
 
-	// 		expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
-	// 	});
+		// 	it('calls shareService for iframe-source', async () => {
+		// 		const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
+		// 		await setup();
 
-	// 	it('calls shareService for iframe-source', async () => {
-	// 		const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
-	// 		await setup();
+		// 		expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+		// 	});
 
-	// 		expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
-	// 	});
+		// 	it('listen to iframe-attribute changes', async () => {
+		// 		const fileId = 'f_foo';
+		// 		const element = await setup();
 
-	// 	it('listen to iframe-attribute changes', async () => {
-	// 		const fileId = 'f_foo';
-	// 		const element = await setup();
+		// 		const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+		// 		expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-	// 		const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-	// 		expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+		// 		const iframe = element.shadowRoot.querySelector('iframe');
+		// 		iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+		// 		await TestUtils.timeout();
 
-	// 		const iframe = element.shadowRoot.querySelector('iframe');
-	// 		iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
-	// 		await TestUtils.timeout();
+		// 		expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
-	// 		expect(element.getModel().mapFeedback.fileId).toBe(fileId);
+		// 		// no calls by changes on any other attribute
+		// 		iframe.setAttribute(IFRAME_ENCODED_STATE, 'foo');
 
-	// 		// no calls by changes on any other attribute
-	// 		iframe.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+		// 		await TestUtils.timeout();
 
-	// 		await TestUtils.timeout();
-
-	// 		expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
-	// 	});
-	// });
+		// 		expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
+		// 	});
+	});
 
 	// describe('when using FeedbackService', () => {
 	// 	it('logs an error when getCategories fails', async () => {
