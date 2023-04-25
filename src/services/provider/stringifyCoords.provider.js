@@ -2,11 +2,13 @@
  * @module services/provider/stringifyCoords_provider
  */
 import { createStringXY } from 'ol/coordinate';
+import { LLtoUTM, forward } from '../../utils/mgrs';
+import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
 /**
  * A function that returns a string representaion of a coordinate.
  *
- * @typedef {function(Coordinate, CoordinateRepresentation, transformFn, object):(string)} stringifyCoordProvider
+ * @typedef {Function} stringifyCoordProvider
  */
 
 /**
@@ -16,15 +18,29 @@ import { createStringXY } from 'ol/coordinate';
  * @returns {stringifyCoordProvider}
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
-	const { global, code, digits } = coordinateRepresentation;
-	if (global && code !== 4326) {
-		return code === 3857 ? createStringXY(digits)(coordinate) : `pending support for global ${coordinateRepresentation.label}`;
+	const { global, code, digits, label } = coordinateRepresentation;
+	// all global coordinate representations
+	if (global) {
+		const stringifyGlobal = (label, coordinate) => {
+			const coord4326 = transformFn(coordinate, 3857, 4326);
+			switch (label) {
+				case GlobalCoordinateRepresentations.SphericalMercator.label:
+					return createStringXY(digits)(coordinate);
+				case GlobalCoordinateRepresentations.WGS84.label:
+					return stringifyLatLong(options.digits ?? coordinateRepresentation.digits)(coord4326);
+				case GlobalCoordinateRepresentations.UTM.label: {
+					const { northing, easting, zoneNumber, zoneLetter } = LLtoUTM({ lat: coord4326[1], lon: coord4326[0] });
+					return `${zoneNumber}${zoneLetter} ${easting} ${northing}`;
+				}
+				case GlobalCoordinateRepresentations.MGRS.label:
+					return forward(coord4326);
+			}
+		};
+		return stringifyGlobal(label, coordinate);
 	}
 
-	if (code === 4326) {
-		return createStringLatLong(options.digits ?? coordinateRepresentation.digits)(transformFn(coordinate, 3857, code));
-	}
-	return createStringUTM(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
+	// all local coordinate representations
+	return stringifyLocalUTM(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
 };
 
 /**
@@ -33,12 +49,12 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
  * Switching [X,Y,(Z,M)] to [Y,X].
  * @param {number} digits
  */
-const createStringLatLong = (digits) => {
+const stringifyLatLong = (digits) => {
 	// Possible Z-, M-values are currently ignored. This may change in future implementations.
 	return (coordinate4326) => createStringXY(digits)(coordinate4326.slice(0, 2).reverse());
 };
 
-const createStringUTM = (srid, digits, transformFn) => {
+const stringifyLocalUTM = (srid, digits, transformFn) => {
 	return (coordinate) => {
 		const zoneNumber = srid === 25832 ? '32' : '33';
 		const zoneBand = determineUtmZoneBand(transformFn(coordinate, srid, 4326));

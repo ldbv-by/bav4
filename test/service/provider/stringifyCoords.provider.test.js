@@ -17,14 +17,28 @@ describe('StringifyCoord provider', () => {
 				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000, 20000.000000');
 			});
 
-			it('stringifies a coordinate for MGRS', () => {
+			it('stringifies a coordinate for SphericalMercator', () => {
 				const coord3857 = [10000, 20000];
-				const coord4326 = [11.572457, 48.140212, 0];
+				const coord4326 = [0, 0, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.MGRS, transformFn, { digits: 3 })).toBe(
-					'pending support for global MGRS'
-				);
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000, 20000.000000');
+			});
+
+			it('stringifies a coordinate for UTM', () => {
+				const coord3857 = [10000, 20000];
+				const coord4326 = [0, 0, 0];
+				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
+
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.UTM, transformFn)).toBe('31N 166021 0');
+			});
+
+			it('stringifies a coordinate for MGRS', () => {
+				const coord3857 = [10000, 20000];
+				const coord4326 = [0, 0, 0];
+				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
+
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.MGRS, transformFn)).toBe('31NAA6602100000');
 			});
 		});
 
