@@ -30,7 +30,8 @@ describe('MapDefinitions provider', () => {
 			expect(localProjectedCoordinateRepresentations()).toEqual([
 				BvvCoordinateRepresentations.UTM32,
 				GlobalCoordinateRepresentations.WGS84,
-				GlobalCoordinateRepresentations.SphericalMercator
+				GlobalCoordinateRepresentations.SphericalMercator,
+				GlobalCoordinateRepresentations.MGRS
 			]);
 			expect(localProjectedSrid).toEqual(25832);
 			expect(minZoomLevel).toBe(0);
@@ -52,7 +53,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In32)).toEqual([
 					BvvCoordinateRepresentations.UTM32,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 
@@ -65,7 +67,8 @@ describe('MapDefinitions provider', () => {
 					BvvCoordinateRepresentations.UTM33,
 					BvvCoordinateRepresentations.UTM32,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 
@@ -77,7 +80,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 
@@ -89,7 +93,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 
@@ -101,7 +106,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 
@@ -113,7 +119,8 @@ describe('MapDefinitions provider', () => {
 				expect(localProjectedCoordinateRepresentations(fakeCoord3857In33)).toEqual([
 					GlobalCoordinateRepresentations.UTM,
 					GlobalCoordinateRepresentations.WGS84,
-					GlobalCoordinateRepresentations.SphericalMercator
+					GlobalCoordinateRepresentations.SphericalMercator,
+					GlobalCoordinateRepresentations.MGRS
 				]);
 			});
 		});
