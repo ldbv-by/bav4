@@ -4,7 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
-import css from '../toggleFeedbackPanel.css';
+import css from './toggleFeedbackPanel.css';
 
 /**
  * possible feedback types
@@ -84,7 +84,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 				<ba-mvu-generalfeedbackpanel></ba-mvu-generalfeedbackpanel>
 			</div>
 			<div class="example row" style="display: ${displayMap};">
-				<ba-mvu-mapfeedbackpanel></ba-mvu-mapfeedbackpanel>
+				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
 			</div>
 		`;
 	}
