@@ -30,6 +30,7 @@ describe('ActivateMapButton', () => {
 				expect(element.shadowRoot.children.length).toBe(0);
 			});
 		});
+
 		describe("we're embedded", () => {
 			describe('QueryParameters.IFRAME_COMPONENTS includes IFrameComponents.ACTIVATE_MAP_BUTTON', () => {
 				it('renders the button', async () => {
@@ -51,6 +52,7 @@ describe('ActivateMapButton', () => {
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);
 				});
 			});
+
 			describe('QueryParameters.IFRAME_COMPONENTS does NOT include IFrameComponents.ACTIVATE_MAP_BUTTON', () => {
 				it('renders nothing', async () => {
 					const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.DRAW_TOOL}`);
