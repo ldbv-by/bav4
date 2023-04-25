@@ -92,6 +92,10 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
+		const getGeometryClass = (featureInfoGeometry) => {
+			return featureInfoGeometry ? 'is-geometry' : '';
+		};
+
 		return html`
 			<style>
 				${css}
@@ -117,7 +121,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 							(item) => html`
 								<li class="ba-section">
 									<button
-										class="ba-list-item ba-list-item__header"
+										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
 										@mouseleave=${() => onMouseLeave(item.geometry)}
 									>
