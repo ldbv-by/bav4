@@ -144,6 +144,7 @@ describe('AttributionInfo', () => {
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].href).toBe(url2);
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].target).toBe('_blank');
 			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].innerText).toBe(layerId1 + '_2' + ','); //should contain also a separator
+			expect(element.shadowRoot.querySelectorAll('a.attribution.attribution-link')[1].title).toBe(layerId1 + '_2');
 
 			expect(element.shadowRoot.querySelectorAll('.collapse-button')).toHaveSize(1);
 		});
