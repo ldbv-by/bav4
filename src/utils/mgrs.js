@@ -100,7 +100,7 @@ const HALF_UTM_ZONE_WIDTH = UTM_ZONE_WIDTH / 2;
 /**
  * Convert lat/lon to MGRS.
  *
- * @param {[number, number]} ll Array with longitude and latitude on a
+ * @param [number, number] ll Array with longitude and latitude on a
  *     WGS84 ellipsoid.
  * @param {number} [accuracy=5] Accuracy in digits (5 for 1 m, 4 for 10 m, 3 for
  *      100 m, 2 for 1 km, 1 for 10 km or 0 for 100 km). Optional, default is 5.
@@ -138,7 +138,7 @@ export function forward(ll, accuracy) {
  * Convert MGRS to lat/lon bounding box.
  *
  * @param {string} mgrs MGRS string.
- * @return {[number,number,number,number]} An array with left (longitude),
+ * @return [number,number,number,number] An array with left (longitude),
  *    bottom (latitude), right
  *    (longitude) and top (latitude) values in WGS84, representing the
  *    bounding box for the provided MGRS reference.
@@ -372,8 +372,6 @@ function UTMtoLL(utm) {
 /**
  * Calculates the MGRS letter designator for the given latitude.
  *
- * @private (Not intended for public API, only exported for testing.)
- * @param {number} latitude The latitude in WGS84 to get the letter designator
  *     for.
  * @return {string} The letter designator.
  */
