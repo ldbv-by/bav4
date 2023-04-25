@@ -44,12 +44,12 @@
 }
 
 .is-desktop .tool-bar__button {
+	font-size: 0.81rem;
 	display: inline-block;
 	cursor: pointer;
 	background: var(--header-button-color);
 	opacity: 0.9;
 	padding: 0.2em 0.4em 0.4em;
-	font-size: 0.9em;
 }
 
 .is-active.tool-bar__button {

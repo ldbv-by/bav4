@@ -68,7 +68,7 @@ export class BottomSheet extends MvuElement {
 
 		const onDismiss = () => {
 			const elementModal = this.shadowRoot.querySelector('.bottom-sheet');
-			elementModal.classList.add('hide');
+			elementModal.classList.add('fade-out');
 			elementModal.addEventListener('animationend', () => {
 				closeBottomSheet();
 			});

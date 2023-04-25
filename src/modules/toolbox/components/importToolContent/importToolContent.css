@@ -5,6 +5,7 @@
 	justify-content: center;
 }
 .tool-container__buttons > button {
+	font-size: 1.2rem;
 	position: relative;
 	background: transparent;
 	cursor: pointer;
@@ -44,6 +45,7 @@
 	position: absolute;
 }
 .data {
+	cursor: pointer;
 	mask-image: url('assets/data.svg');
 	-webkit-mask-image: url('assets/data.svg');
 }
@@ -53,6 +55,7 @@
 }
 
 .tool-container__button-text {
+	color: var(--text1);
 	font-size: 0.8rem;
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
@@ -156,7 +159,4 @@
 	width: 3.4em;
 	background-color: var(--primary-color);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
-}
-.hide {
-	display: none !important;
 }
