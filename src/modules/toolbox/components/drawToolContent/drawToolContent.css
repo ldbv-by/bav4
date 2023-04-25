@@ -5,6 +5,7 @@
 }
 
 .tool-container__buttons > button {
+	font-size: 1.2rem;
 	position: relative;
 	background: transparent;
 	cursor: pointer;
@@ -78,6 +79,7 @@
 }
 
 .tool-container__button-text {
+	color: var(--text1);
 	font-size: 0.8rem;
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
@@ -236,12 +238,14 @@ input[color] {
 	cursor: pointer;
 	padding: 0.8em 1.2em;
 }
-
 .sub-header-text {
 	font-weight: bold;
 	color: var(--text2);
 	flex-grow: 1;
 	font-size: 0.9rem;
+}
+.sub-header:hover .sub-header-text {
+	color: var(--primary-color);
 }
 
 .color-row {

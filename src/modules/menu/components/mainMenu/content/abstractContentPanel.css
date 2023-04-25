@@ -1,7 +1,6 @@
 /* CSS classes for all ContentPanel implementations */
 .ba-list-item {
 	display: flex;
-	cursor: pointer;
 	text-decoration: none;
 	overflow-wrap: break-word;
 	background: transparent;
@@ -174,7 +173,6 @@
 /* header  */
 .ba-list-item__header:hover {
 	background: none;
-	color: var(--primary-color);
 }
 .ba-list-item__sub-header {
 	opacity: 0.8;

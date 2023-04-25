@@ -8,7 +8,7 @@
 	width: auto;
 	right: 2em;
 	left: 7em;
-	padding: 0.8em;
+	padding: 0.7em;
 	background-image: url('assets/chess.svg');
 	background-size: 1em;
 }
@@ -19,6 +19,7 @@
 
 .is-landscape .ba_catalog_container {
 	position: absolute;
+	z-index: 1;
 }
 
 .ba_catalog_item {

@@ -77,7 +77,9 @@ export class AttributionInfo extends MvuElement {
 		const attributionTemplates = this._getCopyrights(activeLayers, zoomLevel).map((copyright, index, array) => {
 			const separator = index === array.length - 1 ? '' : ',';
 			return copyright.url
-				? html`<a class="attribution attribution-link" target="_blank" href=${copyright.url}>${copyright.label}${separator}</a>`
+				? html`<a class="attribution attribution-link" target="_blank" title="${copyright.label}" href=${copyright.url}
+						>${copyright.label}${separator}</a
+				  >`
 				: html`<span class="attribution">${copyright.label}${separator}</span>`;
 		});
 
