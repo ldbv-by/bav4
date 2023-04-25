@@ -61,11 +61,11 @@ export class ToggleFeedbackPanel extends MvuElement {
 				break;
 		}
 
-		const selectedFeedbackTypeMap = () => {
+		const feedbackTypeMap = () => {
 			this.signal(Select_Feedback_Type, FeedbackType.MAP);
 		};
 
-		const selectFeedbackTypeGeneral = () => {
+		const feedbackTypeGeneral = () => {
 			this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
 		};
 
@@ -76,26 +76,21 @@ export class ToggleFeedbackPanel extends MvuElement {
 
 			<h2 id="toggleFeedbackPanelTitle" style="display: ${displayButtons};">${translate('feedback_toggleFeedback_header')}</h2>
 
-			<div style="display: ${displayButtons};margin-bottom: 10px;">
-				<ba-button
-					id="selectFeedbackMapButton"
-					.label=${translate('feedback_toggleFeedback_mapButton')}
-					.type=${'primary'}
-					@click=${selectedFeedbackTypeMap}
-				/>
+			<div id="feedbackMapButtonContainer" style="display: ${displayButtons};margin-bottom: 10px;">
+				<ba-button id="feedbackMapButton" .label=${translate('feedback_toggleFeedback_mapButton')} .type=${'primary'} @click=${feedbackTypeMap} />
 			</div>
-			<div style="display: ${displayButtons};">
+			<div id="feedbackGeneralButtonContainer" style="display: ${displayButtons};">
 				<ba-button
-					id="selectFeedbackGeneralButton"
+					id="feedbackGeneralButton"
 					.label=${translate('feedback_toggleFeedback_generalButton')}
 					.type=${'primary'}
-					@click=${selectFeedbackTypeGeneral}
+					@click=${feedbackTypeGeneral}
 				/>
 			</div>
-			<div style="display: ${displayGeneral};">
+			<div id="generalFeedback" style="display: ${displayGeneral};">
 				<ba-mvu-generalfeedbackpanel></ba-mvu-generalfeedbackpanel>
 			</div>
-			<div class="example row" style="display: ${displayMap};">
+			<div id="mapFeedback" style="display: ${displayMap};">
 				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
 			</div>
 		`;
