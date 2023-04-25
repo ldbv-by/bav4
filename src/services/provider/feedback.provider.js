@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
 
 /**
- * Bvv specific immplementation of {@link module:services/MapFeedbackService~mapFeedbackStorageProvider}
+ * Bvv specific immplementation of {@link module:services/FeedbackService~feedbackStorageProvider}
  * @implements {module:services/MapFeedbackService~feedbackStorageProvider}
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
@@ -24,9 +24,9 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 };
 
 /**
- * Bvv specific immplementation of {@link module:services/MapFeedbackService~mapFeedbackCategoriesProvider}
+ * Bvv specific immplementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
  * @async
- * @implements {module:services/MapFeedbackService~mapFeedbackCategoriesProvider}
+ * @implements {module:services/MapFeedbackService~FeedbackCategoriesProvider}
  */
 export const bvvMapFeedbackCategoriesProvider = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
