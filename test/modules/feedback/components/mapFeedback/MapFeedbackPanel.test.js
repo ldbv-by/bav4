@@ -1,3 +1,4 @@
+import { IFrameComponents } from '../../../../../src/domain/iframeComponents';
 import { PathParameters } from '../../../../../src/domain/pathParameters';
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
@@ -129,7 +130,7 @@ describe('MapFeedbackPanel', () => {
 			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
 			await setup();
 
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: ['draw-tool'], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
 		describe('when listen to iframe-attribute changes', () => {
