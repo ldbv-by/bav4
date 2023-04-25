@@ -1,8 +1,11 @@
+import { IFrameComponents } from '../../../../../src/domain/iframeComponents';
+import { PathParameters } from '../../../../../src/domain/pathParameters';
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
@@ -14,6 +17,11 @@ const configServiceMock = {
 const feedbackServiceMock = {
 	getCategories: () => ['Foo', 'Bar'],
 	save: () => {}
+};
+
+const shareServiceMock = {
+	encodeState: () => {},
+	copyToClipboard() {}
 };
 
 let store;
@@ -30,14 +38,15 @@ const setup = (state = {}) => {
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
-		.registerSingleton('FeedbackService', feedbackServiceMock);
+		.registerSingleton('FeedbackService', feedbackServiceMock)
+		.registerSingleton('ShareService', shareServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
 
 describe('MapFeedbackPanel', () => {
 	describe('constructor', () => {
-		it('sets a  default model', async () => {
+		it('sets a default model', async () => {
 			setup();
 			const element = new MapFeedbackPanel();
 
@@ -110,6 +119,40 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
 		});
+
+		it('creates an iframeObserver', async () => {
+			const element = await setup();
+
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+		});
+
+		it('calls shareService for iframe-source', async () => {
+			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.callThrough();
+			await setup();
+
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+		});
+
+		it('listen to iframe-attribute changes', async () => {
+			const fileId = 'f_foo';
+			const element = await setup();
+
+			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
+
+			// no calls by changes on any other attribute
+			iframe.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+
+			await TestUtils.timeout();
+
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	describe('when using FeedbackService', () => {
@@ -121,7 +164,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._getCategorieOptions();
+			await element._getCategoryOptions();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
@@ -167,7 +210,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._getCategorieOptions();
+			await element._getCategoryOptions();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
@@ -315,6 +358,18 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId'));
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all observers', async () => {
+			const element = await setup();
+
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(element._iframeObserver).toBeNull();
 		});
 	});
 });

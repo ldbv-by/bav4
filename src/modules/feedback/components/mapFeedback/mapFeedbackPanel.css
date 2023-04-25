@@ -14,3 +14,15 @@
 	border: 1px solid black;
 	padding: 10px;
 }
+
+iframe[data-iframe-geometry-reference-id=''] {
+	border-bottom: 5px solid var(--error-color);
+}
+
+iframe[data-iframe-geometry-reference-id^='f_'] {
+	border-bottom: none;
+}
+
+.Iframe__hint {
+	font-style: italic;
+}
