@@ -7,6 +7,10 @@ import { MvuElement } from '../../../MvuElement';
 import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { MapFeedback } from '../../../../services/FeedbackService';
+import { PathParameters } from '../../../../domain/pathParameters';
+import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
+import { QueryParameters } from '../../../../domain/queryParameters';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -36,22 +40,47 @@ export class MapFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
-			FeedbackService: feedbackService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService');
+			FeedbackService: feedbackService,
+			ShareService: shareService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
+		this._shareService = shareService;
+		this._iframeObserver = null;
 	}
 
 	onInitialize() {
-		this._getCategorieOptions();
+		this._getCategoryOptions();
 	}
 
-	async _getCategorieOptions() {
+	onAfterRender(firstTime) {
+		const onIFrameChanged = (mutationList) => {
+			for (const mutation of mutationList) {
+				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_GEOMETRY_REFERENCE_ID) {
+					const fileId = mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID);
+					this._updateFileId(fileId);
+				}
+			}
+		};
+		if (firstTime) {
+			const iframeElement = this.shadowRoot.querySelector('iframe');
+			const config = { attributes: true, childList: false, subtree: false };
+			this._iframeObserver = new MutationObserver(onIFrameChanged);
+			this._iframeObserver.observe(iframeElement, config);
+		}
+	}
+
+	onDisconnect() {
+		this._iframeObserver?.disconnect();
+		this._iframeObserver = null;
+	}
+
+	async _getCategoryOptions() {
 		try {
-			const categorieOptions = await this._feedbackService.getCategories();
-			this.signal(Update_CategoryOptions, categorieOptions);
+			const categoryOptions = await this._feedbackService.getCategories();
+			this.signal(Update_CategoryOptions, categoryOptions);
 		} catch (e) {
 			console.error(e);
 			this.signal(Update_CategoryOptions, []);
@@ -91,12 +120,8 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions, submitWasClicked } = model;
+		const { mapFeedback, categoryOptions } = model;
 
-		let geometryErrorDisplay = 'none';
-		if (submitWasClicked && mapFeedback.fileId === null) {
-			geometryErrorDisplay = 'block';
-		}
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleCategoryChange = () => {
@@ -141,6 +166,14 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		};
 
+		const getExtraParameters = () => {
+			const queryParameters = {};
+			queryParameters[QueryParameters.LAYER] = '914c9263-5312-453e-b3eb-5104db1bf788'; // TODO: replace with layer from FeedbackService
+			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL];
+			return queryParameters;
+		};
+
+		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
 		return html`
 			<style>
 				${css}
@@ -150,6 +183,18 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
+					<div class="iframe__content">
+						<iframe
+							data-iframe-geometry-reference-id
+							src=${iframeSrc}
+							width=100%'
+							height=600px'
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+						></iframe>
+						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
+					</div>					
+
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
@@ -175,10 +220,6 @@ export class MapFeedbackPanel extends MvuElement {
 					<div class="ba-form-element" id="mapFeedback_disclaimer">
 						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
 						>).
-					</div>
-
-					<div class="ba-form-element" style="margin-bottom: 10px; display: ${geometryErrorDisplay};">
-						<label style="color: red; ">${translate('mapFeedback_pleaseSelect')}</label>
 					</div>
 
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />

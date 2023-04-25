@@ -7,7 +7,7 @@ import { createDefaultLayer, createDefaultLayerProperties } from '../../../../..
 import GeoJSON from 'ol/format/GeoJSON';
 import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { $injector } from '../../../../../src/injection';
-import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/GeometryInfo';
+import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);

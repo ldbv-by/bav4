@@ -1,26 +1,23 @@
 /**
- * @module modules/featureInfo/components/FeatureInfoPanel
+ * @module modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel
  */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { $injector } from '../../../injection';
-import { abortOrReset } from '../../../store/featureInfo/featureInfo.action';
-import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
-import css from './featureInfoPanel.css';
+import { $injector } from '../../../../injection';
+import { abortOrReset } from '../../../../store/featureInfo/featureInfo.action';
+import css from './featureInfoIframePanel.css';
 import arrowLeftShortIcon from '../assets/arrowLeftShort.svg';
-import shareIcon from '../assets/share.svg';
-import printerIcon from '../assets/printer.svg';
 import {
 	addHighlightFeatures,
 	HighlightFeatureType,
 	HighlightGeometryType,
 	removeHighlightFeaturesById
-} from '../../../store/highlight/highlight.action';
-import { createUniqueId } from '../../../utils/numberUtils';
-import { isTemplateResult } from '../../../utils/checks';
+} from '../../../../store/highlight/highlight.action';
+import { createUniqueId } from '../../../../utils/numberUtils';
+import { isTemplateResult } from '../../../../utils/checks';
+import { MvuElement } from '../../../MvuElement';
 
 const Update_FeatureInfo_Data = 'update_featureInfo_data';
-const Update_IsPortrait = 'update_isPortrait_hasMinWidth';
 export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${createUniqueId()}`;
 
 /**
@@ -28,11 +25,10 @@ export const TEMPORARY_FEATURE_HIGHLIGHT_ID = `highlightedFeatureInfoGeometry_${
  * @author taulinger
  * @author alsturm
  */
-export class FeatureInfoPanel extends AbstractMvuContentPanel {
+export class FeatureInfoIframePanel extends MvuElement {
 	constructor() {
 		super({
-			featureInfoData: [],
-			isPortrait: false
+			featureInfoData: []
 		});
 
 		const { TranslationService } = $injector.inject('TranslationService');
@@ -41,10 +37,6 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		this.observe(
 			(store) => store.featureInfo.current,
 			(current) => this.signal(Update_FeatureInfo_Data, [...current])
-		);
-		this.observe(
-			(state) => state.media,
-			(media) => this.signal(Update_IsPortrait, media.portrait)
 		);
 	}
 
@@ -55,8 +47,6 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 		switch (type) {
 			case Update_FeatureInfo_Data:
 				return { ...model, featureInfoData: [...data] };
-			case Update_IsPortrait:
-				return { ...model, isPortrait: data };
 		}
 	}
 
@@ -64,7 +54,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	 *@override
 	 */
 	createView(model) {
-		const { featureInfoData, isPortrait } = model;
+		const { featureInfoData } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const getContent = (content) => {
@@ -88,10 +78,6 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 		};
 
-		const getOrientationClass = () => {
-			return isPortrait ? 'is-portrait' : 'is-landscape';
-		};
-
 		const getGeometryClass = (featureInfoGeometry) => {
 			return featureInfoGeometry ? 'is-geometry' : '';
 		};
@@ -101,7 +87,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div>
-				<div class="container  ${getOrientationClass()}">
+				<div class="container">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
@@ -109,12 +95,6 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('featureInfo_header')} </span>
-							</span>
-							<span class="share ba-icon-button ba-list-item__after vertical-center separator" style="padding-right: 1.5em;">
-								<ba-icon .icon="${shareIcon}" .size=${1.3}></ba-icon>
-							</span>
-							<span class="print ba-icon-button ba-list-item__after vertical-center separator">
-								<ba-icon .icon="${printerIcon}" .size=${1.5}></ba-icon>
 							</span>
 						</li>
 						${featureInfoData.map(
@@ -142,6 +122,6 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 	}
 
 	static get tag() {
-		return 'ba-feature-info-panel';
+		return 'ba-feature-info-iframe-panel';
 	}
 }
