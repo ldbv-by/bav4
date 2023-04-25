@@ -183,7 +183,7 @@ describe('IframeGenerator', () => {
 			);
 		});
 
-		it('does NOT renders iframe with the values out of range', async () => {
+		it('does NOT render the iframe when values are out of range', async () => {
 			const expectedUrl = 'https://myhost/app/embed.html?param=foo';
 			spyOn(shareServiceMock, 'encodeState').withArgs({}, [PathParameters.EMBED]).and.returnValue(expectedUrl);
 			const element = await setup();
