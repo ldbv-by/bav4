@@ -1,7 +1,8 @@
 /* istanbul ignore file */
 
 /**
- * Copied from https://github.com/proj4js/mgrs/blob/master/mgrs.js (we just export the UTMtoLL function)
+ * Copied from https://github.com/proj4js/mgrs/blob/master/mgrs.js
+ * (Changes: we export the UTMtoLL function and make the comments compatible to out jsDoc configuration)
  *
  * MIT License
  * Copyright (c) 2012, Mike Adair, Richard Greenwood, Didier Richard, Stephen Irons, Olivier Terral, Calvin Metcalf
