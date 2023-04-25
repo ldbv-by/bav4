@@ -78,6 +78,10 @@ export class FeatureInfoIframePanel extends MvuElement {
 			removeHighlightFeaturesById(TEMPORARY_FEATURE_HIGHLIGHT_ID);
 		};
 
+		const getGeometryClass = (featureInfoGeometry) => {
+			return featureInfoGeometry ? 'is-geometry' : '';
+		};
+
 		return html`
 			<style>
 				${css}
@@ -97,7 +101,7 @@ export class FeatureInfoIframePanel extends MvuElement {
 							(item) => html`
 								<li class="ba-section">
 									<button
-										class="ba-list-item ba-list-item__header"
+										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
 										@mouseleave=${() => onMouseLeave(item.geometry)}
 									>

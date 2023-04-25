@@ -15,7 +15,12 @@
 	width: 13.5em;
 }
 .attribution-link {
+	font-size: 0.8rem;
+	color: var(--text4);
 	margin-left: 0.2em;
+}
+.attribution-link:hover {
+	text-decoration: underline;
 }
 .collapse-button {
 	padding: 0.4em 1em;

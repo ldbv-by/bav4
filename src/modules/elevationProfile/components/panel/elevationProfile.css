@@ -59,7 +59,6 @@
 	margin: 0;
 	font-size: 0.9rem;
 	color: var(--text1);
-	cursor: pointer;
 }
 .is-tablet .profile__text {
 	font-size: 0.8rem;

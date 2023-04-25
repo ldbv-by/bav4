@@ -312,7 +312,6 @@ input[type='range']:focus {
 }
 .ba-list-item {
 	display: flex;
-	cursor: pointer;
 }
 .ba-list-item:hover {
 	background: var(--header-background-color);
@@ -327,6 +326,7 @@ input[type='range']:focus {
 
 .ba-list-item__header {
 	font-weight: bold;
+	cursor: default;
 }
 .ba-list-item__header:hover {
 	background: none;
