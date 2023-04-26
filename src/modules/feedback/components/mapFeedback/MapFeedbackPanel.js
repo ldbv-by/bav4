@@ -20,7 +20,7 @@ const Update_Geometry_Id = 'update_geometry_id';
 const Remember_Submit = 'remember_submit';
 
 /**
- * Contains a map-iframe and a form for submitting a {@link module:services/MapFeedbackService~MapFeedback}.
+ * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
  * @class
  */
 export class MapFeedbackPanel extends MvuElement {
