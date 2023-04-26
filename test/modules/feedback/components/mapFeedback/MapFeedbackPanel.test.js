@@ -53,8 +53,8 @@ describe('MapFeedbackPanel', () => {
 			expect(element.getModel()).toEqual({
 				mapFeedback: {
 					state: null,
-					category: '',
-					description: '',
+					category: null,
+					description: null,
 					email: null,
 					fileId: null
 				},
@@ -200,7 +200,7 @@ describe('MapFeedbackPanel', () => {
 				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
 			});
 
-			it('does not updates mapFeedback.state with existing fileId', async () => {
+			it('does not update mapFeedback.state with existing fileId', async () => {
 				const fileId = 'f_id';
 				const frontendUrl = 'http://frontend.url';
 				const iframeUrl = 'http://iframe.url';

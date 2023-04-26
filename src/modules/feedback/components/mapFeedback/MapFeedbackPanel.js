@@ -29,8 +29,8 @@ export class MapFeedbackPanel extends MvuElement {
 		super({
 			mapFeedback: {
 				state: null,
-				category: '',
-				description: '',
+				category: null,
+				description: null,
 				email: null,
 				fileId: null
 			},
