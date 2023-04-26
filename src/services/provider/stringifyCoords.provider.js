@@ -1,7 +1,6 @@
 /**
  * @module services/provider/stringifyCoords_provider
  */
-import { createStringXY } from 'ol/coordinate';
 import { LLtoUTM, forward } from '../../utils/mgrs';
 import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
@@ -55,20 +54,23 @@ const stringifyLatLong = (digits) => {
 };
 
 const stringifyLocalUTM = (srid, digits, transformFn) => {
+	const determineUtmZoneBand = (coordinate4326) => {
+		if (coordinate4326[1] < 54 && coordinate4326[1] >= 48) {
+			return 'U';
+		} else if (coordinate4326[1] < 48 && coordinate4326[1] >= 42) {
+			return 'T';
+		}
+		return '';
+	};
 	return (coordinate) => {
 		const zoneNumber = srid === 25832 ? '32' : '33';
 		const zoneBand = determineUtmZoneBand(transformFn(coordinate, srid, 4326));
 
-		const coord = createStringXY(digits)(coordinate).replace(/\B(?=(\d{3})+(?!\d))/g, '');
+		const coord = createStringXY(digits)(coordinate);
 		return `${zoneNumber}${zoneBand} ${coord}`;
 	};
 };
 
-const determineUtmZoneBand = (coordinate4326) => {
-	if (coordinate4326[1] < 54 && coordinate4326[1] >= 48) {
-		return 'U';
-	} else if (coordinate4326[1] < 48 && coordinate4326[1] >= 42) {
-		return 'T';
-	}
-	return '';
+const createStringXY = (fractionDigits) => {
+	return (coordinate) => `${coordinate[0].toFixed(fractionDigits)}, ${coordinate[1].toFixed(fractionDigits)}`;
 };
