@@ -6,15 +6,17 @@ import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresen
 
 /**
  * A function that returns a string representaion of a coordinate.
- *
+ * @param {module:domain/coordinateTypeDef~Coordinate} coordinate
+ * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation
+ * @param {function} transformFn
+ * @param {object} [options]
  * @typedef {Function} stringifyCoordProvider
  */
 
 /**
- * @function
- * @param {CoordinateRepresentation} coordinateRepresentation
- * @param {object} options
- * @returns {stringifyCoordProvider}
+ * Bvv specific immplementation of {@link module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
+ * @async
+ * @implements {module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
  */
 export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
 	const { global, code, digits, label } = coordinateRepresentation;
@@ -47,6 +49,7 @@ export const bvvStringifyFunction = (coordinate, coordinateRepresentation, trans
  * point location according to {@link https://en.wikipedia.org/wiki/ISO_6709|ISO 6709}.
  * Switching [X,Y,(Z,M)] to [Y,X].
  * @param {number} digits
+ * @ignore
  */
 const stringifyLatLong = (digits) => {
 	// Possible Z-, M-values are currently ignored. This may change in future implementations.
