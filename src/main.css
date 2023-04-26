@@ -1,22 +1,55 @@
-* {
+/* ==========================================================================
+   global variables (custom properties)
+   ========================================================================== */
+
+:root {
+	font-size: calc(0.75em + 0.15vw);
+
+	--border-radius-button: 2.5em;
+
+	--font-family: 'Open Sans', sans-serif;
+
+	/* z-index */
+	--z-footer: 100;
+	--z-mapbuttons: 200;
+	--z-toolbox: 300;
+	--z-mainmenu: 400;
+	--z-header: 500;
+	--z-modal: 600;
+	--z-notification: 700;
+	--z-dragndrop: 800;
+	--z-disableall: 900;
+
+	/* animation */
+	--animation-duration-large-open: 300ms;
+	--animation-duration-large-close: 250ms;
+	--animation-duration-medium-open: 250ms;
+	--animation-duration-medium-close: 200ms;
+	--animation-duration-small-open: 100ms;
+	--animation-duration-small-close: 75ms;
+	--animation-easing-open: cubic-bezier(0, 0, 0.2, 1);
+	--animation-easing-close: cubic-bezier(0.4, 0, 1, 1);
+	--animation-easing-linear: cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* 
+		color 
+	*/
 	/* brand */
 	--brand-hue: 198;
 	--brand-saturation: 92%;
 	--brand-lightness: 45%;
-
 	/* light */
 	--brand-light: hsl(var(--brand-hue) var(--brand-saturation) var(--brand-lightness));
 	--brand-light-lighter: hsl(var(--brand-hue) var(--brand-saturation) calc(var(--brand-lightness) / 0.55));
 	--brand-secondary-light: hsl(var(--brand-hue) var(--brand-saturation) 30%);
 	--text1-light: hsl(var(--brand-hue) 10% 40%);
-	--text2-light: hsl(var(--brand-hue) 10% 60%);
+	--text2-light: hsl(var(--brand-hue) 10% 55%);
 	--text3-light: hsl(var(--brand-hue) 0% 100%);
 	--surface1-light: hsl(var(--brand-hue) 20% 99%);
 	--surface2-light: hsl(var(--brand-hue) 10% 90%);
 	--surface3-light: hsl(var(--brand-hue) 60% 95%);
 	--surface4-light: hsl(var(--brand-hue) 20% 100%);
 	--surface5-light: hsla(var(--brand-hue), 10%, 15%, 0.8);
-
 	/* dark */
 	--brand-dark: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) / 0.9));
 	--brand-dark-lighter: hsl(var(--brand-hue) calc(var(--brand-saturation) / 1.6) calc(var(--brand-lightness) * 1.7));
@@ -29,51 +62,16 @@
 	--surface3-dark: hsl(var(--brand-hue) 40% 25%);
 	--surface4-dark: hsl(var(--brand-hue) 10% 15%);
 	--surface5-dark: hsla(var(--brand-hue), 15%, 40%, 0.8);
-
 	/* others */
 	--error-color: hsla(341, 60%, 52%, 1);
 	--warning-color: hsla(18, 89%, 48%, 1);
 	--info-color: hsla(184, 56%, 43%, 1);
 	--sucess-color: hsla(161, 100%, 32%, 1);
-}
+	--highlight-map-color: orange;
 
-/* global variables (custom properties) */
-:root {
-	font-size: calc(0.75em + 0.15vw);
-
-	--border-radius-button: 2.5em;
-	--border-radius-button-b: 0.5em;
-
-	--font-family: 'Open Sans', sans-serif;
-
-	--z-footer: 100;
-	--z-mapbuttons: 200;
-	--z-toolbox: 300;
-	--z-mainmenu: 400;
-	--z-header: 500;
-	--z-modal: 600;
-	--z-notification: 700;
-	--z-dragndrop: 800;
-	--z-disableall: 900;
-
+	/* module */
 	--width-mainmenu: 28em;
-	--animationtime-mainmenu: 0.3s;
-
-	/* animation */
-	--animation-duration-large-open: 300ms;
-	--animation-duration-large-close: 250ms;
-	--animation-duration-medium-open: 250ms;
-	--animation-duration-medium-close: 200ms;
-	--animation-duration-small-open: 100ms;
-	--animation-duration-small-close: 75ms;
-
-	--animation-easing-open: cubic-bezier(0, 0, 0.2, 1);
-	--animation-easing-close: cubic-bezier(0.4, 0, 1, 1);
-	--animation-easing-linear: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-body {
-	overscroll-behavior: contain;
+	--animationtime-mainmenu: var(--animation-duration-large-open);
 }
 
 .light-theme {
@@ -114,16 +112,6 @@ body {
 	--text4: var(--brand-dark-lighter);
 }
 
-*,
-::before,
-::after {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-	color: var(--text1);
-	font-family: var(--font-family);
-}
-
 @font-face {
 	font-family: 'Open Sans';
 	font-style: normal;
@@ -142,4 +130,20 @@ body {
 	src: url('assets/OpenSans-Bold.woff2') format('woff2');
 	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212,
 		U+2215, U+FEFF, U+FFFD;
+}
+
+*,
+::before,
+::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	overscroll-behavior: contain;
+	color: var(--text1);
+	font-family: var(--font-family);
+	line-height: 1.2;
+	letter-spacing: 0.01em;
 }

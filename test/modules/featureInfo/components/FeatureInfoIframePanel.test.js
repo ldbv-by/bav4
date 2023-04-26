@@ -148,6 +148,7 @@ describe('FeatureInfoIframePanel', () => {
 				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
 
 			it('does nothing when featureInfo contains no geometry', async () => {
@@ -166,6 +167,7 @@ describe('FeatureInfoIframePanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(0);
 			});
 		});
 

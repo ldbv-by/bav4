@@ -16,17 +16,11 @@
 	animation-duration: var(--animation-duration-large-open);
 	animation-timing-function: var(--animation-easing-linear);
 }
-.hide {
+.fade-out {
 	animation-name: animateOut;
 }
 .is-open {
 	margin: 0 0 0 28em;
-}
-.notification_item_hide {
-	animation-name: animateOut;
-	animation-fill-mode: both;
-	animation-duration: var(--animation-duration-medium-close);
-	animation-timing-function: var(--animation-easing-close);
 }
 .tool-container__close-button {
 	margin: 0;

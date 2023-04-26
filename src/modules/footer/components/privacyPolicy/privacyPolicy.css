@@ -7,3 +7,10 @@
 	padding: 0 1em;
 	margin: 0.4em 0;
 }
+.privacy-policy-link {
+	font-size: 0.8rem;
+	color: var(--text4);
+}
+.privacy-policy-link:hover {
+	text-decoration: underline;
+}

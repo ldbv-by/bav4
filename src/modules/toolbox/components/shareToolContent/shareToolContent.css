@@ -4,6 +4,7 @@
 	justify-content: center;
 }
 .tool-container__buttons > button {
+	font-size: 1.2rem;
 	position: relative;
 	background: transparent;
 	cursor: pointer;
@@ -73,6 +74,7 @@
 	background: var(--text3);
 }
 .tool-container__button-text {
+	color: var(--text1);
 	font-size: 0.8rem;
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
@@ -90,9 +92,13 @@
 .disclaimer-text {
 	text-align: justify;
 }
+.disclaimer-text a {
+	font-size: 0.9rem;
+	color: var(--text4);
+}
+.disclaimer-text a:hover {
+	text-decoration: underline;
+}
 .divider {
 	border-bottom: 1px solid var(--header-background-color);
-}
-.hide {
-	display: none;
 }

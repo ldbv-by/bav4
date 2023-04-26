@@ -118,8 +118,17 @@ img {
 	height: auto;
 }
 
+.ba-list-item__header {
+	cursor: default;
+}
 .ba-section:hover .ba-list-item__header .ba-list-item__text {
 	color: var(--primary-color) 0.3;
+}
+.ba-section:hover .ba-list-item__header {
+	color: var(--secondary-color);
+}
+.ba-list-item__header.is-geometry:hover {
+	color: var(--highlight-map-color);
 }
 
 .content {
