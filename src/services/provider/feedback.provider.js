@@ -19,7 +19,7 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 			return true;
 		}
 		default:
-			throw new Error(`MapFeedback could not be stored: Http-Status ${result.status}`);
+			throw new Error(`Feedback could not be stored: Http-Status ${result.status}`);
 	}
 };
 
