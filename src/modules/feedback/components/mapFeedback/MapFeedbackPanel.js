@@ -8,7 +8,7 @@ import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
-import { IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
+import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
@@ -17,6 +17,7 @@ const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
+const Update_State = 'update_state';
 const Remember_Submit = 'remember_submit';
 
 /**
@@ -27,9 +28,9 @@ export class MapFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
 			mapFeedback: {
-				state: '',
-				category: '',
-				description: '',
+				state: null,
+				category: null,
+				description: null,
 				email: null,
 				fileId: null
 			},
@@ -59,8 +60,12 @@ export class MapFeedbackPanel extends MvuElement {
 		const onIFrameChanged = (mutationList) => {
 			for (const mutation of mutationList) {
 				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_GEOMETRY_REFERENCE_ID) {
-					const fileId = mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID);
-					this._updateFileId(fileId);
+					this._updateFileId(mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID));
+					this._updateState(this._encodeFeedbackState(mutation.target.getAttribute(IFRAME_ENCODED_STATE)));
+				}
+
+				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
+					this._updateState(this._encodeFeedbackState(mutation.target.getAttribute(IFRAME_ENCODED_STATE)));
 				}
 			}
 		};
@@ -110,6 +115,8 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, categoryOptions: ['', ...data] };
 			case Update_Geometry_Id:
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
+			case Update_State:
+				return { ...model, mapFeedback: { ...model.mapFeedback, state: data } };
 			case Remember_Submit:
 				return { ...model, submitWasClicked: data };
 		}
@@ -117,6 +124,22 @@ export class MapFeedbackPanel extends MvuElement {
 
 	_updateFileId(id) {
 		this.signal(Update_Geometry_Id, id);
+	}
+
+	_updateState(state) {
+		this.signal(Update_State, state);
+	}
+
+	_encodeFeedbackState(iframeState) {
+		const { mapFeedback } = this.getModel();
+		const iframeParams = new URLSearchParams(iframeState.split('?')[1]);
+		if (mapFeedback.fileId) {
+			const layers = iframeParams.has(QueryParameters.LAYER) ? iframeParams.get(QueryParameters.LAYER).split(',') : [];
+			if (!layers.includes(mapFeedback.fileId)) {
+				iframeParams.set(QueryParameters.LAYER, [...layers, mapFeedback.fileId].join(','));
+			}
+		}
+		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
 	}
 
 	createView(model) {
@@ -159,7 +182,13 @@ export class MapFeedbackPanel extends MvuElement {
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
-			if (mapFeedback.fileId !== null && isValidCategory(category) && isValidDescription(description) && isValidEmail(email)) {
+			if (
+				mapFeedback.state !== null &&
+				mapFeedback.fileId !== null &&
+				isValidCategory(category) &&
+				isValidDescription(description) &&
+				isValidEmail(email)
+			) {
 				this._saveMapFeedback(
 					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
 				);
@@ -181,17 +210,20 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
 
-            <div class="iframe__content">
-                <iframe
-                    data-iframe-geometry-reference-id
-                    src=${iframeSrc}
-                    width=100%'
-                    height=600px'
-                    loading="lazy"
-                    referrerpolicy="no-referrer-when-downgrade"
-                ></iframe>
-                ${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
-            </div>
+			<div class="feedback-form-container">
+				<div class="feedback-form-left">
+					<div class="iframe__content">
+						<iframe
+							data-iframe-geometry-reference-id
+							data-iframe-encoded-state
+							src=${iframeSrc}
+							width=100%'
+							height=600px'
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+						></iframe>
+						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
+					</div>					
 
 			<div class="ba-form-element">
 				<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
