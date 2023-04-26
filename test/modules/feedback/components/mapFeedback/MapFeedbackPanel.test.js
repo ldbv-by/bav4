@@ -67,7 +67,7 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'mapFeedback_header';
+			const expectedTitle = 'feedback_mapFeedback_header';
 			const expectedCategory = '';
 			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
@@ -99,25 +99,25 @@ describe('MapFeedbackPanel', () => {
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue;
 			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_eMail');
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
 		});
 
 		it('creates an iframeObserver', async () => {
@@ -185,7 +185,7 @@ describe('MapFeedbackPanel', () => {
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
 
-			expect(store.getState().notifications.latest.payload.content).toBe('mapFeedback_could_not_save');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_could_not_save');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 
@@ -200,7 +200,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('mapFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 

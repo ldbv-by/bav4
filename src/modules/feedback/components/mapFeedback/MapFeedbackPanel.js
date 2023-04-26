@@ -91,10 +91,10 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._feedbackService.save(mapFeedback);
-			emitNotification(translate('mapFeedback_saved_successfully'), LevelTypes.INFO);
+			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
-			emitNotification(translate('mapFeedback_could_not_save'), LevelTypes.ERROR);
+			emitNotification(translate('feedback_mapFeedback_could_not_save'), LevelTypes.ERROR);
 		}
 	}
 
@@ -179,7 +179,7 @@ export class MapFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
+			<h2 id="feedbackPanelTitle">${translate('feedback_mapFeedback_header')}</h2>
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
@@ -192,19 +192,19 @@ export class MapFeedbackPanel extends MvuElement {
 							loading="lazy"
 							referrerpolicy="no-referrer-when-downgrade"
 						></iframe>
-						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
+						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 					</div>					
 
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
-						<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
+						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
 					</div>
 
 					<div class="ba-form-element">
 						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-						<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
+						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
 						<i class="bar"></i>
 						<label class="helper-label">Helper text</label>
 						<i class="icon error"></i>
@@ -212,13 +212,15 @@ export class MapFeedbackPanel extends MvuElement {
 
 					<div class="ba-form-element">
 						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-						<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
+						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
 					</div>
 
-					<div class="ba-form-element" id="mapFeedback_disclaimer">
-						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
+					<div class="ba-form-element" id="feedback_mapFeedback_disclaimer">
+						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate(
+			'feedback_mapFeedback_privacyPolicy'
+		)}</a
 						>).
 					</div>
 
