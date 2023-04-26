@@ -72,5 +72,5 @@ const stringifyLocalUTM = (srid, digits, transformFn) => {
 };
 
 const createStringXY = (fractionDigits) => {
-	return (coordinate) => `${coordinate[0].toFixed(fractionDigits)}, ${coordinate[1].toFixed(fractionDigits)}`;
+	return (coordinate) => `${coordinate[0].toFixed(fractionDigits)} ${coordinate[1].toFixed(fractionDigits)}`;
 };

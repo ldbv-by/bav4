@@ -12,9 +12,9 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [11.572457, 48.140212, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140, 11.572');
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn)).toBe('48.14021, 11.57246');
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000, 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn, { digits: 3 })).toBe('48.140 11.572');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.WGS84, transformFn)).toBe('48.14021 11.57246');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
 			});
 
 			it('stringifies a coordinate for SphericalMercator', () => {
@@ -22,7 +22,7 @@ describe('StringifyCoord provider', () => {
 				const coord4326 = [0, 0, 0];
 				const transformFn = jasmine.createSpy().withArgs(coord3857, 3857, 4326).and.returnValue(coord4326);
 
-				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000, 20000.000000');
+				expect(bvvStringifyFunction(coord3857, GlobalCoordinateRepresentations.SphericalMercator, transformFn)).toBe('10000.000000 20000.000000');
 			});
 
 			it('stringifies a coordinate for UTM', () => {
@@ -55,8 +55,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn)).toBe('32U 567962, 5539295');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn, { digits: 3 })).toBe('32U 567962.000, 5539295.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn)).toBe('32U 567962 5539295');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn, { digits: 3 })).toBe('32U 567962.000 5539295.000');
 			});
 
 			it('stringifies a coordinate for 25832 zone T', () => {
@@ -71,8 +71,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn)).toBe('32T 604250, 5294651');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn, { digits: 3 })).toBe('32T 604250.000, 5294651.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn)).toBe('32T 604250 5294651');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM32, transformFn, { digits: 3 })).toBe('32T 604250.000 5294651.000');
 			});
 
 			it('stringifies a coordinate for 25833 zone U', () => {
@@ -87,8 +87,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33U 290052, 5531414');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33U 290052.000, 5531414.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33U 290052 5531414');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33U 290052.000 5531414.000');
 			});
 
 			it('stringifies a coordinate for 25833 zone T', () => {
@@ -103,8 +103,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33T 327250, 5305507');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33T 327250.000, 5305507.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33T 327250 5305507');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33T 327250.000 5305507.000');
 			});
 
 			it('stringifies a coordinate for 25833 with a latitude value > 54°', () => {
@@ -119,8 +119,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33 327250, 5305507');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33 327250.000, 5305507.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33 327250 5305507');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33 327250.000 5305507.000');
 			});
 
 			it('stringifies a 25833 coordinate with a latitude value < 42°', () => {
@@ -135,8 +135,8 @@ describe('StringifyCoord provider', () => {
 					}
 				});
 
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33 327250, 5305507');
-				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33 327250.000, 5305507.000');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn)).toBe('33 327250 5305507');
+				expect(bvvStringifyFunction(coord3857, BvvCoordinateRepresentations.UTM33, transformFn, { digits: 3 })).toBe('33 327250.000 5305507.000');
 			});
 		});
 	});
