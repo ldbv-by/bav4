@@ -5,6 +5,7 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './toggleFeedbackPanel.css';
+import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
  * possible feedback types
@@ -39,27 +40,6 @@ export class ToggleFeedbackPanel extends MvuElement {
 	createView(model) {
 		const { selectedFeedbackPanel } = model;
 		const translate = (key) => this._translationService.translate(key);
-		let displayButtons, displayMap, displayGeneral;
-
-		switch (selectedFeedbackPanel) {
-			case FeedbackType.MAP:
-				displayButtons = 'none';
-				displayMap = 'block';
-				displayGeneral = 'none';
-				break;
-
-			case FeedbackType.GENERAL:
-				displayButtons = 'none';
-				displayMap = 'none';
-				displayGeneral = 'block';
-				break;
-
-			default:
-				displayButtons = 'block';
-				displayMap = 'none';
-				displayGeneral = 'none';
-				break;
-		}
 
 		const feedbackTypeMap = () => {
 			this.signal(Select_Feedback_Type, FeedbackType.MAP);
@@ -69,30 +49,40 @@ export class ToggleFeedbackPanel extends MvuElement {
 			this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
 		};
 
+		const buttonClasses = {
+			active: selectedFeedbackPanel === FeedbackType.NONE
+		};
+		const mapClasses = {
+			active: selectedFeedbackPanel === FeedbackType.MAP
+		};
+		const generalClasses = {
+			active: selectedFeedbackPanel === FeedbackType.GENERAL
+		};
+
 		return html`
 			<style>
 				${css}
 			</style>
 
-			<h2 id="toggleFeedbackPanelTitle" style="display: ${displayButtons};">${translate('feedback_toggleFeedback_header')}</h2>
-
-			<div id="feedbackMapButtonContainer" style="display: ${displayButtons};margin-bottom: 10px;">
-				<ba-button id="feedbackMapButton" .label=${translate('feedback_toggleFeedback_mapButton')} .type=${'primary'} @click=${feedbackTypeMap} />
-			</div>
-			<div id="feedbackGeneralButtonContainer" style="display: ${displayButtons};">
+			<div class="toggleButtons ${classMap(buttonClasses)}">
+				<h2 id="toggleFeedbackPanelTitle">${translate('feedback_toggleFeedback_header')}</h2>
 				<ba-button
 					id="feedbackGeneralButton"
 					.label=${translate('feedback_toggleFeedback_generalButton')}
 					.type=${'primary'}
 					@click=${feedbackTypeGeneral}
-				/>
+				></ba-button>
+				<ba-button
+					id="feedbackMapButton"
+					.label=${translate('feedback_toggleFeedback_mapButton')}
+					.type=${'primary'}
+					@click=${feedbackTypeMap}
+				></ba-button>
 			</div>
-			<div id="generalFeedback" style="display: ${displayGeneral};">
-				<ba-mvu-generalfeedbackpanel></ba-mvu-generalfeedbackpanel>
-			</div>
-			<div id="mapFeedback" style="display: ${displayMap};">
+			<div class="toggleMap ${classMap(mapClasses)}">
 				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
 			</div>
+			<div class="toggleGeneral ${classMap(generalClasses)}">general feeedback todo</div>
 		`;
 	}
 

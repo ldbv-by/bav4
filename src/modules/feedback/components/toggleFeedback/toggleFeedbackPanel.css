@@ -1,16 +1,20 @@
-.feedback-form-container {
-	display: flex;
-	flex-direction: row;
+.toggleButtons {
+	display: none;
+}
+.toggleButtons.active {
+	display: block;
 }
 
-.feedback-form-left {
-	flex: 1;
-	border: 1px solid black;
-	padding: 10px;
+.toggleMap {
+	display: none;
+}
+.toggleMap.active {
+	display: block;
 }
 
-.feedback-form-right {
-	flex: 1;
-	border: 1px solid black;
-	padding: 10px;
+.toggleGeneral {
+	display: none;
+}
+.toggleGeneral.active {
+	display: block;
 }
