@@ -7,7 +7,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_header).toBe('Feedback zur Karte');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_mapFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
-		expect(map.feedback_mapFeedback_markChangeNotice).toBe('Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?');
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.feedback_mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
@@ -28,7 +27,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_header).toBe('Send Feedback');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_mapFeedback_saved_successfully).toBe('Your feedback was successfully submitted');
-		expect(map.feedback_mapFeedback_markChangeNotice).toBe('Edit the map');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Please choose your category');
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Your message');
 		expect(map.feedback_mapFeedback_eMail).toBe('Your email address');
