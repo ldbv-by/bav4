@@ -7,5 +7,6 @@
  */
 export const IFrameComponents = Object.freeze({
 	DRAW_TOOL: 'draw-tool',
-	ACTIVATE_MAP_BUTTON: 'activate-map-button'
+	ACTIVATE_MAP_BUTTON: 'activate-map-button',
+	VIEW_LARGER_MAP_CHIP: 'view-larger-map-chip'
 });
