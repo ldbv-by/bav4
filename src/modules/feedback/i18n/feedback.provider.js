@@ -12,7 +12,10 @@ export const provide = (lang) => {
 				mapFeedback_privacyPolicy: 'Privacy Policy',
 				mapFeedback_disclaimer:
 					'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.',
-				mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback'
+				mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback',
+				feedback_toggleFeedback_header: 'Choose Feedback Type',
+				feedback_toggleFeedback_mapButton: 'Map - Feedback',
+				feedback_toggleFeedback_generalButton: 'General - Feedback'
 			};
 
 		case 'de':
@@ -27,7 +30,10 @@ export const provide = (lang) => {
 				mapFeedback_privacyPolicy: 'Hinweis zum Datenschutz',
 				mapFeedback_disclaimer:
 					'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.',
-				mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.'
+				mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
+				feedback_toggleFeedback_header: 'Feedback Typ',
+				feedback_toggleFeedback_mapButton: 'Kartenfeedback',
+				feedback_toggleFeedback_generalButton: 'Allgemeiner Feedback'
 			};
 
 		default:
