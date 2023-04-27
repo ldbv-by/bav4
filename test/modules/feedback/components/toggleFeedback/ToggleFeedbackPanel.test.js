@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
@@ -23,7 +23,7 @@ describe('MapFeedbackPanel', () => {
 			const element = new ToggleFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
-				selectedFeedbackPanel: FeedbackType.NONE
+				selectedFeedbackPanel: null
 			});
 		});
 	});

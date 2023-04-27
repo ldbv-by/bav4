@@ -76,7 +76,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(9);
+			expect(element.shadowRoot.children.length).toBe(4);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 
 			const category = element.shadowRoot.querySelector('#category');
