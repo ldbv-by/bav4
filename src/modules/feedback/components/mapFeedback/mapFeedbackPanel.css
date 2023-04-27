@@ -1,5 +1,9 @@
-iframe[data-iframe-geometry-reference-id=''] {
+iframe[data-iframe-geometry-reference-id=''].wasTouched {
 	border-bottom: 5px solid var(--error-color);
+}
+
+iframe[data-iframe-geometry-reference-id=''] {
+	border-bottom: none;
 }
 
 iframe[data-iframe-geometry-reference-id^='f_'] {

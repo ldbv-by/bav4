@@ -270,23 +270,23 @@ input[type='range']:focus {
 	width: 100%;
 	left: 0;
 }
-.ba-form-element input:invalid ~ .bar::before,
-.ba-form-element textarea:invalid ~ .bar::before,
-.ba-form-element select:invalid ~ .bar::before {
+.ba-form-element .wasTouched input:invalid ~ .bar::before,
+.ba-form-element .wasTouched textarea:invalid ~ .bar::before,
+.ba-form-element .wasTouched select:invalid ~ .bar::before {
 	width: 100%;
 	left: 0;
 	background: var(--error-color);
 }
-.ba-form-element input:invalid ~ .control-label,
-.ba-form-element textarea:invalid ~ .control-label {
+.ba-form-element .wasTouched input:invalid ~ .control-label,
+.ba-form-element .wasTouched textarea:invalid ~ .control-label {
 	color: var(--error-color);
 }
-.ba-form-element input:invalid ~ .helper-label,
-.ba-form-element textarea:invalid ~ .helper-label {
+.ba-form-element .wasTouched input:invalid ~ .helper-label,
+.ba-form-element .wasTouched textarea:invalid ~ .helper-label {
 	display: none;
 }
-.ba-form-element input:invalid ~ .error-label,
-.ba-form-element textarea:invalid ~ .error-label {
+.ba-form-element .wasTouched input:invalid ~ .error-label,
+.ba-form-element .wasTouched textarea:invalid ~ .error-label {
 	display: block;
 	color: var(--error-color);
 	top: 0.2em;

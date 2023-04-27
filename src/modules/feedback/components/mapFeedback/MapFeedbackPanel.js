@@ -147,10 +147,62 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+		const elementHasClass = (element, className) => {
+			const elementHasClass = element.classList.contains(className);
+			return elementHasClass;
+		};
+
+		const hasClass = (elementName, className) => {
+			const element = this.shadowRoot.querySelector(elementName);
+
+			if (!element) {
+				return false;
+			}
+
+			return elementHasClass(element, className);
+		};
+
+		const allInvolvedElements = () => {
+			const divElement = this.shadowRoot;
+			const allInvolvedElements = [];
+			if (divElement) {
+				for (let i = 0; i < divElement.children.length; i++) {
+					const childElement = divElement.children[i];
+
+					if (childElement.tagName === 'DIV') {
+						const className = childElement.className;
+
+						if (className.includes('ba-form-element') || className.includes('iframe__content')) {
+							allInvolvedElements.push(childElement);
+
+							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement:', childElement);
+							console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement.tagName:', childElement.tagName);
+							const wasTouched = elementHasClass(childElement, 'wasTouched');
+							console.log('🚀 ~ MapFeedbackPanel ~ createView ~ wasTouched:', wasTouched);
+							console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement.id:', childElement.id);
+							console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement.className:', childElement.className);
+							console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement.classList:', childElement.classList);
+							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childElement.textContent:', childElement.textContent);
+							// console.log("🚀 ~ MapFeedbackPanel ~ createView ~ childElement.style:", childElement.style)
+
+							console.log('🚀🚀🚀🚀');
+						}
+					}
+				}
+			}
+			console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀');
+			return allInvolvedElements;
+		};
+		allInvolvedElements();
+
 		const handleCategoryChange = () => {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
+
+			const categoryFormElement = this.shadowRoot.getElementById('category-form-element');
+			categoryFormElement.classList.add('wasTouched');
+
 			this.signal(Update_Category, selectedCategory);
 		};
 
@@ -161,6 +213,8 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleDescriptionChange = (event) => {
 			const { value } = event.target;
+			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
+			descriptionFormElement.classList.add('wasTouched');
 			this.signal(Update_Description, value);
 		};
 
@@ -178,6 +232,10 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleSubmit = () => {
 			this.signal(Remember_Submit, true);
+
+			allInvolvedElements().forEach((element) => {
+				element.classList.add('wasTouched');
+			});
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
@@ -203,6 +261,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
+
 		return html`
 			<style>
 				${css}
@@ -210,49 +269,49 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<h2 id="feedbackPanelTitle">${translate('feedback_mapFeedback_header')}</h2>
 
-			<div class="feedback-form-container">
-				<div class="feedback-form-left">
-					<div class="iframe__content">
-						<iframe
-							data-iframe-geometry-reference-id
-							data-iframe-encoded-state
-							src=${iframeSrc}
-							width=100%'
-							height=600px'
-							loading="lazy"
-							referrerpolicy="no-referrer-when-downgrade"
-						></iframe>
-						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
-					</div>					
+			<div class="iframe__content">
+				<iframe data-iframe-geometry-reference-id data-iframe-encoded-state src=${iframeSrc} width=100%' height=600px' loading="lazy"
+				referrerpolicy="no-referrer-when-downgrade" />
+				<iframe></iframe>
+				${!hasClass('.iframe__content', 'wasTouched')
+					? html.nothing
+					: html`<span class="Iframe__hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
+			</div>
 
-					<div class="ba-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
-							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
-						</select>
-						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
-					</div>
+			<div class="ba-form-element" id="category-form-element">
+				<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
+				<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+				</select>
+				<i class="bar"></i>
+				<label class="helper-label">Helper text</label>
+				<label class="error-label">Error text</label>
+				<i class="icon error"></i>
+			</div>
 
-					<div class="ba-form-element">
-						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
-						<i class="bar"></i>
-						<label class="helper-label">Helper text</label>
-						<i class="icon error"></i>
-					</div>
+			<div class="ba-form-element" id="description-form-element">
+				<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
+				<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
+				<i class="bar"></i>
+				<label class="helper-label">Helper text</label>
+				<label class="error-label">Error text</label>
+				<i class="icon error"></i>
+			</div>
 
-					<div class="ba-form-element">
-						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
-						<i class="bar"></i>
-						<i class="icon error"></i>
-					</div>
+			<div class="ba-form-element">
+				<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
+				<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
+				<i class="bar"></i>
+				<label class="helper-label">Helper text</label>
+				<label class="error-label">Error text</label>
+				<i class="icon error"></i>
+			</div>
 
-					<div class="ba-form-element" id="feedback_mapFeedback_disclaimer">
-						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate(
-			'feedback_mapFeedback_privacyPolicy'
-		)}</a
-						>).
-					</div>
+			<div class="ba-form-element" id="feedback_mapFeedback_disclaimer">
+				${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}"
+					>${translate('feedback_mapFeedback_privacyPolicy')}</a
+				>).
+			</div>
 
 			<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 		`;
