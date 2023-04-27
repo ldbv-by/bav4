@@ -4,6 +4,7 @@ import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
@@ -28,10 +29,14 @@ let store;
 
 const setup = (state = {}) => {
 	const initialState = {
+		media: {
+			portrait: true
+		},
 		...state
 	};
 
 	store = TestUtils.setupStoreAndDi(initialState, {
+		media: createNoInitialStateMediaReducer(),
 		notifications: notificationReducer
 	});
 
@@ -59,7 +64,8 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				submitWasClicked: false
+				submitWasClicked: false,
+				isPortrait: false
 			});
 		});
 	});
@@ -437,6 +443,34 @@ describe('MapFeedbackPanel', () => {
 			element.onDisconnect(); // we call onDisconnect manually
 
 			expect(element._iframeObserver).toBeNull();
+		});
+	});
+
+	describe('responsive layout ', () => {
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 		});
 	});
 });

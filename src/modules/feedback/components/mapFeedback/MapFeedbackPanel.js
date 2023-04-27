@@ -19,7 +19,7 @@ const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
 const Remember_Submit = 'remember_submit';
-const Update_IsPortrait_Value = 'update_isportrait_value';
+const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/MapFeedbackService~MapFeedback}.
@@ -36,7 +36,8 @@ export class MapFeedbackPanel extends MvuElement {
 				fileId: null
 			},
 			categoryOptions: [],
-			submitWasClicked: false
+			submitWasClicked: false,
+			isPortrait: false
 		});
 
 		const {
@@ -55,7 +56,10 @@ export class MapFeedbackPanel extends MvuElement {
 
 	onInitialize() {
 		this._getCategoryOptions();
-		(portrait) => this.signal(Update_IsPortrait_Value, portrait);
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
+		);
 	}
 
 	onAfterRender(firstTime) {
@@ -121,8 +125,8 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, state: data } };
 			case Remember_Submit:
 				return { ...model, submitWasClicked: data };
-			case Update_IsPortrait_Value:
-				return { ...model, portrait: data };
+			case Update_Media_Related_Properties:
+				return { ...model, ...data };
 		}
 	}
 
@@ -147,7 +151,7 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions, portrait } = model;
+		const { mapFeedback, categoryOptions, isPortrait } = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -181,7 +185,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const getOrientationClass = () => {
-			return portrait ? 'is-portrait' : 'is-landscape';
+			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
 		const handleSubmit = () => {
@@ -215,51 +219,66 @@ export class MapFeedbackPanel extends MvuElement {
 			<style>
 				${css}
 			</style>
-
 			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
-
-			<div class="feedback-form-container ${getOrientationClass()}">
-				<div class="feedback-form-left">
-					<div class="iframe__content">
-						<iframe
-							data-iframe-geometry-reference-id
-							data-iframe-encoded-state
-							src=${iframeSrc}
-							width="900px"
-							height="700px"
-							loading="lazy"
-							referrerpolicy="no-referrer-when-downgrade"
-						></iframe>
-						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
+			<div class="map-feedback__container ${getOrientationClass()}">
+				<div class="map-feedback__iframe">
+					<iframe
+						data-iframe-geometry-reference-id
+						data-iframe-encoded-state
+						src=${iframeSrc}
+						width="900px"
+						height="700px"
+						loading="lazy"
+						referrerpolicy="no-referrer-when-downgrade"
+					></iframe>
+					${mapFeedback.fileId ? html.nothing : html`<span class="map-feedback__iframe-hint">${translate('mapFeedback_geometry_missing')}</span>`}
+				</div>
+				<div class="map-feedback__form">
+					<div class="map-feedback__form-hint">
+						${translate('mapFeedback_text_before')}
+						<span class="map-feedback__highlight">${translate('mapFeedback_text_map')}</span>
+						${translate('mapFeedback_text_after')}
 					</div>
-
 					<div class="ba-form-element">
 						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
+						<label class="helper-label">Bitte auswählen</label>
 					</div>
-
 					<div class="ba-form-element">
-						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
+						<textarea
+							id="description"
+							.value="${mapFeedback.description}"
+							@input="${handleDescriptionChange}"
+							required
+							placeholder="${translate('mapFeedback_changeDescription')}"
+						></textarea>
 						<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
 						<i class="bar"></i>
-						<label class="helper-label">Helper text</label>
+						<label class="helper-label">Pflichtfeld</label>
+						<label class="error-label">Pflichtfeld</label>
 						<i class="icon error"></i>
 					</div>
-
 					<div class="ba-form-element">
-						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
+						<input
+							type="email"
+							id="email"
+							.value="${mapFeedback.email}"
+							@input="${handleEmailChange}"
+							placeholder="${translate('mapFeedback_eMail')}"
+						/>
 						<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
+						<label class="helper-label">optional</label>
+						<label class="error-label">keine gültige E-Mail Adresse</label>
 					</div>
-
-					<div class="ba-form-element" id="mapFeedback_disclaimer">
-						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
+					<p class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
+						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
+							>${translate('mapFeedback_privacyPolicy')}</a
 						>).
-					</div>
-
+					</p>
 					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 				</div>
 			</div>

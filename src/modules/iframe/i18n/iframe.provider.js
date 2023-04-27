@@ -44,8 +44,8 @@ export const provide = (lang) => {
 				iframe_drawTool_line: 'Linie',
 				iframe_drawTool_cancel: 'Abbrechen',
 				iframe_drawTool_finish: 'Fertig',
-				iframe_drawTool_delete_point: 'Punkt entfernen',
-				iframe_drawTool_delete_drawing: 'Zeichnung entfernen'
+				iframe_drawTool_delete_point: 'letzten Punk löschen',
+				iframe_drawTool_delete_drawing: 'Zeichnung löschen'
 			};
 
 		default:

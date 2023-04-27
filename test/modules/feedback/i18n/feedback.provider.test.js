@@ -8,7 +8,7 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.mapFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
 		expect(map.mapFeedback_markChangeNotice).toBe('Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?');
-		expect(map.mapFeedback_categorySelection).toBe('Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?');
+		expect(map.mapFeedback_categorySelection).toBe('Kategorie');
 		expect(map.mapFeedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
@@ -20,6 +20,9 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_header).toBe('Feedback Typ');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Kartenfeedback');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
+		expect(map.mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
+		expect(map.mapFeedback_text_map).toBe('Karte');
+		expect(map.mapFeedback_text_after).toBe(' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.');
 	});
 
 	it('provides translation for en', () => {
@@ -41,10 +44,13 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_header).toBe('Choose Feedback Type');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
+		expect(map.mapFeedback_text_before).toBe('Please draw your change on the');
+		expect(map.mapFeedback_text_map).toBe('Map');
+		expect(map.mapFeedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 13;
+		const expectedSize = 16;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
