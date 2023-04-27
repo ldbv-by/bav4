@@ -16,6 +16,10 @@ describe('i18n for feedback module', () => {
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
 		expect(map.mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
+
+		expect(map.feedback_toggleFeedback_header).toBe('Feedback Typ');
+		expect(map.feedback_toggleFeedback_mapButton).toBe('Kartenfeedback');
+		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
 	});
 
 	it('provides translation for en', () => {
@@ -33,10 +37,14 @@ describe('i18n for feedback module', () => {
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
 		expect(map.mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
+
+		expect(map.feedback_toggleFeedback_header).toBe('Choose Feedback Type');
+		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
+		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 10;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

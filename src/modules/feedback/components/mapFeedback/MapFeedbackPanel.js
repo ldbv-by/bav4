@@ -225,36 +225,33 @@ export class MapFeedbackPanel extends MvuElement {
 						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
 					</div>					
 
-					<div class="ba-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
-							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
-						</select>
-						<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
-					</div>
-
-					<div class="ba-form-element">
-						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-						<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
-						<i class="bar"></i>
-						<label class="helper-label">Helper text</label>
-						<i class="icon error"></i>
-					</div>
-
-					<div class="ba-form-element">
-						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-						<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
-						<i class="bar"></i>
-						<i class="icon error"></i>
-					</div>
-
-					<div class="ba-form-element" id="mapFeedback_disclaimer">
-						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
-						>).
-					</div>
-
-					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
-				</div>
+			<div class="ba-form-element">
+				<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+				</select>
+				<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
 			</div>
+
+			<div class="ba-form-element">
+				<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
+				<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
+				<i class="bar"></i>
+				<label class="helper-label">Helper text</label>
+				<i class="icon error"></i>
+			</div>
+
+			<div class="ba-form-element">
+				<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
+				<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
+				<i class="bar"></i>
+				<i class="icon error"></i>
+			</div>
+
+			<div class="ba-form-element" id="mapFeedback_disclaimer">
+				${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a>).
+			</div>
+
+			<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 		`;
 	}
 
