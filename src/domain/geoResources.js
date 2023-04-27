@@ -147,7 +147,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * `true` if this GeoResource is allowed to be listed as a result for a query.
+	 * `true` if this GeoResource is allowed to be exported.
 	 *  @type {boolean}
 	 */
 	get exportable() {
