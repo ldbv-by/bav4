@@ -39,8 +39,8 @@ describe('i18n for feedback module', () => {
 		expect(map.mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 
 		expect(map.feedback_toggleFeedback_header).toBe('Choose Feedback Type');
-		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedpack');
-		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedpack');
+		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
+		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
 	});
 
 	it('have the expected amount of translations', () => {

@@ -73,7 +73,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 			<div class="toggleMap ${classMap(mapClasses)}">
 				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
 			</div>
-			<div class="toggleGeneral ${classMap(generalClasses)}">general feeedback todo</div>
+			<div class="toggleGeneral ${classMap(generalClasses)}">general feedback todo</div>
 		`;
 	}
 
