@@ -52,9 +52,9 @@ describe('MapFeedbackPanel', () => {
 
 			expect(element.getModel()).toEqual({
 				mapFeedback: {
-					state: '',
-					category: '',
-					description: '',
+					state: null,
+					category: null,
+					description: null,
 					email: null,
 					fileId: null
 				},
@@ -133,25 +133,90 @@ describe('MapFeedbackPanel', () => {
 			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
 		});
 
-		it('listen to iframe-attribute changes', async () => {
-			const fileId = 'f_foo';
-			const element = await setup();
+		describe('when listen to iframe-attribute changes', () => {
+			it('updates mapFeedback.fileId and .state', async () => {
+				const fileId = 'f_foo';
+				const element = await setup();
 
-			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+				const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
 
-			const iframe = element.shadowRoot.querySelector('iframe');
-			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
-			await TestUtils.timeout();
+				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
+				const iframe = element.shadowRoot.querySelector('iframe');
+				iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+				await TestUtils.timeout();
 
-			// no calls by changes on any other attribute
-			iframe.setAttribute(IFRAME_ENCODED_STATE, 'foo');
+				expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
-			await TestUtils.timeout();
+				// no calls by changes on any other attribute
+				iframe.setAttribute('foo', 'bar');
 
-			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
+				await TestUtils.timeout();
+
+				expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
+				expect(updateStateSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates mapFeedback.state', async () => {
+				const frontendUrl = 'http://frontend.url';
+				const iframeUrl = 'http://iframe.url';
+				const searchParams = 'l=foo,bar';
+				const element = await setup();
+
+				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+
+				const iframe = element.shadowRoot.querySelector('iframe');
+				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+				await TestUtils.timeout();
+
+				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${searchParams}`);
+
+				// no calls by changes on any other attribute
+				iframe.setAttribute('foo', 'bar');
+
+				await TestUtils.timeout();
+
+				expect(updateStateSpy).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates mapFeedback.state with existing fileId', async () => {
+				const fileId = 'f_id';
+				const frontendUrl = 'http://frontend.url';
+				const iframeUrl = 'http://iframe.url';
+				const searchParams = 'l=foo,bar';
+				const expectedSearchParams = `l=foo,bar,${fileId}`;
+				const element = await setup();
+
+				element._updateFileId(fileId);
+				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+
+				const iframe = element.shadowRoot.querySelector('iframe');
+				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+				await TestUtils.timeout();
+
+				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
+			});
+
+			it('does not update mapFeedback.state with existing fileId', async () => {
+				const fileId = 'f_id';
+				const frontendUrl = 'http://frontend.url';
+				const iframeUrl = 'http://iframe.url';
+				const iframeSearchParams = 'l=foo,f_id,bar';
+
+				const element = await setup();
+
+				element._updateFileId(fileId);
+				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+
+				const iframe = element.shadowRoot.querySelector('iframe');
+				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
+				await TestUtils.timeout();
+
+				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
+			});
 		});
 	});
 
@@ -312,9 +377,10 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			element._updateFileId('geometryId');
+			element._updateState('Foo');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Foo';
+			categorySelect.value = 'Bar';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
@@ -332,7 +398,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId', 'email@some.com'));
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId', 'email@some.com'));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
@@ -341,9 +407,10 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			element._updateFileId('geometryId');
+			element._updateState('Foo');
 
 			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Foo';
+			categorySelect.value = 'Bar';
 			categorySelect.dispatchEvent(new Event('change'));
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
@@ -357,7 +424,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('', 'Foo', 'description', 'geometryId'));
+			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
 	});
 

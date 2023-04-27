@@ -5,7 +5,7 @@
 		"chart.js": "4.2.1",
 		"dompurify": "3.0.2",
 		"geographiclib-geodesic": "^2.0.0",
-		"lit-html": "2.7.2",
+		"lit-html": "2.7.3",
 		"ol": "7.3.0",
 		"proj4": "2.9.0",
 		"redux": "4.2.1",

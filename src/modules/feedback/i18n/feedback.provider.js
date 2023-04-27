@@ -13,8 +13,8 @@ export const provide = (lang) => {
 					'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.',
 				feedback_mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback',
 				feedback_toggleFeedback_header: 'Choose Feedback Type',
-				feedback_toggleFeedback_mapButton: 'Map - Feedpack',
-				feedback_toggleFeedback_generalButton: 'General - Feedpack'
+				feedback_toggleFeedback_mapButton: 'Map - Feedback',
+				feedback_toggleFeedback_generalButton: 'General - Feedback'
 			};
 
 		case 'de':

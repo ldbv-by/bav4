@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
@@ -23,7 +23,7 @@ describe('MapFeedbackPanel', () => {
 			const element = new ToggleFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
-				selectedFeedbackPanel: FeedbackType.NONE
+				selectedFeedbackPanel: null
 			});
 		});
 	});
@@ -38,23 +38,20 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(7);
+			expect(element.shadowRoot.children.length).toBe(5);
 			const panelTitle = element.shadowRoot.querySelector('#toggleFeedbackPanelTitle');
 			expect(panelTitle.textContent).toBe(expectedTitle);
-			expect(window.getComputedStyle(panelTitle).getPropertyValue('display')).toBe('block');
+
+			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
+			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');
+
 			expect(element.shadowRoot.querySelector('#feedbackMapButton').label).toBe(expectedMapButton);
 			expect(element.shadowRoot.querySelector('#feedbackGeneralButton').label).toBe(expectedGeneralButton);
 
-			const mapButtonContainer = element.shadowRoot.querySelector('#feedbackMapButtonContainer');
-			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');
-
-			const generalButtonContainer = element.shadowRoot.querySelector('#feedbackMapButtonContainer');
-			expect(window.getComputedStyle(generalButtonContainer).getPropertyValue('display')).toBe('block');
-
-			const mapPanel = element.shadowRoot.querySelector('#mapFeedback');
+			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
 
-			const generalPanel = element.shadowRoot.querySelector('#generalFeedback');
+			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
 		});
 	});
@@ -69,13 +66,13 @@ describe('MapFeedbackPanel', () => {
 			mapButton.click();
 
 			// assert
-			const mapButtonContainer = element.shadowRoot.querySelector('#feedbackMapButtonContainer');
+			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
 			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
 
-			const mapPanel = element.shadowRoot.querySelector('#mapFeedback');
+			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('block');
 
-			const generalPanel = element.shadowRoot.querySelector('#generalFeedback');
+			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
 		});
 	});
@@ -90,13 +87,13 @@ describe('MapFeedbackPanel', () => {
 			generalButton.click();
 
 			// assert
-			const generalButtonContainer = element.shadowRoot.querySelector('#feedbackMapButtonContainer');
-			expect(window.getComputedStyle(generalButtonContainer).getPropertyValue('display')).toBe('none');
+			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
+			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
 
-			const mapPanel = element.shadowRoot.querySelector('#mapFeedback');
+			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
 
-			const generalPanel = element.shadowRoot.querySelector('#generalFeedback');
+			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('block');
 		});
 	});
