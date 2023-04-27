@@ -14,8 +14,12 @@ import { createUniqueId } from '../utils/numberUtils';
 export class LayersPlugin extends BaPlugin {
 	constructor() {
 		super();
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, FileStorageService: fileStorageService } = $injector.inject(
+			'TranslationService',
+			'FileStorageService'
+		);
 		this._translationService = translationService;
+		this._fileStorageService = fileStorageService;
 	}
 
 	_addLayersFromQueryParams(queryParams) {
@@ -42,6 +46,9 @@ export class LayersPlugin extends BaPlugin {
 								}
 								if (isFinite(layerOpacity[index]) && layerOpacity[index] >= 0 && layerOpacity[index] <= 1) {
 									layerProperties.opacity = parseFloat(layerOpacity[index]);
+								}
+								if (this._fileStorageService.isFileId(id) || this._fileStorageService.isAdminId(id)) {
+									layerProperties.constraints = { cloneable: false };
 								}
 
 								return { id: layerId, layerProperties };
