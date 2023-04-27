@@ -12,7 +12,6 @@ import { classMap } from 'lit-html/directives/class-map.js';
  * @enum
  */
 export const FeedbackType = Object.freeze({
-	NONE: 'none',
 	MAP: 'map',
 	GENERAL: 'general'
 });
@@ -22,7 +21,7 @@ const Select_Feedback_Type = 'select_feedback_type';
 export class ToggleFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
-			selectedFeedbackPanel: FeedbackType.NONE
+			selectedFeedbackPanel: null
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -41,16 +40,8 @@ export class ToggleFeedbackPanel extends MvuElement {
 		const { selectedFeedbackPanel } = model;
 		const translate = (key) => this._translationService.translate(key);
 
-		const feedbackTypeMap = () => {
-			this.signal(Select_Feedback_Type, FeedbackType.MAP);
-		};
-
-		const feedbackTypeGeneral = () => {
-			this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
-		};
-
 		const buttonClasses = {
-			active: selectedFeedbackPanel === FeedbackType.NONE
+			active: !selectedFeedbackPanel
 		};
 		const mapClasses = {
 			active: selectedFeedbackPanel === FeedbackType.MAP
@@ -70,13 +61,13 @@ export class ToggleFeedbackPanel extends MvuElement {
 					id="feedbackGeneralButton"
 					.label=${translate('feedback_toggleFeedback_generalButton')}
 					.type=${'primary'}
-					@click=${feedbackTypeGeneral}
+					@click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}
 				></ba-button>
 				<ba-button
 					id="feedbackMapButton"
 					.label=${translate('feedback_toggleFeedback_mapButton')}
 					.type=${'primary'}
-					@click=${feedbackTypeMap}
+					@click=${() => this.signal(Select_Feedback_Type, FeedbackType.MAP)}
 				></ba-button>
 			</div>
 			<div class="toggleMap ${classMap(mapClasses)}">
