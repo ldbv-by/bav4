@@ -324,8 +324,7 @@ describe('LayerItem', () => {
 				visible: true,
 				zIndex: 0,
 				opacity: 1,
-				collapsed: true,
-				constraints: { cloneable: false }
+				collapsed: true
 			};
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);
