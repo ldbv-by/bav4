@@ -10,7 +10,7 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from './
  * @param {MapFeedback|GeneralFeedback} feedback
  * @typedef {Function} feedbackStorageProvider
  * @throws `Error` when storing was not succesfull
- * @returns {Promise<Boolean>} `true` when storing was successful
+ * @returns {Boolean} `true` when storing was successful
  */
 /**
  * A function that returns a list of categories for a MapFeedback
@@ -60,8 +60,8 @@ export class MapFeedback {
 export class FeedbackService {
 	/**
 	 *
-	 * @param {module:services/MapFeedbackService~feedbackStorageProvider} feedbackStorageProvider
-	 * @param {module:services/MapFeedbackService~mapFeedbackCategoriesProvider} mapFeedbackCategoriesProvider
+	 * @param {module:services/FeedbackService~feedbackStorageProvider} feedbackStorageProvider
+	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} mapFeedbackCategoriesProvider
 	 */
 	constructor(feedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) {
 		this._mapFeedbackStorageProvider = feedbackStorageProvider;

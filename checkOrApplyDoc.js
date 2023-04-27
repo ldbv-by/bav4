@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const excludesFiles = ['index.js', 'setupPage.js', 'embed.js', 'main.js', 'config.js'];
+const excludesFiles = ['index.js', 'setupPage.js', 'embed.js', 'main.js', 'config.js', 'mgrs.js'];
 
 const findInDir = (dir, fileList = []) => {
 	const files = fs.readdirSync(dir);
