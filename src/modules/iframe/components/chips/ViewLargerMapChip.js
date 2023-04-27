@@ -1,8 +1,13 @@
+/**
+ * @module modules/iframe/components/chips/ViewLargerMapChip
+ */
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import baSvg from './assets/ba.svg';
 import { html, nothing } from 'lit-html';
 import css from './viewLargerMapChip.css';
+import { QueryParameters } from '../../../../domain/queryParameters';
+import { IFrameComponents } from '../../../../domain/iframeComponents';
 
 const Update_State_For_Encoding = 'update_state_for_encoding';
 
@@ -26,9 +31,6 @@ export class ViewLargerMapChip extends MvuElement {
 		this._shareService = shareService;
 	}
 
-	/**
-	 * @override
-	 */
 	onInitialize() {
 		this.observe(
 			(state) => state.stateForEncoding.changed,
@@ -46,9 +48,14 @@ export class ViewLargerMapChip extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
+	isRenderingSkipped() {
+		const queryParams = this._environmentService.getUrlParams();
+
+		// check if we have a query parameter defining the iframe ViewLargerMapChip
+		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);
+		return iframeComponents ? !iframeComponents.split(',').includes(IFrameComponents.VIEW_LARGER_MAP_CHIP) : false;
+	}
+
 	createView(model) {
 		const { href } = model;
 

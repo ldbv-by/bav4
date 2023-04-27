@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/toolContainer/AbstractToolContent
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import toolContentCss from './abstractToolContent.css';

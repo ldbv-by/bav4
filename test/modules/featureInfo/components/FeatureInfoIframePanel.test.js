@@ -6,7 +6,10 @@ import { html } from 'lit-html';
 import { addFeatureInfoItems, FeatureInfoGeometryTypes } from '../../../../src/store/featureInfo/featureInfo.action.js';
 import { highlightReducer } from '../../../../src/store/highlight/highlight.reducer.js';
 import { HighlightFeatureType, HighlightGeometryType } from '../../../../src/store/highlight/highlight.action.js';
-import { FeatureInfoIframePanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/FeatureInfoIframePanel.js';
+import {
+	FeatureInfoIframePanel,
+	TEMPORARY_FEATURE_HIGHLIGHT_ID
+} from '../../../../src/modules/featureInfo/components/featureInfoIframePanel/FeatureInfoIframePanel.js';
 
 window.customElements.define(FeatureInfoIframePanel.tag, FeatureInfoIframePanel);
 
@@ -145,6 +148,7 @@ describe('FeatureInfoIframePanel', () => {
 				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
 
 			it('does nothing when featureInfo contains no geometry', async () => {
@@ -163,6 +167,7 @@ describe('FeatureInfoIframePanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(0);
 			});
 		});
 

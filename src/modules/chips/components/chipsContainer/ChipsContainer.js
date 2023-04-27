@@ -1,3 +1,6 @@
+/**
+ * @module modules/chips/components/chipsContainer/ChipsContainer
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import css from './chipsContainer.css';

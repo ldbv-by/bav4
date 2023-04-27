@@ -1,3 +1,6 @@
+/**
+ * @module modules/header/components/Header
+ */
 import { html } from 'lit-html';
 import { open as openMainMenu, setTab, TabId, toggle } from '../../../store/mainMenu/mainMenu.action';
 import { $injector } from '../../../injection';

@@ -1,4 +1,7 @@
 /**
+ * @module domain/sourceType
+ */
+/**
  * Currently maximum file size for supported SourceTypes: 128 Mebibyte
  */
 export const SourceTypeMaxFileSize = 2 ** 27;

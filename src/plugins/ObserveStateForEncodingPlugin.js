@@ -1,3 +1,6 @@
+/**
+ * @module plugins/ObserveStateForEncodingPlugin
+ */
 import { $injector } from '../injection';
 import { indicateChange } from '../store/stateForEncoding/stateForEncoding.action';
 import { observe } from '../utils/storeUtils';

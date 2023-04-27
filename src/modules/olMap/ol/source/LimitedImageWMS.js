@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/ol/source/LimitedImageWMS
+ */
 import ImageWMS from 'ol/source/ImageWMS';
 import { getWidth, getHeight } from 'ol/extent';
 

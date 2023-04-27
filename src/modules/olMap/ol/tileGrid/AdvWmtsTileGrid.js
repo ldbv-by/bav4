@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/ol/tileGrid/AdvWmtsTileGrid
+ */
 import { getTopLeft } from 'ol/extent';
 import TileGrid from 'ol/tilegrid/TileGrid';
 import { DEFAULT_TILE_SIZE } from 'ol/tilegrid/common';

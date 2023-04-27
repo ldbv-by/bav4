@@ -1,3 +1,6 @@
+/**
+ * @module services/ImportWmsService
+ */
 import { $injector } from '../injection';
 import { SourceType, SourceTypeName } from '../domain/sourceType';
 

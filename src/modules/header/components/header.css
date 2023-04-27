@@ -14,7 +14,7 @@
 	min-width: var(--width-mainmenu);
 	padding: 7.5em 1em 2em 1em;
 	border-bottom: 1px solid var(--header-background-color);
-	transition: transform var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .header__background {
 	position: absolute;
@@ -32,8 +32,6 @@
 	z-index: calc(var(--z-header) + 10);
 }
 .header__logo-badge {
-	background: var(--primary-bg-color);
-	background: var(--secondary-color);
 	background: var(--error-color);
 	font-weight: bold;
 	color: var(--primary-color);
@@ -41,9 +39,9 @@
 	color: var(--text3);
 	border-radius: 2em;
 	padding: 0.2em 0.5em;
-	z-index: 999999999;
+	z-index: calc(var(--z-header) + 10);
 	position: absolute;
-	font-size: 0.8rem;
+	font-size: 0.75rem;
 	top: 1em;
 	left: 5.3em;
 	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
@@ -57,7 +55,7 @@
 	height: 6.5em;
 	background-image: url('assets/header.svg');
 	background-repeat: no-repeat;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .header__emblem {
 	position: fixed;
@@ -98,7 +96,7 @@
 	border-width: 1px;
 	border-style: solid;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	font-weight: bold;
 	position: relative;
 	z-index: 1;
@@ -134,7 +132,6 @@
 	right: 0;
 	z-index: 99999;
 	top: 0;
-	background: var(--header-background-color);
 	background: var(--primary-bg-color);
 	height: 2.7em;
 	width: 2.7em;
@@ -160,7 +157,6 @@
 	background: var(--header-background-color);
 }
 .resize-icon {
-	background: var(--secondary-color);
 	background: var(--text2);
 	display: block;
 	height: 2em;
@@ -216,7 +212,7 @@
 	top: -0.7em;
 	right: 0;
 	transform: scale(1);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	opacity: 1;
 }
 .header__button-container .is-active .badges {
@@ -346,7 +342,7 @@ input[type='search']::-webkit-search-results-decoration {
 	border-width: 1px;
 	border-style: solid;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	/* color: rgba(255,255,255,.8); */
 	font-weight: bold;
 	background-repeat: no-repeat;
@@ -404,7 +400,7 @@ input[type='search']::-webkit-search-results-decoration {
 	background-size: 22.7em;
 	background-image: url('assets/header.svg');
 	display: none;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .is-tablet .header__text-mobile {
 	left: -35em;
@@ -417,12 +413,12 @@ input[type='search']::-webkit-search-results-decoration {
 .is-portrait .header__search {
 	width: 3.5em;
 	z-index: 1;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .is-tablet .header__search {
 	width: 3.5em;
 	z-index: 1;
-	transition: all var(--animation-duration-large-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
 }
 .is-portrait .header__search:focus {
 	width: 100%;
@@ -431,7 +427,4 @@ input[type='search']::-webkit-search-results-decoration {
 .is-tablet .header__search:focus {
 	width: 100%;
 	z-index: 0;
-}
-.hide {
-	display: none !important;
 }

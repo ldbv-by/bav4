@@ -1,3 +1,6 @@
+/**
+ * @module services/BaaCredentialService
+ */
 import { $injector } from '../injection';
 import { isHttpUrl } from '../utils/checks';
 

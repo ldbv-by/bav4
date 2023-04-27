@@ -21,7 +21,7 @@ describe('OverlayService', () => {
 	};
 	const mapServiceMock = {
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832
+		getLocalProjectedSrid: () => 25832
 	};
 
 	const environmentServiceMock = {

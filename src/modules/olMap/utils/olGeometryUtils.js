@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/olGeometryUtils
+ */
 import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';

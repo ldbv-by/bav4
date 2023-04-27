@@ -15,7 +15,7 @@ import {
 	enableResponsiveParameterObservation,
 	setIsPortrait
 } from '../../../../../src/store/media/media.action';
-import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { FeatureInfoPanel } from '../../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { MapsContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from '../../../../../src/modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';

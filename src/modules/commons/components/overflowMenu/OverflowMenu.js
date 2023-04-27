@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/overflowMenu/OverflowMenu
+ */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';

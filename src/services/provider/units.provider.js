@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/units_provider
+ */
 import { $injector } from '../../injection';
 
 const Kilometer_In_Meters = 1000;

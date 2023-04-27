@@ -1,4 +1,7 @@
 /**
+ * @module utils/timer
+ */
+/**
  * Helpers to reduce event trigger rate.
  * @see: https://codeburst.io/throttling-and-debouncing-in-javascript-646d076d0a44
  */

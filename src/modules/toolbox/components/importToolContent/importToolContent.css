@@ -5,10 +5,11 @@
 	justify-content: center;
 }
 .tool-container__buttons > button {
+	font-size: 1.2rem;
 	position: relative;
 	background: transparent;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 1em;
 	border-right: 1px dotted var(--header-background-color);
@@ -28,7 +29,7 @@
 	width: 0em;
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	left: 1.75em;
 	transform: translate(-50%, -50%);
 	top: 1.8em;
@@ -39,11 +40,12 @@
 	mask-size: cover;
 	height: 2em;
 	width: 2em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	margin: 0.8em 0.8em;
 	position: absolute;
 }
 .data {
+	cursor: pointer;
 	mask-image: url('assets/data.svg');
 	-webkit-mask-image: url('assets/data.svg');
 }
@@ -53,6 +55,7 @@
 }
 
 .tool-container__button-text {
+	color: var(--text1);
 	font-size: 0.8rem;
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
@@ -87,7 +90,7 @@
 	left: 0;
 	z-index: 1;
 	background-color: var(--modal-background-color);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .text-to-search {
 	display: inline-block;
@@ -156,7 +159,4 @@
 	width: 3.4em;
 	background-color: var(--primary-color);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
-}
-.hide {
-	display: none !important;
 }

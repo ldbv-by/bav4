@@ -5,10 +5,11 @@
 }
 
 .tool-container__buttons > button {
+	font-size: 1.2rem;
 	position: relative;
 	background: transparent;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 0.5em;
 	border: 0;
@@ -24,7 +25,7 @@
 	width: 0em;
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	left: 2.3em;
 	transform: translate(-50%, -50%);
 	top: 1.8em;
@@ -43,7 +44,7 @@
 	mask-size: cover;
 	height: 2em;
 	width: 2em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	margin: 0.8em 0.8em;
 	position: absolute;
 }
@@ -78,6 +79,7 @@
 }
 
 .tool-container__button-text {
+	color: var(--text1);
 	font-size: 0.8rem;
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
@@ -236,12 +238,14 @@ input[color] {
 	cursor: pointer;
 	padding: 0.8em 1.2em;
 }
-
 .sub-header-text {
 	font-weight: bold;
 	color: var(--text2);
 	flex-grow: 1;
 	font-size: 0.9rem;
+}
+.sub-header:hover .sub-header-text {
+	color: var(--primary-color);
 }
 
 .color-row {

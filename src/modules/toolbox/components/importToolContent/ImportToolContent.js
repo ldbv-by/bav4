@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/importToolContent/ImportToolContent
+ */
 import { html } from 'lit-html';
 import css from './importToolContent.css';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';

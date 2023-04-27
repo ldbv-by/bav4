@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mainMenu/MainMenu
+ */
 import { html, nothing } from 'lit-html';
 import css from './mainMenu.css';
 import { $injector } from '../../../../injection';
@@ -5,7 +8,7 @@ import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
 import { TabId, toggle } from '../../../../store/mainMenu/mainMenu.action';
-import { FeatureInfoPanel } from '../../../featureInfo/components/FeatureInfoPanel';
+import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';

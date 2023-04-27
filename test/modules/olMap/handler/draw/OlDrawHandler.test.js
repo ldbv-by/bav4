@@ -139,7 +139,7 @@ describe('OlDrawHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => null })
+			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -715,7 +715,7 @@ describe('OlDrawHandler', () => {
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
-				feature.setId('draw_line_1');
+				feature.setId('drawing_line_1');
 				feature.set('description', 'foo');
 
 				classUnderTest.activate(map);
@@ -864,7 +864,7 @@ describe('OlDrawHandler', () => {
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
+				classUnderTest._sketchHandler.activate(feature, 'drawing_line_');
 
 				setType('line');
 
@@ -885,7 +885,7 @@ describe('OlDrawHandler', () => {
 						[1, 1]
 					])
 				});
-				feature.setId('draw_line_1234');
+				feature.setId('drawing_line_1234');
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
 					type: InteractionStateType.DRAW
@@ -929,7 +929,7 @@ describe('OlDrawHandler', () => {
 				spyOn(classUnderTest, '_getStyleFunctionFrom')
 					.withArgs(feature)
 					.and.callFake(() => () => [newStyle]);
-				feature.setId('draw_Symbol_1234');
+				feature.setId('drawing_Symbol_1234');
 				feature.setStyle([oldStyle1, oldStyle2]);
 				const drawStateFake = {
 					type: InteractionStateType.MODIFY
@@ -951,7 +951,7 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="drawing_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
@@ -994,7 +994,7 @@ describe('OlDrawHandler', () => {
 			setup({ ...initialState, createPermanentLayer: false });
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="drawing_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
@@ -1069,7 +1069,7 @@ describe('OlDrawHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_line_1');
+			feature.setId('drawing_line_1');
 			feature.setStyle(new Style());
 			const store = setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1080,7 +1080,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			expect(store.getState().draw.selection).toEqual(['draw_line_1']);
+			expect(store.getState().draw.selection).toEqual(['drawing_line_1']);
 		});
 
 		describe('_createDrawByType', () => {
@@ -1299,7 +1299,7 @@ describe('OlDrawHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/draw_line_[0-9]{13}/g);
+			expect(id).toMatch(/drawing_line_[0-9]{13}/g);
 		});
 
 		it('switches to modify after drawend', () => {
@@ -1768,7 +1768,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			setup({ ...initialState, selection: ['draw_1'] });
+			setup({ ...initialState, selection: ['drawing_1'] });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap(null, 1);
 
@@ -1778,7 +1778,7 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_1');
+			feature.setId('drawing_1');
 			classUnderTest._select.getFeatures().push(feature);
 
 			expect(classUnderTest._select).toBeDefined();
@@ -1794,7 +1794,7 @@ describe('OlDrawHandler', () => {
 			setup();
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_1');
+			feature.setId('drawing_1');
 			feature.setStyle(style);
 			const map = setupMap();
 
@@ -1826,7 +1826,7 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 			feature.setStyle(style);
 			const map = setupMap();
 
@@ -1889,8 +1889,8 @@ describe('OlDrawHandler', () => {
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
 			const feature1 = new Feature({ geometry: new Point([0, 0]) });
 			const feature2 = new Feature({ geometry: new Point([50, 50]) });
-			feature1.setId('draw_1');
-			feature2.setId('draw_2');
+			feature1.setId('drawing_1');
+			feature2.setId('drawing_2');
 			feature1.setStyle(style);
 			feature2.setStyle(style);
 

@@ -1,5 +1,5 @@
 /**
- * @module stateForEncoding/action
+ * @module store/stateForEncoding/stateForEncoding_action
  */
 import { STATE_FORE_ENCODING_CHANGED } from './stateForEncoding.reducer';
 import { $injector } from '../../injection';

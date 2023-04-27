@@ -10,12 +10,26 @@
 .draw-tool__content {
 	display: flex;
 	justify-content: center;
+	background: var(--primary-bg-color);
 }
 
 .draw-tool__actions {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	opacity: 0.5;
+}
+
+.draw-tool__actions > ba-icon {
+	opacity: 0.5;
+}
+
+.draw-tool__actions > ba-icon.is-enabled {
+	opacity: 1;
+}
+
+.draw-tool__actions.is-enabled {
+	opacity: 1;
 }
 
 .draw-tool__buttons {
@@ -29,15 +43,20 @@
 	position: relative;
 	background: transparent;
 	cursor: pointer;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	color: rgba(255, 255, 255, 0.8);
 	padding: 0 0.5em;
 	border: 0;
 	border-right: 1px dotted var(--header-background-color);
+	opacity: 0.5;
 }
 
 .draw-tool__buttons > button:last-child {
 	border-right: none;
+}
+
+.draw-tool__buttons > button.is-enabled {
+	opacity: 1;
 }
 
 .draw-tool__background {
@@ -45,7 +64,7 @@
 	width: 0em;
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	left: 2.3em;
 	transform: translate(-50%, -50%);
 	top: 1.8em;
@@ -64,9 +83,10 @@
 	mask-size: cover;
 	height: 2em;
 	width: 2em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	margin: 0.8em 0.8em;
 	position: absolute;
+	opacity: 0.5;
 }
 
 .is-active .draw-tool__icon {

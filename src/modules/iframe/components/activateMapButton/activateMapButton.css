@@ -11,16 +11,13 @@
 	opacity: 0;
 	background: var(--text3);
 	min-width: 13em;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	border: 2px solid var(--text3);
 	border-radius: 2em;
 	overflow: hidden;
 }
 .active-map__background:hover .active-map__button {
 	opacity: 1;
-}
-.hide {
-	display: none;
 }
 ba-attribution-info {
 	position: absolute;

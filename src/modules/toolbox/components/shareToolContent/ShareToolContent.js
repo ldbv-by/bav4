@@ -1,3 +1,6 @@
+/**
+ * @module modules/toolbox/components/shareToolContent/ShareToolContent
+ */
 import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { AbstractToolContent } from '../toolContainer/AbstractToolContent';

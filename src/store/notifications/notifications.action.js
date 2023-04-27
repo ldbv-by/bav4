@@ -1,10 +1,9 @@
+/**
+ * @module store/notifications/notifications_action
+ */
 import { NOTIFICATION_ADDED } from './notifications.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
-
-/**
- * @module notification/action
- */
 
 /**
  * Enum for notification levels.

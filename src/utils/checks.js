@@ -1,4 +1,7 @@
 /**
+ * @module utils/checks
+ */
+/**
  * Checks if a value is a Object.
  * @function
  * @param {*} val

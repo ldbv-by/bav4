@@ -1,3 +1,6 @@
+/**
+ * @module plugins/PositionPlugin
+ */
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 import { BaPlugin } from './BaPlugin';
@@ -14,7 +17,7 @@ export class PositionPlugin extends BaPlugin {
 
 		const detectSrid = (center) => {
 			const isWGS84Coordinate = Math.abs(center[0]) <= 180 && Math.abs(center[1]) <= 90;
-			return isWGS84Coordinate ? 4326 : mapService.getDefaultGeodeticSrid();
+			return isWGS84Coordinate ? 4326 : mapService.getLocalProjectedSrid();
 		};
 
 		const parseCenter = (centerValue) => {

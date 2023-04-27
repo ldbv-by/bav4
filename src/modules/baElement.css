@@ -1,17 +1,12 @@
-/* default style for all BaElements */
+/* ==========================================================================
+   default style for all BaElements
+   ========================================================================== */
 *,
 ::before,
 ::after {
-	font-size: 1em;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-	color: var(--text1);
-	font-family: var(--font-family);
-	line-height: 1.2;
-	letter-spacing: 0.01em;
 }
 
 *,
@@ -20,7 +15,7 @@
 	outline: none;
 }
 *:focus-visible {
-	box-shadow: 0 0 0 0.2em var(--primary-color-lighter);
+	box-shadow: 0 0 0 0.2em var(--primary-color-lighter) 0 0 0 0.4em var(--primary-color);
 }
 
 /* not working in Firefox */
@@ -40,20 +35,42 @@
 	color: var(--text3);
 	background: var(--secondary-color);
 }
+
+/* 
+   tags
+*/
+
+a,
+button,
+input,
+select,
+textarea {
+	font-size: 1rem;
+	font-family: var(--font-family);
+	color: var(--text1);
+	line-height: 1.2;
+	letter-spacing: 0.01em;
+}
+a,
+button,
+select,
+ba-checkbox {
+	cursor: pointer;
+}
+a {
+	text-decoration: none;
+}
 input,
 textarea {
 	padding: 0.1em 0.5em;
-	font-size: 1rem;
 	border: 1px solid var(--text2);
 	line-height: 1.8;
 	width: 100%;
-	color: var(--text1);
 	box-shadow: none;
 	background: var(--primary-bg-color);
 }
 select {
 	width: 100%;
-	font-size: 1rem;
 	padding: 0.2em 1.4em 0.3em 0.1em;
 	border: none;
 	border-bottom: 1px solid var(--text1);
@@ -64,7 +81,6 @@ select {
 	background-repeat: no-repeat;
 	background-position: calc(100% - 0.5em) center;
 	background-size: 0.7em;
-	cursor: pointer;
 }
 select:focus {
 	border-bottom: 1px solid var(--primary-color);
@@ -136,6 +152,9 @@ input[type='range']:focus {
 	--thumb-highlight-size: 0.3em;
 }
 
+/* 
+   ba-form-element  
+*/
 .ba-form-element {
 	position: relative;
 	margin: 1em 0 1.5em 0;
@@ -152,8 +171,8 @@ input[type='range']:focus {
 	pointer-events: none;
 	color: var(--text1);
 	z-index: 1;
-	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element textarea::placeholder,
 .ba-form-element input::placeholder {
@@ -174,8 +193,8 @@ input[type='range']:focus {
 	color: var(--text1);
 	font-weight: normal;
 	/* bottom: -1.2rem; */
-	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element .bar {
 	position: relative;
@@ -191,16 +210,15 @@ input[type='range']:focus {
 	position: absolute;
 	background: var(--primary-color);
 	z-index: 2;
-	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
-		width var(--animation-duration-medium-open) var(--animation-easing-linea);
-	transition: left var(--animation-duration-medium-open) var(--animation-easing-linea),
-		width var(--animation-duration-medium-open) var(--animation-easing-linea);
+	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+		width var(--animation-duration-medium-open) var(--animation-easing-linear);
+	transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+		width var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element input,
 .ba-form-element textarea {
 	display: block;
 	padding: 0 1em 0.6em;
-	font-size: 1rem;
 	border-width: 0;
 	border-color: transparent;
 	line-height: 1.9;
@@ -244,7 +262,6 @@ input[type='range']:focus {
 .ba-form-element select:focus ~ .control-label,
 .ba-form-element input:focus ~ .control-label,
 .ba-form-element textarea:focus ~ .control-label {
-	color: var(--primary-color);
 	color: var(--text4);
 }
 .ba-form-element select:focus ~ .bar::before,
@@ -282,6 +299,7 @@ input[type='range']:focus {
 	background-image: url('./assets/exclamationcircle.svg');
 }
 .ba-form-element .icon {
+	font-size: 2em;
 	opacity: 0;
 	position: absolute;
 	top: 0;
@@ -290,9 +308,8 @@ input[type='range']:focus {
 	width: 1.8em;
 	background-size: 0.7em;
 	color: var(--text1);
-	font-size: 2em;
 }
-.check .icon {
+.ba-form-element .check .icon {
 	background: var(--sucess-color);
 	background-repeat: no-repeat;
 	background-position: center;
@@ -301,28 +318,29 @@ input[type='range']:focus {
 .ba-form-element .icon:focus {
 	opacity: 1;
 }
-.clear {
+.ba-form-element .clear {
 	background: var(--primary-bg--color);
 	background-repeat: no-repeat;
 	background-position: center;
 	background-image: url('./assets/xcircle.svg');
 }
-.select-icon {
+.ba-form-element .select-icon {
+	font-size: 1.5em !important;
 	opacity: 1 !important;
 	background: var(--primary-bg--color);
 	background-image: url('./assets/caret-down-fill.svg');
 	background-repeat: no-repeat;
 	background-position: calc(100% - 0.5em) center;
-	font-size: 1.5em !important;
 	width: 2em !important;
 }
-.hint {
+.ba-form-element .hint {
 	padding: 1em 0;
 	width: 100%;
 }
-.highlight {
-	display: inline-block;
-	font-weight: bold;
-	color: var(--primary-color);
-	cursor: default;
+
+/* 
+   helper
+*/
+.hide {
+	display: none !important;
 }

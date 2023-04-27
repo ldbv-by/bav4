@@ -1,3 +1,6 @@
+/**
+ * @module plugins/DrawPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
@@ -9,12 +12,6 @@ import { Tools } from '../domain/tools';
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const DRAW_LAYER_ID = 'draw_layer';
-
-/**
- * Id of the tool used for drawing interaction.
- * Feature of a layer will also use this id as part their id.
- */
-export const DRAW_TOOL_ID = 'draw';
 
 /**
  * This plugin observes the 'active' property of the drawing store.

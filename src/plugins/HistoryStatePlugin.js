@@ -1,3 +1,6 @@
+/**
+ * @module plugins/HistoryStatePlugin
+ */
 import { $injector } from '../injection';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';

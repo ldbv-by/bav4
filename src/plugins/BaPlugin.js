@@ -1,4 +1,7 @@
 /**
+ * @module plugins/BaPlugin
+ */
+/**
  * Abstract base class for all BaPlugins.
  *
  *

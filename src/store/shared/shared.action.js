@@ -1,6 +1,5 @@
 /**
- * Action creators for commonly shared data
- * @module shared/action
+ * @module store/shared/shared_action
  */
 import { $injector } from '../../injection';
 import { FILE_SAVE_RESULT_CHANGED, TERMS_OF_USE_ACKNOWLEDGED_CHANGED } from './shared.reducer';

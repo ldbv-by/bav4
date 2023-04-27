@@ -1,7 +1,6 @@
 /**
- * @module service/provider
+ * @module services/provider/proxifyUrl_provider
  */
-
 import { $injector } from '../../injection';
 
 /**

@@ -1,3 +1,6 @@
+/**
+ * @module modules/menu/components/mainMenu/content/AbstractContentPanel
+ */
 import { html } from 'lit-html';
 import { BaElement } from '../../../../BaElement';
 import contentPanelCss from './abstractContentPanel.css';

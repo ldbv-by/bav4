@@ -1,4 +1,4 @@
-export const coordinateSelectProvide = (lang) => {
+export const coordinateSelectProvider = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {

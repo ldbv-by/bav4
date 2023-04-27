@@ -1,4 +1,7 @@
 /**
+ * @module domain/pathParameters
+ */
+/**
  * Enum which holds all valid path parameter keys.
  * @enum
  */

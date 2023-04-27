@@ -1,4 +1,7 @@
 /**
+ * @module modules/olMap/handler/OlMapHandler
+ */
+/**
  * MapEventHandler.
  * @class
  * @abstract
