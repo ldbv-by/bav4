@@ -84,7 +84,7 @@ describe('MiscContentPanel', () => {
 		it('opens the modal with the feedback components', async () => {
 			const element = await setup();
 
-			const feedbackButton = element.shadowRoot.querySelector('.feedback');
+			const feedbackButton = element.shadowRoot.querySelector('#feedback');
 
 			expect(feedbackButton).toBeDefined();
 
