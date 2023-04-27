@@ -20,8 +20,17 @@ const feedbackServiceMock = {
 };
 
 const shareServiceMock = {
-	encodeState: () => {},
+	encodeState: () => 'http://foo.bar?x=0',
 	copyToClipboard() {}
+};
+
+const fileStorageServiceMock = {
+	isFileId(id) {
+		return id.startsWith('f_');
+	},
+	isAdminId(id) {
+		return id.startsWith('a_');
+	}
 };
 
 let store;
@@ -39,7 +48,8 @@ const setup = (state = {}) => {
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
-		.registerSingleton('ShareService', shareServiceMock);
+		.registerSingleton('ShareService', shareServiceMock)
+		.registerSingleton('FileStorageService', fileStorageServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
@@ -131,6 +141,17 @@ describe('MapFeedbackPanel', () => {
 			await setup();
 
 			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+		});
+
+		it('filters iframe-source for user-generated layers', async () => {
+			const encodedState = 'http://foo.bar/baz?l=atkis,f_foo&foo=bar';
+			const expectedEncodedState = 'http://foo.bar/baz?l=atkis&foo=bar';
+			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
+			const element = await setup();
+
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
 		describe('when listen to iframe-attribute changes', () => {

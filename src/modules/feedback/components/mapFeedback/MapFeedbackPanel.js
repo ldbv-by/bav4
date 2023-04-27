@@ -42,13 +42,15 @@ export class MapFeedbackPanel extends MvuElement {
 			ConfigService: configService,
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
-			ShareService: shareService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
+			ShareService: shareService,
+			FileStorageService: fileStorageService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._shareService = shareService;
+		this._fileStorageService = fileStorageService;
 		this._iframeObserver = null;
 	}
 
@@ -202,7 +204,19 @@ export class MapFeedbackPanel extends MvuElement {
 			return queryParameters;
 		};
 
-		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
+		const filterUserGeneratedLayers = (encodedState) => {
+			const [baseUrl, searchParamsString] = encodedState.split('?');
+			const searchParams = new URLSearchParams(searchParamsString);
+			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
+
+			searchParams.set(
+				QueryParameters.LAYER,
+				layers.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l)).join(',')
+			);
+			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
+		};
+
+		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
 		return html`
 			<style>
 				${css}
