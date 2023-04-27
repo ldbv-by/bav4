@@ -5,13 +5,15 @@
  * An async function that provides an array of {@link GeoResource}s.
  *
  * @async
- * @typedef {function():(Array<GeoResource>)} geoResourceProvider
+ * @typedef {function} geoResourceProvider
+ * @return {GeoResource[]}
  */
 
 /**
  * A function that returns a {@link GeoResourceFuture}.
  * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (GeoResourceFuture|null)} geoResourceByIdProvider
+ * @typedef {function} geoResourceByIdProvider
+ * @returns {GeoResourceFuture|null}
  */
 
 import { $injector } from '../injection';
