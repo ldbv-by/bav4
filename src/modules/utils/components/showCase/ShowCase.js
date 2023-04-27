@@ -256,7 +256,7 @@ export class ShowCase extends BaElement {
 
 					<h3>Feedback</h3>
 					<div class="example row">
-						<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
+						<ba-mvu-togglefeedbackpanel></ba-mvu-togglefeedbackpanel>
 					</div>
 
 					<h3>Profile</h3>
