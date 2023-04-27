@@ -5,6 +5,7 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
+import { openModal } from '../../../../../../store/modal/modal.action';
 
 /**
  * Container for more contents.
@@ -21,6 +22,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
+
+		const openFeedbackDialog = () => {
+			const title = translate('menu_misc_content_panel_feedback_title');
+			const content = html`<ba-mvu-togglefeedbackpanel></ba-mvu-togglefeedbackpanel>`;
+			openModal(title, content);
+		};
 
 		return html`
 			<style>
@@ -49,6 +56,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
+				<button class="ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
 				<a class="ba-list-item" href="https://www.ldbv.bayern.de/service/kontakt.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon contact"> </span>
