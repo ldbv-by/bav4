@@ -216,6 +216,7 @@ export class MapFeedbackPanel extends MvuElement {
 			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
 		};
 
+		// Create an iframe source without any user-generated georesources that could be unintentionally affect the feedback or the georesource itself.
 		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
 		return html`
 			<style>
