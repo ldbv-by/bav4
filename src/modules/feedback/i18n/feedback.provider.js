@@ -21,7 +21,7 @@ export const provide = (lang) => {
 				mapFeedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
 				mapFeedback_saved_successfully: 'Ihr Feedback wurde gespeichert',
 				mapFeedback_markChangeNotice: 'Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?',
-				mapFeedback_categorySelection: 'Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?',
+				mapFeedback_categorySelection: 'Kategorie',
 				mapFeedback_changeDescription: 'Ihre Nachricht',
 				mapFeedback_eMail: 'Ihre E-Mail-Adresse',
 				mapFeedback_privacyPolicy: 'Hinweis zum Datenschutz',

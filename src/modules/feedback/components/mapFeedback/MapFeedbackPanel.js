@@ -18,6 +18,7 @@ const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Remember_Submit = 'remember_submit';
+const Update_IsPortrait_Value = 'update_isportrait_value';
 
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/MapFeedbackService~MapFeedback}.
@@ -53,6 +54,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 	onInitialize() {
 		this._getCategoryOptions();
+		(portrait) => this.signal(Update_IsPortrait_Value, portrait);
 	}
 
 	onAfterRender(firstTime) {
@@ -112,6 +114,8 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
 			case Remember_Submit:
 				return { ...model, submitWasClicked: data };
+			case Update_IsPortrait_Value:
+				return { ...model, portrait: data };
 		}
 	}
 
@@ -120,7 +124,7 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions } = model;
+		const { mapFeedback, categoryOptions, portrait } = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -153,6 +157,10 @@ export class MapFeedbackPanel extends MvuElement {
 			return email.reportValidity();
 		};
 
+		const getOrientationClass = () => {
+			return portrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		const handleSubmit = () => {
 			this.signal(Remember_Submit, true);
 
@@ -181,48 +189,69 @@ export class MapFeedbackPanel extends MvuElement {
 
 			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
 
-			<div class="feedback-form-container">
+			<div class="feedback-form-container ${getOrientationClass()}">
 				<div class="feedback-form-left">
 					<div class="iframe__content">
 						<iframe
 							data-iframe-geometry-reference-id
 							src=${iframeSrc}
-							width=100%'
-							height=600px'
+							width="900px"
+							height="700px"
 							loading="lazy"
 							referrerpolicy="no-referrer-when-downgrade"
 						></iframe>
 						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
-					</div>					
-
-					<div class="ba-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
-							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
-						</select>
-						<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
 					</div>
+					<div class="form__content">
+						<p>
+							Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+							sed diam voluptua. At vero eos et accusam et
+						</p>
+						<div class="ba-form-element">
+							<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+								${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+							</select>
+							<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
+							<label class="helper-label">Bitte auswählen</label>
+						</div>
 
-					<div class="ba-form-element">
-						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-						<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
-						<i class="bar"></i>
-						<label class="helper-label">Helper text</label>
-						<i class="icon error"></i>
+						<div class="ba-form-element">
+							<textarea
+								id="description"
+								.value="${mapFeedback.description}"
+								@input="${handleDescriptionChange}"
+								required
+								placeholder="${translate('mapFeedback_changeDescription')}"
+							></textarea>
+							<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
+							<i class="bar"></i>
+							<label class="helper-label">Pflichtfeld</label>
+							<label class="error-label">Pflichtfeld</label>
+							<i class="icon error"></i>
+						</div>
+
+						<div class="ba-form-element">
+							<input
+								type="email"
+								id="email"
+								.value="${mapFeedback.email}"
+								@input="${handleEmailChange}"
+								placeholder="${translate('mapFeedback_eMail')}"
+							/>
+							<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
+							<i class="bar"></i>
+							<i class="icon error"></i>
+							<label class="helper-label">optional</label>
+						</div>
+
+						<p class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
+							${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
+								>${translate('mapFeedback_privacyPolicy')}</a
+							>).
+						</p>
+
+						<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 					</div>
-
-					<div class="ba-form-element">
-						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-						<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
-						<i class="bar"></i>
-						<i class="icon error"></i>
-					</div>
-
-					<div class="ba-form-element" id="mapFeedback_disclaimer">
-						${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a
-						>).
-					</div>
-
-					<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 				</div>
 			</div>
 		`;
