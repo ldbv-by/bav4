@@ -955,7 +955,10 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			spyOn(map, 'getLayers').and.returnValue(
+				// we add two fileStorage related layers
+				new Collection([new Layer({ geoResourceId: 'a_notWanted' }), new Layer({ geoResourceId: 'a_lastId' })])
+			);
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
