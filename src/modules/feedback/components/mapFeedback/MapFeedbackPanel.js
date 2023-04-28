@@ -261,7 +261,7 @@ export class MapFeedbackPanel extends MvuElement {
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
-						<label class="helper-label">Bitte auswählen</label>
+						<label class="helper-label">${translate('feedback_mapFeedback_categorySelection_helper')}</label>
 					</div>
 					<div class="ba-form-element">
 						<textarea
@@ -273,8 +273,8 @@ export class MapFeedbackPanel extends MvuElement {
 						></textarea>
 						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
 						<i class="bar"></i>
-						<label class="helper-label">Pflichtfeld</label>
-						<label class="error-label">Pflichtfeld</label>
+						<label class="helper-label">${translate('feedback_mapFeedback_changeDescription_helper')}</label>
+						<label class="error-label">${translate('feedback_mapFeedback_changeDescription_error')}</label>
 						<i class="icon error"></i>
 					</div>
 					<div class="ba-form-element">
@@ -288,8 +288,8 @@ export class MapFeedbackPanel extends MvuElement {
 						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
-						<label class="helper-label">optional</label>
-						<label class="error-label">keine gültige E-Mail Adresse</label>
+						<label class="helper-label">${translate('feedback_mapFeedback_eMail_helper')}</label>
+						<label class="error-label">${translate('feedback_mapFeedback_eMail_error')}</label>
 					</div>
 					<p id="feedback_mapFeedback_disclaimer" class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
 						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"

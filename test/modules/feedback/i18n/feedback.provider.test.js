@@ -8,8 +8,13 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_mapFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Kategorie');
+		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Bitte auswählen');
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Ihre Nachricht');
+		expect(map.feedback_mapFeedback_changeDescription_helper).toBe('Pflichtfeld');
+		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Pflichtfeld');
 		expect(map.feedback_mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
+		expect(map.feedback_mapFeedback_eMail_helper).toBe('Optional');
+		expect(map.feedback_mapFeedback_eMail_error).toBe('Keine gültige e-mailaderesse');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
 		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
 		expect(map.feedback_mapFeedback_text_map).toBe('Karte');
@@ -35,8 +40,13 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_mapFeedback_saved_successfully).toBe('Your feedback was successfully submitted');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Category');
+		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Please choose');
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Your message');
+		expect(map.feedback_mapFeedback_changeDescription_helper).toBe('Required field');
+		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Required field');
 		expect(map.feedback_mapFeedback_eMail).toBe('Your email address');
+		expect(map.feedback_mapFeedback_eMail_helper).toBe('Optional');
+		expect(map.feedback_mapFeedback_eMail_error).toBe('No valid e-mail address');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Privacy Policy');
 		expect(map.feedback_mapFeedback_text_before).toBe('Please draw your change on the');
 		expect(map.feedback_mapFeedback_text_map).toBe('Map');
@@ -53,7 +63,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 18;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
