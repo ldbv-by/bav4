@@ -8,17 +8,14 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribut
 
 export const _newLoader = (id) => {
 	return async () => {
-		const { FileStorageService: fileStorageService, TranslationService: translationService } = $injector.inject(
-			'FileStorageService',
-			'TranslationService'
-		);
+		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 
 		try {
 			const fileId = await fileStorageService.getFileId(id);
 			const { data, type, srid } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
-				const vgr = new VectorGeoResource(id, translationService.translate('global_default_vector_georesource_name'), VectorSourceType.KML)
+				const vgr = new VectorGeoResource(id, null /**will be read from the KML */, VectorSourceType.KML)
 					.setSource(data, srid)
 					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 				return vgr;
