@@ -253,7 +253,7 @@ export class MapFeedbackPanel extends MvuElement {
 				<div class="map-feedback__form">
 					<div class="map-feedback__form-hint">
 						${translate('feedback_mapFeedback_text_before')}
-						<span class="feedback__mapFeedback_highlight">${translate('feedback_mapFeedback_text_map')}</span>
+						<span class="map-feedback__highlight">${translate('feedback_mapFeedback_text_map')}</span>
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element">

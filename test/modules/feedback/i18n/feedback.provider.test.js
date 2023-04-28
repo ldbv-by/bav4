@@ -11,6 +11,11 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.feedback_mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
+		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
+		expect(map.feedback_mapFeedback_text_map).toBe('Karte');
+		expect(map.feedback_mapFeedback_text_after).toBe(
+			' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'
+		);
 		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
@@ -22,9 +27,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Falsche Adresse, fehlender Ort, nicht korrekt dargestellter Straßenverlauf usw.');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
 		expect(map.feedback_toggleFeedback_generalButton_sub).toBe('Machen Sie Änderungs- oder Verbesserungsvorschläge oder melden Sie Fehler.');
-		expect(map.feedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
-		expect(map.feedback_text_map).toBe('Karte');
-		expect(map.feedback_text_after).toBe(' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.');
 	});
 
 	it('provides translation for en', () => {
@@ -37,6 +39,9 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_changeDescription).toBe('Your message');
 		expect(map.feedback_mapFeedback_eMail).toBe('Your email address');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Privacy Policy');
+		expect(map.feedback_mapFeedback_text_before).toBe('Please draw your change on the');
+		expect(map.feedback_mapFeedback_text_map).toBe('Map');
+		expect(map.feedback_mapFeedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
 		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
@@ -47,9 +52,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Wrong address, missing place, road not shown correctly, etc.');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
 		expect(map.feedback_toggleFeedback_generalButton_sub).toBe('Make suggestions for changes or improvements, or report errors.');
-		expect(map.feedback_text_before).toBe('Please draw your change on the');
-		expect(map.feedback_text_map).toBe('Map');
-		expect(map.feedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
 	});
 
 	it('have the expected amount of translations', () => {
