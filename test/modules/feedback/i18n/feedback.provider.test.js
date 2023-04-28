@@ -27,10 +27,14 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 		expect(map.feedback_mapFeedback_submit).toBe('Senden');
 
-		expect(map.feedback_toggleFeedback_mapButton).toBe('Kartenfeedback');
-		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Falsche Adresse, fehlender Ort, nicht korrekt dargestellter Straßenverlauf usw.');
-		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
-		expect(map.feedback_toggleFeedback_generalButton_sub).toBe('Machen Sie Änderungs- oder Verbesserungsvorschläge oder melden Sie Fehler.');
+		expect(map.feedback_toggleFeedback_mapButton).toBe('Feedback zur Karte');
+		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
+			'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.'
+		);
+		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeines Feedback');
+		expect(map.feedback_toggleFeedback_generalButton_sub).toBe(
+			'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.'
+		);
 	});
 
 	it('provides translation for en', () => {
@@ -57,7 +61,9 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_mapFeedback_submit).toBe('Submit');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
-		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Wrong address, missing place, road not shown correctly, etc.');
+		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
+			'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.'
+		);
 		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
 		expect(map.feedback_toggleFeedback_generalButton_sub).toBe('Make suggestions for changes or improvements, or report errors.');
 	});
