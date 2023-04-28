@@ -17,6 +17,11 @@
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
 }
+.feedback {
+	mask-image: url('assets/feedback.svg');
+	-webkit-mask-image: url('assets/feedback.svg');
+	transform: scale(0.7);
+}
 .contact {
 	mask-image: url('assets/contact.svg');
 	-webkit-mask-image: url('assets/contact.svg');
