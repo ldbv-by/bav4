@@ -128,7 +128,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
-			return map.getLayers().getArray().find(isOldLayer);
+			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
+			return map.getLayers().getArray().reverse().find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -691,7 +692,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		// register the stored data as new georesource
 		this._geoResourceService.addOrReplace(vgr);
-		addLayer(id, { constraints: { cloneable: false, metaData: false } });
+		addLayer(id, { constraints: { metaData: false } });
 	}
 
 	static get Debounce_Delay() {
