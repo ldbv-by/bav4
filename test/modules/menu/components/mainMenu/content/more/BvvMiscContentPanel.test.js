@@ -81,13 +81,18 @@ describe('MiscContentPanel', () => {
 			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
 		});
 
-		it('opens the modal with the feedback components', async () => {
+		it('have a feedback button', async () => {
 			const element = await setup();
 
 			const feedbackButton = element.shadowRoot.querySelector('#feedback');
+			expect(feedbackButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_feedback_title');
+			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
+		});
 
-			expect(feedbackButton).toBeDefined();
+		it('opens the modal with the toggle-feedback component', async () => {
+			const element = await setup();
 
+			const feedbackButton = element.shadowRoot.querySelector('#feedback');
 			feedbackButton.click();
 
 			expect(store.getState().modal.data.title).toBe('menu_misc_content_panel_feedback_title');
