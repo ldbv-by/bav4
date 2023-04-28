@@ -20,10 +20,6 @@ describe('LayersPlugin', () => {
 		default() {},
 		byId() {}
 	};
-	const fileStorageService = {
-		isFileId: () => false,
-		isAdminId: () => false
-	};
 	const windowMock = {
 		location: {
 			get search() {
@@ -45,8 +41,7 @@ describe('LayersPlugin', () => {
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TopicsService', topicsServiceMock)
 			.registerSingleton('EnvironmentService', { getWindow: () => windowMock })
-			.registerSingleton('TranslationService', translationService)
-			.registerSingleton('FileStorageService', fileStorageService);
+			.registerSingleton('TranslationService', translationService);
 
 		return store;
 	};
@@ -65,7 +60,7 @@ describe('LayersPlugin', () => {
 	});
 
 	describe('_init', () => {
-		it('initializes the GeoResourceService and calls #_addLayersFromConfig', async () => {
+		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
@@ -80,7 +75,7 @@ describe('LayersPlugin', () => {
 			expect(store.getState().layers.ready).toBeTrue();
 		});
 
-		it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
+		it('initializes the georesource service and calls #_addLayersFromQueryParams', async () => {
 			const store = setup();
 			const queryParam = QueryParameters.LAYER + '=some';
 			const instanceUnderTest = new LayersPlugin();
@@ -203,7 +198,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('adds layers considering unusable visibility params', () => {
+			it('adds layers considering unuseable visibility params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -249,7 +244,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('adds layers considering unusable opacity params', () => {
+			it('adds layers considering unuseable opacity params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -270,39 +265,6 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[0].opacity).toBe(1);
 				expect(store.getState().layers.active[1].id).toContain('some1_');
 				expect(store.getState().layers.active[1].opacity).toBe(1);
-			});
-
-			it('adds layers considering id', () => {
-				const queryParam = `${QueryParameters.LAYER}=some0,some1,some2`;
-				const store = setup();
-				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
-				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-					switch (id) {
-						case 'some0':
-							return new XyzGeoResource('some0', 'someLabel0', 'someUrl0');
-						case 'some1':
-							return new XyzGeoResource('some1', 'someLabel1', 'someUrl1');
-						case 'some2':
-							return new XyzGeoResource('some2', 'someLabel2', 'someUrl2');
-					}
-				});
-				spyOn(fileStorageService, 'isFileId').and.callFake((id) => {
-					return id === `some0`;
-				});
-				spyOn(fileStorageService, 'isAdminId').and.callFake((id) => {
-					return id === `some1`;
-				});
-
-				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
-
-				expect(store.getState().layers.active.length).toBe(3);
-				expect(store.getState().layers.active[0].id).toContain('some0_');
-				expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
-				expect(store.getState().layers.active[1].id).toContain('some1_');
-				expect(store.getState().layers.active[1].constraints.cloneable).toBeFalse();
-				expect(store.getState().layers.active[2].id).toContain('some2_');
-				expect(store.getState().layers.active[2].constraints.cloneable).toBeTrue();
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
