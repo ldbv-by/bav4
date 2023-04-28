@@ -20,8 +20,17 @@ const feedbackServiceMock = {
 };
 
 const shareServiceMock = {
-	encodeState: () => {},
+	encodeState: () => 'http://foo.bar?x=0',
 	copyToClipboard() {}
+};
+
+const fileStorageServiceMock = {
+	isFileId(id) {
+		return id.startsWith('f_');
+	},
+	isAdminId(id) {
+		return id.startsWith('a_');
+	}
 };
 
 let store;
@@ -39,7 +48,8 @@ const setup = (state = {}) => {
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
-		.registerSingleton('ShareService', shareServiceMock);
+		.registerSingleton('ShareService', shareServiceMock)
+		.registerSingleton('FileStorageService', fileStorageServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
@@ -67,7 +77,7 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'mapFeedback_header';
+			const expectedTitle = 'feedback_mapFeedback_header';
 			const expectedCategory = '';
 			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
@@ -99,25 +109,25 @@ describe('MapFeedbackPanel', () => {
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue;
 			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_categorySelection');
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_changeDescription');
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('mapFeedback_eMail');
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_eMail');
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('mapFeedback_disclaimer');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
 		});
 
 		it('creates an iframeObserver', async () => {
@@ -131,6 +141,17 @@ describe('MapFeedbackPanel', () => {
 			await setup();
 
 			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+		});
+
+		it('filters iframe-source for user-generated layers', async () => {
+			const encodedState = 'http://foo.bar/baz?l=atkis,f_foo&foo=bar';
+			const expectedEncodedState = 'http://foo.bar/baz?l=atkis&foo=bar';
+			const encodeSpy = spyOn(shareServiceMock, 'encodeState').and.returnValue(encodedState);
+			const element = await setup();
+
+			const iframeElement = element.shadowRoot.querySelector('iframe');
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
 		describe('when listen to iframe-attribute changes', () => {
@@ -250,7 +271,7 @@ describe('MapFeedbackPanel', () => {
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
 
-			expect(store.getState().notifications.latest.payload.content).toBe('mapFeedback_could_not_save');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_could_not_save');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 
@@ -265,7 +286,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('mapFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 		});
 

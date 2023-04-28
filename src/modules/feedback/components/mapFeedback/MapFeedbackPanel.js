@@ -21,7 +21,7 @@ const Update_State = 'update_state';
 const Remember_Submit = 'remember_submit';
 
 /**
- * Contains a map-iframe and a form for submitting a {@link module:services/MapFeedbackService~MapFeedback}.
+ * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
  * @class
  */
 export class MapFeedbackPanel extends MvuElement {
@@ -42,13 +42,15 @@ export class MapFeedbackPanel extends MvuElement {
 			ConfigService: configService,
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
-			ShareService: shareService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
+			ShareService: shareService,
+			FileStorageService: fileStorageService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._shareService = shareService;
+		this._fileStorageService = fileStorageService;
 		this._iframeObserver = null;
 	}
 
@@ -96,10 +98,10 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._feedbackService.save(mapFeedback);
-			emitNotification(translate('mapFeedback_saved_successfully'), LevelTypes.INFO);
+			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
-			emitNotification(translate('mapFeedback_could_not_save'), LevelTypes.ERROR);
+			emitNotification(translate('feedback_mapFeedback_could_not_save'), LevelTypes.ERROR);
 		}
 	}
 
@@ -202,13 +204,26 @@ export class MapFeedbackPanel extends MvuElement {
 			return queryParameters;
 		};
 
-		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
+		const filterUserGeneratedLayers = (encodedState) => {
+			const [baseUrl, searchParamsString] = encodedState.split('?');
+			const searchParams = new URLSearchParams(searchParamsString);
+			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
+
+			searchParams.set(
+				QueryParameters.LAYER,
+				layers.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l)).join(',')
+			);
+			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
+		};
+
+		// Create an iframe source without any user-generated georesources that could be unintentionally affect the feedback or the georesource itself.
+		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
 		return html`
 			<style>
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">${translate('mapFeedback_header')}</h2>
+			<h2 id="feedbackPanelTitle">${translate('feedback_mapFeedback_header')}</h2>
 
 			<div class="feedback-form-container">
 				<div class="feedback-form-left">
@@ -222,34 +237,37 @@ export class MapFeedbackPanel extends MvuElement {
 							loading="lazy"
 							referrerpolicy="no-referrer-when-downgrade"
 						></iframe>
-						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('mapFeedback_geometry_missing')}</span>`}
+						${mapFeedback.fileId ? html.nothing : html`<span class="Iframe__hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 					</div>					
 
-			<div class="ba-form-element">
-				<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
-					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
-				</select>
-				<label for="category" class="control-label">${translate('mapFeedback_categorySelection')}</label><i class="bar"></i>
-			</div>
+					<div class="ba-form-element">
+						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+						</select>
+						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
+					</div>
 
-			<div class="ba-form-element">
-				<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
-				<label for="description" class="control-label">${translate('mapFeedback_changeDescription')}</label>
-				<i class="bar"></i>
-				<label class="helper-label">Helper text</label>
-				<i class="icon error"></i>
-			</div>
+					<div class="ba-form-element">
+						<textarea id="description" .value="${mapFeedback.description}" @input="${handleDescriptionChange}" required placeholder=""></textarea>
+						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
+						<i class="bar"></i>
+						<label class="helper-label">Helper text</label>
+						<i class="icon error"></i>
+					</div>
 
-			<div class="ba-form-element">
-				<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
-				<label for="email" class="control-label">${translate('mapFeedback_eMail')}</label>
-				<i class="bar"></i>
-				<i class="icon error"></i>
-			</div>
+					<div class="ba-form-element">
+						<input type="email" id="email" .value="${mapFeedback.email}" @input="${handleEmailChange}" placeholder="" />
+						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
+						<i class="bar"></i>
+						<i class="icon error"></i>
+					</div>
 
-			<div class="ba-form-element" id="mapFeedback_disclaimer">
-				${translate('mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate('mapFeedback_privacyPolicy')}</a>).
-			</div>
+					<div class="ba-form-element" id="feedback_mapFeedback_disclaimer">
+						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}">${translate(
+			'feedback_mapFeedback_privacyPolicy'
+		)}</a
+						>).
+					</div>
 
 			<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 		`;
