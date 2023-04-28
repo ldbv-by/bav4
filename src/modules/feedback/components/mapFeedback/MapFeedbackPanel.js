@@ -42,13 +42,15 @@ export class MapFeedbackPanel extends MvuElement {
 			ConfigService: configService,
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
-			ShareService: shareService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService');
+			ShareService: shareService,
+			FileStorageService: fileStorageService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._shareService = shareService;
+		this._fileStorageService = fileStorageService;
 		this._iframeObserver = null;
 	}
 
