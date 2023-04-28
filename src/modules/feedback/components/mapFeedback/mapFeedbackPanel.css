@@ -9,7 +9,6 @@
 .map-feedback__iframe {
 	display: flex;
 	flex: 1;
-	padding: 10px;
 	position: relative;
 }
 .map-feedback__iframe iframe[data-iframe-geometry-reference-id=''] {
@@ -57,4 +56,7 @@
 	font-weight: bold;
 	color: var(--primary-color);
 	cursor: default;
+}
+.ba-list-item__main-text {
+	font-size: 1.7rem;
 }

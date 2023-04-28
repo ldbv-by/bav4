@@ -234,7 +234,6 @@ export class MapFeedbackPanel extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<h2 id="feedbackPanelTitle">${translate('feedback_mapFeedback_header')}</h2>
 			<div class="map-feedback__container ${getOrientationClass()}">
 				<div class="map-feedback__iframe">
 					<iframe
@@ -251,6 +250,7 @@ export class MapFeedbackPanel extends MvuElement {
 						: html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
 				<div class="map-feedback__form">
+					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback_header')}</span>
 					<div class="map-feedback__form-hint">
 						${translate('feedback_mapFeedback_text_before')}
 						<span class="map-feedback__highlight">${translate('feedback_mapFeedback_text_map')}</span>
