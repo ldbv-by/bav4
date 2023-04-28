@@ -32,6 +32,9 @@
 .map-feedback__form {
 	padding: 0 1em;
 }
+.is-portrait .map-feedback__form {
+	margin-top: 2em;
+}
 .is-landscape .map-feedback__form {
 	max-width: 35em;
 }
