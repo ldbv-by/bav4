@@ -108,7 +108,6 @@ export class DrawTool extends MvuElement {
 		};
 
 		const icons = this._getIcons(model);
-		const classes = { 'draw-tool__enable': active };
 
 		const getActiveClass = () => {
 			return active ? 'draw-tool__enable' : 'draw-tool__disable';
@@ -139,7 +138,7 @@ export class DrawTool extends MvuElement {
 								(tool) => toolTemplate(tool)
 							)}
 						</div>
-						<div class="draw-tool__actions ${classMap(classes)}">${icons}</div>
+						<div class="draw-tool__actions">${icons}</div>
 					</div>
 				</div>
 			</div>
