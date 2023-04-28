@@ -14,7 +14,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Pflichtfeld');
 		expect(map.feedback_mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_mapFeedback_eMail_helper).toBe('Optional');
-		expect(map.feedback_mapFeedback_eMail_error).toBe('Keine gültige e-mailaderesse');
+		expect(map.feedback_mapFeedback_eMail_error).toBe('Keine gültige E-Mail-Aderesse');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
 		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
 		expect(map.feedback_mapFeedback_text_map).toBe('Karte');

@@ -39,7 +39,7 @@ export const provide = (lang) => {
 				feedback_mapFeedback_changeDescription_error: 'Pflichtfeld',
 				feedback_mapFeedback_eMail: 'Ihre E-Mail-Adresse',
 				feedback_mapFeedback_eMail_helper: 'Optional',
-				feedback_mapFeedback_eMail_error: 'Keine gültige e-mailaderesse',
+				feedback_mapFeedback_eMail_error: 'Keine gültige E-Maila-Aderesse',
 				feedback_mapFeedback_privacyPolicy: 'Hinweis zum Datenschutz',
 				feedback_mapFeedback_submit: 'Senden',
 				feedback_mapFeedback_text_before: 'Bitte zeichnen Sie Ihrer Änderung in die',
