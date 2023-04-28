@@ -31,7 +31,6 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'feedback_toggleFeedback_header';
 			const expectedMapButton = 'feedback_toggleFeedback_mapButton';
 			const expectedMapButtonSub = 'feedback_toggleFeedback_mapButton_sub';
 			const expectedGeneralButton = 'feedback_toggleFeedback_generalButton';
@@ -41,8 +40,6 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(element.shadowRoot.children.length).toBe(5);
-			const panelTitle = element.shadowRoot.querySelector('#toggleFeedbackPanelTitle');
-			expect(panelTitle.textContent).toBe(expectedTitle);
 
 			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
 			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');

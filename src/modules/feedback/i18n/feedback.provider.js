@@ -16,7 +16,6 @@ export const provide = (lang) => {
 				feedback_mapFeedback_disclaimer:
 					'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.',
 				feedback_mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback',
-				feedback_toggleFeedback_header: 'Choose Feedback Type',
 				feedback_toggleFeedback_mapButton: 'Map - Feedback',
 				feedback_toggleFeedback_mapButton_sub: 'Wrong address, missing place, road not shown correctly, etc.',
 				feedback_toggleFeedback_generalButton: 'General - Feedback',
@@ -39,7 +38,6 @@ export const provide = (lang) => {
 				feedback_mapFeedback_disclaimer:
 					'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.',
 				feedback_mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
-				feedback_toggleFeedback_header: 'Feedback Typ',
 				feedback_toggleFeedback_mapButton: 'Kartenfeedback',
 				feedback_toggleFeedback_mapButton_sub: 'Falsche Adresse, fehlender Ort, nicht korrekt dargestellter Straßenverlauf usw.',
 				feedback_toggleFeedback_generalButton: 'Allgemeiner Feedback',

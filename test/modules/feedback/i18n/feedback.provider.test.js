@@ -22,7 +22,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 		expect(map.feedback_mapFeedback_submit).toBe('Senden');
 
-		expect(map.feedback_toggleFeedback_header).toBe('Feedback Typ');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Kartenfeedback');
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Falsche Adresse, fehlender Ort, nicht korrekt dargestellter Straßenverlauf usw.');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
@@ -47,7 +46,6 @@ describe('i18n for feedback module', () => {
 		);
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_mapFeedback_submit).toBe('Submit');
-		expect(map.feedback_toggleFeedback_header).toBe('Choose Feedback Type');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Wrong address, missing place, road not shown correctly, etc.');
 		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');

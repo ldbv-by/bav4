@@ -55,7 +55,6 @@ export class ToggleFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="toggleButtons ${classMap(buttonClasses)}">
-				<p id="toggleFeedbackPanelTitle">${translate('feedback_toggleFeedback_header')}</p>
 				<button id="feedbackGeneralButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}>
 					<span class="ba-list-item__pre ">
 						<span class="ba-list-item__icon chatleftdots"> </span>
