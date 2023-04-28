@@ -115,7 +115,7 @@ export class GeoResourceService {
 	 * without checking the internal cache.
 	 *
 	 *
-	 * The GeoResourceFuture will be addded to the internal cache and can be replaced later
+	 * The GeoResourceFuture will be added to the internal cache and can be replaced later
 	 * by the resolved real GeoResource by calling {@link GeoResourceService#addOrReplace}.
 	 * @param {string} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResourceFuture | null} returns a GeoResourceFuture or `null` when no byIdProvider could fulfill
