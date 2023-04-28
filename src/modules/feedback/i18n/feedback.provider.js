@@ -15,7 +15,9 @@ export const provide = (lang) => {
 				mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback',
 				feedback_toggleFeedback_header: 'Choose Feedback Type',
 				feedback_toggleFeedback_mapButton: 'Map - Feedback',
+				feedback_toggleFeedback_mapButton_sub: 'Wrong address, missing place, road not shown correctly, etc.',
 				feedback_toggleFeedback_generalButton: 'General - Feedback',
+				feedback_toggleFeedback_generalButton_sub: 'Make suggestions for changes or improvements, or report errors.',
 				mapFeedback_text_before: 'Please draw your change on the',
 				mapFeedback_text_map: 'Map',
 				mapFeedback_text_after: ' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.'
@@ -36,7 +38,9 @@ export const provide = (lang) => {
 				mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
 				feedback_toggleFeedback_header: 'Feedback Typ',
 				feedback_toggleFeedback_mapButton: 'Kartenfeedback',
+				feedback_toggleFeedback_mapButton_sub: 'Falsche Adresse, fehlender Ort, nicht korrekt dargestellter Straßenverlauf usw.',
 				feedback_toggleFeedback_generalButton: 'Allgemeiner Feedback',
+				feedback_toggleFeedback_generalButton_sub: 'Machen Sie Änderungs- oder Verbesserungsvorschläge oder melden Sie Fehler.',
 				mapFeedback_text_before: 'Bitte zeichnen Sie Ihrer Änderung in die',
 				mapFeedback_text_map: 'Karte',
 				mapFeedback_text_after: ' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'

@@ -54,21 +54,26 @@ export class ToggleFeedbackPanel extends MvuElement {
 			<style>
 				${css}
 			</style>
-
 			<div class="toggleButtons ${classMap(buttonClasses)}">
-				<h2 id="toggleFeedbackPanelTitle">${translate('feedback_toggleFeedback_header')}</h2>
-				<ba-button
-					id="feedbackGeneralButton"
-					.label=${translate('feedback_toggleFeedback_generalButton')}
-					.type=${'primary'}
-					@click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}
-				></ba-button>
-				<ba-button
-					id="feedbackMapButton"
-					.label=${translate('feedback_toggleFeedback_mapButton')}
-					.type=${'primary'}
-					@click=${() => this.signal(Select_Feedback_Type, FeedbackType.MAP)}
-				></ba-button>
+				<p id="toggleFeedbackPanelTitle">${translate('feedback_toggleFeedback_header')}</p>
+				<button id="feedbackGeneralButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}>
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__icon chatleftdots"> </span>
+					</span>
+					<span class="ba-list-item__text ">
+						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_generalButton')}</span>
+						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
+					</span>
+				</button>
+				<button id="feedbackMapButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.MAP)}>
+					<span class="ba-list-item__pre ">
+						<span class="ba-list-item__icon map"> </span>
+					</span>
+					<span class="ba-list-item__text ">
+						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_mapButton')}</span>
+						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_mapButton_sub')}</span>
+					</span>
+				</button>
 			</div>
 			<div class="toggleMap ${classMap(mapClasses)}">
 				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
