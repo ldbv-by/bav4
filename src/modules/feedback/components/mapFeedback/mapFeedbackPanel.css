@@ -26,7 +26,6 @@
 	margin: 1em 2em;
 	color: var(--text3);
 	background: var(--error-color);
-	background: var(--info-color);
 	bottom: 0;
 	font-size: 1.3rem;
 	padding: 1em;
