@@ -45,14 +45,16 @@ export class MapFeedbackPanel extends MvuElement {
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
 			ShareService: shareService,
-			FileStorageService: fileStorageService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService');
+			FileStorageService: fileStorageService,
+			SecurityService: securityService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService', 'SecurityService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._shareService = shareService;
 		this._fileStorageService = fileStorageService;
+		this._securityService = securityService;
 		this._iframeObserver = null;
 	}
 
@@ -161,17 +163,17 @@ export class MapFeedbackPanel extends MvuElement {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
-			this.signal(Update_Category, selectedCategory);
+			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const handleEmailChange = (event) => {
 			const { value } = event.target;
-			this.signal(Update_EMail, value);
+			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
 		const handleDescriptionChange = (event) => {
 			const { value } = event.target;
-			this.signal(Update_Description, value);
+			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const isValidCategory = (category) => {
