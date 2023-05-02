@@ -4,6 +4,7 @@ import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
@@ -37,10 +38,14 @@ let store;
 
 const setup = (state = {}) => {
 	const initialState = {
+		media: {
+			portrait: true
+		},
 		...state
 	};
 
 	store = TestUtils.setupStoreAndDi(initialState, {
+		media: createNoInitialStateMediaReducer(),
 		notifications: notificationReducer
 	});
 
@@ -69,7 +74,8 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				submitWasClicked: false
+				submitWasClicked: false,
+				isPortrait: false
 			});
 		});
 	});
@@ -86,7 +92,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(4);
+			expect(element.shadowRoot.children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 
 			const category = element.shadowRoot.querySelector('#category');
@@ -128,6 +134,7 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').target).toBe('_blank');
 		});
 
 		it('creates an iframeObserver', async () => {
@@ -458,6 +465,34 @@ describe('MapFeedbackPanel', () => {
 			element.onDisconnect(); // we call onDisconnect manually
 
 			expect(element._iframeObserver).toBeNull();
+		});
+	});
+
+	describe('responsive layout ', () => {
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 		});
 	});
 });

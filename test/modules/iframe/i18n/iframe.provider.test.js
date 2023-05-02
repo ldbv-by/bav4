@@ -15,13 +15,12 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.iframe_activate_map_button).toBe('Karte aktivieren');
 		expect(map.iframe_view_larger_map_chip).toBe('Größere Karte ansehen');
-		expect(map.iframe_drawTool_activate).toBe('"Zeichnen" aktivieren/deaktivieren');
 		expect(map.iframe_drawTool_symbol).toBe('Punkt');
 		expect(map.iframe_drawTool_line).toBe('Linie');
 		expect(map.iframe_drawTool_cancel).toBe('Abbrechen');
 		expect(map.iframe_drawTool_finish).toBe('Fertig');
-		expect(map.iframe_drawTool_delete_point).toBe('Punkt entfernen');
-		expect(map.iframe_drawTool_delete_drawing).toBe('Zeichnung entfernen');
+		expect(map.iframe_drawTool_delete_point).toBe('letzten Punk löschen');
+		expect(map.iframe_drawTool_delete_drawing).toBe('Zeichnung löschen');
 	});
 
 	it('provides translation for en', () => {
@@ -38,7 +37,6 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_copy_icon).toBe('Copy to clipboard');
 		expect(map.iframe_activate_map_button).toBe('Activate map');
 		expect(map.iframe_view_larger_map_chip).toBe('View larger map');
-		expect(map.iframe_drawTool_activate).toBe('Enable/disable the drawing tool');
 		expect(map.iframe_drawTool_symbol).toBe('Point');
 		expect(map.iframe_drawTool_line).toBe('Line');
 		expect(map.iframe_drawTool_cancel).toBe('Cancel');
@@ -48,7 +46,7 @@ describe('i18n for iframe module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 18;
+		const expectedSize = 19;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
