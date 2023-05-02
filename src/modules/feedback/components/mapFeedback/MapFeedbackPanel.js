@@ -45,14 +45,16 @@ export class MapFeedbackPanel extends MvuElement {
 			TranslationService: translationService,
 			FeedbackService: feedbackService,
 			ShareService: shareService,
-			FileStorageService: fileStorageService
-		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService');
+			FileStorageService: fileStorageService,
+			SecurityService: securityService
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'ShareService', 'FileStorageService', 'SecurityService');
 
 		this._configService = configService;
 		this._translationService = translationService;
 		this._feedbackService = feedbackService;
 		this._shareService = shareService;
 		this._fileStorageService = fileStorageService;
+		this._securityService = securityService;
 		this._iframeObserver = null;
 	}
 
@@ -171,7 +173,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleDescriptionChange = (event) => {
 			const { value } = event.target;
-			this.signal(Update_Description, value);
+			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const isValidCategory = (category) => {

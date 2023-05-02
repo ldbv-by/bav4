@@ -34,6 +34,10 @@ const fileStorageServiceMock = {
 	}
 };
 
+const securityServiceMock = {
+	sanitizeHtml: () => {}
+};
+
 let store;
 
 const setup = (state = {}) => {
@@ -54,7 +58,8 @@ const setup = (state = {}) => {
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
 		.registerSingleton('ShareService', shareServiceMock)
-		.registerSingleton('FileStorageService', fileStorageServiceMock);
+		.registerSingleton('FileStorageService', fileStorageServiceMock)
+		.registerSingleton('SecurityService', securityServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
@@ -402,6 +407,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -432,6 +438,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -465,6 +472,23 @@ describe('MapFeedbackPanel', () => {
 			element.onDisconnect(); // we call onDisconnect manually
 
 			expect(element._iframeObserver).toBeNull();
+		});
+	});
+
+	describe('when description is changed', () => {
+		it('sanitizes the input values', async () => {
+			// arrange
+			const descriptionValue = 'description';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = descriptionValue;
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
 		});
 	});
 
