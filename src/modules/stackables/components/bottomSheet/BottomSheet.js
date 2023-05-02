@@ -1,5 +1,5 @@
 /**
- * @module modules/stackables/components/BottomSheet
+ * @module modules/stackables/components/bottomSheet/BottomSheet
  */
 import { html, nothing } from 'lit-html';
 import css from './bottomSheet.css';

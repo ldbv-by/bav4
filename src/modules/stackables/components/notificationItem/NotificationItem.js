@@ -1,5 +1,5 @@
 /**
- * @module modules/stackables/components/NotificationItem
+ * @module modules/stackables/components/notificationItem/NotificationItem
  */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
