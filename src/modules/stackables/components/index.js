@@ -1,5 +1,5 @@
 import { StackableContentPanel } from './StackableContentPanel';
-import { BottomSheet } from './BottomSheet';
+import { BottomSheet } from './bottomSheet/BottomSheet';
 import { NotificationItem } from './NotificationItem';
 
 if (!window.customElements.get(StackableContentPanel.tag)) {

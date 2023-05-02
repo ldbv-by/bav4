@@ -7,7 +7,7 @@ import { $injector } from '../../../../src/injection';
 import { pointerReducer } from '../../../../src/store/pointer/pointer.reducer';
 import { openBottomSheet } from '../../../../src/store/bottomSheet/bottomSheet.action';
 import { bottomSheetReducer } from '../../../../src/store/bottomSheet/bottomSheet.reducer';
-import { BottomSheet } from '../../../../src/modules/stackables/components/BottomSheet';
+import { BottomSheet } from '../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { createNoInitialStateMainMenuReducer } from '../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 
