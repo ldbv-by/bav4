@@ -99,6 +99,7 @@ describe('GeoResource provider', () => {
 		attribution: basicAttribution
 	};
 	const vectorDefinitionOptionalProperties = {
+		clusterParams: { foo: 'bar' },
 		background: true,
 		opacity: 0.5,
 		hidden: true,
@@ -225,6 +226,7 @@ describe('GeoResource provider', () => {
 			expect(vectorGeoResource.hidden).toBeTrue();
 			expect(vectorGeoResource.minZoom).toBe(5);
 			expect(vectorGeoResource.maxZoom).toBe(19);
+			expect(vectorGeoResource.clusterParams).toEqual({ foo: 'bar' });
 			expect(vectorGeoResource.queryable).toBeFalse();
 			expect(vectorGeoResource.exportable).toBeFalse();
 		});

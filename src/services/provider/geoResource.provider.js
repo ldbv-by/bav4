@@ -47,6 +47,7 @@ export const _definitionToGeoResource = (definition) => {
 					new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 						//set specific optional values
 						.setUrl(replaceBackendUrlTemplate(def.url))
+						.setClusterParams(def.clusterParams ?? {})
 				);
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
