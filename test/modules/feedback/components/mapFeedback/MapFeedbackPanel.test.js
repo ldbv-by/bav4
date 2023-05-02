@@ -509,6 +509,23 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
+	describe('when category is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const categoryValue = 'Bar';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = categoryValue;
+			categorySelect.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+	});
+
 	describe('responsive layout ', () => {
 		it('layouts for landscape', async () => {
 			const state = {

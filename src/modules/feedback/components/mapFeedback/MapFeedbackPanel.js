@@ -163,7 +163,7 @@ export class MapFeedbackPanel extends MvuElement {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
-			this.signal(Update_Category, selectedCategory);
+			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const handleEmailChange = (event) => {
