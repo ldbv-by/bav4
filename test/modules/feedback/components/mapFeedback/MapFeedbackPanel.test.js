@@ -476,7 +476,7 @@ describe('MapFeedbackPanel', () => {
 	});
 
 	describe('when description is changed', () => {
-		it('sanitizes the input values', async () => {
+		it('sanitizes the input value', async () => {
 			// arrange
 			const descriptionValue = 'description';
 			const element = await setup();
@@ -489,6 +489,23 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
+		});
+	});
+
+	describe('when email is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const emailValue = 'email@some.com';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = emailValue;
+			emailInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
 		});
 	});
 

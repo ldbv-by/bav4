@@ -168,7 +168,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleEmailChange = (event) => {
 			const { value } = event.target;
-			this.signal(Update_EMail, value);
+			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
 		const handleDescriptionChange = (event) => {
