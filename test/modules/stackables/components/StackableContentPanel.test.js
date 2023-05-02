@@ -1,4 +1,4 @@
-import { StackableContentPanel } from '../../../../src/modules/stackables/components/StackableContentPanel';
+import { StackableContentPanel } from '../../../../src/modules/stackables/components/stackableContentPanel/StackableContentPanel';
 import { NotificationItem } from '../../../../src/modules/stackables/components/notificationItem/NotificationItem';
 import { notificationReducer } from '../../../../src/store/notifications/notifications.reducer';
 import { emitNotification, LevelTypes } from '../../../../src/store/notifications/notifications.action';

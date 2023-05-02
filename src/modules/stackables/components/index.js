@@ -1,4 +1,4 @@
-import { StackableContentPanel } from './StackableContentPanel';
+import { StackableContentPanel } from './stackableContentPanel/StackableContentPanel';
 import { BottomSheet } from './bottomSheet/BottomSheet';
 import { NotificationItem } from './notificationItem/NotificationItem';
 
