@@ -378,7 +378,7 @@ export class ShowCase extends BaElement {
 
 					<h3>ba-form-element</h3>
 					<div class="example row">
-						<div class=" collum" style="width:40em;">
+						<div class="column" style="width:40em;">
 							<div class="ba-form-element">
 								<input type="text" placeholder="Choose category" id="textarea-foo" />
 								<label for="textarea-foo" class="control-label">Choose category</label>
