@@ -5,13 +5,15 @@
  * An async function that provides an array of {@link GeoResource}s.
  *
  * @async
- * @typedef {function():(Array<GeoResource>)} geoResourceProvider
+ * @typedef {function} geoResourceProvider
+ * @return {GeoResource[]}
  */
 
 /**
  * A function that returns a {@link GeoResourceFuture}.
  * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (GeoResourceFuture|null)} geoResourceByIdProvider
+ * @typedef {function} geoResourceByIdProvider
+ * @returns {GeoResourceFuture|null}
  */
 
 import { $injector } from '../injection';
@@ -33,8 +35,8 @@ export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
  * Service for managing {@link GeoResource}s.
  *
  *
- * Georesources that should be available a startup time are loaded by the registered georesourceProvider.
- * GeoResources which should be loaded on-demand during runtime, are loaded by the registered georesourceByIdProviders.
+ * GeoResources that should be available a startup time are loaded by the registered geoResourceProvider function.
+ * GeoResources which should be loaded on-demand during runtime, are loaded by the registered geoResourceByIdProvider functions.
  *
  * @class
  * @author taulinger
@@ -42,39 +44,39 @@ export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
 export class GeoResourceService {
 	/**
 	 *
-	 * @param {georesourceProvider} [georesourceProvider=loadBvvGeoResources]
-	 * @param {georesourceByIdProvider} [georesourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
+	 * @param {geoResourceProvider} [geoResourceProvider=loadBvvGeoResources]
+	 * @param {geoResourceByIdProvider} [geoResourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
 	 */
 	constructor(provider = loadBvvGeoResources, byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
 		this._provider = provider;
 		this._byIdProvider = byIdProvider;
-		this._georesources = null;
+		this._geoResources = null;
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
 		this._environmentService = environmentService;
 	}
 
 	/**
 	 * Initializes this service, which means all available GeoResources are loaded and can be served in the future from the internal cache.
-	 * If initialsation fails, a fallback is delivered.
+	 * If initialization fails, a fallback is delivered.
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<GeoResource>>}
 	 */
 	async init() {
-		if (!this._georesources) {
+		if (!this._geoResources) {
 			try {
-				this._georesources = (await this._provider()).map((gr) => this._proxify(gr));
+				this._geoResources = (await this._provider()).map((gr) => this._proxify(gr));
 			} catch (e) {
-				this._georesources = [];
+				this._geoResources = [];
 				if (this._environmentService.isStandalone()) {
 					console.warn('GeoResources could not be fetched from backend. Using fallback geoResources ...');
-					this._georesources.push(...this._newFallbackGeoResources());
+					this._geoResources.push(...this._newFallbackGeoResources());
 				} else {
 					console.error('GeoResources could not be fetched from backend.', e);
 				}
 			}
 		}
-		return this._georesources;
+		return this._geoResources;
 	}
 
 	/**
@@ -83,11 +85,11 @@ export class GeoResourceService {
 	 * @returns  {Array.<GeoResource>}
 	 */
 	all() {
-		if (!this._georesources) {
+		if (!this._geoResources) {
 			console.warn('GeoResourceService not yet initialized');
 			return [];
 		}
-		return this._georesources;
+		return this._geoResources;
 	}
 
 	/**
@@ -97,14 +99,14 @@ export class GeoResourceService {
 	 * @returns {GeoResource | null}
 	 */
 	byId(id) {
-		if (!this._georesources) {
+		if (!this._geoResources) {
 			console.warn('GeoResourceService not yet initialized');
 			return null;
 		}
 		if (!id) {
 			return null;
 		}
-		const geoResource = this._georesources.find((georesource) => georesource.id === id);
+		const geoResource = this._geoResources.find((georesource) => georesource.id === id);
 		return geoResource || null;
 	}
 
@@ -113,7 +115,7 @@ export class GeoResourceService {
 	 * without checking the internal cache.
 	 *
 	 *
-	 * The GeoResourceFuture will be addded to the internal cache and can be replaced later
+	 * The GeoResourceFuture will be added to the internal cache and can be replaced later
 	 * by the resolved real GeoResource by calling {@link GeoResourceService#addOrReplace}.
 	 * @param {string} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResourceFuture | null} returns a GeoResourceFuture or `null` when no byIdProvider could fulfill
@@ -140,12 +142,12 @@ export class GeoResourceService {
 	 */
 	addOrReplace(geoResource) {
 		const observedGeoResource = this._proxify(geoResource);
-		const existingGeoR = this._georesources.find((_georesource) => _georesource.id === geoResource.id);
+		const existingGeoR = this._geoResources.find((_georesource) => _georesource.id === geoResource.id);
 		if (existingGeoR) {
-			const index = this._georesources.indexOf(existingGeoR);
-			this._georesources.splice(index, 1, observedGeoResource);
+			const index = this._geoResources.indexOf(existingGeoR);
+			this._geoResources.splice(index, 1, observedGeoResource);
 		} else {
-			this._georesources.push(observedGeoResource);
+			this._geoResources.push(observedGeoResource);
 		}
 		// update  slice-of-state 'layers'
 		geoResourceChanged(observedGeoResource);

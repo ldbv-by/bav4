@@ -291,32 +291,6 @@ describe('LayerItem', () => {
 			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
-		it('contains a disabled menu-item for copy', async () => {
-			spyOn(geoResourceService, 'byId')
-				.withArgs('geoResourceId0')
-				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
-			const layer = {
-				...createDefaultLayerProperties(),
-				id: 'id0',
-				geoResourceId: 'geoResourceId0',
-				visible: true,
-				zIndex: 0,
-				opacity: 1,
-				collapsed: true,
-				constraints: { cloneable: false }
-			};
-			const element = await setup(layer);
-
-			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
-			const copyMenuItem = menu.items.find((item) => item.label === 'layerManager_to_copy');
-
-			expect(copyMenuItem).not.toBeNull();
-			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
-			expect(copyMenuItem.action).toEqual(jasmine.any(Function));
-			expect(copyMenuItem.disabled).toBeTrue();
-			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
-		});
-
 		it('contains a menu-item for zoomToExtent', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
@@ -350,8 +324,7 @@ describe('LayerItem', () => {
 				visible: true,
 				zIndex: 0,
 				opacity: 1,
-				collapsed: true,
-				constraints: { cloneable: false }
+				collapsed: true
 			};
 			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);

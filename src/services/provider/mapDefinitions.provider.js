@@ -41,7 +41,12 @@ export const getBvvMapDefinitions = () => {
 };
 
 const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection) => {
-	const definitions = [BvvCoordinateRepresentations.UTM32, GlobalCoordinateRepresentations.WGS84, GlobalCoordinateRepresentations.SphericalMercator];
+	const definitions = [
+		BvvCoordinateRepresentations.UTM32,
+		GlobalCoordinateRepresentations.WGS84,
+		GlobalCoordinateRepresentations.SphericalMercator,
+		GlobalCoordinateRepresentations.MGRS
+	];
 	if (coordinateInMapProjection) {
 		const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
 		const coord4326 = coordinateService.toLonLat(coordinateInMapProjection);
@@ -53,7 +58,12 @@ const getBvvLocalProjectedCoordinateRepresentations = (coordinateInMapProjection
 			 * when we are over the particular zone boundary.
 			 * The northern / southern boundary is limited to zone band "U" / "T".
 			 */
-			return [GlobalCoordinateRepresentations.UTM, GlobalCoordinateRepresentations.WGS84, GlobalCoordinateRepresentations.SphericalMercator];
+			return [
+				GlobalCoordinateRepresentations.UTM,
+				GlobalCoordinateRepresentations.WGS84,
+				GlobalCoordinateRepresentations.SphericalMercator,
+				GlobalCoordinateRepresentations.MGRS
+			];
 		}
 		if (coord4326[0] < 18 && coord4326[0] >= 12) {
 			definitions.splice(0, 0, BvvCoordinateRepresentations.UTM33);

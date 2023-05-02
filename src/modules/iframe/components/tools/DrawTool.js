@@ -8,6 +8,7 @@ import { $injector } from '../../../../injection';
 import { deactivate as deactivateDrawing, activate as activateDrawing, finish, remove, reset, setType } from '../../../../store/draw/draw.action';
 import { MvuElement } from '../../../MvuElement';
 import undoSvg from './assets/arrow-counterclockwise.svg';
+import pencil from './assets/pencil.svg';
 import cancelSvg from './assets/close-lg.svg';
 import finishSvg from './assets/checked.svg';
 import { QueryParameters } from '../../../../domain/queryParameters';
@@ -107,30 +108,38 @@ export class DrawTool extends MvuElement {
 		};
 
 		const icons = this._getIcons(model);
-		const classes = { 'is-enabled': active };
+
+		const getActiveClass = () => {
+			return active ? 'draw-tool__enable' : 'draw-tool__disable';
+		};
 
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="draw-tool">
-				<div class="draw-tool__content">
+				<div class="draw-tool__content ${getActiveClass()}">
 					<div class="draw-tool__toggle">
-						<div>${translate('iframe_drawTool_activate')}</div>
-						<ba-toggle
-							id="toggle"
-							.title=${translate('iframe_drawTool_activate')}
-							@toggle=${active ? deactivateDrawing : activateDrawing}
-						></ba-toggle>
+						<ba-button
+							class="draw-tool__enable-button"
+							.type=${'primary'}
+							.icon=${pencil}
+							.label=${translate('iframe_drawTool_enable')}
+							@click=${activateDrawing}
+						></ba-button>
+						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${cancelSvg}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${deactivateDrawing}>						
 					</div>
-					<div class="draw-tool__buttons">
-						${repeat(
-							tools,
-							(tool) => tool.id,
-							(tool) => toolTemplate(tool)
-						)}
+					<div class="draw-tool-container">
+						<div class="ba-tool-container__title">Zeichnen</div>
+						<div class="draw-tool__buttons">
+							${repeat(
+								tools,
+								(tool) => tool.id,
+								(tool) => toolTemplate(tool)
+							)}
+						</div>
+						<div class="draw-tool__actions">${icons}</div>
 					</div>
-					<div class="draw-tool__actions ${classMap(classes)}">${icons}</div>
 				</div>
 			</div>
 		`;
@@ -216,19 +225,19 @@ export class DrawTool extends MvuElement {
 			return [validGeometry ? iconTypes.finish : iconTypes.cancel, unfinishedLine ? iconTypes.undo : iconTypes.remove];
 		};
 
-		const getIcon = (id, icon, title, onClick, disabled) => {
-			const classes = { 'is-enabled': !disabled };
-			return html`<ba-icon
+		const getIcon = (id, title, onClick, disabled) => {
+			const classes = { 'is-disabled': disabled };
+			return html`<ba-button
 				id=${id + '_icon'}
 				class=${classMap(classes)}
-				.icon="${icon}"
 				.title=${title}
+				.label=${title}
 				.disabled=${disabled}
 				@click=${onClick}
-			></ba-icon>`;
+			></ba-button>`;
 		};
 
-		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.icon, iconType.title, iconType.onClick, iconType.disabled));
+		return getActiveIconTypes().map((iconType) => getIcon(iconType.id, iconType.title, iconType.onClick, iconType.disabled));
 	}
 
 	static get tag() {

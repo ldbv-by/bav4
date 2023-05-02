@@ -5,8 +5,9 @@ import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
 
 /**
- * Bvv specific immplementation of {@link module:services/MapFeedbackService~mapFeedbackStorageProvider}
- * @implements {module:services/MapFeedbackService~feedbackStorageProvider}
+ * Bvv specific immplementation of {@link module:services/FeedbackService~feedbackStorageProvider}
+ * @implements {module:services/FeedbackService~feedbackStorageProvider}
+ * @function
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -19,14 +20,15 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 			return true;
 		}
 		default:
-			throw new Error(`MapFeedback could not be stored: Http-Status ${result.status}`);
+			throw new Error(`Feedback could not be stored: Http-Status ${result.status}`);
 	}
 };
 
 /**
- * Bvv specific immplementation of {@link module:services/MapFeedbackService~mapFeedbackCategoriesProvider}
+ * Bvv specific immplementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
  * @async
- * @implements {module:services/MapFeedbackService~mapFeedbackCategoriesProvider}
+ * @implements {module:services/FeedbackService~feedbackCategoriesProvider}
+ * @function
  */
 export const bvvMapFeedbackCategoriesProvider = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');

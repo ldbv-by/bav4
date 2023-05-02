@@ -20,7 +20,7 @@ describe('bvvFeedbackStorageProvider', () => {
 		$injector.reset();
 	});
 
-	it('stores a MapFeedback', async () => {
+	it('stores a feedback', async () => {
 		const backendUrl = 'https://backend.url/';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
@@ -44,7 +44,7 @@ describe('bvvFeedbackStorageProvider', () => {
 			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
-		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`MapFeedback could not be stored: Http-Status ${statusCode}`);
+		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Http-Status ${statusCode}`);
 	});
 });
 

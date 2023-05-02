@@ -4,47 +4,72 @@ describe('i18n for feedback module', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.mapFeedback_header).toBe('Feedback zur Karte');
-		expect(map.mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
-		expect(map.mapFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
-		expect(map.mapFeedback_markChangeNotice).toBe('Bitte markieren: Auf welche Stelle in der Karte bezieht sich ihr Feedback?');
-		expect(map.mapFeedback_categorySelection).toBe('Bitte wählen: Zu welcher Kategorie passt ihr Feedback an Besten?');
-		expect(map.mapFeedback_changeDescription).toBe('Ihre Nachricht');
-		expect(map.mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
-		expect(map.mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
-		expect(map.mapFeedback_disclaimer).toBe(
+		expect(map.feedback_mapFeedback_header).toBe('Feedback zur Karte');
+		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
+		expect(map.feedback_mapFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
+		expect(map.feedback_mapFeedback_categorySelection).toBe('Kategorie');
+		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Bitte auswählen');
+		expect(map.feedback_mapFeedback_changeDescription).toBe('Ihre Nachricht');
+		expect(map.feedback_mapFeedback_changeDescription_helper).toBe('Pflichtfeld');
+		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Pflichtfeld');
+		expect(map.feedback_mapFeedback_eMail).toBe('Ihre E-Mail-Adresse');
+		expect(map.feedback_mapFeedback_eMail_helper).toBe('Optional');
+		expect(map.feedback_mapFeedback_eMail_error).toBe('Keine gültige E-Mail-Aderesse');
+		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
+		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
+		expect(map.feedback_mapFeedback_text_map).toBe('Karte');
+		expect(map.feedback_mapFeedback_text_after).toBe(
+			' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'
+		);
+		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
 		);
-		expect(map.mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
+		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
+		expect(map.feedback_mapFeedback_submit).toBe('Senden');
 
-		expect(map.feedback_toggleFeedback_header).toBe('Feedback Typ');
-		expect(map.feedback_toggleFeedback_mapButton).toBe('Kartenfeedback');
-		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeiner Feedback');
+		expect(map.feedback_toggleFeedback_mapButton).toBe('Feedback zur Karte');
+		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
+			'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.'
+		);
+		expect(map.feedback_toggleFeedback_generalButton).toBe('Allgemeines Feedback');
+		expect(map.feedback_toggleFeedback_generalButton_sub).toBe(
+			'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.'
+		);
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.mapFeedback_header).toBe('Send Feedback');
-		expect(map.mapFeedback_could_not_save).toBe('Your feedback could not be saved');
-		expect(map.mapFeedback_saved_successfully).toBe('Your feedback was successfully submitted');
-		expect(map.mapFeedback_markChangeNotice).toBe('Edit the map');
-		expect(map.mapFeedback_categorySelection).toBe('Please choose your category');
-		expect(map.mapFeedback_changeDescription).toBe('Your message');
-		expect(map.mapFeedback_eMail).toBe('Your email address');
-		expect(map.mapFeedback_privacyPolicy).toBe('Privacy Policy');
-		expect(map.mapFeedback_disclaimer).toBe(
+		expect(map.feedback_mapFeedback_header).toBe('Send Feedback');
+		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
+		expect(map.feedback_mapFeedback_saved_successfully).toBe('Your feedback was successfully submitted');
+		expect(map.feedback_mapFeedback_categorySelection).toBe('Category');
+		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Please choose');
+		expect(map.feedback_mapFeedback_changeDescription).toBe('Your message');
+		expect(map.feedback_mapFeedback_changeDescription_helper).toBe('Required field');
+		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Required field');
+		expect(map.feedback_mapFeedback_eMail).toBe('Your email address');
+		expect(map.feedback_mapFeedback_eMail_helper).toBe('Optional');
+		expect(map.feedback_mapFeedback_eMail_error).toBe('No valid e-mail address');
+		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Privacy Policy');
+		expect(map.feedback_mapFeedback_text_before).toBe('Please draw your change on the');
+		expect(map.feedback_mapFeedback_text_map).toBe('Map');
+		expect(map.feedback_mapFeedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
+		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
 		);
-		expect(map.mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
-
-		expect(map.feedback_toggleFeedback_header).toBe('Choose Feedback Type');
+		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
+		expect(map.feedback_mapFeedback_submit).toBe('Submit');
 		expect(map.feedback_toggleFeedback_mapButton).toBe('Map - Feedback');
+		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
+			'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.'
+		);
 		expect(map.feedback_toggleFeedback_generalButton).toBe('General - Feedback');
+		expect(map.feedback_toggleFeedback_generalButton_sub).toBe('Make suggestions for changes or improvements, or report errors.');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 13;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

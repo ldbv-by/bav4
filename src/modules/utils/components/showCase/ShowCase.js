@@ -254,11 +254,6 @@ export class ShowCase extends BaElement {
 						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 					</div>
 
-					<h3>Feedback</h3>
-					<div class="example row">
-						<ba-mvu-togglefeedbackpanel></ba-mvu-togglefeedbackpanel>
-					</div>
-
 					<h3>Profile</h3>
 					<div class="example row">
 						<ba-button id="button1" .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
@@ -378,7 +373,7 @@ export class ShowCase extends BaElement {
 
 					<h3>ba-form-element</h3>
 					<div class="example row">
-						<div class=" collum" style="width:40em;">
+						<div class="column" style="width:40em;">
 							<div class="ba-form-element">
 								<input type="text" placeholder="Choose category" id="textarea-foo" />
 								<label for="textarea-foo" class="control-label">Choose category</label>
