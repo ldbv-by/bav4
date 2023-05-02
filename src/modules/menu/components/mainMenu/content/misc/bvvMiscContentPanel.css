@@ -36,6 +36,7 @@
 .cardChecklist {
 	mask-image: url('assets/cardChecklist.svg');
 	-webkit-mask-image: url('assets/cardChecklist.svg');
+}
 .feedback {
 	mask-image: url('assets/feedback.svg');
 	-webkit-mask-image: url('assets/feedback.svg');
