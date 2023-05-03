@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
@@ -61,8 +62,8 @@ describe('MapFeedbackPanel', () => {
 
 			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
-			expect(element.shadowRoot.querySelectorAll('ba-mvu-feedbackpanel')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('ba-mvu-feedbackpanel').onSubmit).toEqual(element._onSubmit);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 
 			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
