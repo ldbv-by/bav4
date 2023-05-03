@@ -2,34 +2,23 @@
 	position: absolute;
 	z-index: var(--z-header);
 	top: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	/* background: var(--primary-bg-color); */
+	right: 0;
+	background: var(--primary-bg-color);
+	box-shadow: 0 2px 4px rgb(0 0 0 / 50%);
+	margin: 0.2em;
 }
 
 .draw-tool__content {
 	display: flex;
 	justify-content: center;
 	background: var(--primary-bg-color);
+	flex-direction: column;
 }
 
 .draw-tool__actions {
 	display: flex;
-	justify-content: center;
-	align-items: center;
-	opacity: 0.5;
-}
-
-.draw-tool__actions > ba-icon {
-	opacity: 0.5;
-}
-
-.draw-tool__actions > ba-icon.is-enabled {
-	opacity: 1;
-}
-
-.draw-tool__actions.is-enabled {
-	opacity: 1;
+	border-top: 1px solid var(--surface3-light);
+	margin-top: 0.5em;
 }
 
 .draw-tool__buttons {
@@ -37,6 +26,7 @@
 	display: flex;
 	justify-content: center;
 	background: var(--primary-bg-color);
+	margin: 0 0 1em 0;
 }
 
 .draw-tool__buttons > button {
@@ -48,15 +38,15 @@
 	padding: 0 0.5em;
 	border: 0;
 	border-right: 1px dotted var(--header-background-color);
-	opacity: 0.5;
+	font-size: 1.2rem;
 }
 
 .draw-tool__buttons > button:last-child {
 	border-right: none;
 }
 
-.draw-tool__buttons > button.is-enabled {
-	opacity: 1;
+.is-disabled {
+	display: none;
 }
 
 .draw-tool__background {
@@ -86,7 +76,6 @@
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	margin: 0.8em 0.8em;
 	position: absolute;
-	opacity: 0.5;
 }
 
 .is-active .draw-tool__icon {
@@ -120,6 +109,7 @@
 
 .draw-tool__button-text {
 	font-size: 0.8rem;
+	color: var(--text1);
 	margin: 5.5em 0.3em 0.5em 0.3em;
 	user-select: none;
 	text-align: center;
@@ -134,4 +124,44 @@
 .symbol {
 	mask-image: url('assets/symbol.svg');
 	-webkit-mask-image: url('assets/symbol.svg');
+}
+
+.draw-tool-container {
+	min-width: 20em;
+}
+
+.draw-tool__enable .draw-tool-container {
+	display: block;
+}
+.draw-tool__disable .draw-tool-container {
+	display: none;
+}
+.tool-container__close-button {
+	margin: 0;
+	width: 3em;
+	height: 3em;
+	border-radius: 1.5em;
+	border: 0;
+	background: var(--primary-bg-color);
+	font-weight: bold;
+	cursor: pointer;
+	display: block;
+	padding: 0.7em;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.tool-container__close-button:hover {
+	background: var(--header-background-color);
+}
+.ba-tool-container__title {
+	padding: 0.8em 1.5em;
+	font-weight: bold;
+}
+.draw-tool__enable .draw-tool__enable-button {
+	display: none;
+}
+
+.draw-tool__disable .draw-tool__disable-button {
+	display: none;
 }

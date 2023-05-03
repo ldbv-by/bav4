@@ -31,22 +31,26 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'feedback_toggleFeedback_header';
 			const expectedMapButton = 'feedback_toggleFeedback_mapButton';
+			const expectedMapButtonSub = 'feedback_toggleFeedback_mapButton_sub';
 			const expectedGeneralButton = 'feedback_toggleFeedback_generalButton';
+			const expectedGeneralButtonSub = 'feedback_toggleFeedback_generalButton_sub';
 
 			const element = await setup();
 
 			// assert
 			expect(element.shadowRoot.children.length).toBe(5);
-			const panelTitle = element.shadowRoot.querySelector('#toggleFeedbackPanelTitle');
-			expect(panelTitle.textContent).toBe(expectedTitle);
 
 			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
 			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');
 
-			expect(element.shadowRoot.querySelector('#feedbackMapButton').label).toBe(expectedMapButton);
-			expect(element.shadowRoot.querySelector('#feedbackGeneralButton').label).toBe(expectedGeneralButton);
+			expect(element.shadowRoot.querySelectorAll('#feedbackMapButton .map')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#feedbackMapButton .ba-list-item__primary-text').innerText).toBe(expectedMapButton);
+			expect(element.shadowRoot.querySelector('#feedbackMapButton .ba-list-item__secondary-text').innerText).toBe(expectedMapButtonSub);
+
+			expect(element.shadowRoot.querySelectorAll('#feedbackGeneralButton .chatleftdots')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__primary-text').innerText).toBe(expectedGeneralButton);
+			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__secondary-text').innerText).toBe(expectedGeneralButtonSub);
 
 			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');

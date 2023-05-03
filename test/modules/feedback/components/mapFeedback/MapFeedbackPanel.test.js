@@ -4,6 +4,7 @@ import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
@@ -33,14 +34,22 @@ const fileStorageServiceMock = {
 	}
 };
 
+const securityServiceMock = {
+	sanitizeHtml: () => {}
+};
+
 let store;
 
 const setup = (state = {}) => {
 	const initialState = {
+		media: {
+			portrait: true
+		},
 		...state
 	};
 
 	store = TestUtils.setupStoreAndDi(initialState, {
+		media: createNoInitialStateMediaReducer(),
 		notifications: notificationReducer
 	});
 
@@ -49,7 +58,8 @@ const setup = (state = {}) => {
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
 		.registerSingleton('ShareService', shareServiceMock)
-		.registerSingleton('FileStorageService', fileStorageServiceMock);
+		.registerSingleton('FileStorageService', fileStorageServiceMock)
+		.registerSingleton('SecurityService', securityServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
 };
@@ -69,7 +79,8 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				submitWasClicked: false
+				submitWasClicked: false,
+				isPortrait: false
 			});
 		});
 	});
@@ -86,7 +97,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(4);
+			expect(element.shadowRoot.children.length).toBe(3);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 
 			const category = element.shadowRoot.querySelector('#category');
@@ -114,6 +125,7 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
@@ -128,6 +140,7 @@ describe('MapFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
 			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').target).toBe('_blank');
 		});
 
 		it('creates an iframeObserver', async () => {
@@ -395,6 +408,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -425,6 +439,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -458,6 +473,85 @@ describe('MapFeedbackPanel', () => {
 			element.onDisconnect(); // we call onDisconnect manually
 
 			expect(element._iframeObserver).toBeNull();
+		});
+	});
+
+	describe('when description is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const descriptionValue = 'description';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = descriptionValue;
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
+		});
+	});
+
+	describe('when email is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const emailValue = 'email@some.com';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = emailValue;
+			emailInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
+		});
+	});
+
+	describe('when category is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const categoryValue = 'Bar';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = categoryValue;
+			categorySelect.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+	});
+
+	describe('responsive layout ', () => {
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait ', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 		});
 	});
 });
