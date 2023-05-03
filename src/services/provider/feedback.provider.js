@@ -5,7 +5,7 @@ import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
 
 /**
- * Bvv specific immplementation of {@link module:services/FeedbackService~feedbackStorageProvider}
+ * Bvv specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
  * @implements {module:services/FeedbackService~feedbackStorageProvider}
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
@@ -24,7 +24,7 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 };
 
 /**
- * Bvv specific immplementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
+ * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
  * @async
  * @implements {module:services/FeedbackService~feedbackCategoriesProvider}
  */
@@ -40,3 +40,10 @@ export const bvvMapFeedbackCategoriesProvider = async () => {
 			throw new Error(`MapFeedback categories could not be loaded: Http-Status ${result.status}`);
 	}
 };
+
+/**
+ * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ * @function
+ * @implements {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ */
+export const bvvMapFeedbackOverlayGeoResourceProvider = () => 'tim';

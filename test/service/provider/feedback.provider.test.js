@@ -1,7 +1,11 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/services/HttpService';
 import { MapFeedback } from '../../../src/services/FeedbackService';
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../../src/services/provider/feedback.provider';
+import {
+	bvvMapFeedbackCategoriesProvider,
+	bvvFeedbackStorageProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
+} from '../../../src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {
 	const configService = {
@@ -92,5 +96,13 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 		await expectAsync(bvvMapFeedbackCategoriesProvider()).toBeRejectedWithError(
 			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
 		);
+	});
+});
+
+describe('bvvMapFeedbackOverlayGeoResourceProvider', () => {
+	it('returns an id of a GeoResource',  () => {
+		const result =  bvvMapFeedbackOverlayGeoResourceProvider();
+
+		expect(result).toBe('tim');
 	});
 });
