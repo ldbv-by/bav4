@@ -2,7 +2,7 @@
  * @module services/FeedbackService
  */
 
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from './provider/feedback.provider';
+import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFeedbackOverlayGeoResourceProvider } from './provider/feedback.provider';
 
 /**
  * A function that stores a feedback.
@@ -17,6 +17,11 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from './
  * @async
  * @typedef {Function} mapFeedbackCategoriesProvider
  * @returns {Array<String>} available categories
+ */
+/**
+ * A function that returns an id of a GeoResource which should be used as a overlay layer of the map
+ * @typedef {Function}  mapFeedbackOverlayGeoResourceProvider
+ * @returns {String} the id of a GeoResource or `null`
  */
 
 /**
@@ -62,10 +67,16 @@ export class FeedbackService {
 	 *
 	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
 	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackCategoriesProvider]
+	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
 	 */
-	constructor(feedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) {
+	constructor(
+		feedbackStorageProvider = bvvFeedbackStorageProvider,
+		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
+		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
+	) {
 		this._mapFeedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
+		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
 		this._categories = null;
 	}
 	/**
@@ -86,7 +97,7 @@ export class FeedbackService {
 	 * Saves a feedback object.
 	 * @async
 	 * @param {MapFeedback|GeneralFeedback} feedback
-	 * @throws `Error` when storing was not succesfull
+	 * @throws `Error` when storing was not successful
 	 * @returns {Boolean} `true` when storing was successful
 	 */
 	async save(feedback) {
@@ -98,5 +109,13 @@ export class FeedbackService {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Returns the id of a GeoResource which should be used as a overlay layer of the map.
+	 * @returns GeoResource id or `null`
+	 */
+	getOverlayGeoResourceId() {
+		return this._mapFeedbackOverlayGeoResourceProvider();
 	}
 }
