@@ -11,7 +11,6 @@ import { PathParameters } from '../../../../domain/pathParameters';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
-import { closeModal } from '../../../../store/modal/modal.action';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -57,6 +56,7 @@ export class MapFeedbackPanel extends MvuElement {
 		this._fileStorageService = fileStorageService;
 		this._securityService = securityService;
 		this._iframeObserver = null;
+		this._onSubmit = () => {};
 	}
 
 	onInitialize() {
@@ -107,7 +107,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._feedbackService.save(mapFeedback);
-			closeModal();
+			this._onSubmit();
 			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
@@ -305,6 +305,14 @@ export class MapFeedbackPanel extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	/**
+	 * Registers callback function which will be called when the form was submitted successfully.
+	 * @type {Function}
+	 */
+	set onSubmit(callback) {
+		this._onSubmit = callback;
 	}
 
 	static get tag() {
