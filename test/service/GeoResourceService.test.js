@@ -53,7 +53,7 @@ describe('GeoResourceService', () => {
 		it('initializes the service and proxifies all GeoResource', async () => {
 			const instanceUnderTest = setup();
 			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
-			expect(instanceUnderTest._georesources).toBeNull();
+			expect(instanceUnderTest._geoResources).toBeNull();
 
 			const georesources = await instanceUnderTest.init();
 
@@ -80,7 +80,7 @@ describe('GeoResourceService', () => {
 
 		it('just provides GeoResources when already initialized', async () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [xyzGeoResource];
+			instanceUnderTest._geoResources = [xyzGeoResource];
 
 			const georesources = await instanceUnderTest.init();
 
@@ -95,7 +95,7 @@ describe('GeoResourceService', () => {
 				});
 				const warnSpy = spyOn(console, 'warn');
 
-				expect(instanceUnderTest._georesources).toBeNull();
+				expect(instanceUnderTest._geoResources).toBeNull();
 
 				const georesources = await instanceUnderTest.init();
 
@@ -133,7 +133,7 @@ describe('GeoResourceService', () => {
 	describe('all', () => {
 		it('provides all GeoResources', () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [xyzGeoResource];
+			instanceUnderTest._geoResources = [xyzGeoResource];
 
 			const geoResources = instanceUnderTest.all();
 
@@ -152,7 +152,7 @@ describe('GeoResourceService', () => {
 	describe('byId', () => {
 		it('provides a GeoResource by its id', () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [xyzGeoResource];
+			instanceUnderTest._geoResources = [xyzGeoResource];
 
 			const geoResource = instanceUnderTest.byId('xyzId');
 
@@ -161,7 +161,7 @@ describe('GeoResourceService', () => {
 
 		it('provides null if for an unknown id', () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [xyzGeoResource];
+			instanceUnderTest._geoResources = [xyzGeoResource];
 
 			const geoResource = instanceUnderTest.byId('something');
 
@@ -170,7 +170,7 @@ describe('GeoResourceService', () => {
 
 		it('provides null if for null or undefined id', () => {
 			const instanceUnderTest = setup();
-			instanceUnderTest._georesources = [xyzGeoResource];
+			instanceUnderTest._geoResources = [xyzGeoResource];
 
 			expect(instanceUnderTest.byId(null)).toBeNull();
 			expect(instanceUnderTest.byId(undefined)).toBeNull();
@@ -189,13 +189,13 @@ describe('GeoResourceService', () => {
 		it('adds a GeoResource', async () => {
 			const instanceUnderTest = setup();
 			const proxifySpy = spyOn(instanceUnderTest, '_proxify').and.callThrough();
-			instanceUnderTest._georesources = [];
+			instanceUnderTest._geoResources = [];
 			const geoResource = new WmsGeoResource('wms', 'Wms', 'https://some.url', 'someLayer', 'image/png');
 
 			const result = instanceUnderTest.addOrReplace(geoResource);
 
-			expect(instanceUnderTest._georesources.length).toBe(1);
-			expect(instanceUnderTest._georesources[0]).toEqual(geoResource);
+			expect(instanceUnderTest._geoResources.length).toBe(1);
+			expect(instanceUnderTest._geoResources[0]).toEqual(geoResource);
 			expect(proxifySpy).toHaveBeenCalledWith(geoResource);
 			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
 			expect(result).toEqual(geoResource);
@@ -205,13 +205,13 @@ describe('GeoResourceService', () => {
 			const instanceUnderTest = setup();
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
-			instanceUnderTest._georesources = [geoResource];
+			instanceUnderTest._geoResources = [geoResource];
 			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON).setUrl('another url');
 
 			const result = instanceUnderTest.addOrReplace(geoResource2);
 
-			expect(instanceUnderTest._georesources.length).toBe(1);
-			expect(instanceUnderTest._georesources[0]).toEqual(geoResource2);
+			expect(instanceUnderTest._geoResources.length).toBe(1);
+			expect(instanceUnderTest._geoResources[0]).toEqual(geoResource2);
 			expect(result[GeoResourceService.proxyIdentifier]).toBeTrue();
 			expect(result).toEqual(geoResource2);
 		});
@@ -227,7 +227,7 @@ describe('GeoResourceService', () => {
 					active: [layerProperties0, layerProperties1]
 				}
 			});
-			instanceUnderTest._georesources = [geoResource0];
+			instanceUnderTest._geoResources = [geoResource0];
 
 			instanceUnderTest.addOrReplace(geoResource0);
 
@@ -248,7 +248,7 @@ describe('GeoResourceService', () => {
 			const future = instanceUnderTest.asyncById(id);
 
 			expect(future).toEqual(expectedFuture);
-			expect(instanceUnderTest._georesources[0]).toEqual(expectedFuture);
+			expect(instanceUnderTest._geoResources[0]).toEqual(expectedFuture);
 		});
 
 		it('returns null when no byIdProvider can fulfill', async () => {
@@ -260,7 +260,7 @@ describe('GeoResourceService', () => {
 			const future = instanceUnderTest.asyncById('foo');
 
 			expect(future).toBeNull();
-			expect(instanceUnderTest._georesources).toHaveSize(0);
+			expect(instanceUnderTest._geoResources).toHaveSize(0);
 		});
 	});
 

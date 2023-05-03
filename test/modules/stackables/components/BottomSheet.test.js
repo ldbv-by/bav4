@@ -1,4 +1,4 @@
-import { BottomSheet } from '../../../../src/modules/stackables/components/BottomSheet';
+import { BottomSheet } from '../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { TestUtils } from '../../../test-utils';
 import { html } from 'lit-html';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';

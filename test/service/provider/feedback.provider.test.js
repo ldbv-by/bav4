@@ -25,7 +25,7 @@ describe('bvvFeedbackStorageProvider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response());
 
 		const result = await bvvFeedbackStorageProvider(mapFeedback);
@@ -41,7 +41,7 @@ describe('bvvFeedbackStorageProvider', () => {
 		const statusCode = 400;
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
 		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Http-Status ${statusCode}`);
@@ -70,7 +70,7 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const categories = ['foo', 'bar'];
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'tim/categories')
+			.withArgs(backendUrl + 'feedback/tim/categories')
 			.and.resolveTo(new Response(JSON.stringify(categories)));
 
 		const result = await bvvMapFeedbackCategoriesProvider();
@@ -86,7 +86,7 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 		const statusCode = 400;
 
 		spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'tim/categories')
+			.withArgs(backendUrl + 'feedback/tim/categories')
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
 		await expectAsync(bvvMapFeedbackCategoriesProvider()).toBeRejectedWithError(

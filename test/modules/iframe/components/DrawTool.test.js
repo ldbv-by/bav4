@@ -2,7 +2,7 @@ import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { QueryParameters } from '../../../../src/domain/queryParameters';
 import { $injector } from '../../../../src/injection';
 import { DrawTool } from '../../../../src/modules/iframe/components/tools/DrawTool';
-import { activate } from '../../../../src/store/draw/draw.action';
+import { activate, deactivate } from '../../../../src/store/draw/draw.action';
 import { drawReducer } from '../../../../src/store/draw/draw.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { TestUtils } from '../../../test-utils';
@@ -63,14 +63,39 @@ describe('DrawTool', () => {
 				spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(drawToolQueryParams);
 			});
 
+			it('shows a label', async () => {
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')[0].innerText).toBe('iframe_drawTool_label');
+			});
+
 			it('shows a list of tools', async () => {
 				const element = await setup();
 
 				expect(element._model.tools).toBeTruthy();
 				expect(element._model.tools.length).toBe(2);
 
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable-button')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('#close-icon')).toHaveSize(1);
 				expect(element.shadowRoot.querySelectorAll('.draw-tool__buttons')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('.draw-tool__buttons').childElementCount).toBe(2);
+			});
+
+			it('activates and deactivate  the draw tool', async () => {
+				const element = await setup();
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(1);
+
+				activate();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(0);
+
+				deactivate();
+
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__enable')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.draw-tool__disable')).toHaveSize(1);
 			});
 
 			it('activates the Line draw tool', async () => {

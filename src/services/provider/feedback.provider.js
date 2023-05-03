@@ -5,12 +5,13 @@ import { $injector } from '../../injection';
 import { MediaType } from '../HttpService';
 
 /**
- * Bvv specific immplementation of {@link module:services/FeedbackService~feedbackStorageProvider}
+ * Bvv specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
  * @implements {module:services/FeedbackService~feedbackStorageProvider}
+ * @function
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = `${configService.getValueAsPath('BACKEND_URL')}tim/message`;
+	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`;
 
 	const result = await httpService.post(url, JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 });
 
@@ -24,13 +25,14 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 };
 
 /**
- * Bvv specific immplementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
+ * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
  * @async
  * @implements {module:services/FeedbackService~feedbackCategoriesProvider}
+ * @function
  */
 export const bvvMapFeedbackCategoriesProvider = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = `${configService.getValueAsPath('BACKEND_URL')}tim/categories`;
+	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/tim/categories`;
 	const result = await httpService.get(url);
 
 	switch (result.status) {

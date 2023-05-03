@@ -29,7 +29,7 @@ export const _newLoader = (id) => {
 /**
  * Uses the BVV endpoint to load a GeoResource from the FileStorage.
  * @function
- * @implements geoResourceByIdProvider
+ * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
  * @returns {GeoResourceFuture|null}
  */
 export const loadBvvFileStorageResourceById = (id) => {
