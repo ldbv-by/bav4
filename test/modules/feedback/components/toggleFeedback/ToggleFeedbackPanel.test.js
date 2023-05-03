@@ -17,14 +17,21 @@ const setup = (state = {}) => {
 };
 
 describe('MapFeedbackPanel', () => {
-	describe('constructor', () => {
+	describe('when instantiated', () => {
 		it('sets a default model', async () => {
-			setup();
+			await setup();
 			const element = new ToggleFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
 				selectedFeedbackPanel: null
 			});
+		});
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new ToggleFeedbackPanel();
+
+			expect(instanceUnderTest._onSubmit).toBeDefined();
 		});
 	});
 
@@ -54,6 +61,8 @@ describe('MapFeedbackPanel', () => {
 
 			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('ba-mvu-feedbackpanel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('ba-mvu-feedbackpanel').onSubmit).toEqual(element._onSubmit);
 
 			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');

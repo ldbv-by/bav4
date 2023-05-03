@@ -27,6 +27,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 
 		this._translationService = translationService;
+		this._onSubmit = () => {};
 	}
 
 	update(type, data, model) {
@@ -75,10 +76,14 @@ export class ToggleFeedbackPanel extends MvuElement {
 				</button>
 			</div>
 			<div class="toggleMap ${classMap(mapClasses)}">
-				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
+				<ba-mvu-feedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-feedbackpanel>
 			</div>
 			<div class="toggleGeneral ${classMap(generalClasses)}">general feedback todo</div>
 		`;
+	}
+
+	set onSubmit(callback) {
+		this._onSubmit = callback;
 	}
 
 	static get tag() {
