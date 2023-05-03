@@ -204,6 +204,31 @@ describe('VectorLayerService', () => {
 				expect(vectorGeoResource.label).toBe(geoResourceLabel);
 			});
 
+			it('builds an olVectorSource for an internal clustered VectorGeoResource', async () => {
+				setup();
+				const sourceSrid = 4326;
+				const expectedSrid = 3857;
+				const kmlName = '';
+				const geoResourceLabel = 'geoResourceLabel';
+				spyOn(mapService, 'getSrid').and.returnValue(expectedSrid);
+				const sourceAsString = `<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document><name>${kmlName}</name><Placemark id="line_1617976924317"><ExtendedData><Data name="type"><value>line</value></Data></ExtendedData><description></description><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode><coordinates>10.713458946685412,49.70007647302964 11.714932179089468,48.34411758499924</coordinates></LineString></Placemark></Document></kml>`;
+				const vectorGeoResource = new VectorGeoResource('someId', geoResourceLabel, VectorSourceType.KML)
+					.setSource(sourceAsString, sourceSrid)
+					.setClusterParams({ distance: 42, minDistance: 21 });
+
+				const olVectorSource = instanceUnderTest._vectorSourceForData(vectorGeoResource);
+
+				expect(olVectorSource.constructor.name).toBe('Cluster');
+				expect(olVectorSource.getDistance()).toBe(42);
+				expect(olVectorSource.getMinDistance()).toBe(21);
+				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
+				expect(olVectorSource.getSource().getFeatures().length).toBe(1);
+				expect(olVectorSource.getSource().getFeatures()[0].get('srid')).toBe(expectedSrid);
+
+				await TestUtils.timeout();
+				expect(vectorGeoResource.label).toBe(geoResourceLabel);
+			});
+
 			it('builds an olVectorSource for an internal VectorGeoresource of type EWKT', () => {
 				setup();
 				const sourceSrid = 4326;
@@ -272,6 +297,28 @@ describe('VectorLayerService', () => {
 				expect(olVectorSource.getFormat().constructor.name).toBe('KML');
 				expect(olVectorSource.loader_).toEqual(load);
 				expect(olVectorSource.getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
+			});
+
+			it('builds an olVectorSource for an external clustered VectorGeoresource', () => {
+				setup();
+				const url = 'https://some.url';
+				spyOn(urlService, 'proxifyInstant')
+					.withArgs(url)
+					.and.returnValue('https://proxy.url?' + url);
+				const vectorGeoresource = new VectorGeoResource('someId', 'Label', VectorSourceType.KML)
+					.setUrl(url)
+					.setClusterParams({ distance: 42, minDistance: 21 });
+
+				const olVectorSource = instanceUnderTest._vectorSourceForUrl(vectorGeoresource);
+
+				expect(olVectorSource.constructor.name).toBe('Cluster');
+				expect(olVectorSource.getDistance()).toBe(42);
+				expect(olVectorSource.getMinDistance()).toBe(21);
+				expect(olVectorSource.getSource().constructor.name).toBe('VectorSource');
+				expect(olVectorSource.getSource().getUrl()).toBe('https://proxy.url?' + url);
+				expect(olVectorSource.getSource().getFormat().constructor.name).toBe('KML');
+				expect(olVectorSource.getSource().loader_).toEqual(load);
+				expect(olVectorSource.getSource().getFormat().iconUrlFunction_).toEqual(iconUrlFunction);
 			});
 		});
 
