@@ -271,6 +271,7 @@ export class MapFeedbackPanel extends MvuElement {
 							.value="${mapFeedback.description}"
 							@input="${handleDescriptionChange}"
 							required
+							maxlength="10000"
 							placeholder="${translate('feedback_mapFeedback_changeDescription')}"
 						></textarea>
 						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>

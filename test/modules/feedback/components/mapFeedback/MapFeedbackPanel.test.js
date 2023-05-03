@@ -125,6 +125,7 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
