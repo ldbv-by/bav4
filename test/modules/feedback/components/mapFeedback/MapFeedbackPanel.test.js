@@ -8,6 +8,7 @@ import { createNoInitialStateMediaReducer } from '../../../../../src/store/media
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 
@@ -46,12 +47,16 @@ const setup = (state = {}) => {
 		media: {
 			portrait: true
 		},
+		modal: {
+			active: true
+		},
 		...state
 	};
 
 	store = TestUtils.setupStoreAndDi(initialState, {
 		media: createNoInitialStateMediaReducer(),
-		notifications: notificationReducer
+		notifications: notificationReducer,
+		modal: modalReducer
 	});
 
 	$injector
@@ -291,10 +296,11 @@ describe('MapFeedbackPanel', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 
-		it('emits a success notification if save succeeds', async () => {
+		it('emits a success notification if save succeeds and closes the modal', async () => {
 			// arrange
 			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
 			const element = await setup();
+			expect(store.getState().modal.active).toBeTrue();
 
 			// act
 			await element._saveMapFeedback('', '', '');
@@ -304,6 +310,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(store.getState().modal.active).toBeFalse();
 		});
 
 		it('calls FeedbackService.getCategories()', async () => {
