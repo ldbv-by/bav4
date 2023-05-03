@@ -1,6 +1,6 @@
-import { StackableContentPanel } from './StackableContentPanel';
-import { BottomSheet } from './BottomSheet';
-import { NotificationItem } from './NotificationItem';
+import { StackableContentPanel } from './stackableContentPanel/StackableContentPanel';
+import { BottomSheet } from './bottomSheet/BottomSheet';
+import { NotificationItem } from './notificationItem/NotificationItem';
 
 if (!window.customElements.get(StackableContentPanel.tag)) {
 	window.customElements.define(StackableContentPanel.tag, StackableContentPanel);

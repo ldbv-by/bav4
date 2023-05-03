@@ -1,20 +1,83 @@
 .toggleButtons {
 	display: none;
+	max-width: 50em;
 }
 .toggleButtons.active {
 	display: block;
 }
-
 .toggleMap {
 	display: none;
 }
 .toggleMap.active {
 	display: block;
 }
-
 .toggleGeneral {
 	display: none;
 }
 .toggleGeneral.active {
 	display: block;
+}
+.ba-list-item {
+	display: flex;
+	text-decoration: none;
+	overflow-wrap: break-word;
+	background: transparent;
+	border: 0;
+	width: 100%;
+	text-align: left;
+}
+.ba-list-item:focus-visible {
+	box-shadow: Inset 0 0 0 0.2em var(--primary-color-lighter);
+}
+.ba-list-item:hover {
+	background: var(--header-background-color);
+}
+.ba-list-item span {
+	overflow-wrap: break-word;
+}
+.ba-list-item > * {
+	padding-top: 0.8em;
+	padding-bottom: 0.8em;
+}
+.ba-list-item > *:first-child {
+	padding-left: 1.5em;
+}
+.ba-list-item > *:last-child {
+	padding-right: 1.5em;
+}
+.ba-list-item__pre {
+	display: flex;
+	margin: 0 1em 0 0;
+}
+.ba-list-item__icon {
+	height: 3em;
+	width: 3em;
+	background: var(--text4);
+}
+.ba-list-item__text {
+	flex-grow: 1;
+}
+.ba-list-item__primary-text {
+	display: block;
+	font-size: 1rem;
+	font-weight: bold;
+	padding-bottom: 0.2em;
+}
+.ba-list-item__secondary-text {
+	font-size: 0.95rem;
+	color: var(--text2);
+}
+.chatleftdots {
+	mask: url('assets/chatleftdots.svg');
+	-webkit-mask-image: url('assets/chatleftdots.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(0.7);
+}
+.map {
+	mask: url('assets/map.svg');
+	-webkit-mask-image: url('assets/map.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(0.7);
 }

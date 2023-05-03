@@ -192,7 +192,6 @@ input[type='range']:focus {
 	z-index: 1;
 	color: var(--text1);
 	font-weight: normal;
-	/* bottom: -1.2rem; */
 	-webkit-transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
@@ -289,7 +288,6 @@ input[type='range']:focus {
 .ba-form-element.wasTouched textarea:invalid ~ .error-label {
 	display: block;
 	color: var(--error-color);
-	top: 0.2em;
 }
 .ba-form-element input:invalid ~ .error,
 .ba-form-element textarea:invalid ~ .error {

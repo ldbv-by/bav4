@@ -1,10 +1,10 @@
 /**
- * @module modules/stackables/components/StackableContentPanel
+ * @module modules/stackables/components/stackableContentPanel/StackableContentPanel
  */
 import { html, nothing } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import css from './stackableContentPanel.css';
-import { MvuElement } from '../../MvuElement';
+import { MvuElement } from '../../../MvuElement';
 
 const Notification_Autoclose_Time = 5000;
 const Update_Notifications = 'update_notifications';

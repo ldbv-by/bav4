@@ -14,7 +14,9 @@ export const provide = (lang) => {
 				iframe_generator_copy_icon: 'Copy to clipboard',
 				iframe_activate_map_button: 'Activate map',
 				iframe_view_larger_map_chip: 'View larger map',
-				iframe_drawTool_activate: 'Enable/disable the drawing tool',
+				iframe_drawTool_label: 'Drawing',
+				iframe_drawTool_enable: 'Enable the drawing tool',
+				iframe_drawTool_disable: 'Disable the drawing tool',
 				iframe_drawTool_symbol: 'Point',
 				iframe_drawTool_line: 'Line',
 				iframe_drawTool_cancel: 'Cancel',
@@ -37,13 +39,15 @@ export const provide = (lang) => {
 				iframe_generator_copy_icon: 'In die Zwischenablage kopieren',
 				iframe_activate_map_button: 'Karte aktivieren',
 				iframe_view_larger_map_chip: 'Größere Karte ansehen',
-				iframe_drawTool_activate: '"Zeichnen" aktivieren/deaktivieren',
+				iframe_drawTool_label: 'Zeichnen',
+				iframe_drawTool_enable: 'Zeichnen aktivieren',
+				iframe_drawTool_disable: 'Zeichnen deaktivieren',
 				iframe_drawTool_symbol: 'Punkt',
 				iframe_drawTool_line: 'Linie',
 				iframe_drawTool_cancel: 'Abbrechen',
 				iframe_drawTool_finish: 'Fertig',
-				iframe_drawTool_delete_point: 'Punkt entfernen',
-				iframe_drawTool_delete_drawing: 'Zeichnung entfernen'
+				iframe_drawTool_delete_point: 'letzten Punk löschen',
+				iframe_drawTool_delete_drawing: 'Zeichnung löschen'
 			};
 
 		default:
