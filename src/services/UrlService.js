@@ -8,6 +8,13 @@ import { bvvQrCodeProvider } from './provider/qrCodeUrlProvider';
 import { shortenBvvUrls } from './provider/urlShorteningProvider';
 
 /**
+ * Takes a URL and returns a proxified url.
+ * @param {string} url the URL which should be proxified
+ * @typedef {Function} proxifyUrlProvider
+ * @returns {string} proxified url
+ */
+
+/**
  * Utility service for URLs/resources.
  * @class
  * @author taulinger
