@@ -100,8 +100,8 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 });
 
 describe('bvvMapFeedbackOverlayGeoResourceProvider', () => {
-	it('returns an id of a GeoResource',  () => {
-		const result =  bvvMapFeedbackOverlayGeoResourceProvider();
+	it('returns an id of a GeoResource', () => {
+		const result = bvvMapFeedbackOverlayGeoResourceProvider();
 
 		expect(result).toBe('tim');
 	});
