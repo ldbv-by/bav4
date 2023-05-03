@@ -60,8 +60,8 @@ export class MapFeedback {
 export class FeedbackService {
 	/**
 	 *
-	 * @param {module:services/FeedbackService~feedbackStorageProvider} feedbackStorageProvider
-	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} mapFeedbackCategoriesProvider
+	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
+	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackCategoriesProvider]
 	 */
 	constructor(feedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) {
 		this._mapFeedbackStorageProvider = feedbackStorageProvider;
