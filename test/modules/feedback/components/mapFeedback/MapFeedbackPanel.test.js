@@ -17,7 +17,8 @@ const configServiceMock = {
 
 const feedbackServiceMock = {
 	getCategories: () => ['Foo', 'Bar'],
-	save: () => {}
+	save: () => {},
+	getOverlayGeoResourceId: () => 'overlay'
 };
 
 const shareServiceMock = {
@@ -163,7 +164,9 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+				PathParameters.EMBED
+			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
