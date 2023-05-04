@@ -17,7 +17,7 @@ const setup = (state = {}) => {
 	return TestUtils.renderAndLogLifecycle(ToggleFeedbackPanel.tag);
 };
 
-describe('MapFeedbackPanel', () => {
+describe('ToggleFeedbackPanel', () => {
 	describe('when instantiated', () => {
 		it('sets a default model', async () => {
 			await setup();
