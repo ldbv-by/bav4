@@ -19,7 +19,7 @@ export const FeedbackType = Object.freeze({
 const Select_Feedback_Type = 'select_feedback_type';
 
 /**
- * Allows the  user to either select a map-related or a general feedback.
+ * Allows the user to either select a map-related or a general feedback.
  * @class
  */
 export class ToggleFeedbackPanel extends MvuElement {
