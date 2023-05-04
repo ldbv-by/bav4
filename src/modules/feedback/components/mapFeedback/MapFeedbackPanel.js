@@ -308,7 +308,7 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	/**
-	 * Registers callback function which will be called when the form was submitted successfully.
+	 * Registers a callback function which will be called when the form was submitted successfully.
 	 * @type {Function}
 	 */
 	set onSubmit(callback) {
