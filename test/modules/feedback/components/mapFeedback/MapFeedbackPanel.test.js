@@ -17,7 +17,8 @@ const configServiceMock = {
 
 const feedbackServiceMock = {
 	getCategories: () => ['Foo', 'Bar'],
-	save: () => {}
+	save: () => {},
+	getOverlayGeoResourceId: () => 'overlay'
 };
 
 const shareServiceMock = {
@@ -65,9 +66,9 @@ const setup = (state = {}) => {
 };
 
 describe('MapFeedbackPanel', () => {
-	describe('constructor', () => {
+	describe('when instantiated', () => {
 		it('sets a default model', async () => {
-			setup();
+			await setup();
 			const element = new MapFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
@@ -82,6 +83,13 @@ describe('MapFeedbackPanel', () => {
 				submitWasClicked: false,
 				isPortrait: false
 			});
+		});
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new MapFeedbackPanel();
+
+			expect(instanceUnderTest._onSubmit).toBeDefined();
 		});
 	});
 
@@ -163,7 +171,9 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+				PathParameters.EMBED
+			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
@@ -288,10 +298,12 @@ describe('MapFeedbackPanel', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 
-		it('emits a success notification if save succeeds', async () => {
+		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
 			// arrange
+			const onSubmitCallback = jasmine.createSpy();
 			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
 			const element = await setup();
+			element.onSubmit = onSubmitCallback;
 
 			// act
 			await element._saveMapFeedback('', '', '');
@@ -301,6 +313,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
 		it('calls FeedbackService.getCategories()', async () => {

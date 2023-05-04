@@ -8,6 +8,7 @@ import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
+import { Cluster } from 'ol/source';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -168,7 +169,13 @@ export class VectorLayerService {
 					break;
 			}
 		}
-		return vectorSource;
+		return geoResource.isClustered()
+			? new Cluster({
+					source: vectorSource,
+					distance: geoResource.clusterParams.distance,
+					minDistance: geoResource.clusterParams.minDistance
+			  })
+			: vectorSource;
 	}
 
 	/**
@@ -185,6 +192,12 @@ export class VectorLayerService {
 			loader: featureLoader,
 			format: mapVectorSourceTypeToFormat(geoResource.sourceType)
 		});
-		return source;
+		return geoResource.isClustered()
+			? new Cluster({
+					source: source,
+					distance: geoResource.clusterParams.distance,
+					minDistance: geoResource.clusterParams.minDistance
+			  })
+			: source;
 	}
 }

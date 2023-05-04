@@ -4,17 +4,9 @@
 import { $injector } from '../../injection';
 
 /**
- * A function that takes a URL (as string) and returns a URL (as string).
- * The returned URL references to the qrCode image for the given URL.
- *
- * @typedef {function(string) : (string)} qrCodeUrlProvider
- */
-
-/**
  * Uses the BVV service to return a qrCode URL.
- * @function
- * @param {string} url URL
- * @returns {string} qrCode URL
+ * @async
+ * @implements {module:services/UrlService~qrCodeUrlProvider}
  */
 export const bvvQrCodeProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');

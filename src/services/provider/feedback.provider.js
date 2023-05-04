@@ -42,3 +42,10 @@ export const bvvMapFeedbackCategoriesProvider = async () => {
 			throw new Error(`MapFeedback categories could not be loaded: Http-Status ${result.status}`);
 	}
 };
+
+/**
+ * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ * @function
+ * @implements {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ */
+export const bvvMapFeedbackOverlayGeoResourceProvider = () => 'tim';
