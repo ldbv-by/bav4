@@ -4,19 +4,13 @@
 import { $injector } from '../../injection';
 
 /**
- * Takes a URL and returns a proxified url.
- *
- * @typedef {function(url) : (string)} proxifyUrlProvider
- */
-
-/**
  * Returns a BVV -style proxified URL.
  * If the `PROXY_URL` config param is not available,
  * the unproxified url is returned.
- * If the URL is already proxied, nothing is done.
+ * If the URL is already proxified, nothing is done.
  * If the URL is a backend URL, nothing is done.
- * @param {string} url URL which should be proxified
- * @returns {string} proxified URL
+ * @function
+ * @implements {module:services/UrlService~proxifyUrlProvider}
  */
 export const bvvProxifyUrlProvider = (url) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');

@@ -23,8 +23,18 @@ ba-icon:focus {
 	background: transparent;
 }
 
+.collapse-content {
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows var(--animation-duration-medium-open);
+}
+
+.collapse-content > div {
+	overflow: hidden;
+}
+
 .iscollapse {
-	display: none;
+	grid-template-rows: 0fr;
 }
 
 .ishidden {

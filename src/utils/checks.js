@@ -69,6 +69,7 @@ export const isTemplateResult = (val) => {
  * @param {*} val
  * @param {strict} tag
  * @returns boolean `true` if it is a TemplateResult
+ * @deprecated use TestUtils#renderTemplateResult() instead
  */
 export const isTemplateResultOf = (val, tag) => {
 	if (!tag) {

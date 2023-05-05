@@ -56,6 +56,7 @@ export class MapFeedbackPanel extends MvuElement {
 		this._fileStorageService = fileStorageService;
 		this._securityService = securityService;
 		this._iframeObserver = null;
+		this._onSubmit = () => {};
 	}
 
 	onInitialize() {
@@ -106,6 +107,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._feedbackService.save(mapFeedback);
+			this._onSubmit();
 			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
@@ -269,7 +271,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const getExtraParameters = () => {
 			const queryParameters = {};
-			queryParameters[QueryParameters.LAYER] = '914c9263-5312-453e-b3eb-5104db1bf788'; // TODO: replace with layer from FeedbackService
+			queryParameters[QueryParameters.LAYER] = this._feedbackService.getOverlayGeoResourceId();
 			queryParameters[QueryParameters.IFRAME_COMPONENTS] = [IFrameComponents.DRAW_TOOL];
 			return queryParameters;
 		};
@@ -315,6 +317,7 @@ export class MapFeedbackPanel extends MvuElement {
 							.value="${mapFeedback.description}"
 							@input="${handleDescriptionChange}"
 							required
+							maxlength="10000"
 							placeholder="${translate('feedback_mapFeedback_changeDescription')}"
 						></textarea>
 						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
@@ -346,6 +349,14 @@ export class MapFeedbackPanel extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	/**
+	 * Registers a callback function which will be called when the form was submitted successfully.
+	 * @type {Function}
+	 */
+	set onSubmit(callback) {
+		this._onSubmit = callback;
 	}
 
 	static get tag() {

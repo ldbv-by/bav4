@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
@@ -16,15 +17,22 @@ const setup = (state = {}) => {
 	return TestUtils.renderAndLogLifecycle(ToggleFeedbackPanel.tag);
 };
 
-describe('MapFeedbackPanel', () => {
-	describe('constructor', () => {
+describe('ToggleFeedbackPanel', () => {
+	describe('when instantiated', () => {
 		it('sets a default model', async () => {
-			setup();
+			await setup();
 			const element = new ToggleFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
 				selectedFeedbackPanel: null
 			});
+		});
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new ToggleFeedbackPanel();
+
+			expect(instanceUnderTest._onSubmit).toBeDefined();
 		});
 	});
 
@@ -54,6 +62,8 @@ describe('MapFeedbackPanel', () => {
 
 			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
 			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 
 			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');

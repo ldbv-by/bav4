@@ -354,6 +354,17 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.data).toBeNull();
 		});
 
+		it('provides default properties', () => {
+			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML);
+
+			expect(vectorGeoResource.clusterParams).toEqual({});
+		});
+
+		it('provides a check for containing a non-default value as clusterParam', () => {
+			expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
+			expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+		});
+
 		it('provides the source type as fallback label', () => {
 			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).label).toBe('foo');
 			expect(new VectorGeoResource('id', null, VectorSourceType.KML).label).toBe('KML');

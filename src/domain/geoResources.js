@@ -422,6 +422,7 @@ export class VectorGeoResource extends GeoResource {
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+		this._clusterParams = {};
 	}
 
 	/**
@@ -494,6 +495,22 @@ export class VectorGeoResource extends GeoResource {
 	 */
 	hasLabel() {
 		return !!this._label || this.label !== this._getFallbackLabel();
+	}
+
+	/**
+	 * @returns `true` if this VectorGeoResource should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	setClusterParams(clusterParams) {
+		this._clusterParams = { ...clusterParams };
+		return this;
 	}
 
 	/**

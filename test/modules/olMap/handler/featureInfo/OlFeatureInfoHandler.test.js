@@ -19,6 +19,7 @@ import { HighlightFeatureType, HighlightGeometryType } from '../../../../../src/
 import GeoJSON from 'ol/format/GeoJSON';
 import { $injector } from '../../../../../src/injection';
 import { QUERY_RUNNING_HIGHLIGHT_FEATURE_ID } from '../../../../../src/plugins/HighlightPlugin';
+import { Cluster } from 'ol/source';
 
 describe('OlFeatureInfoHandler_Query_Resolution_Delay', () => {
 	it('determines amount of time query resolution delayed', async () => {
@@ -210,11 +211,13 @@ describe('OlFeatureInfoHandler', () => {
 			map.addLayer(vectorLayer0);
 
 			const olVectorSource1 = new VectorSource();
+			// here we use a clustered VectorSource
+			const olClusterdVectorSource1 = new Cluster({ source: olVectorSource1 });
 			const feature1 = new Feature({ geometry: geometry });
 			feature1.set('name', 'name1');
 			feature1.set('description', 'description1');
 			olVectorSource1.addFeature(feature1);
-			vectorLayer1.setSource(olVectorSource1);
+			vectorLayer1.setSource(olClusterdVectorSource1);
 			map.addLayer(vectorLayer1);
 
 			handler.register(map);
@@ -279,6 +282,43 @@ describe('OlFeatureInfoHandler', () => {
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(0);
 			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+
+		it('ignores a clustered feature containing more than one features', async () => {
+			const handler = setup(
+				{
+					layers: {
+						active: [createDefaultLayer(layerId0, geoResourceId0), createDefaultLayer(layerId1, geoResourceId1)]
+					}
+				},
+				mockFeatureInfoProvider
+			);
+			const map = setupMap();
+			const geometry = new Point(matchingCoordinate);
+
+			const olVectorSource1 = new VectorSource();
+			// here we use a clustered VectorSource
+			const olClusterdVectorSource1 = new Cluster({ source: olVectorSource1 });
+			const feature0 = new Feature({ geometry: geometry });
+			feature0.set('name', 'name0');
+			feature0.set('description', 'description0');
+			olVectorSource1.addFeature(feature0);
+			const feature1 = new Feature({ geometry: geometry });
+			feature0.set('name', 'name1');
+			feature0.set('description', 'description1');
+			olVectorSource1.addFeature(feature1);
+			vectorLayer1.setSource(olClusterdVectorSource1);
+			map.addLayer(vectorLayer1);
+
+			handler.register(map);
+
+			await TestUtils.timeout(RenderCompleteDelay);
+			// safe to call map.getPixelFromCoordinate from now on
+			startRequest(matchingCoordinate);
+
+			//must be called within a timeout function cause implementation delays call of 'resolveQuery'
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(0);
 		});
 
 		it("adds 'Not_Available' FeatureInfo items and NO HighlightFeatures when FeatureInfoProvider returns null", async () => {
