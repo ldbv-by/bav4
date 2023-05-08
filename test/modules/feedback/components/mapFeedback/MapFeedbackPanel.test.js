@@ -80,7 +80,6 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				submitWasClicked: false,
 				isPortrait: false
 			});
 		});
