@@ -356,9 +356,15 @@ export class MapFeedbackPanel extends MvuElement {
 			for (let n = 0; n < formElement.children.length; n++) {
 				const childElement = formElement.children[n];
 				if (childElement.tagName === 'DIV') {
+					let childIsRequired = false;
+					for (let index = 0; index < childElement.children.length; index++) {
+						const element = childElement.children[index];
+						if (element.required) {
+							childIsRequired = true;
+						}
+					}
 					const className = childElement.className;
-
-					if (className.includes('ba-form-element')) {
+					if (className.includes('ba-form-element') && childIsRequired) {
 						allInvolvedElements.push(childElement);
 					}
 				}
