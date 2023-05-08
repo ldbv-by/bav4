@@ -176,90 +176,115 @@ describe('MapFeedbackPanel', () => {
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
-		describe('when listen to iframe-attribute changes', () => {
-			it('updates mapFeedback.fileId and .state', async () => {
-				const fileId = 'f_foo';
-				const element = await setup();
+		it('gets the correct elements from _allInvolvedElements', async () => {
+			// arrange
+			const element = await setup();
 
-				const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+			const allInvolvedElements = element._allInvolvedElements();
 
-				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
-
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
-				await TestUtils.timeout();
-
-				expect(element.getModel().mapFeedback.fileId).toBe(fileId);
-
-				// no calls by changes on any other attribute
-				iframe.setAttribute('foo', 'bar');
-
-				await TestUtils.timeout();
-
-				expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
-				expect(updateStateSpy).toHaveBeenCalledTimes(1);
+			const nodeValues = [];
+			allInvolvedElements.forEach((element) => {
+				if (element.attributes.length === 1) {
+					nodeValues.push(element.attributes['class'].nodeValue);
+				}
+				if (element.attributes.length > 1) {
+					nodeValues.push(element.attributes['id'].nodeValue);
+				}
 			});
 
-			it('updates mapFeedback.state', async () => {
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const searchParams = 'l=foo,bar';
-				const element = await setup();
+			// assert
+			expect(element._allInvolvedElements).toBeDefined();
+			expect(allInvolvedElements.length).toBe(3);
+			expect(nodeValues.length).toBe(3);
+			expect(nodeValues.includes('map-feedback__iframe')).toBeTrue();
+			expect(nodeValues.includes('description-form-element')).toBeTrue();
+			expect(nodeValues.includes('category-form-element')).toBeTrue();
+		});
+	});
 
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
-				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
-				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+	describe('when listen to iframe-attribute changes', () => {
+		it('updates mapFeedback.fileId and .state', async () => {
+			const fileId = 'f_foo';
+			const element = await setup();
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
-				await TestUtils.timeout();
+			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${searchParams}`);
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-				// no calls by changes on any other attribute
-				iframe.setAttribute('foo', 'bar');
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+			await TestUtils.timeout();
 
-				await TestUtils.timeout();
+			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
-				expect(updateStateSpy).toHaveBeenCalledTimes(1);
-			});
+			// no calls by changes on any other attribute
+			iframe.setAttribute('foo', 'bar');
 
-			it('updates mapFeedback.state with existing fileId', async () => {
-				const fileId = 'f_id';
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const searchParams = 'l=foo,bar';
-				const expectedSearchParams = `l=foo,bar,${fileId}`;
-				const element = await setup();
+			await TestUtils.timeout();
 
-				element._updateFileId(fileId);
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
+			expect(updateStateSpy).toHaveBeenCalledTimes(1);
+		});
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
-				await TestUtils.timeout();
+		it('updates mapFeedback.state', async () => {
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const searchParams = 'l=foo,bar';
+			const element = await setup();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
-			});
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-			it('does not update mapFeedback.state with existing fileId', async () => {
-				const fileId = 'f_id';
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const iframeSearchParams = 'l=foo,f_id,bar';
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+			await TestUtils.timeout();
 
-				const element = await setup();
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${searchParams}`);
 
-				element._updateFileId(fileId);
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			// no calls by changes on any other attribute
+			iframe.setAttribute('foo', 'bar');
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
-				await TestUtils.timeout();
+			await TestUtils.timeout();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
-			});
+			expect(updateStateSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('updates mapFeedback.state with existing fileId', async () => {
+			const fileId = 'f_id';
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const searchParams = 'l=foo,bar';
+			const expectedSearchParams = `l=foo,bar,${fileId}`;
+			const element = await setup();
+
+			element._updateFileId(fileId);
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
+		});
+
+		it('does not update mapFeedback.state with existing fileId', async () => {
+			const fileId = 'f_id';
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const iframeSearchParams = 'l=foo,f_id,bar';
+
+			const element = await setup();
+
+			element._updateFileId(fileId);
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
 		});
 	});
 
@@ -474,6 +499,22 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
+
+		it('all involved elements receive the "wasTouched" class', async () => {
+			// arrange
+			const element = await setup();
+			const allInvolvedElements = element._allInvolvedElements();
+
+			// act
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			submitButton.click();
+
+			// assert
+			allInvolvedElements.forEach((element) => {
+				const nodeValue = element.attributes['class'].nodeValue;
+				expect(nodeValue.includes('wasTouched')).toBeTrue();
+			});
+		});
 	});
 
 	describe('when disconnected', () => {
@@ -502,6 +543,21 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
+		});
+
+		it('its parent receives the "wasTouched" class', async () => {
+			// arrange
+			const descriptionValue = 'description';
+			const element = await setup();
+
+			// act
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = descriptionValue;
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// assert
+			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes('wasTouched')).toBeTrue();
 		});
 	});
 
@@ -536,6 +592,21 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+
+		it('its parent receives the "wasTouched" class', async () => {
+			// arrange
+			const categoryValue = 'Bar';
+			const element = await setup();
+
+			// act
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = categoryValue;
+			categorySelect.dispatchEvent(new Event('change'));
+
+			// assert
+			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes('wasTouched')).toBeTrue();
 		});
 	});
 
