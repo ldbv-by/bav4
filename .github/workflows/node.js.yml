@@ -3,44 +3,44 @@ name: Node.js CI
 on: [push]
 
 jobs:
-  # build:
-  #   runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Use Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '16.x'
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
 
-  #     - name: Install dependencies
-  #       run: |
-  #         npm ci
-  #         npx playwright install-deps
+      - name: Install dependencies
+        run: |
+          npm ci
+          npx playwright install-deps
 
-  #     - name: Run checks
-  #       run: |
-  #         npm audit --only=prod --audit-level=moderate
-  #         npm run prettier:check
-  #         npm run lint
-  #         npm run es-check
-  #         npm run doc:check
-  #         npm run doc
+      - name: Run checks
+        run: |
+          npm audit --only=prod --audit-level=moderate
+          npm run prettier:check
+          npm run lint
+          npm run es-check
+          npm run doc:check
+          npm run doc
 
-  #     - name: Run tests
-  #       run: |
-  #         npm run test:gha
+      - name: Run tests
+        run: |
+          npm run test:gha
 
-  #     - name: Run e2e tests
-  #       run: |
-  #         npm run start &
-  #         npm run e2e
+      - name: Run e2e tests
+        run: |
+          npm run start &
+          npm run e2e
 
-  #     - name: Publish Coveralls report
-  #       uses: coverallsapp/github-action@master
-  #       with:
-  #         github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Coveralls report
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
     runs-on: ubuntu-latest
