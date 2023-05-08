@@ -20,33 +20,28 @@ import { getBvvAttribution } from './attribution.provider';
  * @param {object} definition Configuration object for a GeoResource
  */
 export const _definitionToGeoResource = (definition) => {
-	const { ConfigService: configService } = $injector.inject('ConfigService');
-
 	const toGeoResource = (def) => {
-		const replaceBackendUrlTemplate = (url) => {
-			return url?.replace('${BACKEND_URL}', configService.getValueAsPath('BACKEND_URL').replace(/\/$/, ''));
-		};
 		switch (def.type) {
 			case 'wms':
 				return (
-					new WmsGeoResource(def.id, def.label, replaceBackendUrlTemplate(def.url), def.layers, def.format)
+					new WmsGeoResource(def.id, def.label, def.url, def.layers, def.format)
 						//set specific optional values
 						.setExtraParams(def.extraParams ?? {})
 				);
 			case 'xyz':
 				return (
-					new XyzGeoResource(def.id, def.label, replaceBackendUrlTemplate(def.url))
+					new XyzGeoResource(def.id, def.label, def.url)
 						//set specific optional values
 						.setTileGridId(def.tileGridId)
 				);
 			case 'vt':
-				return new VTGeoResource(def.id, def.label, replaceBackendUrlTemplate(def.url));
+				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector':
 				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
 				return (
 					new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 						//set specific optional values
-						.setUrl(replaceBackendUrlTemplate(def.url))
+						.setUrl(def.url)
 						.setClusterParams(def.clusterParams ?? {})
 				);
 			case 'aggregate':
