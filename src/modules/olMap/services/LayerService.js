@@ -85,16 +85,20 @@ export class LayerService {
 
 			case GeoResourceTypes.XYZ: {
 				const xyzSource = () => {
+					const config = {
+						url: Array.isArray(geoResource.urls) ? undefined : geoResource.urls,
+						urls: Array.isArray(geoResource.urls) ? geoResource.urls : undefined
+					};
 					switch (geoResource.tileGridId) {
 						case 'adv_wmts':
 							return new XYZSource({
-								url: geoResource.url,
+								...config,
 								tileGrid: new AdvWmtsTileGrid(),
 								projection: new Projection({ code: 'EPSG:25832' }) // to make it testable we use a Projection instead of a ProjectionLike here
 							});
 						default:
 							return new XYZSource({
-								url: geoResource.url
+								...config
 							});
 					}
 				};
