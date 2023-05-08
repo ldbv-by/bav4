@@ -67,7 +67,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		...wmsDefinition
 	};
-	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', url: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
+	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', urls: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
 	const xyzDefinitionOptionalProperties = {
 		background: true,
 		opacity: 0.5,
@@ -172,7 +172,7 @@ describe('GeoResource provider', () => {
 			const xyzGeoResource = _definitionToGeoResource(xyzDefinition);
 
 			vadlidateGeoResourceProperties(xyzGeoResource, xyzDefinition);
-			expect(xyzGeoResource.url).toBe('xyzUrl');
+			expect(xyzGeoResource.urls).toBe('xyzUrl');
 			expect(xyzGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(xyzGeoResource._attribution).not.toBeNull();
 		});

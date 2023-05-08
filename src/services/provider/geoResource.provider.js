@@ -30,7 +30,7 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'xyz':
 				return (
-					new XyzGeoResource(def.id, def.label, def.url)
+					new XyzGeoResource(def.id, def.label, def.urls)
 						//set specific optional values
 						.setTileGridId(def.tileGridId)
 				);
