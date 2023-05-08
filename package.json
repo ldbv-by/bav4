@@ -3,7 +3,7 @@
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "0.0.6",
 		"chart.js": "4.3.0",
-		"dompurify": "3.0.2",
+		"dompurify": "3.0.3",
 		"geographiclib-geodesic": "^2.0.0",
 		"lit-html": "2.7.3",
 		"ol": "7.3.0",
@@ -19,7 +19,7 @@
 		"docdash": "^2.0.1",
 		"dotenv-webpack": "8.0.1",
 		"es-check": "7.1.1",
-		"eslint": "8.39.0",
+		"eslint": "8.40.0",
 		"eslint-plugin-import": "2.27.5",
 		"eslint-plugin-promise": "6.1.1",
 		"html-webpack-plugin": "5.5.1",
@@ -47,8 +47,8 @@
 		"to-string-loader": "1.2.0",
 		"webpack": "5.82.0",
 		"webpack-bundle-analyzer": "4.8.0",
-		"webpack-cli": "5.0.2",
-		"webpack-dev-server": "4.13.3"
+		"webpack-cli": "5.1.0",
+		"webpack-dev-server": "4.15.0"
 	},
 	"scripts": {
 		"start": "webpack serve --open --mode=development --devtool=inline-source-map",
