@@ -18,8 +18,6 @@ const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
-// todo remove (Remember_Submit not used anymore)
-const Remember_Submit = 'remember_submit';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
 /**
@@ -37,8 +35,6 @@ export class MapFeedbackPanel extends MvuElement {
 				fileId: null
 			},
 			categoryOptions: [],
-			// todo remove (submitWasClicked not used anymore)
-			submitWasClicked: false,
 			isPortrait: false
 		});
 
@@ -95,28 +91,6 @@ export class MapFeedbackPanel extends MvuElement {
 		this._iframeObserver = null;
 	}
 
-	async _getCategoryOptions() {
-		try {
-			const categoryOptions = await this._feedbackService.getCategories();
-			this.signal(Update_CategoryOptions, categoryOptions);
-		} catch (e) {
-			console.error(e);
-			this.signal(Update_CategoryOptions, []);
-		}
-	}
-
-	async _saveMapFeedback(mapFeedback) {
-		const translate = (key) => this._translationService.translate(key);
-		try {
-			await this._feedbackService.save(mapFeedback);
-			this._onSubmit();
-			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
-		} catch (e) {
-			console.error(e);
-			emitNotification(translate('feedback_mapFeedback_could_not_save'), LevelTypes.ERROR);
-		}
-	}
-
 	update(type, data, model) {
 		switch (type) {
 			case Update_Category:
@@ -131,32 +105,9 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
 			case Update_State:
 				return { ...model, mapFeedback: { ...model.mapFeedback, state: data } };
-			// todo remove following two lines (Remember_Submit and submitWasClicked not used anymore)
-			case Remember_Submit:
-				return { ...model, submitWasClicked: data };
 			case Update_Media_Related_Properties:
 				return { ...model, ...data };
 		}
-	}
-
-	_updateFileId(id) {
-		this.signal(Update_Geometry_Id, id);
-	}
-
-	_updateState(state) {
-		this.signal(Update_State, state);
-	}
-
-	_encodeFeedbackState(iframeState) {
-		const { mapFeedback } = this.getModel();
-		const iframeParams = new URLSearchParams(iframeState.split('?')[1]);
-		if (mapFeedback.fileId) {
-			const layers = iframeParams.has(QueryParameters.LAYER) ? iframeParams.get(QueryParameters.LAYER).split(',') : [];
-			if (!layers.includes(mapFeedback.fileId)) {
-				iframeParams.set(QueryParameters.LAYER, [...layers, mapFeedback.fileId].join(','));
-			}
-		}
-		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
 	}
 
 	createView(model) {
@@ -172,31 +123,6 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 			const elementWasTouchedRetVal = element.classList.contains(wasTouchedString);
 			return elementWasTouchedRetVal;
-		};
-
-		const allInvolvedElements = () => {
-			const allInvolvedElements = [];
-			const iframeElement = this.shadowRoot.querySelector('.map-feedback__iframe');
-
-			if (iframeElement) {
-				allInvolvedElements.push(iframeElement);
-			}
-
-			const formElement = this.shadowRoot.querySelector('.map-feedback__form');
-
-			if (formElement) {
-				for (let n = 0; n < formElement.children.length; n++) {
-					const childElement = formElement.children[n];
-					if (childElement.tagName === 'DIV') {
-						const className = childElement.className;
-
-						if (className.includes('ba-form-element')) {
-							allInvolvedElements.push(childElement);
-						}
-					}
-				}
-			}
-			return allInvolvedElements;
 		};
 
 		const handleCategoryChange = () => {
@@ -240,13 +166,11 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			allInvolvedElements().forEach((element) => {
+			this._allInvolvedElements().forEach((element) => {
 				element.classList.add('wasTouched');
 			});
 
-			// this.requestUpdate();
-			// todo remove (Remember_Submit not used anymore)
-			this.signal(Remember_Submit, true);
+			this.render();
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
@@ -290,17 +214,16 @@ export class MapFeedbackPanel extends MvuElement {
 			const iFrameWasTouched = elementWasTouched('.map-feedback__iframe');
 			// if element with class '.map-feedback__iframe' was not touched
 			if (!iFrameWasTouched) {
-				// hide IframeHint --> return true
+				// hide IframeHint
 				return true;
 			}
 			// if iFrameWasTouched go on
-
 			// if fileId was set
 			if (fileId) {
-				// hide IframeHint --> return true
+				// hide IframeHint
 				return true;
 			}
-			// show IframeHint --> return false
+			// show IframeHint
 			return false;
 		};
 
@@ -376,6 +299,72 @@ export class MapFeedbackPanel extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	async _getCategoryOptions() {
+		try {
+			const categoryOptions = await this._feedbackService.getCategories();
+			this.signal(Update_CategoryOptions, categoryOptions);
+		} catch (e) {
+			console.error(e);
+			this.signal(Update_CategoryOptions, []);
+		}
+	}
+
+	async _saveMapFeedback(mapFeedback) {
+		const translate = (key) => this._translationService.translate(key);
+		try {
+			await this._feedbackService.save(mapFeedback);
+			this._onSubmit();
+			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate('feedback_mapFeedback_could_not_save'), LevelTypes.ERROR);
+		}
+	}
+
+	_updateFileId(id) {
+		this.signal(Update_Geometry_Id, id);
+	}
+
+	_updateState(state) {
+		this.signal(Update_State, state);
+	}
+
+	_encodeFeedbackState(iframeState) {
+		const { mapFeedback } = this.getModel();
+		const iframeParams = new URLSearchParams(iframeState.split('?')[1]);
+		if (mapFeedback.fileId) {
+			const layers = iframeParams.has(QueryParameters.LAYER) ? iframeParams.get(QueryParameters.LAYER).split(',') : [];
+			if (!layers.includes(mapFeedback.fileId)) {
+				iframeParams.set(QueryParameters.LAYER, [...layers, mapFeedback.fileId].join(','));
+			}
+		}
+		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
+	}
+
+	_allInvolvedElements() {
+		const allInvolvedElements = [];
+
+		const iframeElement = this.shadowRoot.querySelector('.map-feedback__iframe');
+		if (iframeElement) {
+			allInvolvedElements.push(iframeElement);
+		}
+
+		const formElement = this.shadowRoot.querySelector('.map-feedback__form');
+		if (formElement) {
+			for (let n = 0; n < formElement.children.length; n++) {
+				const childElement = formElement.children[n];
+				if (childElement.tagName === 'DIV') {
+					const className = childElement.className;
+
+					if (className.includes('ba-form-element')) {
+						allInvolvedElements.push(childElement);
+					}
+				}
+			}
+		}
+		return allInvolvedElements;
 	}
 
 	/**

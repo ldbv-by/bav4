@@ -296,7 +296,7 @@ input[type='range']:focus {
 	background-position: center;
 	background-image: url('./assets/exclamationcircle.svg');
 }
-.ba-form-element .icon {
+.ba-form-element.wasTouched .icon {
 	font-size: 2em;
 	opacity: 0;
 	position: absolute;
