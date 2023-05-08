@@ -18,6 +18,7 @@ const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
+// todo remove (Remember_Submit not used anymore)
 const Remember_Submit = 'remember_submit';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
@@ -36,6 +37,7 @@ export class MapFeedbackPanel extends MvuElement {
 				fileId: null
 			},
 			categoryOptions: [],
+			// todo remove (submitWasClicked not used anymore)
 			submitWasClicked: false,
 			isPortrait: false
 		});
@@ -129,6 +131,7 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
 			case Update_State:
 				return { ...model, mapFeedback: { ...model.mapFeedback, state: data } };
+			// todo remove following two lines (Remember_Submit and submitWasClicked not used anymore)
 			case Remember_Submit:
 				return { ...model, submitWasClicked: data };
 			case Update_Media_Related_Properties:
@@ -158,86 +161,43 @@ export class MapFeedbackPanel extends MvuElement {
 
 	createView(model) {
 		const { mapFeedback, categoryOptions, isPortrait } = model;
+		const wasTouchedString = 'wasTouched';
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const elementHasClass = (element, className) => {
-			const elementHasClass = element.classList.contains(className);
-			console.log('🚀 ~ MapFeedbackPanel ~ elementHasClass ~ elementHasClass:', elementHasClass);
-			return elementHasClass;
-		};
-
-		const hasClass = (elementName, className) => {
-			console.log('🚀🚀  ~ hasClass ~ elementName:', elementName);
-			console.log('🚀🚀  ~ hasClass ~ className:', className);
-
+		const elementWasTouched = (elementName) => {
 			const element = this.shadowRoot.querySelector(elementName);
-			console.log('🚀🚀 ~ hasClass ~ element:', element);
-
 			if (!element) {
 				return false;
 			}
-
-			return elementHasClass(element, className);
+			const elementWasTouchedRetVal = element.classList.contains(wasTouchedString);
+			return elementWasTouchedRetVal;
 		};
 
 		const allInvolvedElements = () => {
 			const allInvolvedElements = [];
 			const iframeElement = this.shadowRoot.querySelector('.map-feedback__iframe');
-			console.log('🚀 ~ MapFeedbackPanel ~ allInvolvedElements ~ iframeElement:', iframeElement);
 
 			if (iframeElement) {
 				allInvolvedElements.push(iframeElement);
 			}
 
 			const formElement = this.shadowRoot.querySelector('.map-feedback__form');
-			console.log('🚀 ~ MapFeedbackPanel ~ allInvolvedElements ~ formElement:', formElement);
 
-			// const rootElement = this.shadowRoot;
-			// const allInvolvedElements = [];
-			// if (rootElement) {
-			// 	for (let i = 0; i < rootElement.children.length; i++) {
-			// 		const childElement = rootElement.children[i];
-			// 		console.log('🚀 ~ MapFeedbackPanel ~ allInvolvedElements ~ childElement.tagName:', childElement.tagName);
-			// 		const classNameXX = childElement.className;
-			// 		console.log('🚀 ~ MapFeedbackPanel ~ allInvolvedElements ~ classNameXX:', classNameXX);
-			// 		// map-feedback__container is-landscape
-
-			// 		if (childElement.className.includes('map-feedback__container')) {
-			// 		}
-			// 	}
-			// }
 			if (formElement) {
 				for (let n = 0; n < formElement.children.length; n++) {
 					const childElement = formElement.children[n];
-					// console.log('🚀 ~ MapFeedbackPanel ~ allInvolvedElements ~ childElement:', childElement);
 					if (childElement.tagName === 'DIV') {
 						const className = childElement.className;
 
 						if (className.includes('ba-form-element')) {
 							allInvolvedElements.push(childElement);
-
-							// // console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement:', childChildElement);
-							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.tagName:', childElement.tagName);
-							// const wasTouched = elementHasClass(childElement, 'wasTouched');
-							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ wasTouched:', wasTouched);
-							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.id:', childElement.id);
-							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.className:', childElement.className);
-							// console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.classList:', childElement.classList);
-							// // console.log('🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.textContent:', childChildElement.textContent);
-							// // console.log("🚀 ~ MapFeedbackPanel ~ createView ~ childChildElement.style:", childChildElement.style)
-
-							// console.log('🚀🚀🚀🚀');
 						}
 					}
 				}
 			}
-			// console.log('🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀🚀');
 			return allInvolvedElements;
 		};
-
-		// todo remove:
-		allInvolvedElements();
 
 		const handleCategoryChange = () => {
 			this._noAnimation = true;
@@ -260,7 +220,7 @@ export class MapFeedbackPanel extends MvuElement {
 			categoryFormElement.classList.add('wasTouched');
 
 			const { value } = event.target;
-			this.signal(Update_Description, value);
+			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const isValidCategory = (category) => {
@@ -280,11 +240,13 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			this.signal(Remember_Submit, true);
-
 			allInvolvedElements().forEach((element) => {
 				element.classList.add('wasTouched');
 			});
+
+			// this.requestUpdate();
+			// todo remove (Remember_Submit not used anymore)
+			this.signal(Remember_Submit, true);
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
@@ -309,10 +271,38 @@ export class MapFeedbackPanel extends MvuElement {
 			return queryParameters;
 		};
 
-		const iframeSrc = this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]);
+		const filterUserGeneratedLayers = (encodedState) => {
+			const [baseUrl, searchParamsString] = encodedState.split('?');
+			const searchParams = new URLSearchParams(searchParamsString);
+			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
 
-		// const category = this.shadowRoot.getElementById('category');
-		// elementHasClass(childElement, 'wasTouched')
+			searchParams.set(
+				QueryParameters.LAYER,
+				layers.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l)).join(',')
+			);
+			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
+		};
+
+		// Create an iframe source without any user-generated georesources that could be unintentionally affect the feedback or the georesource itself.
+		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
+
+		const hideIframeHint = (fileId) => {
+			const iFrameWasTouched = elementWasTouched('.map-feedback__iframe');
+			// if element with class '.map-feedback__iframe' was not touched
+			if (!iFrameWasTouched) {
+				// hide IframeHint --> return true
+				return true;
+			}
+			// if iFrameWasTouched go on
+
+			// if fileId was set
+			if (fileId) {
+				// hide IframeHint --> return true
+				return true;
+			}
+			// show IframeHint --> return false
+			return false;
+		};
 
 		return html`
 			<style>
@@ -329,7 +319,8 @@ export class MapFeedbackPanel extends MvuElement {
 						loading="lazy"
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
-					${!hasClass('.map-feedback__iframe', 'wasTouched') || mapFeedback.fileId
+
+					${hideIframeHint(mapFeedback.fileId)
 						? html.nothing
 						: html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>

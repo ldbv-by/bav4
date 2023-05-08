@@ -21,6 +21,7 @@
 	width: 100%;
 }
 .map-feedback__iframe-hint {
+	display: none;
 	position: absolute;
 	margin: 1em 2em;
 	color: var(--text3);
@@ -28,6 +29,9 @@
 	bottom: 0;
 	font-size: 1.3rem;
 	padding: 1em;
+}
+.wasTouched .map-feedback__iframe-hint {
+	display: flex;
 }
 .map-feedback__form {
 	padding: 0 1em;
