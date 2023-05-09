@@ -202,6 +202,25 @@ describe('LayerService', () => {
 				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
 			});
 
+			it('converts a XyzGeoresource to a olLayer containing an array of urls', () => {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const xyzGeoresource = new XyzGeoResource(geoResourceId, 'label', ['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+
+				const xyzOlLayer = instanceUnderTest.toOlLayer(id, xyzGeoresource);
+
+				expect(xyzOlLayer.get('id')).toBe(id);
+				expect(xyzOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(xyzOlLayer.getPreload()).toBe(3);
+				expect(xyzOlLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(xyzOlLayer.getMaxZoom()).toBePositiveInfinity();
+				const xyzSource = xyzOlLayer.getSource();
+				expect(xyzOlLayer.constructor.name).toBe('TileLayer');
+				expect(xyzSource.constructor.name).toBe('XYZ');
+				expect(xyzSource.getUrls()).toEqual(['https://some1/layer/{z}/{x}/{y}', 'https://some2/layer/{z}/{x}/{y}']);
+			});
+
 			it('converts a XyzGeoresource containing optional properties to a olLayer', () => {
 				const instanceUnderTest = setup();
 				const id = 'id';
