@@ -371,12 +371,16 @@ export class WmsGeoResource extends GeoResource {
 export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
-		this._url = url;
+		this._urls = url;
 		this._tileGridId = null;
 	}
 
-	get url() {
-		return this._url;
+	/**
+	 * The urls of this `XyzGeoResource`.
+	 *  @type {string|string[]}
+	 */
+	get urls() {
+		return this._urls;
 	}
 
 	/**
