@@ -577,6 +577,21 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
 		});
+
+		fit('its parent receives the "wasTouched" class', async () => {
+			// arrange
+			const emailValue = 'email';
+			const element = await setup();
+
+			// act
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = emailValue;
+			emailInput.dispatchEvent(new Event('input'));
+
+			// assert
+			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes('wasTouched')).toBeTrue();
+		});
 	});
 
 	describe('when category is changed', () => {
