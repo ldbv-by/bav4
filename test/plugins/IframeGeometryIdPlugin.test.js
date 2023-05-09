@@ -53,6 +53,26 @@ describe('IframeGeometryIdPlugin', () => {
 		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, expectedGeometryId);
 	});
 
+	it('updates the iframes data attribute when drawing is deleted', async () => {
+		const expectedGeometryId = 'foo';
+		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		const store = setup();
+		const instanceUnderTest = new IframeGeometryIdPlugin();
+		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
+		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
+		await instanceUnderTest.register(store);
+
+		// drawing created
+		setFileSaveResult({ content: 'content', fileSaveResult: { adminId: 'adminId', fileId: expectedGeometryId } });
+
+		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, expectedGeometryId);
+
+		// drawing deleted
+		setFileSaveResult(null);
+
+		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, null);
+	});
+
 	it("does nothing when we are NOT in 'embed' mode", async () => {
 		spyOn(environmentService, 'isEmbedded').and.returnValue(false);
 		const store = setup();
