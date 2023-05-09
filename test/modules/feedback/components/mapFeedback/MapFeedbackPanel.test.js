@@ -578,7 +578,7 @@ describe('MapFeedbackPanel', () => {
 			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
 		});
 
-		fit('its parent receives the "wasTouched" class', async () => {
+		it('its parent receives the "wasTouched" class', async () => {
 			// arrange
 			const emailValue = 'email';
 			const element = await setup();
