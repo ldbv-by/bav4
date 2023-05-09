@@ -194,11 +194,12 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(element._allInvolvedElements).toBeDefined();
-			expect(allInvolvedElements.length).toBe(3);
-			expect(nodeValues.length).toBe(3);
+			expect(allInvolvedElements.length).toBe(4);
+			expect(nodeValues.length).toBe(4);
 			expect(nodeValues.includes('map-feedback__iframe')).toBeTrue();
 			expect(nodeValues.includes('description-form-element')).toBeTrue();
 			expect(nodeValues.includes('category-form-element')).toBeTrue();
+			expect(nodeValues.includes('email-form-element')).toBeTrue();
 		});
 	});
 

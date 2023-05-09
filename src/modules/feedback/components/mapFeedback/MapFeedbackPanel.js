@@ -136,17 +136,20 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
-		const handleEmailChange = (event) => {
-			const { value } = event.target;
-			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
-		};
-
 		const handleDescriptionChange = (event) => {
 			const categoryFormElement = this.shadowRoot.getElementById('description-form-element');
 			categoryFormElement.classList.add('wasTouched');
 
 			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
+		};
+
+		const handleEmailChange = (event) => {
+			const categoryFormElement = this.shadowRoot.getElementById('email-form-element');
+			categoryFormElement.classList.add('wasTouched');
+
+			const { value } = event.target;
+			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
 		const isValidCategory = (category) => {
@@ -276,7 +279,7 @@ export class MapFeedbackPanel extends MvuElement {
 						<label class="error-label">${translate('feedback_mapFeedback_changeDescription_error')}</label>
 						<i class="icon error"></i>
 					</div>
-					<div class="ba-form-element">
+					<div class="ba-form-element" id="email-form-element">
 						<input
 							type="email"
 							id="email"
@@ -345,32 +348,15 @@ export class MapFeedbackPanel extends MvuElement {
 
 	_allInvolvedElements() {
 		const allInvolvedElements = [];
-
-		const iframeElement = this.shadowRoot.querySelector('.map-feedback__iframe');
-		if (iframeElement) {
-			allInvolvedElements.push(iframeElement);
-		}
-
-		const formElement = this.shadowRoot.querySelector('.map-feedback__form');
-		if (formElement) {
-			for (let n = 0; n < formElement.children.length; n++) {
-				const childElement = formElement.children[n];
-				if (childElement.tagName === 'DIV') {
-					let childIsRequired = false;
-					for (let index = 0; index < childElement.children.length; index++) {
-						const element = childElement.children[index];
-						if (element.required) {
-							childIsRequired = true;
-						}
-					}
-					const className = childElement.className;
-					if (className.includes('ba-form-element') && childIsRequired) {
-						allInvolvedElements.push(childElement);
-					}
-				}
-			}
-		}
+		allInvolvedElements.push(this.shadowRoot.querySelector('.map-feedback__iframe'));
+		allInvolvedElements.push(...this._allBaFormElements());
 		return allInvolvedElements;
+	}
+
+	_allBaFormElements() {
+		const allElements = [];
+		allElements.push(...this.shadowRoot.querySelectorAll('.ba-form-element'));
+		return allElements;
 	}
 
 	/**
