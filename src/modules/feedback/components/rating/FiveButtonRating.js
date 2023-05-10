@@ -13,12 +13,12 @@ import { $injector } from '../../../../injection';
  * @enum
  */
 export const Rating = Object.freeze({
-	NONE: 0,
-	TERRIBLE: 1,
-	BAD: 2,
-	SATISFIED: 3,
-	GOOD: 4,
-	EXCELLENT: 5
+	NONE: '0',
+	TERRIBLE: '1',
+	BAD: '2',
+	SATISFIED: '3',
+	GOOD: '4',
+	EXCELLENT: '5'
 });
 
 const Update_Rating = 'update_rating';
@@ -48,6 +48,9 @@ export class FiveButtonRating extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const handleRatingChange = (rating) => {
+			if (rating === Rating.EXCELLENT) {
+				rating = Rating.NONE;
+			}
 			this.signal(Update_Rating, rating);
 
 			this.dispatchEvent(

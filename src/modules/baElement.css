@@ -276,14 +276,18 @@ input[type='range']:focus {
 	left: 0;
 	background: var(--error-color);
 }
+.ba-form-element.userVisited ba-mvu-fivebuttonrating[invalid-rating='true'] ~ .control-label,
 .ba-form-element.userVisited input:invalid ~ .control-label,
 .ba-form-element.userVisited textarea:invalid ~ .control-label {
 	color: var(--error-color);
 }
+.ba-form-element.userVisited ba-mvu-fivebuttonrating[invalid-rating='true'] ~ .helper-label,
 .ba-form-element.userVisited input:invalid ~ .helper-label,
 .ba-form-element.userVisited textarea:invalid ~ .helper-label {
 	display: none;
 }
+
+.ba-form-element.userVisited ba-mvu-fivebuttonrating[invalid-rating='true'] ~ .error-label,
 .ba-form-element.userVisited input:invalid ~ .error-label,
 .ba-form-element.userVisited textarea:invalid ~ .error-label {
 	display: block;

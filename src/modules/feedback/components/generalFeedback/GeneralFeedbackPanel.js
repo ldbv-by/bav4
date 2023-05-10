@@ -10,6 +10,7 @@ import { LevelTypes, emitNotification } from '../../../../store/notifications/no
 import { Rating } from '../rating/FiveButtonRating';
 import css from './generalFeedbackPanel.css';
 
+const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 
@@ -26,10 +27,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 			}
 		});
 
-		const { ConfigService: configService, TranslationService: translationService } = $injector.inject('ConfigService', 'TranslationService');
+		const {
+			ConfigService: configService,
+			TranslationService: translationService,
+			SecurityService: securityService
+		} = $injector.inject('ConfigService', 'TranslationService', 'SecurityService');
 
 		this._configService = configService;
 		this._translationService = translationService;
+		this._securityService = securityService;
 	}
 
 	async _saveGeneralFeedback(generalFeedback) {
@@ -49,6 +55,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 				return { ...model, generalFeedback: { ...model.generalFeedback, description: data } };
 			case Update_EMail:
 				return { ...model, generalFeedback: { ...model.generalFeedback, email: data } };
+			case Update_Rating:
+				return { ...model, generalFeedback: { ...model.generalFeedback, rating: data } };
 		}
 	}
 
@@ -61,11 +69,14 @@ export class GeneralFeedbackPanel extends MvuElement {
 			const {
 				detail: { rating }
 			} = event;
-
 			console.log('🚀 ~ GeneralFeedbackPanel ~ handleRatingChange ~ rating:', rating);
 
-			const ratingElement = this.shadowRoot.getElementById('rating');
+			const ratingElement = this.shadowRoot.getElementById('rating-form-element');
 			ratingElement.classList.add(User_Visited_Class);
+
+			this.signal(Update_Rating, this._securityService.sanitizeHtml(rating));
+
+			this._setRatingAttribute(rating);
 		};
 
 		const handleEmailChange = (event) => {
@@ -77,8 +88,18 @@ export class GeneralFeedbackPanel extends MvuElement {
 		};
 
 		const handleDescriptionChange = (event) => {
+			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
+			descriptionFormElement.classList.add(User_Visited_Class);
+
 			const { value } = event.target;
-			this.signal(Update_Description, value);
+			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
+		};
+
+		const isValidRating = (rating) => {
+			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidRating ~ rating:', rating);
+			const ratingValid = rating.reportValidity();
+			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidRating ~ ratingValid:', ratingValid);
+			return ratingValid;
 		};
 
 		const isValidDescription = (description) => {
@@ -86,11 +107,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 		};
 
 		const isValidEmail = (email) => {
+			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidEmail ~ email:', email);
 			return email.reportValidity();
-		};
-
-		const isValidRating = (rating) => {
-			return rating.reportValidity();
 		};
 
 		const handleSubmit = () => {
@@ -99,30 +117,25 @@ export class GeneralFeedbackPanel extends MvuElement {
 				element.classList.add(User_Visited_Class);
 			});
 
+			this._setRatingAttribute();
 			this.render();
 
-			const rating = this.shadowRoot.getElementById('rating');
-			if (rating.value === 0) {
-				rating.setAttribute('invalid-rating', '');
-			} else {
-				rating.removeAttribute('invalid-rating');
-			}
+			const ratingElement = this.shadowRoot.getElementById('rating');
+			const descriptionElement = this.shadowRoot.getElementById('description');
+			const emailElement = this.shadowRoot.getElementById('email');
 
-			const description = this.shadowRoot.getElementById('description');
-			const email = this.shadowRoot.getElementById('email');
+			// const ratingValidationMessage = this.shadowRoot.getElementById('rating-validation-message');
+			// const ratingElement = this.shadowRoot.getElementById('rating');
+			// const ratingIsValid = isValidRating(ratingElement);
+			// if (!ratingIsValid) {
+			// 	const parent = ratingElement.parentElement;
+			// 	console.log('🚀 ~ GeneralFeedbackPanel ~ handleSubmit ~ parent:', parent);
+			// 	// rating.invalidate();
+			// 	ratingValidationMessage.style.display = 'block';
+			// 	return;
+			// }
 
-			const ratingValidationMessage = this.shadowRoot.getElementById('rating-validation-message');
-
-			const ratingIsValid = isValidRating(rating);
-			if (!ratingIsValid) {
-				const parent = rating.parentElement;
-				console.log('🚀 ~ GeneralFeedbackPanel ~ handleSubmit ~ parent:', parent);
-				// rating.invalidate();
-				ratingValidationMessage.style.display = 'block';
-				return;
-			}
-
-			if (ratingIsValid && isValidDescription(description) && isValidEmail(email)) {
+			if (isValidRating(ratingElement) && isValidDescription(descriptionElement) && isValidEmail(emailElement)) {
 				this._saveGeneralFeedback(generalFeedback);
 			}
 		};
@@ -134,7 +147,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			<h2 id="feedbackPanelTitle">${translate('feedback_generalfeedback_header')}</h2>
 
-			<div class="ba-form-element">
+			<div class="ba-form-element" id="rating-form-element">
 				<label for="rating" class="control-label">${translate('feedback_generalfeedback_rating')}</label>
 				<ba-mvu-fivebuttonrating
 					class="ba-mvu-fivebuttonrating"
@@ -153,7 +166,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<div id="rating-validation-message" class="error-message"></div>
 			</div>
 
-			<div class="ba-form-element">
+			<div class="ba-form-element" id="description-form-element">
 				<label for="description" class="control-label">${translate('feedback_generalfeedback_changeDescription')}</label>
 				<textarea
 					type="text"
@@ -169,7 +182,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label class="error-label">Error text</label>
 			</div>
 
-			<div class="ba-form-element">
+			<div class="ba-form-element" id="email-form-element">
 				<input
 					type="email"
 					id="email"
@@ -184,15 +197,40 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label class="error-label">Error text</label>
 			</div>
 
-			<div class="ba-form-element">
-				${translate('feedback_mapFeedback_disclaimer')} (<a
-					href="https://geoportal.bayern.de/bayernatlas/?lang=de&topic=ba&catalogNodes=11&bgLayer=atkis&layers=timLayer#"
+			<p id="feedback_mapFeedback_disclaimer" class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
+				${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
 					>${translate('feedback_mapFeedback_privacyPolicy')}</a
 				>).
-			</div>
+			</p>
 
 			<ba-button id="button0" .label=${'Senden'} .type=${'primary'} @click=${handleSubmit} />
 		`;
+	}
+
+	_setRatingAttribute(rating) {
+		const ratingElement = this.shadowRoot.getElementById('rating');
+		console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ ratingElement:', ratingElement);
+		if (rating) {
+			console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ rating:', rating);
+
+			if (rating === '0') {
+				ratingElement.setAttribute('invalid-rating', 'true');
+				console.log("setAttribute('invalid-rating', 'true')");
+			} else {
+				ratingElement.removeAttribute('invalid-rating');
+				console.log("removeAttribute('invalid-rating')");
+			}
+			return;
+		}
+
+		console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ ratingElement.value:', ratingElement.value);
+		if (ratingElement.value === '0') {
+			ratingElement.setAttribute('invalid-rating', 'true');
+			console.log("setAttribute('invalid-rating',  'true')");
+		} else {
+			ratingElement.removeAttribute('invalid-rating');
+			console.log("removeAttribute('invalid-rating')");
+		}
 	}
 
 	_allBaFormElements() {
