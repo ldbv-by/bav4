@@ -8,7 +8,7 @@ import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
-import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
@@ -20,7 +20,6 @@ const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
-const User_Visited_Class = 'userVisited';
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
  * @class
@@ -118,7 +117,7 @@ export class MapFeedbackPanel extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const addVisitedClass = (element) => {
-			element.classList.add(User_Visited_Class);
+			element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 		};
 
 		const onCategoryChange = (event) => {
@@ -149,7 +148,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const onSubmit = () => {
-			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(User_Visited_Class));
+			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');

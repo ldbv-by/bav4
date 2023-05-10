@@ -6,12 +6,10 @@ import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
-
-const userVisitedClass = 'userVisited';
 
 const configServiceMock = {
 	getValueAsPath: () => {}
@@ -493,7 +491,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(allBaFormElements).toHaveSize(4);
 			allBaFormElements.forEach((element) => {
-				expect(element.classList.contains(userVisitedClass)).toBeTrue();
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 			});
 		});
 	});
@@ -538,7 +536,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
@@ -570,7 +568,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
@@ -602,7 +600,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
