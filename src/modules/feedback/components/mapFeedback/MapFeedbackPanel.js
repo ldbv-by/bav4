@@ -121,25 +121,25 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const onCategoryChange = (event) => {
-			const select = this.shadowRoot.getElementById('category');
-			const selectedCategory = select.options[select.selectedIndex].value;
+			const select = event.target;
+			const selectedCategory = event.target.options[select.selectedIndex].value;
 
-			addVisitedClass(event.target.parentNode);
+			addVisitedClass(select.parentNode);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const onDescriptionChange = (event) => {
-			addVisitedClass(event.target.parentNode);
+			const { value, parentNode } = event.target;
+			addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const onEmailChange = (event) => {
-			addVisitedClass(event.target.parentNode);
+			const { value, parentNode } = event.target;
+			addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
