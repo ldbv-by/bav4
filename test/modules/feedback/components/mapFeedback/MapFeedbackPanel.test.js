@@ -64,7 +64,7 @@ const setup = (state = {}) => {
 		.registerSingleton('FileStorageService', fileStorageServiceMock)
 		.registerSingleton('SecurityService', securityServiceMock);
 
-	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
+	return TestUtils.render(MapFeedbackPanel.tag);
 };
 
 describe('MapFeedbackPanel', () => {
@@ -205,8 +205,8 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
-	describe('when listen to iframe-attribute changes', () => {
-		it('updates mapFeedback.fileId and .state', async () => {
+	describe('when iframe-attribute changes', () => {
+		it('updates mapFeedback "fileId" and "state" property', async () => {
 			const fileId = 'f_foo';
 			const element = await setup();
 
@@ -221,13 +221,18 @@ describe('MapFeedbackPanel', () => {
 
 			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, '');
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.fileId).toBeNull();
+
 			// no calls by changes on any other attribute
 			iframe.setAttribute('foo', 'bar');
 
 			await TestUtils.timeout();
 
-			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
-			expect(updateStateSpy).toHaveBeenCalledTimes(1);
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
+			expect(updateStateSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('updates mapFeedback.state', async () => {
