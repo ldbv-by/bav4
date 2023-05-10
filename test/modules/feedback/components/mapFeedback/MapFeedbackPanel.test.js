@@ -177,32 +177,6 @@ describe('MapFeedbackPanel', () => {
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
-
-		it('gets the correct elements from _allBaFormElements', async () => {
-			// arrange
-			const element = await setup();
-
-			const allInvolvedElements = element._allBaFormElements();
-
-			const nodeValues = [];
-			allInvolvedElements.forEach((element) => {
-				if (element.attributes.length === 1) {
-					nodeValues.push(element.attributes['class'].nodeValue);
-				}
-				if (element.attributes.length > 1) {
-					nodeValues.push(element.attributes['id'].nodeValue);
-				}
-			});
-
-			// assert
-			expect(element._allBaFormElements).toBeDefined();
-			expect(allInvolvedElements.length).toBe(4);
-			expect(nodeValues.length).toBe(4);
-			expect(nodeValues.includes('map-feedback__iframe ba-form-element')).toBeTrue();
-			expect(nodeValues.includes('description-form-element')).toBeTrue();
-			expect(nodeValues.includes('category-form-element')).toBeTrue();
-			expect(nodeValues.includes('email-form-element')).toBeTrue();
-		});
 	});
 
 	describe('when iframe-attribute changes', () => {
@@ -509,16 +483,16 @@ describe('MapFeedbackPanel', () => {
 		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
 			// arrange
 			const element = await setup();
-			const allBaFormElements = element._allBaFormElements();
+			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
 			// assert
+			expect(allBaFormElements).toHaveSize(4);
 			allBaFormElements.forEach((element) => {
-				const nodeValue = element.attributes['class'].nodeValue;
-				expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+				expect(element.classList.contains(userVisitedClass)).toBeTrue();
 			});
 		});
 	});

@@ -147,9 +147,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const onSubmit = () => {
-			this._allBaFormElements().forEach((element) => {
-				element.classList.add(User_Visited_Class);
-			});
+			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(User_Visited_Class));
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
@@ -305,12 +303,6 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		}
 		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
-	}
-
-	_allBaFormElements() {
-		const allElements = [];
-		allElements.push(...this.shadowRoot.querySelectorAll('.ba-form-element'));
-		return allElements;
 	}
 
 	/**
