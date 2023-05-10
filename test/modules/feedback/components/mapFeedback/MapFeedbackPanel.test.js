@@ -178,11 +178,11 @@ describe('MapFeedbackPanel', () => {
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
 
-		it('gets the correct elements from _allInvolvedElements', async () => {
+		it('gets the correct elements from _allBaFormElements', async () => {
 			// arrange
 			const element = await setup();
 
-			const allInvolvedElements = element._allInvolvedElements();
+			const allInvolvedElements = element._allBaFormElements();
 
 			const nodeValues = [];
 			allInvolvedElements.forEach((element) => {
@@ -195,10 +195,10 @@ describe('MapFeedbackPanel', () => {
 			});
 
 			// assert
-			expect(element._allInvolvedElements).toBeDefined();
+			expect(element._allBaFormElements).toBeDefined();
 			expect(allInvolvedElements.length).toBe(4);
 			expect(nodeValues.length).toBe(4);
-			expect(nodeValues.includes('map-feedback__iframe')).toBeTrue();
+			expect(nodeValues.includes('map-feedback__iframe ba-form-element')).toBeTrue();
 			expect(nodeValues.includes('description-form-element')).toBeTrue();
 			expect(nodeValues.includes('category-form-element')).toBeTrue();
 			expect(nodeValues.includes('email-form-element')).toBeTrue();
@@ -503,17 +503,17 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
 
-		it('all involved elements receive the "userVisited" class', async () => {
+		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
 			// arrange
 			const element = await setup();
-			const allInvolvedElements = element._allInvolvedElements();
+			const allBaFormElements = element._allBaFormElements();
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
 			// assert
-			allInvolvedElements.forEach((element) => {
+			allBaFormElements.forEach((element) => {
 				const nodeValue = element.attributes['class'].nodeValue;
 				expect(nodeValue.includes(userVisitedClass)).toBeTrue();
 			});

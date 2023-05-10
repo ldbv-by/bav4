@@ -169,7 +169,7 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleSubmit = () => {
-			this._allInvolvedElements().forEach((element) => {
+			this._allBaFormElements().forEach((element) => {
 				element.classList.add(userVisitedClass);
 			});
 
@@ -235,7 +235,7 @@ export class MapFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 			<div class="map-feedback__container ${getOrientationClass()}">
-				<div class="map-feedback__iframe">
+				<div class="map-feedback__iframe ba-form-element">
 					<iframe
 						data-iframe-geometry-reference-id
 						data-iframe-encoded-state
@@ -344,13 +344,6 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		}
 		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
-	}
-
-	_allInvolvedElements() {
-		const allInvolvedElements = [];
-		allInvolvedElements.push(this.shadowRoot.querySelector('.map-feedback__iframe'));
-		allInvolvedElements.push(...this._allBaFormElements());
-		return allInvolvedElements;
 	}
 
 	_allBaFormElements() {
