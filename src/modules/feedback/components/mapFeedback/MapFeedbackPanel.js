@@ -11,7 +11,6 @@ import { PathParameters } from '../../../../domain/pathParameters';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
-import { elements } from 'chart.js';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
