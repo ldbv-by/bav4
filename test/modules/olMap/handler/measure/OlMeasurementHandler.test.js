@@ -310,6 +310,22 @@ describe('OlMeasurementHandler', () => {
 				expect(store.getState().measurement.fileSaveResult.payload.content).toContain('<kml');
 				expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save(map);
+
+				await TestUtils.timeout();
+				expect(store.getState().measurement.fileSaveResult.payload).toBeNull();
+			});
 		});
 
 		describe('uses Interactions', () => {

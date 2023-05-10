@@ -299,7 +299,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		describe('_save', () => {
-			it('calls the InteractionService and updates the draw slice-of-state ', async () => {
+			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
 				const store = setup(state);
@@ -316,6 +316,23 @@ describe('OlDrawHandler', () => {
 				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
 				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
 				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
+			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				await TestUtils.timeout();
+
+				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 			});
 		});
 
