@@ -39,7 +39,7 @@ export class IframeGeometryIdPlugin extends BaPlugin {
 	}
 
 	_updateAttribute(fileId) {
-		this._findIframe()?.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+		this._findIframe()?.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId ? fileId : '');
 	}
 
 	_findIframe() {
