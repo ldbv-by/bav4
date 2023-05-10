@@ -11,10 +11,10 @@
 	flex: 1;
 	position: relative;
 }
-.map-feedback__iframe.wasTouched iframe[data-iframe-geometry-reference-id=''] {
+.map-feedback__iframe.userVisited iframe[data-iframe-geometry-reference-id=''] {
 	border-bottom: 5px solid var(--error-color);
 }
-.map-feedback__iframe.wasTouched iframe[data-iframe-geometry-reference-id^='f_'] {
+.map-feedback__iframe.userVisited iframe[data-iframe-geometry-reference-id^='f_'] {
 	border-bottom: none;
 }
 .is-portrait .map-feedback__iframe iframe {
@@ -30,7 +30,7 @@
 	font-size: 1.3rem;
 	padding: 1em;
 }
-.wasTouched .map-feedback__iframe-hint {
+.userVisited .map-feedback__iframe-hint {
 	display: flex;
 }
 .map-feedback__form {

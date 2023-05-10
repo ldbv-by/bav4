@@ -11,6 +11,8 @@ import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
 
+const userVisitedClass = 'userVisited';
+
 const configServiceMock = {
 	getValueAsPath: () => {}
 };
@@ -501,7 +503,7 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
 
-		it('all involved elements receive the "wasTouched" class', async () => {
+		it('all involved elements receive the "userVisited" class', async () => {
 			// arrange
 			const element = await setup();
 			const allInvolvedElements = element._allInvolvedElements();
@@ -513,7 +515,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			allInvolvedElements.forEach((element) => {
 				const nodeValue = element.attributes['class'].nodeValue;
-				expect(nodeValue.includes('wasTouched')).toBeTrue();
+				expect(nodeValue.includes(userVisitedClass)).toBeTrue();
 			});
 		});
 	});
@@ -546,7 +548,7 @@ describe('MapFeedbackPanel', () => {
 			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
 		});
 
-		it('its parent receives the "wasTouched" class', async () => {
+		it('its parent receives the "userVisited" class', async () => {
 			// arrange
 			const descriptionValue = 'description';
 			const element = await setup();
@@ -558,7 +560,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes('wasTouched')).toBeTrue();
+			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
 		});
 	});
 
@@ -578,7 +580,7 @@ describe('MapFeedbackPanel', () => {
 			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
 		});
 
-		it('its parent receives the "wasTouched" class', async () => {
+		it('its parent receives the "userVisited" class', async () => {
 			// arrange
 			const emailValue = 'email';
 			const element = await setup();
@@ -590,7 +592,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes('wasTouched')).toBeTrue();
+			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
 		});
 	});
 
@@ -610,7 +612,7 @@ describe('MapFeedbackPanel', () => {
 			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
 		});
 
-		it('its parent receives the "wasTouched" class', async () => {
+		it('its parent receives the "userVisited" class', async () => {
 			// arrange
 			const categoryValue = 'Bar';
 			const element = await setup();
@@ -622,7 +624,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes('wasTouched')).toBeTrue();
+			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
 		});
 	});
 

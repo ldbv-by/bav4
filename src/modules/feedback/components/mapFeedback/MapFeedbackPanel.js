@@ -112,17 +112,17 @@ export class MapFeedbackPanel extends MvuElement {
 
 	createView(model) {
 		const { mapFeedback, categoryOptions, isPortrait } = model;
-		const wasTouchedString = 'wasTouched';
+		const userVisitedClass = 'userVisited';
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const elementWasTouched = (elementName) => {
+		const elementUserVisited = (elementName) => {
 			const element = this.shadowRoot.querySelector(elementName);
 			if (!element) {
 				return false;
 			}
-			const elementWasTouchedRetVal = element.classList.contains(wasTouchedString);
-			return elementWasTouchedRetVal;
+			const elementUserVisitedRetVal = element.classList.contains(userVisitedClass);
+			return elementUserVisitedRetVal;
 		};
 
 		const handleCategoryChange = () => {
@@ -131,14 +131,14 @@ export class MapFeedbackPanel extends MvuElement {
 			const selectedCategory = select.options[select.selectedIndex].value;
 
 			const categoryFormElement = this.shadowRoot.getElementById('category-form-element');
-			categoryFormElement.classList.add('wasTouched');
+			categoryFormElement.classList.add(userVisitedClass);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const handleDescriptionChange = (event) => {
 			const categoryFormElement = this.shadowRoot.getElementById('description-form-element');
-			categoryFormElement.classList.add('wasTouched');
+			categoryFormElement.classList.add(userVisitedClass);
 
 			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
@@ -146,7 +146,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleEmailChange = (event) => {
 			const categoryFormElement = this.shadowRoot.getElementById('email-form-element');
-			categoryFormElement.classList.add('wasTouched');
+			categoryFormElement.classList.add(userVisitedClass);
 
 			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
@@ -170,7 +170,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleSubmit = () => {
 			this._allInvolvedElements().forEach((element) => {
-				element.classList.add('wasTouched');
+				element.classList.add(userVisitedClass);
 			});
 
 			this.render();
@@ -214,13 +214,13 @@ export class MapFeedbackPanel extends MvuElement {
 		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
 
 		const hideIframeHint = (fileId) => {
-			const iFrameWasTouched = elementWasTouched('.map-feedback__iframe');
+			const iFrameUserVisited = elementUserVisited('.map-feedback__iframe');
 			// if element with class '.map-feedback__iframe' was not touched
-			if (!iFrameWasTouched) {
+			if (!iFrameUserVisited) {
 				// hide IframeHint
 				return true;
 			}
-			// if iFrameWasTouched go on
+			// if iFrameUserVisited go on
 			// if fileId was set
 			if (fileId) {
 				// hide IframeHint
