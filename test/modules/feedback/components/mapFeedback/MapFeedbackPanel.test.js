@@ -211,7 +211,6 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
 
 			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
@@ -232,7 +231,6 @@ describe('MapFeedbackPanel', () => {
 			await TestUtils.timeout();
 
 			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
-			expect(updateStateSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('updates mapFeedback.state', async () => {
