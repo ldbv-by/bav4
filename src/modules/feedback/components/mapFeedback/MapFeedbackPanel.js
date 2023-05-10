@@ -72,6 +72,7 @@ export class MapFeedbackPanel extends MvuElement {
 				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_GEOMETRY_REFERENCE_ID) {
 					const geometryId = mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID);
 					this._updateFileId(geometryId.length ? geometryId : null);
+					this._updateState(this._encodeFeedbackState(mutation.target.getAttribute(IFRAME_ENCODED_STATE)));
 				}
 
 				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_ENCODED_STATE) {
