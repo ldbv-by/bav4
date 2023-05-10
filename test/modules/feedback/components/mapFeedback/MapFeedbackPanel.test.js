@@ -320,13 +320,12 @@ describe('MapFeedbackPanel', () => {
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
-		it('calls FeedbackService.getCategories()', async () => {
+		it('initially calls FeedbackService.getCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories');
-			const element = await setup();
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.returnValue([]);
 
 			// act
-			await element._getCategoryOptions();
+			await setup();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
