@@ -151,8 +151,6 @@ export class MapFeedbackPanel extends MvuElement {
 				element.classList.add(User_Visited_Class);
 			});
 
-			this.render();
-
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
 			const email = this.shadowRoot.getElementById('email');
