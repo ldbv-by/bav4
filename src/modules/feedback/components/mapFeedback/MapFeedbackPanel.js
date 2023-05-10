@@ -137,16 +137,16 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		const handleDescriptionChange = (event) => {
-			const categoryFormElement = this.shadowRoot.getElementById('description-form-element');
-			categoryFormElement.classList.add(User_Visited_Class);
+			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
+			descriptionFormElement.classList.add(User_Visited_Class);
 
 			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const handleEmailChange = (event) => {
-			const categoryFormElement = this.shadowRoot.getElementById('email-form-element');
-			categoryFormElement.classList.add(User_Visited_Class);
+			const emailFormElement = this.shadowRoot.getElementById('email-form-element');
+			emailFormElement.classList.add(User_Visited_Class);
 
 			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
