@@ -20,6 +20,7 @@ const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
+const User_Visited_Class = 'userVisited';
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
  * @class
@@ -112,7 +113,6 @@ export class MapFeedbackPanel extends MvuElement {
 
 	createView(model) {
 		const { mapFeedback, categoryOptions, isPortrait } = model;
-		const userVisitedClass = 'userVisited';
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -121,7 +121,7 @@ export class MapFeedbackPanel extends MvuElement {
 			if (!element) {
 				return false;
 			}
-			const elementUserVisitedRetVal = element.classList.contains(userVisitedClass);
+			const elementUserVisitedRetVal = element.classList.contains(User_Visited_Class);
 			return elementUserVisitedRetVal;
 		};
 
@@ -131,14 +131,14 @@ export class MapFeedbackPanel extends MvuElement {
 			const selectedCategory = select.options[select.selectedIndex].value;
 
 			const categoryFormElement = this.shadowRoot.getElementById('category-form-element');
-			categoryFormElement.classList.add(userVisitedClass);
+			categoryFormElement.classList.add(User_Visited_Class);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const handleDescriptionChange = (event) => {
 			const categoryFormElement = this.shadowRoot.getElementById('description-form-element');
-			categoryFormElement.classList.add(userVisitedClass);
+			categoryFormElement.classList.add(User_Visited_Class);
 
 			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
@@ -146,7 +146,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleEmailChange = (event) => {
 			const categoryFormElement = this.shadowRoot.getElementById('email-form-element');
-			categoryFormElement.classList.add(userVisitedClass);
+			categoryFormElement.classList.add(User_Visited_Class);
 
 			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
@@ -170,7 +170,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const handleSubmit = () => {
 			this._allBaFormElements().forEach((element) => {
-				element.classList.add(userVisitedClass);
+				element.classList.add(User_Visited_Class);
 			});
 
 			this.render();
@@ -327,6 +327,8 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	_updateFileId(id) {
+		const categoryFormElement = this.shadowRoot.querySelector('.map-feedback__iframe');
+		categoryFormElement.classList.add(User_Visited_Class);
 		this.signal(Update_Geometry_Id, id);
 	}
 
