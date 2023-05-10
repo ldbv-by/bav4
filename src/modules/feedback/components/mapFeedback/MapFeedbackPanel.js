@@ -256,7 +256,7 @@ export class MapFeedbackPanel extends MvuElement {
 							>${translate('feedback_mapFeedback_privacyPolicy')}</a
 						>).
 					</p>
-					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit} />
+					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
 				</div>
 			</div>
 		`;
