@@ -116,15 +116,6 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const elementUserVisited = (elementName) => {
-			const element = this.shadowRoot.querySelector(elementName);
-			if (!element) {
-				return false;
-			}
-			const elementUserVisitedRetVal = element.classList.contains(User_Visited_Class);
-			return elementUserVisitedRetVal;
-		};
-
 		const handleCategoryChange = () => {
 			this._noAnimation = true;
 			const select = this.shadowRoot.getElementById('category');
@@ -210,25 +201,8 @@ export class MapFeedbackPanel extends MvuElement {
 			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
 		};
 
-		// Create an iframe source without any user-generated georesources that could be unintentionally affect the feedback or the georesource itself.
+		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
 		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
-
-		const hideIframeHint = (fileId) => {
-			const iFrameUserVisited = elementUserVisited('.map-feedback__iframe');
-			// if element with class '.map-feedback__iframe' was not touched
-			if (!iFrameUserVisited) {
-				// hide IframeHint
-				return true;
-			}
-			// if iFrameUserVisited go on
-			// if fileId is not set
-			if (fileId === null || fileId === 'null') {
-				// show IframeHint
-				return false;
-			}
-			// hide IframeHint
-			return true;
-		};
 
 		return html`
 			<style>
@@ -246,7 +220,7 @@ export class MapFeedbackPanel extends MvuElement {
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
 
-					${hideIframeHint(mapFeedback.fileId)
+					${mapFeedback.fileId
 						? html.nothing
 						: html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
