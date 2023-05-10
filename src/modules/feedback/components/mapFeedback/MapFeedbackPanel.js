@@ -11,6 +11,7 @@ import { PathParameters } from '../../../../domain/pathParameters';
 import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
+import { elements } from 'chart.js';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -116,27 +117,28 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const onCategoryChange = () => {
+		const addVisitedClass = (element) => {
+			element.classList.add(User_Visited_Class);
+		};
+
+		const onCategoryChange = (event) => {
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
 
-			const categoryFormElement = this.shadowRoot.getElementById('category-form-element');
-			categoryFormElement.classList.add(User_Visited_Class);
+			addVisitedClass(event.target.parentNode);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const onDescriptionChange = (event) => {
-			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
-			descriptionFormElement.classList.add(User_Visited_Class);
+			addVisitedClass(event.target.parentNode);
 
 			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const onEmailChange = (event) => {
-			const emailFormElement = this.shadowRoot.getElementById('email-form-element');
-			emailFormElement.classList.add(User_Visited_Class);
+			addVisitedClass(event.target.parentNode);
 
 			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
@@ -284,8 +286,6 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	_updateFileId(id) {
-		const categoryFormElement = this.shadowRoot.querySelector('.map-feedback__iframe');
-		categoryFormElement.classList.add(User_Visited_Class);
 		this.signal(Update_Geometry_Id, id);
 	}
 
