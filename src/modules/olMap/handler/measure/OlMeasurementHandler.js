@@ -655,7 +655,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant with OlDrawHandler, possible responsibility of a statefull _storageHandler
+	 * todo: redundant with OlDrawHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
 		const features = this._vectorLayer.getSource().getFeatures();
