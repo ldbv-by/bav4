@@ -221,13 +221,13 @@ export class MapFeedbackPanel extends MvuElement {
 				return true;
 			}
 			// if iFrameUserVisited go on
-			// if fileId was set
-			if (fileId) {
-				// hide IframeHint
-				return true;
+			// if fileId is not set
+			if (fileId === null || fileId === 'null') {
+				// show IframeHint
+				return false;
 			}
-			// show IframeHint
-			return false;
+			// hide IframeHint
+			return true;
 		};
 
 		return html`
