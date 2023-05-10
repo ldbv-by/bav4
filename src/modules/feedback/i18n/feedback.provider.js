@@ -24,7 +24,11 @@ export const provide = (lang) => {
 				feedback_toggleFeedback_mapButton: 'Map - Feedback',
 				feedback_toggleFeedback_mapButton_sub: 'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.',
 				feedback_toggleFeedback_generalButton: 'General - Feedback',
-				feedback_toggleFeedback_generalButton_sub: 'Make suggestions for changes or improvements, or report errors.'
+				feedback_toggleFeedback_generalButton_sub: 'Make suggestions for changes or improvements, or report errors.',
+				feedback_generalfeedback_header: 'General Feedback',
+				feedback_generalfeedback_rating: 'Your Vote',
+				feedback_generalfeedback_changeDescription: 'Your message',
+				feedback_generalfeedback_eMail: 'eMail'
 			};
 
 		case 'de':
@@ -52,7 +56,11 @@ export const provide = (lang) => {
 				feedback_toggleFeedback_mapButton_sub:
 					'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.',
 				feedback_toggleFeedback_generalButton: 'Allgemeines Feedback',
-				feedback_toggleFeedback_generalButton_sub: 'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.'
+				feedback_toggleFeedback_generalButton_sub: 'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.',
+				feedback_generalfeedback_header: 'Allgemeiner Feedback',
+				feedback_generalfeedback_rating: 'Ihre Bewertung',
+				feedback_generalfeedback_changeDescription: 'Ihre Nachricht',
+				feedback_generalfeedback_eMail: 'Ihre E-Mail-Adresse'
 			};
 
 		default:

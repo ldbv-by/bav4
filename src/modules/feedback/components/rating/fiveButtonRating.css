@@ -1,0 +1,26 @@
+.star-button {
+	height: 20px;
+	width: 20px;
+	display: inline-block;
+	margin-right: 5px;
+	border: none;
+	border-radius: 10px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.selected {
+	background-color: yellow;
+	color: darkred;
+}
+
+.unselected {
+	background-color: black;
+	color: white;
+}
+
+.error-message {
+	color: red;
+	font-size: 12px;
+	margin-top: 5px;
+}
