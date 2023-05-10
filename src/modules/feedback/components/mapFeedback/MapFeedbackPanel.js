@@ -116,8 +116,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const handleCategoryChange = () => {
-			this._noAnimation = true;
+		const onCategoryChange = () => {
 			const select = this.shadowRoot.getElementById('category');
 			const selectedCategory = select.options[select.selectedIndex].value;
 
@@ -127,7 +126,7 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
-		const handleDescriptionChange = (event) => {
+		const onDescriptionChange = (event) => {
 			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
 			descriptionFormElement.classList.add(User_Visited_Class);
 
@@ -135,7 +134,7 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
-		const handleEmailChange = (event) => {
+		const onEmailChange = (event) => {
 			const emailFormElement = this.shadowRoot.getElementById('email-form-element');
 			emailFormElement.classList.add(User_Visited_Class);
 
@@ -143,23 +142,11 @@ export class MapFeedbackPanel extends MvuElement {
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
-		const isValidCategory = (category) => {
-			return category.reportValidity();
-		};
-
-		const isValidDescription = (description) => {
-			return description.reportValidity();
-		};
-
-		const isValidEmail = (email) => {
-			return email.reportValidity();
-		};
-
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
-		const handleSubmit = () => {
+		const onSubmit = () => {
 			this._allBaFormElements().forEach((element) => {
 				element.classList.add(User_Visited_Class);
 			});
@@ -172,9 +159,9 @@ export class MapFeedbackPanel extends MvuElement {
 			if (
 				mapFeedback.state !== null &&
 				mapFeedback.fileId !== null &&
-				isValidCategory(category) &&
-				isValidDescription(description) &&
-				isValidEmail(email)
+				category.reportValidity() &&
+				description.reportValidity() &&
+				email.reportValidity()
 			) {
 				this._saveMapFeedback(
 					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
@@ -232,7 +219,7 @@ export class MapFeedbackPanel extends MvuElement {
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+						<select id="category" .value="${mapFeedback.category}" @change="${onCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
@@ -242,7 +229,7 @@ export class MapFeedbackPanel extends MvuElement {
 						<textarea
 							id="description"
 							.value="${mapFeedback.description}"
-							@input="${handleDescriptionChange}"
+							@input="${onDescriptionChange}"
 							required
 							maxlength="10000"
 							placeholder="${translate('feedback_mapFeedback_changeDescription')}"
@@ -258,7 +245,7 @@ export class MapFeedbackPanel extends MvuElement {
 							type="email"
 							id="email"
 							.value="${mapFeedback.email}"
-							@input="${handleEmailChange}"
+							@input="${onEmailChange}"
 							placeholder="${translate('feedback_mapFeedback_eMail')}"
 						/>
 						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
@@ -272,7 +259,7 @@ export class MapFeedbackPanel extends MvuElement {
 							>${translate('feedback_mapFeedback_privacyPolicy')}</a
 						>).
 					</p>
-					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${handleSubmit} />
+					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit} />
 				</div>
 			</div>
 		`;
