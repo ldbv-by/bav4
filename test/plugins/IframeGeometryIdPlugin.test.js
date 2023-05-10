@@ -56,7 +56,7 @@ describe('IframeGeometryIdPlugin', () => {
 		// drawing deleted
 		setFileSaveResult(null);
 
-		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, null);
+		expect(iframeSpy).toHaveBeenCalledWith(IFRAME_GEOMETRY_REFERENCE_ID, '');
 	});
 
 	it("does nothing when we are NOT in 'embed' mode", async () => {
