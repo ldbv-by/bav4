@@ -21,6 +21,7 @@ import {
 } from '../utils/olStyleUtils';
 
 /**
+ * Enumeration of predefined types of style
  * @enum
  */
 export const StyleTypes = Object.freeze({
@@ -50,7 +51,7 @@ const Default_Colors = [
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
- * Adds or removes styles and overlays to ol.feature.
+ * Adds or removes styles and overlays to {@ ol.feature}.
  * @class
  * @author thiloSchlemmer
  */
@@ -110,7 +111,7 @@ export class StyleService {
 
 	/**
 	 * Adds a cluster style to the specified layer.
-	 * @param {ol.Layer} olLayer the layer of the clustered features
+	 * @param {ol.Layer} olLayer the layer with the clustered features
 	 */
 	addClusterStyle(olLayer) {
 		olLayer.setStyle(defaultClusterStyleFunction());
@@ -155,8 +156,8 @@ export class StyleService {
 	}
 
 	/**
-	 * Returns a ol-StyleFunction for the specified StyleType
-	 * @param {StyleType} styleType
+	 * Returns a ol-StyleFunction for the specified {@ StyleTypes}
+	 * @param {StyleTypes} styleType
 	 * @returns {Function} styleFunction the StyleFunction, used by ol to render a feature
 	 */
 	getStyleFunction(styleType) {
