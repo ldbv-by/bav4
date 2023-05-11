@@ -51,7 +51,7 @@ const Default_Colors = [
 const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color', 'stroke', 'stroke-opacity', 'stroke-width', 'fill', 'fill-opacity'];
 
 /**
- * Adds or removes styles and overlays to {@ ol.feature}.
+ * Adds or removes styles and overlays to {@link ol.feature}.
  * @class
  * @author thiloSchlemmer
  */
@@ -121,11 +121,11 @@ export class StyleService {
 	 * A Container-Object for optional properties related to a update of feature-style or -overlays
 	 * @typedef {Object} UpdateProperties
 	 * @param {Number} [opacity] the opacity (0-1), may or may not given, to update the opacity of the specified feature, based on
-	 * the styletype belonging to the feature
+	 * the style type ({@link StyleTypes}) belonging to the feature
 	 * @param {Boolean} [top] the top-flag (true/false),  may or may not given, whether or not to update the behavior of being in the
 	 * topmost layer
 	 * @param {Boolean} [visible] the visible-flag (true/false), may or may not given, whether or not to update the visibility of the
-	 * specified feature, based on the styletype belonging to the feature
+	 * specified feature, based on the style type ({@link StyleTypes}) belonging to the feature
 	 */
 
 	/**
