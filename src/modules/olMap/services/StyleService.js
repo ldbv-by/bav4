@@ -110,11 +110,11 @@ export class StyleService {
 	}
 
 	/**
-	 * Adds a cluster style to the specified layer.
-	 * @param {ol.Layer} olLayer the layer with the clustered features
+	 * Adds a cluster style to the specified {@link ol.layer.vector.VectorLayer}.
+	 * @param {ol.layer.vector.VectorLayer} olVectorLayer the vector layer with the clustered features
 	 */
-	addClusterStyle(olLayer) {
-		olLayer.setStyle(defaultClusterStyleFunction());
+	addClusterStyle(olVectorLayer) {
+		olVectorLayer.setStyle(defaultClusterStyleFunction());
 	}
 
 	/**
