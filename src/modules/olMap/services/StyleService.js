@@ -16,7 +16,8 @@ import {
 	markerScaleToKeyword,
 	getStyleArray,
 	geojsonStyleFunction,
-	defaultStyleFunction
+	defaultStyleFunction,
+	defaultClusterStyleFunction
 } from '../utils/olStyleUtils';
 
 /**
@@ -54,10 +55,6 @@ const GeoJSON_SimpleStyle_Keys = ['marker-symbol', 'marker-size', 'marker-color'
  * @author thiloSchlemmer
  */
 export class StyleService {
-	/**
-	 *
-	 * @param {administrationProvider} [administrationProvider=loadBvvAdministration]
-	 */
 	constructor() {
 		this._defaultColorIndex = 0;
 		this._defaultColorByLayerId = {};
@@ -109,6 +106,10 @@ export class StyleService {
 				console.warn('Could not provide a style for unknown style-type');
 				break;
 		}
+	}
+
+	addClusterStyle(olLayer) {
+		olLayer.setStyle(defaultClusterStyleFunction());
 	}
 
 	/**
