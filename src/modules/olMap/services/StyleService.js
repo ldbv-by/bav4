@@ -108,6 +108,10 @@ export class StyleService {
 		}
 	}
 
+	/**
+	 * Adds a cluster style to the specified layer.
+	 * @param {ol.Layer} olLayer the layer of the clustered features
+	 */
 	addClusterStyle(olLayer) {
 		olLayer.setStyle(defaultClusterStyleFunction());
 	}

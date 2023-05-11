@@ -253,6 +253,7 @@ export const defaultClusterStyleFunction = () => {
 					})
 				];
 				styleCache[size] = style;
+				return style;
 			};
 			return cachedStyle ? cachedStyle : createAndCache();
 		};
