@@ -113,12 +113,11 @@ export class VectorLayerService {
 	/**
 	 * Adds a specific or a default cluster styling for this vector layer
 	 * @param {ol.layer.Vector} olVectorLayer
-	 * @param {ol.Map} olMap
 	 * @returns olVectorLayer
 	 */
-	_applyClusterStyle(olVectorLayer, olMap) {
+	_applyClusterStyle(olVectorLayer) {
 		const { StyleService: styleService } = $injector.inject('StyleService');
-		styleService.addClusterStyle(olMap, olVectorLayer);
+		styleService.addClusterStyle(olVectorLayer);
 
 		return olVectorLayer;
 	}
@@ -141,7 +140,7 @@ export class VectorLayerService {
 		});
 		const vectorSource = vectorGeoResource.url ? this._vectorSourceForUrl(vectorGeoResource) : this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
-		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer, olMap) : this._applyStyles(vectorLayer, olMap);
+		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
 	}
 
 	/**
