@@ -76,7 +76,7 @@ export class StyleService {
 	}
 
 	/**
-	 * Adds (explicit or implicit) specified styles and overlays (OverlayStyle) to the specified feature.
+	 * Adds (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be added
 	 * @param {ol.Layer} olLayer the layer of the feature, used for layer-wide color in the default style
@@ -156,9 +156,9 @@ export class StyleService {
 	}
 
 	/**
-	 * Returns a ol-StyleFunction for the specified {@ StyleTypes}
+	 * Returns a {@link ol.style.StyleFunction} for the specified {@link StyleTypes}
 	 * @param {StyleTypes} styleType
-	 * @returns {Function} styleFunction the StyleFunction, used by ol to render a feature
+	 * @returns {Function} the {@link ol.style.StyleFunction}, used by ol to render a feature
 	 */
 	getStyleFunction(styleType) {
 		switch (styleType) {
