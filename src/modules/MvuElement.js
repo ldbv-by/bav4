@@ -81,7 +81,7 @@ export class MvuElement extends HTMLElement {
 
 		this._rendered = false;
 
-		this._observer = [];
+		this._observers = [];
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
-			this._observer.forEach((o) => o());
+			this._observers.forEach((o) => o());
 			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
@@ -326,11 +326,11 @@ export class MvuElement extends HTMLElement {
 
 		const keys = Array.isArray(names) ? names : [names];
 
-		const registeredObserver = keys
+		const createdObservers = keys
 			.map((key) => {
 				if (this._model[key] !== undefined) {
 					const observerFn = createObserver(key, onChange);
-					this._observer.push(observerFn);
+					this._observers.push(observerFn);
 
 					if (immediately) {
 						onChange(this._model[key]);
@@ -343,8 +343,8 @@ export class MvuElement extends HTMLElement {
 			.filter((o) => !!o);
 
 		return () => {
-			registeredObserver.forEach((o) => {
-				this._observer.splice(this._observer.indexOf(o), 1);
+			createdObservers.forEach((o) => {
+				this._observers.splice(this._observers.indexOf(o), 1);
 			});
 		};
 	}
