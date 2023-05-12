@@ -63,6 +63,13 @@ export class MapFeedbackPanel extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
+
+		this.observeModel('mapFeedback', ({ fileId }) => {
+			// we add the BA_FORM_ELEMENT_VISITED_CLASS when the fileId was set
+			if (fileId) {
+				this._addVisitedClass(this.shadowRoot.querySelector('.map-feedback__iframe'));
+			}
+		});
 	}
 
 	onAfterRender(firstTime) {
@@ -116,29 +123,25 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const addVisitedClass = (element) => {
-			element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
-		};
-
 		const onCategoryChange = (event) => {
 			const select = event.target;
 			const selectedCategory = event.target.options[select.selectedIndex].value;
 
-			addVisitedClass(select.parentNode);
+			this._addVisitedClass(select.parentNode);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
 		const onDescriptionChange = (event) => {
 			const { value, parentNode } = event.target;
-			addVisitedClass(parentNode);
+			this._addVisitedClass(parentNode);
 
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
 		const onEmailChange = (event) => {
 			const { value, parentNode } = event.target;
-			addVisitedClass(parentNode);
+			this._addVisitedClass(parentNode);
 
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
@@ -260,6 +263,10 @@ export class MapFeedbackPanel extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	_addVisitedClass(element) {
+		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
 	async _getCategoryOptions() {
