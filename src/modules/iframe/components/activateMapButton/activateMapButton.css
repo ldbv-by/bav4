@@ -19,8 +19,3 @@
 .active-map__background:hover .active-map__button {
 	opacity: 1;
 }
-ba-attribution-info {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-}
