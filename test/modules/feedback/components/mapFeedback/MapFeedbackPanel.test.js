@@ -141,6 +141,15 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
+		it('contains 4 unvisited ba-form-elements', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
+			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
+				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
+			});
+		});
+
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
@@ -205,6 +214,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
 			expect(updateStateSpy).toHaveBeenCalledTimes(2);
+			expect(element.shadowRoot.querySelector('.map-feedback__iframe').classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 
 		it('updates mapFeedback.state', async () => {
