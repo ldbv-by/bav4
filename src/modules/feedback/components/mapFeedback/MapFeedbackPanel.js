@@ -8,7 +8,7 @@ import css from './mapFeedbackPanel.css';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { MapFeedback } from '../../../../services/FeedbackService';
 import { PathParameters } from '../../../../domain/pathParameters';
-import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 
@@ -20,7 +20,6 @@ const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
-const User_Visited_Class = 'userVisited';
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
  * @class
@@ -64,13 +63,21 @@ export class MapFeedbackPanel extends MvuElement {
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
+
+		this.observeModel('mapFeedback', ({ fileId }) => {
+			// we add the BA_FORM_ELEMENT_VISITED_CLASS when the fileId was set
+			if (fileId) {
+				this._addVisitedClass(this.shadowRoot.querySelector('.map-feedback__iframe'));
+			}
+		});
 	}
 
 	onAfterRender(firstTime) {
 		const onIFrameChanged = (mutationList) => {
 			for (const mutation of mutationList) {
 				if (mutation.type === 'attributes' && mutation.attributeName === IFRAME_GEOMETRY_REFERENCE_ID) {
-					this._updateFileId(mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID));
+					const geometryId = mutation.target.getAttribute(IFRAME_GEOMETRY_REFERENCE_ID);
+					this._updateFileId(geometryId.length ? geometryId : null);
 					this._updateState(this._encodeFeedbackState(mutation.target.getAttribute(IFRAME_ENCODED_STATE)));
 				}
 
@@ -116,64 +123,35 @@ export class MapFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const elementUserVisited = (elementName) => {
-			const element = this.shadowRoot.querySelector(elementName);
-			if (!element) {
-				return false;
-			}
-			const elementUserVisitedRetVal = element.classList.contains(User_Visited_Class);
-			return elementUserVisitedRetVal;
-		};
+		const onCategoryChange = (event) => {
+			const select = event.target;
+			const selectedCategory = event.target.options[select.selectedIndex].value;
 
-		const handleCategoryChange = () => {
-			this._noAnimation = true;
-			const select = this.shadowRoot.getElementById('category');
-			const selectedCategory = select.options[select.selectedIndex].value;
-
-			const categoryFormElement = this.shadowRoot.getElementById('category-form-element');
-			categoryFormElement.classList.add(User_Visited_Class);
+			this._addVisitedClass(select.parentNode);
 
 			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
 		};
 
-		const handleDescriptionChange = (event) => {
-			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
-			descriptionFormElement.classList.add(User_Visited_Class);
+		const onDescriptionChange = (event) => {
+			const { value, parentNode } = event.target;
+			this._addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
-		const handleEmailChange = (event) => {
-			const emailFormElement = this.shadowRoot.getElementById('email-form-element');
-			emailFormElement.classList.add(User_Visited_Class);
+		const onEmailChange = (event) => {
+			const { value, parentNode } = event.target;
+			this._addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
-		};
-
-		const isValidCategory = (category) => {
-			return category.reportValidity();
-		};
-
-		const isValidDescription = (description) => {
-			return description.reportValidity();
-		};
-
-		const isValidEmail = (email) => {
-			return email.reportValidity();
 		};
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
 
-		const handleSubmit = () => {
-			this._allBaFormElements().forEach((element) => {
-				element.classList.add(User_Visited_Class);
-			});
-
-			this.render();
+		const onSubmit = () => {
+			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
 			const category = this.shadowRoot.getElementById('category');
 			const description = this.shadowRoot.getElementById('description');
@@ -181,9 +159,9 @@ export class MapFeedbackPanel extends MvuElement {
 			if (
 				mapFeedback.state !== null &&
 				mapFeedback.fileId !== null &&
-				isValidCategory(category) &&
-				isValidDescription(description) &&
-				isValidEmail(email)
+				category.reportValidity() &&
+				description.reportValidity() &&
+				email.reportValidity()
 			) {
 				this._saveMapFeedback(
 					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
@@ -210,25 +188,8 @@ export class MapFeedbackPanel extends MvuElement {
 			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
 		};
 
-		// Create an iframe source without any user-generated georesources that could be unintentionally affect the feedback or the georesource itself.
+		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
 		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
-
-		const hideIframeHint = (fileId) => {
-			const iFrameUserVisited = elementUserVisited('.map-feedback__iframe');
-			// if element with class '.map-feedback__iframe' was not touched
-			if (!iFrameUserVisited) {
-				// hide IframeHint
-				return true;
-			}
-			// if iFrameUserVisited go on
-			// if fileId is not set
-			if (fileId === null || fileId === 'null') {
-				// show IframeHint
-				return false;
-			}
-			// hide IframeHint
-			return true;
-		};
 
 		return html`
 			<style>
@@ -246,7 +207,7 @@ export class MapFeedbackPanel extends MvuElement {
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
 
-					${hideIframeHint(mapFeedback.fileId)
+					${mapFeedback.fileId
 						? html.nothing
 						: html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
@@ -258,7 +219,7 @@ export class MapFeedbackPanel extends MvuElement {
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${handleCategoryChange}" required>
+						<select id="category" .value="${mapFeedback.category}" @change="${onCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
@@ -268,7 +229,7 @@ export class MapFeedbackPanel extends MvuElement {
 						<textarea
 							id="description"
 							.value="${mapFeedback.description}"
-							@input="${handleDescriptionChange}"
+							@input="${onDescriptionChange}"
 							required
 							maxlength="10000"
 							placeholder="${translate('feedback_mapFeedback_changeDescription')}"
@@ -284,7 +245,7 @@ export class MapFeedbackPanel extends MvuElement {
 							type="email"
 							id="email"
 							.value="${mapFeedback.email}"
-							@input="${handleEmailChange}"
+							@input="${onEmailChange}"
 							placeholder="${translate('feedback_mapFeedback_eMail')}"
 						/>
 						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
@@ -298,10 +259,14 @@ export class MapFeedbackPanel extends MvuElement {
 							>${translate('feedback_mapFeedback_privacyPolicy')}</a
 						>).
 					</p>
-					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${handleSubmit} />
+					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
 				</div>
 			</div>
 		`;
+	}
+
+	_addVisitedClass(element) {
+		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
 	async _getCategoryOptions() {
@@ -327,8 +292,6 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	_updateFileId(id) {
-		const categoryFormElement = this.shadowRoot.querySelector('.map-feedback__iframe');
-		categoryFormElement.classList.add(User_Visited_Class);
 		this.signal(Update_Geometry_Id, id);
 	}
 
@@ -346,12 +309,6 @@ export class MapFeedbackPanel extends MvuElement {
 			}
 		}
 		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
-	}
-
-	_allBaFormElements() {
-		const allElements = [];
-		allElements.push(...this.shadowRoot.querySelectorAll('.ba-form-element'));
-		return allElements;
 	}
 
 	/**

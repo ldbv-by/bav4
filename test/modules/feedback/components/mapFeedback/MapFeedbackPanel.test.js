@@ -6,12 +6,10 @@ import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
-
-const userVisitedClass = 'userVisited';
 
 const configServiceMock = {
 	getValueAsPath: () => {}
@@ -64,7 +62,7 @@ const setup = (state = {}) => {
 		.registerSingleton('FileStorageService', fileStorageServiceMock)
 		.registerSingleton('SecurityService', securityServiceMock);
 
-	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
+	return TestUtils.render(MapFeedbackPanel.tag);
 };
 
 describe('MapFeedbackPanel', () => {
@@ -143,6 +141,15 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
+		it('contains 4 unvisited ba-form-elements', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
+			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
+				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
+			});
+		});
+
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
@@ -177,36 +184,10 @@ describe('MapFeedbackPanel', () => {
 			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
-
-		it('gets the correct elements from _allBaFormElements', async () => {
-			// arrange
-			const element = await setup();
-
-			const allInvolvedElements = element._allBaFormElements();
-
-			const nodeValues = [];
-			allInvolvedElements.forEach((element) => {
-				if (element.attributes.length === 1) {
-					nodeValues.push(element.attributes['class'].nodeValue);
-				}
-				if (element.attributes.length > 1) {
-					nodeValues.push(element.attributes['id'].nodeValue);
-				}
-			});
-
-			// assert
-			expect(element._allBaFormElements).toBeDefined();
-			expect(allInvolvedElements.length).toBe(4);
-			expect(nodeValues.length).toBe(4);
-			expect(nodeValues.includes('map-feedback__iframe ba-form-element')).toBeTrue();
-			expect(nodeValues.includes('description-form-element')).toBeTrue();
-			expect(nodeValues.includes('category-form-element')).toBeTrue();
-			expect(nodeValues.includes('email-form-element')).toBeTrue();
-		});
 	});
 
-	describe('when listen to iframe-attribute changes', () => {
-		it('updates mapFeedback.fileId and .state', async () => {
+	describe('when iframe-attribute changes', () => {
+		it('updates mapFeedback "fileId" and "state" property', async () => {
 			const fileId = 'f_foo';
 			const element = await setup();
 
@@ -221,13 +202,19 @@ describe('MapFeedbackPanel', () => {
 
 			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, '');
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.fileId).toBeNull();
+
 			// no calls by changes on any other attribute
 			iframe.setAttribute('foo', 'bar');
 
 			await TestUtils.timeout();
 
-			expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
-			expect(updateStateSpy).toHaveBeenCalledTimes(1);
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
+			expect(updateStateSpy).toHaveBeenCalledTimes(2);
+			expect(element.shadowRoot.querySelector('.map-feedback__iframe').classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 
 		it('updates mapFeedback.state', async () => {
@@ -343,13 +330,12 @@ describe('MapFeedbackPanel', () => {
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
-		it('calls FeedbackService.getCategories()', async () => {
+		it('initially calls FeedbackService.getCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories');
-			const element = await setup();
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.returnValue([]);
 
 			// act
-			await element._getCategoryOptions();
+			await setup();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
@@ -506,16 +492,16 @@ describe('MapFeedbackPanel', () => {
 		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
 			// arrange
 			const element = await setup();
-			const allBaFormElements = element._allBaFormElements();
+			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
 			// assert
+			expect(allBaFormElements).toHaveSize(4);
 			allBaFormElements.forEach((element) => {
-				const nodeValue = element.attributes['class'].nodeValue;
-				expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 			});
 		});
 	});
@@ -560,7 +546,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
@@ -592,7 +578,7 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
@@ -624,11 +610,11 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes(userVisitedClass)).toBeTrue();
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
-	describe('responsive layout ', () => {
+	describe('responsive layout', () => {
 		it('layouts for landscape', async () => {
 			const state = {
 				media: {

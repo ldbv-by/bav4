@@ -830,7 +830,7 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
