@@ -132,7 +132,7 @@ export class StyleService {
 	 * Updates (explicit or implicit) specified styles and overlays ({@link OverlayStyle}) to the specified feature.
 	 * @param {ol.Feature} olFeature the feature to be styled
 	 * @param {ol.Map} olMap the map, where overlays related to the feature-style will be updated
-	 * @param {UpdateProperties} properties the optional properties, which are used for additional style updates;
+	 * @param {module:modules/olMap/services/StyleService~UpdateProperties} properties the optional properties, which are used for additional style updates;
 	 * any possible implications of a combination of defined UpdateProperties (i.e. visible=true && top=false) are handled by the current
 	 * implementation of the StyleService
 	 * @param {StyleTypes} [styleType] the {@link StyleTypes}, which should be used for the update
