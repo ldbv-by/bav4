@@ -99,17 +99,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">${translate('feedback_generalfeedback_header')}</h2>
+			<h2 id="feedbackPanelTitle">${translate('feedback_generalFeedback_header')}</h2>
 
 			<div class="ba-form-element">
-				<label for="rating" class="control-label">${translate('feedback_generalfeedback_rating')}</label>
+				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
 				<ba-mvu-fivebuttonrating
 					class="ba-mvu-fivebuttonrating"
 					id="rating"
 					@rating="${onRatingChange}"
-					placeholder="${translate('feedback_generalfeedback_rating')}"
-					.value="${generalFeedback.rating}"
-					style="margin-bottom: 20px;"
+					placeholder="${translate('feedback_generalFeedback_rating')}"
 				>
 				</ba-mvu-fivebuttonrating>
 			</div>
@@ -134,11 +132,11 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<input
 					type="email"
 					id="email"
-					placeholder="${translate('feedback_generalfeedback_eMail')}"
+					placeholder="${translate('feedback_generalFeedback_eMail')}"
 					.value="${generalFeedback.email}"
 					@input="${handleEmailChange}"
 				/>
-				<label for="email" class="control-label">${translate('feedback_generalfeedback_eMail')}</label>
+				<label for="email" class="control-label">${translate('feedback_generalFeedback_eMail')}</label>
 				<i class="bar"></i>
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_generalFeedback_eMail_helper')}</label>

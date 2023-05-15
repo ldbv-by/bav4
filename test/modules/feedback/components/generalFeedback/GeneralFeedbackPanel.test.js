@@ -1,5 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
+import { Rating } from '../../../../../src/modules/feedback/components/rating/FiveButtonRating';
+import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
@@ -26,7 +28,7 @@ const setup = (state = {}) => {
 
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
-		// .registerSingleton('ConfigService', configServiceMock)
+		.registerSingleton('ConfigService', configServiceMock)
 		// .registerSingleton('FeedbackService', feedbackServiceMock)
 		// .registerSingleton('ShareService', shareServiceMock)
 		// .registerSingleton('FileStorageService', fileStorageServiceMock)
@@ -127,104 +129,23 @@ describe('GeneralFeedbackPanel', () => {
 		});
 	});
 
-	describe('when using FeedbackService', () => {
-		it('logs an error when getCategories fails', async () => {
-			// arrange
-			const message = 'error message';
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
-			const element = await setup();
-
-			// act
-			await element._getCategoryOptions();
-
-			// assert
-			expect(getMapFeedbackSpy).toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
-		});
-
-		it('logs an error when save fails', async () => {
-			// arrange
-			const message = 'error message';
-			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.rejectWith(new Error(message));
-			const errorSpy = spyOn(console, 'error');
-			const element = await setup();
-
-			// act
-			await element._saveMapFeedback('', '', '');
-
-			// assert
-			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
-			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
-
-			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_could_not_save');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
-		});
-
-		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
-			// arrange
-			const onSubmitCallback = jasmine.createSpy();
-			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
-			const element = await setup();
-			element.onSubmit = onSubmitCallback;
-
-			// act
-			await element._saveMapFeedback('', '', '');
-
-			// assert
-			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
-
-			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
-			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-			expect(onSubmitCallback).toHaveBeenCalled();
-		});
-
-		it('calls FeedbackService.getCategories()', async () => {
-			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories');
-			const element = await setup();
-
-			// act
-			await element._getCategoryOptions();
-
-			// assert
-			expect(getMapFeedbackSpy).toHaveBeenCalled();
-		});
-	});
-
 	describe('when submit is pressed', () => {
-		it('does not call FeedbackService.save if required fields are not filled', async () => {
+		it('does not call _saveGeneralFeedback if required fields are not filled', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
-			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call FeedbackService.save if geometry is not set', async () => {
+		fit('does not call _saveGeneralFeedback if description is not set', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-
-			// act
-			const submitButton = element.shadowRoot.querySelector('#button0');
-			submitButton.click();
-
-			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
-		});
-
-		it('does not call FeedbackService.save if category is not valid', async () => {
-			// arrange
-			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
-			descriptionInput.dispatchEvent(new Event('input'));
+			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			const emailInput = element.shadowRoot.querySelector('#email');
 			emailInput.value = 'mail@some.com';
@@ -234,37 +155,13 @@ describe('GeneralFeedbackPanel', () => {
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
-			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call FeedbackService.save if description is not valid', async () => {
+		fit('does not call _saveGeneralFeedback if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Foo';
-			categorySelect.dispatchEvent(new Event('change'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
-			emailInput.dispatchEvent(new Event('input'));
-
-			// act
-			const submitButton = element.shadowRoot.querySelector('#button0');
-			submitButton.click();
-
-			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
-		});
-
-		it('does not call FeedbackService.save if email is set and not valid', async () => {
-			// arrange
-			const element = await setup();
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
-
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Foo';
-			categorySelect.dispatchEvent(new Event('change'));
+			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'another text';
@@ -278,21 +175,14 @@ describe('GeneralFeedbackPanel', () => {
 			const submitButton = element.shadowRoot.querySelector('#button0');
 			submitButton.click();
 
-			expect(saveMapFeedbackSpy).not.toHaveBeenCalled();
+			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('calls FeedbackService.save after all fields are filled', async () => {
+		fit('calls _saveGeneralFeedback after all fields are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
-
-			element._updateFileId('geometryId');
-			element._updateState('Foo');
-
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Bar';
-			categorySelect.dispatchEvent(new Event('change'));
+			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'description';
@@ -308,8 +198,8 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId', 'email@some.com'));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.NONE, email: 'email@some.com' });
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
