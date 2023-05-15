@@ -1,3 +1,6 @@
+/**
+ * @module modules/feedback/components/rating/FiveButtonRating
+ */
 /* eslint-disable no-console */
 // todo remove
 /**

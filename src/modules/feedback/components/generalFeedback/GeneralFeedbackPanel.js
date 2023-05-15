@@ -1,5 +1,6 @@
-/* eslint-disable no-console */
-// todo remove
+/**
+ * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
+ */
 /**
  * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
  */
@@ -9,18 +10,24 @@ import { MvuElement } from '../../../MvuElement';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { Rating } from '../rating/FiveButtonRating';
 import css from './generalFeedbackPanel.css';
+import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
 
 const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 
-const User_Visited_Class = 'userVisited';
-
+/**
+ * Contains a form for submitting a general feedback.
+ * @class
+ */
 export class GeneralFeedbackPanel extends MvuElement {
+	/**
+	 * Represents a general feedback form.
+	 * @constructor
+	 */
 	constructor() {
 		super({
 			generalFeedback: {
-				state: '',
 				description: '',
 				rating: Rating.NONE,
 				email: ''
@@ -36,17 +43,6 @@ export class GeneralFeedbackPanel extends MvuElement {
 		this._configService = configService;
 		this._translationService = translationService;
 		this._securityService = securityService;
-	}
-
-	async _saveGeneralFeedback(generalFeedback) {
-		// const translate = (key) => this._translationService.translate(key);
-		// try {
-		// 	await this._generalFeedbackService.save(generalFeedback);
-		emitNotification(generalFeedback, LevelTypes.INFO);
-		// } catch (e) {
-		// 	console.error(e);
-		// 	emitNotification(translate('feedback_could_not_save'), LevelTypes.ERROR);
-		// }
 	}
 
 	update(type, data, model) {
@@ -65,77 +61,35 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const handleRatingChange = (event) => {
+		const onRatingChange = (event) => {
 			const {
 				detail: { rating }
 			} = event;
-			console.log('🚀 ~ GeneralFeedbackPanel ~ handleRatingChange ~ rating:', rating);
-
-			const ratingElement = this.shadowRoot.getElementById('rating-form-element');
-			ratingElement.classList.add(User_Visited_Class);
 
 			this.signal(Update_Rating, this._securityService.sanitizeHtml(rating));
-
-			this._setRatingAttribute(rating);
 		};
 
 		const handleEmailChange = (event) => {
-			const emailFormElement = this.shadowRoot.getElementById('email-form-element');
-			emailFormElement.classList.add(User_Visited_Class);
+			const { value, parentNode } = event.target;
+			this._addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_EMail, this._securityService.sanitizeHtml(value));
 		};
 
-		const handleDescriptionChange = (event) => {
-			const descriptionFormElement = this.shadowRoot.getElementById('description-form-element');
-			descriptionFormElement.classList.add(User_Visited_Class);
+		const onDescriptionChange = (event) => {
+			const { value, parentNode } = event.target;
+			this._addVisitedClass(parentNode);
 
-			const { value } = event.target;
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
-		const isValidRating = (rating) => {
-			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidRating ~ rating:', rating);
-			const ratingValid = rating.reportValidity();
-			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidRating ~ ratingValid:', ratingValid);
-			return ratingValid;
-		};
-
-		const isValidDescription = (description) => {
-			return description.reportValidity();
-		};
-
-		const isValidEmail = (email) => {
-			console.log('🚀 ~ GeneralFeedbackPanel ~ isValidEmail ~ email:', email);
-			return email.reportValidity();
-		};
-
 		const handleSubmit = () => {
-			this._allBaFormElements().forEach((element) => {
-				console.log('🚀 ~ GeneralFeedbackPanel ~ this._allBaFormElements ~ element:', element);
-				element.classList.add(User_Visited_Class);
-			});
+			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
-			this._setRatingAttribute();
-			this.render();
-
-			const ratingElement = this.shadowRoot.getElementById('rating');
 			const descriptionElement = this.shadowRoot.getElementById('description');
 			const emailElement = this.shadowRoot.getElementById('email');
 
-			// const ratingValidationMessage = this.shadowRoot.getElementById('rating-validation-message');
-			// const ratingElement = this.shadowRoot.getElementById('rating');
-			// const ratingIsValid = isValidRating(ratingElement);
-			// if (!ratingIsValid) {
-			// 	const parent = ratingElement.parentElement;
-			// 	console.log('🚀 ~ GeneralFeedbackPanel ~ handleSubmit ~ parent:', parent);
-			// 	// rating.invalidate();
-			// 	ratingValidationMessage.style.display = 'block';
-			// 	return;
-			// }
-
-			if (isValidRating(ratingElement) && isValidDescription(descriptionElement) && isValidEmail(emailElement)) {
+			if (descriptionElement.reportValidity() && emailElement.reportValidity()) {
 				this._saveGeneralFeedback(generalFeedback);
 			}
 		};
@@ -147,42 +101,36 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			<h2 id="feedbackPanelTitle">${translate('feedback_generalfeedback_header')}</h2>
 
-			<div class="ba-form-element" id="rating-form-element">
+			<div class="ba-form-element">
 				<label for="rating" class="control-label">${translate('feedback_generalfeedback_rating')}</label>
 				<ba-mvu-fivebuttonrating
 					class="ba-mvu-fivebuttonrating"
 					id="rating"
-					@rating="${handleRatingChange}"
+					@rating="${onRatingChange}"
 					placeholder="${translate('feedback_generalfeedback_rating')}"
 					.value="${generalFeedback.rating}"
 					style="margin-bottom: 20px;"
 				>
 				</ba-mvu-fivebuttonrating>
-				<i class="bar"></i>
-				<i class="icon error"></i>
-				<label class="helper-label">Helper text</label>
-				<label class="error-label">Error text</label>
-
-				<div id="rating-validation-message" class="error-message"></div>
 			</div>
 
-			<div class="ba-form-element" id="description-form-element">
-				<label for="description" class="control-label">${translate('feedback_generalfeedback_changeDescription')}</label>
+			<div class="ba-form-element">
+				<label for="description" class="control-label">${translate('feedback_generalFeedback_changeDescription')}</label>
 				<textarea
 					type="text"
 					id="description"
-					placeholder="${translate('feedback_generalfeedback_changeDescription')}"
+					placeholder="${translate('feedback_generalFeedback_changeDescription')}"
 					.value="${generalFeedback.description}"
-					@input="${handleDescriptionChange}"
+					@input="${onDescriptionChange}"
 					required
 				></textarea>
 				<i class="bar"></i>
 				<i class="icon error"></i>
-				<label class="helper-label">Helper text</label>
-				<label class="error-label">Error text</label>
+				<label class="helper-label">${translate('feedback_generalFeedback_changeDescription_helper')}</label>
+				<label class="error-label">${translate('feedback_generalFeedback_changeDescription_error')}</label>
 			</div>
 
-			<div class="ba-form-element" id="email-form-element">
+			<div class="ba-form-element">
 				<input
 					type="email"
 					id="email"
@@ -193,8 +141,8 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label for="email" class="control-label">${translate('feedback_generalfeedback_eMail')}</label>
 				<i class="bar"></i>
 				<i class="icon error"></i>
-				<label class="helper-label">Helper text</label>
-				<label class="error-label">Error text</label>
+				<label class="helper-label">${translate('feedback_generalFeedback_eMail_helper')}</label>
+				<label class="error-label">${translate('feedback_generalFeedback_eMail_error')}</label>
 			</div>
 
 			<p id="feedback_mapFeedback_disclaimer" class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
@@ -207,36 +155,19 @@ export class GeneralFeedbackPanel extends MvuElement {
 		`;
 	}
 
-	_setRatingAttribute(rating) {
-		const ratingElement = this.shadowRoot.getElementById('rating');
-		console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ ratingElement:', ratingElement);
-		if (rating) {
-			console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ rating:', rating);
-
-			if (rating === '0') {
-				ratingElement.setAttribute('invalid-rating', 'true');
-				console.log("setAttribute('invalid-rating', 'true')");
-			} else {
-				ratingElement.removeAttribute('invalid-rating');
-				console.log("removeAttribute('invalid-rating')");
-			}
-			return;
-		}
-
-		console.log('🚀 ~ GeneralFeedbackPanel ~ _setRatingAttribute ~ ratingElement.value:', ratingElement.value);
-		if (ratingElement.value === '0') {
-			ratingElement.setAttribute('invalid-rating', 'true');
-			console.log("setAttribute('invalid-rating',  'true')");
-		} else {
-			ratingElement.removeAttribute('invalid-rating');
-			console.log("removeAttribute('invalid-rating')");
-		}
+	async _saveGeneralFeedback(generalFeedback) {
+		// const translate = (key) => this._translationService.translate(key);
+		// try {
+		// 	await this._generalFeedbackService.save(generalFeedback);
+		emitNotification(JSON.stringify(generalFeedback), LevelTypes.INFO);
+		// } catch (e) {
+		// 	console.error(e);
+		// 	emitNotification(translate('feedback_could_not_save'), LevelTypes.ERROR);
+		// }
 	}
 
-	_allBaFormElements() {
-		const allElements = [];
-		allElements.push(...this.shadowRoot.querySelectorAll('.ba-form-element'));
-		return allElements;
+	_addVisitedClass(element) {
+		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
 	static get tag() {
