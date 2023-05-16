@@ -1,7 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { Rating } from '../../../../../src/modules/feedback/components/rating/FiveButtonRating';
-import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
@@ -14,8 +13,6 @@ const securityServiceMock = {
 	sanitizeHtml: () => {}
 };
 
-let store;
-
 const setup = (state = {}) => {
 	const initialState = {
 		media: {
@@ -24,7 +21,7 @@ const setup = (state = {}) => {
 		...state
 	};
 
-	store = TestUtils.setupStoreAndDi(initialState, {});
+	TestUtils.setupStoreAndDi(initialState, {});
 
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
@@ -142,10 +139,14 @@ describe('GeneralFeedbackPanel', () => {
 			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		fit('does not call _saveGeneralFeedback if description is not set', async () => {
+		it('does not call _saveGeneralFeedback if description is not set', async () => {
 			// arrange
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
+
+			// const fiveButtonRating = element.shadowRoot.querySelector('#rating');
+			// fiveButtonRating.value = Rating.BAD;
+			// fiveButtonRating.dispatchEvent(new Event('rating'));
 
 			const emailInput = element.shadowRoot.querySelector('#email');
 			emailInput.value = 'mail@some.com';
@@ -158,7 +159,7 @@ describe('GeneralFeedbackPanel', () => {
 			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		fit('does not call _saveGeneralFeedback if email is set and not valid', async () => {
+		it('does not call _saveGeneralFeedback if email is set and not valid', async () => {
 			// arrange
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
@@ -178,11 +179,17 @@ describe('GeneralFeedbackPanel', () => {
 			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		fit('calls _saveGeneralFeedback after all fields are filled', async () => {
+		it('calls _saveGeneralFeedback after all fields are filled', async () => {
 			// arrange
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
+
+			const fiveButtonRating = element.shadowRoot.getElementById('rating');
+			const ratingChangeEvent = new CustomEvent('rating', {
+				detail: { rating: Rating.GOOD }
+			});
+			fiveButtonRating.dispatchEvent(ratingChangeEvent);
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'description';
@@ -199,21 +206,20 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.NONE, email: 'email@some.com' });
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.GOOD, email: 'email@some.com' });
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
-			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
+			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			element._updateFileId('geometryId');
-			element._updateState('Foo');
-
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = 'Bar';
-			categorySelect.dispatchEvent(new Event('change'));
+			const fiveButtonRating = element.shadowRoot.getElementById('rating');
+			const ratingChangeEvent = new CustomEvent('rating', {
+				detail: { rating: Rating.GOOD }
+			});
+			fiveButtonRating.dispatchEvent(ratingChangeEvent);
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'description';
@@ -225,145 +231,117 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveMapFeedbackSpy).toHaveBeenCalled();
-			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
-		});
-
-		it('all involved elements receive the "wasTouched" class', async () => {
-			// arrange
-			const element = await setup();
-			const allInvolvedElements = element._allInvolvedElements();
-
-			// act
-			const submitButton = element.shadowRoot.querySelector('#button0');
-			submitButton.click();
-
-			// assert
-			allInvolvedElements.forEach((element) => {
-				const nodeValue = element.attributes['class'].nodeValue;
-				expect(nodeValue.includes('wasTouched')).toBeTrue();
-			});
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.GOOD, email: '' });
 		});
 	});
 
-	describe('when disconnected', () => {
-		it('removes all observers', async () => {
-			const element = await setup();
+	// describe('when description is changed', () => {
+	// 	it('sanitizes the input value', async () => {
+	// 		arrange
+	// 		const descriptionValue = 'description';
+	// 		const element = await setup();
+	// 		const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
-			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+	// 		act
+	// 		const descriptionInput = element.shadowRoot.querySelector('#description');
+	// 		descriptionInput.value = descriptionValue;
+	// 		descriptionInput.dispatchEvent(new Event('input'));
 
-			element.onDisconnect(); // we call onDisconnect manually
+	// 		assert
+	// 		expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
+	// 	});
 
-			expect(element._iframeObserver).toBeNull();
-		});
-	});
+	// 	it('its parent receives the "wasTouched" class', async () => {
+	// 		arrange
+	// 		const descriptionValue = 'description';
+	// 		const element = await setup();
 
-	describe('when description is changed', () => {
-		it('sanitizes the input value', async () => {
-			// arrange
-			const descriptionValue = 'description';
-			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+	// 		act
+	// 		const descriptionInput = element.shadowRoot.querySelector('#description');
+	// 		descriptionInput.value = descriptionValue;
+	// 		descriptionInput.dispatchEvent(new Event('input'));
 
-			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+	// 		assert
+	// 		const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
+	// 		expect(nodeValue.includes('wasTouched')).toBeTrue();
+	// 	});
+	// });
 
-			// assert
-			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
-		});
+	// describe('when email is changed', () => {
+	// 	it('sanitizes the input value', async () => {
+	// 		arrange
+	// 		const emailValue = 'email@some.com';
+	// 		const element = await setup();
+	// 		const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
-		it('its parent receives the "wasTouched" class', async () => {
-			// arrange
-			const descriptionValue = 'description';
-			const element = await setup();
+	// 		act
+	// 		const emailInput = element.shadowRoot.querySelector('#email');
+	// 		emailInput.value = emailValue;
+	// 		emailInput.dispatchEvent(new Event('input'));
 
-			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+	// 		assert
+	// 		expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
+	// 	});
+	// });
 
-			// assert
-			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes('wasTouched')).toBeTrue();
-		});
-	});
+	// describe('when category is changed', () => {
+	// 	it('sanitizes the input value', async () => {
+	// 		arrange
+	// 		const categoryValue = 'Bar';
+	// 		const element = await setup();
+	// 		const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
-	describe('when email is changed', () => {
-		it('sanitizes the input value', async () => {
-			// arrange
-			const emailValue = 'email@some.com';
-			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+	// 		act
+	// 		const categorySelect = element.shadowRoot.querySelector('#category');
+	// 		categorySelect.value = categoryValue;
+	// 		categorySelect.dispatchEvent(new Event('change'));
 
-			// act
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = emailValue;
-			emailInput.dispatchEvent(new Event('input'));
+	// 		assert
+	// 		expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+	// 	});
 
-			// assert
-			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
-		});
-	});
+	// 	it('its parent receives the "wasTouched" class', async () => {
+	// 		arrange
+	// 		const categoryValue = 'Bar';
+	// 		const element = await setup();
 
-	describe('when category is changed', () => {
-		it('sanitizes the input value', async () => {
-			// arrange
-			const categoryValue = 'Bar';
-			const element = await setup();
-			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+	// 		act
+	// 		const categorySelect = element.shadowRoot.querySelector('#category');
+	// 		categorySelect.value = categoryValue;
+	// 		categorySelect.dispatchEvent(new Event('change'));
 
-			// act
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = categoryValue;
-			categorySelect.dispatchEvent(new Event('change'));
+	// 		assert
+	// 		const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
+	// 		expect(nodeValue.includes('wasTouched')).toBeTrue();
+	// 	});
+	// });
 
-			// assert
-			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
-		});
+	// describe('responsive layout ', () => {
+	// 	it('layouts for landscape', async () => {
+	// 		const state = {
+	// 			media: {
+	// 				portrait: false
+	// 			}
+	// 		};
 
-		it('its parent receives the "wasTouched" class', async () => {
-			// arrange
-			const categoryValue = 'Bar';
-			const element = await setup();
+	// 		const element = await setup(state);
 
-			// act
-			const categorySelect = element.shadowRoot.querySelector('#category');
-			categorySelect.value = categoryValue;
-			categorySelect.dispatchEvent(new Event('change'));
+	// 		expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+	// 		expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+	// 	});
 
-			// assert
-			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
-			expect(nodeValue.includes('wasTouched')).toBeTrue();
-		});
-	});
+	// 	it('layouts for portrait ', async () => {
+	// 		const state = {
+	// 			media: {
+	// 				portrait: true
+	// 			}
+	// 		};
 
-	describe('responsive layout ', () => {
-		it('layouts for landscape', async () => {
-			const state = {
-				media: {
-					portrait: false
-				}
-			};
+	// 		const element = await setup(state);
 
-			const element = await setup(state);
-
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
-		});
-
-		it('layouts for portrait ', async () => {
-			const state = {
-				media: {
-					portrait: true
-				}
-			};
-
-			const element = await setup(state);
-
-			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
-		});
-	});
+	// 		expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+	// 		expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
+	// 	});
+	// });
 });

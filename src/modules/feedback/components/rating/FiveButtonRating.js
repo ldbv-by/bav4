@@ -1,11 +1,7 @@
 /**
  * @module modules/feedback/components/rating/FiveButtonRating
  */
-/* eslint-disable no-console */
-// todo remove
-/**
- * @module modules/feedback/components/FiveButtonRating
- */
+
 import { html } from 'lit-html';
 import css from './fiveButtonRating.css';
 import { MvuElement } from '../../../MvuElement';
@@ -13,7 +9,8 @@ import { $injector } from '../../../../injection';
 
 /**
  * possible rating types
- * @enum
+ * @readonly
+ * @enum {string}
  */
 export const Rating = Object.freeze({
 	NONE: '0',
@@ -34,8 +31,6 @@ export class FiveButtonRating extends MvuElement {
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 		this._translationService = translationService;
-
-		this.required = true;
 	}
 
 	update(type, data, model) {
@@ -50,29 +45,6 @@ export class FiveButtonRating extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
-		const handleRatingChange = (rating) => {
-			if (rating === Rating.EXCELLENT) {
-				rating = Rating.NONE;
-			}
-			this.signal(Update_Rating, rating);
-
-			this.dispatchEvent(
-				new CustomEvent('rating', {
-					detail: { rating }
-				})
-			);
-			this.dispatchEvent(
-				new CustomEvent('input', {
-					detail: { rating }
-				})
-			);
-			this.dispatchEvent(
-				new CustomEvent('change', {
-					detail: { rating }
-				})
-			);
-		};
-
 		return html`
 			<style>
 				${css}
@@ -81,35 +53,35 @@ export class FiveButtonRating extends MvuElement {
 			<div>
 				<button
 					class="star-button ${Rating.TERRIBLE <= rating ? 'selected' : 'unselected'}"
-					@click="${() => handleRatingChange(Rating.TERRIBLE)}"
+					@click="${() => this._onRatingClick(Rating.TERRIBLE)}"
 					title="${translate('fiveButtonRating_terrible')}"
 				>
 					*
 				</button>
 				<button
 					class="star-button ${Rating.BAD <= rating ? 'selected' : 'unselected'}"
-					@click="${() => handleRatingChange(Rating.BAD)}"
+					@click="${() => this._onRatingClick(Rating.BAD)}"
 					title="${translate('fiveButtonRating_bad')}"
 				>
 					*
 				</button>
 				<button
 					class="star-button ${Rating.SATISFIED <= rating ? 'selected' : 'unselected'}"
-					@click="${() => handleRatingChange(Rating.SATISFIED)}"
+					@click="${() => this._onRatingClick(Rating.SATISFIED)}"
 					title="${translate('fiveButtonRating_satisfied')}"
 				>
 					*
 				</button>
 				<button
 					class="star-button ${Rating.GOOD <= rating ? 'selected' : 'unselected'}"
-					@click="${() => handleRatingChange(Rating.GOOD)}"
+					@click="${() => this._onRatingClick(Rating.GOOD)}"
 					title="${translate('fiveButtonRating_good')}"
 				>
 					*
 				</button>
 				<button
 					class="star-button ${Rating.EXCELLENT <= rating ? 'selected' : 'unselected'}"
-					@click="${() => handleRatingChange(Rating.EXCELLENT)}"
+					@click="${() => this._onRatingClick(Rating.EXCELLENT)}"
 					title="${translate('fiveButtonRating_excellent')}"
 				>
 					*
@@ -118,36 +90,29 @@ export class FiveButtonRating extends MvuElement {
 		`;
 	}
 
-	/**
-	 * supply reportValidity for browser validity check
-	 */
-	//
-	// reportValidity() {
-	// 	const { rating } = this.getModel();
-	// 	return rating > Rating.NONE;
-	// }
-	reportValidity() {
-		console.log('🚀 ~ FiveButtonRating ~ reportValidity');
-
-		const { rating } = this.getModel();
-
-		console.log('🚀 ~ FiveButtonRating ~ reportValidity ~ rating:', rating);
-		console.log('🚀 ~ FiveButtonRating ~ reportValidity ~ this.required:', this.required);
-		if (this.required && rating === Rating.NONE) {
-			console.log('🚀 ~ FiveButtonRating ~ reportValidity ~ return false;');
-			return false;
-		} else {
-			console.log('🚀 ~ FiveButtonRating ~ reportValidity ~ return true;');
-			return true;
+	_onRatingClick(rating) {
+		// todo remove:
+		if (rating === Rating.EXCELLENT) {
+			rating = Rating.NONE;
 		}
+
+		this.rating = rating;
 	}
 
-	/**
-	 * supply checkValidity for browser validity check
-	 */
-	checkValidity() {
-		console.log('🚀 ~ FiveButtonRating ~ checkValidity');
-		return this.reportValidity();
+	set rating(value) {
+		// todo remove:
+		console.log('🚀 ~ FiveButtonRating ~ setrating ~ value:', value);
+		this.signal(Update_Rating, value);
+		this.dispatchEvent(
+			new CustomEvent('rating', {
+				detail: { rating: value }
+			})
+		);
+	}
+
+	get rating() {
+		console.log('🚀 ~ FiveButtonRating ~ getrating ~ this.getModel().rating():', this.getModel().rating);
+		return this.getModel().rating;
 	}
 
 	static get tag() {

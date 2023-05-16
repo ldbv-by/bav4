@@ -1,9 +1,7 @@
 /**
  * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
  */
-/**
- * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
- */
+
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
@@ -66,6 +64,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				detail: { rating }
 			} = event;
 
+			console.log('🚀 ~ GeneralFeedbackPanel ~ onRatingChange ~ rating:', rating);
 			this.signal(Update_Rating, this._securityService.sanitizeHtml(rating));
 		};
 
@@ -104,12 +103,11 @@ export class GeneralFeedbackPanel extends MvuElement {
 			<div class="ba-form-element">
 				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
 				<ba-mvu-fivebuttonrating
-					class="ba-mvu-fivebuttonrating"
 					id="rating"
 					@rating="${onRatingChange}"
 					placeholder="${translate('feedback_generalFeedback_rating')}"
-				>
-				</ba-mvu-fivebuttonrating>
+					required
+				></ba-mvu-fivebuttonrating>
 			</div>
 
 			<div class="ba-form-element">
@@ -154,14 +152,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 	}
 
 	async _saveGeneralFeedback(generalFeedback) {
-		// const translate = (key) => this._translationService.translate(key);
-		// try {
-		// 	await this._generalFeedbackService.save(generalFeedback);
 		emitNotification(JSON.stringify(generalFeedback), LevelTypes.INFO);
-		// } catch (e) {
-		// 	console.error(e);
-		// 	emitNotification(translate('feedback_could_not_save'), LevelTypes.ERROR);
-		// }
 	}
 
 	_addVisitedClass(element) {
