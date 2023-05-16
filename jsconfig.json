@@ -1,0 +1,7 @@
+{
+	"compilerOptions": {
+		"checkJs": true
+	},
+	"exclude": ["**/node_modules/*", "**/test/*"]
+}
+// file needed only for vscode type checking
