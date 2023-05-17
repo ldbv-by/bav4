@@ -8,6 +8,7 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { Icon, Style, Text } from 'ol/style';
 import { measurementReducer } from '../../../../src/store/measurement/measurement.reducer';
+import VectorLayer from 'ol/layer/Vector';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -554,6 +555,17 @@ describe('StyleService', () => {
 			expect(propertySetterSpy).toHaveBeenCalledWith('overlays', jasmine.any(Object));
 			expect(onceSpy).not.toHaveBeenCalled();
 			expect(addOverlaySpy).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('add cluster style', () => {
+		it('adds a style function to the cluster layer', () => {
+			const clusterLayer = new VectorLayer({ id: 'foo' });
+			const styleSpy = spyOn(clusterLayer, 'setStyle').and.callThrough();
+
+			instanceUnderTest.addClusterStyle(clusterLayer);
+
+			expect(styleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 		});
 	});
 

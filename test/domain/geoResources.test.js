@@ -317,7 +317,7 @@ describe('GeoResource', () => {
 			expect(xyzGeoResource.getType()).toEqual(GeoResourceTypes.XYZ);
 			expect(xyzGeoResource.id).toBe('id');
 			expect(xyzGeoResource.label).toBe('label');
-			expect(xyzGeoResource.url).toBe('url');
+			expect(xyzGeoResource.urls).toBe('url');
 		});
 
 		it('provides default properties', () => {

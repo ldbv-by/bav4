@@ -50,7 +50,7 @@ describe('GeoResource provider', () => {
 	const wmsDefinition = {
 		id: 'wmsId',
 		label: 'wmsLabel',
-		url: '${BACKEND_URL}/wmsUrl',
+		url: 'wmsUrl',
 		layers: 'wmsLayer',
 		format: 'image/png',
 		type: 'wms',
@@ -67,7 +67,7 @@ describe('GeoResource provider', () => {
 		exportable: false,
 		...wmsDefinition
 	};
-	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', url: '${BACKEND_URL}/xyzUrl', type: 'xyz', attribution: basicAttribution };
+	const xyzDefinition = { id: 'xyzId', label: 'xyzLabel', urls: 'xyzUrl', type: 'xyz', attribution: basicAttribution };
 	const xyzDefinitionOptionalProperties = {
 		background: true,
 		opacity: 0.5,
@@ -79,7 +79,7 @@ describe('GeoResource provider', () => {
 		tileGridId: 'tileGridId',
 		...xyzDefinition
 	};
-	const vtDefinition = { id: 'vtId', label: 'vtLabel', url: '${BACKEND_URL}/vtStyleUrl', type: 'vt', attribution: basicAttribution };
+	const vtDefinition = { id: 'vtId', label: 'vtLabel', url: 'vtStyleUrl', type: 'vt', attribution: basicAttribution };
 	const vtDefinitionOptionalProperties = {
 		background: true,
 		opacity: 0.5,
@@ -93,7 +93,7 @@ describe('GeoResource provider', () => {
 	const vectorDefinition = {
 		id: 'xyzId',
 		label: 'vectorLabel',
-		url: '${BACKEND_URL}/vectorUrl',
+		url: 'vectorUrl',
 		sourceType: 'kml',
 		type: 'vector',
 		attribution: basicAttribution
@@ -149,7 +149,7 @@ describe('GeoResource provider', () => {
 			const wmsGeoResource = _definitionToGeoResource(wmsDefinition);
 
 			vadlidateGeoResourceProperties(wmsGeoResource, wmsDefinition);
-			expect(wmsGeoResource.url).toBe('https://backend.url/wmsUrl');
+			expect(wmsGeoResource.url).toBe('wmsUrl');
 			expect(wmsGeoResource.layers).toBe(wmsDefinition.layers);
 			expect(wmsGeoResource.format).toBe(wmsDefinition.format);
 			expect(wmsGeoResource._attributionProvider).toBe(getBvvAttribution);
@@ -172,7 +172,7 @@ describe('GeoResource provider', () => {
 			const xyzGeoResource = _definitionToGeoResource(xyzDefinition);
 
 			vadlidateGeoResourceProperties(xyzGeoResource, xyzDefinition);
-			expect(xyzGeoResource.url).toBe('https://backend.url/xyzUrl');
+			expect(xyzGeoResource.urls).toBe('xyzUrl');
 			expect(xyzGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(xyzGeoResource._attribution).not.toBeNull();
 		});
@@ -193,7 +193,7 @@ describe('GeoResource provider', () => {
 			const vtGeoResource = _definitionToGeoResource(vtDefinition);
 
 			vadlidateGeoResourceProperties(vtGeoResource, vtDefinition);
-			expect(vtGeoResource.styleUrl).toBe('https://backend.url/vtStyleUrl');
+			expect(vtGeoResource.styleUrl).toBe('vtStyleUrl');
 			expect(vtGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(vtGeoResource._attribution).not.toBeNull();
 		});
@@ -213,7 +213,7 @@ describe('GeoResource provider', () => {
 			const vectorGeoResource = _definitionToGeoResource(vectorDefinition);
 
 			vadlidateGeoResourceProperties(vectorGeoResource, vectorDefinition);
-			expect(vectorGeoResource.url).toBe('https://backend.url/vectorUrl');
+			expect(vectorGeoResource.url).toBe('vectorUrl');
 			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
 			expect(vectorGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(vectorGeoResource._attribution).not.toBeNull();

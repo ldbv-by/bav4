@@ -2,6 +2,7 @@ import { html } from 'lit-html';
 import { BaElement } from '../../src/modules/BaElement';
 import { MvuElement } from '../../src/modules/MvuElement';
 import {
+	BA_FORM_ELEMENT_VISITED_CLASS,
 	decodeHtmlEntities,
 	findAllBySelector,
 	forEachBySelector,
@@ -96,6 +97,9 @@ describe('markup utils', () => {
 		});
 		it('provides an attribute name for iframes to enable exposing the reference id of an user-generated geometry', () => {
 			expect(IFRAME_GEOMETRY_REFERENCE_ID).toBe('data-iframe-geometry-reference-id');
+		});
+		it('provides an css class name for ba form elements', () => {
+			expect(BA_FORM_ELEMENT_VISITED_CLASS).toBe('userVisited');
 		});
 	});
 

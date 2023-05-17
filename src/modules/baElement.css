@@ -269,23 +269,23 @@ input[type='range']:focus {
 	width: 100%;
 	left: 0;
 }
-.ba-form-element input:invalid ~ .bar::before,
-.ba-form-element textarea:invalid ~ .bar::before,
-.ba-form-element select:invalid ~ .bar::before {
+.ba-form-element.userVisited input:invalid ~ .bar::before,
+.ba-form-element.userVisited textarea:invalid ~ .bar::before,
+.ba-form-element.userVisited select:invalid ~ .bar::before {
 	width: 100%;
 	left: 0;
 	background: var(--error-color);
 }
-.ba-form-element input:invalid ~ .control-label,
-.ba-form-element textarea:invalid ~ .control-label {
+.ba-form-element.userVisited input:invalid ~ .control-label,
+.ba-form-element.userVisited textarea:invalid ~ .control-label {
 	color: var(--error-color);
 }
-.ba-form-element input:invalid ~ .helper-label,
-.ba-form-element textarea:invalid ~ .helper-label {
+.ba-form-element.userVisited input:invalid ~ .helper-label,
+.ba-form-element.userVisited textarea:invalid ~ .helper-label {
 	display: none;
 }
-.ba-form-element input:invalid ~ .error-label,
-.ba-form-element textarea:invalid ~ .error-label {
+.ba-form-element.userVisited input:invalid ~ .error-label,
+.ba-form-element.userVisited textarea:invalid ~ .error-label {
 	display: block;
 	color: var(--error-color);
 }
@@ -296,7 +296,7 @@ input[type='range']:focus {
 	background-position: center;
 	background-image: url('./assets/exclamationcircle.svg');
 }
-.ba-form-element .icon {
+.ba-form-element.userVisited .icon {
 	font-size: 2em;
 	opacity: 0;
 	position: absolute;
