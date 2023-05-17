@@ -83,7 +83,7 @@ export class FeedbackService {
 	 * Returns all possible categories for a MapFeedback.
 	 * @async
 	 * @throws `Error` when categories are not available.
-	 * @returns {Array<String>}
+	 * @returns {Promise<Array<String>>}
 	 */
 	async getCategories() {
 		if (!this._categories) {
@@ -98,7 +98,7 @@ export class FeedbackService {
 	 * @async
 	 * @param {MapFeedback|GeneralFeedback} feedback
 	 * @throws `Error` when storing was not successful
-	 * @returns {Boolean} `true` when storing was successful
+	 * @returns {Promise<Boolean>} `true` when storing was successful
 	 */
 	async save(feedback) {
 		if (feedback instanceof MapFeedback) {
@@ -113,7 +113,7 @@ export class FeedbackService {
 
 	/**
 	 * Returns the id of a GeoResource which should be used as a overlay layer of the map.
-	 * @returns GeoResource id or `null`
+	 * @returns {String|null} GeoResource id or `null`
 	 */
 	getOverlayGeoResourceId() {
 		return this._mapFeedbackOverlayGeoResourceProvider();
