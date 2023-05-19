@@ -41,8 +41,3 @@
 .ba-list-item__main-text {
 	font-size: 1.7rem;
 }
-
-.ba-form-element.userVisited ba-mvu-fivebuttonrating:invalid-rating ~ .error-label {
-	display: block;
-	color: var(--error-color);
-}

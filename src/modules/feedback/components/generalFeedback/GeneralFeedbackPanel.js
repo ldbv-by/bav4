@@ -6,7 +6,6 @@ import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
-import { Rating } from '../rating/FiveButtonRating';
 import css from './generalFeedbackPanel.css';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
 
@@ -26,9 +25,9 @@ export class GeneralFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
 			generalFeedback: {
-				description: '',
-				rating: Rating.NONE,
-				email: ''
+				description: null,
+				email: null,
+				rating: null
 			}
 		});
 
@@ -61,10 +60,11 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 		const onRatingChange = (event) => {
 			const {
-				detail: { rating }
+				detail: { rating },
+				target: { parentNode }
 			} = event;
 
-			console.log('🚀 ~ GeneralFeedbackPanel ~ onRatingChange ~ rating:', rating);
+			this._addVisitedClass(parentNode);
 			this.signal(Update_Rating, this._securityService.sanitizeHtml(rating));
 		};
 

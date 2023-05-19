@@ -91,17 +91,10 @@ export class FiveButtonRating extends MvuElement {
 	}
 
 	_onRatingClick(rating) {
-		// todo remove:
-		if (rating === Rating.EXCELLENT) {
-			rating = Rating.NONE;
-		}
-
 		this.rating = rating;
 	}
 
 	set rating(value) {
-		// todo remove:
-		console.log('🚀 ~ FiveButtonRating ~ setrating ~ value:', value);
 		this.signal(Update_Rating, value);
 		this.dispatchEvent(
 			new CustomEvent('rating', {
@@ -111,7 +104,6 @@ export class FiveButtonRating extends MvuElement {
 	}
 
 	get rating() {
-		console.log('🚀 ~ FiveButtonRating ~ getrating ~ this.getModel().rating():', this.getModel().rating);
 		return this.getModel().rating;
 	}
 

@@ -48,15 +48,38 @@ describe('FiveButtonRating', () => {
 
 		it('setter and getter work', async () => {
 			// arrange
-			const fiveButtonRating = await setup();
-			const ratingSpy = spyOnProperty(fiveButtonRating, 'rating', 'set').and.callThrough();
+			const element = await setup();
+			const ratingSpy = spyOnProperty(element, 'rating', 'set').and.callThrough();
+			const prefix = 'fiveButtonRating_';
 
 			// act
-			fiveButtonRating.rating = Rating.BAD;
+			element.rating = Rating.BAD;
 
 			// assert
 			expect(ratingSpy).toHaveBeenCalled();
-			expect(fiveButtonRating.rating).toBe(Rating.BAD);
+			expect(element.rating).toBe(Rating.BAD);
+
+			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			expect(starButtons.length).toBe(5);
+			starButtons.forEach((starButton) => {
+				expect(starButton.onClick).toEqual(element.onRatingClick);
+				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
+			});
+		});
+
+		it('button  click calls _onRatingClick', async () => {
+			// arrange
+			const element = await setup();
+			const ratingSpy = spyOn(element, '_onRatingClick').and.callThrough();
+
+			// act
+			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			starButtons.forEach((starButton) => {
+				starButton.click();
+			});
+
+			// assert
+			expect(ratingSpy).toHaveBeenCalledTimes(5);
 		});
 	});
 
