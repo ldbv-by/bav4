@@ -1,9 +1,14 @@
+import { Feature } from 'ol';
 import { VectorGeoResource } from '../../src/domain/geoResources';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
+import { Point, LineString, Polygon } from 'ol/geom';
 
 describe('ExportVectorDataService', () => {
+	const EWKT_Point = 'SRID=4326;POINT(10 10)';
+	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
+	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
 	const setup = () => {
 		TestUtils.setupStoreAndDi({});
 
@@ -87,25 +92,53 @@ describe('ExportVectorDataService', () => {
 			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
 			expect(readerSpy).toHaveBeenCalled();
 		});
+	});
 
-		const EWKT_Point = 'SRID=4326;Point(10 10)';
-		const EWKT_LineString = 'SRID=4326;LineString(10 10, 20 20, 30 40)';
-		const EWKT_Polygon = 'SRID=4326;Polygon((10 10, 10 20, 20 20, 20 15, 10 10))';
+	describe('_getEwktReader', () => {
+		it('reads ewkt data', () => {
+			const instance = setup();
+			const reader = instance._getEwktReader();
 
-		const Empty_GPX =
-			'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"/>';
-		describe('having EWKT data', () => {
-			it('exports to GPX', () => {
-				const instance = setup();
-				const dataSourceType = new SourceType(SourceTypeName.EWKT);
-				const targetSourceType = new SourceType(SourceTypeName.GPX);
+			expect(reader(EWKT_Point).length).toBe(1);
+			expect(reader(EWKT_LineString).length).toBe(1);
+			expect(reader(EWKT_Polygon).length).toBe(1);
+		});
+	});
 
-				expect(instance.forData(EWKT_Point, dataSourceType, targetSourceType)).toContain('<wpt lat="10" lon="10"/>');
-				expect(instance.forData(EWKT_LineString, dataSourceType, targetSourceType)).toContain(
-					'<rte><rtept lat="10" lon="10"/><rtept lat="20" lon="20"/><rtept lat="40" lon="30"/></rte>'
-				);
-				expect(instance.forData(EWKT_Polygon, dataSourceType, targetSourceType)).toBe(Empty_GPX);
-			});
+	describe('_getEwktWriter', () => {
+		const point = new Point([10, 10]);
+		const lineString = new LineString([
+			[10, 10],
+			[20, 20],
+			[30, 40]
+		]);
+		const polygon = new Polygon([
+			[
+				[10, 10],
+				[10, 20],
+				[20, 20],
+				[20, 15],
+				[10, 10]
+			]
+		]);
+
+		it('writes ewkt data', () => {
+			const instance = setup();
+			const writer = instance._getEwktWriter();
+
+			expect(writer([new Feature({ geometry: point })])).toBe(EWKT_Point);
+			expect(writer([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
+			expect(writer([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+		});
+	});
+
+	describe('_getFormat', () => {
+		it('throws an error when no format found', () => {
+			const instance = setup();
+
+			expect(() => {
+				instance._getFormat('fooBar');
+			}).toThrowError('Format-provider for fooBar is missing.');
 		});
 	});
 });
