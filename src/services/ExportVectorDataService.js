@@ -8,8 +8,7 @@ import { $injector } from '../injection';
 
 /**
  * Service for exporting vector data
- * @taulinger
- * @thiloSchlemmer
+ * @author taulinger
  * @interface ExportVectorDataService
  */
 
