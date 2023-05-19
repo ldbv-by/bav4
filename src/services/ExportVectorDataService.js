@@ -1,3 +1,6 @@
+/**
+ * @module services/ExportVectorDataService
+ */
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
