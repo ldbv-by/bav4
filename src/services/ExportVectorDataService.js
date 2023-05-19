@@ -84,27 +84,21 @@ export class OlExportVectorDataService {
 	}
 
 	_getReader(sourceType) {
-		switch (sourceType.name) {
-			case SourceTypeName.EWKT:
-				return this._getEwktReader();
-			default:
-				return (data) => {
-					const format = this._getFormat(sourceType.name);
-					return format.readFeatures(data);
-				};
-		}
+		const reader = (data) => {
+			const format = this._getFormat(sourceType.name);
+			return format.readFeatures(data);
+		};
+
+		return sourceType.name === SourceTypeName.EWKT ? this._getEwktReader() : reader;
 	}
 
 	_getWriter(sourceType) {
-		switch (sourceType.name) {
-			case SourceTypeName.EWKT:
-				return this._getEwktWriter(sourceType.srid);
-			default:
-				return (data) => {
-					const format = this._getFormat(sourceType.name);
-					return format.writeFeatures(data);
-				};
-		}
+		const writer = (data) => {
+			const format = this._getFormat(sourceType.name);
+			return format.writeFeatures(data);
+		};
+
+		return sourceType.name === SourceTypeName.EWKT ? this._getEwktWriter(sourceType.srid) : writer;
 	}
 
 	_getFormat(formatName) {
@@ -134,6 +128,7 @@ export class OlExportVectorDataService {
 		throw new Error('Unsupported SRID: ' + targetSrid);
 	}
 
+	// todo: refactor to ewkt.js or an ewkt-provider
 	_getEwktReader() {
 		return (data) => {
 			const ewkt = parse(data);
@@ -145,6 +140,7 @@ export class OlExportVectorDataService {
 		};
 	}
 
+	// todo: refactor to ewkt.js or an ewkt-provider
 	_getEwktWriter(srid = 4326) {
 		return (features) => {
 			const wktFormat = new WKT();
