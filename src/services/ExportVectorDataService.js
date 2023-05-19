@@ -1,5 +1,6 @@
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
-import { SourceType, SourceTypeName } from '../domain/sourceType';
+import { SourceTypeName } from '../domain/sourceType';
+import { parse } from '../utils/ewkt';
 
 /**
  * Service for exporting vector data
@@ -48,8 +49,7 @@ export class OlExportVectorDataService {
 	 * @throws {Error}
 	 */
 	forGeoResource(geoResource, targetSourceType) {
-		const sourceType = new SourceType(SourceTypeName.KML);
-		return this.forData(geoResource.data, sourceType, targetSourceType);
+		return this.forData(geoResource.data, geoResource.sourceType, targetSourceType);
 	}
 
 	/**
@@ -64,14 +64,26 @@ export class OlExportVectorDataService {
 	 */
 	forData(data, dataSourceType, targetSourceType) {
 		const features = this._getReader(dataSourceType)(data);
-
 		return this._getWriter(targetSourceType)(features);
 	}
 
 	_getReader(sourceType) {
+		const ewktReader = (data) => {
+			const ewkt = parse(data);
+			const wktFormat = new WKT();
+			return wktFormat.readFeatures(ewkt.wkt).map((f) => {
+				f.set('srid', ewkt.srid, true);
+				return f;
+			});
+		};
 		switch (sourceType.name) {
+			case SourceTypeName.EWKT:
+				return ewktReader;
 			default:
-				return this._getFormat(sourceType).readFeatures;
+				return (data) => {
+					const format = this._getFormat(sourceType);
+					return format.readFeatures(data);
+				};
 		}
 	}
 
@@ -79,13 +91,16 @@ export class OlExportVectorDataService {
 		const ewktWriter = (features) => {
 			const srid = sourceType.srid ?? '4326';
 			const wktFormat = new WKT();
-			features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
+			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
 		};
 		switch (sourceType.name) {
 			case SourceTypeName.EWKT:
 				return ewktWriter;
 			default:
-				return this._getFormat(sourceType).writeFeatures;
+				return (data) => {
+					const format = this._getFormat(sourceType);
+					return format.writeFeatures(data);
+				};
 		}
 	}
 
@@ -97,8 +112,6 @@ export class OlExportVectorDataService {
 				return new GeoJSON();
 			case SourceTypeName.GPX:
 				return new GPX();
-			case SourceTypeName.EWKT:
-				return new WKT();
 			default:
 				throw Error(`Format-provider for ${sourceType.name} is missing.`);
 		}
