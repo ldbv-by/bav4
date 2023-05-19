@@ -7,6 +7,7 @@ import { Point, LineString, Polygon } from 'ol/geom';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../src/injection';
+import { fromLonLat } from 'ol/proj';
 
 describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
@@ -14,7 +15,7 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
 
 	const projectionServiceMock = {
-		getProjections() {}
+		getProjections: () => [4326, 3857]
 	};
 
 	const setup = () => {
@@ -45,6 +46,21 @@ describe('ExportVectorDataService', () => {
 	});
 
 	describe('forData', () => {
+		it('returns the data, if no transformation and converting is needed', () => {
+			const instance = setup();
+			const readerSpy = spyOn(instance, '_getReader').and.callThrough();
+			const writerSpy = spyOn(instance, '_getWriter').and.callThrough();
+			const transformSpy = spyOn(instance, '_transform').and.callThrough();
+			const sameSourceType = new SourceType('same', 1, 42);
+
+			const actual = instance.forData('someData', sameSourceType, sameSourceType);
+
+			expect(actual).toBe('someData');
+			expect(readerSpy).not.toHaveBeenCalled();
+			expect(writerSpy).not.toHaveBeenCalled();
+			expect(transformSpy).not.toHaveBeenCalled();
+		});
+
 		it('requests the standard format reader', () => {
 			const instance = setup();
 			const mockFormat = { readFeatures: () => [] };
@@ -78,6 +94,20 @@ describe('ExportVectorDataService', () => {
 			expect(readerSpy).toHaveBeenCalled();
 		});
 
+		it('requests a transformation', () => {
+			const instance = setup();
+
+			spyOn(instance, '_getReader').and.returnValue(() => ['foo']);
+			const transformSpy = spyOn(instance, '_transform').and.returnValue(() => ['bar']);
+			spyOn(instance, '_getWriter').and.returnValue(() => 'baz');
+
+			const dataSourceType = new SourceType('foo', 1, 4326);
+			const targetSourceType = new SourceType('bar', 1, 3857);
+
+			instance.forData('someData', dataSourceType, targetSourceType);
+			expect(transformSpy).toHaveBeenCalledWith(['foo'], 4326, 3857);
+		});
+
 		it('requests the standard format writer', () => {
 			const instance = setup();
 			spyOn(instance, '_getReader').and.returnValue(() => []);
@@ -105,6 +135,29 @@ describe('ExportVectorDataService', () => {
 
 			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
 			expect(readerSpy).toHaveBeenCalled();
+		});
+	});
+
+	describe('_transform', () => {
+		it('throws an error when srid is not supported', () => {
+			const instance = setup();
+
+			expect(() => {
+				instance._transform(['foo'], 4326, 42);
+			}).toThrowError('Unsupported SRID: 42');
+		});
+
+		it('transforms features', () => {
+			const coord4326 = [11.57245, 48.14021];
+			const coord3857 = fromLonLat(coord4326);
+			const features = [new Feature({ geometry: new Point(coord4326) })];
+			const instance = setup();
+
+			const targetFeatures = instance._transform(features, 4326, 3857);
+
+			expect(targetFeatures).toHaveSize(1);
+			expect(targetFeatures[0].getGeometry().getCoordinates()[0]).toBeCloseTo(coord3857[0], 3);
+			expect(targetFeatures[0].getGeometry().getCoordinates()[1]).toBeCloseTo(coord3857[1], 3);
 		});
 	});
 
