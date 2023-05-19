@@ -4,6 +4,7 @@
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
+import { $injector } from '../injection';
 
 /**
  * Service for exporting vector data
@@ -43,6 +44,10 @@ import { parse } from '../utils/ewkt';
  * @implements {ExportVectorDataService}
  */
 export class OlExportVectorDataService {
+	constructor() {
+		const { ProjectionService } = $injector.inject('ProjectionService');
+		this._projectionService = ProjectionService;
+	}
 	/**
 	 * Exports the data of a {@link VectorGeoResource} into a
 	 * String containing the data in the specified {@link SourceType| targetSourceType}
@@ -66,8 +71,17 @@ export class OlExportVectorDataService {
 	 * @throws {Error}
 	 */
 	forData(data, dataSourceType, targetSourceType) {
-		const features = this._getReader(dataSourceType)(data);
-		return this._getWriter(targetSourceType)(features);
+		const needConvert = dataSourceType.name !== targetSourceType.name;
+		const needTransform = dataSourceType.srid !== targetSourceType.srid;
+
+		if (!needConvert && !needTransform) {
+			return data;
+		}
+
+		const dataFeatures = this._getReader(dataSourceType)(data);
+		const targetFeatures = needTransform ? this._transform(dataFeatures, dataSourceType.srid, targetSourceType.srid) : dataFeatures;
+
+		return this._getWriter(targetSourceType)(targetFeatures);
 	}
 
 	_getReader(sourceType) {
@@ -105,6 +119,20 @@ export class OlExportVectorDataService {
 			default:
 				throw Error(`Format-provider for ${formatName} is missing.`);
 		}
+	}
+
+	_transform(features, sourceSrid, targetSrid) {
+		if (this._projectionService.getProjections().includes(targetSrid)) {
+			return features.map((feature) => {
+				const clone = feature.clone();
+				clone.setId(feature.getId());
+				clone.getGeometry().setProperties(feature.getGeometry().getProperties());
+				clone.getGeometry().transform(`EPSG:${sourceSrid}`, `EPSG:${targetSrid}`);
+
+				return clone;
+			});
+		}
+		throw new Error('Unsupported SRID: ' + targetSrid);
 	}
 
 	_getEwktReader() {

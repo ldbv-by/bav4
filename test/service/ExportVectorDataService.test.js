@@ -4,16 +4,30 @@ import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { OlExportVectorDataService } from '../../src/services/ExportVectorDataService';
 import { TestUtils } from '../test-utils';
 import { Point, LineString, Polygon } from 'ol/geom';
+import proj4 from 'proj4';
+import { register } from 'ol/proj/proj4';
+import { $injector } from '../../src/injection';
 
 describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+
+	const projectionServiceMock = {
+		getProjections() {}
+	};
+
 	const setup = () => {
 		TestUtils.setupStoreAndDi({});
-
+		$injector.registerSingleton('ProjectionService', projectionServiceMock);
 		return new OlExportVectorDataService();
 	};
+
+	beforeAll(() => {
+		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+		proj4.defs('EPSG:25833', '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
+		register(proj4);
+	});
 
 	describe('forGeoResource', () => {
 		it('uses forData', () => {
