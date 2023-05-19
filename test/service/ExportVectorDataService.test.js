@@ -26,6 +26,68 @@ describe('ExportVectorDataService', () => {
 	});
 
 	describe('forData', () => {
+		it('requests the standard format reader', () => {
+			const instance = setup();
+			const mockFormat = { readFeatures: () => [] };
+			const formatSpy = spyOn(instance, '_getFormat').and.returnValue(mockFormat);
+			const readingSpy = spyOn(mockFormat, 'readFeatures');
+			spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
+			const targetSourceType = new SourceType('something');
+
+			instance.forData('someData', new SourceType(SourceTypeName.KML), targetSourceType);
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
+			formatSpy.calls.reset();
+
+			instance.forData('someData', new SourceType(SourceTypeName.GPX), targetSourceType);
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
+			formatSpy.calls.reset();
+
+			instance.forData('someData', new SourceType(SourceTypeName.GEOJSON), targetSourceType);
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+
+			expect(readingSpy).toHaveBeenCalledTimes(3); // KML + GPX + GEOJSON
+		});
+
+		it('requests the ewkt format reader', () => {
+			const instance = setup();
+
+			const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
+			spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
+			const targetSourceType = new SourceType('something');
+
+			instance.forData('someData', new SourceType(SourceTypeName.EWKT), targetSourceType);
+			expect(readerSpy).toHaveBeenCalled();
+		});
+
+		it('requests the standard format writer', () => {
+			const instance = setup();
+			spyOn(instance, '_getReader').and.returnValue(() => []);
+			const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+
+			const dataSourceType = new SourceType('something');
+
+			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.KML));
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
+			formatSpy.calls.reset();
+
+			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GPX));
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
+			formatSpy.calls.reset();
+
+			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GEOJSON));
+			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+		});
+
+		it('requests the ewkt format writer', () => {
+			const instance = setup();
+			spyOn(instance, '_getReader').and.returnValue(() => []);
+			const readerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
+			const dataSourceType = new SourceType('something');
+
+			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
+			expect(readerSpy).toHaveBeenCalled();
+		});
+
 		const EWKT_Point = 'SRID=4326;Point(10 10)';
 		const EWKT_LineString = 'SRID=4326;LineString(10 10, 20 20, 30 40)';
 		const EWKT_Polygon = 'SRID=4326;Polygon((10 10, 10 20, 20 20, 20 15, 10 10))';

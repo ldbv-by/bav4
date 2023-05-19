@@ -71,44 +71,31 @@ export class OlExportVectorDataService {
 	}
 
 	_getReader(sourceType) {
-		const ewktReader = (data) => {
-			const ewkt = parse(data);
-			const wktFormat = new WKT();
-			return wktFormat.readFeatures(ewkt.wkt).map((f) => {
-				f.set('srid', ewkt.srid, true);
-				return f;
-			});
-		};
 		switch (sourceType.name) {
 			case SourceTypeName.EWKT:
-				return ewktReader;
+				return this._getEwktReader();
 			default:
 				return (data) => {
-					const format = this._getFormat(sourceType);
+					const format = this._getFormat(sourceType.name);
 					return format.readFeatures(data);
 				};
 		}
 	}
 
 	_getWriter(sourceType) {
-		const ewktWriter = (features) => {
-			const srid = sourceType.srid ?? '4326';
-			const wktFormat = new WKT();
-			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
-		};
 		switch (sourceType.name) {
 			case SourceTypeName.EWKT:
-				return ewktWriter;
+				return this._getEwktWriter(sourceType.srid);
 			default:
 				return (data) => {
-					const format = this._getFormat(sourceType);
+					const format = this._getFormat(sourceType.name);
 					return format.writeFeatures(data);
 				};
 		}
 	}
 
-	_getFormat(sourceType) {
-		switch (sourceType.name) {
+	_getFormat(formatName) {
+		switch (formatName) {
 			case SourceTypeName.KML:
 				return new KML();
 			case SourceTypeName.GEOJSON:
@@ -116,7 +103,25 @@ export class OlExportVectorDataService {
 			case SourceTypeName.GPX:
 				return new GPX();
 			default:
-				throw Error(`Format-provider for ${sourceType.name} is missing.`);
+				throw Error(`Format-provider for ${formatName} is missing.`);
 		}
+	}
+
+	_getEwktReader() {
+		return (data) => {
+			const ewkt = parse(data);
+			const wktFormat = new WKT();
+			return wktFormat.readFeatures(ewkt.wkt).map((f) => {
+				f.set('srid', ewkt.srid, true);
+				return f;
+			});
+		};
+	}
+
+	_getEwktWriter(srid = 4326) {
+		return (features) => {
+			const wktFormat = new WKT();
+			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
+		};
 	}
 }
