@@ -1,7 +1,9 @@
 /**
  * @module services/provider/feedback_provider
  */
+//@ts-check
 import { $injector } from '../../injection';
+import { GeneralFeedback, MapFeedback } from '../FeedbackService';
 import { MediaType } from '../HttpService';
 
 /**
@@ -11,10 +13,30 @@ import { MediaType } from '../HttpService';
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
-	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`;
 
-	const result = await httpService.post(url, JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 });
+	const getResult = async () => {
+		switch (mapFeedback.constructor) {
+			case MapFeedback: {
+				return await httpService.post(
+					`${configService.getValueAsPath('BACKEND_URL')}feedback/tim/message`,
+					JSON.stringify(mapFeedback),
+					MediaType.JSON,
+					{ timeout: 2000 }
+				);
+			}
+			case GeneralFeedback:
+				return await httpService.post(
+					`${configService.getValueAsPath('BACKEND_URL')}feedback/general/message`,
+					JSON.stringify(mapFeedback),
+					MediaType.JSON,
+					{ timeout: 2000 }
+				);
+			default:
+				throw new Error(`Feedback could not be stored: Unknown feedback class`);
+		}
+	};
 
+	const result = await getResult();
 	switch (result.status) {
 		case 200: {
 			return true;
