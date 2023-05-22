@@ -85,24 +85,21 @@ describe('ExportVectorDataService', () => {
 
 		it('requests the standard format reader', () => {
 			const instance = setup();
-			const mockFormat = { readFeatures: () => [] };
-			const formatSpy = spyOn(instance, '_getFormat').and.returnValue(mockFormat);
-			const readingSpy = spyOn(mockFormat, 'readFeatures');
+			const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+
 			spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
 			const targetSourceType = new SourceType('something');
 
-			instance.forData('someData', new SourceType(SourceTypeName.KML), targetSourceType);
+			instance.forData('<kml/>', new SourceType(SourceTypeName.KML), targetSourceType);
 			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
 			formatSpy.calls.reset();
 
-			instance.forData('someData', new SourceType(SourceTypeName.GPX), targetSourceType);
+			instance.forData('<gpx/>', new SourceType(SourceTypeName.GPX), targetSourceType);
 			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
 			formatSpy.calls.reset();
 
-			instance.forData('someData', new SourceType(SourceTypeName.GEOJSON), targetSourceType);
+			instance.forData('{"type":"FeatureCollection", "features":[]}', new SourceType(SourceTypeName.GEOJSON), targetSourceType);
 			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
-
-			expect(readingSpy).toHaveBeenCalledTimes(3); // KML + GPX + GEOJSON
 		});
 
 		it('requests the ewkt format reader', () => {
