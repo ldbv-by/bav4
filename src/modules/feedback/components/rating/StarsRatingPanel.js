@@ -1,9 +1,9 @@
 /**
- * @module modules/feedback/components/rating/FiveButtonRating
+ * @module modules/feedback/components/rating/StarsRatingPanel
  */
 
 import { html } from 'lit-html';
-import css from './fiveButtonRating.css';
+import css from './starsRatingPanel.css';
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 
@@ -23,7 +23,7 @@ export const Rating = Object.freeze({
 
 const Update_Rating = 'update_rating';
 
-export class FiveButtonRating extends MvuElement {
+export class StarsRatingPanel extends MvuElement {
 	constructor() {
 		super({
 			rating: Rating.NONE
@@ -108,6 +108,6 @@ export class FiveButtonRating extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-mvu-fivebuttonrating';
+		return 'ba-stars-rating-panel';
 	}
 }

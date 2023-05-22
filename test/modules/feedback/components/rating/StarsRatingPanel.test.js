@@ -1,8 +1,8 @@
 import { $injector } from '../../../../../src/injection';
-import { FiveButtonRating, Rating } from '../../../../../src/modules/feedback/components/rating/FiveButtonRating';
+import { StarsRatingPanel, Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
 import { TestUtils } from '../../../../test-utils';
 
-window.customElements.define(FiveButtonRating.tag, FiveButtonRating);
+window.customElements.define(StarsRatingPanel.tag, StarsRatingPanel);
 
 const setup = (state = {}) => {
 	const initialState = {
@@ -13,14 +13,14 @@ const setup = (state = {}) => {
 
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-	return TestUtils.renderAndLogLifecycle(FiveButtonRating.tag);
+	return TestUtils.renderAndLogLifecycle(StarsRatingPanel.tag);
 };
 
-describe('FiveButtonRating', () => {
+describe('StarsRatingPanel', () => {
 	describe('when instantiated', () => {
 		it('sets a default model', async () => {
 			await setup();
-			const element = new FiveButtonRating();
+			const element = new StarsRatingPanel();
 
 			expect(element.getModel()).toEqual({
 				rating: Rating.NONE

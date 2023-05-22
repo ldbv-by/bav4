@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
-import { Rating } from '../../../../../src/modules/feedback/components/rating/FiveButtonRating';
+import { Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
@@ -159,11 +159,11 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
-			const fiveButtonRating = element.shadowRoot.getElementById('rating');
+			const starsRatingPanel = element.shadowRoot.getElementById('rating');
 			const ratingChangeEvent = new CustomEvent('rating', {
 				detail: { rating: Rating.GOOD }
 			});
-			fiveButtonRating.dispatchEvent(ratingChangeEvent);
+			starsRatingPanel.dispatchEvent(ratingChangeEvent);
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'description';
@@ -189,11 +189,11 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			const fiveButtonRating = element.shadowRoot.getElementById('rating');
+			const starsRatingPanel = element.shadowRoot.getElementById('rating');
 			const ratingChangeEvent = new CustomEvent('rating', {
 				detail: { rating: Rating.GOOD }
 			});
-			fiveButtonRating.dispatchEvent(ratingChangeEvent);
+			starsRatingPanel.dispatchEvent(ratingChangeEvent);
 
 			const descriptionInput = element.shadowRoot.querySelector('#description');
 			descriptionInput.value = 'description';
@@ -282,11 +282,11 @@ describe('GeneralFeedbackPanel', () => {
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const fiveButtonRating = element.shadowRoot.getElementById('rating');
+			const starsRatingPanel = element.shadowRoot.getElementById('rating');
 			const ratingChangeEvent = new CustomEvent('rating', {
 				detail: { rating: Rating.EXCELLENT }
 			});
-			fiveButtonRating.dispatchEvent(ratingChangeEvent);
+			starsRatingPanel.dispatchEvent(ratingChangeEvent);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(ratingValue);

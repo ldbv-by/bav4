@@ -102,12 +102,12 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			<div class="ba-form-element">
 				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
-				<ba-mvu-fivebuttonrating
+				<ba-stars-rating-panel
 					id="rating"
 					@rating="${onRatingChange}"
 					placeholder="${translate('feedback_generalFeedback_rating')}"
 					required
-				></ba-mvu-fivebuttonrating>
+				></ba-stars-rating-panel>
 			</div>
 
 			<div class="ba-form-element">
