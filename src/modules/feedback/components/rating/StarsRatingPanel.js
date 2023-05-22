@@ -97,7 +97,7 @@ export class StarsRatingPanel extends MvuElement {
 	set rating(value) {
 		this.signal(Update_Rating, value);
 		this.dispatchEvent(
-			new CustomEvent('rating', {
+			new CustomEvent('change', {
 				detail: { rating: value }
 			})
 		);

@@ -160,7 +160,7 @@ describe('GeneralFeedbackPanel', () => {
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
 			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('rating', {
+			const ratingChangeEvent = new CustomEvent('change', {
 				detail: { rating: Rating.GOOD }
 			});
 			starsRatingPanel.dispatchEvent(ratingChangeEvent);
@@ -190,7 +190,7 @@ describe('GeneralFeedbackPanel', () => {
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('rating', {
+			const ratingChangeEvent = new CustomEvent('change', {
 				detail: { rating: Rating.GOOD }
 			});
 			starsRatingPanel.dispatchEvent(ratingChangeEvent);
@@ -283,7 +283,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// act
 			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('rating', {
+			const ratingChangeEvent = new CustomEvent('change', {
 				detail: { rating: Rating.EXCELLENT }
 			});
 			starsRatingPanel.dispatchEvent(ratingChangeEvent);
@@ -298,7 +298,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// act
 			const fiveButtonRatingElement = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('rating', {
+			const ratingChangeEvent = new CustomEvent('change', {
 				detail: { rating: Rating.EXCELLENT }
 			});
 			fiveButtonRatingElement.dispatchEvent(ratingChangeEvent);
