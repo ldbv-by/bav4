@@ -17,6 +17,19 @@ const setup = (state = {}) => {
 };
 
 describe('StarsRatingPanel', () => {
+	describe('Rating', () => {
+		it('provides an enum of possible ratings', () => {
+			expect(Object.keys(Rating).length).toBe(6);
+
+			expect(Rating.NONE).toBe(0);
+			expect(Rating.TERRIBLE).toBe(1);
+			expect(Rating.BAD).toBe(2);
+			expect(Rating.SATISFIED).toBe(3);
+			expect(Rating.GOOD).toBe(4);
+			expect(Rating.EXCELLENT).toBe(5);
+		});
+	});
+
 	describe('when instantiated', () => {
 		it('sets a default model', async () => {
 			await setup();

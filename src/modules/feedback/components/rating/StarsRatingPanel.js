@@ -13,12 +13,12 @@ import { $injector } from '../../../../injection';
  * @enum {string}
  */
 export const Rating = Object.freeze({
-	NONE: '0',
-	TERRIBLE: '1',
-	BAD: '2',
-	SATISFIED: '3',
-	GOOD: '4',
-	EXCELLENT: '5'
+	NONE: 0,
+	TERRIBLE: 1,
+	BAD: 2,
+	SATISFIED: 3,
+	GOOD: 4,
+	EXCELLENT: 5
 });
 
 const Update_Rating = 'update_rating';
