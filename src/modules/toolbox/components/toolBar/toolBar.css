@@ -343,3 +343,8 @@
 	-webkit-mask-image: url('assets/close.svg');
 	transform: rotate(90deg);
 }
+
+.is-demo .ba {
+	margin: 0;
+	background-image: url('assets/rocket.svg');
+}

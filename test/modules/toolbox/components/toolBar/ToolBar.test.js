@@ -15,7 +15,7 @@ window.customElements.define(ToolBar.tag, ToolBar);
 describe('ToolBarElement', () => {
 	let store;
 	const setup = async (state = {}, config = {}) => {
-		const { embed = false, fetching = false } = config;
+		const { embed = false, fetching = false, standalone = false } = config;
 
 		const initialState = {
 			tools: {
@@ -40,7 +40,8 @@ describe('ToolBarElement', () => {
 
 		$injector
 			.registerSingleton('EnvironmentService', {
-				isEmbedded: () => embed
+				isEmbedded: () => embed,
+				isStandalone: () => standalone
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(ToolBar.tag);
@@ -75,6 +76,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.export')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.tool-bar__button_icon.close')).toBeTruthy();
 			expect(element.shadowRoot.querySelectorAll('.hide-button')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge');
 		});
 
 		it('contains test-id attributes', async () => {
@@ -93,6 +95,13 @@ describe('ToolBarElement', () => {
 			const element = await setup({}, { embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);
+		});
+
+		it('renders for standalone', async () => {
+			const element = await setup({}, { standalone: true });
+
+			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.toolbar__logo-badge').innerText).toBe('header_logo_badge_standalone');
 		});
 	});
 
