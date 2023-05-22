@@ -97,6 +97,14 @@ export class ToolBar extends MvuElement {
 			return toolId === id ? 'is-active' : '';
 		};
 
+		const getDemoClass = () => {
+			return this._environmentService.isStandalone() ? 'is-demo' : '';
+		};
+
+		const getBadgeText = () => {
+			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		};
+
 		const toggleTool = (id) => {
 			const nextToolId = toolId === id ? null : id;
 
@@ -113,7 +121,7 @@ export class ToolBar extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="${getOrientationClass()} ${getMinWidthClass()}">
+			<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
 				<button
 					id="tools-button"
 					data-test-id
@@ -127,7 +135,7 @@ export class ToolBar extends MvuElement {
 					<div class="action-button__icon">
 						<div class="ba"></div>
 					</div>
-					<div class="toolbar__logo-badge">${translate('toolbox_toolbar_logo_badge')}</div>
+					<div class="toolbar__logo-badge">${getBadgeText()}</div>
 				</button>
 				<div class="tool-bar ${getOverlayClass()}">
 					<button

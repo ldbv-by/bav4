@@ -396,3 +396,25 @@ input[type='search']::-webkit-search-results-decoration {
 	width: 100%;
 	z-index: 0;
 }
+
+.is-demo .header__text-mobile,
+.is-demo .header__text {
+	background-image: url('assets/demo-text.svg');
+}
+.is-demo .ba {
+	margin: 0;
+	background-image: url('assets/rocket.svg');
+}
+.is-demo .header__emblem {
+	display: block;
+	background-image: url('assets/github.svg');
+	top: 0;
+	right: 0;
+	width: 10em;
+	height: 10em;
+	background-color: transparent;
+	border-color: var(--primary-bg-color);
+}
+.is-demo.is-portrait .header__emblem {
+	top: 6em;
+}

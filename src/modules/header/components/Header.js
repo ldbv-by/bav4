@@ -147,6 +147,22 @@ export class Header extends MvuElement {
 			return searchTerm ? 'is-clear-visible' : '';
 		};
 
+		const getDemoClass = () => {
+			return this._environmentService.isStandalone() ? 'is-demo' : '';
+		};
+
+		const getBadgeText = () => {
+			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
+		};
+
+		const getEmblemLink = () => {
+			return this._environmentService.isStandalone() ? translate('header_emblem_link_standalone') : translate('header_emblem_link');
+		};
+
+		const getEmblemLinkTitle = () => {
+			return this._environmentService.isStandalone() ? translate('header_emblem_title_standalone') : translate('header_emblem_title');
+		};
+
 		const layerCount = layers.length;
 
 		const onInputFocus = () => {
@@ -208,7 +224,7 @@ export class Header extends MvuElement {
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()}">
+				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
 					<div class='header__logo'>				
 						<div class="action-button">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
@@ -221,13 +237,13 @@ export class Header extends MvuElement {
 						<div id='header__text' class='${getOverlayClass()} header__text'>
 						</div>
 						<div class='header__logo-badge'>										
-							${translate('header_logo_badge')}
+						${getBadgeText()}
 						</div>	
 					</div>		
 					<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
 					</div>
-					<div class='header__emblem'>
-					</div>
+					<a href='${getEmblemLink()}' title='${getEmblemLinkTitle()}' class='header__emblem' target='_blank'>
+					</a>
 					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
