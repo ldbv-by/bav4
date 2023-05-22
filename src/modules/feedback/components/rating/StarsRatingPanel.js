@@ -10,7 +10,7 @@ import { $injector } from '../../../../injection';
 /**
  * possible rating types
  * @readonly
- * @enum {string}
+ * @enum {number}
  */
 export const Rating = Object.freeze({
 	NONE: 0,
@@ -23,6 +23,18 @@ export const Rating = Object.freeze({
 
 const Update_Rating = 'update_rating';
 
+/**
+ * Rating component
+ * 
+ * Events;
+ * @fires  change
+ *
+ * Properties:
+ * @property {StarsRatingPanel#Rating} rating - The selected rating.
+
+ * @class
+ * @author norbertK
+ */
 export class StarsRatingPanel extends MvuElement {
 	constructor() {
 		super({
@@ -107,6 +119,9 @@ export class StarsRatingPanel extends MvuElement {
 		this.rating = rating;
 	}
 
+	/**
+	 * @property {@link StarsRatingPanel#Rating} rating = Rating.NONE - The current rating
+	 */
 	set rating(value) {
 		this.signal(Update_Rating, value);
 	}
