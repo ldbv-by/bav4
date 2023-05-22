@@ -157,6 +157,7 @@ export class OlExportVectorDataService {
 		};
 	}
 
+	// todo: currently only bav3 features are implemented, future implementations should cover optional behavior like tracks vs. routes
 	_getGpxWriter() {
 		return (features) => {
 			const eventuallyToMultiLineString = (feature) => {
