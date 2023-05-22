@@ -31,7 +31,7 @@ describe('ExportVectorDataService', () => {
 	});
 
 	describe('forGeoResource', () => {
-		it('uses forData', () => {
+		it('uses forData', async () => {
 			const dataSourceType = new SourceType(SourceTypeName.EWKT);
 			const targetSourceType = new SourceType(SourceTypeName.GPX);
 			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
@@ -40,7 +40,7 @@ describe('ExportVectorDataService', () => {
 
 			const forDataSpy = spyOn(instance, 'forData').and.returnValue('someOtherData');
 
-			expect(instance.forGeoResource(vgr, targetSourceType)).toBe('someOtherData');
+			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeResolvedTo('someOtherData');
 			expect(forDataSpy).toHaveBeenCalledWith('someData', dataSourceType, targetSourceType);
 		});
 	});

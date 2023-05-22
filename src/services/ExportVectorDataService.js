@@ -10,13 +10,13 @@ import { Feature } from 'ol';
 
 /**
  * Service for exporting vector data
- * @author taulinger
  * @interface ExportVectorDataService
  */
 
 /**
  * Exports the data of a {@link VectorGeoResource} into a
  * String containing the data in the specified {@link SourceType| targetSourceType}
+ * @async
  * @function
  * @name ExportVectorDataService#forGeoResource
  * @param {VectorGeoResource} geoResource
@@ -54,11 +54,15 @@ export class OlExportVectorDataService {
 	 * String containing the data in the specified {@link SourceType| targetSourceType}
 	 * @param {VectorGeoResource} geoResource
 	 * @param {SourceType} targetSourceType
-	 * @returns {String}
+	 * @returns {Promise<String>}
 	 * @throws {Error}
 	 */
-	forGeoResource(geoResource, targetSourceType) {
-		return this.forData(geoResource.data, geoResource.sourceType, targetSourceType);
+	async forGeoResource(geoResource, targetSourceType) {
+		const data = await geoResource.data;
+		if (data) {
+			return this.forData(data, geoResource.sourceType, targetSourceType);
+		}
+		throw Error(`GeoResource '${geoResource.id}'is empty`);
 	}
 
 	/**
