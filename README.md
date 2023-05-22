@@ -251,4 +251,6 @@ For example, they could be responsible for setting an initial state or reacting 
 
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
 
+## [Live example](https://ldbv-by.github.io/bav4/)
+
 _USE THE PLATFORM_
