@@ -119,10 +119,6 @@ describe('ExportVectorDataService', () => {
 			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
 			formatSpy.calls.reset();
 
-			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GPX));
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
-			formatSpy.calls.reset();
-
 			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GEOJSON));
 			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
 		});
@@ -134,6 +130,16 @@ describe('ExportVectorDataService', () => {
 			const dataSourceType = new SourceType('something');
 
 			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
+			expect(readerSpy).toHaveBeenCalled();
+		});
+
+		it('requests the gpx format writer', () => {
+			const instance = setup();
+			spyOn(instance, '_getReader').and.returnValue(() => []);
+			const readerSpy = spyOn(instance, '_getGpxWriter').and.returnValue(() => 'bar');
+			const dataSourceType = new SourceType('something');
+
+			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GPX));
 			expect(readerSpy).toHaveBeenCalled();
 		});
 	});
@@ -196,6 +202,39 @@ describe('ExportVectorDataService', () => {
 			expect(writer([new Feature({ geometry: point })])).toBe(EWKT_Point);
 			expect(writer([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
 			expect(writer([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+		});
+	});
+
+	describe('_getGpxWriter', () => {
+		const point = new Point([10, 10]);
+		const lineString = new LineString([
+			[10, 10],
+			[20, 20],
+			[30, 40]
+		]);
+		const polygon = new Polygon([
+			[
+				[10, 10],
+				[10, 20],
+				[20, 20],
+				[20, 15],
+				[10, 10]
+			]
+		]);
+
+		it('writes gpx data', () => {
+			const instance = setup();
+			const writer = instance._getGpxWriter();
+
+			expect(writer([new Feature({ geometry: point })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><wpt lat="10" lon="10"/></gpx>'
+			);
+			expect(writer([new Feature({ geometry: lineString })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="40" lon="30"/></trkseg></trk></gpx>'
+			);
+			expect(writer([new Feature({ geometry: polygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg></trk></gpx>'
+			);
 		});
 	});
 

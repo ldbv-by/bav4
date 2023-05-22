@@ -5,6 +5,8 @@ import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
+import { LineString, MultiLineString, Polygon } from 'ol/geom';
+import { Feature } from 'ol';
 
 /**
  * Service for exporting vector data
@@ -98,7 +100,14 @@ export class OlExportVectorDataService {
 			return format.writeFeatures(data);
 		};
 
-		return sourceType.name === SourceTypeName.EWKT ? this._getEwktWriter(sourceType.srid) : writer;
+		switch (sourceType.name) {
+			case SourceTypeName.EWKT:
+				return this._getEwktWriter(sourceType.srid);
+			case SourceTypeName.GPX:
+				return this._getGpxWriter();
+			default:
+				return writer;
+		}
 	}
 
 	_getFormat(formatName) {
@@ -145,6 +154,26 @@ export class OlExportVectorDataService {
 		return (features) => {
 			const wktFormat = new WKT();
 			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
+		};
+	}
+
+	_getGpxWriter() {
+		return (features) => {
+			const eventuallyToMultiLineString = (feature) => {
+				const geometry = feature.getGeometry();
+				if (geometry instanceof Polygon) {
+					const coordinates = geometry.getLinearRing(0).getCoordinates();
+					return new Feature(new MultiLineString([coordinates]));
+				}
+				if (geometry instanceof LineString) {
+					const coordinates = geometry.getCoordinates();
+					return new Feature(new MultiLineString([coordinates]));
+				}
+				return feature;
+			};
+
+			const gpxFormat = new GPX();
+			return gpxFormat.writeFeatures(features.map((feature) => eventuallyToMultiLineString(feature)));
 		};
 	}
 }
