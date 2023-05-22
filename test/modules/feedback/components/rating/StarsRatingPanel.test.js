@@ -58,8 +58,10 @@ describe('StarsRatingPanel', () => {
 				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
 			});
 		});
+	});
 
-		it('setter and getter work', async () => {
+	describe('when rating is set (via property)', () => {
+		it('updates the UI', async () => {
 			// arrange
 			const element = await setup();
 			const ratingSpy = spyOnProperty(element, 'rating', 'set').and.callThrough();
@@ -79,37 +81,22 @@ describe('StarsRatingPanel', () => {
 				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
 			});
 		});
-
-		it('button  click calls _onRatingClick', async () => {
-			// arrange
-			const element = await setup();
-			const ratingSpy = spyOn(element, '_onRatingClick').and.callThrough();
-
-			// act
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
-			starButtons.forEach((starButton) => {
-				starButton.click();
-			});
-
-			// assert
-			expect(ratingSpy).toHaveBeenCalledTimes(5);
-		});
 	});
 
 	describe('when any rating button is pressed', () => {
-		it('calls _onRatingClick', async () => {
+		it('calls a registered "onChange" handler', async () => {
 			// arrange
 			const element = await setup();
 			const onRatingClickSpy = spyOn(element, '_onRatingClick');
 
 			// act
 			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
-			expect(starButtons.length).toBe(5);
 			starButtons.forEach((starButton) => {
 				starButton.click();
 			});
 
 			// assert
+			expect(starButtons.length).toBe(5);
 			expect(onRatingClickSpy).toHaveBeenCalled();
 			expect(onRatingClickSpy).toHaveBeenCalledTimes(5);
 		});
