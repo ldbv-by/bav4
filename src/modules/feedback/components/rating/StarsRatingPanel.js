@@ -40,6 +40,19 @@ export class StarsRatingPanel extends MvuElement {
 		}
 	}
 
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observeModel('rating', (rating) => {
+			this.dispatchEvent(
+				new CustomEvent('change', {
+					detail: { rating }
+				})
+			);
+		});
+	}
+
 	createView(model) {
 		const { rating } = model;
 
@@ -96,11 +109,6 @@ export class StarsRatingPanel extends MvuElement {
 
 	set rating(value) {
 		this.signal(Update_Rating, value);
-		this.dispatchEvent(
-			new CustomEvent('change', {
-				detail: { rating: value }
-			})
-		);
 	}
 
 	get rating() {
