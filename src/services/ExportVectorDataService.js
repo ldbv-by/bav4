@@ -86,16 +86,16 @@ export class OlExportVectorDataService {
 	}
 
 	_getReader(sourceType) {
-		const reader = (data) => {
+		const defaultReader = (data) => {
 			const format = this._getFormat(sourceType.name);
 			return format.readFeatures(data);
 		};
 
-		return sourceType.name === SourceTypeName.EWKT ? this._getEwktReader() : reader;
+		return sourceType.name === SourceTypeName.EWKT ? this._getEwktReader() : defaultReader;
 	}
 
 	_getWriter(sourceType) {
-		const writer = (data) => {
+		const defaultWriter = (data) => {
 			const format = this._getFormat(sourceType.name);
 			return format.writeFeatures(data);
 		};
@@ -106,7 +106,7 @@ export class OlExportVectorDataService {
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
 			default:
-				return writer;
+				return defaultWriter;
 		}
 	}
 
