@@ -11,7 +11,7 @@
 
 </h1>
 
-Next-generation web-map viewer based on web standards.
+Next-generation web-map viewer based on web standards ([Live example](https://ldbv-by.github.io/bav4/))
 
 #### Table of Contents
 
@@ -21,7 +21,6 @@ Next-generation web-map viewer based on web standards.
 4. [Details](#details)
 5. [Best Practices](#best-practices)
 6. [Links](#links)
-7. [Live Example](#live-example)
 
 ## Concept
 
@@ -251,7 +250,5 @@ For example, they could be responsible for setting an initial state or reacting 
 ### Other
 
 - Why I don't miss React: a story about using the platform: https://www.jackfranklin.co.uk/blog/working-with-react-and-the-web-platform/
-
-## [Live example](https://ldbv-by.github.io/bav4/)
 
 _USE THE PLATFORM_
