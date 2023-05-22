@@ -31,7 +31,7 @@ describe('ExportVectorDataService', () => {
 	});
 
 	describe('forGeoResource', () => {
-		it('uses forData', async () => {
+		it('uses forData', () => {
 			const dataSourceType = new SourceType(SourceTypeName.EWKT);
 			const targetSourceType = new SourceType(SourceTypeName.GPX);
 			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
@@ -40,22 +40,11 @@ describe('ExportVectorDataService', () => {
 
 			const forDataSpy = spyOn(instance, 'forData').and.returnValue('someOtherData');
 
-			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeResolvedTo('someOtherData');
+			expect(instance.forGeoResource(vgr, targetSourceType)).toBe('someOtherData');
 			expect(forDataSpy).toHaveBeenCalledWith('someData', dataSourceType, targetSourceType);
 		});
 
-		it('throws an error for rejected geoResource.data', async () => {
-			const dataSourceType = new SourceType(SourceTypeName.EWKT);
-			const targetSourceType = new SourceType(SourceTypeName.GPX);
-			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
-			spyOnProperty(vgr, 'data', 'get').and.rejectWith(new Error('foo'));
-
-			const instance = setup();
-
-			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeRejectedWithError('foo');
-		});
-
-		it('throws an error for empty geoResource.data', async () => {
+		it('throws an error for empty geoResource.data', () => {
 			const dataSourceType = new SourceType(SourceTypeName.EWKT);
 			const targetSourceType = new SourceType(SourceTypeName.GPX);
 			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
@@ -63,7 +52,7 @@ describe('ExportVectorDataService', () => {
 
 			const instance = setup();
 
-			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeRejectedWithError("GeoResource 'id_foo'is empty");
+			expect(() => instance.forGeoResource(vgr, targetSourceType)).toThrowError("GeoResource 'id_foo'is empty");
 		});
 	});
 

@@ -18,9 +18,9 @@ import { Feature } from 'ol';
  * String containing the data in the specified {@link SourceType| targetSourceType}
  * @async
  * @function
- * @name ExportVectorDataService#forGeoResource
- * @param {VectorGeoResource} geoResource
- * @param {SourceType} targetSourceType
+ * @name module:services/ExportVectorDataService~ExportVectorDataService#forGeoResource
+ * @param {module:domain/geoResources~VectorGeoResource} geoResource
+ * @param {module:domain/sourceType~SourceType} targetSourceType
  * @returns {String}
  * @throws {Error}
  */
@@ -29,10 +29,10 @@ import { Feature } from 'ol';
  * Exports the data in the specified {@link SourceType| dataSourceType} into a
  * String containing the data in the specified {@link SourceType| targetSourceType}-Format
  * @function
- * @name ExportVectorDataService#forData
+ * @name module:services/ExportVectorDataService~ExportVectorDataService#forData
  * @param {String} data
- * @param {SourceType} dataSourceType
- * @param {SourceType} targetSourceType
+ * @param {module:domain/sourceType~SourceType} dataSourceType
+ * @param {module:domain/sourceType~SourceType} targetSourceType
  * @returns {String}
  * @throws {Error}
  */
@@ -42,7 +42,7 @@ import { Feature } from 'ol';
  * to convert data to a String in KML/GPX/GeoJSON/EWKT-Format
  * @class
  * @author thiloSchlemmer
- * @implements {ExportVectorDataService}
+ * @implements {module:services/ExportVectorDataService~ExportVectorDataService}
  */
 export class OlExportVectorDataService {
 	constructor() {
@@ -52,13 +52,13 @@ export class OlExportVectorDataService {
 	/**
 	 * Exports the data of a {@link VectorGeoResource} into a
 	 * String containing the data in the specified {@link SourceType| targetSourceType}
-	 * @param {VectorGeoResource} geoResource
-	 * @param {SourceType} targetSourceType
-	 * @returns {Promise<String>}
+	 * @param {module:domain/geoResources~VectorGeoResource} geoResource
+	 * @param {module:domain/sourceType~SourceType} targetSourceType
+	 * @returns {String}
 	 * @throws {Error}
 	 */
-	async forGeoResource(geoResource, targetSourceType) {
-		const data = await geoResource.data;
+	forGeoResource(geoResource, targetSourceType) {
+		const data = geoResource.data;
 		if (data) {
 			return this.forData(data, geoResource.sourceType, targetSourceType);
 		}
@@ -70,8 +70,8 @@ export class OlExportVectorDataService {
 	 * String containing the data in the specified {@link SourceType| targetSourceType}-Format
 	 * @name ExportVectorDataService#forData
 	 * @param {String} data
-	 * @param {SourceType} dataSourceType
-	 * @param {SourceType} targetSourceType
+	 * @param {module:domain/sourceType~SourceType} dataSourceType
+	 * @param {module:domain/sourceType~SourceType} targetSourceType
 	 * @returns {String}
 	 * @throws {Error}
 	 */
@@ -170,7 +170,7 @@ export class OlExportVectorDataService {
 			const eventuallyToMultiLineString = (feature) => {
 				const geometry = feature.getGeometry();
 				if (geometry instanceof Polygon) {
-					const coordinates = geometry.getLinearRing(0).getCoordinates();
+					const coordinates = geometry.getLinearRing(0)?.getCoordinates();
 					return new Feature(new MultiLineString([coordinates]));
 				}
 				if (geometry instanceof LineString) {
