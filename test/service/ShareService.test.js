@@ -304,6 +304,26 @@ describe('ShareService', () => {
 					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
 				});
 
+				it('encodes a state object to url removing `index.html` from path', () => {
+					setup();
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
+					const instanceUnderTest = new ShareService();
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+
+					const encoded = instanceUnderTest.encodeState();
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith('http://frontend.de/?')).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
+
 				it('encodes a state object to url merging extra parameter', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
@@ -346,12 +366,32 @@ describe('ShareService', () => {
 				});
 			});
 
-			describe('for existing pathname', () => {
+			describe('for existing pathname e.g. "/app"', () => {
 				const mockFrontendUrl = 'http://frontend.de/app/';
 
 				it('encodes a state object to url', () => {
 					setup();
 					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(mockFrontendUrl);
+					const instanceUnderTest = new ShareService();
+					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
+					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
+					spyOn(instanceUnderTest, '_extractTopic').and.returnValue({ t: 'someTopic' });
+					const _mergeExtraParamsSpy = spyOn(instanceUnderTest, '_mergeExtraParams').withArgs(jasmine.anything(), {}).and.callThrough();
+
+					const encoded = instanceUnderTest.encodeState();
+					const queryParams = new URLSearchParams(new URL(encoded).search);
+
+					expect(encoded.startsWith('http://frontend.de/app/?')).toBeTrue();
+					expect(queryParams.get(QueryParameters.LAYER)).toBe('someLayer,anotherLayer');
+					expect(queryParams.get(QueryParameters.ZOOM)).toBe('5');
+					expect(queryParams.get(QueryParameters.CENTER)).toBe('44.123,88.123');
+					expect(queryParams.get(QueryParameters.TOPIC)).toBe('someTopic');
+					expect(_mergeExtraParamsSpy).toHaveBeenCalled();
+				});
+
+				it('encodes a state object to url removing `index.html` from path', () => {
+					setup();
+					spyOn(configService, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(`${mockFrontendUrl}index.html/`);
 					const instanceUnderTest = new ShareService();
 					spyOn(instanceUnderTest, '_extractPosition').and.returnValue({ z: 5, c: ['44.123', '88.123'] });
 					spyOn(instanceUnderTest, '_extractLayers').and.returnValue({ l: ['someLayer', 'anotherLayer'] });
