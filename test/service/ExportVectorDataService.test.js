@@ -43,6 +43,28 @@ describe('ExportVectorDataService', () => {
 			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeResolvedTo('someOtherData');
 			expect(forDataSpy).toHaveBeenCalledWith('someData', dataSourceType, targetSourceType);
 		});
+
+		it('throws an error for rejected geoResource.data', async () => {
+			const dataSourceType = new SourceType(SourceTypeName.EWKT);
+			const targetSourceType = new SourceType(SourceTypeName.GPX);
+			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
+			spyOnProperty(vgr, 'data', 'get').and.rejectWith(new Error('foo'));
+
+			const instance = setup();
+
+			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeRejectedWithError('foo');
+		});
+
+		it('throws an error for empty geoResource.data', async () => {
+			const dataSourceType = new SourceType(SourceTypeName.EWKT);
+			const targetSourceType = new SourceType(SourceTypeName.GPX);
+			const vgr = new VectorGeoResource('id_foo', 'label_foo', dataSourceType);
+			vgr.setSource(null, 4326);
+
+			const instance = setup();
+
+			await expectAsync(instance.forGeoResource(vgr, targetSourceType)).toBeRejectedWithError("GeoResource 'id_foo'is empty");
+		});
 	});
 
 	describe('forData', () => {
@@ -175,6 +197,13 @@ describe('ExportVectorDataService', () => {
 			expect(reader(EWKT_Point).length).toBe(1);
 			expect(reader(EWKT_LineString).length).toBe(1);
 			expect(reader(EWKT_Polygon).length).toBe(1);
+		});
+
+		it('throws a parse error', () => {
+			const instance = setup();
+			const reader = instance._getEwktReader();
+
+			expect(() => reader('')).toThrowError('Cannot parse data as EWKT');
 		});
 	});
 
