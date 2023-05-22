@@ -1,7 +1,6 @@
 /**
  * @module services/provider/feedback_provider
  */
-//@ts-check
 import { $injector } from '../../injection';
 import { GeneralFeedback, MapFeedback } from '../FeedbackService';
 import { MediaType } from '../HttpService';
