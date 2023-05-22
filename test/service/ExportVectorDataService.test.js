@@ -222,7 +222,7 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
-		it('writes gpx data', () => {
+		it('writes gpx tracks', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
 
