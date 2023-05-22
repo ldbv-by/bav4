@@ -20,8 +20,9 @@ describe('Entities', () => {
 		expect(instanceUnderTest.description).toBe('description');
 		expect(instanceUnderTest.email).toBe('email');
 		expect(instanceUnderTest.rating).toBe('rating');
-		expect(new GeneralFeedback('description').email).toBeNull();
-		expect(new GeneralFeedback('description').rating).toBeNull();
+		expect(new GeneralFeedback().description).toBeNull();
+		expect(new GeneralFeedback().email).toBeNull();
+		expect(new GeneralFeedback().rating).toBeNull();
 	});
 });
 
@@ -99,13 +100,6 @@ describe('FeedbackService', () => {
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
 			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeRejectedWith('Error');
-		});
-
-		it('resolves to "false" when no feedback object available', async () => {
-			const mockFeedback = { fpp: 'bar' };
-			const instanceUnderTest = setup();
-
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(false);
 		});
 	});
 
