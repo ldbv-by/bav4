@@ -9,7 +9,7 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  * @async
  * @param {MapFeedback|GeneralFeedback} feedback
  * @typedef {Function} feedbackStorageProvider
- * @throws `Error` when storing was not succesfull
+ * @throws `Error` when storing was not successful
  * @returns {Boolean} `true` when storing was successful
  */
 /**

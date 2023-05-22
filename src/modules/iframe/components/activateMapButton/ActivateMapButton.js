@@ -7,6 +7,7 @@ import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { OlMap } from '../../../olMap/components/OlMap';
+import { Footer } from '../../../footer/components/Footer';
 import css from './activateMapButton.css';
 
 /**
@@ -28,14 +29,23 @@ export class ActivateMapButton extends MvuElement {
 	onInitialize() {
 		if (this._isVisible()) {
 			//append common styles
+			//ba-footer width transparent scale and higher z-index
 			const renderCommonStyle = () => {
 				return `
 				body *:not(
 				${ActivateMapButton.tag},
-				${OlMap.tag}
+				${OlMap.tag},
+				${Footer.tag}
+
 				) {
 					display: none;
-				}				
+				}					
+				ba-footer{
+					--text3: transparent;
+					--secondary-color: transparent;		
+					--z-mapbuttons: calc(var(--z-disableall) + 1);			
+				}
+				
 				`;
 			};
 
@@ -66,7 +76,6 @@ export class ActivateMapButton extends MvuElement {
 				<div class="active-map__button">
 					<ba-button .type=${'primary'} .label=${translate('iframe_activate_map_button')} @click=${close}></ba-button>
 				</div>
-				<ba-attribution-info></ba-attribution-info>
 			</div>
 		`;
 	}

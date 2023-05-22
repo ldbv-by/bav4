@@ -216,6 +216,59 @@ export const geojsonStyleFunction = (feature) => {
 	];
 };
 
+export const defaultClusterStyleFunction = () => {
+	const styleCache = {};
+	const clusterShadowStyle = new Style({
+		image: new CircleStyle({
+			radius: 17,
+			fill: new Fill({
+				color: Black_Color.concat([0.15])
+			})
+		})
+	});
+	return (feature, resolution) => {
+		const getClusterStyle = () => {
+			const cachedStyle = styleCache[size];
+			const createAndCache = () => {
+				const style = [
+					clusterShadowStyle,
+					new Style({
+						image: new CircleStyle({
+							radius: 15,
+							stroke: new Stroke({
+								color: White_Color
+							}),
+							fill: new Fill({
+								color: '#099dda'
+							}),
+							displacement: [0, 1] // displacement needed to place the text centered
+						}),
+						text: new TextStyle({
+							text: size.toString(),
+							scale: 1.5,
+							fill: new Fill({
+								color: White_Color
+							})
+						})
+					})
+				];
+				styleCache[size] = style;
+				return style;
+			};
+			return cachedStyle ? cachedStyle : createAndCache();
+		};
+		const getFeatureStyle = () => {
+			const baseStyle = feature.get('features')[0].getStyle();
+			if (typeof baseStyle === 'function') {
+				return baseStyle(feature, resolution);
+			}
+			return baseStyle;
+		};
+		const size = feature.get('features').length;
+		return size === 1 ? getFeatureStyle() : getClusterStyle();
+	};
+};
+
 export const highlightStyleFunction = () => [
 	new Style({
 		image: new Icon({
