@@ -21,6 +21,7 @@ Next-generation web-map viewer based on web standards.
 4. [Details](#details)
 5. [Best Practices](#best-practices)
 6. [Links](#links)
+7. [Live Example](#live-example)
 
 ## Concept
 
