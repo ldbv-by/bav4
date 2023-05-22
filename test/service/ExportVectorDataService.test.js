@@ -52,7 +52,7 @@ describe('ExportVectorDataService', () => {
 
 			const instance = setup();
 
-			expect(() => instance.forGeoResource(vgr, targetSourceType)).toThrowError("GeoResource 'id_foo'is empty");
+			expect(() => instance.forGeoResource(vgr, targetSourceType)).toThrowError("GeoResource 'id_foo' is empty");
 		});
 	});
 

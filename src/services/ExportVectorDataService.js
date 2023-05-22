@@ -1,6 +1,8 @@
 /**
  * @module services/ExportVectorDataService
  */
+
+//@ts-check
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
 import { SourceTypeName } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
@@ -19,8 +21,8 @@ import { Feature } from 'ol';
  * @async
  * @function
  * @name module:services/ExportVectorDataService~ExportVectorDataService#forGeoResource
- * @param {module:domain/geoResources~VectorGeoResource} geoResource
- * @param {module:domain/sourceType~SourceType} targetSourceType
+ * @param {module:domain/geoResources.VectorGeoResource} geoResource
+ * @param {module:domain/sourceType.SourceType} targetSourceType
  * @returns {String}
  * @throws {Error}
  */
@@ -31,8 +33,8 @@ import { Feature } from 'ol';
  * @function
  * @name module:services/ExportVectorDataService~ExportVectorDataService#forData
  * @param {String} data
- * @param {module:domain/sourceType~SourceType} dataSourceType
- * @param {module:domain/sourceType~SourceType} targetSourceType
+ * @param {module:domain/sourceType.SourceType} dataSourceType
+ * @param {module:domain/sourceType.SourceType} targetSourceType
  * @returns {String}
  * @throws {Error}
  */
@@ -52,8 +54,8 @@ export class OlExportVectorDataService {
 	/**
 	 * Exports the data of a {@link VectorGeoResource} into a
 	 * String containing the data in the specified {@link SourceType| targetSourceType}
-	 * @param {module:domain/geoResources~VectorGeoResource} geoResource
-	 * @param {module:domain/sourceType~SourceType} targetSourceType
+	 * @param {module:domain/geoResources.VectorGeoResource} geoResource
+	 * @param {module:domain/sourceType.SourceType} targetSourceType
 	 * @returns {String}
 	 * @throws {Error}
 	 */
@@ -62,7 +64,7 @@ export class OlExportVectorDataService {
 		if (data) {
 			return this.forData(data, geoResource.sourceType, targetSourceType);
 		}
-		throw Error(`GeoResource '${geoResource.id}'is empty`);
+		throw Error(`GeoResource '${geoResource.id}' is empty`);
 	}
 
 	/**
@@ -70,8 +72,8 @@ export class OlExportVectorDataService {
 	 * String containing the data in the specified {@link SourceType| targetSourceType}-Format
 	 * @name ExportVectorDataService#forData
 	 * @param {String} data
-	 * @param {module:domain/sourceType~SourceType} dataSourceType
-	 * @param {module:domain/sourceType~SourceType} targetSourceType
+	 * @param {module:domain/sourceType.SourceType} dataSourceType
+	 * @param {module:domain/sourceType.SourceType} targetSourceType
 	 * @returns {String}
 	 * @throws {Error}
 	 */
