@@ -5,7 +5,6 @@ import { getBvvAttribution } from '../../../src/services/provider/attribution.pr
 import {
 	loadBvvGeoResourceById,
 	loadBvvGeoResources,
-	loadExampleGeoResources,
 	loadExternalGeoResource,
 	_definitionToGeoResource,
 	_parseBvvAttributionDefinition
@@ -444,14 +443,6 @@ describe('GeoResource provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalled();
 				expect(error.message).toBe('GeoResources could not be loaded');
 			}
-		});
-	});
-
-	describe('loadExampleGeoResources', () => {
-		it('loads GeoResources', async () => {
-			const georesources = await loadExampleGeoResources();
-
-			expect(georesources.length).toBe(6);
 		});
 	});
 

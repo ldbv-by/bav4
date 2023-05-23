@@ -1,15 +1,7 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import {
-	AggregateGeoResource,
-	VectorGeoResource,
-	WmsGeoResource,
-	XyzGeoResource,
-	VectorSourceType,
-	GeoResourceFuture,
-	VTGeoResource
-} from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { isHttpUrl } from '../../utils/checks';
@@ -112,36 +104,6 @@ export const _parseBvvAttributionDefinition = (definition) => {
 		}));
 	}
 	return definition.attribution ?? null;
-};
-
-/**
- * Loads example GeoResources without a backend.
- * @function
- * @type {module:services/GeoResourceService~geoResourceProvider}
- */
-export const loadExampleGeoResources = async () => {
-	const wms0 = new WmsGeoResource(
-		'bodendenkmal',
-		'Bodendenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bodendenkmalO',
-		'image/png'
-	);
-	const wms1 = new WmsGeoResource(
-		'baudenkmal',
-		'Baudenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bauensembleO,einzeldenkmalO',
-		'image/png'
-	);
-	const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
-	const xyz0 = new XyzGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
-	const vector0 = new VectorGeoResource('huetten', 'Hütten', VectorSourceType.KML).setUrl(
-		'http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml'
-	);
-	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['xyz0', 'wms0']);
-
-	return [wms0, wms1, wms2, xyz0, vector0, aggregate0];
 };
 
 /**
