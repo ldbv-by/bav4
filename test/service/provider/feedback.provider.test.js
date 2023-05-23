@@ -1,7 +1,11 @@
 import { $injector } from '../../../src/injection';
 import { MediaType } from '../../../src/services/HttpService';
-import { MapFeedback } from '../../../src/services/FeedbackService';
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../../src/services/provider/feedback.provider';
+import { GeneralFeedback, MapFeedback } from '../../../src/services/FeedbackService';
+import {
+	bvvMapFeedbackCategoriesProvider,
+	bvvFeedbackStorageProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
+} from '../../../src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {
 	const configService = {
@@ -20,12 +24,27 @@ describe('bvvFeedbackStorageProvider', () => {
 		$injector.reset();
 	});
 
-	it('stores a feedback', async () => {
+	it('stores a MapFeedback', async () => {
 		const backendUrl = 'https://backend.url/';
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		const httpServiceSpy = spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.and.resolveTo(new Response());
+
+		const result = await bvvFeedbackStorageProvider(mapFeedback);
+
+		expect(result).toBeTrue();
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
+	});
+
+	it('stores a GeneralFeedback', async () => {
+		const backendUrl = 'https://backend.url/';
+		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const mapFeedback = new GeneralFeedback('description', 'email', 5);
+		const httpServiceSpy = spyOn(httpService, 'post')
+			.withArgs(backendUrl + 'feedback/general/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response());
 
 		const result = await bvvFeedbackStorageProvider(mapFeedback);
@@ -41,10 +60,22 @@ describe('bvvFeedbackStorageProvider', () => {
 		const statusCode = 400;
 		const mapFeedback = new MapFeedback('state', 'category', 'description', 'geometryId', 'email');
 		spyOn(httpService, 'post')
-			.withArgs(backendUrl + 'tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
 		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Http-Status ${statusCode}`);
+	});
+
+	it('throws an Error when feedback class is unknown', async () => {
+		const backendUrl = 'https://backend.url/';
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const statusCode = 400;
+		const mapFeedback = { foo: 'bar' };
+		spyOn(httpService, 'post')
+			.withArgs(backendUrl + 'feedback/tim/message', JSON.stringify(mapFeedback), MediaType.JSON, { timeout: 2000 })
+			.and.resolveTo(new Response(null, { status: statusCode }));
+
+		await expectAsync(bvvFeedbackStorageProvider(mapFeedback)).toBeRejectedWithError(`Feedback could not be stored: Unknown feedback class`);
 	});
 });
 
@@ -70,7 +101,7 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const categories = ['foo', 'bar'];
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'tim/categories')
+			.withArgs(backendUrl + 'feedback/tim/categories')
 			.and.resolveTo(new Response(JSON.stringify(categories)));
 
 		const result = await bvvMapFeedbackCategoriesProvider();
@@ -86,11 +117,19 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 		const statusCode = 400;
 
 		spyOn(httpService, 'get')
-			.withArgs(backendUrl + 'tim/categories')
+			.withArgs(backendUrl + 'feedback/tim/categories')
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
 		await expectAsync(bvvMapFeedbackCategoriesProvider()).toBeRejectedWithError(
 			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
 		);
+	});
+});
+
+describe('bvvMapFeedbackOverlayGeoResourceProvider', () => {
+	it('returns an id of a GeoResource', () => {
+		const result = bvvMapFeedbackOverlayGeoResourceProvider();
+
+		expect(result).toBe('tim');
 	});
 });

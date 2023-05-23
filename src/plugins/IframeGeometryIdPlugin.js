@@ -24,12 +24,14 @@ export class IframeGeometryIdPlugin extends BaPlugin {
 	async register(store) {
 		if (this._environmentService.isEmbedded()) {
 			const update = (eventLike) => {
-				const {
-					payload: {
+				const { payload } = eventLike;
+				const getFileId = () => {
+					const {
 						fileSaveResult: { fileId }
-					}
-				} = eventLike;
-				this._updateAttribute(fileId);
+					} = payload;
+					return fileId;
+				};
+				this._updateAttribute(eventLike.payload ? getFileId() : null);
 			};
 
 			observe(store, (state) => state.draw.fileSaveResult, update);
@@ -37,7 +39,7 @@ export class IframeGeometryIdPlugin extends BaPlugin {
 	}
 
 	_updateAttribute(fileId) {
-		this._findIframe()?.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+		this._findIframe()?.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId ? fileId : '');
 	}
 
 	_findIframe() {

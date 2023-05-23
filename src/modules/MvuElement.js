@@ -81,7 +81,7 @@ export class MvuElement extends HTMLElement {
 
 		this._rendered = false;
 
-		this._observer = [];
+		this._observers = [];
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class MvuElement extends HTMLElement {
 		const newModel = this.update(type, data, this.getModel());
 		if (newModel && !equals(newModel, this._model)) {
 			this._model = newModel;
-			this._observer.forEach((o) => o());
+			this._observers.forEach((o) => o());
 			this._logLifeCycle(`📌 ${this.constructor.name}#onModelChanged`, this.getModel());
 			this.onModelChanged(this.getModel());
 		}
@@ -107,9 +107,9 @@ export class MvuElement extends HTMLElement {
 	 * @protected
 	 * @see {@link MvuElement#signal}
 	 * @param {string} type type of update
-	 * @param {object|number|string} [data=null] data of this update request
+	 * @param {object|number|string|null} data data of this update request
 	 * @param {object} model current Model
-	 * @returns the new Model
+	 * @returns {object} the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */ type, data, model) {
 		throw new Error('Please implement method #update before calling #signal or do not call super.update from child.');
@@ -309,6 +309,7 @@ export class MvuElement extends HTMLElement {
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
 	 * @param {function(observedField)} onChange A function that will be called when the observed field has changed
 	 * @param {boolean|false} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
+	 * @returns  A function that unsubscribes the observer
 	 */
 	observeModel(names, onChange, immediately = false) {
 		const createObserver = (key, onChange) => {
@@ -325,17 +326,27 @@ export class MvuElement extends HTMLElement {
 
 		const keys = Array.isArray(names) ? names : [names];
 
-		keys.forEach((key) => {
-			if (this._model[key] !== undefined) {
-				this._observer.push(createObserver(key, onChange));
+		const createdObservers = keys
+			.map((key) => {
+				if (this._model[key] !== undefined) {
+					const observerFn = createObserver(key, onChange);
+					this._observers.push(observerFn);
 
-				if (immediately) {
-					onChange(this._model[key]);
+					if (immediately) {
+						onChange(this._model[key]);
+					}
+					return observerFn;
+				} else {
+					console.error(`Could not register observer --> '${key}' is not a field in the Model of ${this.constructor.name}`);
 				}
-			} else {
-				console.error(`Could not register observer --> '${key}' is not a field in the Model of ${this.constructor.name}`);
-			}
-		});
+			})
+			.filter((o) => !!o);
+
+		return () => {
+			createdObservers.forEach((o) => {
+				this._observers.splice(this._observers.indexOf(o), 1);
+			});
+		};
 	}
 
 	_logLifeCycle(message, ...values) {

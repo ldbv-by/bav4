@@ -128,11 +128,6 @@ ba-checkbox:focus {
 	-webkit-mask-image: url('assets/polygon.svg');
 }
 
-.tool-container__form,
-.tool-container__info {
-	/* padding: 0 1.5em .8em; */
-}
-
 .tool-container__form label {
 	min-width: 7em;
 	margin: auto 0;
@@ -150,6 +145,11 @@ ba-checkbox:focus {
 	flex-grow: 1;
 	max-width: 40em;
 	margin: auto;
+}
+
+.tool-container__style_color,
+.form-container {
+	padding: 0.3em 2em 2em 2em;
 }
 
 .tool-container__form input,
@@ -287,18 +287,18 @@ ba-iconselect {
 	border-bottom: 1px solid var(--header-background-color);
 }
 
-.iscollapse {
-	max-height: 0;
-	display: none;
-}
-
 .collapse-content {
-	padding: 0 2em 2em;
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows var(--animation-duration-medium-open);
 }
 
-.iscollaps {
-	max-height: 0;
-	display: none;
+.collapse-content > div {
+	overflow: hidden;
+}
+
+.iscollapse {
+	grid-template-rows: 0fr;
 }
 
 .chevron {

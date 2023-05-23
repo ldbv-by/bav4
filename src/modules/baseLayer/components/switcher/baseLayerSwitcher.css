@@ -27,6 +27,7 @@
 	transform: scale(1);
 	flex-grow: 1;
 	width: auto;
+	max-width: 13em;
 	height: 5em;
 	transition: transform var(--animation-duration-medium-close) var(--animation-easing-open);
 	background: var(--secondary-bg-color);
@@ -89,10 +90,10 @@
 	background-image: url('assets/5.webp');
 }
 .tpo {
-	background-image: url('assets/1.webp');
+	background-image: url('assets/6.webp');
 }
 .tpo_mono {
-	background-image: url('assets/5.webp');
+	background-image: url('assets/7.webp');
 }
 .bmde_vector {
 	background-image: url('assets/1.webp');

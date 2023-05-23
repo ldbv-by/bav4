@@ -1,11 +1,11 @@
 {
 	"name": "bav4",
 	"dependencies": {
-		"@geoblocks/ol-maplibre-layer": "0.0.6",
+		"@geoblocks/ol-maplibre-layer": "0.1.1",
 		"chart.js": "4.3.0",
-		"dompurify": "3.0.2",
+		"dompurify": "3.0.3",
 		"geographiclib-geodesic": "^2.0.0",
-		"lit-html": "2.7.3",
+		"lit-html": "2.7.4",
 		"ol": "7.3.0",
 		"proj4": "2.9.0",
 		"redux": "4.2.1",
@@ -15,15 +15,16 @@
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.32.2",
 		"copy-webpack-plugin": "11.0.0",
-		"css-loader": "6.7.3",
+		"css-loader": "6.7.4",
 		"docdash": "^2.0.1",
 		"dotenv-webpack": "8.0.1",
 		"es-check": "7.1.1",
-		"eslint": "8.39.0",
+		"eslint": "8.41.0",
 		"eslint-plugin-import": "2.27.5",
 		"eslint-plugin-promise": "6.1.1",
+		"gh-pages": "^5.0.0",
 		"html-webpack-plugin": "5.5.1",
-		"jasmine": "4.6.0",
+		"jasmine": "5.0.0",
 		"jsdoc": "4.0.2",
 		"jsdoc-ts-utils": "^4.0.0",
 		"karma": "6.4.2",
@@ -41,14 +42,14 @@
 		"portfinder-sync": "0.0.2",
 		"prettier": "2.8.8",
 		"redux-test-utils": "1.0.2",
-		"style-loader": "3.3.2",
-		"stylelint": "15.6.0",
+		"style-loader": "3.3.3",
+		"stylelint": "15.6.2",
 		"stylelint-config-recommended": "12.0.0",
 		"to-string-loader": "1.2.0",
-		"webpack": "5.81.0",
+		"webpack": "5.83.1",
 		"webpack-bundle-analyzer": "4.8.0",
-		"webpack-cli": "5.0.2",
-		"webpack-dev-server": "4.13.3"
+		"webpack-cli": "5.1.1",
+		"webpack-dev-server": "4.15.0"
 	},
 	"scripts": {
 		"start": "webpack serve --open --mode=development --devtool=inline-source-map",
@@ -67,6 +68,7 @@
 		"test:gha": "karma start karma.conf.gha.js --single-run",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
 		"es-check": "es-check es12 \"./src/**/*.js\" --module",
-		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
+		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
+		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
 }

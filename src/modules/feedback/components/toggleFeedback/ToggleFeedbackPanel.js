@@ -8,7 +8,7 @@ import css from './toggleFeedbackPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
- * possible feedback types
+ * Possible feedback types
  * @enum
  */
 export const FeedbackType = Object.freeze({
@@ -18,6 +18,10 @@ export const FeedbackType = Object.freeze({
 
 const Select_Feedback_Type = 'select_feedback_type';
 
+/**
+ * Allows the user to either select a map-related or a general feedback.
+ * @class
+ */
 export class ToggleFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
@@ -27,6 +31,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
 
 		this._translationService = translationService;
+		this._onSubmit = () => {};
 	}
 
 	update(type, data, model) {
@@ -75,10 +80,18 @@ export class ToggleFeedbackPanel extends MvuElement {
 				</button>
 			</div>
 			<div class="toggleMap ${classMap(mapClasses)}">
-				<ba-mvu-feedbackpanel></ba-mvu-feedbackpanel>
+				<ba-mvu-feedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-feedbackpanel>
 			</div>
 			<div class="toggleGeneral ${classMap(generalClasses)}">general feedback todo</div>
 		`;
+	}
+
+	/**
+	 * Registers a callback function which will be called when one of the forms was submitted successfully.
+	 * @type {Function}
+	 */
+	set onSubmit(callback) {
+		this._onSubmit = callback;
 	}
 
 	static get tag() {

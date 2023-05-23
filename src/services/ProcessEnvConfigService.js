@@ -25,7 +25,7 @@ export class ProcessEnvConfigService {
 		// eslint-disable-next-line no-undef
 		this._properties.set(
 			'FRONTEND_URL',
-			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}`
+			window?.ba_externalConfigProperties?.FRONTEND_URL ?? process.env.FRONTEND_URL ?? `${location.protocol}//${location.host}${location.pathname}`
 		);
 		// eslint-disable-next-line no-undef
 		this._properties.set('SHORTENING_SERVICE_URL', window?.ba_externalConfigProperties?.SHORTENING_SERVICE_URL ?? process.env.SHORTENING_SERVICE_URL);

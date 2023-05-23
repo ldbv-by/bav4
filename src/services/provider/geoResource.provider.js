@@ -30,7 +30,7 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'xyz':
 				return (
-					new XyzGeoResource(def.id, def.label, def.url)
+					new XyzGeoResource(def.id, def.label, def.urls)
 						//set specific optional values
 						.setTileGridId(def.tileGridId)
 				);
@@ -42,6 +42,7 @@ export const _definitionToGeoResource = (definition) => {
 					new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
 						//set specific optional values
 						.setUrl(def.url)
+						.setClusterParams(def.clusterParams ?? {})
 				);
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);

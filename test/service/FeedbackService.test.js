@@ -1,5 +1,9 @@
 import { GeneralFeedback, MapFeedback, FeedbackService } from '../../src/services/FeedbackService';
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider } from '../../src/services/provider/feedback.provider';
+import {
+	bvvMapFeedbackCategoriesProvider,
+	bvvFeedbackStorageProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider
+} from '../../src/services/provider/feedback.provider';
 
 describe('Entities', () => {
 	it('MapFeedback', async () => {
@@ -16,29 +20,41 @@ describe('Entities', () => {
 		expect(instanceUnderTest.description).toBe('description');
 		expect(instanceUnderTest.email).toBe('email');
 		expect(instanceUnderTest.rating).toBe('rating');
-		expect(new GeneralFeedback('description').email).toBeNull();
-		expect(new GeneralFeedback('description').rating).toBeNull();
+		expect(new GeneralFeedback().description).toBeNull();
+		expect(new GeneralFeedback().email).toBeNull();
+		expect(new GeneralFeedback().rating).toBeNull();
 	});
 });
 
 describe('FeedbackService', () => {
-	const setup = (mapFeedbackStorageProvider = bvvFeedbackStorageProvider, mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider) => {
-		return new FeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider);
+	const setup = (
+		mapFeedbackStorageProvider = bvvFeedbackStorageProvider,
+		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
+		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
+	) => {
+		return new FeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider, mapFeedbackOverlayGeoResourceProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
 			const instanceUnderTest = new FeedbackService();
-			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
+			expect(instanceUnderTest._feedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
+			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(bvvMapFeedbackOverlayGeoResourceProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customMapFeedbackStorageProvider = async () => {};
 			const customMapFeedbackCategoriesProvider = async () => {};
-			const instanceUnderTest = setup(customMapFeedbackStorageProvider, customMapFeedbackCategoriesProvider);
-			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
+			const customMapMapFeedbackOverlayGeoResourceProvider = async () => {};
+			const instanceUnderTest = setup(
+				customMapFeedbackStorageProvider,
+				customMapFeedbackCategoriesProvider,
+				customMapMapFeedbackOverlayGeoResourceProvider
+			);
+			expect(instanceUnderTest._feedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(customMapFeedbackCategoriesProvider);
+			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(customMapMapFeedbackOverlayGeoResourceProvider);
 		});
 	});
 
@@ -85,12 +101,14 @@ describe('FeedbackService', () => {
 
 			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeRejectedWith('Error');
 		});
+	});
 
-		it('resolves to "false" when no feedback object available', async () => {
-			const mockFeedback = { fpp: 'bar' };
-			const instanceUnderTest = setup();
+	describe('getOverlayGeoResourceId', () => {
+		it('provides a GeoREsource id', async () => {
+			const customMapFeedbackOverlayGeoResourceProvider = jasmine.createSpy().and.returnValue('foo');
+			const instanceUnderTest = setup(null, null, customMapFeedbackOverlayGeoResourceProvider);
 
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(false);
+			expect(instanceUnderTest.getOverlayGeoResourceId()).toBe('foo');
 		});
 	});
 });

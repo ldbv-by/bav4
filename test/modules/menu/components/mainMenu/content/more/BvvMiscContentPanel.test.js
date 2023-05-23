@@ -3,9 +3,9 @@ import { BvvMiscContentPanel } from '../../../../../../../src/modules/menu/compo
 import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
-import { isTemplateResultOf } from '../../../../../../../src/utils/checks';
 import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
+import { closeModal } from '../../../../../../../src/store/modal/modal.action';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 
@@ -96,7 +96,9 @@ describe('MiscContentPanel', () => {
 			feedbackButton.click();
 
 			expect(store.getState().modal.data.title).toBe('menu_misc_content_panel_feedback_title');
-			expect(isTemplateResultOf(store.getState().modal.data.content, ToggleFeedbackPanel.tag)).toBeTrue();
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
 		});
 	});
 });

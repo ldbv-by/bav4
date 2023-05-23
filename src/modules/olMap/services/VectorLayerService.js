@@ -8,6 +8,7 @@ import { load as featureLoader } from '../utils/feature.provider';
 import { KML, GPX, GeoJSON, WKT } from 'ol/format';
 import VectorLayer from 'ol/layer/Vector';
 import { parse } from '../../../utils/ewkt';
+import { Cluster } from 'ol/source';
 
 const getUrlService = () => {
 	const { UrlService: urlService } = $injector.inject('UrlService');
@@ -110,6 +111,18 @@ export class VectorLayerService {
 	}
 
 	/**
+	 * Adds a specific or a default cluster styling for this vector layer
+	 * @param {ol.layer.Vector} olVectorLayer
+	 * @returns olVectorLayer
+	 */
+	_applyClusterStyle(olVectorLayer) {
+		const { StyleService: styleService } = $injector.inject('StyleService');
+		styleService.addClusterStyle(olVectorLayer);
+
+		return olVectorLayer;
+	}
+
+	/**
 	 * Builds an ol VectorLayer from an VectorGeoResource
 	 * @param {string} id layerId
 	 * @param {VectorGeoResource} vectorGeoResource
@@ -127,7 +140,7 @@ export class VectorLayerService {
 		});
 		const vectorSource = vectorGeoResource.url ? this._vectorSourceForUrl(vectorGeoResource) : this._vectorSourceForData(vectorGeoResource);
 		vectorLayer.setSource(vectorSource);
-		return this._applyStyles(vectorLayer, olMap);
+		return vectorGeoResource.isClustered() ? this._applyClusterStyle(vectorLayer) : this._applyStyles(vectorLayer, olMap);
 	}
 
 	/**
@@ -168,7 +181,13 @@ export class VectorLayerService {
 					break;
 			}
 		}
-		return vectorSource;
+		return geoResource.isClustered()
+			? new Cluster({
+					source: vectorSource,
+					distance: geoResource.clusterParams.distance,
+					minDistance: geoResource.clusterParams.minDistance
+			  })
+			: vectorSource;
 	}
 
 	/**
@@ -185,6 +204,12 @@ export class VectorLayerService {
 			loader: featureLoader,
 			format: mapVectorSourceTypeToFormat(geoResource.sourceType)
 		});
-		return source;
+		return geoResource.isClustered()
+			? new Cluster({
+					source: source,
+					distance: geoResource.clusterParams.distance,
+					minDistance: geoResource.clusterParams.minDistance
+			  })
+			: source;
 	}
 }

@@ -19,7 +19,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
 		expect(map.feedback_mapFeedback_text_map).toBe('Karte');
 		expect(map.feedback_mapFeedback_text_after).toBe(
-			' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'
+			' und füllen die Felder aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'
 		);
 		expect(map.feedback_mapFeedback_disclaimer).toBe(
 			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'

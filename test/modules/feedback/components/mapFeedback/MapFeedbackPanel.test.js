@@ -6,7 +6,7 @@ import { MapFeedback } from '../../../../../src/services/FeedbackService';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
+import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(MapFeedbackPanel.tag, MapFeedbackPanel);
@@ -17,7 +17,8 @@ const configServiceMock = {
 
 const feedbackServiceMock = {
 	getCategories: () => ['Foo', 'Bar'],
-	save: () => {}
+	save: () => {},
+	getOverlayGeoResourceId: () => 'overlay'
 };
 
 const shareServiceMock = {
@@ -32,6 +33,10 @@ const fileStorageServiceMock = {
 	isAdminId(id) {
 		return id.startsWith('a_');
 	}
+};
+
+const securityServiceMock = {
+	sanitizeHtml: () => {}
 };
 
 let store;
@@ -54,15 +59,16 @@ const setup = (state = {}) => {
 		.registerSingleton('ConfigService', configServiceMock)
 		.registerSingleton('FeedbackService', feedbackServiceMock)
 		.registerSingleton('ShareService', shareServiceMock)
-		.registerSingleton('FileStorageService', fileStorageServiceMock);
+		.registerSingleton('FileStorageService', fileStorageServiceMock)
+		.registerSingleton('SecurityService', securityServiceMock);
 
-	return TestUtils.renderAndLogLifecycle(MapFeedbackPanel.tag);
+	return TestUtils.render(MapFeedbackPanel.tag);
 };
 
 describe('MapFeedbackPanel', () => {
-	describe('constructor', () => {
+	describe('when instantiated', () => {
 		it('sets a default model', async () => {
-			setup();
+			await setup();
 			const element = new MapFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
@@ -74,9 +80,15 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				submitWasClicked: false,
 				isPortrait: false
 			});
+		});
+
+		it('has default callback methods', async () => {
+			await setup();
+			const instanceUnderTest = new MapFeedbackPanel();
+
+			expect(instanceUnderTest._onSubmit).toBeDefined();
 		});
 	});
 
@@ -120,12 +132,22 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_eMail');
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
+		});
+
+		it('contains 4 unvisited ba-form-elements', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
+			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
+				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
+			});
 		});
 
 		it('renders a privacy policy disclaimer', async () => {
@@ -157,94 +179,102 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			const iframeElement = element.shadowRoot.querySelector('iframe');
-			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: feedbackServiceMock.getOverlayGeoResourceId() }, [
+				PathParameters.EMBED
+			]);
 			expect(iframeElement.src).toBe(expectedEncodedState);
 		});
+	});
 
-		describe('when listen to iframe-attribute changes', () => {
-			it('updates mapFeedback.fileId and .state', async () => {
-				const fileId = 'f_foo';
-				const element = await setup();
+	describe('when iframe-attribute changes', () => {
+		it('updates mapFeedback "fileId" and "state" property', async () => {
+			const fileId = 'f_foo';
+			const element = await setup();
 
-				const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
-				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+			const updateFileIdSpy = spyOn(element, '_updateFileId').and.callThrough();
+			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
 
-				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
-				await TestUtils.timeout();
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, fileId);
+			await TestUtils.timeout();
 
-				expect(element.getModel().mapFeedback.fileId).toBe(fileId);
+			expect(element.getModel().mapFeedback.fileId).toBe(fileId);
 
-				// no calls by changes on any other attribute
-				iframe.setAttribute('foo', 'bar');
+			iframe.setAttribute(IFRAME_GEOMETRY_REFERENCE_ID, '');
+			await TestUtils.timeout();
 
-				await TestUtils.timeout();
+			expect(element.getModel().mapFeedback.fileId).toBeNull();
 
-				expect(updateFileIdSpy).toHaveBeenCalledTimes(1);
-				expect(updateStateSpy).toHaveBeenCalledTimes(1);
-			});
+			// no calls by changes on any other attribute
+			iframe.setAttribute('foo', 'bar');
 
-			it('updates mapFeedback.state', async () => {
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const searchParams = 'l=foo,bar';
-				const element = await setup();
+			await TestUtils.timeout();
 
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
-				const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
-				expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
+			expect(updateFileIdSpy).toHaveBeenCalledTimes(2);
+			expect(updateStateSpy).toHaveBeenCalledTimes(2);
+			expect(element.shadowRoot.querySelector('.map-feedback__iframe').classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+		});
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
-				await TestUtils.timeout();
+		it('updates mapFeedback.state', async () => {
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const searchParams = 'l=foo,bar';
+			const element = await setup();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${searchParams}`);
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			const updateStateSpy = spyOn(element, '_updateState').and.callThrough();
+			expect(element._iframeObserver).toEqual(jasmine.any(MutationObserver));
 
-				// no calls by changes on any other attribute
-				iframe.setAttribute('foo', 'bar');
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+			await TestUtils.timeout();
 
-				await TestUtils.timeout();
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${searchParams}`);
 
-				expect(updateStateSpy).toHaveBeenCalledTimes(1);
-			});
+			// no calls by changes on any other attribute
+			iframe.setAttribute('foo', 'bar');
 
-			it('updates mapFeedback.state with existing fileId', async () => {
-				const fileId = 'f_id';
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const searchParams = 'l=foo,bar';
-				const expectedSearchParams = `l=foo,bar,${fileId}`;
-				const element = await setup();
+			await TestUtils.timeout();
 
-				element._updateFileId(fileId);
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+			expect(updateStateSpy).toHaveBeenCalledTimes(1);
+		});
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
-				await TestUtils.timeout();
+		it('updates mapFeedback.state with existing fileId', async () => {
+			const fileId = 'f_id';
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const searchParams = 'l=foo,bar';
+			const expectedSearchParams = `l=foo,bar,${fileId}`;
+			const element = await setup();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
-			});
+			element._updateFileId(fileId);
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
 
-			it('does not update mapFeedback.state with existing fileId', async () => {
-				const fileId = 'f_id';
-				const frontendUrl = 'http://frontend.url';
-				const iframeUrl = 'http://iframe.url';
-				const iframeSearchParams = 'l=foo,f_id,bar';
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${searchParams}`);
+			await TestUtils.timeout();
 
-				const element = await setup();
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${expectedSearchParams}`);
+		});
 
-				element._updateFileId(fileId);
-				spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+		it('does not update mapFeedback.state with existing fileId', async () => {
+			const fileId = 'f_id';
+			const frontendUrl = 'http://frontend.url';
+			const iframeUrl = 'http://iframe.url';
+			const iframeSearchParams = 'l=foo,f_id,bar';
 
-				const iframe = element.shadowRoot.querySelector('iframe');
-				iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
-				await TestUtils.timeout();
+			const element = await setup();
 
-				expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
-			});
+			element._updateFileId(fileId);
+			spyOn(configServiceMock, 'getValueAsPath').withArgs('FRONTEND_URL').and.returnValue(frontendUrl);
+
+			const iframe = element.shadowRoot.querySelector('iframe');
+			iframe.setAttribute(IFRAME_ENCODED_STATE, `${iframeUrl}?${iframeSearchParams}`);
+			await TestUtils.timeout();
+
+			expect(element.getModel().mapFeedback.state).toBe(`${frontendUrl}?${iframeSearchParams}`);
 		});
 	});
 
@@ -282,10 +312,12 @@ describe('MapFeedbackPanel', () => {
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
 
-		it('emits a success notification if save succeeds', async () => {
+		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
 			// arrange
+			const onSubmitCallback = jasmine.createSpy();
 			const mapFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
 			const element = await setup();
+			element.onSubmit = onSubmitCallback;
 
 			// act
 			await element._saveMapFeedback('', '', '');
@@ -295,15 +327,15 @@ describe('MapFeedbackPanel', () => {
 
 			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
-		it('calls FeedbackService.getCategories()', async () => {
+		it('initially calls FeedbackService.getCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories');
-			const element = await setup();
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.returnValue([]);
 
 			// act
-			await element._getCategoryOptions();
+			await setup();
 
 			// assert
 			expect(getMapFeedbackSpy).toHaveBeenCalled();
@@ -402,6 +434,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -432,6 +465,7 @@ describe('MapFeedbackPanel', () => {
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
 			const saveMapFeedbackSpy = spyOn(feedbackServiceMock, 'save');
+			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
 			element._updateFileId('geometryId');
@@ -454,6 +488,22 @@ describe('MapFeedbackPanel', () => {
 			expect(saveMapFeedbackSpy).toHaveBeenCalled();
 			expect(saveMapFeedbackSpy).toHaveBeenCalledWith(new MapFeedback('Foo', 'Bar', 'description', 'geometryId'));
 		});
+
+		it('all "ba-form-element" elements receive the "userVisited" class', async () => {
+			// arrange
+			const element = await setup();
+			const allBaFormElements = element.shadowRoot.querySelectorAll('.ba-form-element');
+
+			// act
+			const submitButton = element.shadowRoot.querySelector('#button0');
+			submitButton.click();
+
+			// assert
+			expect(allBaFormElements).toHaveSize(4);
+			allBaFormElements.forEach((element) => {
+				expect(element.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+			});
+		});
 	});
 
 	describe('when disconnected', () => {
@@ -468,7 +518,103 @@ describe('MapFeedbackPanel', () => {
 		});
 	});
 
-	describe('responsive layout ', () => {
+	describe('when description is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const descriptionValue = 'description';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = descriptionValue;
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
+		});
+
+		it('its parent receives the "userVisited" class', async () => {
+			// arrange
+			const descriptionValue = 'description';
+			const element = await setup();
+
+			// act
+			const descriptionInput = element.shadowRoot.querySelector('#description');
+			descriptionInput.value = descriptionValue;
+			descriptionInput.dispatchEvent(new Event('input'));
+
+			// assert
+			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+		});
+	});
+
+	describe('when email is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const emailValue = 'email@some.com';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = emailValue;
+			emailInput.dispatchEvent(new Event('input'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
+		});
+
+		it('its parent receives the "userVisited" class', async () => {
+			// arrange
+			const emailValue = 'email';
+			const element = await setup();
+
+			// act
+			const emailInput = element.shadowRoot.querySelector('#email');
+			emailInput.value = emailValue;
+			emailInput.dispatchEvent(new Event('input'));
+
+			// assert
+			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+		});
+	});
+
+	describe('when category is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const categoryValue = 'Bar';
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = categoryValue;
+			categorySelect.dispatchEvent(new Event('change'));
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+
+		it('its parent receives the "userVisited" class', async () => {
+			// arrange
+			const categoryValue = 'Bar';
+			const element = await setup();
+
+			// act
+			const categorySelect = element.shadowRoot.querySelector('#category');
+			categorySelect.value = categoryValue;
+			categorySelect.dispatchEvent(new Event('change'));
+
+			// assert
+			const nodeValue = categorySelect.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+		});
+	});
+
+	describe('responsive layout', () => {
 		it('layouts for landscape', async () => {
 			const state = {
 				media: {

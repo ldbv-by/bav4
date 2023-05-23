@@ -63,6 +63,13 @@ describe('DrawTool', () => {
 				spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(drawToolQueryParams);
 			});
 
+			it('shows a label', async () => {
+				const element = await setup();
+
+				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-tool-container__title')[0].innerText).toBe('iframe_drawTool_label');
+			});
+
 			it('shows a list of tools', async () => {
 				const element = await setup();
 

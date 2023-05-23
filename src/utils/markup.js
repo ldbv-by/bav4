@@ -30,6 +30,11 @@ export const IFRAME_ENCODED_STATE = 'data-iframe-encoded-state';
 export const IFRAME_GEOMETRY_REFERENCE_ID = 'data-iframe-geometry-reference-id';
 
 /**
+ * Name of the CSS class which marks a ba-form element as visited by the user.
+ */
+export const BA_FORM_ELEMENT_VISITED_CLASS = 'userVisited';
+
+/**
  * Sets the value of the `data-test-id` attribute for a MvuElement and all of its children.
  * The Test-Id is derived from the DOM hierarchy of the current MvuElement following its parent MvuElements
  *(BaElements are also supported).

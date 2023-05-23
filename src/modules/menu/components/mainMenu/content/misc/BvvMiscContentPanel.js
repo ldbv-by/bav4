@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
-import { openModal } from '../../../../../../store/modal/modal.action';
+import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 
 /**
  * Container for more contents.
@@ -25,7 +25,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 
 		const openFeedbackDialog = () => {
 			const title = translate('menu_misc_content_panel_feedback_title');
-			const content = html`<ba-mvu-togglefeedbackpanel></ba-mvu-togglefeedbackpanel>`;
+			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
 			openModal(title, content);
 		};
 

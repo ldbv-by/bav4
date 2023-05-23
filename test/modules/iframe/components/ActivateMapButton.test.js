@@ -4,6 +4,7 @@ import { IFrameComponents } from '../../../../src/domain/iframeComponents';
 import { $injector } from '../../../../src/injection';
 import { ActivateMapButton } from '../../../../src/modules/iframe/components/activateMapButton/ActivateMapButton';
 import { OlMap } from '../../../../src/modules/olMap/components/OlMap';
+import { Footer } from '../../../../src/modules/footer/components/Footer';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(ActivateMapButton.tag, ActivateMapButton);
@@ -45,11 +46,11 @@ describe('ActivateMapButton', () => {
 					expect(element.shadowRoot.querySelectorAll('.active-map__background')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('.active-map__button')).toHaveSize(1);
 					expect(element.shadowRoot.querySelectorAll('ba-button')).toHaveSize(1);
-					expect(element.shadowRoot.querySelectorAll('ba-attribution-info')).toHaveSize(1);
 
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)).toHaveSize(1);
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(ActivateMapButton.tag);
 					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(OlMap.tag);
+					expect(document.querySelectorAll(`#${ActivateMapButton.STYLE_ID}`)[0].innerText).toContain(Footer.tag);
 				});
 			});
 

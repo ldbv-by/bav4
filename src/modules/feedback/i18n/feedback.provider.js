@@ -44,7 +44,7 @@ export const provide = (lang) => {
 				feedback_mapFeedback_submit: 'Senden',
 				feedback_mapFeedback_text_before: 'Bitte zeichnen Sie Ihrer Änderung in die',
 				feedback_mapFeedback_text_map: 'Karte',
-				feedback_mapFeedback_text_after: ' und füllen die Feldere aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.',
+				feedback_mapFeedback_text_after: ' und füllen die Felder aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.',
 				feedback_mapFeedback_disclaimer:
 					'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.',
 				feedback_mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',

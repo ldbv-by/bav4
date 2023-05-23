@@ -130,7 +130,7 @@ export class DrawTool extends MvuElement {
 						<ba-icon id="close-icon" class='tool-container__close-button draw-tool__disable-button' .icon='${cancelSvg}' .size=${1.6} .color=${'var(--text2)'} .color_hover=${'var(--text2)'} @click=${deactivateDrawing}>						
 					</div>
 					<div class="draw-tool-container">
-						<div class="ba-tool-container__title">Zeichnen</div>
+						<div class="ba-tool-container__title">${translate('iframe_drawTool_label')}</div>
 						<div class="draw-tool__buttons">
 							${repeat(
 								tools,

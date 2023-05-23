@@ -200,13 +200,17 @@
 }
 /* collapse */
 .collapse-content {
-	max-height: auto;
-	visibility: visibility;
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows var(--animation-duration-medium-open);
 }
-.iscollapse {
-	max-height: 0;
+
+.collapse-content > div {
 	overflow: hidden;
-	visibility: hidden;
+}
+
+.iscollapse {
+	grid-template-rows: 0fr;
 }
 
 /* helper */

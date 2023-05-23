@@ -830,13 +830,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		this._storedContent = newContent;
 		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
-		setFileSaveResult({ fileSaveResult, content: newContent });
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {

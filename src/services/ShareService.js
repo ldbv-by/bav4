@@ -60,7 +60,7 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL');
+		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
 		return `${baseUrl}${mergedPathParameters.join('/')}` + '?' + decodeURIComponent(searchParams.toString());
