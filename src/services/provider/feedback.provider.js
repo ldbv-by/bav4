@@ -7,8 +7,8 @@ import { MediaType } from '../HttpService';
 
 /**
  * Bvv specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
- * @implements {module:services/FeedbackService~feedbackStorageProvider}
  * @function
+ * @type {module:services/FeedbackService~feedbackStorageProvider}
  */
 export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -47,9 +47,8 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 
 /**
  * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackCategoriesProvider}
- * @async
- * @implements {module:services/FeedbackService~feedbackCategoriesProvider}
  * @function
+ * @type {module:services/FeedbackService~mapFeedbackCategoriesProvider}
  */
 export const bvvMapFeedbackCategoriesProvider = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -67,6 +66,6 @@ export const bvvMapFeedbackCategoriesProvider = async () => {
 /**
  * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
  * @function
- * @implements {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
+ * @type {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
  */
 export const bvvMapFeedbackOverlayGeoResourceProvider = () => 'tim';
