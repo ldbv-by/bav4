@@ -255,10 +255,11 @@ describe('ExportVectorDataService', () => {
 		it('does NOT writes gpx track segments for empty geometries', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
-
 			const emptyPolygon = new Polygon([[[]]]);
+			spyOn(emptyPolygon, 'getLinearRing').and.returnValue(undefined);
+
 			expect(writer([new Feature({ geometry: emptyPolygon })])).toBe(
-				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"/>'
 			);
 		});
 	});
