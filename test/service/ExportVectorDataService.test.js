@@ -252,7 +252,7 @@ describe('ExportVectorDataService', () => {
 			);
 		});
 
-		fit('does NOT writes gpx track segments for empty geometries', () => {
+		it('does NOT writes gpx track segments for empty geometries', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
 
