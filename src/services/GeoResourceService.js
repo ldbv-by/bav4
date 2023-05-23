@@ -17,7 +17,7 @@
  */
 
 import { $injector } from '../injection';
-import {  observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
+import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
