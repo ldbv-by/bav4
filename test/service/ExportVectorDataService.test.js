@@ -210,12 +210,11 @@ describe('ExportVectorDataService', () => {
 
 			it('requests the ewkt format reader', () => {
 				const instance = setup();
-
 				const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
 				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-				const targetSourceType = new SourceType('something');
 
-				instance.forData('someData', new SourceType(SourceTypeName.EWKT), targetSourceType);
+				instance.forData('someData', new SourceType(SourceTypeName.EWKT), new SourceType('something'));
+
 				expect(readerSpy).toHaveBeenCalled();
 			});
 
@@ -223,9 +222,9 @@ describe('ExportVectorDataService', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
 				const readerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
-				const dataSourceType = new SourceType('something');
 
-				instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
+				instance.forData('someData', new SourceType('something'), new SourceType(SourceTypeName.EWKT));
+
 				expect(readerSpy).toHaveBeenCalled();
 			});
 
