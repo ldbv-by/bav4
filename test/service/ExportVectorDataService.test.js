@@ -13,6 +13,12 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const KML_Data =
+		'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document>	<name>Zeichnung</name>	<Placemark id="polygon_1645077612885">	<ExtendedData>		<Data name="type">			<value>polygon</value>		</Data>	</ExtendedData>	<description>	</description>	<Style>		<LineStyle>			<color>ff0000ff</color>			<width>3</width>		</LineStyle>		<PolyStyle>			<color>660000ff</color>		</PolyStyle>	</Style>	<Polygon>		<outerBoundaryIs>			<LinearRing>				<coordinates>					11.248395432833206,48.599861238104666 					11.414296346422136,48.66067918795375 					11.484919041751134,48.55051466922948 					11.30524992459611,48.503527784132004 					11.248395432833206,48.599861238104666				</coordinates>			</LinearRing>		</outerBoundaryIs>	</Polygon></Placemark></Document></kml>';
+	const GEOJSON_Data =
+		'{"type": "FeatureCollection","name": "Geometry Example","features": [{"type": "Feature","id": "linestring_1","geometry": {"type": "LineString","coordinates": [[11.623994925, 48.103902276], [11.6238941494, 48.1038562591],[11.6237933577, 48.1038312889],[11.623671698, 48.1038326017],[11.6236550072, 48.103838031],[11.6234912923, 48.1034946718],[11.6234954066, 48.1030211821],[11.6240959829, 48.1030061469],[11.6240767886, 48.1032433238],[11.6252867619, 48.1032918834]]},"properties": {"description": "A LineString"}},{"type": "Feature","id": "point_1","geometry": {"type": "Point","coordinates":[11.6160251361, 48.1052634623]},"properties": {"title": "Point 1","description": "A valid Point style"}}]}';
+	const GPX_Data =
+		'﻿<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="48.599861238104666" lon="11.248395432833206"/><trkpt lat="48.66067918795375" lon="11.414296346422136"/><trkpt lat="48.55051466922948" lon="11.484919041751134"/><trkpt lat="48.503527784132004" lon="11.30524992459611"/><trkpt lat="48.599861238104666" lon="11.248395432833206"/></trkseg></trk></gpx>';
 
 	const projectionServiceMock = {
 		getProjections: () => [4326, 3857]
@@ -53,6 +59,74 @@ describe('ExportVectorDataService', () => {
 			const instance = setup();
 
 			expect(() => instance.forGeoResource(vgr, targetSourceType)).toThrowError("GeoResource 'id_foo' is empty");
+		});
+	});
+
+	describe('GPX', () => {
+		const FORMAT_GPX_START = '<gpx ';
+		it('writes features in GPX format ', () => {
+			const instance = setup();
+
+			expect(
+				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+			).toBeTrue();
+			expect(
+				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+			).toBeTrue();
+			expect(
+				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+			).toBeTrue();
+		});
+	});
+
+	describe('KML', () => {
+		const FORMAT_KML_START = '<kml ';
+		it('writes features in KML format ', () => {
+			const instance = setup();
+
+			expect(
+				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+			).toBeTrue();
+			expect(
+				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+			).toBeTrue();
+			expect(
+				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+			).toBeTrue();
+		});
+	});
+
+	describe('GeoJSON', () => {
+		const FORMAT_GEOJSON_START = '{"type":"FeatureCollection","features":[{"type":"Feature"';
+		it('writes features in GeoJSON format ', () => {
+			const instance = setup();
+
+			expect(
+				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+			).toBeTrue();
+			expect(
+				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+			).toBeTrue();
+			expect(
+				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+			).toBeTrue();
+		});
+	});
+
+	describe('EWKT', () => {
+		const FORMAT_EWKT_START = 'SRID=';
+		it('writes features in GeoJSON format ', () => {
+			const instance = setup();
+
+			expect(
+				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+			).toBeTrue();
+			expect(
+				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+			).toBeTrue();
+			expect(
+				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+			).toBeTrue();
 		});
 	});
 
