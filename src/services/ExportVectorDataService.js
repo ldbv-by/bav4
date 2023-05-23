@@ -172,7 +172,7 @@ export class OlExportVectorDataService {
 				const geometry = feature.getGeometry();
 				if (geometry instanceof Polygon) {
 					const coordinates = geometry.getLinearRing(0)?.getCoordinates();
-					return new Feature(new MultiLineString([coordinates]));
+					return new Feature(coordinates ? new MultiLineString([coordinates]) : {});
 				}
 				if (geometry instanceof LineString) {
 					const coordinates = geometry.getCoordinates();

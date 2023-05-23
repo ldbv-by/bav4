@@ -251,6 +251,16 @@ describe('ExportVectorDataService', () => {
 				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg><trkpt lat="10" lon="10"/><trkpt lat="20" lon="10"/><trkpt lat="20" lon="20"/><trkpt lat="15" lon="20"/><trkpt lat="10" lon="10"/></trkseg></trk></gpx>'
 			);
 		});
+
+		fit('does NOT writes gpx track segments for empty geometries', () => {
+			const instance = setup();
+			const writer = instance._getGpxWriter();
+
+			const emptyPolygon = new Polygon([[[]]]);
+			expect(writer([new Feature({ geometry: emptyPolygon })])).toBe(
+				'<gpx xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd" version="1.1" creator="OpenLayers"><trk><trkseg/></trk></gpx>'
+			);
+		});
 	});
 
 	describe('_getFormat', () => {
