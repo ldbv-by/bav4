@@ -58,11 +58,7 @@ describe('Button', () => {
 
 			button.click();
 
-			expect(spy).toHaveBeenCalledOnceWith(
-				new CustomEvent('remove', {
-					detail: { label: 'initial_label' }
-				})
-			);
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: 'initial_label' }));
 		});
 	});
 });

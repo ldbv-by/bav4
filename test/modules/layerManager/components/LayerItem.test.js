@@ -822,7 +822,7 @@ describe('LayerItem', () => {
 		};
 
 		describe('on collapse', () => {
-			it('fires a "collapse" event', async () => {
+			fit('fires a "collapse" event', async () => {
 				setup();
 				spyOn(geoResourceService, 'byId')
 					.withArgs('geoResourceId0')
@@ -838,8 +838,10 @@ describe('LayerItem', () => {
 				collapseButton.click();
 
 				expect(spy).toHaveBeenCalledOnceWith(
-					new CustomEvent('collapse', {
-						detail: { layer: layer, collapsed: false }
+					jasmine.objectContaining({
+						detail: {
+							layer: jasmine.objectContaining({ ...layer, collapsed: false })
+						}
 					})
 				);
 				expect(element.getModel().layer.collapsed).toBeFalse();

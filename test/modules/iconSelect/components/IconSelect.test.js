@@ -177,11 +177,7 @@ describe('IconSelect', () => {
 			const selectableIcon = element.shadowRoot.querySelector('#svg_foo');
 			selectableIcon.click();
 
-			expect(spy).toHaveBeenCalledOnceWith(
-				new CustomEvent('toggle', {
-					detail: { selected: jasmine.any(IconResult) }
-				})
-			);
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { selected: jasmine.any(IconResult) } }));
 		});
 
 		it('calls the onSelect callback via property callback', async () => {

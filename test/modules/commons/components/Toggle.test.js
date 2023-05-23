@@ -93,11 +93,7 @@ describe('Toggle', () => {
 
 				element.click();
 
-				expect(spy).toHaveBeenCalledOnceWith(
-					new CustomEvent('toggle', {
-						detail: { checked: true }
-					})
-				);
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 				expect(element.checked).toBeTrue();
 			});
 
