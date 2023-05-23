@@ -80,15 +80,14 @@ describe('ExportVectorDataService', () => {
 
 		it('requests a transformation', () => {
 			const instance = setup();
-
 			spyOn(instance, '_getReader').and.returnValue(() => ['foo']);
 			const transformSpy = spyOn(instance, '_transform').and.returnValue(() => ['bar']);
 			spyOn(instance, '_getWriter').and.returnValue(() => 'baz');
 
 			const dataSourceType = new SourceType('foo', 1, 4326);
 			const targetSourceType = new SourceType('bar', 1, 3857);
-
 			instance.forData('someData', dataSourceType, targetSourceType);
+
 			expect(transformSpy).toHaveBeenCalledWith(['foo'], 4326, 3857);
 		});
 
