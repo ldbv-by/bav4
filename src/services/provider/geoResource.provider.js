@@ -15,10 +15,6 @@ import { $injector } from '../../injection';
 import { isHttpUrl } from '../../utils/checks';
 import { getBvvAttribution } from './attribution.provider';
 
-/**
- * Maps a BVV geoResource definition to a corresponding GeoResource instance
- * @param {object} definition Configuration object for a GeoResource
- */
 export const _definitionToGeoResource = (definition) => {
 	const toGeoResource = (def) => {
 		switch (def.type) {
@@ -81,8 +77,7 @@ export const _definitionToGeoResource = (definition) => {
 /**
  * Uses the BVV endpoint to load geoResources.
  * @function
- * @implements {module:services/GeoResourceService~geoResourceProvider}
- * @returns {Promise<Array<GeoResource>>}
+ * @type {module:services/GeoResourceService~geoResourceProvider}
  */
 export const loadBvvGeoResources = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -109,11 +104,6 @@ export const loadBvvGeoResources = async () => {
 	throw new Error('GeoResources could not be loaded');
 };
 
-/**
- * Helper function to parse BVV attributions.
- * @param {object} definition BVV GeoResource definition
- * @returns  {Array<Attribution>|null} an array of attributions or `null`
- */
 export const _parseBvvAttributionDefinition = (definition) => {
 	if (Array.isArray(definition.extendedAttributions)) {
 		return definition.extendedAttributions.map((extAtt) => ({
@@ -127,8 +117,7 @@ export const _parseBvvAttributionDefinition = (definition) => {
 /**
  * Loads example GeoResources without a backend.
  * @function
- * @implements {module:services/GeoResourceService~geoResourceProvider}
- * @returns {Promise<Array<GeoResource>>}
+ * @type {module:services/GeoResourceService~geoResourceProvider}
  */
 export const loadExampleGeoResources = async () => {
 	const wms0 = new WmsGeoResource(
@@ -158,8 +147,8 @@ export const loadExampleGeoResources = async () => {
 /**
  * Uses the BVV endpoint to load a GeoResource by id
  * @function
- * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
- * @returns {GeoResourceFuture|null}
+ * @param {string} id Id of the requested GeoResource
+ * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadBvvGeoResourceById = (id) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -192,8 +181,8 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * WMS: `{url}||{layer}||[{label}]`
  * @function
- * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
- * @returns {GeoResourceFuture|null}
+ * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
+ * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadExternalGeoResource = (urlBasedAsId) => {
 	const parts = urlBasedAsId.split('||');
