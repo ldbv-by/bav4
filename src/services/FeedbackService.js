@@ -1,7 +1,6 @@
 /**
  * @module services/FeedbackService
  */
-
 import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFeedbackOverlayGeoResourceProvider } from './provider/feedback.provider';
 
 /**
@@ -29,11 +28,11 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  */
 export class GeneralFeedback {
 	/**
-	 * @param {String} description The actual message of this feedback message
-	 * @param {String} [email] The email address of the editor of this feedback message
-	 * @param {Number} [rating] The rating as number
+	 * @param {String|null} [description] The actual message of this feedback message
+	 * @param {String|null} [email] The email address of the editor of this feedback message
+	 * @param {Number|null} [rating] The rating as number
 	 */
-	constructor(description, email = null, rating = null) {
+	constructor(description = null, email = null, rating = null) {
 		this.description = description;
 		this.email = email;
 		this.rating = rating;
@@ -48,7 +47,7 @@ export class MapFeedback {
 	 * @param {String} category The category of this feedback message
 	 * @param {String} description The actual message of this feedback message
 	 * @param {String} geometryId The id of the referenced geometry file of this feedback message
-	 * @param {String} [email] The email address of the editor of this feedback message
+	 * @param {String|null} [email] The email address of the editor of this feedback message
 	 */
 	constructor(state, category, description, geometryId, email = null) {
 		this.state = state;
@@ -74,7 +73,7 @@ export class FeedbackService {
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
 		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
 	) {
-		this._mapFeedbackStorageProvider = feedbackStorageProvider;
+		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
 		this._categories = null;
@@ -83,7 +82,7 @@ export class FeedbackService {
 	 * Returns all possible categories for a MapFeedback.
 	 * @async
 	 * @throws `Error` when categories are not available.
-	 * @returns {Array<String>}
+	 * @returns {Promise<Array<String>>}
 	 */
 	async getCategories() {
 		if (!this._categories) {
@@ -98,17 +97,10 @@ export class FeedbackService {
 	 * @async
 	 * @param {MapFeedback|GeneralFeedback} feedback
 	 * @throws `Error` when storing was not successful
-	 * @returns {Boolean} `true` when storing was successful
+	 * @returns {Promise<Boolean>} `true` when storing was successful
 	 */
 	async save(feedback) {
-		if (feedback instanceof MapFeedback) {
-			// we have MapFeedback object
-			return this._mapFeedbackStorageProvider(feedback);
-		} else if (feedback instanceof GeneralFeedback) {
-			//we have a GeneralFeedback object (currently mocked)
-			return true;
-		}
-		return false;
+		return this._feedbackStorageProvider(feedback);
 	}
 
 	/**

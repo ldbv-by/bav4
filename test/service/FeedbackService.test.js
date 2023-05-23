@@ -20,8 +20,9 @@ describe('Entities', () => {
 		expect(instanceUnderTest.description).toBe('description');
 		expect(instanceUnderTest.email).toBe('email');
 		expect(instanceUnderTest.rating).toBe('rating');
-		expect(new GeneralFeedback('description').email).toBeNull();
-		expect(new GeneralFeedback('description').rating).toBeNull();
+		expect(new GeneralFeedback().description).toBeNull();
+		expect(new GeneralFeedback().email).toBeNull();
+		expect(new GeneralFeedback().rating).toBeNull();
 	});
 });
 
@@ -37,7 +38,7 @@ describe('FeedbackService', () => {
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
 			const instanceUnderTest = new FeedbackService();
-			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
+			expect(instanceUnderTest._feedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(bvvMapFeedbackOverlayGeoResourceProvider);
 		});
@@ -51,7 +52,7 @@ describe('FeedbackService', () => {
 				customMapFeedbackCategoriesProvider,
 				customMapMapFeedbackOverlayGeoResourceProvider
 			);
-			expect(instanceUnderTest._mapFeedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
+			expect(instanceUnderTest._feedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(customMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(customMapMapFeedbackOverlayGeoResourceProvider);
 		});
@@ -99,13 +100,6 @@ describe('FeedbackService', () => {
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
 			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeRejectedWith('Error');
-		});
-
-		it('resolves to "false" when no feedback object available', async () => {
-			const mockFeedback = { fpp: 'bar' };
-			const instanceUnderTest = setup();
-
-			await expectAsync(instanceUnderTest.save(mockFeedback)).toBeResolvedTo(false);
 		});
 	});
 
