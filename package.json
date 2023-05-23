@@ -19,9 +19,10 @@
 		"docdash": "^2.0.1",
 		"dotenv-webpack": "8.0.1",
 		"es-check": "7.1.1",
-		"eslint": "8.40.0",
+		"eslint": "8.41.0",
 		"eslint-plugin-import": "2.27.5",
 		"eslint-plugin-promise": "6.1.1",
+		"gh-pages": "^5.0.0",
 		"html-webpack-plugin": "5.5.1",
 		"jasmine": "5.0.0",
 		"jsdoc": "4.0.2",
@@ -67,6 +68,7 @@
 		"test:gha": "karma start karma.conf.gha.js --single-run",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
 		"es-check": "es-check es12 \"./src/**/*.js\" --module",
-		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json"
+		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
+		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
 }

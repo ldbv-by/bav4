@@ -11,7 +11,7 @@
 
 </h1>
 
-Next-generation web-map viewer based on web standards.
+Next-generation web-map viewer based on web standards ([`live example`](https://ldbv-by.github.io/bav4/)).
 
 #### Table of Contents
 
