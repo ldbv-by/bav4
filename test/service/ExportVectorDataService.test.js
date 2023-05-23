@@ -62,74 +62,6 @@ describe('ExportVectorDataService', () => {
 		});
 	});
 
-	describe('GPX', () => {
-		const FORMAT_GPX_START = '<gpx ';
-		it('writes features in GPX format ', () => {
-			const instance = setup();
-
-			expect(
-				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
-			).toBeTrue();
-			expect(
-				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
-			).toBeTrue();
-			expect(
-				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
-			).toBeTrue();
-		});
-	});
-
-	describe('KML', () => {
-		const FORMAT_KML_START = '<kml ';
-		it('writes features in KML format ', () => {
-			const instance = setup();
-
-			expect(
-				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
-			).toBeTrue();
-			expect(
-				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
-			).toBeTrue();
-			expect(
-				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
-			).toBeTrue();
-		});
-	});
-
-	describe('GeoJSON', () => {
-		const FORMAT_GEOJSON_START = '{"type":"FeatureCollection","features":[{"type":"Feature"';
-		it('writes features in GeoJSON format ', () => {
-			const instance = setup();
-
-			expect(
-				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
-			).toBeTrue();
-			expect(
-				instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
-			).toBeTrue();
-			expect(
-				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
-			).toBeTrue();
-		});
-	});
-
-	describe('EWKT', () => {
-		const FORMAT_EWKT_START = 'SRID=';
-		it('writes features in GeoJSON format ', () => {
-			const instance = setup();
-
-			expect(
-				instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
-			).toBeTrue();
-			expect(
-				instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
-			).toBeTrue();
-			expect(
-				instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
-			).toBeTrue();
-		});
-	});
-
 	describe('forData', () => {
 		it('returns the data, if no transformation and converting is needed', () => {
 			const instance = setup();
@@ -146,36 +78,6 @@ describe('ExportVectorDataService', () => {
 			expect(transformSpy).not.toHaveBeenCalled();
 		});
 
-		it('requests the standard format reader', () => {
-			const instance = setup();
-			const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
-
-			spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-			const targetSourceType = new SourceType('something');
-
-			instance.forData('<kml/>', new SourceType(SourceTypeName.KML), targetSourceType);
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
-			formatSpy.calls.reset();
-
-			instance.forData('<gpx/>', new SourceType(SourceTypeName.GPX), targetSourceType);
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
-			formatSpy.calls.reset();
-
-			instance.forData('{"type":"FeatureCollection", "features":[]}', new SourceType(SourceTypeName.GEOJSON), targetSourceType);
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
-		});
-
-		it('requests the ewkt format reader', () => {
-			const instance = setup();
-
-			const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
-			spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
-			const targetSourceType = new SourceType('something');
-
-			instance.forData('someData', new SourceType(SourceTypeName.EWKT), targetSourceType);
-			expect(readerSpy).toHaveBeenCalled();
-		});
-
 		it('requests a transformation', () => {
 			const instance = setup();
 
@@ -190,39 +92,157 @@ describe('ExportVectorDataService', () => {
 			expect(transformSpy).toHaveBeenCalledWith(['foo'], 4326, 3857);
 		});
 
-		it('requests the standard format writer', () => {
-			const instance = setup();
-			spyOn(instance, '_getReader').and.returnValue(() => []);
-			const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+		describe('GPX', () => {
+			const FORMAT_GPX_START = '<gpx ';
 
-			const dataSourceType = new SourceType('something');
+			it('requests the gpx format reader', () => {
+				const instance = setup();
+				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
 
-			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.KML));
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
-			formatSpy.calls.reset();
+				instance.forData('<gpx/>', new SourceType(SourceTypeName.GPX), new SourceType('something'));
 
-			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GEOJSON));
-			expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GPX);
+			});
+
+			it('requests the gpx format writer', () => {
+				const instance = setup();
+				spyOn(instance, '_getReader').and.returnValue(() => []);
+				const readerSpy = spyOn(instance, '_getGpxWriter').and.returnValue(() => 'bar');
+
+				instance.forData('someData', new SourceType('something'), new SourceType(SourceTypeName.GPX));
+
+				expect(readerSpy).toHaveBeenCalled();
+			});
+
+			it('writes features as gpx ', () => {
+				const instance = setup();
+
+				expect(
+					instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+				).toBeTrue();
+				expect(
+					instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+				).toBeTrue();
+				expect(
+					instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.GPX)).startsWith(FORMAT_GPX_START)
+				).toBeTrue();
+			});
 		});
 
-		it('requests the ewkt format writer', () => {
-			const instance = setup();
-			spyOn(instance, '_getReader').and.returnValue(() => []);
-			const readerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
-			const dataSourceType = new SourceType('something');
+		describe('KML', () => {
+			const FORMAT_KML_START = '<kml ';
 
-			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
-			expect(readerSpy).toHaveBeenCalled();
+			it('requests the kml format reader', () => {
+				const instance = setup();
+				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
+
+				instance.forData('<kml/>', new SourceType(SourceTypeName.KML), new SourceType('something'));
+
+				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
+			});
+
+			it('requests the kml format writer', () => {
+				const instance = setup();
+				spyOn(instance, '_getReader').and.returnValue(() => []);
+				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+
+				instance.forData('someData', new SourceType('something'), new SourceType(SourceTypeName.KML));
+
+				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
+			});
+
+			it('writes features as kml ', () => {
+				const instance = setup();
+
+				expect(
+					instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+				).toBeTrue();
+				expect(
+					instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+				).toBeTrue();
+				expect(
+					instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.KML)).startsWith(FORMAT_KML_START)
+				).toBeTrue();
+			});
 		});
 
-		it('requests the gpx format writer', () => {
-			const instance = setup();
-			spyOn(instance, '_getReader').and.returnValue(() => []);
-			const readerSpy = spyOn(instance, '_getGpxWriter').and.returnValue(() => 'bar');
-			const dataSourceType = new SourceType('something');
+		describe('GeoJSON', () => {
+			const FORMAT_GEOJSON_START = '{"type":"FeatureCollection","features":[{"type":"Feature"';
 
-			instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.GPX));
-			expect(readerSpy).toHaveBeenCalled();
+			it('requests the geojson format reader', () => {
+				const instance = setup();
+				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
+
+				instance.forData('{"type":"FeatureCollection", "features":[]}', new SourceType(SourceTypeName.GEOJSON), new SourceType('something'));
+
+				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+			});
+
+			it('requests the geojson format writer', () => {
+				const instance = setup();
+				spyOn(instance, '_getReader').and.returnValue(() => []);
+				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
+
+				instance.forData('someData', new SourceType('something'), new SourceType(SourceTypeName.GEOJSON));
+
+				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
+			});
+
+			it('writes features as geojson ', () => {
+				const instance = setup();
+
+				expect(
+					instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+				).toBeTrue();
+				expect(
+					instance.forData(EWKT_Polygon, new SourceType(SourceTypeName.EWKT), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+				).toBeTrue();
+				expect(
+					instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.GEOJSON)).startsWith(FORMAT_GEOJSON_START)
+				).toBeTrue();
+			});
+		});
+
+		describe('EWKT', () => {
+			const FORMAT_EWKT_START = 'SRID=';
+
+			it('requests the ewkt format reader', () => {
+				const instance = setup();
+
+				const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
+				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
+				const targetSourceType = new SourceType('something');
+
+				instance.forData('someData', new SourceType(SourceTypeName.EWKT), targetSourceType);
+				expect(readerSpy).toHaveBeenCalled();
+			});
+
+			it('requests the ewkt format writer', () => {
+				const instance = setup();
+				spyOn(instance, '_getReader').and.returnValue(() => []);
+				const readerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
+				const dataSourceType = new SourceType('something');
+
+				instance.forData('someData', dataSourceType, new SourceType(SourceTypeName.EWKT));
+				expect(readerSpy).toHaveBeenCalled();
+			});
+
+			it('writes features as ewkt ', () => {
+				const instance = setup();
+
+				expect(
+					instance.forData(GPX_Data, new SourceType(SourceTypeName.GPX), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+				).toBeTrue();
+				expect(
+					instance.forData(GEOJSON_Data, new SourceType(SourceTypeName.GEOJSON), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+				).toBeTrue();
+				expect(
+					instance.forData(KML_Data, new SourceType(SourceTypeName.KML), new SourceType(SourceTypeName.EWKT)).startsWith(FORMAT_EWKT_START)
+				).toBeTrue();
+			});
 		});
 	});
 
