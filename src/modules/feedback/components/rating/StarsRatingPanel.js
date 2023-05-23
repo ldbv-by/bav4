@@ -119,9 +119,6 @@ export class StarsRatingPanel extends MvuElement {
 		this.rating = rating;
 	}
 
-	/**
-	 * @property {@link StarsRatingPanel#Rating} rating = Rating.NONE - The current rating
-	 */
 	set rating(value) {
 		this.signal(Update_Rating, value);
 	}
