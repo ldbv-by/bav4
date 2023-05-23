@@ -820,7 +820,33 @@ describe('LayerItem', () => {
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
 			return store;
 		};
+
 		describe('on collapse', () => {
+			it('fires a "collapse" event', async () => {
+				setup();
+				spyOn(geoResourceService, 'byId')
+					.withArgs('geoResourceId0')
+					.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+				const element = await TestUtils.render(LayerItem.tag);
+
+				element.layer = { ...layer }; // collapsed = true is initialized
+				element.onCollapse = jasmine.createSpy();
+				const collapseButton = element.shadowRoot.querySelector('button');
+				const spy = jasmine.createSpy();
+				element.addEventListener('collapse', spy);
+
+				collapseButton.click();
+
+				expect(spy).toHaveBeenCalledOnceWith(
+					jasmine.objectContaining({
+						detail: {
+							layer: jasmine.objectContaining({ ...layer, collapsed: false })
+						}
+					})
+				);
+				expect(element.getModel().layer.collapsed).toBeFalse();
+			});
+
 			it('calls the onCollapse callback via property callback', async () => {
 				setup();
 				spyOn(geoResourceService, 'byId')

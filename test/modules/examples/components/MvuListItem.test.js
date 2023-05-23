@@ -49,5 +49,16 @@ describe('Button', () => {
 
 			expect(element.label).toBe('initial_label');
 		});
+
+		it('fires a "remove" event', async () => {
+			const element = await TestUtils.render(MvuListItem.tag);
+			const spy = jasmine.createSpy();
+			element.addEventListener('remove', spy);
+			const button = element.shadowRoot.querySelector('button');
+
+			button.click();
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: 'initial_label' }));
+		});
 	});
 });
