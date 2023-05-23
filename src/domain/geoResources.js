@@ -124,7 +124,7 @@ export class GeoResource {
 	}
 
 	/**
-	 *  @type {Attribution}
+	 *  @type {Attribution|Array<Attribution>|string|null}
 	 */
 	get attribution() {
 		return this._attribution;
@@ -259,9 +259,11 @@ export class GeoResource {
 
 /**
  * An async function that loads a  {@link GeoResource}.
- *
+ * @async
+ * @function
  * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (Promise<GeoResource>)} asyncGeoResourceLoader
+ * @typedef {Function} asyncGeoResourceLoader
+ * @returns {GeoResource}
  */
 
 /**
@@ -422,7 +424,6 @@ export const VectorSourceType = Object.freeze({
 export class VectorGeoResource extends GeoResource {
 	constructor(id, label, sourceType) {
 		super(id, label);
-		this._url = null;
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
@@ -452,10 +453,6 @@ export class VectorGeoResource extends GeoResource {
 		return this._label ? this._label : this._getFallbackLabel();
 	}
 
-	get url() {
-		return this._url;
-	}
-
 	get sourceType() {
 		return this._sourceType;
 	}
@@ -469,25 +466,12 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Sets the Url for this 'external' GeoResource.
-	 * @param {string} url
-	 * @returns `this` for chaining
-	 */
-	setUrl(url) {
-		this._url = url;
-		this._data = null;
-		this._srid = null;
-		return this;
-	}
-
-	/**
-	 * Sets the source of this 'internal' GeoResource.
-	 * @param {Promise<string>|string} data
+	 * Sets the source of this  GeoResource.
+	 * @param {string} data
 	 * @param {number} srid of the data
 	 * @returns `this` for chaining
 	 */
 	setSource(data, srid) {
-		this._url = null;
 		this._data = data;
 		this._srid = srid;
 		return this;

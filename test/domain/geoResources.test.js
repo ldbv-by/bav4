@@ -348,7 +348,6 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.getType()).toEqual(GeoResourceTypes.VECTOR);
 			expect(vectorGeoResource.id).toBe('id');
 			expect(vectorGeoResource.label).toBe('label');
-			expect(vectorGeoResource.url).toBeNull();
 			expect(vectorGeoResource.srid).toBeNull();
 			expect(vectorGeoResource.sourceType).toEqual(VectorSourceType.KML);
 			expect(vectorGeoResource.data).toBeNull();
@@ -380,20 +379,11 @@ describe('GeoResource', () => {
 			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
 		});
 
-		it('sets the url of an external VectorGeoResource', () => {
-			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setUrl('someUrl');
-
-			expect(vectorGeoResource.url).toBe('someUrl');
-			expect(vectorGeoResource.srid).toBeNull();
-			expect(vectorGeoResource.data).toBeNull();
-		});
-
 		it('sets the source of an internal VectorGeoResource by a string', () => {
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
 			expect(vectorGeoResource.data).toBe('someData');
 			expect(vectorGeoResource.srid).toBe(1234);
-			expect(vectorGeoResource.url).toBeNull();
 		});
 	});
 
