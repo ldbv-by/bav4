@@ -17,7 +17,7 @@
  */
 
 import { $injector } from '../injection';
-import { observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
+import {  observable, VTGeoResource, XyzGeoResource } from '../domain/geoResources';
 import { loadBvvFileStorageResourceById } from './provider/fileStorage.provider';
 import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from './provider/geoResource.provider';
 import { geoResourceChanged } from '../store/layers/layers.action';
@@ -44,8 +44,8 @@ export const FALLBACK_GEORESOURCE_LABEL_3 = 'Web Vektor Relief';
 export class GeoResourceService {
 	/**
 	 *
-	 * @param {geoResourceProvider} [geoResourceProvider=loadBvvGeoResources]
-	 * @param {geoResourceByIdProvider} [geoResourceByIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
+	 * @param {module:services/GeoResourceService~geoResourceProvider} [provider=loadBvvGeoResources]
+	 * @param {module:services/GeoResourceService~geoResourceByIdProvider[]} [byIdProvider=[loadBvvFileStorageResourceById, loadBvvGeoResourceById]]
 	 */
 	constructor(provider = loadBvvGeoResources, byIdProvider = [loadExternalGeoResource, loadBvvFileStorageResourceById, loadBvvGeoResourceById]) {
 		this._provider = provider;
