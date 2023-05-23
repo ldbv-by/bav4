@@ -36,34 +36,46 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
-			case 'vector':
-				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
-				return (
-					new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
-						//set specific optional values
-						.setUrl(def.url)
-						.setClusterParams(def.clusterParams ?? {})
-				);
+			case 'vector': {
+				const loader = async () => {
+					const { HttpService: httpService, UrlService: urlService } = $injector.inject('HttpService', 'UrlService');
+					const proxyfiedUrl = urlService.proxifyInstant(def.url);
+					const result = await httpService.get(proxyfiedUrl, { timeout: 5000 });
+
+					if (result.ok) {
+						const data = await result.text();
+
+						return setPropertiesAndProviders(
+							new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
+								.setSource(data, 4326 /**valid for kml, gpx and geoJson**/)
+								.setClusterParams(def.clusterParams ?? {})
+						);
+					}
+					throw new Error(`GeoResource for '${def.url}' could not be loaded: Http-Status ${result.status}`);
+				};
+				return new GeoResourceFuture(def.id, loader);
+			}
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
 			default:
 				return null;
 		}
 	};
-	const geoResource = toGeoResource(definition);
-	if (geoResource) {
-		geoResource.setAttributionProvider(getBvvAttribution);
-		geoResource.setAttribution(_parseBvvAttributionDefinition(definition));
-		//set common optional values
-		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
-		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
-		geoResource.setMinZoom(definition.minZoom ?? null);
-		geoResource.setMaxZoom(definition.maxZoom ?? null);
-		geoResource.setQueryable(definition.queryable ?? true);
-		geoResource.setExportable(definition.exportable ?? true);
-		return geoResource;
-	}
-	return null;
+	const setPropertiesAndProviders = (geoResource) => {
+		return geoResource
+			? geoResource
+					.setAttributionProvider(getBvvAttribution)
+					.setAttribution(_parseBvvAttributionDefinition(definition))
+					//set common optional values
+					.setOpacity(definition.opacity ?? geoResource.opacity)
+					.setHidden(definition.hidden ?? geoResource.hidden)
+					.setMinZoom(definition.minZoom ?? null)
+					.setMaxZoom(definition.maxZoom ?? null)
+					.setQueryable(definition.queryable ?? true)
+					.setExportable(definition.exportable ?? true)
+			: null;
+	};
+	return setPropertiesAndProviders(toGeoResource(definition));
 };
 
 /**
