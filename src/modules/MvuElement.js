@@ -107,9 +107,9 @@ export class MvuElement extends HTMLElement {
 	 * @protected
 	 * @see {@link MvuElement#signal}
 	 * @param {string} type type of update
-	 * @param {object|number|string} [data=null] data of this update request
+	 * @param {object|number|string|null} data data of this update request
 	 * @param {object} model current Model
-	 * @returns the new Model
+	 * @returns {object} the new Model
 	 */
 	update(/*eslint-disable no-unused-vars */ type, data, model) {
 		throw new Error('Please implement method #update before calling #signal or do not call super.update from child.');

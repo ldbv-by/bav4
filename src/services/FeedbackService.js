@@ -105,7 +105,7 @@ export class FeedbackService {
 
 	/**
 	 * Returns the id of a GeoResource which should be used as a overlay layer of the map.
-	 * @returns GeoResource id or `null`
+	 * @returns {String|null} GeoResource id or `null`
 	 */
 	getOverlayGeoResourceId() {
 		return this._mapFeedbackOverlayGeoResourceProvider();
