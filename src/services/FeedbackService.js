@@ -73,7 +73,7 @@ export class FeedbackService {
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
 		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
 	) {
-		this._mapFeedbackStorageProvider = feedbackStorageProvider;
+		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
 		this._categories = null;
@@ -100,7 +100,7 @@ export class FeedbackService {
 	 * @returns {Promise<Boolean>} `true` when storing was successful
 	 */
 	async save(feedback) {
-		return this._mapFeedbackStorageProvider(feedback);
+		return this._feedbackStorageProvider(feedback);
 	}
 
 	/**
