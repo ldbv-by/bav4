@@ -822,7 +822,7 @@ describe('LayerItem', () => {
 		};
 
 		describe('on collapse', () => {
-			fit('fires a "collapse" event', async () => {
+			it('fires a "collapse" event', async () => {
 				setup();
 				spyOn(geoResourceService, 'byId')
 					.withArgs('geoResourceId0')
