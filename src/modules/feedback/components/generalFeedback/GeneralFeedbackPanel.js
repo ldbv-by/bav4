@@ -171,6 +171,14 @@ export class GeneralFeedbackPanel extends MvuElement {
 		element.classList.add(BA_FORM_ELEMENT_VISITED_CLASS);
 	}
 
+	/**
+	 * Registers a callback function which will be called when the form was submitted successfully.
+	 * @type {Function}
+	 */
+	set onSubmit(callback) {
+		this._onSubmit = callback;
+	}
+
 	static get tag() {
 		return 'ba-mvu-generalfeedbackpanel';
 	}

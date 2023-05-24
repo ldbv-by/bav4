@@ -4,6 +4,9 @@ import { Rating } from '../../../../../src/modules/feedback/components/rating/St
 import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
@@ -19,6 +22,8 @@ const securityServiceMock = {
 	sanitizeHtml: () => {}
 };
 
+let store;
+
 const setup = (state = {}) => {
 	const initialState = {
 		media: {
@@ -27,7 +32,10 @@ const setup = (state = {}) => {
 		...state
 	};
 
-	TestUtils.setupStoreAndDi(initialState, {});
+	store = TestUtils.setupStoreAndDi(initialState, {
+		media: createNoInitialStateMediaReducer(),
+		notifications: notificationReducer
+	});
 
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
@@ -312,6 +320,44 @@ describe('GeneralFeedbackPanel', () => {
 			// assert
 			const nodeValue = fiveButtonRatingElement.parentElement.attributes['class'].nodeValue;
 			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
+		});
+	});
+
+	describe('when using FeedbackService', () => {
+		it('logs an error when save fails', async () => {
+			// arrange
+			const message = 'error message';
+			const generalFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+			const element = await setup();
+
+			// act
+			await element._saveGeneralFeedback();
+
+			// assert
+			expect(generalFeedbackSaveSpy).toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
+
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_generalFeedback_could_not_save');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+		});
+
+		it('emits a success notification if save succeeds and calls the onClose callback', async () => {
+			// arrange
+			const onSubmitCallback = jasmine.createSpy();
+			const generalFeedbackSaveSpy = spyOn(feedbackServiceMock, 'save').and.resolveTo(true);
+			const element = await setup();
+			element.onSubmit = onSubmitCallback;
+
+			// act
+			await element._saveGeneralFeedback();
+
+			// assert
+			expect(generalFeedbackSaveSpy).toHaveBeenCalled();
+
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_generalFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
+			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 	});
 });

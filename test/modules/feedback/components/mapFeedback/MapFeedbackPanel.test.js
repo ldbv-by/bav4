@@ -302,7 +302,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._saveMapFeedback('', '', '');
+			await element._saveMapFeedback();
 
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
@@ -320,7 +320,7 @@ describe('MapFeedbackPanel', () => {
 			element.onSubmit = onSubmitCallback;
 
 			// act
-			await element._saveMapFeedback('', '', '');
+			await element._saveMapFeedback();
 
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
