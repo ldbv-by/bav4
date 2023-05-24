@@ -463,7 +463,7 @@ describe('GeoResource provider', () => {
 			const geoResource = await future.get();
 
 			expect(future.id).toBe(wmsDefinition.id);
-			expect(future.label).toBe('');
+			expect(future.label).toBeNull();
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -522,7 +522,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -550,7 +550,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -578,7 +578,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -606,7 +606,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -630,7 +630,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -657,7 +657,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -685,7 +685,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -714,7 +714,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource0);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -740,7 +740,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
