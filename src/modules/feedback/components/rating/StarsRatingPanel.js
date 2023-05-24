@@ -67,7 +67,6 @@ export class StarsRatingPanel extends MvuElement {
 
 	createView(model) {
 		const { rating } = model;
-
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`

@@ -7,11 +7,13 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_generalFeedback_changeDescription_error).toBe('Pflichtfeld');
 		expect(map.feedback_generalFeedback_changeDescription_helper).toBe('Pflichtfeld');
 		expect(map.feedback_generalFeedback_changeDescription).toBe('Ihre Nachricht');
+		expect(map.feedback_generalFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_generalFeedback_eMail_error).toBe('Keine gültige E-Mail-Adresse');
 		expect(map.feedback_generalFeedback_eMail_helper).toBe('Optional');
 		expect(map.feedback_generalFeedback_eMail).toBe('Ihre E-Mail-Adresse');
 		expect(map.feedback_generalFeedback_header).toBe('Allgemeiner Feedback');
 		expect(map.feedback_generalFeedback_rating).toBe('Ihre Bewertung');
+		expect(map.feedback_generalFeedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
 		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Bitte auswählen');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Kategorie');
 		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Pflichtfeld');
@@ -50,11 +52,13 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_generalFeedback_changeDescription_error).toBe('Required field');
 		expect(map.feedback_generalFeedback_changeDescription_helper).toBe('Required field');
 		expect(map.feedback_generalFeedback_changeDescription).toBe('Your message');
+		expect(map.feedback_generalFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_generalFeedback_eMail_error).toBe('No valid e-mail address');
 		expect(map.feedback_generalFeedback_eMail_helper).toBe('Optional');
 		expect(map.feedback_generalFeedback_eMail).toBe('Your email address');
 		expect(map.feedback_generalFeedback_header).toBe('General Feedback');
 		expect(map.feedback_generalFeedback_rating).toBe('Your Vote');
+		expect(map.feedback_generalFeedback_saved_successfully).toBe('Your feedback was successfully submitted');
 		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Please choose');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Category');
 		expect(map.feedback_mapFeedback_changeDescription_error).toBe('Required field');
@@ -84,7 +88,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 30;
+		const expectedSize = 32;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

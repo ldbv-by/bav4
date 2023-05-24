@@ -11,6 +11,7 @@ import { PathParameters } from '../../../../domain/pathParameters';
 import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_REFERENCE_ID } from '../../../../utils/markup';
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
+import { nothing } from 'lit-html';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -153,15 +154,15 @@ export class MapFeedbackPanel extends MvuElement {
 		const onSubmit = () => {
 			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
-			const category = this.shadowRoot.getElementById('category');
-			const description = this.shadowRoot.getElementById('description');
-			const email = this.shadowRoot.getElementById('email');
+			const categoryElement = this.shadowRoot.getElementById('category');
+			const descriptionElement = this.shadowRoot.getElementById('description');
+			const emailElement = this.shadowRoot.getElementById('email');
 			if (
 				mapFeedback.state !== null &&
 				mapFeedback.fileId !== null &&
-				category.reportValidity() &&
-				description.reportValidity() &&
-				email.reportValidity()
+				categoryElement.reportValidity() &&
+				descriptionElement.reportValidity() &&
+				emailElement.reportValidity()
 			) {
 				this._saveMapFeedback(
 					new MapFeedback(mapFeedback.state, mapFeedback.category, mapFeedback.description, mapFeedback.fileId, mapFeedback.email)
@@ -207,9 +208,7 @@ export class MapFeedbackPanel extends MvuElement {
 						referrerpolicy="no-referrer-when-downgrade"
 					></iframe>
 
-					${mapFeedback.fileId
-						? html.nothing
-						: html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
+					${mapFeedback.fileId ? nothing : html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
 				<div class="map-feedback__form">
 					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback_header')}</span>

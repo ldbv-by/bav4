@@ -1,6 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
+import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
 
@@ -8,6 +9,10 @@ window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
 const configServiceMock = {
 	getValueAsPath: () => {}
+};
+
+const feedbackServiceMock = {
+	save: () => {}
 };
 
 const securityServiceMock = {
@@ -27,6 +32,7 @@ const setup = (state = {}) => {
 	$injector
 		.registerSingleton('TranslationService', { translate: (key) => key })
 		.registerSingleton('ConfigService', configServiceMock)
+		.registerSingleton('FeedbackService', feedbackServiceMock)
 		.registerSingleton('SecurityService', securityServiceMock);
 
 	return TestUtils.renderAndLogLifecycle(GeneralFeedbackPanel.tag);
@@ -180,14 +186,14 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.GOOD, email: 'email@some.com' });
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', 'email@some.com', Rating.GOOD));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
 			// arrange
+			const saveGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'save');
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
-			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			const starsRatingPanel = element.shadowRoot.getElementById('rating');
 			const ratingChangeEvent = new CustomEvent('change', {
@@ -206,7 +212,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith({ description: 'description', rating: Rating.GOOD, email: null });
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', null, Rating.GOOD));
 		});
 	});
 

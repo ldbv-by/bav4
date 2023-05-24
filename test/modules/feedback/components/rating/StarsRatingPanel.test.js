@@ -54,6 +54,8 @@ describe('StarsRatingPanel', () => {
 			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
 			expect(starButtons.length).toBe(5);
 			starButtons.forEach((starButton) => {
+				expect(starButton.classList.contains('unselected')).toBeTrue();
+				expect(starButton.classList.contains('selected')).toBeFalse();
 				expect(starButton.onClick).toEqual(element.onRatingClick);
 				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
 			});
@@ -65,7 +67,6 @@ describe('StarsRatingPanel', () => {
 			// arrange
 			const element = await setup();
 			const ratingSpy = spyOnProperty(element, 'rating', 'set').and.callThrough();
-			const prefix = 'fiveButtonRating_';
 
 			// act
 			element.rating = Rating.BAD;
@@ -75,10 +76,14 @@ describe('StarsRatingPanel', () => {
 			expect(element.rating).toBe(Rating.BAD);
 
 			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
-			expect(starButtons.length).toBe(5);
 			starButtons.forEach((starButton) => {
-				expect(starButton.onClick).toEqual(element.onRatingClick);
-				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
+				if (['fiveButtonRating_terrible', 'fiveButtonRating_bad'].includes(starButton.title)) {
+					expect(starButton.classList.contains('unselected')).toBeFalse();
+					expect(starButton.classList.contains('selected')).toBeTrue();
+				} else {
+					expect(starButton.classList.contains('unselected')).toBeTrue();
+					expect(starButton.classList.contains('selected')).toBeFalse();
+				}
 			});
 		});
 	});
@@ -99,6 +104,39 @@ describe('StarsRatingPanel', () => {
 			expect(starButtons.length).toBe(5);
 			expect(onRatingClickSpy).toHaveBeenCalled();
 			expect(onRatingClickSpy).toHaveBeenCalledTimes(5);
+		});
+
+		it('fires a "change" event', async () => {
+			// arrange
+			const element = await setup();
+			const spy = jasmine.createSpy();
+			element.addEventListener('change', spy);
+
+			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			starButtons.forEach((starButton) => {
+				// act
+				starButton.click();
+				// assert
+				expect(spy).toHaveBeenCalledWith(
+					new CustomEvent('change', {
+						detail: { rating: element.rating }
+					})
+				);
+			});
+		});
+
+		it('it will be displayed as selected', async () => {
+			// arrange
+			const element = await setup();
+
+			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			starButtons.forEach((starButton) => {
+				// act
+				starButton.click();
+
+				// assert
+				expect(starButton.classList.contains('selected')).toBeTrue();
+			});
 		});
 	});
 });
