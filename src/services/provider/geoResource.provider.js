@@ -5,6 +5,7 @@ import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { isHttpUrl } from '../../utils/checks';
+import { createUniqueId } from '../../utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
 export const _definitionToGeoResource = (definition) => {
@@ -26,20 +27,14 @@ export const _definitionToGeoResource = (definition) => {
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector': {
 				const loader = async () => {
-					const { HttpService: httpService, UrlService: urlService } = $injector.inject('HttpService', 'UrlService');
-					const proxyfiedUrl = urlService.proxifyInstant(def.url);
-					const result = await httpService.get(proxyfiedUrl, { timeout: 5000 });
-
-					if (result.ok) {
-						const data = await result.text();
-
-						return setPropertiesAndProviders(
-							new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
-								.setSource(data, 4326 /**valid for kml, gpx and geoJson**/)
-								.setClusterParams(def.clusterParams ?? {})
-						);
-					}
-					throw new Error(`GeoResource for '${def.url}' could not be loaded: Http-Status ${result.status}`);
+					const { UrlService: urlService } = $injector.inject('UrlService');
+					const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
+						urlService.proxifyInstant(def.url),
+						Symbol.for(def.sourceType),
+						def.id,
+						def.label
+					)();
+					return setPropertiesAndProviders(vectorGeoResource.setClusterParams(def.clusterParams ?? {}));
 				};
 				return new GeoResourceFuture(def.id, loader);
 			}
@@ -201,4 +196,28 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 		return new GeoResourceFuture(urlBasedAsId, loader);
 	}
 	return null;
+};
+
+/**
+ * Returns an GeoResourceLoader for an URL-based VectorGeoResource.
+ * @function
+ * @param {string} url
+ * @param {VectorSourceType} sourceType
+ * @param {string | null} [id]
+ * @param {string | null} [label]
+ * @returns {module:domain/geoResources~asyncGeoResourceLoader}
+ * @throws when resource cannot be loaded
+ */
+export const defaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
+	return async () => {
+		const { HttpService: httpService } = $injector.inject('HttpService');
+		const result = await httpService.get(url, { timeout: 5000 });
+
+		if (result.ok) {
+			const data = await result.text();
+
+			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
+		}
+		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+	};
 };
