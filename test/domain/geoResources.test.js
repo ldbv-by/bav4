@@ -20,10 +20,13 @@ describe('GeoResource', () => {
 	const geoResourceServiceMock = {
 		addOrReplace() {}
 	};
+	const httpServiceMock = {
+		async get() {}
+	};
 
 	const setup = (state = {}) => {
 		const store = TestUtils.setupStoreAndDi(state);
-		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('HttpService', httpServiceMock);
 		return store;
 	};
 
@@ -161,6 +164,36 @@ describe('GeoResource', () => {
 				expect(() => {
 					grs.getAttribution(42);
 				}).toThrowError('No attribution provider found');
+			});
+
+			it('copies the properties from another GeoResource', () => {
+				const attributionProvider = () => {};
+				const geoResource0 = new GeoResourceNoImpl('id0');
+				geoResource0
+					.setOpacity(0.5)
+					.setMinZoom(5)
+					.setMaxZoom(19)
+					.setHidden(true)
+					.setLabel('some label')
+					.setAttribution('some attribution')
+					.setAttributionProvider(attributionProvider)
+					.setAuthenticationType(GeoResourceAuthenticationType.BAA)
+					.setQueryable(false)
+					.setExportable(false);
+				const geoResource1 = new GeoResourceNoImpl('id1');
+
+				geoResource1.copyProperties(geoResource0);
+
+				expect(geoResource1.hidden).toBeTrue();
+				expect(geoResource1.opacity).toBe(0.5);
+				expect(geoResource1.minZoom).toBe(5);
+				expect(geoResource1.maxZoom).toBe(19);
+				expect(geoResource1.label).toBe('some label');
+				expect(geoResource1.attribution).toBe('some attribution');
+				expect(geoResource1.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
+				expect(geoResource1._attributionProvider).toEqual(attributionProvider);
+				expect(geoResource1.queryable).toBeFalse();
+				expect(geoResource1.exportable).toBeFalse();
 			});
 		});
 
@@ -359,11 +392,6 @@ describe('GeoResource', () => {
 			expect(vectorGeoResource.clusterParams).toEqual({});
 		});
 
-		it('provides a check for containing a non-default value as clusterParam', () => {
-			expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
-			expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
-		});
-
 		it('provides the source type as fallback label', () => {
 			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).label).toBe('foo');
 			expect(new VectorGeoResource('id', null, VectorSourceType.KML).label).toBe('KML');
@@ -373,17 +401,65 @@ describe('GeoResource', () => {
 			expect(new VectorGeoResource('id', null, 'unknown').label).toBe('');
 		});
 
-		it('provides a check for containing a non-default value as label', () => {
-			expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
-			expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
-			expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
-		});
-
 		it('sets the source of an internal VectorGeoResource by a string', () => {
 			const vectorGeoResource = new VectorGeoResource('id', 'label', VectorSourceType.KML).setSource('someData', 1234);
 
 			expect(vectorGeoResource.data).toBe('someData');
 			expect(vectorGeoResource.srid).toBe(1234);
+		});
+
+		describe('methods', () => {
+			it('provides a check for containing a non-default value as clusterParam', () => {
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).isClustered()).toBeFalse();
+				expect(new VectorGeoResource('id', 'label', VectorSourceType.KML).setClusterParams({ foo: 'bar' }).isClustered()).toBeTrue();
+			});
+
+			it('provides a check for containing a non-default value as label', () => {
+				expect(new VectorGeoResource('id', null, VectorSourceType.KML).hasLabel()).toBeFalse();
+				expect(new VectorGeoResource('id', '', VectorSourceType.KML).hasLabel()).toBeFalse();
+				expect(new VectorGeoResource('id', 'foo', VectorSourceType.KML).hasLabel()).toBeTrue();
+			});
+
+			it('provides a static method for creating a VectorGeoResource from an URL', async () => {
+				setup();
+				const url = 'url';
+				const data = 'data';
+				spyOn(httpServiceMock, 'get')
+					.withArgs(url, { timeout: 5000 })
+					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
+				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
+
+				const geoResourceFuture = VectorGeoResource.forUrl('id', 'url', VectorSourceType.KML);
+
+				expect(geoResourceFuture.id).toBe('id');
+				expect(geoResourceFuture.label).toBeNull();
+				expect(geoResourceFuture).toBeInstanceOf(GeoResourceFuture);
+				const vectorGeoResource = await geoResourceFuture.get();
+				expect(vectorGeoResource.id).toBe('id');
+				expect(vectorGeoResource.data).toBe(data);
+				expect(vectorGeoResource.label).not.toBeNull();
+			});
+
+			it('provides a static method for creating a VectorGeoResource from an URL with optional property "label"', async () => {
+				setup();
+				const url = 'url';
+				const label = 'label';
+				const data = 'data';
+				spyOn(httpServiceMock, 'get')
+					.withArgs(url, { timeout: 5000 })
+					.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
+				spyOn(geoResourceServiceMock, 'addOrReplace').and.callFake((gr) => gr);
+
+				const geoResourceFuture = VectorGeoResource.forUrl('id', 'url', VectorSourceType.KML, label);
+
+				expect(geoResourceFuture.id).toBe('id');
+				expect(geoResourceFuture.label).toBe(label);
+				expect(geoResourceFuture).toBeInstanceOf(GeoResourceFuture);
+				const vectorGeoResource = await geoResourceFuture.get();
+				expect(vectorGeoResource.id).toBe('id');
+				expect(vectorGeoResource.label).toBe(label);
+				expect(vectorGeoResource.data).toBe(data);
+			});
 		});
 	});
 

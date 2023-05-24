@@ -3,6 +3,7 @@
  */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
+import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isHttpUrl } from '../utils/checks';
 
 /**
@@ -21,7 +22,8 @@ import { isHttpUrl } from '../utils/checks';
  */
 
 /**
- * @enum
+ * @readonly
+ * @enum {Symbol}
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
@@ -34,7 +36,8 @@ export const GeoResourceTypes = Object.freeze({
 
 /**
  * Enum of all supported authentication types.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const GeoResourceAuthenticationType = Object.freeze({
 	BAA: 'baa',
@@ -154,6 +157,10 @@ export class GeoResource {
 		return this._exportable;
 	}
 
+	get attributionProvider() {
+		return this._attributionProvider;
+	}
+
 	setLabel(label) {
 		this._label = label;
 		return this;
@@ -231,7 +238,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
+	 * Returns an array of attributions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
 	 * It returns `null` when no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
@@ -247,22 +254,40 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns the type of this GeoResouce
+	 * Returns the type of this GeoResource
 	 * @abstract
-	 * @type {GeoResourceTypes}
+	 * @returns {GeoResourceTypes}
 	 */
 	getType() {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
 	}
+
+	/**
+	 * Copies all properties from the given GeoResource except for the `id`.
+	 * @param {GeoResource} geoResource
+	 * @returns {GeoResource} this for chaining
+	 */
+	copyProperties(geoResource) {
+		this.setLabel(geoResource.label)
+			.setOpacity(geoResource.opacity)
+			.setMinZoom(geoResource.minZoom)
+			.setMaxZoom(geoResource.maxZoom)
+			.setHidden(geoResource.hidden)
+			.setAttribution(geoResource.attribution)
+			.setAttributionProvider(geoResource.attributionProvider)
+			.setQueryable(geoResource.queryable)
+			.setExportable(geoResource.exportable)
+			.setAuthenticationType(geoResource.authenticationType);
+		return this;
+	}
 }
 
 /**
- * An async function that loads a  {@link GeoResource}.
+ * An async function that loads a {@link GeoResource}.
  * @async
- * @function
+ * @callback asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @typedef {Function} asyncGeoResourceLoader
  * @returns {GeoResource}
  */
 
@@ -273,7 +298,7 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 *
 	 * @param {string} id
-	 * @param {asyncGeoResourceLoader} loader
+	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader
 	 */
 	constructor(id, loader) {
 		super(id);
@@ -289,6 +314,7 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	onResolve(callback) {
 		this._onResolve.push(callback);
+		return this;
 	}
 
 	/**
@@ -297,6 +323,7 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	onReject(callback) {
 		this._onReject.push(callback);
+		return this;
 	}
 
 	/**
@@ -315,7 +342,7 @@ export class GeoResourceFuture extends GeoResource {
 		try {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
-			// replace the GeoResourceFuture by the resolved GeoResource in the chache
+			// replace the GeoResourceFuture by the resolved GeoResource in the cache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
 			this._onResolve.forEach((f) => f(observedGr, this));
 			return observedGr;
@@ -386,7 +413,7 @@ export class XyzGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Returns an identifier for a TileGrid other than the widely-used Google grid.
 	 * Default is `null`.
 	 */
 	get tileGridId() {
@@ -407,7 +434,8 @@ export class XyzGeoResource extends GeoResource {
 }
 
 /**
- * @enum
+ * @readonly
+ * @enum {Symbol}
  */
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
@@ -506,6 +534,24 @@ export class VectorGeoResource extends GeoResource {
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
+	}
+
+	/**
+	 * Returns a {@link GeoResourceFuture} which will be resolved to a {@link VectorGeoResource}
+	 * by the the default loader. All properties set on the GeoResourceFuture will be copied to the resolved VectorGeoResource.
+	 *
+	 * @param {string} id
+	 * @param {string} url
+	 * @param {VectorSourceType} sourceType
+	 * @param {string | null} [label]
+	 * @returns {GeoResourceFuture}
+	 */
+	static forUrl(id, url, sourceType, label = null) {
+		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+			.setLabel(label)
+			.onResolve((resolved, future) => {
+				resolved.copyProperties(future);
+			});
 	}
 }
 
