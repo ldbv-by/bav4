@@ -291,24 +291,24 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * A function that extract a portion (single value or a object) from the current state which will be observed for changes.
+	 * A function that extracts a portion (single value or a object or an array) from the current state which will be observed for changes.
 	 * @callback  extractStateFn
 	 * @param {object} state the current state
-	 * @returns {object} extracted state
+	 * @returns {object|array} extracted state
 	 */
 
 	/**
 	 * A function that will be called when the observed state has changed.
 	 * @callback onObservedStateChange
-	 * @param {object|array} observedPartOfState
-	 * @param {object} state
+	 * @param {object|array} observedPartOfState the observed part of the state that has changed
+	 * @param {object} state the current state
 	 */
 
 	/**
 	 * Registers an observer on state changes of the global store.
 	 * @param {module:modules/MvuElement~extractStateFn} extract A function that extract a portion (single value or a object) from the current state which will be observed for comparison
 	 * @param {module:modules/MvuElement~onObservedStateChange} onChange A function that will be called when the observed state has changed
-	 * @param {boolean|true} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
+	 * @param {boolean|true} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered
 	 * @returns  A function that unsubscribes the observer
 	 * @see observe
 	 */
@@ -318,9 +318,9 @@ export class MvuElement extends HTMLElement {
 	}
 
 	/**
-	 * A function that will be called when one of the observed field has change
+	 * A function that will be called when one of the observed fields has change
 	 * @callback onObservedModelChange
-	 * @param {object|array} observedPartOfModel
+	 * @param {object|array} observedPartOfModel the observed field that has changed
 	 */
 
 	/**
@@ -328,8 +328,8 @@ export class MvuElement extends HTMLElement {
 	 * Observers are called right before {@link MvuElement#onModelChanged}.
 	 * @protected
 	 * @param {(string|string[])} names Name(s) of the observed field(s)
-	 * @param {module:modules/MvuElement~onObservedModelChange} onChange A function that will be called when one of the observed field has change
-	 * @param {boolean|false} immediately A boolean which indicates, if the callback should be called with the current state immediately after the observer has been registered
+	 * @param {module:modules/MvuElement~onObservedModelChange} onChange A function that will be called when one of the observed fields has change
+	 * @param {boolean|false} immediately A boolean that indicates, if the callback should be called immediately after the observer has been registered
 	 * @returns  A function that unsubscribes the observer
 	 */
 	observeModel(names, onChange, immediately = false) {
