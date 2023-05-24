@@ -291,8 +291,7 @@ describe('GeoResource', () => {
 			spyOn(geoResourceServiceMock, 'addOrReplace').withArgs(expectedGeoResource).and.returnValue(expectedGeoResource);
 			const loader = jasmine.createSpy().withArgs(id).and.resolveTo(expectedGeoResource);
 			const onResolveCallback = jasmine.createSpy();
-			const future = new GeoResourceFuture(id, loader);
-			future.onResolve(onResolveCallback);
+			const future = new GeoResourceFuture(id, loader).onResolve(onResolveCallback);
 
 			await future.get();
 
@@ -304,8 +303,7 @@ describe('GeoResource', () => {
 			const id = 'id';
 			const loader = jasmine.createSpy().withArgs(id).and.rejectWith('error');
 			const onResolveCallback = jasmine.createSpy();
-			const future = new GeoResourceFuture(id, loader);
-			future.onReject(onResolveCallback);
+			const future = new GeoResourceFuture(id, loader).onReject(onResolveCallback);
 
 			try {
 				await future.get();
