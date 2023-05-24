@@ -103,7 +103,7 @@ describe('GeoResource', () => {
 				const grs = new GeoResourceImpl('id');
 				grs.setAttributionProvider(provider);
 
-				expect(grs._attributionProvider).toBe(provider);
+				expect(grs.attributionProvider).toBe(provider);
 			});
 
 			it('returns an attribution provided by the provider', () => {
@@ -111,7 +111,7 @@ describe('GeoResource', () => {
 				const spy = jasmine.createSpy().and.returnValue(minimalAttribution);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
-				grs._attributionProvider = spy;
+				grs.setAttributionProvider(spy);
 
 				const result = grs.getAttribution(42);
 
@@ -124,7 +124,7 @@ describe('GeoResource', () => {
 				const spy = jasmine.createSpy().and.returnValue([minimalAttribution]);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
-				grs._attributionProvider = spy;
+				grs.setAttributionProvider(spy);
 
 				const result = grs.getAttribution(42);
 
@@ -136,7 +136,7 @@ describe('GeoResource', () => {
 				const spy = jasmine.createSpy().and.returnValue(null);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
-				grs._attributionProvider = spy;
+				grs.setAttributionProvider(spy);
 
 				const result = grs.getAttribution(42);
 
@@ -144,11 +144,11 @@ describe('GeoResource', () => {
 				expect(result).toBeNull();
 			});
 
-			it('returns null when provider returns an empyt array', () => {
+			it('returns null when provider returns an empty array', () => {
 				const spy = jasmine.createSpy().and.returnValue([]);
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
-				grs._attributionProvider = spy;
+				grs.setAttributionProvider(spy);
 
 				const result = grs.getAttribution(42);
 
@@ -159,7 +159,7 @@ describe('GeoResource', () => {
 			it('throws an error when no provider found', () => {
 				const grs = new GeoResourceImpl('id');
 				grs.setAttribution('foo');
-				grs._attributionProvider = null;
+				grs.setAttributionProvider(null);
 
 				expect(() => {
 					grs.getAttribution(42);
@@ -191,7 +191,7 @@ describe('GeoResource', () => {
 				expect(geoResource1.label).toBe('some label');
 				expect(geoResource1.attribution).toBe('some attribution');
 				expect(geoResource1.authenticationType).toEqual(GeoResourceAuthenticationType.BAA);
-				expect(geoResource1._attributionProvider).toEqual(attributionProvider);
+				expect(geoResource1.attributionProvider).toEqual(attributionProvider);
 				expect(geoResource1.queryable).toBeFalse();
 				expect(geoResource1.exportable).toBeFalse();
 			});
@@ -209,9 +209,9 @@ describe('GeoResource', () => {
 				expect(georesource.hidden).toBeFalse();
 				expect(georesource.attribution).toBeNull();
 				expect(georesource.authenticationType).toBeNull();
-				expect(georesource._attributionProvider).toBe(getDefaultAttribution);
-				expect(georesource._queryable).toBeTrue();
-				expect(georesource._exportable).toBeTrue();
+				expect(georesource.attributionProvider).toBe(getDefaultAttribution);
+				expect(georesource.queryable).toBeTrue();
+				expect(georesource.exportable).toBeTrue();
 			});
 
 			it('provides set methods and getters', () => {
