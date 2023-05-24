@@ -202,7 +202,7 @@ describe('GeoResource', () => {
 				setup();
 				const georesource = new GeoResourceNoImpl('id');
 
-				expect(georesource.label).toBe('');
+				expect(georesource.label).toBeNull();
 				expect(georesource.opacity).toBe(1);
 				expect(georesource.minZoom).toBeNull();
 				expect(georesource.maxZoom).toBeNull();
@@ -248,12 +248,10 @@ describe('GeoResource', () => {
 			const loader = async () => {};
 
 			const future = new GeoResourceFuture('id', loader);
-			const futureWithoutLabel = new GeoResourceFuture('id', loader);
 
 			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
 			expect(future._loader).toBe(loader);
-			expect(future.label).toBe('');
-			expect(futureWithoutLabel.label).toHaveSize(0);
+			expect(future.label).toBeNull();
 		});
 
 		it('registers and returns the real GeoResource by calling loader', async () => {

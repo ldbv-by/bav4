@@ -52,7 +52,12 @@ export const GeoResourceAuthenticationType = Object.freeze({
  * @class
  */
 export class GeoResource {
-	constructor(id, label = '') {
+	/**
+	 *
+	 * @param {string} id the id of this GeoResource
+	 * @param {string | null} [label] the label of this GeoResource
+	 */
+	constructor(id, label = null) {
 		if (this.constructor === GeoResource) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
@@ -88,7 +93,7 @@ export class GeoResource {
 
 	/**
 	 * The label of this GeoResource
-	 * @type {string}
+	 * @type {string|null}
 	 */
 	get label() {
 		return this._label;
