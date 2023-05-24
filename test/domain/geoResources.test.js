@@ -182,7 +182,7 @@ describe('GeoResource', () => {
 					.setExportable(false);
 				const geoResource1 = new GeoResourceNoImpl('id1');
 
-				geoResource1.copyProperties(geoResource0);
+				geoResource1.copyPropertiesFrom(geoResource0);
 
 				expect(geoResource1.hidden).toBeTrue();
 				expect(geoResource1.opacity).toBe(0.5);

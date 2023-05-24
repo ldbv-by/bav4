@@ -270,11 +270,11 @@ export class GeoResource {
 
 	/**
 	 * Copies all properties from the given GeoResource except for the `id`.
-	 * @param {GeoResource} geoResource
+	 * @param {GeoResource} geoResource the GeoResource the properties should be copied from
 	 * @returns {GeoResource} this for chaining
 	 */
-	copyProperties(geoResource) {
-		this.setLabel(geoResource.label)
+	copyPropertiesFrom(geoResource) {
+		return this.setLabel(geoResource.label)
 			.setOpacity(geoResource.opacity)
 			.setMinZoom(geoResource.minZoom)
 			.setMaxZoom(geoResource.maxZoom)
@@ -284,7 +284,6 @@ export class GeoResource {
 			.setQueryable(geoResource.queryable)
 			.setExportable(geoResource.exportable)
 			.setAuthenticationType(geoResource.authenticationType);
-		return this;
 	}
 }
 
@@ -557,7 +556,7 @@ export class VectorGeoResource extends GeoResource {
 		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
 			.setLabel(label)
 			.onResolve((resolved, future) => {
-				resolved.copyProperties(future);
+				resolved.copyPropertiesFrom(future);
 			});
 	}
 }
