@@ -15,7 +15,7 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  * A function that returns a list of categories for a MapFeedback
  * @async
  * @typedef {Function} mapFeedbackCategoriesProvider
- * @returns {Array<String>} available categories
+ * @returns {Promise<Array<String>>} available categories
  */
 /**
  * A function that returns an id of a GeoResource which should be used as a overlay layer of the map
