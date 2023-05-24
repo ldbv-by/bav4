@@ -341,6 +341,8 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 * Calls the loader function and returns the real GeoResource.
 	 * Will be typically called by map implementations.
+	 *
+	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
 	 */
 	async get() {
