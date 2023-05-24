@@ -8,6 +8,7 @@ import { MvuElement } from '../../../MvuElement';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import css from './generalFeedbackPanel.css';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../utils/markup';
+import { GeneralFeedback } from '../../../../services/FeedbackService';
 
 const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';
@@ -34,12 +35,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 		const {
 			ConfigService: configService,
 			TranslationService: translationService,
+			FeedbackService: feedbackService,
 			SecurityService: securityService
-		} = $injector.inject('ConfigService', 'TranslationService', 'SecurityService');
+		} = $injector.inject('ConfigService', 'TranslationService', 'FeedbackService', 'SecurityService');
 
 		this._configService = configService;
 		this._translationService = translationService;
+		this._feedbackService = feedbackService;
 		this._securityService = securityService;
+		this._onSubmit = () => {};
 	}
 
 	update(type, data, model) {
@@ -89,7 +93,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			const emailElement = this.shadowRoot.getElementById('email');
 
 			if (descriptionElement.reportValidity() && emailElement.reportValidity()) {
-				this._saveGeneralFeedback(generalFeedback);
+				this._saveGeneralFeedback(new GeneralFeedback(generalFeedback.description, generalFeedback.email, generalFeedback.rating));
 			}
 		};
 
@@ -152,7 +156,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 	}
 
 	async _saveGeneralFeedback(generalFeedback) {
-		emitNotification(JSON.stringify(generalFeedback), LevelTypes.INFO);
+		const translate = (key) => this._translationService.translate(key);
+		try {
+			await this._feedbackService.save(generalFeedback);
+			this._onSubmit();
+			emitNotification(translate('feedback_generalFeedback_saved_successfully'), LevelTypes.INFO);
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate('feedback_generalFeedback_could_not_save'), LevelTypes.ERROR);
+		}
 	}
 
 	_addVisitedClass(element) {
