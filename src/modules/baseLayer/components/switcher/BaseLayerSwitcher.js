@@ -8,34 +8,30 @@ import css from './baseLayerSwitcher.css';
 import { MvuElement } from '../../../MvuElement';
 import { createUniqueId } from '../../../../utils/numberUtils';
 
-const Update_Topic_Id = 'update_topic_id';
+const Update_Base_GeoResource_Ids = 'update_base_georesource_ids';
 const Update_Layers = 'update_layers';
 const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
 /**
  * Displays and handles GeoResources defined to act as base layers.
+ * @property {Array<string>} geoResourceIds Array of GeoResource ids
  * @class
  * @author taulinger
  */
 export class BaseLayerSwitcher extends MvuElement {
 	constructor() {
 		super({
-			currentTopicId: null,
+			baseGeoResourceIds: [],
 			activeLayers: [],
 			layersStoreReady: false
 		});
 
-		const { TopicsService: topicsService, GeoResourceService: geoResourceService } = $injector.inject('TopicsService', 'GeoResourceService');
-
-		this._topicsService = topicsService;
-		this._geoResourceService = geoResourceService;
-
-		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-
-		this.observe(
-			(store) => store.topics.current,
-			(topicId) => this.signal(Update_Topic_Id, topicId)
+		const { GeoResourceService: geoResourceService, TranslationService: translationService } = $injector.inject(
+			'GeoResourceService',
+			'TranslationService'
 		);
+		this._geoResourceService = geoResourceService;
+		this._translationService = translationService;
+
 		this.observe(
 			(store) => store.layers.active,
 			(layers) => this.signal(Update_Layers, [...layers])
@@ -46,13 +42,10 @@ export class BaseLayerSwitcher extends MvuElement {
 		);
 	}
 
-	/**
-	 * @override
-	 */
 	update(type, data, model) {
 		switch (type) {
-			case Update_Topic_Id:
-				return { ...model, currentTopicId: data };
+			case Update_Base_GeoResource_Ids:
+				return { ...model, baseGeoResourceIds: [...data] };
 			case Update_Layers:
 				return { ...model, activeLayers: [...data] };
 			case Update_Is_Layers_Store_Ready:
@@ -60,11 +53,10 @@ export class BaseLayerSwitcher extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	createView(model) {
-		const { currentTopicId, activeLayers, layersStoreReady } = model;
+		const { baseGeoResourceIds, activeLayers, layersStoreReady } = model;
+
+		console.log(baseGeoResourceIds);
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -72,10 +64,8 @@ export class BaseLayerSwitcher extends MvuElement {
 			/**
 			 * carefully differentiate between layer ids and geoResource ids!
 			 */
-
-			const { baseGeoRs: baseGeoRIds } = this._topicsService.byId(currentTopicId);
 			const currentBaseLayerGeoResourceId = activeLayers[0] ? activeLayers[0].geoResourceId : null;
-			const geoRs = baseGeoRIds.map((grId) => this._geoResourceService.byId(grId)).filter((geoR) => !!geoR);
+			const geoRs = baseGeoResourceIds.map((grId) => this._geoResourceService.byId(grId)).filter((geoR) => !!geoR);
 
 			const onClick = (geoR) => {
 				const add = () => {
@@ -87,7 +77,7 @@ export class BaseLayerSwitcher extends MvuElement {
 					// noting todo when requested base GeoResource already on index=0
 					if (activeLayers[0].geoResourceId !== geoR.id) {
 						// if we have a layer referencing a base GeoResource on index=0, we remove it
-						if (baseGeoRIds.includes(activeLayers[0].geoResourceId)) {
+						if (baseGeoResourceIds.includes(activeLayers[0].geoResourceId)) {
 							removeLayer(activeLayers[0].id);
 						}
 						// add selected layer
@@ -118,6 +108,10 @@ export class BaseLayerSwitcher extends MvuElement {
 		}
 		// should we render a placeholder for that case?
 		return nothing;
+	}
+
+	set geoResourceIds(ids) {
+		this.signal(Update_Base_GeoResource_Ids, [...ids]);
 	}
 
 	static get tag() {
