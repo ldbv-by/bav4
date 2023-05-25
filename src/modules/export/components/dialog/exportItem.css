@@ -1,12 +1,12 @@
 .export-item__content {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
 }
 
 .export-item__head {
-	width: 15em;
+	width: 25em;
 	padding-right: 1em;
+	align-self: center;
 }
 
 .export-item__label {
@@ -15,13 +15,16 @@
 
 .export-item__description {
 	font-style: italic;
+	padding-left: 0.5em;
 }
 
 .export-item__select {
 	width: 9em;
+	align-self: center;
 }
 
 ba-button {
 	padding-left: 1em;
 	width: 9em;
+	align-self: center;
 }

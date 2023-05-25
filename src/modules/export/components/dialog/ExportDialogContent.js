@@ -5,6 +5,8 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { SourceTypeName } from '../../../../domain/sourceType';
 import { repeat } from 'lit-html/directives/repeat.js';
+// @ts-ignore
+import css from './exportDialogContent.css';
 
 const Update = 'update';
 
@@ -27,13 +29,16 @@ export class ExportDialogContent extends MvuElement {
 	createView(model) {
 		const { exportData } = model;
 		const exportTypes = this.getExportTypes(exportData);
-		return html`<div class="export_content">
-			${repeat(
-				exportTypes,
-				(exportType) => exportType.sourceType,
-				(exportType) => html`<ba-export-item .content=${exportType}></ba-export-item>`
-			)}
-		</div>`;
+		return html`<style>
+				${css}
+			</style>
+			<div class="export_content">
+				${repeat(
+					exportTypes,
+					(exportType) => exportType.sourceType,
+					(exportType) => html`<ba-export-item .content=${exportType}></ba-export-item>`
+				)}
+			</div>`;
 	}
 
 	/**
