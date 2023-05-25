@@ -5,10 +5,10 @@ import { getBvvAttribution } from '../../../src/services/provider/attribution.pr
 import {
 	loadBvvGeoResourceById,
 	loadBvvGeoResources,
-	loadExampleGeoResources,
 	loadExternalGeoResource,
 	_definitionToGeoResource,
-	_parseBvvAttributionDefinition
+	_parseBvvAttributionDefinition,
+	defaultVectorGeoResourceLoaderForUrl
 } from '../../../src/services/provider/geoResource.provider';
 import { TestUtils } from '../../test-utils';
 
@@ -225,7 +225,7 @@ describe('GeoResource provider', () => {
 
 			validateGeoResourceProperties(vectorGeoResource, vectorDefinition);
 			expect(vectorGeoResource.data).toBe(data);
-			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+			expect(vectorGeoResource.sourceType).toBe(Symbol.for(vectorDefinition.sourceType));
 			expect(vectorGeoResource._attributionProvider).toBe(getBvvAttribution);
 			expect(vectorGeoResource._attribution).not.toBeNull();
 		});
@@ -447,14 +447,6 @@ describe('GeoResource provider', () => {
 		});
 	});
 
-	describe('loadExampleGeoResources', () => {
-		it('loads GeoResources', async () => {
-			const georesources = await loadExampleGeoResources();
-
-			expect(georesources.length).toBe(6);
-		});
-	});
-
 	describe('loadBvvGeoResourceById', () => {
 		it('loads a GeoResource by id', async () => {
 			const backendUrl = 'https://backend.url';
@@ -471,7 +463,7 @@ describe('GeoResource provider', () => {
 			const geoResource = await future.get();
 
 			expect(future.id).toBe(wmsDefinition.id);
-			expect(future.label).toBe('');
+			expect(future.label).toBeNull();
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -530,7 +522,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -558,7 +550,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -586,7 +578,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -614,7 +606,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -638,7 +630,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -665,7 +657,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -693,7 +685,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -722,7 +714,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource0);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -748,7 +740,7 @@ describe('GeoResource provider', () => {
 				const resolvedGeoResource = await future.get();
 
 				expect(future.id).toBe(geoResourceId);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(resolvedGeoResource).toEqual(geoResource);
 				expect(resolvedGeoResource.id).toBe(geoResourceId);
 				expect(resolvedGeoResource.label).toBe(label);
@@ -816,6 +808,55 @@ describe('GeoResource provider', () => {
 			const future = loadExternalGeoResource(geoResourceId);
 
 			expect(future).toBeNull();
+		});
+	});
+
+	describe('defaultVectorGeoResourceLoaderForUrl', () => {
+		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
+			const data = 'data';
+			spyOn(httpService, 'get')
+				.withArgs(vectorDefinition.url, { timeout: 5000 })
+				.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
+			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+
+			const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
+				vectorDefinition.url,
+				Symbol.for(vectorDefinition.sourceType),
+				vectorDefinition.id,
+				vectorDefinition.label
+			)();
+
+			expect(vectorGeoResource.id).toBe(vectorDefinition.id);
+			expect(vectorGeoResource.label).toBe(vectorDefinition.label);
+			expect(vectorGeoResource.data).toBe(data);
+			expect(vectorGeoResource.srid).toBe(4326);
+			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+		});
+
+		it('returns an GeoResourceLoader resolving to a VectorGeoResource', async () => {
+			const data = 'data';
+			spyOn(httpService, 'get')
+				.withArgs(vectorDefinition.url, { timeout: 5000 })
+				.and.returnValue(Promise.resolve(new Response(data, { status: 200 })));
+			spyOn(geoResourceService, 'addOrReplace').and.callFake((gr) => gr);
+
+			const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, Symbol.for(vectorDefinition.sourceType))();
+
+			expect(vectorGeoResource.id).not.toBeNull();
+			expect(vectorGeoResource.label).not.toBeNull();
+			expect(vectorGeoResource.data).toBe(data);
+			expect(vectorGeoResource.srid).toBe(4326);
+			expect(Symbol.keyFor(vectorGeoResource.sourceType)).toBe(vectorDefinition.sourceType);
+		});
+
+		it('returns an GeoResourceLoader throwing an Error when resource is not available', async () => {
+			spyOn(httpService, 'get')
+				.withArgs(vectorDefinition.url, { timeout: 5000 })
+				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+
+			await expectAsync(defaultVectorGeoResourceLoaderForUrl(vectorDefinition.url, vectorDefinition.sourceType)()).toBeRejectedWithError(
+				`GeoResource for '${vectorDefinition.url}' could not be loaded: Http-Status 404`
+			);
 		});
 	});
 });

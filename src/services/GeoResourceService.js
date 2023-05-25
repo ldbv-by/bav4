@@ -58,9 +58,8 @@ export class GeoResourceService {
 	/**
 	 * Initializes this service, which means all available GeoResources are loaded and can be served in the future from the internal cache.
 	 * If initialization fails, a fallback is delivered.
-	 * @public
 	 * @async
-	 * @returns {Promise<Array.<GeoResource>>}
+	 * @returns {Promise<Array<GeoResource>>}
 	 */
 	async init() {
 		if (!this._geoResources) {
@@ -81,8 +80,7 @@ export class GeoResourceService {
 
 	/**
 	 * Returns all available {@link GeoResource}.
-	 * @public
-	 * @returns  {Array.<GeoResource>}
+	 * @returns  {Array<GeoResource>}
 	 */
 	all() {
 		if (!this._geoResources) {
@@ -94,7 +92,6 @@ export class GeoResourceService {
 
 	/**
 	 * Returns the corresponding  {@link GeoResource} for an id.
-	 * @public
 	 * @param {string|null|undefined} id Id of the desired {@link GeoResource}
 	 * @returns {GeoResource | null}
 	 */
@@ -154,9 +151,6 @@ export class GeoResourceService {
 		return observedGeoResource;
 	}
 
-	/**
-	 * @private
-	 */
 	_newFallbackGeoResources() {
 		const topPlusOpenGeoResources = [
 			new XyzGeoResource(

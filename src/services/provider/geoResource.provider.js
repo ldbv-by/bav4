@@ -1,18 +1,11 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import {
-	AggregateGeoResource,
-	VectorGeoResource,
-	WmsGeoResource,
-	XyzGeoResource,
-	VectorSourceType,
-	GeoResourceFuture,
-	VTGeoResource
-} from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { isHttpUrl } from '../../utils/checks';
+import { createUniqueId } from '../../utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
 export const _definitionToGeoResource = (definition) => {
@@ -34,20 +27,14 @@ export const _definitionToGeoResource = (definition) => {
 				return new VTGeoResource(def.id, def.label, def.url);
 			case 'vector': {
 				const loader = async () => {
-					const { HttpService: httpService, UrlService: urlService } = $injector.inject('HttpService', 'UrlService');
-					const proxyfiedUrl = urlService.proxifyInstant(def.url);
-					const result = await httpService.get(proxyfiedUrl, { timeout: 5000 });
-
-					if (result.ok) {
-						const data = await result.text();
-
-						return setPropertiesAndProviders(
-							new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
-								.setSource(data, 4326 /**valid for kml, gpx and geoJson**/)
-								.setClusterParams(def.clusterParams ?? {})
-						);
-					}
-					throw new Error(`GeoResource for '${def.url}' could not be loaded: Http-Status ${result.status}`);
+					const { UrlService: urlService } = $injector.inject('UrlService');
+					const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
+						urlService.proxifyInstant(def.url),
+						Symbol.for(def.sourceType),
+						def.id,
+						def.label
+					)();
+					return setPropertiesAndProviders(vectorGeoResource.setClusterParams(def.clusterParams ?? {}));
 				};
 				return new GeoResourceFuture(def.id, loader);
 			}
@@ -112,36 +99,6 @@ export const _parseBvvAttributionDefinition = (definition) => {
 		}));
 	}
 	return definition.attribution ?? null;
-};
-
-/**
- * Loads example GeoResources without a backend.
- * @function
- * @type {module:services/GeoResourceService~geoResourceProvider}
- */
-export const loadExampleGeoResources = async () => {
-	const wms0 = new WmsGeoResource(
-		'bodendenkmal',
-		'Bodendenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bodendenkmalO',
-		'image/png'
-	);
-	const wms1 = new WmsGeoResource(
-		'baudenkmal',
-		'Baudenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bauensembleO,einzeldenkmalO',
-		'image/png'
-	);
-	const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
-	const xyz0 = new XyzGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
-	const vector0 = new VectorGeoResource('huetten', 'Hütten', VectorSourceType.KML).setUrl(
-		'http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml'
-	);
-	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['xyz0', 'wms0']);
-
-	return [wms0, wms1, wms2, xyz0, vector0, aggregate0];
 };
 
 /**
@@ -239,4 +196,28 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 		return new GeoResourceFuture(urlBasedAsId, loader);
 	}
 	return null;
+};
+
+/**
+ * Returns an GeoResourceLoader for an URL-based VectorGeoResource.
+ * @function
+ * @param {string} url
+ * @param {VectorSourceType} sourceType
+ * @param {string | null} [id]
+ * @param {string | null} [label]
+ * @returns {module:domain/geoResources~asyncGeoResourceLoader}
+ * @throws when resource cannot be loaded
+ */
+export const defaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
+	return async () => {
+		const { HttpService: httpService } = $injector.inject('HttpService');
+		const result = await httpService.get(url, { timeout: 5000 });
+
+		if (result.ok) {
+			const data = await result.text();
+
+			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
+		}
+		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+	};
 };
