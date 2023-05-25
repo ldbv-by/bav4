@@ -37,28 +37,26 @@ export class ExportDialogContent extends MvuElement {
 				${repeat(
 					exportTypes,
 					(exportType) => exportType.sourceType,
-					(exportType) => html`<ba-export-item .content=${exportType}></ba-export-item>`
+					(exportType) => html`<ba-export-item .exportType=${exportType} .exportData=${exportData}></ba-export-item>`
 				)}
 			</div>`;
 	}
 
 	/**
 	 * creates the available ExportTypes
-	 * @param {string} exportData the data to export
 	 * @returns {Array<import('./ExportItem').ExportType>}
 	 */
-	getExportTypes(exportData) {
+	getExportTypes() {
 		return [
-			{ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326], data: exportData },
-			{ sourceType: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326], data: exportData },
+			{ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] },
+			{ sourceType: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] },
 			{
 				sourceType: SourceTypeName.GEOJSON,
 				mediaType: MediaType.GeoJSON,
 				fileExtension: 'geojson',
-				srids: [4326, 3857, 25832, 25833],
-				data: exportData
+				srids: [4326, 3857, 25832, 25833]
 			},
-			{ sourceType: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, fileExtension: 'txt', srids: [4326, 3857, 25832, 25833], data: exportData }
+			{ sourceType: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, fileExtension: 'txt', srids: [4326, 3857, 25832, 25833] }
 		];
 	}
 

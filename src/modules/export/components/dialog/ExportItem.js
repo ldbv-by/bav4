@@ -10,15 +10,15 @@ import css from './exportItem.css';
 import downloadSvg from './assets/download.svg';
 import { SourceType } from '../../../../domain/sourceType';
 
-const Update = 'update';
+const Update_Type = 'update_type';
+const Update_Data = 'update_data';
 const Update_Selected_Srid = 'update_selected_srid';
 /**
  * @typedef {Object} ExportType
  * @property {module:services/domain/sourceType~SourceTypeName} sourceType
  * @property {module:/services/HttpService~MediaType} mediaType
- * @property {string}fileExtension
+ * @property {string} fileExtension
  * @property {Array<number>} srids
- * @property {string} data *
  */
 
 /**
@@ -27,7 +27,7 @@ const Update_Selected_Srid = 'update_selected_srid';
  */
 export class ExportItem extends MvuElement {
 	constructor() {
-		super({ sourceType: null, mediaType: null, fileExtension: null, srids: null, selectedSrid: null, exportData: null });
+		super({ exportType: null, selectedSrid: null, exportData: null });
 		const { TranslationService, SourceTypeService, ExportVectorDataService } = $injector.inject(
 			'TranslationService',
 			'SourceTypeService',
@@ -40,15 +40,16 @@ export class ExportItem extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update:
+			case Update_Type:
 				return {
 					...model,
-					sourceType: data.sourceType,
-					mediaType: data.mediaType,
-					fileExtension: data.fileExtension,
-					srids: data.srids,
-					selectedSrid: data.srids[0],
-					exportData: data.data
+					exportType: data,
+					selectedSrid: data.srids[0]
+				};
+			case Update_Data:
+				return {
+					...model,
+					exportData: data
 				};
 			case Update_Selected_Srid:
 				return { ...model, selectedSrid: data };
@@ -56,7 +57,7 @@ export class ExportItem extends MvuElement {
 	}
 
 	createView(model) {
-		const { sourceType: sourceTypeName, mediaType, fileExtension, srids, selectedSrid, exportData } = model;
+		const { exportType, selectedSrid, exportData } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const onSridChange = (e) => {
 			const srid = parseInt(e.target.value);
@@ -66,11 +67,11 @@ export class ExportItem extends MvuElement {
 			const sourceTypeResult = this._sourceTypeService.forData(exportData);
 
 			const dataSourceType = sourceTypeResult.sourceType;
-			const targetSourceType = new SourceType(sourceTypeName, null, selectedSrid);
+			const targetSourceType = new SourceType(exportType.sourceType, null, selectedSrid);
 			const content = this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType);
-			const blob = new Blob([content], { type: mediaType });
+			const blob = new Blob([content], { type: exportType.mediaType });
 
-			const fileName = `bayernAtlas.${fileExtension}`;
+			const fileName = `bayernAtlas.${exportType.fileExtension}`;
 			this._saveAs(blob, fileName);
 		};
 
@@ -79,20 +80,20 @@ export class ExportItem extends MvuElement {
 			</style>
 			<div class="export-item__content">
 				<div class="export-item__head">
-					<div class="export-item__label">${translate(`export_item_label_${sourceTypeName}`)}</div>
-					<div class="export-item__description">${translate(`export_item_description_${sourceTypeName}`)}</div>
+					<div class="export-item__label">${translate(`export_item_label_${exportType.sourceType}`)}</div>
+					<div class="export-item__description">${translate(`export_item_description_${exportType.sourceType}`)}</div>
 				</div>
 				<div class="export-item__select ba-form-element">
-					<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${srids.length === 1}>
-						${srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
+					<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
+						${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
 					</select>
 					<label for="srid" class="control-label"
-						>${srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
+						>${exportType.srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
 					><i class="bar"></i>
 				</div>
 				<ba-button
 					id="download-button"
-					.label=${translate(`export_item_download_${sourceTypeName}`)}
+					.label=${translate(`export_item_download_${exportType.sourceType}`)}
 					.icon=${downloadSvg}
 					.type=${'primary'}
 					.disabled=${!selectedSrid || !exportData}
@@ -104,27 +105,30 @@ export class ExportItem extends MvuElement {
 	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
 	_saveAs(blob, fileName) {
 		if (blob instanceof Blob && blob.type) {
-			throw Error('only Blob objects with a type property supported');
+			const url = window.URL.createObjectURL(blob);
+			try {
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = fileName;
+				a.click();
+			} finally {
+				window.URL.revokeObjectURL(url);
+			}
 		}
-		const url = window.URL.createObjectURL(blob);
-		try {
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = fileName;
-			a.click();
-		} finally {
-			window.URL.revokeObjectURL(url);
-		}
+		console.warn('only Blob objects with a valid type property supported');
 	}
 
 	/**
 	 * content for export action
 	 * @param {ExportType} value
 	 */
-	set content(value) {
-		this.signal(Update, value);
+	set exportType(value) {
+		this.signal(Update_Type, value);
 	}
 
+	set exportData(value) {
+		this.signal(Update_Data, value);
+	}
 	static get tag() {
 		return 'ba-export-item';
 	}
