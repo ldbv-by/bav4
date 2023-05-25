@@ -39,7 +39,6 @@ export class ExportItem extends MvuElement {
 	}
 
 	update(type, data, model) {
-		console.log(data);
 		switch (type) {
 			case Update_Type:
 				return {
