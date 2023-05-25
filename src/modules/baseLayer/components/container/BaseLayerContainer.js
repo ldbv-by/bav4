@@ -1,3 +1,6 @@
+/**
+ * @module modules/baseLayer/components/container/BaseLayerContainer
+ */
 import { html } from 'lit-html';
 import css from './baseLayerContainer.css';
 import { $injector } from '../../../../injection';
