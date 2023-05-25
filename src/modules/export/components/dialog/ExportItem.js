@@ -16,7 +16,7 @@ const Update_Selected_Srid = 'update_selected_srid';
 /**
  * @typedef {Object} ExportType
  * @property {module:services/domain/sourceType~SourceTypeName} sourceType
- * @property {module:/services/HttpService~MediaType} mediaType
+ * @property {module:services/HttpService~MediaType} mediaType
  * @property {string} fileExtension
  * @property {Array<number>} srids
  */

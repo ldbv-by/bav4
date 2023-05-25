@@ -8,6 +8,7 @@ import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
 import css from './exportDialogContent.css';
 import { MediaType } from '../../../../services/HttpService';
+import { ExportItem } from './ExportItem';
 
 const Update = 'update';
 
@@ -44,7 +45,7 @@ export class ExportDialogContent extends MvuElement {
 
 	/**
 	 * creates the available ExportTypes
-	 * @returns {Array<import('./ExportItem').ExportType>}
+	 * @returns {Array<ExportType>}
 	 */
 	getExportTypes() {
 		return [
