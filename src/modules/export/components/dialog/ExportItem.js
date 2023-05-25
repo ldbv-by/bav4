@@ -39,6 +39,7 @@ export class ExportItem extends MvuElement {
 	}
 
 	update(type, data, model) {
+		console.log(data);
 		switch (type) {
 			case Update_Type:
 				return {
@@ -75,31 +76,33 @@ export class ExportItem extends MvuElement {
 			this._saveAs(blob, fileName);
 		};
 
-		return html`<style>
-				${css}
-			</style>
-			<div class="export-item__content">
-				<div class="export-item__head">
-					<div class="export-item__label">${translate(`export_item_label_${exportType.sourceType}`)}</div>
-					<div class="export-item__description">${translate(`export_item_description_${exportType.sourceType}`)}</div>
-				</div>
-				<div class="export-item__select ba-form-element">
-					<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
-						${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
-					</select>
-					<label for="srid" class="control-label"
-						>${exportType.srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
-					><i class="bar"></i>
-				</div>
-				<ba-button
-					id="download-button"
-					.label=${translate(`export_item_download_${exportType.sourceType}`)}
-					.icon=${downloadSvg}
-					.type=${'primary'}
-					.disabled=${!selectedSrid || !exportData}
-					@click=${onClickDownload}
-				></ba-button>
-			</div>`;
+		return exportType
+			? html`<style>
+						${css}
+					</style>
+					<div class="export-item__content">
+						<div class="export-item__head">
+							<div class="export-item__label">${translate(`export_item_label_${exportType.sourceType}`)}</div>
+							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceType}`)}</div>
+						</div>
+						<div class="export-item__select ba-form-element">
+							<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
+								${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
+							</select>
+							<label for="srid" class="control-label"
+								>${exportType.srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
+							><i class="bar"></i>
+						</div>
+						<ba-button
+							id="download-button"
+							.label=${translate(`export_item_download_${exportType.sourceType}`)}
+							.icon=${downloadSvg}
+							.type=${'primary'}
+							.disabled=${!selectedSrid || !exportData}
+							@click=${onClickDownload}
+						></ba-button>
+					</div>`
+			: html.nothing;
 	}
 
 	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
