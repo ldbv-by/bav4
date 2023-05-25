@@ -10,6 +10,7 @@ import { MvuElement } from '../../../MvuElement';
 export class BaseLayerContainer extends MvuElement {
 	constructor() {
 		super({
+			// Todo: Get model from service
 			categories: {
 				raster: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
 				vector: [
