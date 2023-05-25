@@ -29,7 +29,7 @@ export class ExportDialogContent extends MvuElement {
 
 	createView(model) {
 		const { exportData } = model;
-		const exportTypes = this.getExportTypes(exportData);
+		const exportTypes = this.getExportTypes();
 		return html`<style>
 				${css}
 			</style>
