@@ -23,6 +23,7 @@ const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
+ * @property {Function} onSubmit
  * @class
  */
 export class MapFeedbackPanel extends MvuElement {

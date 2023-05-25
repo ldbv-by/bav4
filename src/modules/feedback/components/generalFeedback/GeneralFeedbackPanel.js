@@ -16,13 +16,10 @@ const Update_EMail = 'update_email';
 
 /**
  * Contains a form for submitting a general feedback.
+ * @property {Function} onSubmit
  * @class
  */
 export class GeneralFeedbackPanel extends MvuElement {
-	/**
-	 * Represents a general feedback form.
-	 * @constructor
-	 */
 	constructor() {
 		super({
 			generalFeedback: {
