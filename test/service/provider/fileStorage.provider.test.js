@@ -30,7 +30,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 			});
 		});
@@ -44,7 +44,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 			});
 		});
