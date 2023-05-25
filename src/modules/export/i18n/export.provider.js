@@ -14,7 +14,7 @@ export const provide = (lang) => {
 				export_item_download_geojson: '.geojson',
 				export_item_label_ewkt: 'EWKT',
 				export_item_description_ewkt: 'usable in BayernAtlas and many GIS-Applications',
-				export_item_download_ewkt: '.ewkt',
+				export_item_download_ewkt: '.txt',
 				export_item_srid_selection: 'Select SRID',
 				export_item_srid_selection_disabled: 'SRID is predefined'
 			};
@@ -33,7 +33,7 @@ export const provide = (lang) => {
 				export_item_download_geojson: '.geojson',
 				export_item_label_ewkt: 'EWKT',
 				export_item_description_ewkt: 'verwendbar im BayernAtlas und vielen GIS-Anwendungen',
-				export_item_download_ewkt: '.ewkt',
+				export_item_download_ewkt: '.txt',
 				export_item_srid_selection: 'SRID auswählen',
 				export_item_srid_selection_disabled: 'SRID ist vordefiniert'
 			};
