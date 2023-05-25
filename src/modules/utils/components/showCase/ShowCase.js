@@ -67,6 +67,10 @@ export class ShowCase extends BaElement {
 			});
 		};
 
+		const onClickExport = () => {
+			const data = 'SRID=4326;POINT(10 10)';
+			openModal('Export', html`<ba-export-content .exportData=${data}></ba-export-content>`);
+		};
 		const onClickAuthenticate = async () => {
 			closeModal();
 
@@ -249,6 +253,12 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
+					<h3>ExportDialog</h3>
+					<div class="example row">
+						<ba-button id="button0" .label=${'open Export-Dialog'} .type=${'primary'} @click=${onClickExport}></ba-button>
+						<div>Hint: Using a EWKT String as Data to Export | SRID=4326;POINT(10 10)</div>
+					</div>
+
 					<h3>Theme-Toggle</h3>
 					<div class="example">
 						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
