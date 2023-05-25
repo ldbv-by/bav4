@@ -4,6 +4,7 @@
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { SourceTypeName } from '../../../../domain/sourceType';
+import { repeat } from 'lit-html/directives/repeat.js';
 
 const Update = 'update';
 
@@ -25,11 +26,28 @@ export class ExportDialogContent extends MvuElement {
 
 	createView(model) {
 		const { exportData } = model;
-		const exportContent = { sourceType: SourceTypeName.KML, srids: [4326], data: exportData };
+		const exportTypes = this.getExportTypes(exportData);
 		return html`<div class="export_content">
-			<ba-export-item .content=${exportContent}></ba-export-item>
-			${exportData}
+			${repeat(
+				exportTypes,
+				(exportType) => exportType.sourceType,
+				(exportType) => html`<ba-export-item .content=${exportType}></ba-export-item>`
+			)}
 		</div>`;
+	}
+
+	/**
+	 * creates the available ExportTypes
+	 * @param {string} exportData the data to export
+	 * @returns {Array<import('./ExportItem').ExportType>}
+	 */
+	getExportTypes(exportData) {
+		return [
+			{ sourceType: SourceTypeName.KML, srids: [4326], data: exportData },
+			{ sourceType: SourceTypeName.GPX, srids: [4326], data: exportData },
+			{ sourceType: SourceTypeName.GEOJSON, srids: [4326, 3857, 25832, 25833], data: exportData },
+			{ sourceType: SourceTypeName.EWKT, srids: [4326, 3857, 25832, 25833], data: exportData }
+		];
 	}
 
 	/**

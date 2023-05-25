@@ -12,7 +12,7 @@ import downloadSvg from './assets/download.svg';
 const Update = 'update';
 const Update_Selected_Srid = 'update_selected_srid';
 /**
- * @typedef {Object} ExportContent
+ * @typedef {Object} ExportType
  * @property {module:services/domain/sourceType~SourceTypeName} sourceType
  * @property {Array<number>} srids
  * @property {string} data *
@@ -79,7 +79,7 @@ export class ExportItem extends MvuElement {
 
 	/**
 	 * content for export action
-	 * @param {ExportContent} value
+	 * @param {ExportType} value
 	 */
 	set content(value) {
 		this.signal(Update, value);
