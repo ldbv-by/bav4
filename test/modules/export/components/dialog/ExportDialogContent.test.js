@@ -10,6 +10,7 @@ describe('ExportDialogContent', () => {
 	const setup = (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {});
 
+		// services needed for ExportItem components
 		$injector
 			.registerSingleton('ExportVectorDataService', {
 				forData: () => '<foo-bar></foo-bar>'
@@ -27,6 +28,15 @@ describe('ExportDialogContent', () => {
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({ exportData: null });
+		});
+	});
+
+	describe('when initialized', () => {
+		it('renders the component', async () => {
+			const element = await setup();
+			element.exportData = '<kml/>';
+
+			expect(element.shadowRoot.querySelectorAll('ba-export-item')).toHaveSize(4);
 		});
 	});
 });
