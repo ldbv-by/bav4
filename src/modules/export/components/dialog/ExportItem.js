@@ -4,7 +4,9 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+// @ts-ignore
 import css from './exportItem.css';
+// @ts-ignore
 import downloadSvg from './assets/download.svg';
 
 const Update = 'update';
