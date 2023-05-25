@@ -36,6 +36,8 @@ export class SourceType {
 
 /**
  * Enum of all supported source types names.
+ * @enum {string}
+ * @readonly
  */
 export const SourceTypeName = Object.freeze({
 	KML: 'kml',

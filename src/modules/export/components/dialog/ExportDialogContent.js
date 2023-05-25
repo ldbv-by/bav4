@@ -1,5 +1,9 @@
+/**
+ * @module modules/export/components/dialog/ExportDialogContent
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
+import { SourceTypeName } from '../../../../domain/sourceType';
 
 const Update = 'update';
 
@@ -21,7 +25,11 @@ export class ExportDialogContent extends MvuElement {
 
 	createView(model) {
 		const { exportData } = model;
-		return html`<div class="export_content">${exportData}</div>`;
+		const exportContent = { sourceType: SourceTypeName.KML, srids: [4326], data: exportData };
+		return html`<div class="export_content">
+			<ba-export-item .content=${exportContent}></ba-export-item>
+			${exportData}
+		</div>`;
 	}
 
 	/**
