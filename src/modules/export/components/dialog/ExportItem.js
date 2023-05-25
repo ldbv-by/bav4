@@ -8,6 +8,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './exportItem.css';
 // @ts-ignore
 import downloadSvg from './assets/download.svg';
+import { SourceType } from '../../../../domain/sourceType';
 
 const Update = 'update';
 const Update_Selected_Srid = 'update_selected_srid';
@@ -48,7 +49,16 @@ export class ExportItem extends MvuElement {
 		const { sourceType: sourceTypeName, srids, selectedSrid, exportData } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const onSridChange = (e) => {
-			this.signal(Update_Selected_Srid, e.target.value);
+			const srid = parseInt(e.target.value);
+			this.signal(Update_Selected_Srid, srid);
+		};
+		const onClickDownload = () => {
+			const sourceTypeResult = this._sourceTypeService.forData(exportData);
+
+			const dataSourceType = sourceTypeResult.sourceType;
+			const targetSourceType = new SourceType(sourceTypeName, null, selectedSrid);
+			const downloadContent = this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType);
+			console.log(downloadContent);
 		};
 
 		return html`<style>
@@ -60,8 +70,8 @@ export class ExportItem extends MvuElement {
 					<div class="export-item__description">${translate(`export_item_description_${sourceTypeName}`)}</div>
 				</div>
 				<div class="export-item__select ba-form-element">
-					<select id="srid" .value="${selectedSrid}" @change="${onSridChange}" ?disabled=${srids.length === 1}>
-						${srids.map((srid) => html` <option value="${srid}">EPSG:${srid}</option> `)}
+					<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${srids.length === 1}>
+						${srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
 					</select>
 					<label for="srid" class="control-label"
 						>${srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
@@ -73,6 +83,7 @@ export class ExportItem extends MvuElement {
 					.icon=${downloadSvg}
 					.type=${'primary'}
 					.disabled=${!selectedSrid || !exportData}
+					@click=${onClickDownload}
 				></ba-button>
 			</div>`;
 	}
