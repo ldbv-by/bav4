@@ -95,7 +95,7 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'feedback_mapFeedback_header';
+			const expectedTitle = 'feedback_mapFeedback';
 			const expectedCategory = '';
 			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
@@ -133,11 +133,11 @@ describe('MapFeedbackPanel', () => {
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
 			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_eMail');
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
@@ -325,7 +325,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});

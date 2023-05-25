@@ -65,7 +65,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 						<span class="ba-list-item__icon chatleftdots"> </span>
 					</span>
 					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_generalButton')}</span>
+						<span class="ba-list-item__primary-text">${translate('feedback_generalFeedback')}</span>
 						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
 					</span>
 				</button>
@@ -74,7 +74,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 						<span class="ba-list-item__icon map"> </span>
 					</span>
 					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_mapButton')}</span>
+						<span class="ba-list-item__primary-text">${translate('feedback_mapFeedback')}</span>
 						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_mapButton_sub')}</span>
 					</span>
 				</button>

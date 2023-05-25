@@ -65,7 +65,7 @@ describe('GeneralFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'feedback_generalFeedback_header';
+			const expectedTitle = 'feedback_generalFeedback';
 			const expectedDescription = '';
 			const expectedEmail = '';
 
@@ -91,11 +91,11 @@ describe('GeneralFeedbackPanel', () => {
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue;
 			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_changeDescription');
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
 			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_eMail');
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
 			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
@@ -355,7 +355,7 @@ describe('GeneralFeedbackPanel', () => {
 			// assert
 			expect(generalFeedbackSaveSpy).toHaveBeenCalled();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('feedback_generalFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});

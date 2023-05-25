@@ -212,7 +212,7 @@ export class MapFeedbackPanel extends MvuElement {
 					${mapFeedback.fileId ? nothing : html`<span class="map-feedback__iframe-hint">${translate('feedback_mapFeedback_geometry_missing')}</span>`}
 				</div>
 				<div class="map-feedback__form">
-					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback_header')}</span>
+					<span id="feedbackPanelTitle" class="ba-list-item__main-text">${translate('feedback_mapFeedback')}</span>
 					<div class="map-feedback__form-hint">
 						${translate('feedback_mapFeedback_text_before')}
 						<span class="map-feedback__highlight">${translate('feedback_mapFeedback_text_map')}</span>
@@ -232,34 +232,28 @@ export class MapFeedbackPanel extends MvuElement {
 							@input="${onDescriptionChange}"
 							required
 							maxlength="10000"
-							placeholder="${translate('feedback_mapFeedback_changeDescription')}"
+							placeholder="${translate('feedback_changeDescription')}"
 						></textarea>
-						<label for="description" class="control-label">${translate('feedback_mapFeedback_changeDescription')}</label>
+						<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 						<i class="bar"></i>
-						<label class="helper-label">${translate('feedback_mapFeedback_changeDescription_helper')}</label>
-						<label class="error-label">${translate('feedback_mapFeedback_changeDescription_error')}</label>
+						<label class="helper-label">${translate('feedback_required_field_helper')}</label>
+						<label class="error-label">${translate('feedback_required_field_error')}</label>
 						<i class="icon error"></i>
 					</div>
 					<div class="ba-form-element" id="email-form-element">
-						<input
-							type="email"
-							id="email"
-							.value="${mapFeedback.email}"
-							@input="${onEmailChange}"
-							placeholder="${translate('feedback_mapFeedback_eMail')}"
-						/>
-						<label for="email" class="control-label">${translate('feedback_mapFeedback_eMail')}</label>
+						<input type="email" id="email" .value="${mapFeedback.email}" @input="${onEmailChange}" placeholder="${translate('feedback_eMail')}" />
+						<label for="email" class="control-label">${translate('feedback_eMail')}</label>
 						<i class="bar"></i>
 						<i class="icon error"></i>
-						<label class="helper-label">${translate('feedback_mapFeedback_eMail_helper')}</label>
-						<label class="error-label">${translate('feedback_mapFeedback_eMail_error')}</label>
+						<label class="helper-label">${translate('feedback_eMail_helper')}</label>
+						<label class="error-label">${translate('feedback_eMail_error')}</label>
 					</div>
 					<p id="feedback_mapFeedback_disclaimer" class="map-feedback__disclaimer" id="mapFeedback_disclaimer">
 						${translate('feedback_mapFeedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
 							>${translate('feedback_mapFeedback_privacyPolicy')}</a
 						>).
 					</p>
-					<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
+					<ba-button id="button0" .label=${translate('feedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
 				</div>
 			</div>
 		`;
@@ -284,7 +278,7 @@ export class MapFeedbackPanel extends MvuElement {
 		try {
 			await this._feedbackService.save(mapFeedback);
 			this._onSubmit();
-			emitNotification(translate('feedback_mapFeedback_saved_successfully'), LevelTypes.INFO);
+			emitNotification(translate('feedback_saved_successfully'), LevelTypes.INFO);
 		} catch (e) {
 			console.error(e);
 			emitNotification(translate('feedback_mapFeedback_could_not_save'), LevelTypes.ERROR);
