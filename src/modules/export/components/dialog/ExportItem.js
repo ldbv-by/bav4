@@ -56,7 +56,9 @@ export class ExportItem extends MvuElement {
 			<select id="srid" .value="${selectedSrid}" @change="${onSridChange}" ?disabled=${srids.length === 1}>
 				${srids.map((srid) => html` <option value="${srid}">EPSG:${srid}</option> `)}
 			</select>
-			<label for="srid" class="control-label">${translate('export_item_srid_selection')}</label><i class="bar"></i>
+			<label for="srid" class="control-label"
+				>${srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
+			><i class="bar"></i>
 			<ba-button
 				id="download-button"
 				.label=${translate(`export_item_download_${sourceTypeName}`)}
