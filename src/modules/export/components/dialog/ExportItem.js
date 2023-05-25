@@ -4,6 +4,7 @@
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+import css from './exportItem.css';
 import downloadSvg from './assets/download.svg';
 
 const Update = 'update';
@@ -48,25 +49,30 @@ export class ExportItem extends MvuElement {
 			this.signal(Update_Selected_Srid, e.target.value);
 		};
 
-		return html`<div class="export-item__content">
-			<div class="export-item__head">
-				<div class="export-item__label">${translate(`export_item_label_${sourceTypeName}`)}</div>
-				<div class="export-item__description">${translate(`export_item_description_${sourceTypeName}`)}</div>
-			</div>
-			<select id="srid" .value="${selectedSrid}" @change="${onSridChange}" ?disabled=${srids.length === 1}>
-				${srids.map((srid) => html` <option value="${srid}">EPSG:${srid}</option> `)}
-			</select>
-			<label for="srid" class="control-label"
-				>${srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
-			><i class="bar"></i>
-			<ba-button
-				id="download-button"
-				.label=${translate(`export_item_download_${sourceTypeName}`)}
-				.icon=${downloadSvg}
-				.type=${'primary'}
-				.disabled=${!selectedSrid || !exportData}
-			></ba-button>
-		</div>`;
+		return html`<style>
+				${css}
+			</style>
+			<div class="export-item__content">
+				<div class="export-item__head">
+					<div class="export-item__label">${translate(`export_item_label_${sourceTypeName}`)}</div>
+					<div class="export-item__description">${translate(`export_item_description_${sourceTypeName}`)}</div>
+				</div>
+				<div class="export-item__select ba-form-element">
+					<select id="srid" .value="${selectedSrid}" @change="${onSridChange}" ?disabled=${srids.length === 1}>
+						${srids.map((srid) => html` <option value="${srid}">EPSG:${srid}</option> `)}
+					</select>
+					<label for="srid" class="control-label"
+						>${srids.length === 1 ? translate('export_item_srid_selection_disabled') : translate('export_item_srid_selection')}</label
+					><i class="bar"></i>
+				</div>
+				<ba-button
+					id="download-button"
+					.label=${translate(`export_item_download_${sourceTypeName}`)}
+					.icon=${downloadSvg}
+					.type=${'primary'}
+					.disabled=${!selectedSrid || !exportData}
+				></ba-button>
+			</div>`;
 	}
 
 	/**

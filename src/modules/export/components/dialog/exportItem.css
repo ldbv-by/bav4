@@ -1,0 +1,27 @@
+.export-item__content {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+}
+
+.export-item__head {
+	width: 15em;
+	padding-right: 1em;
+}
+
+.export-item__label {
+	font-weight: 800;
+}
+
+.export-item__description {
+	font-style: italic;
+}
+
+.export-item__select {
+	width: 9em;
+}
+
+ba-button {
+	padding-left: 1em;
+	width: 9em;
+}
