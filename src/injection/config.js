@@ -32,6 +32,7 @@ import { MainMenuPlugin } from '../plugins/MainMenuPlugin';
 import { FeatureInfoService } from '../services/FeatureInfoService';
 import { GeoResourceInfoService } from '../modules/geoResourceInfo/services/GeoResourceInfoService';
 import { ImportVectorDataService } from '../services/ImportVectorDataService';
+import { OlExportVectorDataService } from '../services/ExportVectorDataService';
 import { SourceTypeService } from '../services/SourceTypeService';
 import { ImportPlugin } from '../plugins/ImportPlugin';
 import { SecurityService } from '../services/SecurityService';
@@ -76,6 +77,7 @@ $injector
 	.register('FeatureInfoService', FeatureInfoService)
 	.registerSingleton('GeoResourceInfoService', new GeoResourceInfoService())
 	.register('ImportVectorDataService', ImportVectorDataService)
+	.register('ExportVectorDataService', OlExportVectorDataService)
 	.register('ImportWmsService', ImportWmsService)
 	.registerSingleton('SourceTypeService', new SourceTypeService())
 	.register('Mfp3Encoder', BvvMfp3Encoder)
