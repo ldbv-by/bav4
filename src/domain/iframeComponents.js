@@ -3,7 +3,8 @@
  */
 /**
  * Enum which holds all valid values for the query parameter key 'IFRAME_COMPONENTS'.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const IFrameComponents = Object.freeze({
 	DRAW_TOOL: 'draw-tool',
