@@ -7,6 +7,7 @@ import { SourceTypeName } from '../../../../domain/sourceType';
 import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
 import css from './exportDialogContent.css';
+import { MediaType } from '../../../../services/HttpService';
 
 const Update = 'update';
 
@@ -48,10 +49,16 @@ export class ExportDialogContent extends MvuElement {
 	 */
 	getExportTypes(exportData) {
 		return [
-			{ sourceType: SourceTypeName.KML, srids: [4326], data: exportData },
-			{ sourceType: SourceTypeName.GPX, srids: [4326], data: exportData },
-			{ sourceType: SourceTypeName.GEOJSON, srids: [4326, 3857, 25832, 25833], data: exportData },
-			{ sourceType: SourceTypeName.EWKT, srids: [4326, 3857, 25832, 25833], data: exportData }
+			{ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326], data: exportData },
+			{ sourceType: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326], data: exportData },
+			{
+				sourceType: SourceTypeName.GEOJSON,
+				mediaType: MediaType.GeoJSON,
+				fileExtension: 'geojson',
+				srids: [4326, 3857, 25832, 25833],
+				data: exportData
+			},
+			{ sourceType: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, fileExtension: 'txt', srids: [4326, 3857, 25832, 25833], data: exportData }
 		];
 	}
 

@@ -15,6 +15,8 @@ const Update_Selected_Srid = 'update_selected_srid';
 /**
  * @typedef {Object} ExportType
  * @property {module:services/domain/sourceType~SourceTypeName} sourceType
+ * @property {module:/services/HttpService~MediaType} mediaType
+ * @property {string}fileExtension
  * @property {Array<number>} srids
  * @property {string} data *
  */
@@ -25,7 +27,7 @@ const Update_Selected_Srid = 'update_selected_srid';
  */
 export class ExportItem extends MvuElement {
 	constructor() {
-		super({ sourceType: null, srids: null, selectedSrid: null, exportData: null });
+		super({ sourceType: null, mediaType: null, fileExtension: null, srids: null, selectedSrid: null, exportData: null });
 		const { TranslationService, SourceTypeService, ExportVectorDataService } = $injector.inject(
 			'TranslationService',
 			'SourceTypeService',
@@ -39,14 +41,22 @@ export class ExportItem extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update:
-				return { ...model, sourceType: data.sourceType, srids: data.srids, selectedSrid: data.srids[0], exportData: data.data };
+				return {
+					...model,
+					sourceType: data.sourceType,
+					mediaType: data.mediaType,
+					fileExtension: data.fileExtension,
+					srids: data.srids,
+					selectedSrid: data.srids[0],
+					exportData: data.data
+				};
 			case Update_Selected_Srid:
 				return { ...model, selectedSrid: data };
 		}
 	}
 
 	createView(model) {
-		const { sourceType: sourceTypeName, srids, selectedSrid, exportData } = model;
+		const { sourceType: sourceTypeName, mediaType, fileExtension, srids, selectedSrid, exportData } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const onSridChange = (e) => {
 			const srid = parseInt(e.target.value);
@@ -57,8 +67,11 @@ export class ExportItem extends MvuElement {
 
 			const dataSourceType = sourceTypeResult.sourceType;
 			const targetSourceType = new SourceType(sourceTypeName, null, selectedSrid);
-			const downloadContent = this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType);
-			console.log(downloadContent);
+			const content = this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType);
+			const blob = new Blob([content], { type: mediaType });
+
+			const fileName = `bayernAtlas.${fileExtension}`;
+			this._saveAs(blob, fileName);
 		};
 
 		return html`<style>
@@ -86,6 +99,22 @@ export class ExportItem extends MvuElement {
 					@click=${onClickDownload}
 				></ba-button>
 			</div>`;
+	}
+
+	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
+	_saveAs(blob, fileName) {
+		if (blob instanceof Blob && blob.type) {
+			throw Error('only Blob objects with a type property supported');
+		}
+		const url = window.URL.createObjectURL(blob);
+		try {
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = fileName;
+			a.click();
+		} finally {
+			window.URL.revokeObjectURL(url);
+		}
 	}
 
 	/**
