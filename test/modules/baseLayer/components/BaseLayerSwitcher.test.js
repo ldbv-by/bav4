@@ -30,6 +30,7 @@ describe('BaseLayerSwitcher', () => {
 
 			expect(model).toEqual({
 				baseGeoResourceIds: [],
+				allBaseGeoResourceIds: [],
 				activeLayers: [],
 				layersStoreReady: false
 			});
@@ -47,7 +48,7 @@ describe('BaseLayerSwitcher', () => {
 		it('renders nothing when layers state not yet set ready', async () => {
 			const element = await setup();
 
-			element.geoResourceIds = ['geoRsId0'];
+			element.configuration = { all: ['geoRsId0'], specific: ['geoRsId0'] };
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -71,7 +72,7 @@ describe('BaseLayerSwitcher', () => {
 			});
 			const element = await setup(state);
 
-			element.geoResourceIds = ['geoRsId0', activeGeoResourceId];
+			element.configuration = { all: [], specific: ['geoRsId0', activeGeoResourceId] };
 
 			const container = element.shadowRoot.querySelector('.baselayer__container');
 			expect(container).toBeTruthy();
@@ -82,44 +83,9 @@ describe('BaseLayerSwitcher', () => {
 			expect(buttons[1].children[0].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
 
-			expect(element.shadowRoot.querySelector('.title').innerText).toBe('baselayer_switcher_header');
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
 		});
 	});
-
-	// describe('when topic changed ', () => {
-	// 	it('updates the view', async () => {
-	// 		const topicsId = 'topicId';
-	// 		const activeGeoResourceId = 'geoRsId1';
-	// 		const activeLayer = createDefaultLayer(activeGeoResourceId);
-	// 		const state = {
-	// 			layers: {
-	// 				ready: true,
-	// 				active: [activeLayer]
-	// 			}
-	// 		};
-	// 		spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicsId, 'label', 'description', ['geoRsId0', activeGeoResourceId]));
-	// 		spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
-	// 			switch (id) {
-	// 				case 'geoRsId0':
-	// 					return new XyzGeoResource('geoRsId0', 'someLabel0', 'someUrl0');
-	// 				case activeGeoResourceId:
-	// 					return new XyzGeoResource(activeGeoResourceId, 'someLabel1', 'someUrl1');
-	// 			}
-	// 		});
-	// 		const element = await setup(state);
-
-	// 		setCurrent(topicsId);
-
-	// 		const container = element.shadowRoot.querySelector('.baselayer__container');
-	// 		expect(container).toBeTruthy();
-	// 		const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
-	// 		expect(buttons.length).toBe(2);
-	// 		expect(buttons[0].children[0].innerText).toBe('someLabel0');
-	// 		expect(buttons[0].getAttribute('type')).toBe('secondary');
-	// 		expect(buttons[1].children[0].innerText).toBe('someLabel1');
-	// 		expect(buttons[1].getAttribute('type')).toBe('primary');
-	// 	});
-	// });
 
 	describe('when element clicked ', () => {
 		describe('and some layers are active ', () => {
@@ -140,7 +106,7 @@ describe('BaseLayerSwitcher', () => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
-					element.geoResourceIds = [geoResourceId0, geoResourceId2];
+					element.configuration = { all: [geoResourceId0], specific: [geoResourceId0, geoResourceId2] };
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 					//let's add the second baseLayer
@@ -170,7 +136,7 @@ describe('BaseLayerSwitcher', () => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
-					element.geoResourceIds = [geoResourceId0, geoResourceId2];
+					element.configuration = { all: [], specific: [geoResourceId0, geoResourceId2] };
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 					//let's add the second baseLayer
@@ -198,7 +164,7 @@ describe('BaseLayerSwitcher', () => {
 					return new XyzGeoResource(id, 'someLabel', 'someUrl');
 				});
 				const element = await setup(state);
-				element.geoResourceIds = [geoResourceId0, geoResourceId1];
+				element.configuration = { all: [], specific: [geoResourceId0, geoResourceId1] };
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 				//let's try to add the first baseLayer again
@@ -224,7 +190,7 @@ describe('BaseLayerSwitcher', () => {
 					return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
-				element.geoResourceIds = [geoResourceId0];
+				element.configuration = { all: [], specific: [geoResourceId0] };
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 				//let's add a baseLayer

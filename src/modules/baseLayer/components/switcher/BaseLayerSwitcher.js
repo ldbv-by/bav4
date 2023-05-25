@@ -8,18 +8,28 @@ import css from './baseLayerSwitcher.css';
 import { MvuElement } from '../../../MvuElement';
 import { createUniqueId } from '../../../../utils/numberUtils';
 
-const Update_Base_GeoResource_Ids = 'update_base_georesource_ids';
+const Update_Configuration = 'update_configuration';
 const Update_Layers = 'update_layers';
 const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
+
+/**
+ * Configuration of a BaseLayerSwitcher instance.
+ * @typedef BaseLayerSwitcherConfiguration
+ * @property {Array<string>} specific GeoResource ids which should be managed by this component instance
+ * @property {Array<string>} all All available GeoResource ids which should be considered as a base layer
+ */
+
 /**
  * Displays and handles GeoResources defined to act as base layers.
- * @property {Array<string>} geoResourceIds Array of GeoResource ids
+ * Component can be used alone or in conjunction with {@link BaseLayerContainer}.
+ * @property {module:modules/baseLayer/components/switcher/BaseLayerSwitcher~BaseLayerSwitcherConfiguration} configuration Configuration for this BaseLayerSwitcher
  * @class
  * @author taulinger
  */
 export class BaseLayerSwitcher extends MvuElement {
 	constructor() {
 		super({
+			allBaseGeoResourceIds: [],
 			baseGeoResourceIds: [],
 			activeLayers: [],
 			layersStoreReady: false
@@ -44,8 +54,8 @@ export class BaseLayerSwitcher extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Base_GeoResource_Ids:
-				return { ...model, baseGeoResourceIds: [...data] };
+			case Update_Configuration:
+				return { ...model, baseGeoResourceIds: [...data.specific], allBaseGeoResourceIds: [...data.all] };
 			case Update_Layers:
 				return { ...model, activeLayers: [...data] };
 			case Update_Is_Layers_Store_Ready:
@@ -54,7 +64,7 @@ export class BaseLayerSwitcher extends MvuElement {
 	}
 
 	createView(model) {
-		const { baseGeoResourceIds, activeLayers, layersStoreReady } = model;
+		const { baseGeoResourceIds, allBaseGeoResourceIds, activeLayers, layersStoreReady } = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -75,7 +85,7 @@ export class BaseLayerSwitcher extends MvuElement {
 					// noting todo when requested base GeoResource already on index=0
 					if (activeLayers[0].geoResourceId !== geoR.id) {
 						// if we have a layer referencing a base GeoResource on index=0, we remove it
-						if (baseGeoResourceIds.includes(activeLayers[0].geoResourceId)) {
+						if (allBaseGeoResourceIds.includes(activeLayers[0].geoResourceId)) {
 							removeLayer(activeLayers[0].id);
 						}
 						// add selected layer
@@ -94,7 +104,7 @@ export class BaseLayerSwitcher extends MvuElement {
 				<style>
 					${css}
 				</style>
-				<div class="title">${translate('baselayer_switcher_header')}</div>
+				<div class="title">${translate('baseLayer_switcher_header')}</div>
 				<div class="baselayer__container">
 					${geoRs.map(
 						(geoR) => html` <button class="baselayer__button  ${geoR.id}" @click=${() => onClick(geoR)} type=${getType(geoR)}>
@@ -108,8 +118,8 @@ export class BaseLayerSwitcher extends MvuElement {
 		return nothing;
 	}
 
-	set geoResourceIds(ids) {
-		this.signal(Update_Base_GeoResource_Ids, [...ids]);
+	set configuration(configuration) {
+		this.signal(Update_Configuration, { ...configuration });
 	}
 
 	static get tag() {
