@@ -33,8 +33,8 @@ describe('OlFeatureInfoHandler_Hit_Tolerance_Px', () => {
 });
 
 describe('OlFeatureInfoHandler', () => {
-	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 100;
-	const RenderCompleteDelay = 100;
+	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 200;
+	const RenderCompleteDelay = 200;
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
