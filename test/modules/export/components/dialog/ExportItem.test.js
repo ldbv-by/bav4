@@ -95,7 +95,7 @@ describe('ExportItem', () => {
 
 			downloadButton.click();
 
-			expect(saveAsSpy).toHaveBeenCalledWith(jasmine.any(Blob), 'bayernAtlas.baz');
+			expect(saveAsSpy).toHaveBeenCalledWith(jasmine.objectContaining({ content: '<foo-bar></foo-bar>', mimeType: 'bar' }), 'bayernAtlas.baz');
 			expect(createObjectURLSpy).toHaveBeenCalled();
 			expect(revokeObjectURLSpy).toHaveBeenCalled();
 		});

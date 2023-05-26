@@ -68,11 +68,15 @@ export class ExportItem extends MvuElement {
 
 			const dataSourceType = sourceTypeResult.sourceType;
 			const targetSourceType = new SourceType(exportType.sourceType, null, selectedSrid);
-			const content = this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType);
-			const blob = new Blob([content], { type: exportType.mediaType });
 
 			const fileName = `bayernAtlas.${exportType.fileExtension}`;
-			this._saveAs(blob, fileName);
+			this._saveAs(
+				{
+					content: this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType),
+					mimeType: exportType.mediaType
+				},
+				fileName
+			);
 		};
 
 		return exportType
@@ -105,8 +109,11 @@ export class ExportItem extends MvuElement {
 	}
 
 	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
-	_saveAs(blob, fileName) {
-		// FIXME: if refactored to a static service method...: check for valid blob(instanceof) and blob.type
+	_saveAs(fileName, contentOptions) {
+		const { content, mimeType } = contentOptions;
+		// FIXME: if refactored to a static service method...: check for valid content and mimeType
+		const blob = new Blob([content], { type: mimeType });
+
 		const url = window.URL.createObjectURL(blob);
 		try {
 			const a = document.createElement('a');
