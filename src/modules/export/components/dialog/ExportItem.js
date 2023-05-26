@@ -106,18 +106,16 @@ export class ExportItem extends MvuElement {
 
 	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
 	_saveAs(blob, fileName) {
-		if (blob instanceof Blob && blob.type) {
-			const url = window.URL.createObjectURL(blob);
-			try {
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = fileName;
-				a.click();
-			} finally {
-				window.URL.revokeObjectURL(url);
-			}
+		// FIXME: if refactored to a static service method...: check for valid blob(instanceof) and blob.type
+		const url = window.URL.createObjectURL(blob);
+		try {
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = fileName;
+			a.click();
+		} finally {
+			window.URL.revokeObjectURL(url);
 		}
-		console.warn('only Blob objects with a valid type property supported');
 	}
 
 	/**

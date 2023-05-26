@@ -63,4 +63,41 @@ describe('ExportItem', () => {
 			});
 		});
 	});
+
+	describe('when srid is changed', () => {
+		it('changes the model', async () => {
+			const element = await setup();
+			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportData = '<baz/>';
+			const selectElement = element.shadowRoot.querySelector('select');
+
+			expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
+			expect(selectElement.value).toBe('42');
+
+			selectElement.value = 21;
+			selectElement.dispatchEvent(new Event('change'));
+
+			expect(element.getModel().selectedSrid).toBe(21);
+		});
+	});
+
+	describe('when download-button is clicked', () => {
+		it('saves the file', async () => {
+			const element = await setup();
+			const saveAsSpy = spyOn(element, '_saveAs').and.callThrough();
+			const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
+			const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL')
+				.withArgs('foo')
+				.and.callFake(() => {});
+			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportData = '<baz/>';
+			const downloadButton = element.shadowRoot.querySelector('ba-button');
+
+			downloadButton.click();
+
+			expect(saveAsSpy).toHaveBeenCalledWith(jasmine.any(Blob), 'bayernAtlas.baz');
+			expect(createObjectURLSpy).toHaveBeenCalled();
+			expect(revokeObjectURLSpy).toHaveBeenCalled();
+		});
+	});
 });
