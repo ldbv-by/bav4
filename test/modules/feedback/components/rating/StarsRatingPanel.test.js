@@ -106,25 +106,6 @@ describe('StarsRatingPanel', () => {
 			expect(onRatingClickSpy).toHaveBeenCalledTimes(5);
 		});
 
-		it('fires a "change" event', async () => {
-			// arrange
-			const element = await setup();
-			const spy = jasmine.createSpy();
-			element.addEventListener('change', spy);
-
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
-			starButtons.forEach((starButton) => {
-				// act
-				starButton.click();
-				// assert
-				expect(spy).toHaveBeenCalledWith(
-					new CustomEvent('change', {
-						detail: { rating: element.rating }
-					})
-				);
-			});
-		});
-
 		it('it will be displayed as selected', async () => {
 			// arrange
 			const element = await setup();
@@ -136,6 +117,35 @@ describe('StarsRatingPanel', () => {
 
 				// assert
 				expect(starButton.classList.contains('selected')).toBeTrue();
+			});
+		});
+
+		it('fires a "change" event', async () => {
+			// arrange
+			const element = await setup();
+			const spy = jasmine.createSpy();
+			const starButton = element.shadowRoot.querySelectorAll('.star-button')[0];
+			element.addEventListener('change', spy);
+
+			// act
+			starButton.click();
+
+			// assert
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { rating: element.rating } }));
+		});
+
+		it('fires a "change" event', async () => {
+			// arrange
+			const element = await setup();
+			const spy = jasmine.createSpy();
+			element.addEventListener('change', spy);
+
+			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			starButtons.forEach((starButton) => {
+				// act
+				starButton.click();
+				// assert
+				expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { rating: element.rating } }));
 			});
 		});
 	});
