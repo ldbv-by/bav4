@@ -10,19 +10,43 @@ import {
 	FALLBACK_GEORESOURCE_LABEL_3,
 	GeoResourceService
 } from '../../src/services/GeoResourceService';
-import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource, XyzGeoResource } from '../../src/domain/geoResources';
 import {
-	loadBvvGeoResourceById,
-	loadBvvGeoResources,
-	loadExampleGeoResources,
-	loadExternalGeoResource
-} from '../../src/services/provider/geoResource.provider';
+	AggregateGeoResource,
+	GeoResourceFuture,
+	VectorGeoResource,
+	VectorSourceType,
+	WmsGeoResource,
+	XyzGeoResource
+} from '../../src/domain/geoResources';
+import { loadBvvGeoResourceById, loadBvvGeoResources, loadExternalGeoResource } from '../../src/services/provider/geoResource.provider';
 import { $injector } from '../../src/injection';
 import { loadBvvFileStorageResourceById } from '../../src/services/provider/fileStorage.provider';
 import { TestUtils } from '../test-utils';
 import { createDefaultLayerProperties, layersReducer } from '../../src/store/layers/layers.reducer';
 
 describe('GeoResourceService', () => {
+	const loadExampleGeoResources = async () => {
+		const wms0 = new WmsGeoResource(
+			'bodendenkmal',
+			'Bodendenkmal',
+			'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
+			'bodendenkmalO',
+			'image/png'
+		);
+		const wms1 = new WmsGeoResource(
+			'baudenkmal',
+			'Baudenkmal',
+			'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
+			'bauensembleO,einzeldenkmalO',
+			'image/png'
+		);
+		const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
+		const xyz0 = new XyzGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
+		const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['xyz0', 'wms0']);
+
+		return [wms0, wms1, wms2, xyz0, aggregate0];
+	};
+
 	const environmentService = {
 		isStandalone: () => {}
 	};
@@ -58,8 +82,8 @@ describe('GeoResourceService', () => {
 			const georesources = await instanceUnderTest.init();
 
 			//georesources from provider
-			expect(georesources.length).toBe(6);
-			expect(proxifySpy).toHaveBeenCalledTimes(6);
+			expect(georesources.length).toBe(5);
+			expect(proxifySpy).toHaveBeenCalledTimes(5);
 		});
 
 		it('initializes the service with default providers', async () => {
@@ -206,7 +230,7 @@ describe('GeoResourceService', () => {
 			const geoResourceId = 'geoResId';
 			const geoResource = new WmsGeoResource(geoResourceId, 'Wms', 'https://some.url', 'someLayer', 'image/png');
 			instanceUnderTest._geoResources = [geoResource];
-			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON).setUrl('another url');
+			const geoResource2 = new VectorGeoResource(geoResourceId, 'Vector', VectorSourceType.GEOJSON);
 
 			const result = instanceUnderTest.addOrReplace(geoResource2);
 
