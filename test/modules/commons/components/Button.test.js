@@ -109,13 +109,13 @@ describe('Button', () => {
 			expect(button.children[0].classList.contains('icon')).toBeTrue();
 			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("foo');
 
-			element.icon = 'bar';
+			element.icon = 'barbaz';
 
 			expect(button.classList.contains('iconbutton')).toBeTrue();
 			expect(button.children.length).toBe(1);
 			expect(element.shadowRoot.styleSheets.length).toBe(3);
 			expect(button.children[0].classList.contains('icon')).toBeTrue();
-			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("bar');
+			expect(element.shadowRoot.styleSheets[2].cssRules.item(0).cssText).toContain('.icon { mask: url("barbaz');
 		});
 	});
 
