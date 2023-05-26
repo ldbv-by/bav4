@@ -85,9 +85,9 @@ describe('ExportItem', () => {
 		it('saves the file', async () => {
 			const element = await setup();
 			const saveAsSpy = spyOn(element, '_saveAs').and.callThrough();
-			const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
+			const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'http://foo');
 			const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('foo')
+				.withArgs('http://foo')
 				.and.callFake(() => {});
 			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
