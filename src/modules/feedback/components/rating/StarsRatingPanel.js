@@ -25,10 +25,7 @@ const Update_Rating = 'update_rating';
 
 /**
  * Rating component
- *
- * Events;
  * @fires  change when the rating has changed
- * Properties:
  * @property {Rating} rating - The selected rating.
  * @class
  * @author norbertK
