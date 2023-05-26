@@ -193,7 +193,6 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', 'email@some.com', Rating.GOOD));
 		});
 
@@ -219,7 +218,6 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalled();
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', null, Rating.GOOD));
 		});
 	});
@@ -337,7 +335,6 @@ describe('GeneralFeedbackPanel', () => {
 			// assert
 			expect(generalFeedbackSaveSpy).toHaveBeenCalled();
 			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
-
 			expect(store.getState().notifications.latest.payload.content).toBe('feedback_generalFeedback_could_not_save');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
 		});
@@ -354,10 +351,9 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(generalFeedbackSaveSpy).toHaveBeenCalled();
-
+			expect(onSubmitCallback).toHaveBeenCalled();
 			expect(store.getState().notifications.latest.payload.content).toBe('feedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
-			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 	});
 });

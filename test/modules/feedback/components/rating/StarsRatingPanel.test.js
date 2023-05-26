@@ -102,7 +102,6 @@ describe('StarsRatingPanel', () => {
 
 			// assert
 			expect(starButtons.length).toBe(5);
-			expect(onRatingClickSpy).toHaveBeenCalled();
 			expect(onRatingClickSpy).toHaveBeenCalledTimes(5);
 		});
 
