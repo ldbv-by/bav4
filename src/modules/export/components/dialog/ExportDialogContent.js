@@ -8,12 +8,14 @@ import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
 import css from './exportDialogContent.css';
 import { MediaType } from '../../../../services/HttpService';
-import { ExportItem } from './ExportItem';
 
 const Update = 'update';
 
 /**
+ * A content component to show available export actions
+ * for specified (stringified) exportData
  * @class
+ * @property {string} exportData the stringified collection of data, which should be exported
  * @author thiloSchlemmer
  */
 export class ExportDialogContent extends MvuElement {
@@ -43,10 +45,6 @@ export class ExportDialogContent extends MvuElement {
 			</div>`;
 	}
 
-	/**
-	 * creates the available ExportTypes
-	 * @returns {Array<ExportType>}
-	 */
 	getExportTypes() {
 		return [
 			{ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] },
@@ -61,10 +59,6 @@ export class ExportDialogContent extends MvuElement {
 		];
 	}
 
-	/**
-	 * sets the data which should be exported
-	 * @param {String} value the export data; wether a plain string or a geoResourceId
-	 */
 	set exportData(value) {
 		this.signal(Update, value);
 	}

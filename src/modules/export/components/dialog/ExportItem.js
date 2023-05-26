@@ -15,16 +15,18 @@ const Update_Data = 'update_data';
 const Update_Selected_Srid = 'update_selected_srid';
 /**
  * @typedef {Object} ExportType
- * @property {module:services/domain/sourceType~SourceTypeName} sourceType
+ * @property {module:domain/sourceType~SourceTypeName} sourceType
  * @property {module:services/HttpService~MediaType} mediaType
  * @property {string} fileExtension
  * @property {Array<number>} srids
  */
 
 /**
- * A child component of {@link ExportDialogContent |ExportDialogContent} to show options and action buttons
- * for a specific {@link module:modules/export/components/dialog/ExportItem~ExportType| ExportType}
+ * A child component of {@link ExportDialogContent|ExportDialogContent} to show options and action buttons
+ * for a specific {@link module:modules/export/components/dialog/ExportItem~ExportType|ExportType}
  * @class
+ * @property {module:modules/export/components/dialog/ExportItem~ExportType} exportType the type of export; including information about mime-type, filename and sourceType
+ * @property {string} exportData the stringified collection of data, which should be exported
  * @author thiloSchlemmer
  */
 export class ExportItem extends MvuElement {
@@ -127,18 +129,10 @@ export class ExportItem extends MvuElement {
 		}
 	}
 
-	/**
-	 * the type of export; including information about mime-type, filename and sourceType
-	 * @param {ExportType} value
-	 */
 	set exportType(value) {
 		this.signal(Update_Type, value);
 	}
 
-	/***
-	 * the stringified collection of data, which should be exported
-	 * @param {string} value
-	 */
 	set exportData(value) {
 		this.signal(Update_Data, value);
 	}
