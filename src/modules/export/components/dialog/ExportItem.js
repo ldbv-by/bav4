@@ -22,6 +22,8 @@ const Update_Selected_Srid = 'update_selected_srid';
  */
 
 /**
+ * A child component of {@link ExportDialogContent |ExportDialogContent} to show options and action buttons
+ * for a specific {@link module:modules/export/components/dialog/ExportItem~ExportType| ExportType}
  * @class
  * @author thiloSchlemmer
  */
@@ -126,16 +128,21 @@ export class ExportItem extends MvuElement {
 	}
 
 	/**
-	 * content for export action
+	 * the type of export; including information about mime-type, filename and sourceType
 	 * @param {ExportType} value
 	 */
 	set exportType(value) {
 		this.signal(Update_Type, value);
 	}
 
+	/***
+	 * the stringified collection of data, which should be exported
+	 * @param {string} value
+	 */
 	set exportData(value) {
 		this.signal(Update_Data, value);
 	}
+
 	static get tag() {
 		return 'ba-export-item';
 	}
