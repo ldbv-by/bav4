@@ -5,6 +5,10 @@ import { TestUtils } from '../../../../test-utils';
 window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportItem', () => {
+	const fileSaveServiceMock = {
+		saveAs: () => {}
+	};
+
 	const setup = (state = {}) => {
 		TestUtils.setupStoreAndDi(state, {});
 
@@ -15,7 +19,8 @@ describe('ExportItem', () => {
 			.registerSingleton('SourceTypeService', {
 				forData: () => 'foo/bar'
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('FileSaveService', fileSaveServiceMock);
 
 		return TestUtils.render(ExportItem.tag);
 	};
@@ -84,20 +89,14 @@ describe('ExportItem', () => {
 	describe('when download-button is clicked', () => {
 		it('saves the file', async () => {
 			const element = await setup();
-			const saveAsSpy = spyOn(element, '_saveAs').and.callThrough();
-			const createObjectURLSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'http://foo');
-			const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL')
-				.withArgs('http://foo')
-				.and.callFake(() => {});
+			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callThrough();
 			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const downloadButton = element.shadowRoot.querySelector('ba-button');
 
 			downloadButton.click();
 
-			expect(saveAsSpy).toHaveBeenCalledWith(jasmine.objectContaining({ content: '<foo-bar></foo-bar>', mimeType: 'bar' }), 'bayernAtlas.baz');
-			expect(createObjectURLSpy).toHaveBeenCalled();
-			expect(revokeObjectURLSpy).toHaveBeenCalled();
+			expect(saveAsSpy).toHaveBeenCalledWith('<foo-bar></foo-bar>', 'bar', 'bayernAtlas.baz');
 		});
 	});
 });

@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(66);
+		expect($injector.count()).toBe(67);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -22,6 +22,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('SearchResultService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('ShareService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('UnitsService')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('FileSaveService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('FileStorageService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('UrlService')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('IconService')).toBe(Injector.SCOPE_SINGLETON);

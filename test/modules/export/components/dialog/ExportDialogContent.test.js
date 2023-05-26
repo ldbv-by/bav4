@@ -18,7 +18,8 @@ describe('ExportDialogContent', () => {
 			.registerSingleton('SourceTypeService', {
 				forData: () => 'foo/bar'
 			})
-			.registerSingleton('TranslationService', { translate: (key) => key });
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('FileSaveService', { saveAs: () => {} });
 
 		return TestUtils.render(ExportDialogContent.tag);
 	};

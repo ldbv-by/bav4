@@ -32,14 +32,16 @@ const Update_Selected_Srid = 'update_selected_srid';
 export class ExportItem extends MvuElement {
 	constructor() {
 		super({ exportType: null, selectedSrid: null, exportData: null });
-		const { TranslationService, SourceTypeService, ExportVectorDataService } = $injector.inject(
+		const { TranslationService, SourceTypeService, ExportVectorDataService, FileSaveService } = $injector.inject(
 			'TranslationService',
 			'SourceTypeService',
-			'ExportVectorDataService'
+			'ExportVectorDataService',
+			'FileSaveService'
 		);
 		this._translationService = TranslationService;
 		this._sourceTypeService = SourceTypeService;
 		this._exportVectorDataService = ExportVectorDataService;
+		this._fileSaveService = FileSaveService;
 	}
 
 	update(type, data, model) {
@@ -74,11 +76,9 @@ export class ExportItem extends MvuElement {
 			const targetSourceType = new SourceType(exportType.sourceType, null, selectedSrid);
 
 			const fileName = `bayernAtlas.${exportType.fileExtension}`;
-			this._saveAs(
-				{
-					content: this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType),
-					mimeType: exportType.mediaType
-				},
+			this._fileSaveService.saveAs(
+				this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType),
+				exportType.mediaType,
 				fileName
 			);
 		};
@@ -110,23 +110,6 @@ export class ExportItem extends MvuElement {
 						></ba-button>
 					</div>`
 			: html.nothing;
-	}
-
-	// FIXME: this is a prototypical implementation, should be moved to something like a FileSaveService.
-	_saveAs(fileName, contentOptions) {
-		const { content, mimeType } = contentOptions;
-		// FIXME: if refactored to a static service method...: check for valid content and mimeType
-		const blob = new Blob([content], { type: mimeType });
-
-		const url = window.URL.createObjectURL(blob);
-		try {
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = fileName;
-			a.click();
-		} finally {
-			window.URL.revokeObjectURL(url);
-		}
 	}
 
 	set exportType(value) {

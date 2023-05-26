@@ -7,6 +7,7 @@ import { NetworkStateSyncHttpService } from '../services/HttpService';
 import { TranslationService } from '../services/TranslationService';
 import { ShareService } from '../services/ShareService';
 import { UnitsService } from '../services/UnitsService';
+import { FileSaveService } from '../services/FileSaveService';
 import { GeoResourceService } from '../services/GeoResourceService';
 import { UrlService } from '../services/UrlService';
 import { IconService } from '../services/IconService';
@@ -70,6 +71,7 @@ $injector
 	.register('SearchResultService', SearchResultService)
 	.register('ShareService', ShareService)
 	.register('UnitsService', UnitsService)
+	.register('FileSaveService', FileSaveService)
 	.register('FileStorageService', BvvFileStorageService)
 	.register('UrlService', UrlService)
 	.registerSingleton('IconService', new IconService())
