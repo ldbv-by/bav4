@@ -48,7 +48,7 @@ describe('BaseLayerSwitcher', () => {
 		it('renders nothing when layers state not yet set ready', async () => {
 			const element = await setup();
 
-			element.configuration = { all: ['geoRsId0'], specific: ['geoRsId0'] };
+			element.configuration = { all: ['geoRsId0'], managed: ['geoRsId0'] };
 
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
@@ -72,7 +72,7 @@ describe('BaseLayerSwitcher', () => {
 			});
 			const element = await setup(state);
 
-			element.configuration = { all: [], specific: ['geoRsId0', activeGeoResourceId] };
+			element.configuration = { all: [], managed: ['geoRsId0', activeGeoResourceId] };
 
 			const container = element.shadowRoot.querySelector('.baselayer__container');
 			expect(container).toBeTruthy();
@@ -106,7 +106,7 @@ describe('BaseLayerSwitcher', () => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
-					element.configuration = { all: [geoResourceId0], specific: [geoResourceId0, geoResourceId2] };
+					element.configuration = { all: [geoResourceId0], managed: [geoResourceId0, geoResourceId2] };
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 					//let's add the second baseLayer
@@ -136,7 +136,7 @@ describe('BaseLayerSwitcher', () => {
 						return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 					});
 					const element = await setup(state);
-					element.configuration = { all: [], specific: [geoResourceId0, geoResourceId2] };
+					element.configuration = { all: [], managed: [geoResourceId0, geoResourceId2] };
 					const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 					//let's add the second baseLayer
@@ -164,7 +164,7 @@ describe('BaseLayerSwitcher', () => {
 					return new XyzGeoResource(id, 'someLabel', 'someUrl');
 				});
 				const element = await setup(state);
-				element.configuration = { all: [], specific: [geoResourceId0, geoResourceId1] };
+				element.configuration = { all: [], managed: [geoResourceId0, geoResourceId1] };
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 				//let's try to add the first baseLayer again
@@ -190,7 +190,7 @@ describe('BaseLayerSwitcher', () => {
 					return new XyzGeoResource(id, `${id}Label`, 'someUrl');
 				});
 				const element = await setup(state);
-				element.configuration = { all: [], specific: [geoResourceId0] };
+				element.configuration = { all: [], managed: [geoResourceId0] };
 				const buttons = element.shadowRoot.querySelectorAll('.baselayer__button');
 
 				//let's add a baseLayer

@@ -42,7 +42,7 @@ describe('BaseLayerSwitcher', () => {
 
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
-				specific: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
+				managed: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
 				all: [
 					'atkis',
 					'luftbild_labels',
@@ -59,7 +59,7 @@ describe('BaseLayerSwitcher', () => {
 				]
 			});
 			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[1].configuration).toEqual({
-				specific: [
+				managed: [
 					'by_style_standard',
 					'by_style_grau',
 					'by_style_nacht',

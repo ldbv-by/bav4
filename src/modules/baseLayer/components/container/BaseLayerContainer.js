@@ -47,7 +47,7 @@ export class BaseLayerContainer extends MvuElement {
 					([key, value]) =>
 						html`<div class="title">${translate(`baseLayer_container_category_${key}`)}</div>
 							<div>
-								<ba-base-layer-switcher .configuration=${{ all: allBaseGeoResourceIds, specific: value }}></ba-base-layer-switcher>
+								<ba-base-layer-switcher .configuration=${{ all: allBaseGeoResourceIds, managed: value }}></ba-base-layer-switcher>
 							</div>`
 				)}
 			</div>

@@ -15,8 +15,8 @@ const Update_Is_Layers_Store_Ready = 'update_is_layers_store_ready';
 /**
  * Configuration of a BaseLayerSwitcher instance.
  * @typedef BaseLayerSwitcherConfiguration
- * @property {Array<string>} specific GeoResource ids which should be managed by this component instance
- * @property {Array<string>} all All available GeoResource ids which should be considered as a base layer
+ * @property {Array<string>} managed GeoResource ids which should be managed by this BaseLayerSwitcher instance
+ * @property {Array<string>} all All available GeoResource ids which should be considered as a base layer (may be empty)
  */
 
 /**
@@ -55,7 +55,7 @@ export class BaseLayerSwitcher extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Configuration:
-				return { ...model, baseGeoResourceIds: [...data.specific], allBaseGeoResourceIds: [...data.all] };
+				return { ...model, baseGeoResourceIds: [...data.managed], allBaseGeoResourceIds: [...data.all] };
 			case Update_Layers:
 				return { ...model, activeLayers: [...data] };
 			case Update_Is_Layers_Store_Ready:
