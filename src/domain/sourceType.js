@@ -74,7 +74,7 @@ export class SourceTypeResult {
 
 /**
  * Flag that indicates the status of a SourceTypeResult.
- * @enum
+ * @enum {number}
  */
 export const SourceTypeResultStatus = Object.freeze({
 	OK: 0,
