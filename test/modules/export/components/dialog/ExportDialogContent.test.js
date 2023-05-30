@@ -1,6 +1,8 @@
+import { SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import { ExportDialogContent } from '../../../../../src/modules/export/components/dialog/ExportDialogContent';
 import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
+import { MediaType } from '../../../../../src/services/HttpService';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
@@ -38,6 +40,32 @@ describe('ExportDialogContent', () => {
 			element.exportData = '<kml/>';
 
 			expect(element.shadowRoot.querySelectorAll('ba-export-item')).toHaveSize(4);
+		});
+	});
+
+	describe('getExportTypes', () => {
+		it('creates a list of available exportTypes', async () => {
+			const element = await setup();
+			const exportTypes = element.getExportTypes();
+
+			expect(exportTypes).toHaveSize(4);
+			expect(exportTypes[0]).toEqual(
+				jasmine.objectContaining({ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] })
+			);
+			expect(exportTypes[1]).toEqual(
+				jasmine.objectContaining({ sourceType: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] })
+			);
+			expect(exportTypes[2]).toEqual(
+				jasmine.objectContaining({ sourceType: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, fileExtension: 'geojson', srids: [4326] })
+			);
+			expect(exportTypes[3]).toEqual(
+				jasmine.objectContaining({
+					sourceType: SourceTypeName.EWKT,
+					mediaType: MediaType.TEXT_PLAIN,
+					fileExtension: 'txt',
+					srids: [4326, 3857, 25832, 25833]
+				})
+			);
 		});
 	});
 });
