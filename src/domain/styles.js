@@ -2,7 +2,8 @@
  * @module domain/styles
  */
 /**
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const StyleSizeTypes = Object.freeze({
 	SMALL: 'small',

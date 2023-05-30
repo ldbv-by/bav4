@@ -11,7 +11,8 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 
 /**
- * @enum
+ * @readonly
+ * @enum {Number}
  */
 export const TopicsContentPanelIndex = Object.freeze({
 	TOPICS: 0,
