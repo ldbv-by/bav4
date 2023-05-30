@@ -23,7 +23,8 @@ const Chart_Delay = 300;
 
 /**
  * different types of slope
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const SlopeType = Object.freeze({
 	FLAT: 'flat',

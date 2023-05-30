@@ -284,6 +284,7 @@ input[type='range']:focus {
 .ba-form-element.userVisited textarea:invalid ~ .helper-label {
 	display: none;
 }
+
 .ba-form-element.userVisited input:invalid ~ .error-label,
 .ba-form-element.userVisited textarea:invalid ~ .error-label {
 	display: block;

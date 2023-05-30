@@ -3,7 +3,8 @@
  */
 /**
  * Enum which holds all valid tool ids.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const Tools = Object.freeze({
 	MEASURING: 'measuring',

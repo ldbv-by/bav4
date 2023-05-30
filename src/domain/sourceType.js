@@ -35,9 +35,9 @@ export class SourceType {
 }
 
 /**
- * Enum of all supported source type names.
- * @enum {string}
+ * Enum of all supported source types names.
  * @readonly
+ * @enum {String}
  */
 export const SourceTypeName = Object.freeze({
 	KML: 'kml',
@@ -74,7 +74,8 @@ export class SourceTypeResult {
 
 /**
  * Flag that indicates the status of a SourceTypeResult.
- * @enum {number}
+ * @readonly
+ * @enum {Number}
  */
 export const SourceTypeResultStatus = Object.freeze({
 	OK: 0,

@@ -1,0 +1,12 @@
+.map-feedback__disclaimer {
+	font-size: 0.9rem;
+	margin-top: 8em;
+	padding: 1em 0;
+}
+.map-feedback__disclaimer a {
+	font-size: 0.9rem;
+	color: var(--text4);
+}
+.map-feedback__disclaimer a:hover {
+	text-decoration: underline;
+}
