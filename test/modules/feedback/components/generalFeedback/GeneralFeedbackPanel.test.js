@@ -111,10 +111,10 @@ describe('GeneralFeedbackPanel', () => {
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').target).toBe('_blank');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').target).toBe('_blank');
 		});
 	});
 

@@ -5,6 +5,9 @@ describe('i18n for feedback module', () => {
 		const map = provide('de');
 
 		expect(map.feedback_changeDescription).toBe('Ihre Nachricht');
+		expect(map.feedback_disclaimer).toBe(
+			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
+		);
 		expect(map.feedback_eMail_error).toBe('Keine gültige E-Mail-Adresse');
 		expect(map.feedback_eMail_helper).toBe('Optional');
 		expect(map.feedback_eMail).toBe('Ihre E-Mail-Adresse');
@@ -24,9 +27,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Bitte auswählen');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Kategorie');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
-		expect(map.feedback_mapFeedback_disclaimer).toBe(
-			'Das LDBV behält sich grundsätzlich vor, Meldungen nicht zu übernehmen. Für evtl. Rückfragen, sowie zur Information über die weitere Bearbeitung, empfehlen wir die Angabe Ihrer E-Mail-Adresse.'
-		);
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
 		expect(map.feedback_mapFeedback_text_after).toBe(
@@ -41,6 +41,9 @@ describe('i18n for feedback module', () => {
 		const map = provide('en');
 
 		expect(map.feedback_changeDescription).toBe('Your message');
+		expect(map.feedback_disclaimer).toBe(
+			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
+		);
 		expect(map.feedback_eMail_error).toBe('No valid e-mail address');
 		expect(map.feedback_eMail_helper).toBe('Optional');
 		expect(map.feedback_eMail).toBe('Your email address');
@@ -58,9 +61,6 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_categorySelection_helper).toBe('Please choose');
 		expect(map.feedback_mapFeedback_categorySelection).toBe('Category');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
-		expect(map.feedback_mapFeedback_disclaimer).toBe(
-			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
-		);
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_mapFeedback_privacyPolicy).toBe('Privacy Policy');
 		expect(map.feedback_mapFeedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
