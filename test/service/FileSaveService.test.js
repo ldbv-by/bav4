@@ -1,6 +1,6 @@
 import { $injector } from '../../src/injection';
 import { FileSaveService } from '../../src/services/FileSaveService';
-import { HttpService, MediaType } from '../../src/services/HttpService';
+import { MediaType } from '../../src/services/HttpService';
 
 describe('UnitsService', () => {
 	const defaultFileNameFromConfig = 'foo.bar';
