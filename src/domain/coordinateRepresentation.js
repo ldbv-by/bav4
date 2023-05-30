@@ -13,7 +13,8 @@
 
 /**
  * Predefined global enum of CoordinateRepresentation.
- * @enum
+ * @readonly
+ * @enum {CoordinateRepresentation}
  */
 export const GlobalCoordinateRepresentations = Object.freeze({
 	WGS84: { label: 'WGS84', code: 4326, digits: 5, global: true, group: 'wgs84' },
@@ -23,7 +24,8 @@ export const GlobalCoordinateRepresentations = Object.freeze({
 });
 /**
  * BVV specific local projected enum of CoordinateRepresentations.
- * @enum
+ * @readonly
+ * @enum {CoordinateRepresentation}
  */
 export const BvvCoordinateRepresentations = Object.freeze({
 	UTM32: { label: 'UTM32', code: 25832, digits: 0, global: false, group: 'utm' },

@@ -29,7 +29,8 @@ const Update_Anchor_Position = 'update_last_anchor_position';
 const DefaultMenuOption = { label: null, icon: null, action: null, disabled: false, isDivider: false };
 
 /**
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const MenuTypes = Object.freeze({
 	MEATBALL: 'meatball',
