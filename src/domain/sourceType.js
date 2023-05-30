@@ -35,7 +35,7 @@ export class SourceType {
 }
 
 /**
- * Enum of all supported source types names.
+ * Enum of all supported source type names.
  * @enum {string}
  * @readonly
  */
