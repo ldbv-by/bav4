@@ -9,7 +9,8 @@ import { classMap } from 'lit-html/directives/class-map.js';
 
 /**
  * Possible feedback types
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const FeedbackType = Object.freeze({
 	MAP: 'map',
@@ -65,7 +66,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 						<span class="ba-list-item__icon chatleftdots"> </span>
 					</span>
 					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_generalButton')}</span>
+						<span class="ba-list-item__primary-text">${translate('feedback_generalFeedback')}</span>
 						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
 					</span>
 				</button>
@@ -74,7 +75,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 						<span class="ba-list-item__icon map"> </span>
 					</span>
 					<span class="ba-list-item__text ">
-						<span class="ba-list-item__primary-text">${translate('feedback_toggleFeedback_mapButton')}</span>
+						<span class="ba-list-item__primary-text">${translate('feedback_mapFeedback')}</span>
 						<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_mapButton_sub')}</span>
 					</span>
 				</button>
@@ -82,7 +83,9 @@ export class ToggleFeedbackPanel extends MvuElement {
 			<div class="toggleMap ${classMap(mapClasses)}">
 				<ba-mvu-feedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-feedbackpanel>
 			</div>
-			<div class="toggleGeneral ${classMap(generalClasses)}">general feedback todo</div>
+			<div class="toggleGeneral ${classMap(generalClasses)}">
+				<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
+			</div>
 		`;
 	}
 
