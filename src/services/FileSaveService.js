@@ -25,7 +25,7 @@ export class FileSaveService {
 			throw Error('content and mimetype must be specified');
 		}
 
-		const fileName = filename ?? this._configService.getValue('DEFAULT_FILENAME', 'bayernAtlas');
+		const fileName = filename ?? this._configService.getValue('DEFAULT_SAVE_FILENAME', 'fileSaved');
 		const blob = new Blob([content], { type: type });
 
 		const url = window.URL.createObjectURL(blob);

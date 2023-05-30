@@ -25,7 +25,7 @@ describe('UnitsService', () => {
 			const instanceUnderTest = new FileSaveService();
 
 			expect(() => instanceUnderTest.saveAs(null, MediaType.JSON)).toThrowError('content and mimetype must be specified');
-			expect(() => instanceUnderTest.saveAs('fooo', null)).toThrowError('content and mimetype must be specified');
+			expect(() => instanceUnderTest.saveAs('foo', null)).toThrowError('content and mimetype must be specified');
 		});
 
 		it('saves a blob with fileName', () => {
@@ -57,6 +57,7 @@ describe('UnitsService', () => {
 			const ankerMock = { href: null, download: null, click: () => {} };
 			const ankerClickSpy = spyOn(ankerMock, 'click').and.callThrough();
 			spyOn(document, 'createElement').and.returnValue(ankerMock);
+			const configSpy = spyOn(configService, 'getValue').and.callThrough();
 			const createUrlSpy = spyOn(window.URL, 'createObjectURL').and.callFake(() => 'foo');
 			const revokeUrlSpy = spyOn(window.URL, 'revokeObjectURL')
 				.withArgs('foo')
@@ -65,6 +66,7 @@ describe('UnitsService', () => {
 			const instanceUnderTest = new FileSaveService();
 			instanceUnderTest.saveAs(content, mimetype);
 
+			expect(configSpy).toHaveBeenCalledWith('DEFAULT_SAVE_FILENAME', 'fileSaved');
 			expect(createUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
 			expect(revokeUrlSpy).toHaveBeenCalledWith('foo');
 			expect(ankerMock.href).toBe('foo');
