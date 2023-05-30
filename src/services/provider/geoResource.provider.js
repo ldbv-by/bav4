@@ -1,24 +1,13 @@
 /**
  * @module services/provider/geoResource_provider
  */
-import {
-	AggregateGeoResource,
-	VectorGeoResource,
-	WmsGeoResource,
-	XyzGeoResource,
-	VectorSourceType,
-	GeoResourceFuture,
-	VTGeoResource
-} from '../../domain/geoResources';
+import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
 import { isHttpUrl } from '../../utils/checks';
+import { createUniqueId } from '../../utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
-/**
- * Maps a BVV geoResource definition to a corresponding GeoResource instance
- * @param {object} definition Configuration object for a GeoResource
- */
 export const _definitionToGeoResource = (definition) => {
 	const toGeoResource = (def) => {
 		switch (def.type) {
@@ -36,41 +25,46 @@ export const _definitionToGeoResource = (definition) => {
 				);
 			case 'vt':
 				return new VTGeoResource(def.id, def.label, def.url);
-			case 'vector':
-				//Todo: Let's try to load it as GeoResourceFuture, than we can use the onResolve callback
-				return (
-					new VectorGeoResource(def.id, def.label, Symbol.for(def.sourceType))
-						//set specific optional values
-						.setUrl(def.url)
-						.setClusterParams(def.clusterParams ?? {})
-				);
+			case 'vector': {
+				const loader = async () => {
+					const { UrlService: urlService } = $injector.inject('UrlService');
+					const vectorGeoResource = await defaultVectorGeoResourceLoaderForUrl(
+						urlService.proxifyInstant(def.url),
+						Symbol.for(def.sourceType),
+						def.id,
+						def.label
+					)();
+					return setPropertiesAndProviders(vectorGeoResource.setClusterParams(def.clusterParams ?? {}));
+				};
+				return new GeoResourceFuture(def.id, loader);
+			}
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
 			default:
 				return null;
 		}
 	};
-	const geoResource = toGeoResource(definition);
-	if (geoResource) {
-		geoResource.setAttributionProvider(getBvvAttribution);
-		geoResource.setAttribution(_parseBvvAttributionDefinition(definition));
-		//set common optional values
-		geoResource.setOpacity(definition.opacity ?? geoResource.opacity);
-		geoResource.setHidden(definition.hidden ?? geoResource.hidden);
-		geoResource.setMinZoom(definition.minZoom ?? null);
-		geoResource.setMaxZoom(definition.maxZoom ?? null);
-		geoResource.setQueryable(definition.queryable ?? true);
-		geoResource.setExportable(definition.exportable ?? true);
-		return geoResource;
-	}
-	return null;
+	const setPropertiesAndProviders = (geoResource) => {
+		return geoResource
+			? geoResource
+					.setAttributionProvider(getBvvAttribution)
+					.setAttribution(_parseBvvAttributionDefinition(definition))
+					//set common optional values
+					.setOpacity(definition.opacity ?? geoResource.opacity)
+					.setHidden(definition.hidden ?? geoResource.hidden)
+					.setMinZoom(definition.minZoom ?? null)
+					.setMaxZoom(definition.maxZoom ?? null)
+					.setQueryable(definition.queryable ?? true)
+					.setExportable(definition.exportable ?? true)
+			: null;
+	};
+	return setPropertiesAndProviders(toGeoResource(definition));
 };
 
 /**
  * Uses the BVV endpoint to load geoResources.
  * @function
- * @implements {module:services/GeoResourceService~geoResourceProvider}
- * @returns {Promise<Array<GeoResource>>}
+ * @type {module:services/GeoResourceService~geoResourceProvider}
  */
 export const loadBvvGeoResources = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -97,11 +91,6 @@ export const loadBvvGeoResources = async () => {
 	throw new Error('GeoResources could not be loaded');
 };
 
-/**
- * Helper function to parse BVV attributions.
- * @param {object} definition BVV GeoResource definition
- * @returns  {Array<Attribution>|null} an array of attributions or `null`
- */
 export const _parseBvvAttributionDefinition = (definition) => {
 	if (Array.isArray(definition.extendedAttributions)) {
 		return definition.extendedAttributions.map((extAtt) => ({
@@ -113,41 +102,10 @@ export const _parseBvvAttributionDefinition = (definition) => {
 };
 
 /**
- * Loads example GeoResources without a backend.
- * @function
- * @implements {module:services/GeoResourceService~geoResourceProvider}
- * @returns {Promise<Array<GeoResource>>}
- */
-export const loadExampleGeoResources = async () => {
-	const wms0 = new WmsGeoResource(
-		'bodendenkmal',
-		'Bodendenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bodendenkmalO',
-		'image/png'
-	);
-	const wms1 = new WmsGeoResource(
-		'baudenkmal',
-		'Baudenkmal',
-		'https://geoservices.bayern.de/wms/v1/ogc_denkmal.cgi',
-		'bauensembleO,einzeldenkmalO',
-		'image/png'
-	);
-	const wms2 = new WmsGeoResource('dop80', 'DOP 80 Farbe', 'https://geoservices.bayern.de/wms/v2/ogc_dop80_oa.cgi?', 'by_dop80c', 'image/png');
-	const xyz0 = new XyzGeoResource('atkis_sw', 'Webkarte s/w', 'https://intergeo{31-37}.bayernwolke.de/betty/g_atkisgray/{z}/{x}/{y}');
-	const vector0 = new VectorGeoResource('huetten', 'Hütten', VectorSourceType.KML).setUrl(
-		'http://www.geodaten.bayern.de/ba-data/Themen/kml/huetten.kml'
-	);
-	const aggregate0 = new AggregateGeoResource('aggregate0', 'Aggregate', ['xyz0', 'wms0']);
-
-	return [wms0, wms1, wms2, xyz0, vector0, aggregate0];
-};
-
-/**
  * Uses the BVV endpoint to load a GeoResource by id
  * @function
- * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
- * @returns {GeoResourceFuture|null}
+ * @param {string} id Id of the requested GeoResource
+ * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadBvvGeoResourceById = (id) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -180,8 +138,8 @@ export const loadBvvGeoResourceById = (id) => {
  *
  * WMS: `{url}||{layer}||[{label}]`
  * @function
- * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
- * @returns {GeoResourceFuture|null}
+ * @param {string} urlBasedAsId URL-based ID of the requested GeoResource
+ * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadExternalGeoResource = (urlBasedAsId) => {
 	const parts = urlBasedAsId.split('||');
@@ -238,4 +196,28 @@ export const loadExternalGeoResource = (urlBasedAsId) => {
 		return new GeoResourceFuture(urlBasedAsId, loader);
 	}
 	return null;
+};
+
+/**
+ * Returns an GeoResourceLoader for an URL-based VectorGeoResource.
+ * @function
+ * @param {string} url
+ * @param {VectorSourceType} sourceType
+ * @param {string | null} [id]
+ * @param {string | null} [label]
+ * @returns {module:domain/geoResources~asyncGeoResourceLoader}
+ * @throws when resource cannot be loaded
+ */
+export const defaultVectorGeoResourceLoaderForUrl = (url, sourceType, id = createUniqueId().toString(), label = null) => {
+	return async () => {
+		const { HttpService: httpService } = $injector.inject('HttpService');
+		const result = await httpService.get(url, { timeout: 5000 });
+
+		if (result.ok) {
+			const data = await result.text();
+
+			return new VectorGeoResource(id, label, sourceType).setSource(data, 4326 /**valid for kml, gpx and geoJson**/);
+		}
+		throw new Error(`GeoResource for '${url}' could not be loaded: Http-Status ${result.status}`);
+	};
 };
