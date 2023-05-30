@@ -39,9 +39,9 @@ describe('ToggleFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedMapButton = 'feedback_toggleFeedback_mapButton';
+			const expectedMapButton = 'feedback_mapFeedback';
 			const expectedMapButtonSub = 'feedback_toggleFeedback_mapButton_sub';
-			const expectedGeneralButton = 'feedback_toggleFeedback_generalButton';
+			const expectedGeneralButton = 'feedback_generalFeedback';
 			const expectedGeneralButtonSub = 'feedback_toggleFeedback_generalButton_sub';
 
 			const element = await setup();
