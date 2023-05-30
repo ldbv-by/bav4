@@ -7,12 +7,16 @@ import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import exportSvg from './assets/download.svg';
 import { KML } from 'ol/format';
+import { VectorGeoResource } from '../../../../domain/geoResources';
+import { Feature } from 'ol';
 
 const Update_GeoResource_ID = 'update_georesource_id';
 const Update_Feature = 'update_feature';
 /**
- *
+ * AssistChip to show the availability of export actions
  * @class
+ * @property {String} geoResourceId the ID of a existing {@link VectorGeoResource}
+ * @property {Feature} feature the single {@link ol.Feature}, available for an export
  * @author thiloSchlemmer
  */
 export class ExportVectorDataChip extends AbstractAssistChip {
@@ -46,6 +50,7 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 
 	isVisible() {
 		const { geoResourceId, feature } = this.getModel();
+
 		return geoResourceId || feature;
 	}
 
@@ -64,5 +69,22 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		const exportData = geoResourceId ? fromGeoResource(geoResourceId) : fromFeature(feature);
 
 		openModal('Export', html`<ba-export-dialog .exportData=${exportData}></ba-export-dialog>`);
+	}
+
+	set geoResourceId(value) {
+		const geoResource = this._geoResourceService.byId(value);
+		if (geoResource && geoResource instanceof VectorGeoResource) {
+			this.signal(Update_GeoResource_ID, value);
+		} else {
+			console.warn('value is not a valid ID for an existing instance of VectorGeoResource', value);
+		}
+	}
+
+	set feature(value) {
+		if (value instanceof Feature) {
+			this.signal(Update_Feature, value);
+		} else {
+			console.warn('value is no Feature', value);
+		}
 	}
 }
