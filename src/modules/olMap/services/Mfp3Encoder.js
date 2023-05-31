@@ -23,6 +23,10 @@ const UnitsRatio = 39.37; //inches per meter
 const PointsPerInch = 72; // PostScript points 1/72"
 const PixelSizeInMeter = 0.00028; // based on https://www.adv-online.de/AdV-Produkte/Standards-und-Produktblaetter/AdV-Profile/binarywriterservlet?imgUid=36060b99-b8c4-0a41-ba3c-cdd1072e13d6&uBasVariant=11111111-1111-1111-1111-111111111111  and the calculations of a specific scaleDenominator (p.22)
 
+/**
+ * @readonly
+ * @enum {String}
+ */
 export const MFP_ENCODING_ERROR_TYPE = Object.freeze({
 	MISSING_GEORESOURCE: 'missing_georesource',
 	NOT_EXPORTABLE: 'not_exportable'

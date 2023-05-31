@@ -25,7 +25,8 @@ const getStore = () => {
 
 /**
  * Type of a {@link FeatureInfoGeometry}
- * @enum
+ * @readonly
+ * @enum {Number}
  */
 export const FeatureInfoGeometryTypes = Object.freeze({
 	GEOJSON: 0
