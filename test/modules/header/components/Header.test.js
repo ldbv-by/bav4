@@ -21,7 +21,7 @@ let store;
 
 describe('Header', () => {
 	const setup = (state = {}, config = {}) => {
-		const { embed = false } = config;
+		const { embed = false, standalone = false } = config;
 
 		const initialState = {
 			mainMenu: {
@@ -54,7 +54,7 @@ describe('Header', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
-			.registerSingleton('EnvironmentService', { isEmbedded: () => embed })
+			.registerSingleton('EnvironmentService', { isEmbedded: () => embed, isStandalone: () => standalone })
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(Header.tag);
@@ -182,6 +182,12 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 
 			expect(element.shadowRoot.querySelector('.header__search').getAttribute('placeholder')).toBe('header_search_placeholder');
+
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
+
+			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title');
+			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link');
+			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('target')).toBe('_blank');
 		});
 
 		it('adds a close button', async () => {
@@ -231,6 +237,15 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('#maps_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#misc_button').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
 			expect(element.shadowRoot.querySelector('#input').hasAttribute(TEST_ID_ATTRIBUTE_NAME)).toBeTrue();
+		});
+
+		it('renders for standalone', async () => {
+			const element = await setup({}, { standalone: true });
+
+			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_standalone');
+			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
+			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
 		});
 	});
 

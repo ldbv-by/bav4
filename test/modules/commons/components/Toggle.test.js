@@ -86,6 +86,17 @@ describe('Toggle', () => {
 
 	describe('event handling', () => {
 		describe('on click', () => {
+			it('fires a "toggle" event', async () => {
+				const element = await TestUtils.render(Toggle.tag);
+				const spy = jasmine.createSpy();
+				element.addEventListener('toggle', spy);
+
+				element.click();
+
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+				expect(element.checked).toBeTrue();
+			});
+
 			it('calls the onToggle callback via property callback', async () => {
 				const element = await TestUtils.render(Toggle.tag);
 				element.onToggle = jasmine.createSpy();

@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/components/menu/catalog/CatalogLeaf
+ */
 import { html, nothing } from 'lit-html';
 import { AbstractContentPanel } from '../../../../menu/components/mainMenu/content/AbstractContentPanel';
 import css from './catalogLeaf.css';

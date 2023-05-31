@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/spinner/Spinner
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';

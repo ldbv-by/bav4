@@ -1,3 +1,6 @@
+/**
+ * @module utils/assets
+ */
 const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
 
 export const AssetSourceType = Object.freeze({

@@ -1,6 +1,5 @@
 /**
- * Action creators to change/update the state of the Toolbox.
- * @module toolContainer/action
+ * @module store/tools/tools_action
  */
 import { CURRENT_TOOL_CHANGED } from './tools.reducer';
 import { $injector } from '../../injection';
@@ -9,18 +8,6 @@ const getStore = () => {
 	const { StoreService } = $injector.inject('StoreService');
 	return StoreService.getStore();
 };
-
-/**
- *Available tools.
- * @enum
- */
-export const ToolId = Object.freeze({
-	MEASURING: 'measuring',
-	DRAWING: 'drawing',
-	SHARING: 'sharing',
-	IMPORT: 'import',
-	EXPORT: 'export'
-});
 
 /**
  * Sets the current active tool. A value of `null` will disable an currently active tool.

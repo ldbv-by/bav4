@@ -1,5 +1,9 @@
 /**
- * @enum
+ * @module modules/search/services/domain/searchResult
+ */
+/**
+ * @readonly
+ * @enum {String}
  */
 export const SearchResultTypes = Object.freeze({
 	LOCATION: Symbol.for('location'),

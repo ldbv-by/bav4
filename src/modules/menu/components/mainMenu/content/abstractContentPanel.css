@@ -1,7 +1,6 @@
 /* CSS classes for all ContentPanel implementations */
 .ba-list-item {
 	display: flex;
-	cursor: pointer;
 	text-decoration: none;
 	overflow-wrap: break-word;
 	background: transparent;
@@ -116,7 +115,7 @@
 	mask: url('../assets/info-lg.svg');
 	-webkit-mask-image: url('../assets/info-lg.svg');
 	mask-image: url('../assets/info-lg.svg');
-	transition: all var(--animation-duration-small-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-small-open) var(--animation-easing-linear);
 	margin-right: 0.2em;
 	background: var(--primary-color);
 }
@@ -141,7 +140,7 @@
 	background-color: var(--secondary-bg-color);
 	border-radius: 2.5em;
 	position: absolute;
-	transition: all var(--animation-duration-medium-open) var(--animation-easing-linea);
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
 	transform: translate(-50%, -50%);
 	display: inline-block;
 }
@@ -174,7 +173,6 @@
 /* header  */
 .ba-list-item__header:hover {
 	background: none;
-	color: var(--primary-color);
 }
 .ba-list-item__sub-header {
 	opacity: 0.8;
@@ -202,13 +200,17 @@
 }
 /* collapse */
 .collapse-content {
-	max-height: auto;
-	visibility: visibility;
+	display: grid;
+	grid-template-rows: 1fr;
+	transition: grid-template-rows var(--animation-duration-medium-open);
 }
-.iscollapse {
-	max-height: 0;
+
+.collapse-content > div {
 	overflow: hidden;
-	visibility: hidden;
+}
+
+.iscollapse {
+	grid-template-rows: 0fr;
 }
 
 /* helper */

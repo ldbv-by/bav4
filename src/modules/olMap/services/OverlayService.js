@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/services/OverlayService
+ */
 import { MeasurementOverlayStyle } from '../overlayStyle/MeasurementOverlayStyle';
 import { OverlayStyle } from '../overlayStyle/OverlayStyle';
 import { StyleTypes } from './StyleService';

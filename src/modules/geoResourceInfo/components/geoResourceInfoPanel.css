@@ -1,15 +1,17 @@
 h4,
 h5 {
+	font-size: 1rem;
 	padding: 1em 0 0.8em 0;
 }
 
 h6 {
+	font-size: 1rem;
 	padding: 0 0 0.8em;
 	font-weight: normal;
 }
 
 a {
-	color: var(--primary-color);
+	color: var(--text4);
 	text-decoration: unset;
 }
 
@@ -21,7 +23,7 @@ a:focus {
 a:before {
 	content: url('../assets/placeholder.svg');
 	margin: 0 0.2em 0 0;
-	background: var(--primary-color);
+	background: var(--text4);
 	mask: url('../assets/boxarrowupright.svg');
 	-webkit-mask-image: url('../assets/boxarrowupright.svg');
 	-webkit-mask-repeat: no-repeat;
@@ -43,7 +45,6 @@ table {
 
 td {
 	padding: 1em 0.8em;
-	border-right: 1px dotted var(--primary-color);
 	border-right: 1px dotted var(--primary-bg-color);
 }
 

@@ -27,12 +27,13 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.action';
 import { simulateMapBrowserEvent } from '../../mapTestUtils';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { drawReducer } from '../../../../../src/store/draw/draw.reducer';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { MeasurementOverlay } from '../../../../../src/modules/olMap/components/MeasurementOverlay';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
+import { Tools } from '../../../../../src/domain/tools';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -141,7 +142,11 @@ describe('OlMeasurementHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => [5, -80, 14, 80] })
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => [5, -80, 14, 80]
+			})
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -187,6 +192,21 @@ describe('OlMeasurementHandler', () => {
 		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
+	};
+
+	const createFeature = () => {
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+		return feature;
 	};
 
 	describe('when activated over olMap', () => {
@@ -267,6 +287,44 @@ describe('OlMeasurementHandler', () => {
 				await TestUtils.timeout();
 				//check notification
 				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('_save', () => {
+			it('calls the InteractionService and updates the measurement slice-of-state ', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save(map);
+
+				await TestUtils.timeout();
+				expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(store.getState().measurement.fileSaveResult.payload.content).toContain('<kml');
+				expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
+			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlMeasurementHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save(map);
+
+				await TestUtils.timeout();
+				expect(store.getState().measurement.fileSaveResult.payload).toBeNull();
 			});
 		});
 
@@ -429,7 +487,10 @@ describe('OlMeasurementHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			spyOn(map, 'getLayers').and.returnValue(
+				// we add two fileStorage related layers
+				new Collection([new Layer({ geoResourceId: 'a_notWanted' }), new Layer({ geoResourceId: 'a_lastId' })])
+			);
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -543,7 +604,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -552,7 +613,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._measureState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			expect(store.getState().measurement.selection).toEqual(['measure_1']);
+			expect(store.getState().measurement.selection).toEqual(['measuring_1']);
 		});
 
 		it("updates statistics and overlays of features on 'change'", () => {
@@ -566,7 +627,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 
 			const classUnderTest = new OlMeasurementHandler();
 
@@ -595,7 +656,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 
 			const classUnderTest = new OlMeasurementHandler();
 			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'remove');
@@ -607,28 +668,14 @@ describe('OlMeasurementHandler', () => {
 	});
 
 	describe('when deactivated over olMap', () => {
-		const createFeature = () => {
-			const feature = new Feature({
-				geometry: new Polygon([
-					[
-						[0, 0],
-						[1, 0],
-						[1, 1],
-						[0, 1],
-						[0, 0]
-					]
-				])
-			});
-			return feature;
-		};
-
 		it('writes features to kml format for persisting purpose', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
-			setup(state);
+			const fileSaveResultMock = { fileId: 'barId', adminId: null };
+			const state = { ...initialState, fileSaveResult: new EventLike(null) };
+			const store = setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -637,6 +684,8 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(classUnderTest._vectorLayer.getSource().getFeatures().length).toBe(1);
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+			expect(store.getState().measurement.fileSaveResult.payload.content).toContain('<kml');
+			expect(store.getState().measurement.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
 		it('uses already written features for persisting purpose', () => {
@@ -696,7 +745,6 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
-			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
@@ -802,7 +850,7 @@ describe('OlMeasurementHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/measure_[0-9]{13}/g);
+			expect(id).toMatch(/measuring_[0-9]{13}/g);
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
@@ -962,7 +1010,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_');
+			feature.setId('measuring_');
 			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {});
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -992,7 +1040,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_');
+			feature.setId('measuring_');
 			const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1411,7 +1459,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
@@ -1730,7 +1778,7 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when pointer click', () => {
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			const store = setup({ ...initialState, selection: ['measure_1'] });
+			const store = setup({ ...initialState, selection: ['measuring_1'] });
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1746,7 +1794,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 			classUnderTest._select.getFeatures().push(feature);
 
 			expect(classUnderTest._select).toBeDefined();
@@ -1771,7 +1819,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 			const map = setupMap();
 
 			const classUnderTest = new OlMeasurementHandler();
@@ -1808,7 +1856,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_1');
+			feature.setId('drawing_1');
 			const map = setupMap();
 
 			const classUnderTest = new OlMeasurementHandler();
@@ -1830,7 +1878,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
 
 			expect(store.getState().draw.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(ToolId.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAWING);
 		});
 
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
@@ -1845,7 +1893,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_');
+			feature.setId('measuring_');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
@@ -1875,13 +1923,13 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature1 = new Feature({ geometry: geometry1 });
-			feature1.setId('measure_1');
+			feature1.setId('measuring_1');
 			const geometry2 = new LineString([
 				[2, 0],
 				[7, 0]
 			]);
 			const feature2 = new Feature({ geometry: geometry2 });
-			feature2.setId('measure_2');
+			feature2.setId('measuring_2');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);

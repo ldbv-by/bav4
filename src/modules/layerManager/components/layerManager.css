@@ -52,7 +52,6 @@ li {
 .layermanager__actions {
 	display: flex;
 	justify-content: flex-start;
-	font-size: 0.9em;
 }
 
 .layermanager__expandOrCollapse {

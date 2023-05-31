@@ -1,7 +1,10 @@
+/**
+ * @module plugins/SharePlugin
+ */
 import { html } from 'lit-html';
+import { Tools } from '../domain/tools';
 import { $injector } from '../injection';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
-import { ToolId } from '../store/tools/tools.action';
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
@@ -52,7 +55,7 @@ export class SharePlugin extends BaPlugin {
 		};
 
 		const onToolChanged = (toolId) => {
-			if (toolId === ToolId.SHARING) {
+			if (toolId === Tools.SHARING) {
 				checkAndEmit();
 			}
 		};

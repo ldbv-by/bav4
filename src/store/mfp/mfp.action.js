@@ -1,4 +1,7 @@
 /**
+ * @module store/mfp/mfp_action
+ */
+/**
  * @typedef {Object} MfpConstraint
  * @property {string} id
  * @property {number} scale

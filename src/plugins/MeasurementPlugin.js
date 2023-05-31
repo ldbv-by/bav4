@@ -1,20 +1,17 @@
+/**
+ * @module plugins/MeasurementPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
-import { ToolId } from '../store/tools/tools.action';
 import { activate, deactivate } from '../store/measurement/measurement.action';
+import { Tools } from '../domain/tools';
 
 /**
  * Id of the layer used for measurement interaction.
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const MEASUREMENT_LAYER_ID = 'measurement_layer';
-
-/**
- * Id of the tool used for measurement interaction.
- * Feature of a layer will also use this id as part their id.
- */
-export const MEASUREMENT_TOOL_ID = 'measure';
 
 /**
  * This plugin observes the 'active' property of the measurements store.
@@ -34,7 +31,7 @@ export class MeasurementPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onToolChanged = (toolId) => {
-			if (toolId !== ToolId.MEASURING) {
+			if (toolId !== Tools.MEASURING) {
 				deactivate();
 			} else {
 				// we activate the tool after another possible active tool was deactivated

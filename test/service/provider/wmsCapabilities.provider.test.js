@@ -154,7 +154,7 @@ describe('bvvCapabilitiesProvider', () => {
 
 	const mapService = {
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832
+		getLocalProjectedSrid: () => 25832
 	};
 
 	const baaCredentialService = {
@@ -267,7 +267,7 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(wmsGeoResources).toHaveSize(2);
 		expect(wmsGeoResources[0]).toEqual(
 			jasmine.objectContaining({
-				id: jasmine.stringMatching(/^\d*$/),
+				id: `${url}||layer0||Layer 0`,
 				label: 'Layer 0',
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
@@ -278,7 +278,7 @@ describe('bvvCapabilitiesProvider', () => {
 		);
 		expect(wmsGeoResources[1]).toEqual(
 			jasmine.objectContaining({
-				id: jasmine.stringMatching(/^\d*$/),
+				id: `${url}||layer1||Layer 1`,
 				label: 'Layer 1',
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',
@@ -310,7 +310,7 @@ describe('bvvCapabilitiesProvider', () => {
 		expect(wmsGeoResources).toHaveSize(1);
 		expect(wmsGeoResources[0]).toEqual(
 			jasmine.objectContaining({
-				id: jasmine.stringMatching(/^\d*$/),
+				id: `${url}||layer1||Layer 1`,
 				label: 'Layer 1',
 				url: 'https://online.resource/GetMap?',
 				format: 'image/png',

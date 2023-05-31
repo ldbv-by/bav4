@@ -1,8 +1,36 @@
+/**
+ * @module services/UrlService
+ */
 import { $injector } from '../injection';
 import { isHttpUrl } from '../utils/checks';
 import { bvvProxifyUrlProvider } from './provider/proxifyUrl.provider';
 import { bvvQrCodeProvider } from './provider/qrCodeUrlProvider';
 import { shortenBvvUrls } from './provider/urlShorteningProvider';
+
+/**
+ * A function that takes a url and returns a promise with a short url.
+ * @async
+ * @param {string} url the URL which should be shortened
+ * @typedef {Function} shortUrlProvider
+ * @returns {string} short URL
+ */
+
+/**
+ * Takes a URL and returns a proxified url.
+ * @param {string} url the URL which should be proxified
+ * @typedef {Function} proxifyUrlProvider
+ * @returns {string} proxified url
+ */
+
+/**
+ * A function that takes a URL (as string) and returns a URL (as string).
+ * The returned URL references to the qrCode image for the given URL.
+ *
+ * @async
+ * @param {string} url the URL which should be enccoded as QrCode.
+ * @typedef {Function} qrCodeUrlProvider
+ * @returns {string} URL for the QrCode image
+ */
 
 /**
  * Utility service for URLs/resources.
@@ -11,9 +39,9 @@ import { shortenBvvUrls } from './provider/urlShorteningProvider';
  */
 export class UrlService {
 	/**
-	 *
-	 * @param {shortUrlProvider} [urlShorteningProvider=shortenBvvUrls]
-	 * @param {proxifyUrlProvider} [proxifyUrlProvider=bvvProxifyUrlProvider]
+	 * @param {module:services/UrlService~shortUrlProvider} [shortUrlProvider=shortenBvvUrls]
+	 * @param {module:services/UrlService~proxifyUrlProvider} [proxifyUrlProvider=bvvProxifyUrlProvider]
+	 * @param {module:services/UrlService~qrCodeUrlProvider} [proxifyUrlProvider=bvvQrCodeProvider]
 	 */
 	constructor(urlShorteningProvider = shortenBvvUrls, proxifyUrlProvider = bvvProxifyUrlProvider, qrCodeUrlProvider = bvvQrCodeProvider) {
 		const { HttpService: httpService } = $injector.inject('HttpService');

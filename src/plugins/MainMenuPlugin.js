@@ -1,3 +1,6 @@
+/**
+ * @module plugins/MainMenuPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
 import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
@@ -25,7 +28,7 @@ export class MainMenuPlugin extends BaPlugin {
 			setTab(tabId);
 		} else {
 			// set default tab id
-			setTab(TabId.TOPICS);
+			setTab(TabId.MAPS);
 		}
 	}
 

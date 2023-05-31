@@ -1,6 +1,5 @@
 /**
- * Action creators to activate/deactive the draw tool
- * @module draw/action
+ * @module store/draw/draw_action
  */
 import {
 	ACTIVE_CHANGED,
@@ -22,10 +21,10 @@ import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
- * MetaData of a successfully saved drawing (@see {@link FileSaveResult}).
+ * MetaData and content of a successfully saved drawing (@see {@link FileSaveResult}).
  * @typedef {Object} DrawFileSaveResult
- * @property {string} adminId The adminId of the succesfully saved drawing
- * @property {string} fileId The fileId of the succesfully saved drawing
+ * @property {FileSaveResult} fileSaveResult the FileSaveResult
+ * @property {string} content the content (geometry) that was saved
  */
 
 /**
@@ -159,7 +158,7 @@ export const clearText = () => {
 export const setFileSaveResult = (fileSaveResult) => {
 	getStore().dispatch({
 		type: FILE_SAVE_RESULT_CHANGED,
-		payload: fileSaveResult
+		payload: new EventLike(fileSaveResult)
 	});
 };
 

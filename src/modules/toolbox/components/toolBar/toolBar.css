@@ -44,12 +44,12 @@
 }
 
 .is-desktop .tool-bar__button {
+	font-size: 0.81rem;
 	display: inline-block;
 	cursor: pointer;
 	background: var(--header-button-color);
 	opacity: 0.9;
 	padding: 0.2em 0.4em 0.4em;
-	font-size: 0.9em;
 }
 
 .is-active.tool-bar__button {
@@ -297,7 +297,6 @@
 	display: block;
 	position: fixed;
 	z-index: calc(var(--z-toolbox) - 10);
-	background: var(--primary-color);
 	background: var(--primary-bg-color);
 	width: 4em;
 	height: 4em;
@@ -312,7 +311,6 @@
 .is-portrait .toolbar__button-tools,
 .is-tablet .toolbar__button-tools {
 	position: fixed;
-	background: var(--primary-bg-color);
 	background: var(--primary-color);
 	width: 3.4em;
 	height: 3.4em;
@@ -344,4 +342,9 @@
 	mask-image: url('assets/close.svg');
 	-webkit-mask-image: url('assets/close.svg');
 	transform: rotate(90deg);
+}
+
+.is-demo .ba {
+	margin: 0;
+	background-image: url('assets/rocket.svg');
 }

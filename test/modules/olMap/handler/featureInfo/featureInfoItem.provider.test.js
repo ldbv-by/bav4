@@ -7,7 +7,7 @@ import { createDefaultLayer, createDefaultLayerProperties } from '../../../../..
 import GeoJSON from 'ol/format/GeoJSON';
 import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { $injector } from '../../../../../src/injection';
-import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/GeometryInfo';
+import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
@@ -15,8 +15,8 @@ window.customElements.define(GeometryInfo.tag, GeometryInfo);
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
 		getSrid: () => 3857,
-		getDefaultGeodeticSrid: () => 25832,
-		getDefaultGeodeticExtent: () => null
+		getLocalProjectedSrid: () => 25832,
+		getLocalProjectedSridExtent: () => null
 	};
 
 	const securityServiceMock = {

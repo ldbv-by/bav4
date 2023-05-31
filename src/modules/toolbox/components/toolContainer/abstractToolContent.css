@@ -10,7 +10,6 @@
 }
 .ba-tool-container__actions {
 	display: flex;
-	justify-content: space-between;
 	justify-content: flex-start;
 	min-height: 2.8em;
 }

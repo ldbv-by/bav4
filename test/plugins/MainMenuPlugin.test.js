@@ -19,7 +19,7 @@ describe('MainMenuPlugin', () => {
 		}
 	};
 
-	const defaultTabId = TabId.TOPICS;
+	const defaultTabId = TabId.MAPS;
 
 	const setup = (state) => {
 		const initialState = {
@@ -136,7 +136,7 @@ describe('MainMenuPlugin', () => {
 			registerQuery(queryId);
 
 			expect(store.getState().featureInfo.current).toHaveSize(1);
-			expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+			expect(store.getState().mainMenu.tab).toBe(defaultTabId);
 			expect(store.getState().mainMenu.open).toBeFalse();
 		});
 
@@ -204,7 +204,7 @@ describe('MainMenuPlugin', () => {
 
 						abortOrReset();
 
-						expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+						expect(store.getState().mainMenu.tab).toBe(defaultTabId);
 						expect(store.getState().mainMenu.open).toBeTrue();
 					});
 				});

@@ -440,6 +440,26 @@ describe('MvuElement', () => {
 			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
 		});
 
+		it('unsubscribes model observers', async () => {
+			const element = await TestUtils.render(MvuElementImpl.tag);
+			const elementStateIndexCallback = jasmine.createSpy();
+			const someUnknownFieldCallback = jasmine.createSpy();
+			const errorSpy = spyOn(console, 'error');
+			//let's register an observer of model.index three times
+			element.observeModel('index', elementStateIndexCallback)();
+			element.observeModel(['index', 'index'], elementStateIndexCallback)();
+			element.observeModel('someUnknowField', someUnknownFieldCallback)();
+
+			//change state after registration
+			store.dispatch({
+				type: INDEX_CHANGED,
+				payload: 42
+			});
+
+			expect(elementStateIndexCallback).toHaveBeenCalledTimes(0);
+			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
+		});
+
 		it('registers observers and calls the callbacks immediately', async () => {
 			const element = await TestUtils.render(MvuElementImpl.tag);
 			const elementStateIndexCallback = jasmine.createSpy();

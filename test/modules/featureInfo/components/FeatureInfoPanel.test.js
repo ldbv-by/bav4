@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 import { TestUtils } from '../../../test-utils.js';
 import { $injector } from '../../../../src/injection';
-import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/FeatureInfoPanel';
+import { FeatureInfoPanel, TEMPORARY_FEATURE_HIGHLIGHT_ID } from '../../../../src/modules/featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { featureInfoReducer } from '../../../../src/store/featureInfo/featureInfo.reducer';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel.js';
 import { html } from 'lit-html';
@@ -188,6 +188,7 @@ describe('FeatureInfoPanel', () => {
 				expect(store.getState().highlight.features[0].data.geometryType).toBe(HighlightGeometryType.GEOJSON);
 				expect(store.getState().highlight.features[0].type).toBe(HighlightFeatureType.TEMPORARY);
 				expect(store.getState().highlight.features[0].id).toBe(TEMPORARY_FEATURE_HIGHLIGHT_ID);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(1);
 			});
 
 			it('does nothing when featureInfo contains no geometry', async () => {
@@ -206,6 +207,7 @@ describe('FeatureInfoPanel', () => {
 				target.dispatchEvent(new Event('mouseenter'));
 
 				expect(store.getState().highlight.features).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.is-geometry')).toHaveSize(0);
 			});
 		});
 

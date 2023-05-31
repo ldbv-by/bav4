@@ -1,3 +1,6 @@
+/**
+ * @module modules/topics/components/menu/TopicsContentPanel
+ */
 import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { setCurrent } from '../../../../store/topics/topics.action';
@@ -8,7 +11,8 @@ import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import { setIndex } from '../../../../store/topicsContentPanel/topicsContentPanel.action';
 
 /**
- * @enum
+ * @readonly
+ * @enum {Number}
  */
 export const TopicsContentPanelIndex = Object.freeze({
 	TOPICS: 0,

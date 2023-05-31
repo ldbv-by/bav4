@@ -1,4 +1,7 @@
-import { DRAW_LAYER_ID, DRAW_TOOL_ID } from '../../../../plugins/DrawPlugin';
+/**
+ * @module modules/olMap/handler/draw/OlDrawHandler
+ */
+import { DRAW_LAYER_ID } from '../../../../plugins/DrawPlugin';
 import { OlLayerHandler } from '../OlLayerHandler';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
@@ -17,7 +20,15 @@ import { StyleTypes } from '../../services/StyleService';
 import { StyleSizeTypes } from '../../../../domain/styles';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { equals, observe } from '../../../../utils/storeUtils';
-import { setSelectedStyle, setStyle, setType, setGeometryIsValid, setSelection, setDescription } from '../../../../store/draw/draw.action';
+import {
+	setSelectedStyle,
+	setStyle,
+	setType,
+	setGeometryIsValid,
+	setSelection,
+	setDescription,
+	setFileSaveResult
+} from '../../../../store/draw/draw.action';
 import { unByKey } from 'ol/Observable';
 import { create as createKML } from '../../formats/kml';
 import {
@@ -42,7 +53,7 @@ import { setMode } from '../../../../store/draw/draw.action';
 import { isValidGeometry } from '../../utils/olGeometryUtils';
 import { acknowledgeTermsOfUse } from '../../../../store/shared/shared.action';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
-import { setCurrentTool, ToolId } from '../../../../store/tools/tools.action';
+import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { setSelection as setMeasurementSelection } from '../../../../store/measurement/measurement.action';
 import { INITIAL_STYLE } from '../../../../store/draw/draw.reducer';
 import { isString } from '../../../../utils/checks';
@@ -50,6 +61,7 @@ import { hexToRgb } from '../../../../utils/colors';
 import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
+import { Tools } from '../../../../domain/tools';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -116,8 +128,8 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getDefaultGeodeticSrid(),
-			toProjectionExtent: this._mapService.getDefaultGeodeticExtent()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 		this._lastPointerMoveEvent = null;
 		this._lastInteractionStateType = null;
@@ -150,7 +162,8 @@ export class OlDrawHandler extends OlLayerHandler {
 		}
 		const getOldLayer = (map) => {
 			const isOldLayer = (layer) => this._storageHandler.isStorageId(layer.get('geoResourceId'));
-			return map.getLayers().getArray().find(isOldLayer);
+			// we iterate over all layers in reverse order, the top-most layer is the one we take source for our drawing layer
+			return map.getLayers().getArray().reverse().find(isOldLayer);
 		};
 
 		const createLayer = () => {
@@ -229,17 +242,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith('measure_'));
+					return features.some((f) => f.getId().startsWith(Tools.MEASURING + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const measurementIds = features.filter((f) => f.getId().startsWith('measure_')).map((f) => f.getId());
+					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURING + '_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
-					setCurrentTool(ToolId.MEASURING);
+					setCurrentTool(Tools.MEASURING);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith('draw_'));
+				return features.some((f) => !f.getId().startsWith(Tools.DRAWING + '_'));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
@@ -435,7 +448,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, DRAW_TOOL_ID + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, Tools.DRAWING + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {
@@ -817,12 +830,13 @@ export class OlDrawHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * todo: redundant with OlMeasurementHandler, possible responsibility of a statefull _storageHandler
+	 * todo: redundant with OlMeasurementHandler, possible responsibility of a stateful _storageHandler
 	 */
 	async _save() {
 		const newContent = createKML(this._vectorLayer, 'EPSG:3857');
 		this._storedContent = newContent;
-		this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		const fileSaveResult = await this._storageHandler.store(newContent, FileStorageServiceDataTypes.KML);
+		setFileSaveResult(fileSaveResult ? { fileSaveResult, content: newContent } : null);
 	}
 
 	async _saveAndOptionallyConvertToPermanentLayer() {
@@ -851,7 +865,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			// register the stored data as new georesource
 			this._geoResourceService.addOrReplace(vgr);
-			addLayer(id, { constraints: { cloneable: false, metaData: false } });
+			addLayer(id, { constraints: { metaData: false } });
 		}
 	}
 }

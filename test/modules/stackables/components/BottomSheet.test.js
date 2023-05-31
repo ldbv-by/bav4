@@ -1,4 +1,4 @@
-import { BottomSheet } from '../../../../src/modules/stackables/components/BottomSheet';
+import { BottomSheet } from '../../../../src/modules/stackables/components/bottomSheet/BottomSheet';
 import { TestUtils } from '../../../test-utils';
 import { html } from 'lit-html';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
@@ -159,7 +159,7 @@ describe('BottomSheet', () => {
 			const element = await setup('FooBar', { mainMenu: { open: true }, media: { portrait: false } });
 
 			const contentElement = element.shadowRoot.querySelector('.bottom-sheet');
-			expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.tool-container__close-button')).toHaveSize(1);
 			const closeButton = element.shadowRoot.querySelectorAll('.tool-container__close-button')[0];
 			openBottomSheet(true);
@@ -169,7 +169,7 @@ describe('BottomSheet', () => {
 
 			closeButton.click();
 
-			expect(element.shadowRoot.querySelectorAll('.hide')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.fade-out')).toHaveSize(1);
 			contentElement.dispatchEvent(new Event('animationend'));
 			expect(store.getState().bottomSheet.data).toBeNull();
 		});

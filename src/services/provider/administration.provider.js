@@ -1,5 +1,5 @@
 /**
- * @module service/provider
+ * @module services/provider/administration_provider
  */
 import { $injector } from '../../injection';
 

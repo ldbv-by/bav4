@@ -1,6 +1,5 @@
 /**
- * Action creators to update the current topic
- * @module topics/action
+ * @module store/topics/topics_action
  */
 import { TOPIC_CHANGED, TOPIC_RESOURCES_READY } from './topics.reducer';
 import { $injector } from '../../injection';

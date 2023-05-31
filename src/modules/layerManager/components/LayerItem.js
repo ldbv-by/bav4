@@ -1,3 +1,6 @@
+/**
+ * @module modules/layerManager/components/LayerItem
+ */
 import { html, nothing } from 'lit-html';
 import css from './layerItem.css';
 import { $injector } from '../../../injection';
@@ -200,7 +203,7 @@ export class LayerItem extends AbstractMvuContentPanel {
 
 		const getMenuItems = () => {
 			return [
-				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: !layer.constraints?.cloneable },
+				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: false },
 				{
 					id: 'zoomToExtent',
 					label: translate('layerManager_zoom_to_extent'),
@@ -225,42 +228,44 @@ export class LayerItem extends AbstractMvuContentPanel {
 						<i class="icon chevron icon-rotate-90 ${classMap(iconCollapseClass)}"></i>
 					</button>
 				</div>
-				<div class="collapse-content ba-list-item  ${classMap(bodyCollapseClass)}">
-					${getSlider()}
-					<div>
-						<ba-icon
-							id="increase"
-							.icon="${arrowUpSvg}"
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--text3)'}
-							.size=${2.6}
-							.title=${translate('layerManager_move_up')}
-							@click=${increaseIndex}
-						></ba-icon>
+				<div class="collapse-content  ${classMap(bodyCollapseClass)}">
+					<div class="ba-list-item">
+						${getSlider()}
+						<div>
+							<ba-icon
+								id="increase"
+								.icon="${arrowUpSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('layerManager_move_up')}
+								@click=${increaseIndex}
+							></ba-icon>
+						</div>
+						<div>
+							<ba-icon
+								id="decrease"
+								.icon="${arrowDownSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('layerManager_move_down')}
+								@click=${decreaseIndex}
+							></ba-icon>
+						</div>
+						<div>
+							<ba-icon
+								id="remove"
+								.icon="${removeSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('layerManager_remove')}
+								@click=${remove}
+							></ba-icon>
+						</div>
+						<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 					</div>
-					<div>
-						<ba-icon
-							id="decrease"
-							.icon="${arrowDownSvg}"
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--text3)'}
-							.size=${2.6}
-							.title=${translate('layerManager_move_down')}
-							@click=${decreaseIndex}
-						></ba-icon>
-					</div>
-					<div>
-						<ba-icon
-							id="remove"
-							.icon="${removeSvg}"
-							.color=${'var(--primary-color)'}
-							.color_hover=${'var(--text3)'}
-							.size=${2.6}
-							.title=${translate('layerManager_remove')}
-							@click=${remove}
-						></ba-icon>
-					</div>
-					<ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${getMenuItems()}></ba-overflow-menu>
 				</div>
 			</div>`;
 	}

@@ -1,4 +1,7 @@
 /**
+ * @module utils/checks
+ */
+/**
  * Checks if a value is a Object.
  * @function
  * @param {*} val
@@ -66,6 +69,7 @@ export const isTemplateResult = (val) => {
  * @param {*} val
  * @param {strict} tag
  * @returns boolean `true` if it is a TemplateResult
+ * @deprecated use TestUtils#renderTemplateResult() instead
  */
 export const isTemplateResultOf = (val, tag) => {
 	if (!tag) {

@@ -26,11 +26,12 @@ import { sharedReducer } from '../../../../../src/store/shared/shared.reducer';
 import { acknowledgeTermsOfUse } from '../../../../../src/store/shared/shared.action';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
-import { ToolId } from '../../../../../src/store/tools/tools.action';
 import { toolsReducer } from '../../../../../src/store/tools/tools.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../../src/services/provider/attribution.provider';
 import { Layer } from 'ol/layer';
+import { Tools } from '../../../../../src/domain/tools';
+import { EventLike } from '../../../../../src/utils/storeUtils';
 
 describe('OlDrawHandler', () => {
 	class MockClass {
@@ -138,7 +139,7 @@ describe('OlDrawHandler', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', translationServiceMock)
-			.registerSingleton('MapService', { getSrid: () => 3857, getDefaultGeodeticSrid: () => 25832, getDefaultGeodeticExtent: () => null })
+			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null })
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('InteractionStorageService', interactionStorageServiceMock)
@@ -169,6 +170,21 @@ describe('OlDrawHandler', () => {
 		const keyEvent = new KeyboardEvent('keyup', { key: key, keyCode: keyCode, which: keyCode });
 
 		document.dispatchEvent(keyEvent);
+	};
+
+	const createFeature = () => {
+		const feature = new Feature({
+			geometry: new Polygon([
+				[
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+					[0, 0]
+				]
+			])
+		});
+		return feature;
 	};
 
 	it('has two methods', () => {
@@ -279,6 +295,44 @@ describe('OlDrawHandler', () => {
 				await TestUtils.timeout();
 				//check notification
 				expect(store.getState().notifications.latest).toBeFalsy();
+			});
+		});
+
+		describe('_save', () => {
+			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
+				const fileSaveResultMock = { fileId: 'barId', adminId: null };
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				await TestUtils.timeout();
+				expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+				expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+				expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
+			});
+
+			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
+				const state = { ...initialState, fileSaveResult: new EventLike(null) };
+				const store = setup(state);
+				const classUnderTest = new OlDrawHandler();
+				const map = setupMap();
+				const feature = createFeature();
+				spyOn(interactionStorageServiceMock, 'store').and.resolveTo(null);
+
+				classUnderTest.activate(map);
+				classUnderTest._vectorLayer.getSource().addFeature(feature);
+				classUnderTest._save();
+
+				await TestUtils.timeout();
+
+				expect(store.getState().draw.fileSaveResult.payload).toBeNull();
 			});
 		});
 
@@ -678,7 +732,7 @@ describe('OlDrawHandler', () => {
 					[1, 0]
 				]);
 				const feature = new Feature({ geometry: geometry });
-				feature.setId('draw_line_1');
+				feature.setId('drawing_line_1');
 				feature.set('description', 'foo');
 
 				classUnderTest.activate(map);
@@ -827,7 +881,7 @@ describe('OlDrawHandler', () => {
 				};
 				classUnderTest.activate(map);
 				classUnderTest._drawState = drawStateFake;
-				classUnderTest._sketchHandler.activate(feature, 'draw_line_');
+				classUnderTest._sketchHandler.activate(feature, 'drawing_line_');
 
 				setType('line');
 
@@ -848,7 +902,7 @@ describe('OlDrawHandler', () => {
 						[1, 1]
 					])
 				});
-				feature.setId('draw_line_1234');
+				feature.setId('drawing_line_1234');
 				feature.setStyle([new Style(), new Style()]);
 				const drawStateFake = {
 					type: InteractionStateType.DRAW
@@ -892,7 +946,7 @@ describe('OlDrawHandler', () => {
 				spyOn(classUnderTest, '_getStyleFunctionFrom')
 					.withArgs(feature)
 					.and.callFake(() => () => [newStyle]);
-				feature.setId('draw_Symbol_1234');
+				feature.setId('drawing_Symbol_1234');
 				feature.setStyle([oldStyle1, oldStyle2]);
 				const drawStateFake = {
 					type: InteractionStateType.MODIFY
@@ -914,11 +968,14 @@ describe('OlDrawHandler', () => {
 			setup();
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="drawing_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			spyOn(map, 'getLayers').and.returnValue(
+				// we add two fileStorage related layers
+				new Collection([new Layer({ geoResourceId: 'a_notWanted' }), new Layer({ geoResourceId: 'a_lastId' })])
+			);
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -957,7 +1014,7 @@ describe('OlDrawHandler', () => {
 			setup({ ...initialState, createPermanentLayer: false });
 			const classUnderTest = new OlDrawHandler();
 			const lastData =
-				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="draw_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
+				'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Placemark id="drawing_line_1620710146878"><Style><LineStyle><color>ff0000ff</color><width>3</width></LineStyle><PolyStyle><color>660000ff</color></PolyStyle></Style><ExtendedData><Data name="area"/><Data name="measurement"/><Data name="partitions"/></ExtendedData><Polygon><outerBoundaryIs><LinearRing><coordinates>10.66758401,50.09310529 11.77182103,50.08964948 10.57062661,49.66616988 10.66758401,50.09310529</coordinates></LinearRing></outerBoundaryIs></Polygon></Placemark></kml>';
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
@@ -1032,7 +1089,7 @@ describe('OlDrawHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_line_1');
+			feature.setId('drawing_line_1');
 			feature.setStyle(new Style());
 			const store = setup();
 			const classUnderTest = new OlDrawHandler();
@@ -1043,7 +1100,7 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			expect(store.getState().draw.selection).toEqual(['draw_line_1']);
+			expect(store.getState().draw.selection).toEqual(['drawing_line_1']);
 		});
 
 		describe('_createDrawByType', () => {
@@ -1110,28 +1167,14 @@ describe('OlDrawHandler', () => {
 	});
 
 	describe('when deactivated over olMap', () => {
-		const createFeature = () => {
-			const feature = new Feature({
-				geometry: new Polygon([
-					[
-						[0, 0],
-						[1, 0],
-						[1, 1],
-						[0, 1],
-						[0, 0]
-					]
-				])
-			});
-			return feature;
-		};
-
 		it('writes features to kml format for persisting purpose', async () => {
-			const state = { ...initialState, fileSaveResult: { fileId: 'barId', adminId: null } };
-			setup(state);
+			const fileSaveResultMock = { fileId: 'barId', adminId: null };
+			const state = { ...initialState, fileSaveResult: new EventLike(null) };
+			const store = setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
-			const storageSpy = spyOn(interactionStorageServiceMock, 'store');
+			const storageSpy = spyOn(interactionStorageServiceMock, 'store').and.resolveTo(fileSaveResultMock);
 
 			classUnderTest.activate(map);
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1139,6 +1182,8 @@ describe('OlDrawHandler', () => {
 
 			await TestUtils.timeout();
 			expect(storageSpy).toHaveBeenCalledWith(jasmine.any(String), FileStorageServiceDataTypes.KML);
+			expect(store.getState().draw.fileSaveResult.payload.content).toContain('<kml');
+			expect(store.getState().draw.fileSaveResult.payload.fileSaveResult).toEqual(fileSaveResultMock);
 		});
 
 		it('uses already written features for persisting purpose', () => {
@@ -1198,7 +1243,6 @@ describe('OlDrawHandler', () => {
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('f_ooBarId');
-			expect(store.getState().layers.active[0].constraints.cloneable).toBeFalse();
 			expect(store.getState().layers.active[0].constraints.metaData).toBeFalse();
 		});
 
@@ -1274,7 +1318,7 @@ describe('OlDrawHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/draw_line_[0-9]{13}/g);
+			expect(id).toMatch(/drawing_line_[0-9]{13}/g);
 		});
 
 		it('switches to modify after drawend', () => {
@@ -1743,7 +1787,7 @@ describe('OlDrawHandler', () => {
 		});
 
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			setup({ ...initialState, selection: ['draw_1'] });
+			setup({ ...initialState, selection: ['drawing_1'] });
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap(null, 1);
 
@@ -1753,7 +1797,7 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_1');
+			feature.setId('drawing_1');
 			classUnderTest._select.getFeatures().push(feature);
 
 			expect(classUnderTest._select).toBeDefined();
@@ -1769,7 +1813,7 @@ describe('OlDrawHandler', () => {
 			setup();
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('draw_1');
+			feature.setId('drawing_1');
 			feature.setStyle(style);
 			const map = setupMap();
 
@@ -1801,7 +1845,7 @@ describe('OlDrawHandler', () => {
 
 			const geometry = new Point([550, 550]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measure_1');
+			feature.setId('measuring_1');
 			feature.setStyle(style);
 			const map = setupMap();
 
@@ -1826,7 +1870,7 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(store.getState().measurement.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURING);
 		});
 
 		it('does NOT switch to measure-tool, if clickposition is in anyinteract to selected unknown feature (not measure or draw)', () => {
@@ -1858,14 +1902,14 @@ describe('OlDrawHandler', () => {
 			classUnderTest._drawState.type = InteractionStateType.SELECT;
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
-			expect(store.getState().tools.current).not.toBe(ToolId.MEASURING);
+			expect(store.getState().tools.current).not.toBe(Tools.MEASURING);
 		});
 
 		it('select only ONE feature (no multiselect; preselected feature is deselected)', () => {
 			const feature1 = new Feature({ geometry: new Point([0, 0]) });
 			const feature2 = new Feature({ geometry: new Point([50, 50]) });
-			feature1.setId('draw_1');
-			feature2.setId('draw_2');
+			feature1.setId('drawing_1');
+			feature2.setId('drawing_2');
 			feature1.setStyle(style);
 			feature2.setStyle(style);
 

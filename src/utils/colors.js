@@ -1,3 +1,6 @@
+/**
+ * @module utils/colors
+ */
 import { isString } from './checks';
 
 const Min_Color_Components_Count = 3;

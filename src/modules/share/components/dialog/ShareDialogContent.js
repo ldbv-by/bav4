@@ -1,3 +1,6 @@
+/**
+ * @module modules/share/components/dialog/ShareDialogContent
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import clipboardIcon from './assets/clipboard.svg';

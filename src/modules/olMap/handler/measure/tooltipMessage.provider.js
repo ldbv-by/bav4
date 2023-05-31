@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/measure/tooltipMessage_provider
+ */
 import { InteractionSnapType, InteractionStateType } from '../../utils/olInteractionUtils';
 import { $injector } from '../../../../injection';
 

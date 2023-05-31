@@ -16,7 +16,7 @@ describe('GeolocationPlugin', () => {
 	};
 
 	const mapServiceMock = {
-		getDefaultGeodeticSrid() {},
+		getLocalProjectedSrid() {},
 		getSrid() {}
 	};
 
@@ -254,7 +254,7 @@ describe('GeolocationPlugin', () => {
 			const bufferedMapExtent = [11, 22, 33, 44];
 			const position = { coords: { longitude: 43, latitude: 26, accuracy: 10 } };
 			spyOn(mapServiceMock, 'getSrid').and.returnValue(mapSrid);
-			spyOn(mapServiceMock, 'getDefaultGeodeticSrid').and.returnValue(geodeticSrid);
+			spyOn(mapServiceMock, 'getLocalProjectedSrid').and.returnValue(geodeticSrid);
 			spyOn(instanceUnderTest, '_transformPositionTo3857').and.returnValue([38, 57]);
 			spyOn(coordinateServiceMock, 'transformExtent').and.callFake((extent, sourceSrid, targetSrid) => {
 				return targetSrid === geodeticSrid ? geodeticExtent : bufferedMapExtent;

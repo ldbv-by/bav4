@@ -1,3 +1,6 @@
+/**
+ * @module modules/footer/components/Footer
+ */
 import { html } from 'lit-html';
 import { $injector } from '../../../injection';
 import css from './footer.css';
@@ -79,7 +82,10 @@ export class Footer extends MvuElement {
 		};
 
 		const createChildrenView = () => {
-			return html` <ba-map-info></ba-map-info> `;
+			return html`
+				<ba-privacy-policy></ba-privacy-policy>
+				<ba-map-info></ba-map-info>
+			`;
 		};
 
 		return html`

@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/toggle/Toggle
+ */
 import { html } from 'lit-html';
 import css from './toggle.css';
 import { classMap } from 'lit-html/directives/class-map.js';

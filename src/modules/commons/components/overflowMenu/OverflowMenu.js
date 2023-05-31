@@ -1,3 +1,6 @@
+/**
+ * @module modules/commons/components/overflowMenu/OverflowMenu
+ */
 import { html, nothing } from 'lit-html';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { styleMap } from 'lit-html/directives/style-map.js';
@@ -26,7 +29,8 @@ const Update_Anchor_Position = 'update_last_anchor_position';
 const DefaultMenuOption = { label: null, icon: null, action: null, disabled: false, isDivider: false };
 
 /**
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const MenuTypes = Object.freeze({
 	MEATBALL: 'meatball',

@@ -1,36 +1,47 @@
 /**
- * @module service/provider
+ * @module services/provider/stringifyCoords_provider
  */
-import { createStringXY } from 'ol/coordinate';
-import { $injector } from '../../injection';
+import { LLtoUTM, forward } from '../../utils/mgrs';
+import { GlobalCoordinateRepresentations } from '../../domain/coordinateRepresentation';
 
 /**
- * A function that returns a function which itsself takes a coordinate and returns a string representation.
- *
- * @typedef {function():(function(Coordinate) : (string))} stringifyCoordProvider
+ * A function that returns a string representation of a coordinate.
+ * @param {module:domain/coordinateTypeDef~Coordinate} coordinate
+ * @param {module:domain/coordinateRepresentation~CoordinateRepresentation} coordinateRepresentation
+ * @param {function} transformFn
+ * @param {object} [options]
+ * @typedef {Function} stringifyCoordProvider
  */
 
 /**
- * @function
- * @param {number} srid
- * @param {object} options
- * @returns {stringifyCoordProvider}
+ * Bvv specific implementation of {@link module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
+ * @async
+ * @implements {module:services/provider/stringifyCoords_provider~stringifyCoordProvider}
  */
-export const defaultStringifyFunction = (srid, options = { digits: 3 }) => {
-	return srid === 4326 ? createStringLatLong(options.digits) : createStringXY(options.digits);
-};
-
-/**
- * @function
- * @param {number} srid
- * @param {object} options
- * @returns {stringifyCoordProvider}
- */
-export const bvvStringifyFunction = (srid, options = {}) => {
-	if (srid !== 4326) {
-		return createStringUTM(srid, options.digits || 0);
+export const bvvStringifyFunction = (coordinate, coordinateRepresentation, transformFn, options = {}) => {
+	const { global, code, digits, label } = coordinateRepresentation;
+	// all global coordinate representations
+	if (global) {
+		const stringifyGlobal = (label, coordinate) => {
+			const coord4326 = transformFn(coordinate, 3857, 4326);
+			switch (label) {
+				case GlobalCoordinateRepresentations.SphericalMercator.label:
+					return createStringXY(digits)(coordinate);
+				case GlobalCoordinateRepresentations.WGS84.label:
+					return stringifyLatLong(options.digits ?? coordinateRepresentation.digits)(coord4326);
+				case GlobalCoordinateRepresentations.UTM.label: {
+					const { northing, easting, zoneNumber, zoneLetter } = LLtoUTM({ lat: coord4326[1], lon: coord4326[0] });
+					return `${zoneNumber}${zoneLetter} ${easting} ${northing}`;
+				}
+				case GlobalCoordinateRepresentations.MGRS.label:
+					return forward(coord4326);
+			}
+		};
+		return stringifyGlobal(label, coordinate);
 	}
-	return createStringLatLong(options.digits || 3);
+
+	// all local coordinate representations
+	return stringifyLocalUTM(code, options.digits ?? coordinateRepresentation.digits, transformFn)(transformFn(coordinate, 3857, code));
 };
 
 /**
@@ -38,29 +49,31 @@ export const bvvStringifyFunction = (srid, options = {}) => {
  * point location according to {@link https://en.wikipedia.org/wiki/ISO_6709|ISO 6709}.
  * Switching [X,Y,(Z,M)] to [Y,X].
  * @param {number} digits
+ * @ignore
  */
-const createStringLatLong = (digits) => {
+const stringifyLatLong = (digits) => {
 	// Possible Z-, M-values are currently ignored. This may change in future implementations.
-	return (coordinate) => createStringXY(digits)(coordinate.slice(0, 2).reverse());
+	return (coordinate4326) => createStringXY(digits)(coordinate4326.slice(0, 2).reverse());
 };
 
-const createStringUTM = (srid, digits) => {
-	const { CoordinateService: coordinateService } = $injector.inject('CoordinateService');
-
+const stringifyLocalUTM = (srid, digits, transformFn) => {
+	const determineUtmZoneBand = (coordinate4326) => {
+		if (coordinate4326[1] < 54 && coordinate4326[1] >= 48) {
+			return 'U';
+		} else if (coordinate4326[1] < 48 && coordinate4326[1] >= 42) {
+			return 'T';
+		}
+		return '';
+	};
 	return (coordinate) => {
 		const zoneNumber = srid === 25832 ? '32' : '33';
-		const zoneBand = determineUtmZoneBand(coordinateService.transform(coordinate, srid, 4326));
+		const zoneBand = determineUtmZoneBand(transformFn(coordinate, srid, 4326));
 
-		const coord = createStringXY(digits)(coordinate).replace(/\B(?=(\d{3})+(?!\d))/g, '');
-		return zoneNumber + zoneBand + ' ' + coord;
+		const coord = createStringXY(digits)(coordinate);
+		return `${zoneNumber}${zoneBand} ${coord}`;
 	};
 };
 
-const determineUtmZoneBand = (coord4326) => {
-	if (coord4326[1] < 54 && coord4326[1] >= 48) {
-		return 'U';
-	} else if (coord4326[1] < 48 && coord4326[1] >= 42) {
-		return 'T';
-	}
-	return '';
+const createStringXY = (fractionDigits) => {
+	return (coordinate) => `${coordinate[0].toFixed(fractionDigits)} ${coordinate[1].toFixed(fractionDigits)}`;
 };

@@ -1,15 +1,14 @@
+/**
+ * @module store/notifications/notifications_action
+ */
 import { NOTIFICATION_ADDED } from './notifications.reducer';
 import { $injector } from '../../injection';
 import { EventLike } from '../../utils/storeUtils';
 
 /**
- * @module notification/action
- */
-
-/**
  * Enum for notification levels.
  * @readonly
- * @enum {string}
+ * @enum {Symbol}
  */
 export const LevelTypes = Object.freeze({
 	INFO: Symbol.for('info'),
@@ -31,7 +30,7 @@ const getStore = () => {
 /**
  * Emits a new notification to the system
  * @param {string} content The notification content.
- * @param {'info'|'warn'|'error'} level the notification level (@see {@link LevelTypes})
+ * @param {LevelTypes} level the notification level (@see {@link LevelTypes})
  * @function
  */
 export const emitNotification = (content, level) => {

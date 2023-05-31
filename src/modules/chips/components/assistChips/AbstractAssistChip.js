@@ -1,3 +1,6 @@
+/**
+ * @module modules/chips/components/assistChips/AbstractAssistChip
+ */
 import { html, nothing } from 'lit-html';
 import css from './abstractAssistChip.css';
 import { MvuElement } from '../../../MvuElement';
@@ -37,7 +40,7 @@ export class AbstractAssistChip extends MvuElement {
 			mask : url("${icon}");			
 			-webkit-mask-image : url("${icon}");			
 			-webkit-mask-size:cover;
-			background: var(--secondary-color);
+			background: var(--text4);
 		}`;
 
 		return this.isVisible()

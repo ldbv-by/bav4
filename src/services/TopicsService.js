@@ -1,3 +1,6 @@
+/**
+ * @module services/TopicsService
+ */
 import { $injector } from '../injection';
 import { Topic } from '../domain/topic';
 import { loadBvvTopics } from './provider/topics.provider';
@@ -81,20 +84,44 @@ export class TopicsService {
 	_newFallbackTopics() {
 		const [fallbackId0, fallbackId1] = FALLBACK_TOPICS_IDS;
 		return [
-			new Topic(fallbackId0, 'Topic 1', 'This is a fallback topic...', [
-				//see fallback georesources in GeoResourceService
-				'tpo',
-				'tpo_mono',
-				'bmde_vector',
-				'bmde_vector_relief'
-			]),
-			new Topic(fallbackId1, 'Topic 2', 'This is another fallback topic...', [
-				//see fallback georesources in GeoResourceService
-				'tpo',
-				'tpo_mono',
-				'bmde_vector',
-				'bmde_vector_relief'
-			])
+			new Topic(
+				fallbackId0,
+				'Topic 1',
+				'This is a fallback topic...',
+				[
+					//see fallback georesources in GeoResourceService
+					'tpo',
+					'tpo_mono',
+					'bmde_vector',
+					'bmde_vector_relief'
+				],
+				[],
+				[],
+				[],
+				{
+					hue: 300,
+					icon: "<path d='M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z'/>"
+				}
+			),
+			new Topic(
+				fallbackId1,
+				'Topic 2',
+				'This is another fallback topic...',
+				[
+					//see fallback georesources in GeoResourceService
+					'tpo',
+					'tpo_mono',
+					'bmde_vector',
+					'bmde_vector_relief'
+				],
+				[],
+				[],
+				[],
+				{
+					hue: 250,
+					icon: "<path d='M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z'/>"
+				}
+			)
 		];
 	}
 }

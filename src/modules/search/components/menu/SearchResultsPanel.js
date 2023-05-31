@@ -1,3 +1,6 @@
+/**
+ * @module modules/search/components/menu/SearchResultsPanel
+ */
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { LocationResultsPanel } from './types/location/LocationResultsPanel';

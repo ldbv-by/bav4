@@ -1,3 +1,6 @@
+/**
+ * @module modules/elevationProfile/components/assistChip/ElevationProfileChip
+ */
 import { $injector } from '../../../../injection';
 import { openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';

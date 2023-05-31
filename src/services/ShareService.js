@@ -1,6 +1,10 @@
+/**
+ * @module services/ShareService
+ */
 import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
+import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 
 export class ShareService {
 	constructor() {
@@ -56,7 +60,7 @@ export class ShareService {
 			extraParams
 		);
 
-		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL');
+		const baseUrl = this._configService.getValueAsPath('FRONTEND_URL').replace('/index.html', '');
 		const searchParams = new URLSearchParams(extractedState);
 		const mergedPathParameters = pathParameters.length ? [...pathParameters] : [];
 		return `${baseUrl}${mergedPathParameters.join('/')}` + '?' + decodeURIComponent(searchParams.toString());
@@ -88,11 +92,14 @@ export class ShareService {
 			position: { rotation }
 		} = state;
 
-		const digits = mapService.getSridDefinitionsForView().find((df) => df.code === mapService.getDefaultSridForView()).digits;
+		// we use the defined SRID for local projected tasks (if available) otherwise WGS84
+		const { digits, code } =
+			mapService
+				.getCoordinateRepresentations(center)
+				.filter((cr) => cr.code)
+				.filter((cr) => cr.code === mapService.getLocalProjectedSrid())[0] ?? GlobalCoordinateRepresentations.WGS84;
 
-		const transformedCenter = coordinateService
-			.transform(center, mapService.getSrid(), mapService.getDefaultSridForView())
-			.map((n) => n.toFixed(digits));
+		const transformedCenter = coordinateService.transform(center, mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
 		const roundedZoom = round(zoom, ShareService.ZOOM_LEVEL_PRECISION);
 		const roundedRotation = round(rotation, ShareService.ROTATION_VALUE_PRECISION);

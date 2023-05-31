@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/featureInfo/OlFeatureInfoHandler
+ */
 import { $injector } from '../../../../injection';
 import { addFeatureInfoItems, registerQuery, resolveQuery } from '../../../../store/featureInfo/featureInfo.action';
 import { observe } from '../../../../utils/storeUtils';
@@ -46,10 +49,21 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		//find ONE closest feature per layer
 		const findOlFeature = (map, pixel, olLayer) => {
 			return (
-				map.forEachFeatureAtPixel(pixel, (feature) => feature, {
-					layerFilter: (l) => l === olLayer,
-					hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
-				}) || null
+				map.forEachFeatureAtPixel(
+					pixel,
+					(feature) => {
+						// clustered features
+						if (feature.get('features')) {
+							return feature.get('features').length === 1 ? feature.get('features')[0] : null;
+						}
+						// un-clustered features
+						return feature;
+					},
+					{
+						layerFilter: (l) => l === olLayer,
+						hitTolerance: OlFeatureInfoHandler_Hit_Tolerance_Px
+					}
+				) ?? null
 			);
 		};
 

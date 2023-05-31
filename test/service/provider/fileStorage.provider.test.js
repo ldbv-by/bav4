@@ -13,7 +13,7 @@ describe('BVV GeoResource provider', () => {
 	};
 
 	beforeEach(() => {
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('FileStorageService', fileStorageService);
+		$injector.registerSingleton('FileStorageService', fileStorageService);
 	});
 
 	afterEach(() => {
@@ -30,7 +30,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 			});
 		});
@@ -44,7 +44,7 @@ describe('BVV GeoResource provider', () => {
 
 				expect(future instanceof GeoResourceFuture).toBeTrue();
 				expect(future.id).toBe(id);
-				expect(future.label).toBe('');
+				expect(future.label).toBeNull();
 				expect(future._loader).toBeDefined();
 			});
 		});
@@ -83,7 +83,7 @@ describe('BVV GeoResource provider', () => {
 			expect(geoResource._srid).toBe(srid);
 			expect(geoResource._attributionProvider).toBe(getAttributionForLocallyImportedOrCreatedGeoResource);
 			expect(geoResource._sourceType).toBe(VectorSourceType.KML);
-			expect(geoResource.label).toBe('global_default_vector_georesource_name');
+			expect(geoResource.label).toBe('KML');
 		});
 
 		it('throws an error when source type is not supported', async () => {

@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/utils/olInteractionUtils
+ */
 import { isVertexOfGeometry } from './olGeometryUtils';
 import { modifyStyleFunction } from './olStyleUtils';
 import { $injector } from '../../../injection';

@@ -1,3 +1,6 @@
+/**
+ * @module plugins/IframeStatePlugin
+ */
 import { PathParameters } from '../domain/pathParameters';
 import { $injector } from '../injection';
 import { findAllBySelector, IFRAME_ENCODED_STATE } from '../utils/markup';
@@ -5,8 +8,8 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 
 /**
- * Checks if a surrounding iframe exists and contains the {@link IFRAME_ENCODED_STATE } data-attribute.
- * If so, it updates the attributes value on state changes.
+ * Checks if a surrounding iframe exists and contains the {@link IFRAME_ENCODED_STATE } data attribute.
+ * If so, it updates the attribute's value on state changes.
  * @author taulinger
  */
 export class IframeStatePlugin extends BaPlugin {

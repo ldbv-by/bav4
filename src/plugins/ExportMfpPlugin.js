@@ -1,10 +1,13 @@
+/**
+ * @module plugins/ExportMfpPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
-import { ToolId } from '../store/tools/tools.action';
 import { activate, cancelJob, deactivate, setCurrent } from '../store/mfp/mfp.action';
 import { $injector } from '../injection';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { emitNotification, LevelTypes } from '../store/notifications/notifications.action';
+import { Tools } from '../domain/tools';
 
 /**
  * Id of the layer used for mfp export visualization.
@@ -51,7 +54,7 @@ export class ExportMfpPlugin extends BaPlugin {
 		};
 
 		const onToolChanged = async (toolId) => {
-			if (toolId !== ToolId.EXPORT) {
+			if (toolId !== Tools.EXPORT) {
 				deactivate();
 			} else {
 				if (await lazyInitialize()) {

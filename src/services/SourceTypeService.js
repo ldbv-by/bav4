@@ -1,3 +1,6 @@
+/**
+ * @module services/SourceTypeService
+ */
 import { isHttpUrl, isString } from '../utils/checks';
 import { PromiseQueue } from '../utils/PromiseQueue';
 import { bvvUrlSourceTypeProvider, defaultDataSourceTypeProvider, defaultMediaSourceTypeProvider } from './provider/sourceType.provider';

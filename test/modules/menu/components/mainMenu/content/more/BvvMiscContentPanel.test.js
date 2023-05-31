@@ -3,12 +3,16 @@ import { BvvMiscContentPanel } from '../../../../../../../src/modules/menu/compo
 import { ThemeToggle } from '../../../../../../../src/modules/uiTheme/components/toggle/ThemeToggle';
 import { TestUtils } from '../../../../../../test-utils';
 import { $injector } from '../../../../../../../src/injection';
+import { ToggleFeedbackPanel } from '../../../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { modalReducer } from '../../../../../../../src/store/modal/modal.reducer';
+import { closeModal } from '../../../../../../../src/store/modal/modal.action';
 
 window.customElements.define(BvvMiscContentPanel.tag, BvvMiscContentPanel);
 
 describe('MiscContentPanel', () => {
+	let store;
 	const setup = () => {
-		TestUtils.setupStoreAndDi();
+		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(BvvMiscContentPanel.tag);
 	};
@@ -53,7 +57,7 @@ describe('MiscContentPanel', () => {
 			expect(links[2].target).toEqual('_blank');
 			expect(links[2].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_terms_of_use');
 
-			expect(links[3].href).toEqual('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
+			expect(links[3].href).toContain('global_privacy_policy_url');
 			expect(links[3].target).toEqual('_blank');
 			expect(links[3].querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_privacy_policy');
 
@@ -75,6 +79,26 @@ describe('MiscContentPanel', () => {
 			expect(links[7].target).toEqual('_blank');
 			expect(links[7].querySelector('.ba-list-item__primary-text').innerText).toEqual('menu_misc_content_panel_ea_header');
 			expect(links[7].querySelector('.ba-list-item__secondary-text').innerText).toEqual('menu_misc_content_panel_ea_text');
+		});
+
+		it('have a feedback button', async () => {
+			const element = await setup();
+
+			const feedbackButton = element.shadowRoot.querySelector('#feedback');
+			expect(feedbackButton.querySelector('.ba-list-item__text').innerText).toEqual('menu_misc_content_panel_feedback_title');
+			expect(feedbackButton.querySelectorAll('.ba-list-item__icon.icon.feedback')).toHaveSize(1);
+		});
+
+		it('opens the modal with the toggle-feedback component', async () => {
+			const element = await setup();
+
+			const feedbackButton = element.shadowRoot.querySelector('#feedback');
+			feedbackButton.click();
+
+			expect(store.getState().modal.data.title).toBe('menu_misc_content_panel_feedback_title');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
 		});
 	});
 });

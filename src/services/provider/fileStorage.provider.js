@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/fileStorage_provider
+ */
 import { $injector } from '../../injection';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType } from '../../domain/geoResources';
 import { FileStorageServiceDataTypes } from '../FileStorageService';
@@ -5,17 +8,14 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from './attribut
 
 export const _newLoader = (id) => {
 	return async () => {
-		const { FileStorageService: fileStorageService, TranslationService: translationService } = $injector.inject(
-			'FileStorageService',
-			'TranslationService'
-		);
+		const { FileStorageService: fileStorageService } = $injector.inject('FileStorageService');
 
 		try {
 			const fileId = await fileStorageService.getFileId(id);
 			const { data, type, srid } = await fileStorageService.get(fileId);
 
 			if (type === FileStorageServiceDataTypes.KML) {
-				const vgr = new VectorGeoResource(id, translationService.translate('global_default_vector_georesource_name'), VectorSourceType.KML)
+				const vgr = new VectorGeoResource(id, null /**will be read from the KML */, VectorSourceType.KML)
 					.setSource(data, srid)
 					.setAttributionProvider(getAttributionForLocallyImportedOrCreatedGeoResource);
 				return vgr;
@@ -29,7 +29,7 @@ export const _newLoader = (id) => {
 /**
  * Uses the BVV endpoint to load a GeoResource from the FileStorage.
  * @function
- * @implements geoResourceByIdProvider
+ * @implements {module:services/GeoResourceService~geoResourceByIdProvider}
  * @returns {GeoResourceFuture|null}
  */
 export const loadBvvFileStorageResourceById = (id) => {

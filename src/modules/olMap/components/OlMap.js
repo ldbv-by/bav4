@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/components/OlMap
+ */
 import { html } from 'lit-html';
 import { MvuElement } from '../../MvuElement';
 import olCss from 'ol/ol.css';

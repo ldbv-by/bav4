@@ -1,3 +1,6 @@
+/**
+ * @module services/AdministrationService
+ */
 import { loadBvvAdministration } from './provider/administration.provider';
 import { isCoordinate } from '../utils/checks';
 

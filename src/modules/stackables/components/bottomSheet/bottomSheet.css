@@ -1,0 +1,52 @@
+.bottom-sheet {
+	background-color: var(--primary-bg-color);
+	box-shadow: 3px 0px 4px rgb(0 0 0 / 50%);
+	display: flex;
+	flex-direction: column;
+	padding: 0.8em 1.5em;
+	min-width: 25em;
+	pointer-events: all;
+	color: var(--text3);
+	margin: 0 0 0 0;
+	transition-property: margin;
+	transition-duration: var(--animation-duration-large-open);
+	transition-timing-function: var(--animation-easing-linear);
+	animation-name: animateIn;
+	animation-fill-mode: both;
+	animation-duration: var(--animation-duration-large-open);
+	animation-timing-function: var(--animation-easing-linear);
+}
+.fade-out {
+	animation-name: animateOut;
+}
+.is-open {
+	margin: 0 0 0 28em;
+}
+.tool-container__close-button {
+	margin: 0;
+	width: 3em;
+	height: 3em;
+	border-radius: 1.5em;
+	border: 0;
+	background: var(--primary-bg-color);
+	font-weight: bold;
+	cursor: pointer;
+	display: block;
+	padding: 0.7em;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.tool-container__close-button:hover {
+	background: var(--header-background-color);
+}
+@keyframes animateIn {
+	0% {
+		transform: translateY(100%);
+	}
+}
+@keyframes animateOut {
+	100% {
+		transform: translateY(100%);
+	}
+}

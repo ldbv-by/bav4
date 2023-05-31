@@ -1,5 +1,9 @@
+/**
+ * @module domain/geoResources
+ */
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
+import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
 import { isHttpUrl } from '../utils/checks';
 
 /**
@@ -18,7 +22,8 @@ import { isHttpUrl } from '../utils/checks';
  */
 
 /**
- * @enum
+ * @readonly
+ * @enum {Symbol}
  */
 export const GeoResourceTypes = Object.freeze({
 	WMS: Symbol.for('wms'),
@@ -31,7 +36,8 @@ export const GeoResourceTypes = Object.freeze({
 
 /**
  * Enum of all supported authentication types.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const GeoResourceAuthenticationType = Object.freeze({
 	BAA: 'baa',
@@ -46,7 +52,12 @@ export const GeoResourceAuthenticationType = Object.freeze({
  * @class
  */
 export class GeoResource {
-	constructor(id, label = '') {
+	/**
+	 *
+	 * @param {string} id the id of this GeoResource
+	 * @param {string | null} [label] the label of this GeoResource
+	 */
+	constructor(id, label = null) {
 		if (this.constructor === GeoResource) {
 			// Abstract class can not be constructed.
 			throw new TypeError('Can not construct abstract class.');
@@ -82,7 +93,7 @@ export class GeoResource {
 
 	/**
 	 * The label of this GeoResource
-	 * @type {string}
+	 * @type {string|null}
 	 */
 	get label() {
 		return this._label;
@@ -121,7 +132,7 @@ export class GeoResource {
 	}
 
 	/**
-	 *  @type {Attribution}
+	 *  @type {Attribution|Array<Attribution>|string|null}
 	 */
 	get attribution() {
 		return this._attribution;
@@ -144,11 +155,15 @@ export class GeoResource {
 	}
 
 	/**
-	 * `true` if this GeoResource is allowed to be listed as a result for a query.
+	 * `true` if this GeoResource is allowed to be exported.
 	 *  @type {boolean}
 	 */
 	get exportable() {
 		return this._exportable;
+	}
+
+	get attributionProvider() {
+		return this._attributionProvider;
 	}
 
 	setLabel(label) {
@@ -228,7 +243,7 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns an array of attibutions determined by the attributionProvider (optionally for a specific zoom level)
+	 * Returns an array of attributions determined by the attributionProvider (optionally for a specific zoom level)
 	 * for this GeoResource.
 	 * It returns `null` when no attributions are available.
 	 * @param {number} [value=0] level (index-like value, can be a zoom level of a map)
@@ -244,21 +259,40 @@ export class GeoResource {
 	}
 
 	/**
-	 * Returns the type of this GeoResouce
+	 * Returns the type of this GeoResource
 	 * @abstract
-	 * @type {GeoResourceTypes}
+	 * @returns {GeoResourceTypes}
 	 */
 	getType() {
 		// The child has not implemented this method.
 		throw new TypeError('Please implement abstract method #getType or do not call super.getType from child.');
 	}
+
+	/**
+	 * Copies all properties from the given GeoResource except for the `id`.
+	 * @param {GeoResource} geoResource the GeoResource the properties should be copied from
+	 * @returns {GeoResource} this for chaining
+	 */
+	copyPropertiesFrom(geoResource) {
+		return this.setLabel(geoResource.label)
+			.setOpacity(geoResource.opacity)
+			.setMinZoom(geoResource.minZoom)
+			.setMaxZoom(geoResource.maxZoom)
+			.setHidden(geoResource.hidden)
+			.setAttribution(geoResource.attribution)
+			.setAttributionProvider(geoResource.attributionProvider)
+			.setQueryable(geoResource.queryable)
+			.setExportable(geoResource.exportable)
+			.setAuthenticationType(geoResource.authenticationType);
+	}
 }
 
 /**
- * An async function that loads a  {@link GeoResource}.
- *
+ * An async function that loads a {@link GeoResource}.
+ * @async
+ * @callback asyncGeoResourceLoader
  * @param {string} id Id of the requested GeoResource
- * @typedef {function(id) : (Promise<GeoResource>)} asyncGeoResourceLoader
+ * @returns {GeoResource}
  */
 
 /**
@@ -268,7 +302,7 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 *
 	 * @param {string} id
-	 * @param {asyncGeoResourceLoader} loader
+	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader
 	 */
 	constructor(id, loader) {
 		super(id);
@@ -284,6 +318,7 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	onResolve(callback) {
 		this._onResolve.push(callback);
+		return this;
 	}
 
 	/**
@@ -292,6 +327,7 @@ export class GeoResourceFuture extends GeoResource {
 	 */
 	onReject(callback) {
 		this._onReject.push(callback);
+		return this;
 	}
 
 	/**
@@ -304,13 +340,15 @@ export class GeoResourceFuture extends GeoResource {
 	/**
 	 * Calls the loader function and returns the real GeoResource.
 	 * Will be typically called by map implementations.
+	 *
+	 * Note: It's up to the loader implementation which properties of the GeoResourceFuture instance are copied to the resolved GeoResource.
 	 * @returns GeoResource
 	 */
 	async get() {
 		try {
 			const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 			const resolvedGeoResource = await this._loader(this.id);
-			// replace the GeoResourceFuture by the resolved GeoResource in the chache
+			// replace the GeoResourceFuture by the resolved GeoResource in the cache
 			const observedGr = geoResourceService.addOrReplace(resolvedGeoResource);
 			this._onResolve.forEach((f) => f(observedGr, this));
 			return observedGr;
@@ -368,16 +406,20 @@ export class WmsGeoResource extends GeoResource {
 export class XyzGeoResource extends GeoResource {
 	constructor(id, label, url) {
 		super(id, label);
-		this._url = url;
+		this._urls = url;
 		this._tileGridId = null;
 	}
 
-	get url() {
-		return this._url;
+	/**
+	 * The urls of this `XyzGeoResource`.
+	 *  @type {string|string[]}
+	 */
+	get urls() {
+		return this._urls;
 	}
 
 	/**
-	 * Returns an identifier for a TielGrid other than the widely-used Google grid.
+	 * Returns an identifier for a TileGrid other than the widely-used Google grid.
 	 * Default is `null`.
 	 */
 	get tileGridId() {
@@ -398,7 +440,8 @@ export class XyzGeoResource extends GeoResource {
 }
 
 /**
- * @enum
+ * @readonly
+ * @enum {Symbol}
  */
 export const VectorSourceType = Object.freeze({
 	KML: Symbol.for('kml'),
@@ -415,10 +458,10 @@ export const VectorSourceType = Object.freeze({
 export class VectorGeoResource extends GeoResource {
 	constructor(id, label, sourceType) {
 		super(id, label);
-		this._url = null;
 		this._sourceType = sourceType;
 		this._data = null;
 		this._srid = null;
+		this._clusterParams = {};
 	}
 
 	/**
@@ -444,10 +487,6 @@ export class VectorGeoResource extends GeoResource {
 		return this._label ? this._label : this._getFallbackLabel();
 	}
 
-	get url() {
-		return this._url;
-	}
-
 	get sourceType() {
 		return this._sourceType;
 	}
@@ -461,25 +500,12 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
-	 * Sets the Url for this 'external' GeoResource.
-	 * @param {string} url
-	 * @returns `this` for chaining
-	 */
-	setUrl(url) {
-		this._url = url;
-		this._data = null;
-		this._srid = null;
-		return this;
-	}
-
-	/**
-	 * Sets the source of this 'internal' GeoResource.
-	 * @param {Promise<string>|string} data
+	 * Sets the source of this  GeoResource.
+	 * @param {string} data
 	 * @param {number} srid of the data
 	 * @returns `this` for chaining
 	 */
 	setSource(data, srid) {
-		this._url = null;
 		this._data = data;
 		this._srid = srid;
 		return this;
@@ -494,10 +520,44 @@ export class VectorGeoResource extends GeoResource {
 	}
 
 	/**
+	 * @returns `true` if this VectorGeoResource should be displayed clustered
+	 */
+	isClustered() {
+		return !!Object.keys(this._clusterParams).length;
+	}
+
+	get clusterParams() {
+		return { ...this._clusterParams };
+	}
+
+	setClusterParams(clusterParams) {
+		this._clusterParams = { ...clusterParams };
+		return this;
+	}
+
+	/**
 	 * @override
 	 */
 	getType() {
 		return GeoResourceTypes.VECTOR;
+	}
+
+	/**
+	 * Returns a {@link GeoResourceFuture} which will be resolved to a {@link VectorGeoResource}
+	 * by the the default loader. All properties set on the GeoResourceFuture will be copied to the resolved VectorGeoResource.
+	 *
+	 * @param {string} id
+	 * @param {string} url
+	 * @param {VectorSourceType} sourceType
+	 * @param {string | null} [label]
+	 * @returns {GeoResourceFuture}
+	 */
+	static forUrl(id, url, sourceType, label = null) {
+		return new GeoResourceFuture(id, defaultVectorGeoResourceLoaderForUrl(url, sourceType, id, label))
+			.setLabel(label)
+			.onResolve((resolved, future) => {
+				resolved.copyPropertiesFrom(future);
+			});
 	}
 }
 

@@ -1,7 +1,11 @@
+/**
+ * @module modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel
+ */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './bvvMiscContentPanel.css';
 import { $injector } from '../../../../../../injection';
+import { closeModal, openModal } from '../../../../../../store/modal/modal.action';
 
 /**
  * Container for more contents.
@@ -18,6 +22,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
+
+		const openFeedbackDialog = () => {
+			const title = translate('menu_misc_content_panel_feedback_title');
+			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
+			openModal(title, content);
+		};
 
 		return html`
 			<style>
@@ -46,6 +56,12 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
+				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
 				<a class="ba-list-item" href="https://www.ldbv.bayern.de/service/kontakt.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon contact"> </span>
@@ -62,7 +78,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_terms_of_use')}</span>
 				</a>
-				<a class="ba-list-item" href="https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html" target="_blank">
+				<a class="ba-list-item" href="${translate('global_privacy_policy_url')}" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon lock"> </span>
 					</span>

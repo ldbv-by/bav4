@@ -1,3 +1,6 @@
+/**
+ * @module modules/elevationProfile/components/panel/ElevationProfile
+ */
 import { html } from 'lit-html';
 import css from './elevationProfile.css';
 import { MvuElement } from '../../../MvuElement';
@@ -20,7 +23,8 @@ const Chart_Delay = 300;
 
 /**
  * different types of slope
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const SlopeType = Object.freeze({
 	FLAT: 'flat',
