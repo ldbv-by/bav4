@@ -6,6 +6,10 @@ import { modifyStyleFunction } from './olStyleUtils';
 import { $injector } from '../../../injection';
 import { noModifierKeys, singleClick } from 'ol/events/condition';
 
+/**
+ * @readonly
+ * @enum {String}
+ */
 export const InteractionStateType = Object.freeze({
 	ACTIVE: 'active',
 	DRAW: 'draw',
@@ -14,6 +18,10 @@ export const InteractionStateType = Object.freeze({
 	OVERLAY: 'overlay'
 });
 
+/**
+ * @readonly
+ * @enum {String}
+ */
 export const InteractionSnapType = Object.freeze({
 	FIRSTPOINT: 'firstPoint',
 	LASTPOINT: 'lastPoint',
