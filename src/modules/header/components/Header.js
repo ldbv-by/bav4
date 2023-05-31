@@ -155,12 +155,15 @@ export class Header extends MvuElement {
 			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
 		};
 
-		const getEmblemLink = () => {
-			return this._environmentService.isStandalone() ? translate('header_emblem_link_standalone') : translate('header_emblem_link');
-		};
-
-		const getEmblemLinkTitle = () => {
-			return this._environmentService.isStandalone() ? translate('header_emblem_title_standalone') : translate('header_emblem_title');
+		const getEmblem = () => {
+			return this._environmentService.isStandalone()
+				? html`<a
+						href="${translate('header_emblem_link_standalone')}"
+						title="${translate('header_emblem_title_standalone')}"
+						class="header__emblem"
+						target="_blank"
+				  ></a>`
+				: html`<div class='header__emblem'></a>`;
 		};
 
 		const layerCount = layers.length;
@@ -242,8 +245,7 @@ export class Header extends MvuElement {
 					</div>		
 					<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
 					</div>
-					<a href='${getEmblemLink()}' title='${getEmblemLinkTitle()}' class='header__emblem' target='_blank'>
-					</a>
+					${getEmblem()}					
 					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
