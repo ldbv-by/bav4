@@ -163,7 +163,7 @@ export class Header extends MvuElement {
 						class="header__emblem"
 						target="_blank"
 				  ></a>`
-				: html`<div class='header__emblem'></a>`;
+				: html`<div class="header__emblem"></div>`;
 		};
 
 		const layerCount = layers.length;
