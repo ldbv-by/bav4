@@ -175,6 +175,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
+		const getProjectionHints = () => (olFeature.geodesic ? {} : this._projectionHints);
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			if (simplifiedGeometry) {
@@ -185,14 +186,15 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
-			simplifiedGeometry = olFeature.getGeometry();
+			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
 			if (olFeature.getGeometry() instanceof Polygon) {
-				simplifiedGeometry = new LineString(olFeature.getGeometry().getCoordinates(false)[0]);
+				const geom = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
+				simplifiedGeometry = new LineString(geom.getCoordinates(false)[0]);
 			}
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const delta = getPartitionDelta(simplifiedGeometry, resolution, this._projectionHints);
+		const delta = getPartitionDelta(simplifiedGeometry, resolution, getProjectionHints());
 
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
@@ -202,7 +204,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					olMap,
 					{ offset: [0, -25], positioning: 'top-center' },
 					MeasurementOverlayTypes.DISTANCE_PARTITION,
-					this._projectionHints
+					getProjectionHints()
 				);
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);

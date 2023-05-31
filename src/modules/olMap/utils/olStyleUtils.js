@@ -13,9 +13,11 @@ import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
+import { Feature } from 'ol';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
+const Green_Color = [0, 255, 0];
 const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
 const Black_Color = [0, 0, 0];
@@ -383,12 +385,8 @@ const getRulerStyle = (feature) => {
 			renderContext.drawGeometry(geometry);
 		};
 	};
-	if (!feature.geodesic) {
-		feature.geodesic = new GeodesicGeometry(feature);
-	}
-	console.log(feature.geodesic);
 	return new Style({
-		geometry: feature?.geodesic?.getGeodesicGeom(),
+		geometry: () => feature?.geodesic?.getGeodesicGeom(),
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -410,7 +408,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
-		color: Red_Color.concat([1]),
+		color: Green_Color.concat([1]),
 		width: 3 * pixelRatio
 	});
 
@@ -494,6 +492,7 @@ export const measureStyleFunction = (feature, resolution) => {
 
 	const getFallbackStyle = () => {
 		return new Style({
+			geometry: () => feature?.geodesic?.getGeodesicGeom(),
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],
@@ -517,7 +516,8 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle(feature) : getFallbackStyle()
+		//resolution ? getRulerStyle(feature) : getFallbackStyle()
+		getFallbackStyle()
 	];
 	return styles;
 };
@@ -662,7 +662,7 @@ export const createSketchStyleFunction = (styleFunction) => {
 			}),
 			stroke: new Stroke({
 				color: White_Color,
-				width: 0
+				width: 2
 			})
 		});
 
@@ -685,6 +685,9 @@ export const createSketchStyleFunction = (styleFunction) => {
 			});
 			styles = [sketchCircle];
 		} else {
+			if (!feature.geodesic) {
+				feature.geodesic = new GeodesicGeometry(feature);
+			}
 			styles = styleFunction(feature, resolution);
 		}
 

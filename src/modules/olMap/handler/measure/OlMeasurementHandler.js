@@ -44,6 +44,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GeodesicGeometry } from '../../ol/geom/geodesicGeometry';
 
 const Debounce_Delay = 1000;
 
@@ -566,14 +567,15 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createMeasureGeometry(feature, isDrawing = false) {
+		const geometry = feature.geodesic ? feature.geodesic.getGeodesicGeom() : feature.getGeometry();
 		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? feature.getGeometry().getCoordinates()[0].slice(0, -1) : feature.getGeometry().getCoordinates(false)[0];
+			const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
 
 			if (!this._sketchHandler.isFinishOnFirstPoint) {
 				return new LineString(lineCoordinates);
 			}
 		}
-		return feature.getGeometry();
+		return geometry;
 	}
 
 	_updateMeasureState(coordinate, pixel, dragging) {

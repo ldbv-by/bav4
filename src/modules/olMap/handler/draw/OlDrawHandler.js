@@ -448,7 +448,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, Tools.DRAWING + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, 'draw_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {
