@@ -64,8 +64,6 @@ export const isTemplateResult = (val) => {
 	return isObject(val) ? '_$litType$' in val : false;
 };
 
-
-
 /**
  * Checks if a value is a string and represents an HTTP URL.
  * based on https://stackoverflow.com/a/43467144
