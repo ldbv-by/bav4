@@ -47,10 +47,10 @@ export class ExportDialogContent extends MvuElement {
 
 	getExportTypes() {
 		return [
-			{ sourceType: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] },
-			{ sourceType: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] },
-			{ sourceType: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, fileExtension: 'geojson', srids: [4326] },
-			{ sourceType: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, fileExtension: 'txt', srids: [4326, 3857, 25832, 25833] }
+			{ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] },
+			{ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] },
+			{ sourceTypeName: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, fileExtension: 'geojson', srids: [4326] },
+			{ sourceTypeName: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, fileExtension: 'txt', srids: [4326, 3857, 25832, 25833] }
 		];
 	}
 

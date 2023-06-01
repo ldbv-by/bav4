@@ -36,7 +36,7 @@ describe('ExportItem', () => {
 	describe('when initialized', () => {
 		it('renders the component', async () => {
 			const element = await setup();
-			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 
 			expect(element.shadowRoot.querySelector('.export-item__label').innerText).toBe('export_item_label_foo');
@@ -49,7 +49,7 @@ describe('ExportItem', () => {
 		describe('with srids', () => {
 			it('renders a single srid as predefined srid', async () => {
 				const element = await setup();
-				element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42] };
+				element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42] };
 				element.exportData = '<baz/>';
 
 				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(1);
@@ -59,7 +59,7 @@ describe('ExportItem', () => {
 
 			it('renders the first srid as default srid', async () => {
 				const element = await setup();
-				element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+				element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 				element.exportData = '<baz/>';
 
 				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
@@ -72,7 +72,7 @@ describe('ExportItem', () => {
 	describe('when srid is changed', () => {
 		it('changes the model', async () => {
 			const element = await setup();
-			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const selectElement = element.shadowRoot.querySelector('select');
 
@@ -90,7 +90,7 @@ describe('ExportItem', () => {
 		it('saves the file', async () => {
 			const element = await setup();
 			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callThrough();
-			element.exportType = { sourceType: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const downloadButton = element.shadowRoot.querySelector('ba-button');
 

@@ -15,7 +15,7 @@ const Update_Data = 'update_data';
 const Update_Selected_Srid = 'update_selected_srid';
 /**
  * @typedef {Object} ExportType
- * @property {module:domain/sourceType~SourceTypeName} sourceType
+ * @property {module:domain/sourceType.SourceTypeName} sourceTypeName
  * @property {module:services/HttpService~MediaType} mediaType
  * @property {string} fileExtension
  * @property {Array<number>} srids
@@ -73,7 +73,7 @@ export class ExportItem extends MvuElement {
 			const sourceTypeResult = this._sourceTypeService.forData(exportData);
 
 			const dataSourceType = sourceTypeResult.sourceType;
-			const targetSourceType = new SourceType(exportType.sourceType, null, selectedSrid);
+			const targetSourceType = new SourceType(exportType.sourceTypeName, null, selectedSrid);
 
 			const fileName = `bayernAtlas.${exportType.fileExtension}`;
 			this._fileSaveService.saveAs(
@@ -89,8 +89,8 @@ export class ExportItem extends MvuElement {
 					</style>
 					<div class="export-item__content">
 						<div class="export-item__head">
-							<div class="export-item__label">${translate(`export_item_label_${exportType.sourceType}`)}</div>
-							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceType}`)}</div>
+							<div class="export-item__label">${translate(`export_item_label_${exportType.sourceTypeName}`)}</div>
+							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceTypeName}`)}</div>
 						</div>
 						<div class="export-item__select ba-form-element">
 							<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
@@ -102,7 +102,7 @@ export class ExportItem extends MvuElement {
 						</div>
 						<ba-button
 							id="download-button"
-							.label=${translate(`export_item_download_${exportType.sourceType}`)}
+							.label=${translate(`export_item_download_${exportType.sourceTypeName}`)}
 							.icon=${downloadSvg}
 							.type=${'primary'}
 							.disabled=${!selectedSrid || !exportData}
