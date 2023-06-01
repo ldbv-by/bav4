@@ -83,20 +83,27 @@ describe('GeneralFeedbackPanel', () => {
 			// arrange
 			const element = await setup();
 
+			const ratingElement = element.shadowRoot.querySelector('#rating');
 			const descriptionElement = element.shadowRoot.querySelector('#description');
 			const emailElement = element.shadowRoot.querySelector('#email');
+			const submitElement = element.shadowRoot.querySelector('#button0');
 
 			// assert
+			expect(ratingElement.hasAttribute('required')).toBeFalse();
+			expect(ratingElement.getAttribute('placeholder')).toBe('feedback_generalFeedback_rating');
+			expect(ratingElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_rating');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue;
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.hasAttribute('required')).toBeTrue();
+			expect(descriptionElement.getAttribute('placeholder')).toBe('feedback_changeDescription');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+			expect(emailElement.getAttribute('placeholder')).toBe('feedback_eMail');
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
-			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
+
+			expect(submitElement.type).toBe('primary');
+			expect(submitElement.label).toBe('feedback_submit');
 		});
 
 		it('contains 3 unvisited ba-form-elements', async () => {

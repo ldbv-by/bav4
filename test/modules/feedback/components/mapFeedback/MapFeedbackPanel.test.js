@@ -125,20 +125,19 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(categoryElement.type).toBe('select-one');
-			expect(categoryElement.hasAttribute('required')).toBeTrue;
-			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
+			expect(categoryElement.hasAttribute('required')).toBeTrue();
+			expect(categoryElement.hasAttribute('placeholder')).toBeTrue();
 			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue;
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.hasAttribute('required')).toBeTrue();
+			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue();
 			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+			expect(emailElement.hasAttribute('placeholder')).toBeTrue();
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
-			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
 		});
 
 		it('contains 4 unvisited ba-form-elements', async () => {
