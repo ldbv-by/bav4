@@ -10,6 +10,32 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
+const ratingValue = Rating.EXCELLENT;
+const fillRating = (element) => {
+	const starsRatingPanel = element.shadowRoot.getElementById('rating');
+	const ratingChangeEvent = new CustomEvent('change', {
+		detail: { rating: ratingValue }
+	});
+	starsRatingPanel.dispatchEvent(ratingChangeEvent);
+	return starsRatingPanel;
+};
+
+const descriptionValue = 'description';
+const fillDescription = (element) => {
+	const descriptionInputElement = element.shadowRoot.querySelector('#description');
+	descriptionInputElement.value = descriptionValue;
+	descriptionInputElement.dispatchEvent(new Event('input'));
+	return descriptionInputElement;
+};
+
+const emailValue = 'mail@some.com';
+const fillEmail = (element, value = emailValue) => {
+	const emailInputElement = element.shadowRoot.querySelector('#email');
+	emailInputElement.value = value;
+	emailInputElement.dispatchEvent(new Event('input'));
+	return emailInputElement;
+};
+
 const configServiceMock = {
 	getValueAsPath: () => {}
 };
@@ -72,7 +98,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(8);
+			expect(element.shadowRoot.children.length).toBe(9);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
@@ -106,10 +132,10 @@ describe('GeneralFeedbackPanel', () => {
 			expect(submitElement.label).toBe('feedback_submit');
 		});
 
-		it('contains 3 unvisited ba-form-elements', async () => {
+		it('contains 4 unvisited ba-form-elements', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
 			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
 				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
 			});
@@ -143,9 +169,8 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
-			emailInput.dispatchEvent(new Event('input'));
+			fillRating(element);
+			fillEmail(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -154,18 +179,14 @@ describe('GeneralFeedbackPanel', () => {
 			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call _saveGeneralFeedback if email is set and not valid', async () => {
+		it('does not call _saveGeneralFeedback if email is set but not valid', async () => {
 			// arrange
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
-			descriptionInput.dispatchEvent(new Event('input'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'no email';
-			emailInput.dispatchEvent(new Event('input'));
+			fillRating(element);
+			fillDescription(element);
+			fillEmail(element, 'no email');
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -180,19 +201,9 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.GOOD }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'description';
-			descriptionInput.dispatchEvent(new Event('input'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'email@some.com';
-			emailInput.dispatchEvent(new Event('input'));
+			fillRating(element);
+			fillDescription(element);
+			fillEmail(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -200,7 +211,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', 'email@some.com', Rating.GOOD));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, emailValue, ratingValue));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
@@ -209,15 +220,8 @@ describe('GeneralFeedbackPanel', () => {
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.GOOD }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'description';
-			descriptionInput.dispatchEvent(new Event('input'));
+			fillRating(element);
+			fillDescription(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -225,21 +229,18 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', null, Rating.GOOD));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, null, ratingValue));
 		});
 	});
 
 	describe('when description is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const descriptionValue = 'description';
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+			fillDescription(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
@@ -247,13 +248,10 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('its parent receives the "userVisited" class', async () => {
 			// arrange
-			const descriptionValue = 'description';
 			const element = await setup();
 
 			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+			const descriptionInput = fillDescription(element);
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
@@ -264,14 +262,11 @@ describe('GeneralFeedbackPanel', () => {
 	describe('when email is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const emailValue = 'email@some.com';
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = emailValue;
-			emailInput.dispatchEvent(new Event('input'));
+			fillEmail(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
@@ -279,13 +274,10 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('its parent receives the "userVisited" class', async () => {
 			// arrange
-			const emailValue = 'email';
 			const element = await setup();
 
 			// act
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = emailValue;
-			emailInput.dispatchEvent(new Event('input'));
+			const emailInput = fillEmail(element);
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
@@ -296,16 +288,11 @@ describe('GeneralFeedbackPanel', () => {
 	describe('when rating is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const ratingValue = Rating.EXCELLENT;
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.EXCELLENT }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
+			fillRating(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(ratingValue);
@@ -316,11 +303,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			const fiveButtonRatingElement = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.EXCELLENT }
-			});
-			fiveButtonRatingElement.dispatchEvent(ratingChangeEvent);
+			const fiveButtonRatingElement = fillRating(element);
 
 			// assert
 			const nodeValue = fiveButtonRatingElement.parentElement.attributes['class'].nodeValue;
