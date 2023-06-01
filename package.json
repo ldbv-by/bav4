@@ -15,7 +15,7 @@
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
 		"@playwright/test": "1.32.2",
 		"copy-webpack-plugin": "11.0.0",
-		"css-loader": "6.7.4",
+		"css-loader": "6.8.1",
 		"docdash": "^2.0.1",
 		"dotenv-webpack": "8.0.1",
 		"es-check": "7.1.1",

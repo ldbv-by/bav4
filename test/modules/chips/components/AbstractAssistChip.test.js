@@ -1,4 +1,3 @@
-import { html } from 'lit-html';
 import { AbstractAssistChip } from '../../../../src/modules/chips/components/assistChips/AbstractAssistChip';
 import { TestUtils } from '../../../test-utils';
 
@@ -8,9 +7,7 @@ class AssistChipImpl extends AbstractAssistChip {
 	}
 
 	getIcon() {
-		return html`<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16">
-			<circle cx="8" cy="8" r="5" stroke="black" stroke-width="3" fill="red" />
-		</svg>`;
+		return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
 	}
 
 	getLabel() {
@@ -36,9 +33,7 @@ class AssistChipNotVisibleImpl extends AbstractAssistChip {
 	}
 
 	getIcon() {
-		return html`<svg xmlns="http://www.w3.org/2000/svg" height="16" width="16">
-			<circle cx="8" cy="8" r="5" stroke="black" stroke-width="3" fill="red" />
-		</svg>`;
+		return 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
 	}
 
 	getLabel() {
