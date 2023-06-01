@@ -2189,7 +2189,6 @@
 					id="rating"
 					@change="${t=>{const{detail:{rating:e},target:{parentNode:i}}=t;this._addVisitedClass(i),this.signal(VF,this._securityService.sanitizeHtml(e))}}"
 					placeholder="${i("feedback_generalFeedback_rating")}"
-					required
 				></ba-stars-rating-panel>
 			</div>
 
@@ -2224,7 +2223,7 @@
 				>).
 			</p>
 
-			<ba-button id="button0" .label=${i("feedback_mapFeedback_submit")} .type=${"primary"} @click=${()=>{this.shadowRoot.querySelectorAll(".ba-form-element").forEach((t=>t.classList.add(fo)));const t=this.shadowRoot.getElementById("description"),i=this.shadowRoot.getElementById("email");t.reportValidity()&&i.reportValidity()&&this._saveGeneralFeedback(new hT(e.description,e.email,e.rating))}}></ba-button>
+			<ba-button id="button0" .label=${i("feedback_submit")} .type=${"primary"} @click=${()=>{this.shadowRoot.querySelectorAll(".ba-form-element").forEach((t=>t.classList.add(fo)));const t=this.shadowRoot.getElementById("description"),i=this.shadowRoot.getElementById("email");t.reportValidity()&&i.reportValidity()&&this._saveGeneralFeedback(new hT(e.description,e.email,e.rating))}}></ba-button>
 		`}async _saveGeneralFeedback(t){const e=t=>this._translationService.translate(t);try{await this._feedbackService.save(t),this._onSubmit(),Mj(e("feedback_saved_successfully"),cj.INFO)}catch(t){console.error(t),Mj(e("feedback_generalFeedback_could_not_save"),cj.ERROR)}}_addVisitedClass(t){t.classList.add(fo)}set onSubmit(t){this._onSubmit=t}static get tag(){return"ba-mvu-generalfeedbackpanel"}}var WF=i(7485),GF=i.n(WF);const JF=Object.freeze({NONE:0,TERRIBLE:1,BAD:2,SATISFIED:3,GOOD:4,EXCELLENT:5}),HF="update_rating";class XF extends xo{constructor(){super({rating:JF.NONE});const{TranslationService:t}=n.inject("TranslationService");this._translationService=t}update(t,e,i){if(t===HF)return{...i,rating:e}}onInitialize(){this.observeModel("rating",(t=>{this.dispatchEvent(new CustomEvent("change",{detail:{rating:t}}))}))}createView(t){const{rating:e}=t,i=t=>this._translationService.translate(t);return Hs`
 			<style>
 				${GF()}
