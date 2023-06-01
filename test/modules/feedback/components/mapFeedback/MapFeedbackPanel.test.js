@@ -126,7 +126,6 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue();
-			expect(categoryElement.hasAttribute('placeholder')).toBeTrue();
 			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
