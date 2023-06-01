@@ -20,6 +20,15 @@ const fillRating = (element) => {
 	return starsRatingPanel;
 };
 
+// todo const categoryValue = 'Foo';
+const categoryValue = 'Verbesserungsvorschlag';
+const fillCategory = (element) => {
+	const categorySelectElement = element.shadowRoot.querySelector('#category');
+	categorySelectElement.value = categoryValue;
+	categorySelectElement.dispatchEvent(new Event('change'));
+	return categorySelectElement;
+};
+
 const descriptionValue = 'description';
 const fillDescription = (element) => {
 	const descriptionInputElement = element.shadowRoot.querySelector('#description');
@@ -80,10 +89,12 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(element.getModel()).toEqual({
 				generalFeedback: {
+					category: null,
 					description: null,
 					email: null,
 					rating: null
-				}
+				},
+				categoryOptions: []
 			});
 		});
 	});
@@ -92,6 +103,8 @@ describe('GeneralFeedbackPanel', () => {
 		it('renders the view', async () => {
 			// arrange
 			const expectedTitle = 'feedback_generalFeedback';
+			const expectedCategory = '';
+			// todo const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
 			const expectedEmail = '';
 
@@ -100,6 +113,11 @@ describe('GeneralFeedbackPanel', () => {
 			// assert
 			expect(element.shadowRoot.children.length).toBe(9);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
+			const category = element.shadowRoot.querySelector('#category');
+			expect(category.value).toBe(expectedCategory);
+			// todo
+			// const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
+			// expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 			expect(element.shadowRoot.querySelector('#rating').rating).toBe(undefined);
@@ -110,6 +128,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			const ratingElement = element.shadowRoot.querySelector('#rating');
+			const categoryElement = element.shadowRoot.querySelector('#category');
 			const descriptionElement = element.shadowRoot.querySelector('#description');
 			const emailElement = element.shadowRoot.querySelector('#email');
 			const submitElement = element.shadowRoot.querySelector('#button0');
@@ -118,6 +137,10 @@ describe('GeneralFeedbackPanel', () => {
 			expect(ratingElement.hasAttribute('required')).toBeFalse();
 			expect(ratingElement.getAttribute('placeholder')).toBe('feedback_generalFeedback_rating');
 			expect(ratingElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_rating');
+
+			expect(categoryElement.type).toBe('select-one');
+			expect(categoryElement.hasAttribute('required')).toBeTrue();
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue();
@@ -170,6 +193,7 @@ describe('GeneralFeedbackPanel', () => {
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			fillRating(element);
+			fillCategory(element);
 			fillEmail(element);
 
 			// act
@@ -185,6 +209,7 @@ describe('GeneralFeedbackPanel', () => {
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
 			fillRating(element);
+			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element, 'no email');
 
@@ -202,6 +227,7 @@ describe('GeneralFeedbackPanel', () => {
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
 			fillRating(element);
+			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element);
 
@@ -221,6 +247,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			fillRating(element);
+			fillCategory(element);
 			fillDescription(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -230,6 +257,32 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, null, ratingValue));
+		});
+	});
+
+	describe('when category is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			fillCategory(element);
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+
+		it('its parent receives the "userVisited" class', async () => {
+			// arrange
+			const element = await setup();
+
+			// act
+			const categoryPanel = fillDescription(element);
+
+			// assert
+			const nodeValue = categoryPanel.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
