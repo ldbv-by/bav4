@@ -21,6 +21,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
 			'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.'
 		);
+		expect(map.feedback_generalFeedback_categorySelection).toBe('Allgemeine Kategorie');
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_generalFeedback_rating).toBe('Ihre Bewertung');
 		expect(map.feedback_generalFeedback).toBe('Allgemeines Feedback');
@@ -55,6 +56,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe(
 			'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.'
 		);
+		expect(map.feedback_generalFeedback_categorySelection).toBe('General Category');
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_generalFeedback_rating).toBe('Your Vote');
 		expect(map.feedback_generalFeedback).toBe('General - Feedback');
@@ -70,7 +72,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 23;
+		const expectedSize = 24;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

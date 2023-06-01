@@ -14,6 +14,7 @@ export const provide = (lang) => {
 				feedback_submit: 'Submit',
 				feedback_toggleFeedback_generalButton_sub: 'Make suggestions for changes or improvements, or report errors.',
 				feedback_toggleFeedback_mapButton_sub: 'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.',
+				feedback_generalFeedback_categorySelection: 'General Category',
 				feedback_generalFeedback_could_not_save: 'Your feedback could not be saved',
 				feedback_generalFeedback_rating: 'Your Vote',
 				feedback_generalFeedback: 'General - Feedback',
@@ -43,6 +44,7 @@ export const provide = (lang) => {
 				feedback_toggleFeedback_generalButton_sub: 'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.',
 				feedback_toggleFeedback_mapButton_sub:
 					'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.',
+				feedback_generalFeedback_categorySelection: 'Allgemeine Kategorie',
 				feedback_generalFeedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
 				feedback_generalFeedback_rating: 'Ihre Bewertung',
 				feedback_generalFeedback: 'Allgemeines Feedback',
