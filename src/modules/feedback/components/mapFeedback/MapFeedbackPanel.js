@@ -219,7 +219,13 @@ export class MapFeedbackPanel extends MvuElement {
 						${translate('feedback_mapFeedback_text_after')}
 					</div>
 					<div class="ba-form-element" id="category-form-element">
-						<select id="category" .value="${mapFeedback.category}" @change="${onCategoryChange}" required>
+						<select
+							id="category"
+							.value="${mapFeedback.category}"
+							@change="${onCategoryChange}"
+							placeholder="${translate('feedback_mapFeedback_categorySelection')}"
+							required
+						>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
 						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
