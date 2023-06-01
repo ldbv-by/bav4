@@ -180,9 +180,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 	async _getCategoryOptions() {
 		try {
-			// todo get 'real' general categories
-			// const categoryOptions = await this._feedbackService.getCategories();
-			const categoryOptions = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
+			const categoryOptions = await this._feedbackService.getGeneralFeedbackCategories();
 			this.signal(Update_CategoryOptions, categoryOptions);
 		} catch (e) {
 			console.error(e);
