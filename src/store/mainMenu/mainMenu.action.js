@@ -47,7 +47,8 @@ export const toggle = () => {
 
 /**
  * Available menu tabs.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const TabId = Object.freeze({
 	TOPICS: 'topics',
