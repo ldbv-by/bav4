@@ -207,7 +207,7 @@ describe('GeoResourceResultItem', () => {
 				target.click();
 
 				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue;
+				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 
 			it('closes the main menu in portrait orientation', async () => {
