@@ -20,6 +20,9 @@ describe('ExportDialogContent', () => {
 			.registerSingleton('SourceTypeService', {
 				forData: () => 'foo/bar'
 			})
+			.registerSingleton('ConfigService', {
+				forData: () => 'foo/bar'
+			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('FileSaveService', { saveAs: () => {} });
 

@@ -32,15 +32,15 @@ const Update_Selected_Srid = 'update_selected_srid';
 export class ExportItem extends MvuElement {
 	constructor() {
 		super({ exportType: null, selectedSrid: null, exportData: null });
-		const { TranslationService, SourceTypeService, ExportVectorDataService, FileSaveService } = $injector.inject(
+		const { TranslationService, ExportVectorDataService, ConfigService, FileSaveService } = $injector.inject(
 			'TranslationService',
-			'SourceTypeService',
 			'ExportVectorDataService',
+			'ConfigService',
 			'FileSaveService'
 		);
 		this._translationService = TranslationService;
-		this._sourceTypeService = SourceTypeService;
 		this._exportVectorDataService = ExportVectorDataService;
+		this._configService = ConfigService;
 		this._fileSaveService = FileSaveService;
 	}
 
@@ -70,17 +70,10 @@ export class ExportItem extends MvuElement {
 			this.signal(Update_Selected_Srid, srid);
 		};
 		const onClickDownload = () => {
-			const sourceTypeResult = this._sourceTypeService.forData(exportData);
-
-			const dataSourceType = sourceTypeResult.sourceType;
 			const targetSourceType = new SourceType(exportType.sourceTypeName, null, selectedSrid);
 
-			const fileName = `bayernAtlas.${exportType.fileExtension}`;
-			this._fileSaveService.saveAs(
-				this._exportVectorDataService.forData(exportData, dataSourceType, targetSourceType),
-				exportType.mediaType,
-				fileName
-			);
+			const fileName = `${this._configService.getValue('DEFAULT_SAVE_FILENAME', 'fileSaved')}.${exportType.fileExtension}`;
+			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType, fileName);
 		};
 
 		return exportType

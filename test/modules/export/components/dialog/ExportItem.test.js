@@ -5,6 +5,10 @@ import { TestUtils } from '../../../../test-utils';
 window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportItem', () => {
+	const defaultFileNameFromConfig = 'foo.bar';
+	const configServiceMock = {
+		getValue: () => defaultFileNameFromConfig
+	};
 	const fileSaveServiceMock = {
 		saveAs: () => {}
 	};
@@ -13,11 +17,9 @@ describe('ExportItem', () => {
 		TestUtils.setupStoreAndDi(state, {});
 
 		$injector
+			.registerSingleton('ConfigService', configServiceMock)
 			.registerSingleton('ExportVectorDataService', {
 				forData: () => '<foo-bar></foo-bar>'
-			})
-			.registerSingleton('SourceTypeService', {
-				forData: () => 'foo/bar'
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('FileSaveService', fileSaveServiceMock);
@@ -89,14 +91,15 @@ describe('ExportItem', () => {
 	describe('when download-button is clicked', () => {
 		it('saves the file', async () => {
 			const element = await setup();
+			const fileExtension = 'baz';
 			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callThrough();
-			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: 'baz', srids: [42, 21, 1] };
+			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: fileExtension, srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const downloadButton = element.shadowRoot.querySelector('ba-button');
 
 			downloadButton.click();
 
-			expect(saveAsSpy).toHaveBeenCalledWith('<foo-bar></foo-bar>', 'bar', 'bayernAtlas.baz');
+			expect(saveAsSpy).toHaveBeenCalledWith('<foo-bar></foo-bar>', 'bar', `${defaultFileNameFromConfig}.${fileExtension}`);
 		});
 	});
 });
