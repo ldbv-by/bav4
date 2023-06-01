@@ -20,8 +20,7 @@ const fillRating = (element) => {
 	return starsRatingPanel;
 };
 
-// todo const categoryValue = 'Foo';
-const categoryValue = 'Verbesserungsvorschlag';
+const categoryValue = 'Foo';
 const fillCategory = (element) => {
 	const categorySelectElement = element.shadowRoot.querySelector('#category');
 	categorySelectElement.value = categoryValue;
@@ -50,6 +49,7 @@ const configServiceMock = {
 };
 
 const feedbackServiceMock = {
+	getGeneralFeedbackCategories: () => ['Foo', 'Bar'],
 	save: () => {}
 };
 
@@ -104,7 +104,7 @@ describe('GeneralFeedbackPanel', () => {
 			// arrange
 			const expectedTitle = 'feedback_generalFeedback';
 			const expectedCategory = '';
-			// todo const expectedCategoryOptions = ['', 'Foo', 'Bar'];
+			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
 			const expectedEmail = '';
 
@@ -115,9 +115,8 @@ describe('GeneralFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 			const category = element.shadowRoot.querySelector('#category');
 			expect(category.value).toBe(expectedCategory);
-			// todo
-			// const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
-			// expect(actualOptions).toEqual(expectedCategoryOptions);
+			const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
+			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
 			expect(element.shadowRoot.querySelector('#rating').rating).toBe(undefined);
