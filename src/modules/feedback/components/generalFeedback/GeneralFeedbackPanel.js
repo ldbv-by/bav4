@@ -134,7 +134,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				></ba-stars-rating-panel>
 			</div>
 
-			<div class="ba-form-element" id="category-form-element">
+			<div class="ba-form-element">
 				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
 					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 				</select>
