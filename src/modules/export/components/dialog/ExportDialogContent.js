@@ -32,7 +32,7 @@ export class ExportDialogContent extends MvuElement {
 
 	createView(model) {
 		const { exportData } = model;
-		const exportTypes = this.getExportTypes();
+		const exportTypes = this._getExportTypes();
 		return html`<style>
 				${css}
 			</style>
@@ -45,7 +45,10 @@ export class ExportDialogContent extends MvuElement {
 			</div>`;
 	}
 
-	getExportTypes() {
+	// todo: could be moved to an exportTypes.provider to get the exportTypes as bvv-specific list,
+	// nonetheless must this bvv-specific list match up with the list of possible (technically) formats
+	// from the ExportVectorDataService
+	_getExportTypes() {
 		return [
 			{ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] },
 			{ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] },

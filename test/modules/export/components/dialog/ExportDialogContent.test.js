@@ -46,10 +46,10 @@ describe('ExportDialogContent', () => {
 		});
 	});
 
-	describe('getExportTypes', () => {
+	describe('_getExportTypes', () => {
 		it('creates a list of available exportTypes', async () => {
 			const element = await setup();
-			const exportTypes = element.getExportTypes();
+			const exportTypes = element._getExportTypes();
 
 			expect(exportTypes).toHaveSize(4);
 			expect(exportTypes[0]).toEqual(
