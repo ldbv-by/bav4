@@ -64,19 +64,7 @@ export const isTemplateResult = (val) => {
 	return isObject(val) ? '_$litType$' in val : false;
 };
 
-/**
- * Checks if a value is a lit-html TemplateResult of a specified tag.
- * @param {*} val
- * @param {strict} tag
- * @returns boolean `true` if it is a TemplateResult
- * @deprecated use TestUtils#renderTemplateResult() instead
- */
-export const isTemplateResultOf = (val, tag) => {
-	if (!tag) {
-		return false;
-	}
-	return isTemplateResult(val) && val?.strings[0]?.startsWith(`<${tag}`);
-};
+
 
 /**
  * Checks if a value is a string and represents an HTTP URL.
