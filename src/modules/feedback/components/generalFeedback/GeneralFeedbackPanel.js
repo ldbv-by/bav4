@@ -142,7 +142,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				>).
 			</p>
 
-			<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
+			<ba-button id="button0" .label=${translate('feedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
 		`;
 	}
 
