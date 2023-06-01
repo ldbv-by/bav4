@@ -265,7 +265,7 @@ export class MapFeedbackPanel extends MvuElement {
 
 	async _getCategoryOptions() {
 		try {
-			const categoryOptions = await this._feedbackService.getCategories();
+			const categoryOptions = await this._feedbackService.getMapFeedbackCategories();
 			this.signal(Update_CategoryOptions, categoryOptions);
 		} catch (e) {
 			console.error(e);

@@ -16,7 +16,7 @@ const configServiceMock = {
 };
 
 const feedbackServiceMock = {
-	getCategories: () => ['Foo', 'Bar'],
+	getMapFeedbackCategories: () => ['Foo', 'Bar'],
 	save: () => {},
 	getOverlayGeoResourceId: () => 'overlay'
 };
@@ -277,10 +277,10 @@ describe('MapFeedbackPanel', () => {
 	});
 
 	describe('when using FeedbackService', () => {
-		it('logs an error when getCategories fails', async () => {
+		it('logs an error when getMapFeedbackCategories fails', async () => {
 			// arrange
 			const message = 'error message';
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.rejectWith(new Error(message));
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.rejectWith(new Error(message));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
@@ -328,9 +328,9 @@ describe('MapFeedbackPanel', () => {
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
-		it('initially calls FeedbackService.getCategories()', async () => {
+		it('initially calls FeedbackService.getMapFeedbackCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.returnValue([]);
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.returnValue([]);
 
 			// act
 			await setup();
