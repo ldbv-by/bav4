@@ -32,6 +32,7 @@ const plugins = [
 	new Dotenv()
 ];
 
+// in standalone mode we do not want to include the assets
 if (!standaloneMode) {
 	plugins.push(
 		new CopyPlugin({
