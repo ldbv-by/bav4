@@ -1,3 +1,32 @@
 .title {
 	font-weight: bold;
+	padding: 0.8em 1.5em;
+}
+.button-group {
+	position: absolute;
+	right: 1.3em;
+	top: 0.6em;
+}
+.button-group button {
+	font-size: 0.8rem;
+	padding: 0.4em 0.8em;
+	background: var(--primary-bg-color);
+	border: 1px solid var(--header-background-color);
+	color: var(--text1);
+}
+.button-group button:first-child {
+	border-radius: 2em 0 0 2em;
+	border-right: 0;
+}
+.button-group button:last-child {
+	border-radius: 0 2em 2em 0;
+}
+.button-group button.is-active {
+	color: var(--primary-color);
+}
+.container {
+	display: none;
+}
+.container.is-active {
+	display: block;
 }

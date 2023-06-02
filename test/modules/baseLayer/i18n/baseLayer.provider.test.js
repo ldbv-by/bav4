@@ -5,16 +5,20 @@ describe('i18n for header module', () => {
 		const map = provide('de');
 
 		expect(map.baseLayer_switcher_header).toBe('Basiskarten');
+		expect(map.baseLayer_container_category_raster).toBe('Raster');
+		expect(map.baseLayer_container_category_vector).toBe('Vektor');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
 		expect(map.baseLayer_switcher_header).toBe('Base maps');
+		expect(map.baseLayer_container_category_raster).toBe('Raster');
+		expect(map.baseLayer_container_category_vector).toBe('Vector');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 1;
+		const expectedSize = 3;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

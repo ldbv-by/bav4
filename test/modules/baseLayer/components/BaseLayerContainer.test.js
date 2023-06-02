@@ -5,7 +5,7 @@ import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(BaseLayerContainer.tag, BaseLayerContainer);
 
-describe('BaseLayerSwitcher', () => {
+describe('BaseLayerContainer', () => {
 	const setup = async (state = {}) => {
 		TestUtils.setupStoreAndDi(state);
 
@@ -16,7 +16,7 @@ describe('BaseLayerSwitcher', () => {
 
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
-			await setup();
+			const element = await setup();
 			const model = new BaseLayerContainer().getModel();
 
 			expect(model).toEqual({
@@ -33,6 +33,7 @@ describe('BaseLayerSwitcher', () => {
 					]
 				}
 			});
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
 		});
 	});
 

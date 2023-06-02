@@ -82,8 +82,6 @@ describe('BaseLayerSwitcher', () => {
 			expect(buttons[0].getAttribute('type')).toBe('secondary');
 			expect(buttons[1].children[0].innerText).toBe('someLabel1');
 			expect(buttons[1].getAttribute('type')).toBe('primary');
-
-			expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
 		});
 	});
 
