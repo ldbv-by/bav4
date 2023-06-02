@@ -9,10 +9,10 @@
  */
 export class FileSaveService {
 	/**
-	 * saves the specified content and makes it for the user available as downloaded file
-	 * @param {string} content the content to save
-	 * @param {module:services/HttpService~MediaType} type the MediaType (MIMEType) of file
-	 * @param {string} fileName the filename
+	 * Saves the specified content and makes it for the user available as downloaded file
+	 * @param {string} content The content to save
+	 * @param {module:services/HttpService~MediaType} type The MediaType (MIME-Type) of file
+	 * @param {string} fileName The filename
 	 */
 	saveAs(content, type, fileName) {
 		if (!content || !type || !fileName) {
