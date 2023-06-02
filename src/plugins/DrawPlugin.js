@@ -32,7 +32,7 @@ export class DrawPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onToolChanged = (toolId) => {
-			if (toolId !== Tools.DRAWING) {
+			if (toolId !== Tools.DRAW) {
 				deactivate();
 			} else {
 				// we activate the tool after another possible active tool was deactivated
