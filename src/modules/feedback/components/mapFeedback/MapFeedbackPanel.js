@@ -314,6 +314,6 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-mvu-feedbackpanel';
+		return 'ba-mvu-mapfeedbackpanel';
 	}
 }
