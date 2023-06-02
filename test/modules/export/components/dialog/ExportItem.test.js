@@ -92,7 +92,7 @@ describe('ExportItem', () => {
 		it('saves the file', async () => {
 			const element = await setup();
 			const fileExtension = 'baz';
-			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callThrough();
+			const saveAsSpy = spyOn(fileSaveServiceMock, 'saveAs').and.callFake(() => {});
 			element.exportType = { sourceTypeName: 'foo', mediaType: 'bar', fileExtension: fileExtension, srids: [42, 21, 1] };
 			element.exportData = '<baz/>';
 			const downloadButton = element.shadowRoot.querySelector('ba-button');

@@ -8,7 +8,6 @@ import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 import { $injector } from '../../src/injection';
 import { fromLonLat } from 'ol/proj';
-import { KML } from 'ol/format';
 
 describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
