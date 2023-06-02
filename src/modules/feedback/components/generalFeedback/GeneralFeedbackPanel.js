@@ -144,7 +144,6 @@ export class GeneralFeedbackPanel extends MvuElement {
 			</div>
 
 			<div class="ba-form-element">
-				<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 				<textarea
 					type="text"
 					id="description"
@@ -153,6 +152,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 					@input="${onDescriptionChange}"
 					required
 				></textarea>
+				<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 				<i class="bar"></i>
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_required_field_helper')}</label>
