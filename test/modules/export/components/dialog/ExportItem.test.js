@@ -1,6 +1,5 @@
 import { $injector } from '../../../../../src/injection';
 import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
-import { MediaType } from '../../../../../src/services/HttpService';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ExportItem.tag, ExportItem);
