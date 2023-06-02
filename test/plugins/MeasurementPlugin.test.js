@@ -24,7 +24,7 @@ describe('MeasurementPlugin', () => {
 			const instanceUnderTest = new MeasurementPlugin();
 			await instanceUnderTest.register(store);
 
-			setCurrentTool(Tools.MEASURING);
+			setCurrentTool(Tools.MEASURE);
 
 			await TestUtils.timeout();
 			expect(store.getState().measurement.active).toBeTrue();
@@ -33,7 +33,7 @@ describe('MeasurementPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
-					current: Tools.MEASURING
+					current: Tools.MEASURE
 				}
 			});
 			const instanceUnderTest = new MeasurementPlugin();

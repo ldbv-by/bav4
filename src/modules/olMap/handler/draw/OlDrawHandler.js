@@ -242,17 +242,17 @@ export class OlDrawHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.MEASURING + '_'));
+					return features.some((f) => f.getId().startsWith(Tools.MEASURE + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURING + '_')).map((f) => f.getId());
+					const measurementIds = features.filter((f) => f.getId().startsWith(Tools.MEASURE + '_')).map((f) => f.getId());
 					setMeasurementSelection(measurementIds);
-					setCurrentTool(Tools.MEASURING);
+					setCurrentTool(Tools.MEASURE);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith(Tools.DRAWING + '_'));
+				return features.some((f) => !f.getId().startsWith(Tools.DRAW + '_'));
 			};
 
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel).slice(0, 1); // we only want the first selectable feature
@@ -448,7 +448,7 @@ export class OlDrawHandler extends OlLayerHandler {
 					const geometry = event.target.getGeometry();
 					setGeometryIsValid(isValidGeometry(geometry));
 				};
-				this._sketchHandler.activate(event.feature, Tools.DRAWING + '_' + type + '_');
+				this._sketchHandler.activate(event.feature, Tools.DRAW + '_' + type + '_');
 				const description = this._storeService.getStore().getState().draw.description;
 
 				if (description) {

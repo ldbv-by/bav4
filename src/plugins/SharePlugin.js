@@ -55,7 +55,7 @@ export class SharePlugin extends BaPlugin {
 		};
 
 		const onToolChanged = (toolId) => {
-			if (toolId === Tools.SHARING) {
+			if (toolId === Tools.SHARE) {
 				checkAndEmit();
 			}
 		};
