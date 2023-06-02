@@ -7,10 +7,9 @@ const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
 // load local .env file
 require('dotenv').config({ path: '.env' });
-const standaloneMode = !process.env.BACKEND_URL;
-const templateParameters = standaloneMode
-	? require(`./src/assets/standalone.json`)
-	: require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`);
+const templateParameters = process.env.BACKEND_URL
+	? require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`)
+	: require(`./src/assets/standalone.json`);
 
 const plugins = [
 	new HtmlWebpackPlugin({
@@ -29,24 +28,18 @@ const plugins = [
 		template: 'src/embedWrapper.html',
 		chunks: []
 	}),
+	new CopyPlugin({
+		patterns: [
+			{ from: path.resolve(__dirname, './src/assets/favicon/manifest.json'), to: path.join('assets') },
+			{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') },
+			{ from: path.resolve(__dirname, './src/assets/favicon/icon_192x192.png'), to: path.join('assets') },
+			{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512.png'), to: path.join('assets') },
+			{ from: path.resolve(__dirname, './src/assets/favicon/icon.svg'), to: path.join('assets') },
+			{ from: path.resolve(__dirname, './src/assets/favicon/apple-touch-icon.png'), to: path.join('assets') }
+		]
+	}),
 	new Dotenv()
 ];
-
-// in standalone mode we do not want to include the assets
-if (!standaloneMode) {
-	plugins.push(
-		new CopyPlugin({
-			patterns: [
-				{ from: path.resolve(__dirname, './src/assets/favicon/manifest.json'), to: path.join('assets') },
-				{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') },
-				{ from: path.resolve(__dirname, './src/assets/favicon/icon_192x192.png'), to: path.join('assets') },
-				{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512.png'), to: path.join('assets') },
-				{ from: path.resolve(__dirname, './src/assets/favicon/icon.svg'), to: path.join('assets') },
-				{ from: path.resolve(__dirname, './src/assets/favicon/apple-touch-icon.png'), to: path.join('assets') }
-			]
-		})
-	);
-}
 
 module.exports = {
 	mode: 'development',
