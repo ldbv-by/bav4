@@ -165,14 +165,14 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(6);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.current).toBe(Tools.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURE);
 			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[0].click();
 			expect(store.getState().tools.current).toBeNull();
 			expect(element.shadowRoot.querySelector('#measure-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[1].click();
-			expect(store.getState().tools.current).toBe(Tools.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
 			expect(element.shadowRoot.querySelector('#draw-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[1].click();
 			expect(store.getState().tools.current).toBeNull();
@@ -192,7 +192,7 @@ describe('ToolBarElement', () => {
 			expect(element.shadowRoot.querySelector('#export-button').classList.contains('is-active')).toBeFalse();
 
 			toolButtons[4].click();
-			expect(store.getState().tools.current).toBe(Tools.SHARING);
+			expect(store.getState().tools.current).toBe(Tools.SHARE);
 			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeTrue();
 			toolButtons[4].click();
 			expect(element.shadowRoot.querySelector('#share-button').classList.contains('is-active')).toBeFalse();
@@ -213,15 +213,15 @@ describe('ToolBarElement', () => {
 			expect(toolButtons).toHaveSize(6);
 
 			toolButtons[0].click();
-			expect(store.getState().tools.current).toBe(Tools.MEASURING);
+			expect(store.getState().tools.current).toBe(Tools.MEASURE);
 			toolButtons[1].click();
-			expect(store.getState().tools.current).toBe(Tools.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
 			toolButtons[2].click();
 			expect(store.getState().tools.current).toBe(Tools.IMPORT);
 			toolButtons[3].click();
 			expect(store.getState().tools.current).toBe(Tools.EXPORT);
 			toolButtons[4].click();
-			expect(store.getState().tools.current).toBe(Tools.SHARING);
+			expect(store.getState().tools.current).toBe(Tools.SHARE);
 		});
 	});
 

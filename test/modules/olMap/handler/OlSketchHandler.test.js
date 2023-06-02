@@ -1,8 +1,14 @@
 import { Feature } from 'ol';
 import { LineString, Point, Polygon } from 'ol/geom';
-import { OlSketchHandler } from '../../../../src/modules/olMap/handler/OlSketchHandler';
+import { DefaultIdPrefix, OlSketchHandler } from '../../../../src/modules/olMap/handler/OlSketchHandler';
+import { Tools } from '../../../../src/domain/tools';
 
-describe('OlSketchPropertyHandler', () => {
+describe('OlSketchHandler', () => {
+	describe('constants', () => {
+		it('have a DefaultIdPrefix based on Tools.DRAW', () => {
+			expect(DefaultIdPrefix).toBe(Tools.DRAW + '_');
+		});
+	});
 	describe('when initialized', () => {
 		it('have default properties', () => {
 			const classUnderTest = new OlSketchHandler();

@@ -105,13 +105,13 @@ describe('ToolContainer', () => {
 				const content = element.shadowRoot.querySelector('.tool-container__content');
 
 				switch (value) {
-					case Tools.MEASURING:
+					case Tools.MEASURE:
 						expect(content.innerHTML.toString().includes(MeasureToolContent.tag)).toBeTrue();
 						break;
-					case Tools.DRAWING:
+					case Tools.DRAW:
 						expect(content.innerHTML.toString().includes(DrawToolContent.tag)).toBeTrue();
 						break;
-					case Tools.SHARING:
+					case Tools.SHARE:
 						expect(content.innerHTML.toString().includes(ShareToolContent.tag)).toBeTrue();
 						break;
 					case Tools.IMPORT:
