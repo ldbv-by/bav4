@@ -604,7 +604,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure');
 			const store = setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
@@ -613,7 +613,7 @@ describe('OlMeasurementHandler', () => {
 			classUnderTest._measureState.type = InteractionStateType.DRAW;
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
 
-			expect(store.getState().measurement.selection).toEqual(['measuring_1']);
+			expect(store.getState().measurement.selection).toEqual(['measure']);
 		});
 
 		it("updates statistics and overlays of features on 'change'", () => {
@@ -627,7 +627,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure');
 
 			const classUnderTest = new OlMeasurementHandler();
 
@@ -656,7 +656,7 @@ describe('OlMeasurementHandler', () => {
 				[0, 500]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure');
 
 			const classUnderTest = new OlMeasurementHandler();
 			const updateOverlaysSpy = spyOn(classUnderTest._overlayService, 'remove');
@@ -850,7 +850,7 @@ describe('OlMeasurementHandler', () => {
 			const id = feature.getId();
 
 			expect(id).toBeTruthy();
-			expect(id).toMatch(/measuring_[0-9]{13}/g);
+			expect(id).toMatch(/measure_[0-9]{13}/g);
 		});
 
 		it('positions tooltip content on the end of not closed Polygon', () => {
@@ -1010,7 +1010,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_');
+			feature.setId('measure_');
 			const removeFeatureSpy = spyOn(classUnderTest._vectorLayer.getSource(), 'removeFeature').and.callFake(() => {});
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1040,7 +1040,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_');
+			feature.setId('measure_');
 			const startNewSpy = spyOn(classUnderTest, '_startNew').and.callThrough();
 
 			classUnderTest._vectorLayer.getSource().addFeature(feature);
@@ -1459,7 +1459,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure_1');
 
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
@@ -1778,7 +1778,7 @@ describe('OlMeasurementHandler', () => {
 
 	describe('when pointer click', () => {
 		it('deselect feature, if clickposition is disjoint to selected feature', () => {
-			const store = setup({ ...initialState, selection: ['measuring_1'] });
+			const store = setup({ ...initialState, selection: ['measure'] });
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 
@@ -1794,7 +1794,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure_1');
 			classUnderTest._select.getFeatures().push(feature);
 
 			expect(classUnderTest._select).toBeDefined();
@@ -1819,7 +1819,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_1');
+			feature.setId('measure_1');
 			const map = setupMap();
 
 			const classUnderTest = new OlMeasurementHandler();
@@ -1856,7 +1856,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('drawing_1');
+			feature.setId('draw_1');
 			const map = setupMap();
 
 			const classUnderTest = new OlMeasurementHandler();
@@ -1878,7 +1878,7 @@ describe('OlMeasurementHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 250, 250);
 
 			expect(store.getState().draw.selection.length).toBe(1);
-			expect(store.getState().tools.current).toBe(Tools.DRAWING);
+			expect(store.getState().tools.current).toBe(Tools.DRAW);
 		});
 
 		it('updates statistics if clickposition is in anyinteract to selected feature', () => {
@@ -1893,7 +1893,7 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature = new Feature({ geometry: geometry });
-			feature.setId('measuring_');
+			feature.setId('measure_');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);
@@ -1923,13 +1923,13 @@ describe('OlMeasurementHandler', () => {
 				]
 			]);
 			const feature1 = new Feature({ geometry: geometry1 });
-			feature1.setId('measuring_1');
+			feature1.setId('measure_1');
 			const geometry2 = new LineString([
 				[2, 0],
 				[7, 0]
 			]);
 			const feature2 = new Feature({ geometry: geometry2 });
-			feature2.setId('measuring_2');
+			feature2.setId('measure_2');
 			const map = setupMap();
 			const classUnderTest = new OlMeasurementHandler();
 			const layer = classUnderTest.activate(map);

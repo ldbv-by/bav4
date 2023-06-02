@@ -78,7 +78,8 @@ import { $injector } from '../injection';
  */
 
 /**
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const FileStorageServiceDataTypes = Object.freeze({
 	KML: 'application/vnd.google-earth.kml+xml'

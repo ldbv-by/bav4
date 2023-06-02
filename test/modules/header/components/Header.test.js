@@ -185,9 +185,8 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
 
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title');
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link');
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('target')).toBe('_blank');
+			expect(element.shadowRoot.querySelectorAll('div.header__emblem')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('a.header__emblem')).toHaveSize(0);
 		});
 
 		it('adds a close button', async () => {
@@ -243,6 +242,9 @@ describe('Header', () => {
 			const element = await setup({}, { standalone: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelectorAll('div.header__emblem')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('a.header__emblem')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');

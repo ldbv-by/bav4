@@ -73,11 +73,11 @@ export class ToolContainer extends MvuElement {
 
 		const getContentPanel = (toolId) => {
 			switch (toolId) {
-				case Tools.DRAWING:
+				case Tools.DRAW:
 					return html`${unsafeHTML(`<${DrawToolContent.tag}/>`)}`;
-				case Tools.MEASURING:
+				case Tools.MEASURE:
 					return html`${unsafeHTML(`<${MeasureToolContent.tag}/>`)}`;
-				case Tools.SHARING:
+				case Tools.SHARE:
 					return html`${unsafeHTML(`<${ShareToolContent.tag}/>`)}`;
 				case Tools.IMPORT:
 					return html`${unsafeHTML(`<${ImportToolContent.tag}/>`)}`;

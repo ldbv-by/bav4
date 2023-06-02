@@ -3,6 +3,10 @@
  */
 const Asset_Svg_B64_Flag = 'data:image/svg+xml;base64,';
 
+/**
+ * @readonly
+ * @enum {String}
+ */
 export const AssetSourceType = Object.freeze({
 	LOCAL: 'local',
 	REMOTE: 'remote',

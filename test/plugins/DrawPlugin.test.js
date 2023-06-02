@@ -23,7 +23,7 @@ describe('DrawPlugin', () => {
 			const instanceUnderTest = new DrawPlugin();
 			await instanceUnderTest.register(store);
 
-			setCurrentTool(Tools.DRAWING);
+			setCurrentTool(Tools.DRAW);
 
 			await TestUtils.timeout();
 			expect(store.getState().draw.active).toBeTrue();
@@ -32,7 +32,7 @@ describe('DrawPlugin', () => {
 		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
-					current: Tools.DRAWING
+					current: Tools.DRAW
 				}
 			});
 			const instanceUnderTest = new DrawPlugin();
