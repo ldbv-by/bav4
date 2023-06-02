@@ -11,36 +11,6 @@ const templateParameters = process.env.BACKEND_URL
 	? require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`)
 	: require(`./src/assets/standalone.json`);
 
-const plugins = [
-	new HtmlWebpackPlugin({
-		template: 'src/index.html',
-		templateParameters: templateParameters,
-		chunks: ['config', 'bundle']
-	}),
-	new HtmlWebpackPlugin({
-		filename: 'embed.html',
-		template: 'src/embed.html',
-		templateParameters: templateParameters,
-		chunks: ['config', 'embed']
-	}),
-	new HtmlWebpackPlugin({
-		filename: 'embed/wrapper/index.html',
-		template: 'src/embedWrapper.html',
-		chunks: []
-	}),
-	new CopyPlugin({
-		patterns: [
-			{ from: path.resolve(__dirname, './src/assets/favicon/manifest.json'), to: path.join('assets') },
-			{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') },
-			{ from: path.resolve(__dirname, './src/assets/favicon/icon_192x192.png'), to: path.join('assets') },
-			{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512.png'), to: path.join('assets') },
-			{ from: path.resolve(__dirname, './src/assets/favicon/icon.svg'), to: path.join('assets') },
-			{ from: path.resolve(__dirname, './src/assets/favicon/apple-touch-icon.png'), to: path.join('assets') }
-		]
-	}),
-	new Dotenv()
-];
-
 module.exports = {
 	mode: 'development',
 	entry: {
@@ -73,7 +43,35 @@ module.exports = {
 			}
 		]
 	},
-	plugins: plugins,
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: 'src/index.html',
+			templateParameters: templateParameters,
+			chunks: ['config', 'bundle']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'embed.html',
+			template: 'src/embed.html',
+			templateParameters: templateParameters,
+			chunks: ['config', 'embed']
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'embed/wrapper/index.html',
+			template: 'src/embedWrapper.html',
+			chunks: []
+		}),
+		new CopyPlugin({
+			patterns: [
+				{ from: path.resolve(__dirname, './src/assets/favicon/manifest.json'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/icon_192x192.png'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512.png'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/icon.svg'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/apple-touch-icon.png'), to: path.join('assets') }
+			]
+		}),
+		new Dotenv()
+	],
 
 	// OPTIONAL
 	// Reload On File Change
