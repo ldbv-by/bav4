@@ -27,19 +27,13 @@ describe('Entities', () => {
 });
 
 describe('FeedbackService', () => {
-	// todo
+	// todo - generalFeedbackCategoriesProvider
 	const setup = (
 		mapFeedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
-		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider,
-		generalFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider
+		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
 	) => {
-		return new FeedbackService(
-			mapFeedbackStorageProvider,
-			mapFeedbackCategoriesProvider,
-			mapFeedbackOverlayGeoResourceProvider,
-			generalFeedbackCategoriesProvider
-		);
+		return new FeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider, mapFeedbackOverlayGeoResourceProvider);
 	};
 
 	describe('constructor', () => {
@@ -48,28 +42,20 @@ describe('FeedbackService', () => {
 			expect(instanceUnderTest._feedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(bvvMapFeedbackOverlayGeoResourceProvider);
-			// todo
-			expect(instanceUnderTest._generalFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customMapFeedbackStorageProvider = async () => {};
 			const customMapFeedbackCategoriesProvider = async () => {};
 			const customMapMapFeedbackOverlayGeoResourceProvider = async () => {};
-			// todo
-			// const customGeneralFeedbackCategoriesProvider = async () => {};
 			const instanceUnderTest = setup(
 				customMapFeedbackStorageProvider,
 				customMapFeedbackCategoriesProvider,
 				customMapMapFeedbackOverlayGeoResourceProvider
-				// todo
-				// customGeneralFeedbackCategoriesProvider
 			);
 			expect(instanceUnderTest._feedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(customMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(customMapMapFeedbackOverlayGeoResourceProvider);
-			// todo
-			// expect(instanceUnderTest._generalFeedbackCategoriesProvider).toEqual(customGeneralFeedbackCategoriesProvider);
 		});
 	});
 
@@ -92,25 +78,7 @@ describe('FeedbackService', () => {
 		});
 	});
 
-	// todo
-	// describe('getGeneralFeedbackCategories', () => {
-	// it('provides categories for GeneralFeedback', async () => {
-	// 	const generalCategories = ['foo', 'bar'];
-	// 	const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(generalCategories);
-	// 	const instanceUnderTest = setup(null, customGeneralFeedbackCategoriesProvider);
-
-	// 	await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
-	// 	await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories); // second call served from cache
-	// 	expect(customGeneralFeedbackCategoriesProvider).toHaveBeenCalledTimes(1);
-	// });
-
-	// 	it('rejects when the provider rejects', async () => {
-	// 		const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.rejectWith('Error');
-	// 		const instanceUnderTest = setup(null, customGeneralFeedbackCategoriesProvider);
-
-	// 		await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeRejectedWith('Error');
-	// 	});
-	// });
+	// todo - describe('getGeneralFeedbackCategories' ...
 
 	describe('save', () => {
 		it('saves a MapFeedback entity', async () => {

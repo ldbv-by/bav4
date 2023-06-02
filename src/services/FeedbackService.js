@@ -64,7 +64,7 @@ export class MapFeedback {
  * @class
  */
 export class FeedbackService {
-	// todo
+	// todo : add generalFeedbackCategoriesProvider to FeedbackService
 	/**
 	 *
 	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
@@ -73,15 +73,12 @@ export class FeedbackService {
 	 */
 	constructor(
 		feedbackStorageProvider = bvvFeedbackStorageProvider,
-		// todo
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
 		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
 	) {
 		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
-		// todo
-		this._generalFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapCategories = null;
 		this._generalCategories = null;
 	}
