@@ -222,8 +222,9 @@ export class MapFeedbackPanel extends MvuElement {
 						<select id="category" .value="${mapFeedback.category}" @change="${onCategoryChange}" required>
 							${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 						</select>
-						<label for="category" class="control-label">${translate('feedback_mapFeedback_categorySelection')}</label><i class="bar"></i>
-						<label class="helper-label">${translate('feedback_mapFeedback_categorySelection_helper')}</label>
+						<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
+						<label class="helper-label">${translate('feedback_categorySelection_helper')}</label>
+						<label class="helper-label">${translate('feedback_categorySelection_error')}</label>
 					</div>
 					<div class="ba-form-element" id="description-form-element">
 						<textarea
@@ -250,7 +251,7 @@ export class MapFeedbackPanel extends MvuElement {
 					</div>
 					<p id="mapFeedback_disclaimer" class="map-feedback__disclaimer">
 						${translate('feedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
-							>${translate('feedback_mapFeedback_privacyPolicy')}</a
+							>${translate('feedback_privacyPolicy')}</a
 						>).
 					</p>
 					<ba-button id="button0" .label=${translate('feedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>

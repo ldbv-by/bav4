@@ -139,7 +139,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue();
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_categorySelection');
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue();
@@ -168,7 +168,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').innerText).toBe('feedback_privacyPolicy');
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').target).toBe('_blank');
 		});
 	});
@@ -364,6 +364,21 @@ describe('GeneralFeedbackPanel', () => {
 	});
 
 	describe('when using FeedbackService', () => {
+		it('logs an error when getGeneralFeedbackCategories fails', async () => {
+			// arrange
+			const message = 'error message';
+			const getGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'getGeneralFeedbackCategories').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+			const element = await setup();
+
+			// act
+			await element._getCategoryOptions();
+
+			// assert
+			expect(getGeneralFeedbackSpy).toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
+		});
+
 		it('logs an error when save fails', async () => {
 			// arrange
 			const message = 'error message';

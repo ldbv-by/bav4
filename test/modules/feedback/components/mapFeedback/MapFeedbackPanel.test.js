@@ -126,7 +126,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue();
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue();
@@ -153,7 +153,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('feedback_privacyPolicy');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').target).toBe('_blank');
 		});
 

@@ -78,7 +78,16 @@ describe('FeedbackService', () => {
 		});
 	});
 
-	// todo - describe('getGeneralFeedbackCategories' ...
+	describe('getGeneralFeedbackCategories', () => {
+		// todo : real tests
+		it('provides categories for GeneralFeedback', async () => {
+			const generalCategories = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
+		});
+	});
 
 	describe('save', () => {
 		it('saves a MapFeedback entity', async () => {
