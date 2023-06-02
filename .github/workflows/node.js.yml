@@ -27,8 +27,6 @@ jobs:
           npm run es-check
           npm run doc:check
           npm run doc
-        with:
-        fail_on_error: true
 
       - name: Run tests
         run: |
