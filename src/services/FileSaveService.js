@@ -11,7 +11,7 @@ export class FileSaveService {
 	/**
 	 * Saves the specified content and makes it for the user available as downloaded file
 	 * @param {string} content The content to save
-	 * @param {module:services/HttpService~MediaType} type The MediaType (MIME-Type) of file
+	 * @param {module:services/HttpService~MediaType} type The MediaType (MIME-Type) of the file
 	 * @param {string} fileName The filename
 	 */
 	saveAs(content, type, fileName) {
