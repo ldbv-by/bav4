@@ -61,7 +61,7 @@
 		"doc:check": "env DOC_CHECK=true node checkOrApplyDoc.js",
 		"prettier:check": "prettier --check .",
 		"prettier": "prettier --write .",
-		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\"; npx stylelint --fix \"src/**/*.css\"; npx stylelint \"src/**/*.css\"",
+		"lint": "eslint --fix \"src/**/*.js\" \"test/**/*.js\" && npx stylelint --fix \"src/**/*.css\"; npx stylelint \"src/**/*.css\"",
 		"test": "npx playwright install; KARMA_BROWSERS=$npm_config_browsers karma start --single-run",
 		"test:single": "npx playwright install; env KARMA_SPEC=$npm_config_spec env KARMA_BROWSER=$npm_config_browser karma start karma.conf.single.js --single-run",
 		"test:debug": "karma start --single-run --browsers ChromeDebugging",
