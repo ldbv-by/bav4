@@ -19,6 +19,7 @@ export class FileSaveService {
 	 * @param {string} content The content to save
 	 * @param {module:services/HttpService~MediaType} mimeType The MediaType (MIME-Type) of the file
 	 * @param {string} [filename] The optional filename without extension
+	 * @throws {Error}
 	 */
 	saveAs(content, mimeType, filename = null) {
 		if (!content || !mimeType) {
