@@ -17,7 +17,6 @@ const Update_Selected_Srid = 'update_selected_srid';
  * @typedef {Object} ExportType
  * @property {module:domain/sourceType.SourceTypeName} sourceTypeName
  * @property {module:services/HttpService~MediaType} mediaType
- * @property {string} fileExtension
  * @property {Array<number>} srids
  */
 
@@ -32,15 +31,13 @@ const Update_Selected_Srid = 'update_selected_srid';
 export class ExportItem extends MvuElement {
 	constructor() {
 		super({ exportType: null, selectedSrid: null, exportData: null });
-		const { TranslationService, ExportVectorDataService, ConfigService, FileSaveService } = $injector.inject(
+		const { TranslationService, ExportVectorDataService, FileSaveService } = $injector.inject(
 			'TranslationService',
 			'ExportVectorDataService',
-			'ConfigService',
 			'FileSaveService'
 		);
 		this._translationService = TranslationService;
 		this._exportVectorDataService = ExportVectorDataService;
-		this._configService = ConfigService;
 		this._fileSaveService = FileSaveService;
 	}
 
@@ -72,8 +69,7 @@ export class ExportItem extends MvuElement {
 		const onClickDownload = () => {
 			const targetSourceType = new SourceType(exportType.sourceTypeName, null, selectedSrid);
 
-			const fileName = `${this._configService.getValue('DEFAULT_SAVE_FILENAME', 'fileSaved')}.${exportType.fileExtension}`;
-			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType, fileName);
+			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType);
 		};
 
 		return exportType

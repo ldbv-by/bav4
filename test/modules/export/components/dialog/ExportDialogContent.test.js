@@ -52,20 +52,15 @@ describe('ExportDialogContent', () => {
 			const exportTypes = element._getExportTypes();
 
 			expect(exportTypes).toHaveSize(4);
-			expect(exportTypes[0]).toEqual(
-				jasmine.objectContaining({ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, fileExtension: 'kml', srids: [4326] })
-			);
-			expect(exportTypes[1]).toEqual(
-				jasmine.objectContaining({ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, fileExtension: 'gpx', srids: [4326] })
-			);
+			expect(exportTypes[0]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, srids: [4326] }));
+			expect(exportTypes[1]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, srids: [4326] }));
 			expect(exportTypes[2]).toEqual(
-				jasmine.objectContaining({ sourceTypeName: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, fileExtension: 'geojson', srids: [4326] })
+				jasmine.objectContaining({ sourceTypeName: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, srids: [4326] })
 			);
 			expect(exportTypes[3]).toEqual(
 				jasmine.objectContaining({
 					sourceTypeName: SourceTypeName.EWKT,
 					mediaType: MediaType.TEXT_PLAIN,
-					fileExtension: 'txt',
 					srids: [4326, 3857, 25832, 25833]
 				})
 			);
