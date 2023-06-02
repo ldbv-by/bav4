@@ -5,7 +5,7 @@ import { Tools } from '../../../../src/domain/tools';
 
 describe('OlSketchHandler', () => {
 	describe('constants', () => {
-		it('has a DefaultDeatureIdPrefix', () => {
+		it('have a DefaultIdPrefix based on Tools.DRAW', () => {
 			expect(DefaultIdPrefix).toBe(Tools.DRAW + '_');
 		});
 	});
