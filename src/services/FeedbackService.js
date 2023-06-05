@@ -1,7 +1,12 @@
 /**
  * @module services/FeedbackService
  */
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFeedbackOverlayGeoResourceProvider } from './provider/feedback.provider';
+import {
+	bvvMapFeedbackCategoriesProvider,
+	bvvFeedbackStorageProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider,
+	bvvGeneralFeedbackCategoriesProvider
+} from './provider/feedback.provider';
 
 /**
  * A function that stores a feedback.
@@ -15,6 +20,12 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  * A function that returns a list of categories for a MapFeedback
  * @async
  * @typedef {Function} mapFeedbackCategoriesProvider
+ * @returns {Promise<Array<String>>} available categories
+ */
+/**
+ * A function that returns a list of categories for a GeneralFeedback
+ * @async
+ * @typedef {Function} generalFeedbackCategoriesProvider
  * @returns {Promise<Array<String>>} available categories
  */
 /**
@@ -64,21 +75,23 @@ export class MapFeedback {
  * @class
  */
 export class FeedbackService {
-	// todo : add generalFeedbackCategoriesProvider to FeedbackService
 	/**
 	 *
 	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
 	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackCategoriesProvider]
 	 * @param {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
+	 * @param {module:services/FeedbackService~generalFeedbackCategoriesProvider} [generalFeedbackCategoriesProvider=bvvGeneralFeedbackCategoriesProvider]
 	 */
 	constructor(
 		feedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
-		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
+		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider,
+		generalFeedbackCategoriesProvider = bvvGeneralFeedbackCategoriesProvider
 	) {
 		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
+		this._generalFeedbackCategoriesProvider = generalFeedbackCategoriesProvider;
 		this._mapCategories = null;
 		this._generalCategories = null;
 	}
@@ -101,11 +114,10 @@ export class FeedbackService {
 	 * @returns {Promise<Array<String>>}
 	 */
 	async getGeneralFeedbackCategories() {
-		if (!this._categories) {
-			// todo this._categories = await this._generalFeedbackCategoriesProvider();
-			this._categories = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
+		if (!this._generalCategories) {
+			this._generalCategories = await this._generalFeedbackCategoriesProvider();
 		}
-		return [...this._categories];
+		return [...this._generalCategories];
 	}
 
 	/**
