@@ -16,17 +16,18 @@ describe('Entities', () => {
 		expect(new MapFeedback('state', 'category', 'description', 'geometryId').email).toBeNull();
 	});
 	it('GeneralFeedback', async () => {
-		const instanceUnderTest = new GeneralFeedback('description', 'email', 'rating');
+		const instanceUnderTest = new GeneralFeedback('category', 'description', 'email', 'rating');
+		expect(instanceUnderTest.category).toBe('category');
 		expect(instanceUnderTest.description).toBe('description');
 		expect(instanceUnderTest.email).toBe('email');
 		expect(instanceUnderTest.rating).toBe('rating');
-		expect(new GeneralFeedback().description).toBeNull();
-		expect(new GeneralFeedback().email).toBeNull();
-		expect(new GeneralFeedback().rating).toBeNull();
+		expect(new GeneralFeedback('category', 'description').email).toBeNull();
+		expect(new GeneralFeedback('category', 'description').rating).toBeNull();
 	});
 });
 
 describe('FeedbackService', () => {
+	// todo - generalFeedbackCategoriesProvider
 	const setup = (
 		mapFeedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
@@ -58,14 +59,14 @@ describe('FeedbackService', () => {
 		});
 	});
 
-	describe('getCategories', () => {
-		it('provides categories', async () => {
-			const categories = ['foo', 'bar'];
-			const customMapFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(categories);
+	describe('getMapFeedbackCategories', () => {
+		it('provides categories for MapFeedback', async () => {
+			const mapCategories = ['foo', 'bar'];
+			const customMapFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(mapCategories);
 			const instanceUnderTest = setup(null, customMapFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getCategories()).toBeResolvedTo(categories);
-			await expectAsync(instanceUnderTest.getCategories()).toBeResolvedTo(categories); // second call served from cache
+			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeResolvedTo(mapCategories);
+			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeResolvedTo(mapCategories); // second call served from cache
 			expect(customMapFeedbackCategoriesProvider).toHaveBeenCalledTimes(1);
 		});
 
@@ -73,7 +74,18 @@ describe('FeedbackService', () => {
 			const customMapFeedbackCategoriesProvider = jasmine.createSpy().and.rejectWith('Error');
 			const instanceUnderTest = setup(null, customMapFeedbackCategoriesProvider);
 
-			await expectAsync(instanceUnderTest.getCategories()).toBeRejectedWith('Error');
+			await expectAsync(instanceUnderTest.getMapFeedbackCategories()).toBeRejectedWith('Error');
+		});
+	});
+
+	describe('getGeneralFeedbackCategories', () => {
+		// todo : real tests
+		it('provides categories for GeneralFeedback', async () => {
+			const generalCategories = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
+			const instanceUnderTest = setup();
+
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
 		});
 	});
 
@@ -87,7 +99,7 @@ describe('FeedbackService', () => {
 		});
 
 		it('saves a GeneralFeedback entity', async () => {
-			const mockFeedback = new GeneralFeedback('description');
+			const mockFeedback = new GeneralFeedback('category', 'description');
 			const customMapFeedbackStorageProvider = jasmine.createSpy().withArgs(mockFeedback).and.resolveTo(true);
 			const instanceUnderTest = setup(customMapFeedbackStorageProvider);
 
