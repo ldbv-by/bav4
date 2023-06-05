@@ -28,11 +28,13 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  */
 export class GeneralFeedback {
 	/**
-	 * @param {String|null} [description] The actual message of this feedback message
+	 * @param {String} category The category of this feedback message
+	 * @param {String} description The actual message of this feedback message
 	 * @param {String|null} [email] The email address of the editor of this feedback message
 	 * @param {Number|null} [rating] The rating as number
 	 */
-	constructor(description = null, email = null, rating = null) {
+	constructor(category, description, email = null, rating = null) {
+		this.category = category;
 		this.description = description;
 		this.email = email;
 		this.rating = rating;
@@ -62,11 +64,12 @@ export class MapFeedback {
  * @class
  */
 export class FeedbackService {
+	// todo : add generalFeedbackCategoriesProvider to FeedbackService
 	/**
 	 *
 	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
 	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackCategoriesProvider]
-	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
+	 * @param {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
 	 */
 	constructor(
 		feedbackStorageProvider = bvvFeedbackStorageProvider,
@@ -76,7 +79,8 @@ export class FeedbackService {
 		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
-		this._categories = null;
+		this._mapCategories = null;
+		this._generalCategories = null;
 	}
 	/**
 	 * Returns all possible categories for a MapFeedback.
@@ -84,9 +88,22 @@ export class FeedbackService {
 	 * @throws `Error` when categories are not available.
 	 * @returns {Promise<Array<String>>}
 	 */
-	async getCategories() {
+	async getMapFeedbackCategories() {
+		if (!this._mapCategories) {
+			this._mapCategories = await this._mapFeedbackCategoriesProvider();
+		}
+		return [...this._mapCategories];
+	}
+	/**
+	 * Returns all possible categories for a GeneralFeedback.
+	 * @async
+	 * @throws `Error` when categories are not available.
+	 * @returns {Promise<Array<String>>}
+	 */
+	async getGeneralFeedbackCategories() {
 		if (!this._categories) {
-			this._categories = await this._mapFeedbackCategoriesProvider();
+			// todo this._categories = await this._generalFeedbackCategoriesProvider();
+			this._categories = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
 		}
 		return [...this._categories];
 	}
