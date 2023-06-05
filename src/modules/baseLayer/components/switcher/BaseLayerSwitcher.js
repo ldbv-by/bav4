@@ -66,7 +66,7 @@ export class BaseLayerSwitcher extends MvuElement {
 	createView(model) {
 		const { baseGeoResourceIds, allBaseGeoResourceIds, activeLayers, layersStoreReady } = model;
 
-		const translate = (key) => this._translationService.translate(key);
+		// const translate = (key) => this._translationService.translate(key);
 
 		if (layersStoreReady) {
 			/**
