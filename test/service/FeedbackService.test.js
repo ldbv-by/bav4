@@ -2,7 +2,8 @@ import { GeneralFeedback, MapFeedback, FeedbackService } from '../../src/service
 import {
 	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
-	bvvMapFeedbackOverlayGeoResourceProvider
+	bvvMapFeedbackOverlayGeoResourceProvider,
+	bvvGeneralFeedbackCategoriesProvider
 } from '../../src/services/provider/feedback.provider';
 
 describe('Entities', () => {
@@ -31,9 +32,15 @@ describe('FeedbackService', () => {
 	const setup = (
 		mapFeedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
+		generalFeedbackCategoriesProvider = bvvGeneralFeedbackCategoriesProvider,
 		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
 	) => {
-		return new FeedbackService(mapFeedbackStorageProvider, mapFeedbackCategoriesProvider, mapFeedbackOverlayGeoResourceProvider);
+		return new FeedbackService(
+			mapFeedbackStorageProvider,
+			mapFeedbackCategoriesProvider,
+			generalFeedbackCategoriesProvider,
+			mapFeedbackOverlayGeoResourceProvider
+		);
 	};
 
 	describe('constructor', () => {
@@ -42,20 +49,24 @@ describe('FeedbackService', () => {
 			expect(instanceUnderTest._feedbackStorageProvider).toEqual(bvvFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(bvvMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(bvvMapFeedbackOverlayGeoResourceProvider);
+			expect(instanceUnderTest._generalFeedbackCategoriesProvider).toEqual(bvvGeneralFeedbackCategoriesProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customMapFeedbackStorageProvider = async () => {};
 			const customMapFeedbackCategoriesProvider = async () => {};
 			const customMapMapFeedbackOverlayGeoResourceProvider = async () => {};
+			const customGeneralFeedbackCategoriesProvider = async () => {};
 			const instanceUnderTest = setup(
 				customMapFeedbackStorageProvider,
 				customMapFeedbackCategoriesProvider,
-				customMapMapFeedbackOverlayGeoResourceProvider
+				customMapMapFeedbackOverlayGeoResourceProvider,
+				customGeneralFeedbackCategoriesProvider
 			);
 			expect(instanceUnderTest._feedbackStorageProvider).toEqual(customMapFeedbackStorageProvider);
 			expect(instanceUnderTest._mapFeedbackCategoriesProvider).toEqual(customMapFeedbackCategoriesProvider);
 			expect(instanceUnderTest._mapFeedbackOverlayGeoResourceProvider).toEqual(customMapMapFeedbackOverlayGeoResourceProvider);
+			expect(instanceUnderTest._generalFeedbackCategoriesProvider).toEqual(customGeneralFeedbackCategoriesProvider);
 		});
 	});
 
@@ -79,13 +90,21 @@ describe('FeedbackService', () => {
 	});
 
 	describe('getGeneralFeedbackCategories', () => {
-		// todo : real tests
-		it('provides categories for GeneralFeedback', async () => {
-			const generalCategories = ['Verbesserungsvorschlag', 'Technische Probleme', 'Lob und Kritik', 'Allgemein'];
-			const instanceUnderTest = setup();
+		it('provides categories for MapFeedback', async () => {
+			const generalCategories = ['foo', 'bar'];
+			const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.resolveTo(generalCategories);
+			const instanceUnderTest = setup(null, null, null, customGeneralFeedbackCategoriesProvider);
 
 			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
-			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories);
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeResolvedTo(generalCategories); // second call served from cache
+			expect(customGeneralFeedbackCategoriesProvider).toHaveBeenCalledTimes(1);
+		});
+
+		it('rejects when the provider rejects', async () => {
+			const customGeneralFeedbackCategoriesProvider = jasmine.createSpy().and.rejectWith('Error');
+			const instanceUnderTest = setup(null, null, null, customGeneralFeedbackCategoriesProvider);
+
+			await expectAsync(instanceUnderTest.getGeneralFeedbackCategories()).toBeRejectedWith('Error');
 		});
 	});
 
