@@ -81,7 +81,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 				</button>
 			</div>
 			<div class="toggleMap ${classMap(mapClasses)}">
-				<ba-mvu-feedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-feedbackpanel>
+				<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-mapfeedbackpanel>
 			</div>
 			<div class="toggleGeneral ${classMap(generalClasses)}">
 				<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>

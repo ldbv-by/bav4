@@ -1,5 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const templateParameters = require(`../../src/assets/${process.env.DEFAULT_LANG || 'en'}.json`);
+require('dotenv').config({ path: '.env' });
+const templateParameters = process.env.BACKEND_URL
+	? require(`../../src/assets/${process.env.DEFAULT_LANG || 'en'}.json`)
+	: require(`../../src/assets/standalone.json`);
 const BASE_URL = process.env.URL || 'http://localhost:8080';
 
 test.describe('page', () => {
