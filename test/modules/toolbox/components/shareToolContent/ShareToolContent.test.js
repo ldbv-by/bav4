@@ -4,7 +4,6 @@ import { ShareToolContent } from '../../../../../src/modules/toolbox/components/
 import { Checkbox } from '../../../../../src/modules/commons/components/checkbox/Checkbox';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
-import { isTemplateResultOf } from '../../../../../src/utils/checks';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
@@ -281,8 +280,9 @@ describe('ShareToolContent', () => {
 				button.click();
 
 				await TestUtils.timeout();
-				expect(store.getState().modal.data.title).toBe('BayernAtlas-IFrame');
-				expect(isTemplateResultOf(store.getState().modal.data.content, IframeGenerator.tag)).toBeTrue();
+				expect(store.getState().modal.data.title).toBe('toolbox_shareTool_embed');
+				const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				expect(wrapperElement.querySelectorAll(IframeGenerator.tag)).toHaveSize(1);
 			});
 		});
 	});

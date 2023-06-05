@@ -87,7 +87,7 @@ export class EnvironmentService {
 	}
 
 	/**
-	 *  @returns `false` if a backend is intented to be used
+	 *  @returns `false` if a backend is intended to be used
 	 */
 	isStandalone() {
 		return !this._configService.getValue('BACKEND_URL', false);
