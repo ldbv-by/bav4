@@ -19,6 +19,7 @@ const Update_CollapsedInfo = 'update_collapsedInfo';
 const Update_CollapsedStyle = 'update_collapsedStyle';
 
 /**
+ * Component to control drawing properties
  * @class
  * @author thiloSchlemmer
  * @author alsturm
@@ -62,7 +63,7 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...tool, active: tool.name === type };
 			});
 		};
-		console.log(data.fileSaveResult);
+
 		switch (type) {
 			case Update:
 				return {
