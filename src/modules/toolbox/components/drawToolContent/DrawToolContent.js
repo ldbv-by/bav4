@@ -34,7 +34,8 @@ export class DrawToolContent extends AbstractToolContent {
 			selectedStyle: null,
 			mode: null,
 			validGeometry: null,
-			tools: null
+			tools: null,
+			fileSaveResult: null
 		});
 
 		const {
@@ -61,7 +62,7 @@ export class DrawToolContent extends AbstractToolContent {
 				return { ...tool, active: tool.name === type };
 			});
 		};
-
+		console.log(data.fileSaveResult);
 		switch (type) {
 			case Update:
 				return {
@@ -72,7 +73,8 @@ export class DrawToolContent extends AbstractToolContent {
 					selectedStyle: data.selectedStyle ? data.selectedStyle : null,
 					mode: data.mode ? data.mode : null,
 					validGeometry: data.validGeometry ? data.validGeometry : null,
-					tools: setActiveToolByType(model.tools, data.type)
+					tools: setActiveToolByType(model.tools, data.type),
+					fileSaveResult: data?.fileSaveResult?.payload ?? null
 				};
 			case Update_Tools:
 				return { ...model, tools: data };
@@ -214,7 +216,16 @@ export class DrawToolContent extends AbstractToolContent {
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { type: preselectedType, style: preselectedStyle, selectedStyle, tools, description, collapsedInfo, collapsedStyle } = model;
+		const {
+			type: preselectedType,
+			style: preselectedStyle,
+			selectedStyle,
+			tools,
+			description,
+			collapsedInfo,
+			collapsedStyle,
+			fileSaveResult
+		} = model;
 		this._showActive(tools);
 		const toolTemplate = (tool) => {
 			const classes = { 'is-active': tool.active };
@@ -599,7 +610,10 @@ export class DrawToolContent extends AbstractToolContent {
 					</div>
 					<div class="tool-container__form">${getStyleTemplate(drawingType, drawingStyle)}</div>
 					<div class="sub-text">${subText}</div>
-					<div class="chips__container"><ba-profile-chip></ba-profile-chip><ba-share-data-chip></ba-share-data-chip></div>
+					<div class="chips__container">
+						<ba-profile-chip></ba-profile-chip><ba-share-data-chip></ba-share-data-chip>
+						<ba-export-vector-data-chip .exportData=${fileSaveResult?.content}></ba-export-vector-data-chip>
+					</div>
 					<div class="ba-tool-container__actions">${buttons}</div>
 				</div>
 			</div>
