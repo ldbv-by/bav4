@@ -95,7 +95,7 @@ describe('MapFeedbackPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const expectedTitle = 'feedback_mapFeedback_header';
+			const expectedTitle = 'feedback_mapFeedback';
 			const expectedCategory = '';
 			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
@@ -125,20 +125,18 @@ describe('MapFeedbackPanel', () => {
 
 			// assert
 			expect(categoryElement.type).toBe('select-one');
-			expect(categoryElement.hasAttribute('required')).toBeTrue;
-			expect(categoryElement.hasAttribute('placeholder')).toBeTrue;
+			expect(categoryElement.hasAttribute('required')).toBeTrue();
 			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue;
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.hasAttribute('required')).toBeTrue();
+			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue();
 			expect(descriptionElement.getAttribute('maxlength')).toBe('10000');
-			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_changeDescription');
+			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
-			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_eMail');
-			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
+			expect(emailElement.hasAttribute('placeholder')).toBeTrue();
+			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
 		});
 
 		it('contains 4 unvisited ba-form-elements', async () => {
@@ -153,10 +151,10 @@ describe('MapFeedbackPanel', () => {
 		it('renders a privacy policy disclaimer', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer').innerText).toContain('feedback_mapFeedback_disclaimer');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
-			expect(element.shadowRoot.querySelector('#feedback_mapFeedback_disclaimer a').target).toBe('_blank');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').target).toBe('_blank');
 		});
 
 		it('creates an iframeObserver', async () => {
@@ -302,7 +300,7 @@ describe('MapFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			await element._saveMapFeedback('', '', '');
+			await element._saveMapFeedback();
 
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
@@ -320,12 +318,12 @@ describe('MapFeedbackPanel', () => {
 			element.onSubmit = onSubmitCallback;
 
 			// act
-			await element._saveMapFeedback('', '', '');
+			await element._saveMapFeedback();
 
 			// assert
 			expect(mapFeedbackSaveSpy).toHaveBeenCalled();
 
-			expect(store.getState().notifications.latest.payload.content).toBe('feedback_mapFeedback_saved_successfully');
+			expect(store.getState().notifications.latest.payload.content).toBe('feedback_saved_successfully');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.INFO);
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});

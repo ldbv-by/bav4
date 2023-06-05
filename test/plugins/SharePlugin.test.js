@@ -47,7 +47,7 @@ describe('SharePlugin', () => {
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 
-				setCurrentTool(Tools.SHARING);
+				setCurrentTool(Tools.SHARE);
 
 				expect(TestUtils.renderTemplateResult(store.getState().notifications.latest.payload.content).textContent).toContain(
 					'global_share_unsupported_geoResource_warning'
@@ -92,7 +92,7 @@ describe('SharePlugin', () => {
 				const instanceUnderTest = new SharePlugin();
 				await instanceUnderTest.register(store);
 
-				setCurrentTool(Tools.SHARING);
+				setCurrentTool(Tools.SHARE);
 
 				expect(store.getState().notifications.latest).toBeNull();
 			});

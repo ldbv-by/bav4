@@ -22,7 +22,8 @@ import {
 
 /**
  * Enumeration of predefined types of style
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const StyleTypes = Object.freeze({
 	NULL: 'null',

@@ -13,8 +13,6 @@ describe('i18n for header module', () => {
 		expect(map.header_close_button_title).toBe('Menü schließen');
 		expect(map.header_logo_badge).toBe('Beta');
 		expect(map.header_logo_badge_standalone).toBe('Demo');
-		expect(map.header_emblem_title).toBe('Landesamt für Digitalisierung, Breitband und Vermessung');
-		expect(map.header_emblem_link).toBe('https://www.ldbv.bayern.de/vermessung/bvv.html');
 		expect(map.header_emblem_title_standalone).toBe('bav4 auf github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
 		expect(map.header_search_placeholder).toBe('Suchen');
@@ -32,15 +30,13 @@ describe('i18n for header module', () => {
 		expect(map.header_close_button_title).toBe('Close menu');
 		expect(map.header_logo_badge).toBe('Beta');
 		expect(map.header_logo_badge_standalone).toBe('Demo');
-		expect(map.header_emblem_title).toBe('Landesamt für Digitalisierung, Breitband und Vermessung');
-		expect(map.header_emblem_link).toBe('https://www.ldbv.bayern.de/vermessung/bvv.html');
 		expect(map.header_emblem_title_standalone).toBe('bav4 on github');
 		expect(map.header_emblem_link_standalone).toBe('https://github.com/ldbv-by/bav4/');
 		expect(map.header_search_placeholder).toBe('Search');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 12;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

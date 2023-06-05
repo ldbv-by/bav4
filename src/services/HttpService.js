@@ -132,6 +132,8 @@ export class NetworkStateSyncHttpService extends HttpService {
 
 /**
  * Enum for common media types.
+ * @readonly
+ * @enum {String}
  */
 export const MediaType = Object.freeze({
 	JSON: 'application/json',

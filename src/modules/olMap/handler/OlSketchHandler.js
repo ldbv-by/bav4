@@ -5,7 +5,7 @@ import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
 import { Tools } from '../../../domain/tools';
 
-export const DefaultIdPrefix = Tools.DRAWING + '_';
+export const DefaultIdPrefix = Tools.DRAW + '_';
 
 /**
  * OlSketchHandler monitors changes for geometry based interactions of sketch-features and
@@ -43,7 +43,7 @@ export class OlSketchHandler {
 		}
 	}
 
-	activate(sketchFeature, idPrefix = Tools.DRAWING + '_') {
+	activate(sketchFeature, idPrefix = Tools.DRAW + '_') {
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
 				sketchFeature.setId(idPrefix + new Date().getTime());

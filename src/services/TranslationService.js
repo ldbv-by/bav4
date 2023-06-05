@@ -10,7 +10,8 @@ import { $injector } from '../injection';
  */
 export class TranslationService {
 	constructor() {
-		const { ConfigService: configService } = $injector.inject('ConfigService');
+		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');
+		this._environmentService = environmentService;
 		this._language = configService.getValue('DEFAULT_LANG');
 		this._providers = new Map();
 		this._translations = new Map();
@@ -53,7 +54,7 @@ export class TranslationService {
 	 */
 	translate(key) {
 		if (this._translations.has(key)) {
-			return this._translations.get(key);
+			return this._filter(this._translations.get(key));
 		}
 		console.warn('No value found for ' + this._language + '.' + key);
 		return key;
@@ -64,5 +65,9 @@ export class TranslationService {
 	 */
 	getMap() {
 		return new Map(this._translations);
+	}
+
+	_filter(s) {
+		return this._environmentService.isStandalone() ? s.replace('BayernAtlas', 'bav4') : s;
 	}
 }

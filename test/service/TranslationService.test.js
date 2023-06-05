@@ -6,9 +6,12 @@ describe('TranslationService', () => {
 	const configService = {
 		getValue: () => {}
 	};
+	const environmentService = {
+		isStandalone: () => false
+	};
 
 	beforeAll(() => {
-		$injector.registerSingleton('ConfigService', configService);
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('EnvironmentService', environmentService);
 	});
 
 	beforeEach(() => {
@@ -33,7 +36,7 @@ describe('TranslationService', () => {
 
 	it('provides updated translations from a provider', () => {
 		spyOn(configService, 'getValue').and.returnValue('en');
-
+		const spy = spyOn(instanceUnderTest, '_filter').and.callThrough();
 		instanceUnderTest.register('testProvider', (lang) => {
 			return lang === 'de'
 				? {
@@ -49,6 +52,7 @@ describe('TranslationService', () => {
 		instanceUnderTest.reload('de');
 
 		expect(instanceUnderTest.translate('key0')).toBe('value0_de');
+		expect(spy).toHaveBeenCalledTimes(2);
 	});
 
 	it('throws an error when provider already registered', () => {
@@ -94,5 +98,17 @@ describe('TranslationService', () => {
 
 		expect(instanceUnderTest.translate('unknown_key')).toBe('unknown_key');
 		expect(warnSpy).toHaveBeenCalled();
+	});
+
+	it('filters a value when app is in standalone mode', () => {
+		spyOn(configService, 'getValue').and.returnValue('de');
+		spyOn(environmentService, 'isStandalone').and.returnValue(true);
+		instanceUnderTest.register('testProvider', () => {
+			return {
+				key0: 'value BayernAtlas_de'
+			};
+		});
+
+		expect(instanceUnderTest.translate('key0')).toBe('value bav4_de');
 	});
 });

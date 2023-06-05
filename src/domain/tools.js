@@ -3,12 +3,13 @@
  */
 /**
  * Enum which holds all valid tool ids.
- * @enum
+ * @readonly
+ * @enum {String}
  */
 export const Tools = Object.freeze({
-	MEASURING: 'measuring',
-	DRAWING: 'drawing',
-	SHARING: 'sharing',
+	MEASURE: 'measure',
+	DRAW: 'draw',
+	SHARE: 'share',
 	IMPORT: 'import',
 	EXPORT: 'export'
 });

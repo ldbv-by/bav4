@@ -12,8 +12,6 @@ export const provide = (lang) => {
 				header_close_button_title: 'Close menu',
 				header_logo_badge: 'Beta',
 				header_logo_badge_standalone: 'Demo',
-				header_emblem_title: 'Landesamt für Digitalisierung, Breitband und Vermessung',
-				header_emblem_link: 'https://www.ldbv.bayern.de/vermessung/bvv.html',
 				header_emblem_title_standalone: 'bav4 on github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
 				header_search_placeholder: 'Search'
@@ -31,8 +29,6 @@ export const provide = (lang) => {
 				header_close_button_title: 'Menü schließen',
 				header_logo_badge: 'Beta',
 				header_logo_badge_standalone: 'Demo',
-				header_emblem_title: 'Landesamt für Digitalisierung, Breitband und Vermessung',
-				header_emblem_link: 'https://www.ldbv.bayern.de/vermessung/bvv.html',
 				header_emblem_title_standalone: 'bav4 auf github',
 				header_emblem_link_standalone: 'https://github.com/ldbv-by/bav4/',
 				header_search_placeholder: 'Suchen'
