@@ -10,7 +10,7 @@ import css from './exportDialogContent.css';
 import { MediaType } from '../../../../services/HttpService';
 
 const Update = 'update';
-
+const Update_Media_Related_Properties = 'update_isPortrait';
 /**
  * A content component to show available export actions
  * for specified (stringified) exportData
@@ -20,23 +20,40 @@ const Update = 'update';
  */
 export class ExportDialogContent extends MvuElement {
 	constructor() {
-		super({ exportData: null });
+		super({ exportData: null, isPortrait: false });
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update:
 				return { ...model, exportData: data };
+			case Update_Media_Related_Properties:
+				return { ...model, ...data };
 		}
 	}
 
+	/**
+	 * @override
+	 */
+	onInitialize() {
+		this.observe(
+			(state) => state.media,
+			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
+		);
+	}
+
 	createView(model) {
-		const { exportData } = model;
+		const { exportData, isPortrait } = model;
 		const exportTypes = this._getExportTypes();
+
+		const getOrientationClass = () => {
+			return isPortrait ? 'is-portrait' : 'is-landscape';
+		};
+
 		return html`<style>
 				${css}
 			</style>
-			<div class="export_content">
+			<div class="container ${getOrientationClass()}">
 				${repeat(
 					exportTypes,
 					(exportType) => exportType.sourceType,

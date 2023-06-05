@@ -50,6 +50,7 @@ describe('ExportItem', () => {
 				element.exportData = '<baz/>';
 
 				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveSize(1);
 				expect(element.shadowRoot.querySelector('select').disabled).toBeTrue();
 				expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection_disabled');
 			});
@@ -62,6 +63,7 @@ describe('ExportItem', () => {
 				expect(element.shadowRoot.querySelectorAll('select option')).toHaveSize(3);
 				expect(element.shadowRoot.querySelector('select').value).toBe('42');
 				expect(element.shadowRoot.querySelector('label').innerText).toBe('export_item_srid_selection');
+				expect(element.shadowRoot.querySelectorAll('.ba-form-element.disabled')).toHaveSize(0);
 			});
 		});
 	});
