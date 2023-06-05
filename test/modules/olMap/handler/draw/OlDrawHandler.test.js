@@ -972,10 +972,9 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(
-				// we add two fileStorage related layers
-				new Collection([new Layer({ geoResourceId: 'a_notWanted' }), new Layer({ geoResourceId: 'a_lastId' })])
-			);
+			// we add two fileStorage related layers
+			map.addLayer(new Layer({ geoResourceId: 'a_notWanted', render: () => {} }));
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -995,7 +994,7 @@ describe('OlDrawHandler', () => {
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 
@@ -1039,7 +1038,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
@@ -1063,7 +1062,7 @@ describe('OlDrawHandler', () => {
 			const map = setupMap();
 			const vectorGeoResource = new VectorGeoResource('a_lastId', 'foo', VectorSourceType.KML).setSource(lastData, 4326);
 
-			spyOn(map, 'getLayers').and.returnValue(new Collection([new Layer({ geoResourceId: 'a_lastId' })]));
+			map.addLayer(new Layer({ geoResourceId: 'a_lastId', render: () => {} }));
 			spyOn(interactionStorageServiceMock, 'isStorageId').and.callFake(() => true);
 			spyOn(classUnderTest._overlayService, 'add').and.callFake(() => {});
 			spyOn(geoResourceServiceMock, 'byId').and.returnValue(vectorGeoResource);
