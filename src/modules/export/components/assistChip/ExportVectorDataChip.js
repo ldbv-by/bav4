@@ -6,12 +6,9 @@ import { $injector } from '../../../../injection';
 import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import exportSvg from './assets/download.svg';
-import { KML } from 'ol/format';
 import { VectorGeoResource } from '../../../../domain/geoResources';
-import { Feature } from 'ol';
 
-const Update_GeoResource_ID = 'update_georesource_id';
-const Update_Feature = 'update_feature';
+const Update_Data = 'update_data';
 /**
  * AssistChip to show the availability of export actions
  * @class
@@ -22,8 +19,7 @@ const Update_Feature = 'update_feature';
 export class ExportVectorDataChip extends AbstractAssistChip {
 	constructor() {
 		super({
-			geoResourceId: null,
-			feature: null
+			data: null
 		});
 		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
@@ -32,10 +28,8 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_GeoResource_ID:
-				return { ...model, geoResourceId: data, feature: null };
-			case Update_Feature:
-				return { ...model, feature: data, geoResourceId: null };
+			case Update_Data:
+				return { ...model, data: data, geoResourceId: null };
 		}
 	}
 
@@ -49,42 +43,29 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { geoResourceId, feature } = this.getModel();
-
-		return geoResourceId || feature;
+		const { geoResource, data } = this.getModel();
+		return !!geoResource?.data || !!data;
 	}
 
 	onClick() {
-		const { geoResourceId, feature } = this.getModel();
-
-		const fromGeoResource = (geoResourceId) => {
-			const geoResource = this._geoResourceService.byId(geoResourceId);
-			return geoResource.data ?? null;
-		};
-
-		const fromFeature = (feature) => {
-			return new KML().writeFeature(feature);
-		};
-
-		const exportData = geoResourceId ? fromGeoResource(geoResourceId) : fromFeature(feature);
-
-		openModal('Export', html`<ba-export-dialog .exportData=${exportData}></ba-export-dialog>`);
+		const { data } = this.getModel();
+		const translate = (key) => this._translationService.translate(key);
+		openModal(translate('export_assistChip_export_vector_data'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
 	}
 
-	set geoResourceId(value) {
+	set geoResource(value) {
 		const geoResource = this._geoResourceService.byId(value);
 		if (geoResource && geoResource instanceof VectorGeoResource) {
-			this.signal(Update_GeoResource_ID, value);
+			this.signal(Update_Data, geoResource.data);
 		} else {
 			console.warn('value is not a valid ID for an existing instance of VectorGeoResource', value);
 		}
 	}
 
-	set feature(value) {
-		if (value instanceof Feature) {
-			this.signal(Update_Feature, value);
-		} else {
-			console.warn('value is no Feature', value);
-		}
+	set exportData(value) {
+		this.signal(Update_Data, value);
+	}
+	static get tag() {
+		return 'ba-export-vector-data-chip';
 	}
 }
