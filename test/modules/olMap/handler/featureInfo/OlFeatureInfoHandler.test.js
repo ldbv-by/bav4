@@ -34,7 +34,14 @@ describe('OlFeatureInfoHandler_Hit_Tolerance_Px', () => {
 
 describe('OlFeatureInfoHandler', () => {
 	const TestDelay = OlFeatureInfoHandler_Query_Resolution_Delay_Ms + 100;
-	const RenderCompleteDelay = 100;
+
+	const renderComplete = (map) => {
+		return new Promise((resolve) => {
+			map.on('rendercomplete', () => {
+				resolve();
+			});
+		});
+	};
 
 	const mockFeatureInfoProvider = (olFeature, layer) => {
 		const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
@@ -142,7 +149,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			await TestUtils.timeout(RenderCompleteDelay);
+			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
@@ -179,7 +186,7 @@ describe('OlFeatureInfoHandler', () => {
 			const map = setupMap();
 			handler.register(map);
 
-			await TestUtils.timeout(RenderCompleteDelay);
+			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(notMatchingCoordinate);
 
@@ -222,7 +229,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			await TestUtils.timeout(RenderCompleteDelay);
+			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
@@ -312,7 +319,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			await TestUtils.timeout(RenderCompleteDelay);
+			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
@@ -349,7 +356,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			handler.register(map);
 
-			await TestUtils.timeout(RenderCompleteDelay);
+			await renderComplete(map);
 			// safe to call map.getPixelFromCoordinate from now on
 			startRequest(matchingCoordinate);
 
