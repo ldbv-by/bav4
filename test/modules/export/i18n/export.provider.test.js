@@ -37,6 +37,7 @@ describe('i18n for search module', () => {
 		expect(map.export_item_description_ewkt).toBe('saves all geometry types, no styles');
 		expect(map.export_item_download_ewkt).toBe('.txt');
 		expect(map.export_item_srid_selection).toBe('Select SRID');
+		expect(map.export_item_srid_selection_disabled).toBe('SRID is predefined');
 		expect(map.export_assistChip_export_vector_data).toBe('Export');
 	});
 
