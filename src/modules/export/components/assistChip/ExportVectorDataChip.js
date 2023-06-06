@@ -12,8 +12,8 @@ const Update_Data = 'update_data';
 /**
  * AssistChip to show the availability of export actions
  * @class
- * @property {String} geoResourceId the ID of a existing {@link VectorGeoResource}
- * @property {Feature} feature the single {@link ol.Feature}, available for an export
+ * @property {String} geoResource the ID of a existing {@link VectorGeoResource}
+ * @property {String} exportData the stringified representation of the features, available for an export
  * @author thiloSchlemmer
  */
 export class ExportVectorDataChip extends AbstractAssistChip {
