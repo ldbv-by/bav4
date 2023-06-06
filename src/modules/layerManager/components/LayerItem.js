@@ -10,6 +10,7 @@ import arrowUpSvg from './assets/arrow-up-short.svg';
 import arrowDownSvg from './assets/arrow-down-short.svg';
 import cloneSvg from './assets/clone.svg';
 import zoomToExtentSvg from './assets/zoomToExtent.svg';
+import downloadSvg from './assets/download.svg';
 import removeSvg from './assets/trash.svg';
 import infoSvg from './assets/info.svg';
 import { AbstractMvuContentPanel } from '../../menu/components/mainMenu/content/AbstractMvuContentPanel';
@@ -201,9 +202,21 @@ export class LayerItem extends AbstractMvuContentPanel {
 			openModal(layer.label, this._getInfoPanelFor(layer.geoResourceId));
 		};
 
+		const openExportDialog = async () => {
+			const data = this._geoResourceService.byId(layer.geoResourceId)?.data;
+			openModal(translate('layerManager_export'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
+		};
+
 		const getMenuItems = () => {
 			return [
 				{ id: 'copy', label: translate('layerManager_to_copy'), icon: cloneSvg, action: cloneLayer, disabled: false },
+				{
+					id: 'export',
+					label: translate('layerManager_export'),
+					icon: downloadSvg,
+					action: openExportDialog,
+					disabled: !(geoResource instanceof VectorGeoResource)
+				},
 				{
 					id: 'zoomToExtent',
 					label: translate('layerManager_zoom_to_extent'),

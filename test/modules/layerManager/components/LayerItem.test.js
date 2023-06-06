@@ -339,6 +339,54 @@ describe('LayerItem', () => {
 			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
 		});
 
+		it('contains a menu-item for export', async () => {
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new VectorGeoResource('geoResourceId0', 'label0', VectorSourceType.KML));
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_export');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_export');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeFalse();
+			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxucz0ia');
+		});
+
+		it('contains a disabled menu-item for zoomToExtent', async () => {
+			const layer = {
+				...createDefaultLayerProperties(),
+				id: 'id0',
+				geoResourceId: 'geoResourceId0',
+				visible: true,
+				zIndex: 0,
+				opacity: 1,
+				collapsed: true
+			};
+			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
+			const element = await setup(layer);
+
+			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
+			const zoomToExtentMenuItem = menu.items.find((item) => item.label === 'layerManager_export');
+
+			expect(zoomToExtentMenuItem).not.toBeNull();
+			expect(zoomToExtentMenuItem.label).toEqual('layerManager_export');
+			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
+			expect(zoomToExtentMenuItem.disabled).toBeTrue();
+			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxucz0ia');
+		});
+
 		it('contains test-id attributes', async () => {
 			spyOn(geoResourceService, 'byId')
 				.withArgs('geoResourceId0')
