@@ -127,15 +127,6 @@ export class GeneralFeedbackPanel extends MvuElement {
 			<h2 id="feedbackPanelTitle">${translate('feedback_generalFeedback')}</h2>
 
 			<div class="ba-form-element">
-				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
-				<ba-stars-rating-panel
-					id="rating"
-					@change="${onRatingChange}"
-					placeholder="${translate('feedback_generalFeedback_rating')}"
-				></ba-stars-rating-panel>
-			</div>
-
-			<div class="ba-form-element">
 				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
 					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
 				</select>
@@ -167,6 +158,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_eMail_helper')}</label>
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
+			</div>
+
+			<div class="ba-form-element">
+				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
+				<ba-stars-rating-panel
+					id="rating"
+					@change="${onRatingChange}"
+					placeholder="${translate('feedback_generalFeedback_rating')}"
+				></ba-stars-rating-panel>
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">

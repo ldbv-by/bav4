@@ -77,7 +77,7 @@ describe('StarsRatingPanel', () => {
 
 			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
 			starButtons.forEach((starButton) => {
-				if (['fiveButtonRating_terrible', 'fiveButtonRating_bad'].includes(starButton.title)) {
+				if (['fiveButtonRating_very_unlikely', 'fiveButtonRating_unlikely'].includes(starButton.title)) {
 					expect(starButton.classList.contains('unselected')).toBeFalse();
 					expect(starButton.classList.contains('selected')).toBeTrue();
 				} else {
