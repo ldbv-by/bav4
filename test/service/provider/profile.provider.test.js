@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import { getBvvProfile } from '../../../src/services/provider/profile.provider';
 
 describe('profile provider', () => {

@@ -1,7 +1,7 @@
 import { $injector } from '../../../../src/injection';
 import { DndImportPanel } from '../../../../src/modules/dndImport/components/DndImportPanel';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../src/domain/sourceType';
-import { MediaType } from '../../../../src/services/HttpService';
+import { MediaType } from '../../../../src/domain/mediaTypes';
 import { importReducer } from '../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { LevelTypes } from '../../../../src/store/notifications/notifications.action';

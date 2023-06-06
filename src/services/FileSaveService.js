@@ -2,7 +2,7 @@
  * @module services/FileSaveService
  */
 
-import { MediaType } from './HttpService';
+import { MediaType } from '../domain/mediaTypes';
 
 const DEFAULT_FILE_NAME_PREFIX = 'bayernatlas';
 
@@ -17,7 +17,7 @@ export class FileSaveService {
 	 * The extension for the filename is guessed from the MIME-type otherwise the
 	 * filename is left without any extension.
 	 * @param {string} content The content to save
-	 * @param {module:services/HttpService~MediaType} mimeType The MediaType (MIME-Type) of the file
+	 * @param {module:domain/mediaTypes~MediaType} mimeType The MediaType (MIME-Type) of the file
 	 * @param {string} [filename] The optional filename without extension
 	 * @throws {Error}
 	 */
