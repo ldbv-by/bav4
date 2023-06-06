@@ -1,11 +1,17 @@
 .container {
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
-	grid-template-rows: repeat(1, 1fr);
+	grid-template-columns: 1em repeat(4, 1fr) 1em;
 	grid-column-gap: 1.2em;
-	grid-row-gap: 0px;
 	padding: 3em 0;
 }
+
+.start-colum,
+.end-colum {
+	height: 100%;
+}
+
 .container.is-portrait {
 	min-height: calc(100vh - 14em);
+	align-items: center;
+	padding-bottom: 10em;
 }

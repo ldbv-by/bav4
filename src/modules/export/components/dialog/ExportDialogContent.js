@@ -54,11 +54,13 @@ export class ExportDialogContent extends MvuElement {
 				${css}
 			</style>
 			<div class="container ${getOrientationClass()}">
+				<div class="start-colum"></div>
 				${repeat(
 					exportTypes,
 					(exportType) => exportType.sourceType,
 					(exportType) => html`<ba-export-item .exportType=${exportType} .exportData=${exportData}></ba-export-item>`
 				)}
+				<div class="end-colum"></div>
 			</div>`;
 	}
 
