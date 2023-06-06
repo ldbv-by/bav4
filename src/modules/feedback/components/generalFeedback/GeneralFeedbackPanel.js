@@ -61,7 +61,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			case Update_Rating:
 				return { ...model, generalFeedback: { ...model.generalFeedback, rating: data } };
 			case Update_Category:
-				return { ...model, mapFeedback: { ...model.generalFeedback, category: data } };
+				return { ...model, generalFeedback: { ...model.generalFeedback, category: data } };
 			case Update_CategoryOptions:
 				return { ...model, categoryOptions: ['', ...data] };
 		}
@@ -113,8 +113,9 @@ export class GeneralFeedbackPanel extends MvuElement {
 			const emailElement = this.shadowRoot.getElementById('email');
 
 			if (categoryElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
-				// todo add category
-				this._saveGeneralFeedback(new GeneralFeedback(generalFeedback.description, generalFeedback.email, generalFeedback.rating));
+				this._saveGeneralFeedback(
+					new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+				);
 			}
 		};
 
