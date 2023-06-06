@@ -16,7 +16,7 @@ const configServiceMock = {
 };
 
 const feedbackServiceMock = {
-	getCategories: () => ['Foo', 'Bar'],
+	getMapFeedbackCategories: () => ['Foo', 'Bar'],
 	save: () => {},
 	getOverlayGeoResourceId: () => 'overlay'
 };
@@ -126,7 +126,7 @@ describe('MapFeedbackPanel', () => {
 			// assert
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue();
-			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_mapFeedback_categorySelection');
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
 			expect(descriptionElement.hasAttribute('required')).toBeTrue();
@@ -153,7 +153,7 @@ describe('MapFeedbackPanel', () => {
 
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').innerText).toBe('feedback_privacyPolicy');
 			expect(element.shadowRoot.querySelector('#mapFeedback_disclaimer a').target).toBe('_blank');
 		});
 
@@ -277,10 +277,10 @@ describe('MapFeedbackPanel', () => {
 	});
 
 	describe('when using FeedbackService', () => {
-		it('logs an error when getCategories fails', async () => {
+		it('logs an error when getMapFeedbackCategories fails', async () => {
 			// arrange
 			const message = 'error message';
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.rejectWith(new Error(message));
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.rejectWith(new Error(message));
 			const errorSpy = spyOn(console, 'error');
 			const element = await setup();
 
@@ -328,9 +328,9 @@ describe('MapFeedbackPanel', () => {
 			expect(onSubmitCallback).toHaveBeenCalled();
 		});
 
-		it('initially calls FeedbackService.getCategories()', async () => {
+		it('initially calls FeedbackService.getMapFeedbackCategories()', async () => {
 			// arrange
-			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getCategories').and.returnValue([]);
+			const getMapFeedbackSpy = spyOn(feedbackServiceMock, 'getMapFeedbackCategories').and.returnValue([]);
 
 			// act
 			await setup();
