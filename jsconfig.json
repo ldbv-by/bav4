@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"checkJs": true
+		"checkJs": true,
+		"allowArbitraryExtensions": true
 	},
-	"exclude": ["**/node_modules/*", "**/test/*"],
-	"files": ["globals.d.ts"]
+	"exclude": ["**/node_modules/*", "**/test/*"]
 }
 // file needed only for vscode type checking
