@@ -4,7 +4,6 @@
 import { $injector } from '../../../../injection';
 import { GeoResourceInfoResult } from '../GeoResourceInfoService';
 import { MediaType } from '../../../../domain/mediaTypes';
-
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../../domain/geoResources';
 
 /**
