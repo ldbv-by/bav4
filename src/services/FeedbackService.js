@@ -1,7 +1,12 @@
 /**
  * @module services/FeedbackService
  */
-import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFeedbackOverlayGeoResourceProvider } from './provider/feedback.provider';
+import {
+	bvvMapFeedbackCategoriesProvider,
+	bvvFeedbackStorageProvider,
+	bvvMapFeedbackOverlayGeoResourceProvider,
+	bvvGeneralFeedbackCategoriesProvider
+} from './provider/feedback.provider';
 
 /**
  * A function that stores a feedback.
@@ -18,6 +23,12 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  * @returns {Promise<Array<String>>} available categories
  */
 /**
+ * A function that returns a list of categories for a GeneralFeedback
+ * @async
+ * @typedef {Function} generalFeedbackCategoriesProvider
+ * @returns {Promise<Array<String>>} available categories
+ */
+/**
  * A function that returns an id of a GeoResource which should be used as a overlay layer of the map
  * @typedef {Function}  mapFeedbackOverlayGeoResourceProvider
  * @returns {String} the id of a GeoResource or `null`
@@ -28,11 +39,13 @@ import { bvvMapFeedbackCategoriesProvider, bvvFeedbackStorageProvider, bvvMapFee
  */
 export class GeneralFeedback {
 	/**
-	 * @param {String|null} [description] The actual message of this feedback message
+	 * @param {String} category The category of this feedback message
+	 * @param {String} description The actual message of this feedback message
 	 * @param {String|null} [email] The email address of the editor of this feedback message
 	 * @param {Number|null} [rating] The rating as number
 	 */
-	constructor(description = null, email = null, rating = null) {
+	constructor(category, description, email = null, rating = null) {
+		this.category = category;
 		this.description = description;
 		this.email = email;
 		this.rating = rating;
@@ -66,17 +79,21 @@ export class FeedbackService {
 	 *
 	 * @param {module:services/FeedbackService~feedbackStorageProvider} [feedbackStorageProvider=bvvFeedbackStorageProvider]
 	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackCategoriesProvider]
-	 * @param {module:services/FeedbackService~mapFeedbackCategoriesProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
+	 * @param {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider} [mapFeedbackCategoriesProvider=bvvMapFeedbackOverlayGeoResourceProvider]
+	 * @param {module:services/FeedbackService~generalFeedbackCategoriesProvider} [generalFeedbackCategoriesProvider=bvvGeneralFeedbackCategoriesProvider]
 	 */
 	constructor(
 		feedbackStorageProvider = bvvFeedbackStorageProvider,
 		mapFeedbackCategoriesProvider = bvvMapFeedbackCategoriesProvider,
-		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider
+		mapFeedbackOverlayGeoResourceProvider = bvvMapFeedbackOverlayGeoResourceProvider,
+		generalFeedbackCategoriesProvider = bvvGeneralFeedbackCategoriesProvider
 	) {
 		this._feedbackStorageProvider = feedbackStorageProvider;
 		this._mapFeedbackCategoriesProvider = mapFeedbackCategoriesProvider;
 		this._mapFeedbackOverlayGeoResourceProvider = mapFeedbackOverlayGeoResourceProvider;
-		this._categories = null;
+		this._generalFeedbackCategoriesProvider = generalFeedbackCategoriesProvider;
+		this._mapCategories = null;
+		this._generalCategories = null;
 	}
 	/**
 	 * Returns all possible categories for a MapFeedback.
@@ -84,11 +101,23 @@ export class FeedbackService {
 	 * @throws `Error` when categories are not available.
 	 * @returns {Promise<Array<String>>}
 	 */
-	async getCategories() {
-		if (!this._categories) {
-			this._categories = await this._mapFeedbackCategoriesProvider();
+	async getMapFeedbackCategories() {
+		if (!this._mapCategories) {
+			this._mapCategories = await this._mapFeedbackCategoriesProvider();
 		}
-		return [...this._categories];
+		return [...this._mapCategories];
+	}
+	/**
+	 * Returns all possible categories for a GeneralFeedback.
+	 * @async
+	 * @throws `Error` when categories are not available.
+	 * @returns {Promise<Array<String>>}
+	 */
+	async getGeneralFeedbackCategories() {
+		if (!this._generalCategories) {
+			this._generalCategories = await this._generalFeedbackCategoriesProvider();
+		}
+		return [...this._generalCategories];
 	}
 
 	/**

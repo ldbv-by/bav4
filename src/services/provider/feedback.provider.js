@@ -64,6 +64,24 @@ export const bvvMapFeedbackCategoriesProvider = async () => {
 };
 
 /**
+ * Bvv specific implementation of {@link module:services/FeedbackService~generalFeedbackCategoriesProvider}
+ * @function
+ * @type {module:services/FeedbackService~generalFeedbackCategoriesProvider}
+ */
+export const bvvGeneralFeedbackCategoriesProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/general/categories`;
+	const result = await httpService.get(url);
+
+	switch (result.status) {
+		case 200:
+			return await result.json();
+		default:
+			throw new Error(`MapFeedback categories could not be loaded: Http-Status ${result.status}`);
+	}
+};
+
+/**
  * Bvv specific implementation of {@link module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
  * @function
  * @type {module:services/FeedbackService~mapFeedbackOverlayGeoResourceProvider}
