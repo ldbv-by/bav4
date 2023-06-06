@@ -19,7 +19,7 @@ export const provide = (lang) => {
 				feedback_toggleFeedback_generalButton_sub: 'Make suggestions for changes or improvements, or report errors.',
 				feedback_toggleFeedback_mapButton_sub: 'Give us feedback about a wrong address, a missing place or a road not shown correctly, etc.',
 				feedback_generalFeedback_could_not_save: 'Your feedback could not be saved',
-				feedback_generalFeedback_rating: 'Your Vote',
+				feedback_generalFeedback_rating: 'Would you recommend the BayernAtlas?',
 				feedback_generalFeedback: 'General - Feedback',
 				feedback_mapFeedback_could_not_save: 'Your feedback could not be saved',
 				feedback_mapFeedback_geometry_missing: 'Please draw at least one Point to mark the location of your feedback',
@@ -49,7 +49,7 @@ export const provide = (lang) => {
 				feedback_toggleFeedback_mapButton_sub:
 					'Melden Sie uns eine falsche Adresse, einen fehlenden Ort, einen nicht korrekt dargestellten Straßenverlauf usw.',
 				feedback_generalFeedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
-				feedback_generalFeedback_rating: 'Ihre Bewertung',
+				feedback_generalFeedback_rating: 'Würden Sie den BayernAtlas weiterempfehlen?',
 				feedback_generalFeedback: 'Allgemeines Feedback',
 				feedback_mapFeedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
 				feedback_mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
