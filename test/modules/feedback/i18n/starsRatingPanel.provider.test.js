@@ -4,21 +4,21 @@ describe('i18n for starsRatingPanel', () => {
 	it('provides translation for de', () => {
 		const map = provide('de');
 
-		expect(map.fiveButtonRating_terrible).toBe('Sehr unwahrscheinlich');
-		expect(map.fiveButtonRating_bad).toBe('Unwahrscheinlich');
-		expect(map.fiveButtonRating_satisfied).toBe('Neutral');
-		expect(map.fiveButtonRating_good).toBe('Wahrscheinlich');
-		expect(map.fiveButtonRating_excellent).toBe('Sehr wahrscheinlich');
+		expect(map.fiveButtonRating_very_unlikely).toBe('Sehr unwahrscheinlich');
+		expect(map.fiveButtonRating_unlikely).toBe('Unwahrscheinlich');
+		expect(map.fiveButtonRating_neutral).toBe('Neutral');
+		expect(map.fiveButtonRating_likely).toBe('Wahrscheinlich');
+		expect(map.fiveButtonRating_very_likely).toBe('Sehr wahrscheinlich');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
-		expect(map.fiveButtonRating_terrible).toBe('Very unlikely');
-		expect(map.fiveButtonRating_bad).toBe('Unlikely');
-		expect(map.fiveButtonRating_satisfied).toBe('Neutral');
-		expect(map.fiveButtonRating_good).toBe('Likely');
-		expect(map.fiveButtonRating_excellent).toBe('Very likely');
+		expect(map.fiveButtonRating_very_unlikely).toBe('Very unlikely');
+		expect(map.fiveButtonRating_unlikely).toBe('Unlikely');
+		expect(map.fiveButtonRating_neutral).toBe('Neutral');
+		expect(map.fiveButtonRating_likely).toBe('Likely');
+		expect(map.fiveButtonRating_very_likely).toBe('Very likely');
 	});
 
 	it('have the expected amount of translations', () => {
