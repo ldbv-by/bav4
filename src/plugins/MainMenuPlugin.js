@@ -3,7 +3,8 @@
  */
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from '../plugins/BaPlugin';
-import { close, open, setTab, TabId } from '../store/mainMenu/mainMenu.action';
+import { close, open, setTab } from '../store/mainMenu/mainMenu.action';
+import { TabId } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
 

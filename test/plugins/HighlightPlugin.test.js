@@ -12,7 +12,8 @@ import { addHighlightFeatures, clearHighlightFeatures, HighlightFeatureType } fr
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { setTab, TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { TabId } from '../../src/domain/mainMenu';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';

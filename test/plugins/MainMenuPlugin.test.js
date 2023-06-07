@@ -1,6 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { setTab, TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { TabId } from '../../src/domain/mainMenu';
 import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';

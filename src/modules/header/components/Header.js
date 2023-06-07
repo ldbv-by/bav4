@@ -2,7 +2,8 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, TabId, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { TabId } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';

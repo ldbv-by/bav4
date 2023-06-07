@@ -7,7 +7,8 @@ import { emitNotification, LevelTypes } from '../store/notifications/notificatio
 import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../domain/sourceType';
-import { setTab, TabId } from '../store/mainMenu/mainMenu.action';
+import { setTab } from '../store/mainMenu/mainMenu.action';
+import { TabId } from '../domain/mainMenu';
 import { fitLayer } from '../store/position/position.action';
 
 /**

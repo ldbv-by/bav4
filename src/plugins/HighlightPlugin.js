@@ -5,7 +5,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
-import { TabId } from '../store/mainMenu/mainMenu.action';
+import { TabId } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 
 /**

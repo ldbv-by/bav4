@@ -1,4 +1,4 @@
-import { TabId } from '../../../src/store/mainMenu/mainMenu.action';
+import { TabId } from '../../src/domain/mainMenu';
 
 describe('mainMenuAction', () => {
 	it('exports a TabId enum', () => {

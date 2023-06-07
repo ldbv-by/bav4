@@ -2,7 +2,8 @@
 
 import { MainMenu } from '../../../../../src/modules/menu/components/mainMenu/MainMenu';
 import { createNoInitialStateMainMenuReducer } from '../../../../../src/store/mainMenu/mainMenu.reducer';
-import { TabId, toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { toggle } from '../../../../../src/store/mainMenu/mainMenu.action';
+import { TabId } from '../../../../../src/domain/mainMenu';
 import { TestUtils } from '../../../../test-utils';
 import { $injector } from '../../../../../src/injection';
 import { setTab } from '../../../../../src/store/mainMenu/mainMenu.action';
