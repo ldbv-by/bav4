@@ -21,6 +21,15 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
 describe('ElevationProfile', () => {
+	const renderComplete = () => {
+		return new Promise((resolve) => {
+			// we register on the chartJsAfterRender event
+			window.addEventListener('chartJsAfterRender', () => {
+				resolve();
+			});
+		});
+	};
+
 	const sumUp = 1480.8;
 	const sumUpAfterToLocaleStringEn = '1,480.8 m';
 
@@ -254,7 +263,7 @@ describe('ElevationProfile', () => {
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('UnitsService', unitsServiceMock);
 
-		return TestUtils.renderAndLogLifecycle(ElevationProfile.tag);
+		return TestUtils.render(ElevationProfile.tag);
 	};
 
 	describe('when using ElevationService', () => {
@@ -1052,8 +1061,33 @@ describe('ElevationProfile', () => {
 	});
 
 	describe('events', () => {
-		const chartJsTimeoutInMs = 100;
+		describe('when chart was rendered', () => {
+			it('fires a bubbling "chartJsAfterRender" event', async () => {
+				// arrange
+				const spy = jasmine.createSpy();
+				window.addEventListener('chartJsAfterRender', spy);
+				const coordinates = [
+					[0, 1],
+					[2, 3]
+				];
+				spyOn(elevationServiceMock, 'getProfile').withArgs(coordinates).and.resolveTo(profile());
 
+				//act
+				await setup({
+					media: {
+						darkSchema: true
+					},
+					elevationProfile: {
+						active: true,
+						coordinates: coordinates
+					}
+				});
+
+				// assert
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
+			});
+		});
+		
 		describe('on pointermove', () => {
 			it('places a highlight feature within the store', async () => {
 				// arrange
@@ -1076,7 +1110,8 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(event);
-				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				await renderComplete();
 
 				// assert
 				expect(setCoordinatesSpy).toHaveBeenCalled();
@@ -1106,7 +1141,8 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(new Event('mouseout'));
-				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				await renderComplete();
 
 				// assert
 				expect(store.getState().highlight.features).toHaveSize(0);
@@ -1132,7 +1168,8 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(new PointerEvent('pointerup'));
-				await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				await renderComplete();
 
 				// assert
 				expect(store.getState().highlight.features).toHaveSize(0);
