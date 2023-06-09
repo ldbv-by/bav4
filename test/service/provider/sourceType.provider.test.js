@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import {
 	bvvUrlSourceTypeProvider,
 	_createCredentialPanel,

@@ -4,7 +4,7 @@ import { importReducer } from '../../src/store/import/import.reducer';
 import { setUrl, setData } from '../../src/store/import/import.action';
 import { TestUtils } from '../test-utils';
 import { ImportPlugin, LAYER_ADDING_DELAY_MS } from '../../src/plugins/ImportPlugin';
-import { MediaType } from '../../src/services/HttpService';
+import { MediaType } from '../../src/domain/mediaTypes';
 import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';

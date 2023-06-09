@@ -2,7 +2,7 @@
  * @module services/provider/profile_provider
  */
 import { $injector } from '../../injection';
-import { MediaType } from '../HttpService';
+import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * A function that takes an array of coordinates (in 3857) and returns a promise resolving to  a {@link Profile}.
