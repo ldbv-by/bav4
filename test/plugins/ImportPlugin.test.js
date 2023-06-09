@@ -9,7 +9,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { SourceType, SourceTypeName } from '../../src/domain/sourceType';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
-import { TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { TabIds } from '../../src/domain/mainMenu';
 import { positionReducer } from '../../src/store/position/position.reducer';
 
 describe('LAYER_ADDING_DELAY_MS', () => {
@@ -33,7 +33,7 @@ describe('ImportPlugin', () => {
 		const initialState = {
 			import: { latest: null },
 			mainMenu: {
-				tab: TabId.MISC
+				tab: TabIds.MISC
 			},
 			...state
 		};
@@ -85,7 +85,7 @@ describe('ImportPlugin', () => {
 			expect(spy).toHaveBeenCalledWith('http://some.url', { sourceType: sourceType });
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 			expect(store.getState().position.fitLayerRequest.payload).not.toBeNull();
 		});
 
@@ -165,7 +165,7 @@ describe('ImportPlugin', () => {
 			await TestUtils.timeout(LAYER_ADDING_DELAY_MS + 100);
 			expect(store.getState().layers.active.length).toBe(1);
 			expect(store.getState().layers.active[0].id).toBe('idFoo');
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 		});
 
 		it('emits a notification when importVectorDataService returns NULL', async () => {
