@@ -1087,7 +1087,7 @@ describe('ElevationProfile', () => {
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ bubbles: true }));
 			});
 		});
-		
+
 		describe('on pointermove', () => {
 			it('places a highlight feature within the store', async () => {
 				// arrange
@@ -1110,7 +1110,7 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(event);
-				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// wait until chart was updated
 				await renderComplete();
 
 				// assert
@@ -1141,7 +1141,7 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(new Event('mouseout'));
-				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// wait until chart was updated
 				await renderComplete();
 
 				// assert
@@ -1168,7 +1168,7 @@ describe('ElevationProfile', () => {
 
 				// act
 				chart.dispatchEvent(new PointerEvent('pointerup'));
-				// await TestUtils.timeout(chartJsTimeoutInMs); // give the chart some time to update
+				// wait until chart was updated
 				await renderComplete();
 
 				// assert
