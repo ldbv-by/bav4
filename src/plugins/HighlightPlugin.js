@@ -5,7 +5,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
-import { TabId } from '../domain/mainMenu';
+import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
 
 /**
@@ -55,7 +55,7 @@ export class HighlightPlugin extends BaPlugin {
 		};
 
 		const onTabChanged = (tab) => {
-			if (tab !== TabId.FEATUREINFO) {
+			if (tab !== TabIds.FEATUREINFO) {
 				removeHighlightFeaturesById([QUERY_RUNNING_HIGHLIGHT_FEATURE_ID, QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID]);
 			}
 		};

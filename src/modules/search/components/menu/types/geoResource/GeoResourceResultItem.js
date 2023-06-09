@@ -5,7 +5,7 @@ import { html, nothing } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { addLayer, removeLayer } from '../../../../../../store/layers/layers.action';
 import { close as closeMainMenu, setTab } from '../../../../../../store/mainMenu/mainMenu.action';
-import { TabId } from '../../../../../../domain/mainMenu';
+import { TabIds } from '../../../../../../domain/mainMenu';
 import css from './geoResourceResultItem.css';
 import { MvuElement } from '../../../../../MvuElement';
 import { $injector } from '../../../../../../injection';
@@ -114,7 +114,7 @@ export class GeoResourceResultItem extends MvuElement {
 				closeMainMenu();
 			} else {
 				//switch to "maps" tab in main menu
-				setTab(TabId.MAPS);
+				setTab(TabIds.MAPS);
 			}
 		};
 		const getActiveClass = () => {

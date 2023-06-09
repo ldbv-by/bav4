@@ -6,27 +6,28 @@
  * @readonly
  * @enum {String}
  */
-export const TabId = Object.freeze({
+export const TabIds = Object.freeze({
 	TOPICS: 'topics',
 	MAPS: 'maps',
 	MISC: 'misc',
 	ROUTING: 'routing',
 	SEARCH: 'search',
 	FEATUREINFO: 'featureinfo',
+
 	valueOf: (index) => {
 		switch (index) {
 			case 0:
-				return TabId.TOPICS;
+				return TabIds.TOPICS;
 			case 1:
-				return TabId.MAPS;
+				return TabIds.MAPS;
 			case 2:
-				return TabId.SEARCH;
+				return TabIds.SEARCH;
 			case 3:
-				return TabId.ROUTING;
+				return TabIds.ROUTING;
 			case 4:
-				return TabId.MISC;
+				return TabIds.MISC;
 			case 5:
-				return TabId.FEATUREINFO;
+				return TabIds.FEATUREINFO;
 		}
 		return null;
 	}

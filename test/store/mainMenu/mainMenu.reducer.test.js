@@ -1,7 +1,7 @@
 import { TestUtils } from '../../test-utils.js';
 import { createMainMenuReducer, createNoInitialStateMainMenuReducer } from '../../../src/store/mainMenu/mainMenu.reducer';
 import { open, close, toggle, setTab } from '../../../src/store/mainMenu/mainMenu.action';
-import { TabId } from '../../../src/domain/mainMenu';
+import { TabIds } from '../../../src/domain/mainMenu';
 
 describe('mainMenuReducer', () => {
 	const windowMock = {
@@ -89,10 +89,10 @@ describe('mainMenuReducer', () => {
 		it('set the tab index', () => {
 			const store = setup(createNoInitialStateMainMenuReducer());
 
-			setTab(TabId.MAPS);
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-			setTab(TabId.MISC);
-			expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
+			setTab(TabIds.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+			setTab(TabIds.MISC);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
 		});
 	});
 });

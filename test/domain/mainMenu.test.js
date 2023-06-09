@@ -1,23 +1,23 @@
-import { TabId } from '../../src/domain/mainMenu';
+import { TabIds } from '../../src/domain/mainMenu';
 
 describe('mainMenuAction', () => {
 	it('exports a TabId enum', () => {
-		expect(Object.keys(TabId).length).toBe(7);
-		expect(Object.isFrozen(TabId)).toBeTrue();
+		expect(Object.keys(TabIds).length).toBe(7);
+		expect(Object.isFrozen(TabIds)).toBeTrue();
 
-		expect(TabId.TOPICS).toBe('topics');
-		expect(TabId.MAPS).toBe('maps');
-		expect(TabId.MISC).toBe('misc');
-		expect(TabId.ROUTING).toBe('routing');
-		expect(TabId.SEARCH).toBe('search');
-		expect(TabId.FEATUREINFO).toBe('featureinfo');
+		expect(TabIds.TOPICS).toBe('topics');
+		expect(TabIds.MAPS).toBe('maps');
+		expect(TabIds.MISC).toBe('misc');
+		expect(TabIds.ROUTING).toBe('routing');
+		expect(TabIds.SEARCH).toBe('search');
+		expect(TabIds.FEATUREINFO).toBe('featureinfo');
 
-		expect(TabId.valueOf(0)).toEqual(TabId.TOPICS);
-		expect(TabId.valueOf(1)).toEqual(TabId.MAPS);
-		expect(TabId.valueOf(2)).toEqual(TabId.SEARCH);
-		expect(TabId.valueOf(3)).toEqual(TabId.ROUTING);
-		expect(TabId.valueOf(4)).toEqual(TabId.MISC);
-		expect(TabId.valueOf(5)).toEqual(TabId.FEATUREINFO);
-		expect(TabId.valueOf(6)).toBeNull();
+		expect(TabIds.valueOf(0)).toEqual(TabIds.TOPICS);
+		expect(TabIds.valueOf(1)).toEqual(TabIds.MAPS);
+		expect(TabIds.valueOf(2)).toEqual(TabIds.SEARCH);
+		expect(TabIds.valueOf(3)).toEqual(TabIds.ROUTING);
+		expect(TabIds.valueOf(4)).toEqual(TabIds.MISC);
+		expect(TabIds.valueOf(5)).toEqual(TabIds.FEATUREINFO);
+		expect(TabIds.valueOf(6)).toBeNull();
 	});
 });

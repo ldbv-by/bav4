@@ -8,7 +8,7 @@ import { observe } from '../utils/storeUtils';
 import { BaPlugin } from './BaPlugin';
 import { SourceTypeName } from '../domain/sourceType';
 import { setTab } from '../store/mainMenu/mainMenu.action';
-import { TabId } from '../domain/mainMenu';
+import { TabIds } from '../domain/mainMenu';
 import { fitLayer } from '../store/position/position.action';
 
 /**
@@ -46,7 +46,7 @@ export class ImportPlugin extends BaPlugin {
 			if (geoResource) {
 				const { id } = geoResource;
 				//switch to the main menu's maps tab
-				setTab(TabId.MAPS);
+				setTab(TabIds.MAPS);
 				//add the layer after some delay, which gives the user a better feedback
 				setTimeout(() => {
 					addLayer(id);

@@ -13,7 +13,7 @@ import { layersReducer } from '../../src/store/layers/layers.reducer';
 import { pointerReducer } from '../../src/store/pointer/pointer.reducer';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer';
 import { setTab } from '../../src/store/mainMenu/mainMenu.action';
-import { TabId } from '../../src/domain/mainMenu';
+import { TabIds } from '../../src/domain/mainMenu';
 import { setClick } from '../../src/store/pointer/pointer.action';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '../../src/store/featureInfo/featureInfo.action';
@@ -26,7 +26,7 @@ describe('HighlightPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tab: TabId.MAPS
+				tab: TabIds.MAPS
 			},
 			search: {
 				query: new EventLike(null)
@@ -93,7 +93,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: QUERY_SUCCESS_HIGHLIGHT_FEATURE_ID };
 			const store = setup({
 				mainMenu: {
-					tab: TabId.TOPICS,
+					tab: TabIds.TOPICS,
 					open: false
 				},
 				highlight: {
@@ -111,7 +111,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index
-			setTab(TabId.MAPS);
+			setTab(TabIds.MAPS);
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].id).toBe('foo');
@@ -120,7 +120,7 @@ describe('HighlightPlugin', () => {
 			addHighlightFeatures([highlightFeature0, highlightFeature1, highlightFeature2]);
 
 			//we change the tab index to the FeatureInfo tab
-			setTab(TabId.FEATUREINFO);
+			setTab(TabIds.FEATUREINFO);
 
 			expect(store.getState().highlight.features).toHaveSize(3);
 		});
@@ -137,7 +137,7 @@ describe('HighlightPlugin', () => {
 			const highlightFeature2 = { type: HighlightFeatureType.DEFAULT, data: { coordinate: [21, 42] }, id: 'foo' };
 			const store = setup({
 				mainMenu: {
-					tab: TabId.TOPICS,
+					tab: TabIds.TOPICS,
 					open: false
 				},
 				highlight: {
@@ -197,7 +197,7 @@ describe('HighlightPlugin', () => {
 			const store = setup({
 				mainMenu: {
 					open: true,
-					tab: TabId.FEATUREINFO
+					tab: TabIds.FEATUREINFO
 				},
 				highlight: {
 					features: [highlightFeature]
