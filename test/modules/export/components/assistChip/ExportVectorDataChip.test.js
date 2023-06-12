@@ -4,7 +4,6 @@ import { ExportDialogContent } from '../../../../../src/modules/export/component
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 import downloadSvg from '../../../../../src/modules/export/components/assistChip/assets/download.svg';
-import { VectorGeoResource } from '../../../../../src/domain/geoResources';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
