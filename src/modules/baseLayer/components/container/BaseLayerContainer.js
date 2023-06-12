@@ -40,7 +40,7 @@ export class BaseLayerContainer extends MvuElement {
 	 */
 	onAfterRender(firsttime) {
 		const determineActiveTabSection = (section) => {
-			const i = section.scrollLeft / section.clientWidth;
+			const i = Math.round(section.scrollLeft / section.clientWidth);
 			const { categories } = this.getModel();
 			const keys = Object.keys(categories);
 			this._activeCategory = keys[i];
