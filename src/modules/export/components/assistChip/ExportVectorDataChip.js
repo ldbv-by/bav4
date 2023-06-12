@@ -6,7 +6,6 @@ import { $injector } from '../../../../injection';
 import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import exportSvg from './assets/download.svg';
-import { VectorGeoResource } from '../../../../domain/geoResources';
 
 const Update_Data = 'update_data';
 /**
