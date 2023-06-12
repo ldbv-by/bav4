@@ -72,7 +72,7 @@ export class ExportItem extends MvuElement {
 			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType);
 		};
 		const isDisabled = () => {
-			return exportType.srids.length === 1 ? 'disabled' : '';
+			return exportType.srids.length > 1 ? '' : 'disabled';
 		};
 
 		return exportType
