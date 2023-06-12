@@ -19,8 +19,8 @@ import { KML } from 'ol/format';
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
  * @function
  * @param {Feature} olFeature ol feature
- * @param {LayerProperties} layerProperties layerProperties
- * @returns {FeatureInfo} featureInfo
+ * @param {module:store/layers/layers_action~LayerProperties} layerProperties layerProperties
+ * @returns {module:store/featureInfo/featureInfo_action~FeatureInfo} featureInfo
  */
 export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
