@@ -160,13 +160,11 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
 			</div>
 
+			<div>${translate('feedback_generalFeedback_rating')}</div>
 			<div class="ba-form-element">
-				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
-				<ba-stars-rating-panel
-					id="rating"
-					@change="${onRatingChange}"
-					placeholder="${translate('feedback_generalFeedback_rating')}"
-				></ba-stars-rating-panel>
+				<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>
+				<ba-stars-rating-panel id="rating" @change="${onRatingChange}"></ba-stars-rating-panel>
+				<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">
