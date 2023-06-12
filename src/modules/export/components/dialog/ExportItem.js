@@ -71,6 +71,9 @@ export class ExportItem extends MvuElement {
 
 			this._fileSaveService.saveAs(this._exportVectorDataService.forData(exportData, targetSourceType), exportType.mediaType);
 		};
+		const isDisabled = () => {
+			return exportType.srids.length > 1 ? '' : 'disabled';
+		};
 
 		return exportType
 			? html`<style>
@@ -81,7 +84,7 @@ export class ExportItem extends MvuElement {
 							<div class="export-item__label">${translate(`export_item_label_${exportType.sourceTypeName}`)}</div>
 							<div class="export-item__description">${translate(`export_item_description_${exportType.sourceTypeName}`)}</div>
 						</div>
-						<div class="export-item__select ba-form-element">
+						<div class="export-item__select ba-form-element ${isDisabled()}">
 							<select id="srid" .value=${selectedSrid} @change="${onSridChange}" ?disabled=${exportType.srids.length === 1}>
 								${exportType.srids.map((srid) => html` <option value=${srid}>EPSG:${srid}</option> `)}
 							</select>
