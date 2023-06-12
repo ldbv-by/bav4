@@ -7,7 +7,8 @@ import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
 import { TopicsContentPanel } from '../../../topics/components/menu/TopicsContentPanel';
 import { SearchResultsPanel } from '../../../search/components/menu/SearchResultsPanel';
-import { TabId, toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { toggle } from '../../../../store/mainMenu/mainMenu.action';
+import { TabIds } from '../../../../domain/mainMenu';
 import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPanel/FeatureInfoPanel';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
@@ -76,7 +77,7 @@ export class MainMenu extends MvuElement {
 	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
 		tabcontents.forEach((tabcontent, i) =>
-			Object.values(TabId)[i] === key ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active')
+			Object.values(TabIds)[i] === key ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active')
 		);
 	}
 
@@ -116,13 +117,13 @@ export class MainMenu extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
-		const getFullSizeClass = () => (tab === TabId.FEATUREINFO ? 'is-full-size' : '');
+		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO ? 'is-full-size' : '');
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 
-		const contentPanels = Object.values(TabId).map((v) => this._getContentPanel(v));
+		const contentPanels = Object.values(TabIds).map((v) => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -178,15 +179,15 @@ export class MainMenu extends MvuElement {
 
 	_getContentPanel(index) {
 		switch (index) {
-			case TabId.MAPS:
+			case TabIds.MAPS:
 				return html`${unsafeHTML(`<${MapsContentPanel.tag} data-test-id />`)}`;
-			case TabId.MISC:
+			case TabIds.MISC:
 				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag} data-test-id />`)}`;
-			case TabId.SEARCH:
+			case TabIds.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag} data-test-id />`)}`;
-			case TabId.TOPICS:
+			case TabIds.TOPICS:
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
-			case TabId.FEATUREINFO:
+			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
 			default:
 				return nothing;

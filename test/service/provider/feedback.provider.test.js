@@ -1,5 +1,5 @@
 import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import { GeneralFeedback, MapFeedback } from '../../../src/services/FeedbackService';
 import {
 	bvvMapFeedbackCategoriesProvider,

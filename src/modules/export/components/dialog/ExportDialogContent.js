@@ -7,7 +7,7 @@ import { SourceTypeName } from '../../../../domain/sourceType';
 import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
 import css from './exportDialogContent.css';
-import { MediaType } from '../../../../services/HttpService';
+import { MediaType } from '../../../../domain/mediaTypes';
 
 const Update = 'update';
 const Update_Media_Related_Properties = 'update_isPortrait';

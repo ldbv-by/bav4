@@ -1,6 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
-import { setTab, TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { setTab } from '../../src/store/mainMenu/mainMenu.action';
+import { TabIds } from '../../src/domain/mainMenu';
 import { abortOrReset, registerQuery, resolveQuery } from '../../src/store/featureInfo/featureInfo.action.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
 import { MainMenuPlugin } from '../../src/plugins/MainMenuPlugin.js';
@@ -19,7 +20,7 @@ describe('MainMenuPlugin', () => {
 		}
 	};
 
-	const defaultTabId = TabId.MAPS;
+	const defaultTabId = TabIds.MAPS;
 
 	const setup = (state) => {
 		const initialState = {
@@ -62,7 +63,7 @@ describe('MainMenuPlugin', () => {
 
 				instanceUnderTest._init();
 
-				expect(store.getState().mainMenu.tab).toEqual(TabId.valueOf(3));
+				expect(store.getState().mainMenu.tab).toEqual(TabIds.valueOf(3));
 			});
 
 			it('sets the default tab id when param is not parseable', async () => {
@@ -115,7 +116,7 @@ describe('MainMenuPlugin', () => {
 			const instanceUnderTest = new MainMenuPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			expect(store.getState().mainMenu.open).toBeTrue();
 		});
 	});
@@ -157,7 +158,7 @@ describe('MainMenuPlugin', () => {
 					resolveQuery(queryId);
 
 					expect(store.getState().featureInfo.current).toHaveSize(1);
-					expect(store.getState().mainMenu.tab).toBe(TabId.FEATUREINFO);
+					expect(store.getState().mainMenu.tab).toBe(TabIds.FEATUREINFO);
 					expect(store.getState().mainMenu.open).toBeTrue();
 				});
 			});
@@ -262,7 +263,7 @@ describe('MainMenuPlugin', () => {
 
 	describe('when mainMenu.tabIndex changes', () => {
 		it('stores some properties', async () => {
-			const tabIndex = TabId.MAPS;
+			const tabIndex = TabIds.MAPS;
 			const store = setup({
 				mainMenu: {
 					tab: tabIndex,
@@ -272,11 +273,11 @@ describe('MainMenuPlugin', () => {
 			const instanceUnderTest = new MainMenuPlugin();
 			await instanceUnderTest.register(store);
 
-			setTab(TabId.MISC);
+			setTab(TabIds.MISC);
 
-			expect(instanceUnderTest._previousTab).toBe(TabId.MISC);
+			expect(instanceUnderTest._previousTab).toBe(TabIds.MISC);
 
-			setTab(TabId.FEATUREINFO);
+			setTab(TabIds.FEATUREINFO);
 
 			expect(instanceUnderTest._open).toBeTrue();
 		});
@@ -294,7 +295,7 @@ describe('MainMenuPlugin', () => {
 
 			setQuery('foo');
 
-			expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			expect(store.getState().mainMenu.open).toBeTrue();
 		});
 
@@ -310,7 +311,7 @@ describe('MainMenuPlugin', () => {
 			setQuery(null);
 
 			expect(store.getState().mainMenu.open).toBeFalse();
-			expect(store.getState().mainMenu.tab).not.toBe(TabId.SEARCH);
+			expect(store.getState().mainMenu.tab).not.toBe(TabIds.SEARCH);
 		});
 	});
 });

@@ -2,7 +2,7 @@ import { $injector } from '../../../../../src/injection';
 import { ImportToolContent } from '../../../../../src/modules/toolbox/components/importToolContent/ImportToolContent';
 import { AbstractToolContent } from '../../../../../src/modules/toolbox/components/toolContainer/AbstractToolContent';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResultStatus } from '../../../../../src/domain/sourceType';
-import { MediaType } from '../../../../../src/services/HttpService';
+import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { importReducer } from '../../../../../src/store/import/import.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';

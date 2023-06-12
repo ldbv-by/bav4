@@ -191,9 +191,9 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			fillRating(element);
 			fillCategory(element);
 			fillEmail(element);
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -207,10 +207,10 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element, 'no email');
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -225,10 +225,10 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -236,7 +236,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, emailValue, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
@@ -245,9 +245,9 @@ describe('GeneralFeedbackPanel', () => {
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -255,7 +255,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, null, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
 		});
 	});
 

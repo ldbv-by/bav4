@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../domain/geoResources';
-import { MediaType } from '../HttpService';
+import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * Supported (content) and preferred (order) media types for getMap requests.
