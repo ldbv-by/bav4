@@ -24,9 +24,32 @@
 .button-group button.is-active {
 	color: var(--primary-color);
 }
-.container {
-	display: none;
+
+.section {
+	block-size: 100%;
+
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 100%;
 }
-.container.is-active {
-	display: block;
+
+.container {
+	scroll-snap-align: start;
+
+	overflow-y: auto;
+	overscroll-behavior-y: contain;
+}
+.scroll-snap-x {
+	overflow: auto hidden;
+	overscroll-behavior-x: contain;
+	scroll-snap-type: x mandatory;
+	scroll-behavior: smooth;
+}
+
+.scroll-snap-x @media (hover: none) {
+	scrollbar-width: none;
+}
+.scroll-snap-x::-webkit-scrollbar {
+	width: 0;
+	height: 0;
 }

@@ -35,14 +35,35 @@ export class BaseLayerContainer extends MvuElement {
 		this._activeCategory = 'raster';
 	}
 
+	/**
+	 * @override
+	 */
+	onAfterRender(firsttime) {
+		const determineActiveTabSection = (section) => {
+			const i = section.scrollLeft / section.clientWidth;
+			const { categories } = this.getModel();
+			const keys = Object.keys(categories);
+			this._activeCategory = keys[i];
+			this.render();
+		};
+
+		if (firsttime) {
+			const section = this.shadowRoot.getElementById('section');
+			section.addEventListener('scroll', () => {
+				clearTimeout(section.scrollEndTimer);
+				section.scrollEndTimer = setTimeout(determineActiveTabSection(section), 100);
+			});
+		}
+	}
+
 	createView(model) {
 		const { categories } = model;
 		const allBaseGeoResourceIds = Array.from(new Set(Object.values(categories).flat()));
 		const translate = (key) => this._translationService.translate(key);
 
 		const onClick = (category) => {
-			this._activeCategory = category;
-			this.render();
+			const tab = this.shadowRoot.getElementById(category);
+			tab.scrollIntoView();
 		};
 
 		const isActive = (category) => {
@@ -60,15 +81,16 @@ export class BaseLayerContainer extends MvuElement {
 						html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
 				)}
 			</div>
-
-			${Object.entries(categories).map(
-				([key, value]) =>
-					html`<div class="container ${isActive(key)}">
-						<div>
-							<ba-base-layer-switcher .configuration=${{ all: allBaseGeoResourceIds, managed: value }}></ba-base-layer-switcher>
-						</div>
-					</div>`
-			)}
+			<div id="section" class="section scroll-snap-x">
+				${Object.entries(categories).map(
+					([key, value]) =>
+						html`<div id="${key}" class="container ${isActive(key)}">
+							<div>
+								<ba-base-layer-switcher .configuration=${{ all: allBaseGeoResourceIds, managed: value }}></ba-base-layer-switcher>
+							</div>
+						</div>`
+				)}
+			</div>
 		`;
 	}
 
