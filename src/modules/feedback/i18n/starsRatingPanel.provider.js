@@ -2,20 +2,20 @@ export const provide = (lang) => {
 	switch (lang) {
 		case 'en':
 			return {
-				fiveButtonRating_terrible: 'terrible',
-				fiveButtonRating_bad: 'bad',
-				fiveButtonRating_satisfied: 'satisfied',
-				fiveButtonRating_good: 'good',
-				fiveButtonRating_excellent: 'excellent'
+				fiveButtonRating_very_unlikely: 'Very unlikely',
+				fiveButtonRating_unlikely: 'Unlikely',
+				fiveButtonRating_neutral: 'Neutral',
+				fiveButtonRating_likely: 'Likely',
+				fiveButtonRating_very_likely: 'Very likely'
 			};
 
 		case 'de':
 			return {
-				fiveButtonRating_terrible: 'schrecklich',
-				fiveButtonRating_bad: 'schlecht',
-				fiveButtonRating_satisfied: 'zufrieden',
-				fiveButtonRating_good: 'gut',
-				fiveButtonRating_excellent: 'ausgezeichnet'
+				fiveButtonRating_very_unlikely: 'Sehr unwahrscheinlich',
+				fiveButtonRating_unlikely: 'Unwahrscheinlich',
+				fiveButtonRating_neutral: 'Neutral',
+				fiveButtonRating_likely: 'Wahrscheinlich',
+				fiveButtonRating_very_likely: 'Sehr wahrscheinlich'
 			};
 
 		default:

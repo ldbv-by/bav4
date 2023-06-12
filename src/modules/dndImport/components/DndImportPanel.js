@@ -7,7 +7,7 @@ import { MvuElement } from '../../MvuElement';
 import { emitNotification, LevelTypes } from '../../../store/notifications/notifications.action';
 import css from './dndImportPanel.css';
 import { classMap } from 'lit-html/directives/class-map.js';
-import { MediaType } from '../../../services/HttpService';
+import { MediaType } from '../../../domain/mediaTypes';
 import { setData, setData as setImportData, setUrl as setImportUrl } from '../../../store/import/import.action';
 import { setQuery } from '../../../store/search/search.action';
 import { SourceTypeName, SourceTypeResultStatus } from '../../../domain/sourceType';

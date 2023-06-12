@@ -61,7 +61,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 			case Update_Rating:
 				return { ...model, generalFeedback: { ...model.generalFeedback, rating: data } };
 			case Update_Category:
-				return { ...model, mapFeedback: { ...model.generalFeedback, category: data } };
+				return { ...model, generalFeedback: { ...model.generalFeedback, category: data } };
 			case Update_CategoryOptions:
 				return { ...model, categoryOptions: ['', ...data] };
 		}
@@ -113,8 +113,9 @@ export class GeneralFeedbackPanel extends MvuElement {
 			const emailElement = this.shadowRoot.getElementById('email');
 
 			if (categoryElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
-				// todo add category
-				this._saveGeneralFeedback(new GeneralFeedback(generalFeedback.description, generalFeedback.email, generalFeedback.rating));
+				this._saveGeneralFeedback(
+					new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+				);
 			}
 		};
 
@@ -124,15 +125,6 @@ export class GeneralFeedbackPanel extends MvuElement {
 			</style>
 
 			<h2 id="feedbackPanelTitle">${translate('feedback_generalFeedback')}</h2>
-
-			<div class="ba-form-element">
-				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
-				<ba-stars-rating-panel
-					id="rating"
-					@change="${onRatingChange}"
-					placeholder="${translate('feedback_generalFeedback_rating')}"
-				></ba-stars-rating-panel>
-			</div>
 
 			<div class="ba-form-element">
 				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
@@ -166,6 +158,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_eMail_helper')}</label>
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
+			</div>
+
+			<div class="ba-form-element">
+				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
+				<ba-stars-rating-panel
+					id="rating"
+					@change="${onRatingChange}"
+					placeholder="${translate('feedback_generalFeedback_rating')}"
+				></ba-stars-rating-panel>
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">

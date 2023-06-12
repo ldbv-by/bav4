@@ -6,7 +6,7 @@ import { $injector } from '../../injection';
 import { closeModal, openModal } from '../../store/modal/modal.action';
 import { observe } from '../../utils/storeUtils';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../domain/sourceType';
-import { MediaType } from '../HttpService';
+import { MediaType } from '../../domain/mediaTypes';
 import { parse } from '../../utils/ewkt';
 
 /**
