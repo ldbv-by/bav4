@@ -46,9 +46,6 @@
 	scroll-behavior: smooth;
 }
 
-.scroll-snap-x @media (hover: none) {
-	scrollbar-width: none;
-}
 .scroll-snap-x::-webkit-scrollbar {
 	width: 0;
 	height: 0;
