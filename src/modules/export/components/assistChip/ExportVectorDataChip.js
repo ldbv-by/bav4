@@ -43,8 +43,8 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { geoResource, data } = this.getModel();
-		return !!geoResource?.data || !!data;
+		const { data } = this.getModel();
+		return !!data;
 	}
 
 	onClick() {
@@ -53,18 +53,10 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		openModal(translate('export_assistChip_export_vector_data'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
 	}
 
-	set geoResource(value) {
-		const geoResource = this._geoResourceService.byId(value);
-		if (geoResource && geoResource instanceof VectorGeoResource) {
-			this.signal(Update_Data, geoResource.data);
-		} else {
-			console.warn('value is not a valid ID for an existing instance of VectorGeoResource', value);
-		}
-	}
-
 	set exportData(value) {
 		this.signal(Update_Data, value);
 	}
+
 	static get tag() {
 		return 'ba-export-vector-data-chip';
 	}
