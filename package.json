@@ -24,7 +24,7 @@
 		"eslint-plugin-promise": "6.1.1",
 		"gh-pages": "^5.0.0",
 		"html-webpack-plugin": "5.5.1",
-		"jasmine": "5.0.0",
+		"jasmine": "5.0.1",
 		"jsdoc": "4.0.2",
 		"jsdoc-ts-utils": "^4.0.0",
 		"karma": "6.4.2",
