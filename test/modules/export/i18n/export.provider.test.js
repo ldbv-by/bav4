@@ -12,7 +12,7 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_gpx).toBe('Download GPX');
 		expect(map.export_item_label_geojson).toBe('GeoJSON');
 		expect(map.export_item_description_geojson).toBe('übernimmt Stil (Symbol, Farbe und Strichstärke) und alle Geometrietypen');
-		expect(map.export_item_download_geojson).toBe('Download GeoJson');
+		expect(map.export_item_download_geojson).toBe('Download GeoJSON');
 		expect(map.export_item_label_ewkt).toBe('EWKT');
 		expect(map.export_item_description_ewkt).toBe('übernimmt alle Geometrietypen, keine Stile');
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
@@ -31,7 +31,7 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_gpx).toBe('Download GPX');
 		expect(map.export_item_label_geojson).toBe('GeoJSON');
 		expect(map.export_item_description_geojson).toBe('saves styles (symbols, color and width) and all geometry types');
-		expect(map.export_item_download_geojson).toBe('Download GeoJson');
+		expect(map.export_item_download_geojson).toBe('Download GeoJSON');
 		expect(map.export_item_label_ewkt).toBe('EWKT');
 		expect(map.export_item_description_ewkt).toBe('saves all geometry types, no styles');
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
