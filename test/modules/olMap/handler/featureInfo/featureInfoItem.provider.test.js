@@ -8,9 +8,11 @@ import GeoJSON from 'ol/format/GeoJSON';
 import { FeatureInfoGeometryTypes } from '../../../../../src/store/featureInfo/featureInfo.action';
 import { $injector } from '../../../../../src/injection';
 import { GeometryInfo } from '../../../../../src/modules/featureInfo/components/geometryInfo/GeometryInfo';
+import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(GeometryInfo.tag, GeometryInfo);
+window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
 describe('FeatureInfo provider', () => {
 	const mapServiceMock = {
@@ -88,7 +90,7 @@ describe('FeatureInfo provider', () => {
 					content: jasmine.any(Object),
 					geometry: expectedFeatureInfoGeometry
 				});
-				expect(target.innerText).toBe('');
+				expect(target.innerText.trim()).toBe('');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
 
@@ -107,6 +109,7 @@ describe('FeatureInfo provider', () => {
 				expect(target.querySelector('.content').innerText).toBe('description');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
+				expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
 
 				//no name property, but desc property
 				feature = new Feature({ geometry: new Point(coordinate) });
@@ -123,6 +126,7 @@ describe('FeatureInfo provider', () => {
 				expect(target.querySelector('.content').innerText).toBe('desc');
 				expect(target.querySelector('ba-geometry-info')).toBeTruthy();
 				expect(target.querySelector('ba-profile-chip')).toBeTruthy();
+				expect(target.querySelector('ba-export-vector-data-chip')).toBeTruthy();
 			});
 
 			it('should sanitize description content', () => {
@@ -155,6 +159,24 @@ describe('FeatureInfo provider', () => {
 				render(featureInfo.content, target);
 
 				expect(sanitizeSpy).toHaveBeenCalled();
+			});
+
+			it('should supply exportVectorDataChip with exportData as KML', () => {
+				const target = document.createElement('div');
+				const geoResourceId = 'geoResourceId';
+				spyOn(geoResourceServiceMock, 'byId').withArgs(geoResourceId).and.returnValue({ label: 'foo' } /*fake GeoResource */);
+				const layerProperties = { ...createDefaultLayerProperties(), geoResourceId: geoResourceId };
+				const geometry = new Point(coordinate);
+				let feature = new Feature({ geometry: geometry });
+				feature = new Feature({ geometry: new Point(coordinate) });
+				feature.set('name', 'name');
+
+				const featureInfo = getBvvFeatureInfo(feature, layerProperties);
+				render(featureInfo.content, target);
+
+				const chipElement = target.querySelector('ba-export-vector-data-chip');
+
+				expect(chipElement.getModel().data.startsWith('<kml')).toBeTrue();
 			});
 		});
 	});

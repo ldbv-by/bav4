@@ -8,6 +8,7 @@ import { AbstractToolContent } from '../../../../../src/modules/toolbox/componen
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { measurementReducer } from '../../../../../src/store/measurement/measurement.reducer';
 import { ElevationProfileChip } from '../../../../../src/modules/elevationProfile/components/assistChip/ElevationProfileChip';
+import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { isString } from '../../../../../src/utils/checks';
@@ -17,6 +18,7 @@ import { elevationProfileReducer } from '../../../../../src/store/elevationProfi
 window.customElements.define(MeasureToolContent.tag, MeasureToolContent);
 window.customElements.define(Checkbox.tag, Checkbox);
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
+window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 window.customElements.define(Icon.tag, Icon);
 
 describe('MeasureToolContent', () => {
@@ -29,6 +31,7 @@ describe('MeasureToolContent', () => {
 		measurement: {
 			active: true,
 			statistic: { length: null, area: null },
+			mode: null,
 			fileSaveResult: null,
 			reset: null,
 			remove: null
@@ -37,6 +40,12 @@ describe('MeasureToolContent', () => {
 			termsOfUseAcknowledged: false,
 			fileSaveResult: null
 		}
+	};
+
+	const geoResourceServiceMock = {
+		async init() {},
+		all() {},
+		byId() {}
 	};
 	const shareServiceMock = {
 		copyToClipboard() {
@@ -80,6 +89,7 @@ describe('MeasureToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.register('UnitsService', MockClass);
 		return TestUtils.render(MeasureToolContent.tag);
 	};
@@ -93,6 +103,12 @@ describe('MeasureToolContent', () => {
 	});
 
 	describe('when initialized', () => {
+		it('has a model with default values', async () => {
+			const element = await setup();
+			const model = element.getModel();
+			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, fileSaveResult: null });
+		});
+
 		it('displays the finish-button', async () => {
 			const state = {
 				measurement: {
@@ -244,6 +260,36 @@ describe('MeasureToolContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
 		});
 
+		it('contains the export vector data chip', async () => {
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+		});
+
+		it('shows the export vector data chip with exportData', async () => {
+			const exportData = '<kml/>';
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0 },
+					fileSaveResult: new EventLike({ fileSaveResult: 'foo', content: exportData }),
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
+			const chipModel = chipElement.getModel();
+
+			expect(chipModel.data).toBe(exportData);
+		});
+
 		it('shows only the length measurement statistics', async () => {
 			const state = {
 				measurement: {
@@ -264,7 +310,7 @@ describe('MeasureToolContent', () => {
 			expect(areaElement).toBeFalsy();
 		});
 
-		it('shows question mark on ambigues unit-strings', async () => {
+		it('shows question mark on ambiguous unit-strings', async () => {
 			const state = {
 				measurement: {
 					statistic: { length: '42 m m', area: null },

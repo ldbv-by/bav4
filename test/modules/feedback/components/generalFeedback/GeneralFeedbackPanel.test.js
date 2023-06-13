@@ -111,7 +111,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(9);
+			expect(element.shadowRoot.children.length).toBe(10);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
 			const category = element.shadowRoot.querySelector('#category');
 			expect(category.value).toBe(expectedCategory);
@@ -119,7 +119,9 @@ describe('GeneralFeedbackPanel', () => {
 			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-			expect(element.shadowRoot.querySelector('#rating').rating).toBe(undefined);
+			expect(element.shadowRoot.querySelectorAll('#rating')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#rating').previousElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_0');
+			expect(element.shadowRoot.querySelector('#rating').nextElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_5');
 		});
 
 		it('renders form elements containing correct attributes', async () => {
@@ -134,8 +136,6 @@ describe('GeneralFeedbackPanel', () => {
 
 			// assert
 			expect(ratingElement.hasAttribute('required')).toBeFalse();
-			expect(ratingElement.getAttribute('placeholder')).toBe('feedback_generalFeedback_rating');
-			expect(ratingElement.parentElement.querySelector('label').innerText).toBe('feedback_generalFeedback_rating');
 
 			expect(categoryElement.type).toBe('select-one');
 			expect(categoryElement.hasAttribute('required')).toBeTrue();
@@ -191,9 +191,9 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			fillRating(element);
 			fillCategory(element);
 			fillEmail(element);
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -207,10 +207,10 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element, 'no email');
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -225,10 +225,10 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
 			fillEmail(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -236,7 +236,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, emailValue, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
@@ -245,9 +245,9 @@ describe('GeneralFeedbackPanel', () => {
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
-			fillRating(element);
 			fillCategory(element);
 			fillDescription(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -255,7 +255,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(descriptionValue, null, ratingValue));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
 		});
 	});
 

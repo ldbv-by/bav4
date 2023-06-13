@@ -13,18 +13,20 @@ import {
 import { $injector } from '../../../../injection';
 import { html } from 'lit-html';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
+import { KML } from 'ol/format';
 
 /**
  * BVV strategy for mapping an olFeature to a FeatureInfo item.
  * @function
  * @param {Feature} olFeature ol feature
- * @param {LayerProperties} layerProperties layerProperties
- * @returns {FeatureInfo} featureInfo
+ * @param {module:store/layers/layers_action~LayerProperties} layerProperties layerProperties
+ * @returns {module:store/featureInfo/featureInfo_action~FeatureInfo} featureInfo
  */
 export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	if (!olFeature.get('name') && !olFeature.get('description') && !olFeature.get('desc') && !olFeature.getGeometry()) {
 		return null;
 	}
+
 	const {
 		MapService: mapService,
 		SecurityService: securityService,
@@ -41,9 +43,17 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
 		)?.getCoordinates() ?? [];
+	const exportData = new KML().writeFeatures([olFeature], { featureProjection: 'EPSG:' + mapService.getSrid() });
+
 	const getContent = () => {
 		const descContent = olFeature.get('description') || olFeature.get('desc');
-		const geometryContent = html`</div><ba-geometry-info .statistics=${stats}></ba-geometry-info><div class='chips__container'><ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>`;
+		const geometryContent = html`
+		</div>
+			<ba-geometry-info .statistics=${stats}></ba-geometry-info>
+			<div class='chips__container'>
+				<ba-profile-chip .coordinates=${elevationProfileCoordinates}></ba-profile-chip>
+				<ba-export-vector-data-chip .exportData=${exportData}></ba-export-vector-data-chip>
+			</div>`;
 
 		return descContent
 			? html`<div class="content">${unsafeHTML(securityService.sanitizeHtml(descContent))}</div>

@@ -4,7 +4,7 @@
 import { $injector } from '../../injection';
 import { GeoResourceAuthenticationType } from '../../domain/geoResources';
 import { FeatureInfoResult } from '../FeatureInfoService';
-import { MediaType } from '../HttpService';
+import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * A function that takes a coordinate and returns a promise with a FeatureInfoResult.
