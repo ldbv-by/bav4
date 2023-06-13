@@ -11,7 +11,6 @@ const Update_Data = 'update_data';
 /**
  * AssistChip to show the availability of export actions
  * @class
- * @property {String} geoResource the ID of a existing {@link VectorGeoResource}
  * @property {String} exportData the stringified representation of the features, available for an export
  * @author thiloSchlemmer
  */
@@ -20,15 +19,14 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		super({
 			data: null
 		});
-		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService } = $injector.inject('TranslationService', 'GeoResourceService');
 		this._translationService = TranslationService;
-		this._geoResourceService = GeoResourceService;
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Data:
-				return { ...model, data: data, geoResourceId: null };
+				return { ...model, data: data };
 		}
 	}
 
