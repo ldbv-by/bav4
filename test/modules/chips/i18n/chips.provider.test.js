@@ -5,16 +5,18 @@ describe('i18n for chips module', () => {
 		const map = provide('de');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Geländeprofil');
+		expect(map.chips_assist_chip_export).toBe('Export');
 	});
 
 	it('provides translation for en', () => {
 		const map = provide('en');
 
 		expect(map.chips_assist_chip_elevation_profile).toBe('Elevation Profile');
+		expect(map.chips_assist_chip_export).toBe('Export');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 1;
+		const expectedSize = 2;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

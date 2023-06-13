@@ -16,7 +16,8 @@ export const provide = (lang) => {
 				export_item_description_ewkt: 'Saves all geometry types, no styles',
 				export_item_download_ewkt: 'Download TXT',
 				export_item_srid_selection: 'Select SRID',
-				export_item_srid_selection_disabled: 'SRID is predefined'
+				export_item_srid_selection_disabled: 'SRID is predefined',
+				export_assistChip_export_vector_data: 'Export'
 			};
 
 		case 'de':
@@ -35,7 +36,8 @@ export const provide = (lang) => {
 				export_item_description_ewkt: 'Übernimmt alle Geometrietypen, keine Stile',
 				export_item_download_ewkt: 'Download TXT',
 				export_item_srid_selection: 'SRID auswählen',
-				export_item_srid_selection_disabled: 'SRID ist vordefiniert'
+				export_item_srid_selection_disabled: 'SRID ist vordefiniert',
+				export_assistChip_export_vector_data: 'Export'
 			};
 
 		default:

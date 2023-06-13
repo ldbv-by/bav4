@@ -18,6 +18,7 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
 		expect(map.export_item_srid_selection).toBe('SRID auswählen');
 		expect(map.export_item_srid_selection_disabled).toBe('SRID ist vordefiniert');
+		expect(map.export_assistChip_export_vector_data).toBe('Export');
 	});
 
 	it('provides translation for en', () => {
@@ -37,10 +38,11 @@ describe('i18n for search module', () => {
 		expect(map.export_item_download_ewkt).toBe('Download TXT');
 		expect(map.export_item_srid_selection).toBe('Select SRID');
 		expect(map.export_item_srid_selection_disabled).toBe('SRID is predefined');
+		expect(map.export_assistChip_export_vector_data).toBe('Export');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 14;
+		const expectedSize = 15;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
