@@ -225,13 +225,16 @@ export class StyleService {
 	}
 
 	_addTextStyle(olFeature) {
-		const styles = getStyleArray(olFeature);
 		const getStyleOption = () => {
-			const currentStyle = styles[0];
-			const currentColor = currentStyle.getText().getFill().getColor();
-			const currentText = currentStyle.getText().getText();
-			const currentScale = currentStyle.getText().getScale();
-			return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
+			const fromStyle = (style) => {
+				const currentColor = style.getText().getFill().getColor();
+				const currentText = style.getText().getText();
+				const currentScale = style.getText().getScale();
+				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
+			};
+
+			const styles = getStyleArray(olFeature);
+			return styles ? fromStyle(styles[0]) : {};
 		};
 
 		const newStyle = textStyleFunction(getStyleOption());
@@ -243,13 +246,17 @@ export class StyleService {
 		const { IconService: iconService } = $injector.inject('IconService');
 
 		const getStyleOption = (feature) => {
-			const style = getStyleArray(feature)[0];
-			const symbolSrc = style.getImage().getSrc();
-			const styleColor = style.getImage().getColor();
-			const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
-			const scale = markerScaleToKeyword(style.getImage().getScale());
-			const text = style.getText().getText();
-			return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
+			const fromStyle = (style) => {
+				const symbolSrc = style.getImage().getSrc();
+				const styleColor = style.getImage().getColor();
+				const color = styleColor ? styleColor : iconService.decodeColor(symbolSrc);
+				const scale = markerScaleToKeyword(style.getImage().getScale());
+				const text = style.getText().getText();
+				return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
+			};
+
+			const styles = getStyleArray(feature);
+			return styles ? fromStyle(styles[0]) : {};
 		};
 
 		const newStyle = markerStyleFunction(getStyleOption(olFeature));
