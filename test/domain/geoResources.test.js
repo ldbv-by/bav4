@@ -254,6 +254,17 @@ describe('GeoResource', () => {
 			expect(future.label).toBeNull();
 		});
 
+		it('instantiates a GeoResourceFuture with optional label', () => {
+			setup();
+			const loader = async () => {};
+
+			const future = new GeoResourceFuture('id', loader, 'label');
+
+			expect(future.getType()).toEqual(GeoResourceTypes.FUTURE);
+			expect(future._loader).toBe(loader);
+			expect(future.label).toBe('label');
+		});
+
 		it('registers and returns the real GeoResource by calling loader', async () => {
 			setup();
 			const id = 'id';

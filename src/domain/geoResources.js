@@ -301,11 +301,12 @@ export class GeoResource {
 export class GeoResourceFuture extends GeoResource {
 	/**
 	 *
-	 * @param {string} id
-	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader
+	 * @param {string} id The id of this GeoResource
+	 * @param {module:domain/geoResources~asyncGeoResourceLoader} loader  The loader function of this GeoResourceFuture
+	 * @param {string} [label] The label of this GeoResource
 	 */
-	constructor(id, loader) {
-		super(id);
+	constructor(id, loader, label = null) {
+		super(id, label);
 		this._loader = loader;
 		this._onResolve = [];
 		this._onReject = [];
