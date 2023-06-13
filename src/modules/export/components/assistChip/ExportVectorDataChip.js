@@ -19,7 +19,7 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		super({
 			data: null
 		});
-		const { TranslationService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
 

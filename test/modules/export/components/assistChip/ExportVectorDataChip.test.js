@@ -12,12 +12,6 @@ window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 describe('ExportVectorDataChip', () => {
 	let store;
 
-	const geoResourceServiceMock = {
-		async init() {},
-		all() {},
-		byId() {}
-	};
-
 	const setup = async () => {
 		const windowMock = { navigator: {}, open() {} };
 		store = TestUtils.setupStoreAndDi(
@@ -32,7 +26,6 @@ describe('ExportVectorDataChip', () => {
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
 			})
-			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return TestUtils.render(ExportVectorDataChip.tag);
