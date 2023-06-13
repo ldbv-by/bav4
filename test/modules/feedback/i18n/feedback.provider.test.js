@@ -26,6 +26,8 @@ describe('i18n for feedback module', () => {
 		);
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_generalFeedback_rating).toBe('Würden Sie den BayernAtlas weiterempfehlen?');
+		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Sehr wahrscheinlich');
+		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Sehr unwahrscheinlich');
 		expect(map.feedback_generalFeedback).toBe('Allgemeines Feedback');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
@@ -61,6 +63,8 @@ describe('i18n for feedback module', () => {
 		);
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_generalFeedback_rating).toBe('Would you recommend the BayernAtlas?');
+		expect(map.feedback_generalFeedback_rating_scale_0).toBe('Very unlikely');
+		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Very likely');
 		expect(map.feedback_generalFeedback).toBe('General - Feedback');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
@@ -72,7 +76,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 24;
+		const expectedSize = 26;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
