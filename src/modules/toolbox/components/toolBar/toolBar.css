@@ -85,13 +85,13 @@
 }
 
 .import {
-	mask-image: url('assets/upload.svg');
-	-webkit-mask-image: url('assets/upload.svg');
+	mask-image: url('assets/file-import.svg');
+	-webkit-mask-image: url('assets/file-import.svg');
 }
 
 .export {
-	mask-image: url('assets/download.svg');
-	-webkit-mask-image: url('assets/download.svg');
+	mask-image: url('assets/pdf-export.svg');
+	-webkit-mask-image: url('assets/pdf-export.svg');
 }
 
 .pencil {
