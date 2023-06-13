@@ -4,6 +4,7 @@ import { ExportDialogContent } from '../../../../../src/modules/export/component
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 import downloadSvg from '../../../../../src/modules/export/components/assistChip/assets/download.svg';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
@@ -19,7 +20,14 @@ describe('ExportVectorDataChip', () => {
 
 	const setup = async () => {
 		const windowMock = { navigator: {}, open() {} };
-		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(
+			{
+				media: {
+					portrait: false
+				}
+			},
+			{ modal: modalReducer, media: createNoInitialStateMediaReducer() }
+		);
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
