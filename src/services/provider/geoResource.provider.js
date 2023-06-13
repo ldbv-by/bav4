@@ -36,7 +36,7 @@ export const _definitionToGeoResource = (definition) => {
 					)();
 					return setPropertiesAndProviders(vectorGeoResource.setClusterParams(def.clusterParams ?? {}));
 				};
-				return new GeoResourceFuture(def.id, loader);
+				return new GeoResourceFuture(def.id, loader, def.label);
 			}
 			case 'aggregate':
 				return new AggregateGeoResource(def.id, def.label, def.geoResourceIds);
