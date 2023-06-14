@@ -2,15 +2,25 @@ import { SourceTypeName } from '../../../../../src/domain/sourceType';
 import { $injector } from '../../../../../src/injection';
 import { ExportDialogContent } from '../../../../../src/modules/export/components/dialog/ExportDialogContent';
 import { ExportItem } from '../../../../../src/modules/export/components/dialog/ExportItem';
-import { MediaType } from '../../../../../src/services/HttpService';
+import { MediaType } from '../../../../../src/domain/mediaTypes';
 import { TestUtils } from '../../../../test-utils';
+import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 
 window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportDialogContent', () => {
 	const setup = (state = {}) => {
-		TestUtils.setupStoreAndDi(state, {});
+		// state of store
+		const initialState = {
+			media: {
+				portrait: false
+			},
+			...state
+		};
+		TestUtils.setupStoreAndDi(initialState, {
+			media: createNoInitialStateMediaReducer()
+		});
 
 		// services needed for ExportItem components
 		$injector
@@ -33,7 +43,7 @@ describe('ExportDialogContent', () => {
 		it('has a model with default values', async () => {
 			const element = await setup();
 			const model = element.getModel();
-			expect(model).toEqual({ exportData: null });
+			expect(model).toEqual({ exportData: null, isPortrait: false });
 		});
 	});
 
@@ -64,6 +74,34 @@ describe('ExportDialogContent', () => {
 					srids: [4326, 3857, 25832, 25833]
 				})
 			);
+		});
+	});
+
+	describe('responsive layout ', () => {
+		it('layouts for landscape', async () => {
+			const state = {
+				media: {
+					portrait: false
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(0);
+		});
+
+		it('layouts for portrait', async () => {
+			const state = {
+				media: {
+					portrait: true
+				}
+			};
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelectorAll('.is-landscape')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.is-portrait')).toHaveSize(1);
 		});
 	});
 });

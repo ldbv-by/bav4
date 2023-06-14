@@ -20,7 +20,7 @@ import { GeoResource } from '../../domain/geoResources';
  * @property {boolean} [visible=true] Visibility
  * @property {number} [zIndex]  Index of this layer within the list of active layers. When not set, the layer will be appended at the end
  * @property {Constraints} [constraints] Constraints of the layer
- * @property {EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
+ * @property {module:utils/storeUtils.EventLike<String|null>} [grChangedFlag] Flag that indicates a change of the linked GeoResource
  */
 
 /**

@@ -3,7 +3,7 @@
  */
 
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
-import { SourceTypeName } from '../domain/sourceType';
+import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
@@ -79,7 +79,10 @@ export class OlExportVectorDataService {
 		const sourceTypeResult = this._sourceTypeService.forData(data);
 		const dataSourceType = sourceTypeResult.sourceType;
 
-		return this._forData(data, dataSourceType, targetSourceType);
+		if (sourceTypeResult.status === SourceTypeResultStatus.OK) {
+			return this._forData(data, dataSourceType, targetSourceType);
+		}
+		throw new Error(`Unexpected SourceTypeResultStatus: ${sourceTypeResult.status}`);
 	}
 
 	_forData(data, dataSourceType, targetSourceType) {

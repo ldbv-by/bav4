@@ -393,13 +393,13 @@ describe('GeoResource provider', () => {
 				.and.returnValue(backendUrl + '/');
 			const httpServiceSpy = spyOn(httpService, 'get')
 				.withArgs(expectedArgs0, expectedArgs1)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify([wmsDefinition, xyzDefinition, aggregateDefinition]))));
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify([wmsDefinition, xyzDefinition, vectorDefinition, aggregateDefinition]))));
 
 			const georesources = await loadBvvGeoResources();
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(georesources.length).toBe(3);
+			expect(georesources.length).toBe(4);
 
 			const wmsGeoResource = georesources[0];
 			validateGeoResourceProperties(wmsGeoResource, wmsDefinition);
@@ -407,10 +407,10 @@ describe('GeoResource provider', () => {
 			const xyzGeoResource = georesources[1];
 			validateGeoResourceProperties(xyzGeoResource, xyzDefinition);
 
-			// const vectorGeoResource = georesources[2];
-			// validateGeoResourceProperties(await vectorGeoResource.get(), vectorDefinition);
+			const geoResourceFutureForVectorGeoResource /** Is's a GeoResourceFuture! */ = georesources[2];
+			validateGeoResourceProperties(geoResourceFutureForVectorGeoResource, { ...vectorDefinition, type: 'future' });
 
-			const aggregateGeoResource = georesources[2];
+			const aggregateGeoResource = georesources[3];
 			validateGeoResourceProperties(aggregateGeoResource, aggregateDefinition);
 		});
 
@@ -436,14 +436,9 @@ describe('GeoResource provider', () => {
 				.withArgs(expectedArgs0, expectedArgs1)
 				.and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-			try {
-				await loadBvvGeoResources();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(configServiceSpy).toHaveBeenCalled();
-				expect(httpServiceSpy).toHaveBeenCalled();
-				expect(error.message).toBe('GeoResources could not be loaded');
-			}
+			await expectAsync(loadBvvGeoResources()).toBeRejectedWithError('GeoResources could not be loaded');
+			expect(configServiceSpy).toHaveBeenCalled();
+			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 	});
 
@@ -475,14 +470,9 @@ describe('GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
 			spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(JSON.stringify({ id: id, type: 'somethingUnknown' }))));
+			const future = loadBvvGeoResourceById(id);
 
-			try {
-				const future = loadBvvGeoResourceById(id);
-				await future.get();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
-			}
+			await expectAsync(future.get()).toBeRejectedWithError(`GeoResource for id '${id}' could not be loaded`);
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
@@ -490,14 +480,9 @@ describe('GeoResource provider', () => {
 			const backendUrl = 'https://backend.url';
 			spyOn(configService, 'getValueAsPath').and.returnValue(backendUrl);
 			spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
+			const future = loadBvvGeoResourceById(id);
 
-			try {
-				const future = loadBvvGeoResourceById(id);
-				await future.get();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe(`GeoResource for id '${id}' could not be loaded`);
-			}
+			await expectAsync(future.get()).toBeRejectedWithError(`GeoResource for id '${id}' could not be loaded`);
 		});
 	});
 

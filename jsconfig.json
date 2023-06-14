@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
-		"checkJs": true
+		"checkJs": true,
+		"target": "ES2022"
 	},
 	"exclude": ["**/node_modules/*", "**/test/*"]
 }

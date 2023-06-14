@@ -6,13 +6,11 @@ import { $injector } from '../../../../injection';
 import { openModal } from '../../../../store/modal/modal.action';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import exportSvg from './assets/download.svg';
-import { VectorGeoResource } from '../../../../domain/geoResources';
 
 const Update_Data = 'update_data';
 /**
  * AssistChip to show the availability of export actions
  * @class
- * @property {String} geoResource the ID of a existing {@link VectorGeoResource}
  * @property {String} exportData the stringified representation of the features, available for an export
  * @author thiloSchlemmer
  */
@@ -21,15 +19,14 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		super({
 			data: null
 		});
-		const { TranslationService, GeoResourceService } = $injector.inject('TranslationService', 'GeoResourceService');
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._geoResourceService = GeoResourceService;
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Data:
-				return { ...model, data: data, geoResourceId: null };
+				return { ...model, data: data };
 		}
 	}
 
@@ -43,8 +40,8 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { geoResource, data } = this.getModel();
-		return !!geoResource?.data || !!data;
+		const { data } = this.getModel();
+		return !!data;
 	}
 
 	onClick() {
@@ -53,18 +50,10 @@ export class ExportVectorDataChip extends AbstractAssistChip {
 		openModal(translate('export_assistChip_export_vector_data'), html`<ba-export-content .exportData=${data}></ba-export-content>`);
 	}
 
-	set geoResource(value) {
-		const geoResource = this._geoResourceService.byId(value);
-		if (geoResource && geoResource instanceof VectorGeoResource) {
-			this.signal(Update_Data, geoResource.data);
-		} else {
-			console.warn('value is not a valid ID for an existing instance of VectorGeoResource', value);
-		}
-	}
-
 	set exportData(value) {
 		this.signal(Update_Data, value);
 	}
+
 	static get tag() {
 		return 'ba-export-vector-data-chip';
 	}
