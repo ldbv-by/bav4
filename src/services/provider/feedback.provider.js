@@ -3,7 +3,7 @@
  */
 import { $injector } from '../../injection';
 import { GeneralFeedback, MapFeedback } from '../FeedbackService';
-import { MediaType } from '../HttpService';
+import { MediaType } from '../../domain/mediaTypes';
 
 /**
  * Bvv specific implementation of {@link module:services/FeedbackService~feedbackStorageProvider}
@@ -53,6 +53,24 @@ export const bvvFeedbackStorageProvider = async (mapFeedback) => {
 export const bvvMapFeedbackCategoriesProvider = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/tim/categories`;
+	const result = await httpService.get(url);
+
+	switch (result.status) {
+		case 200:
+			return await result.json();
+		default:
+			throw new Error(`MapFeedback categories could not be loaded: Http-Status ${result.status}`);
+	}
+};
+
+/**
+ * Bvv specific implementation of {@link module:services/FeedbackService~generalFeedbackCategoriesProvider}
+ * @function
+ * @type {module:services/FeedbackService~generalFeedbackCategoriesProvider}
+ */
+export const bvvGeneralFeedbackCategoriesProvider = async () => {
+	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+	const url = `${configService.getValueAsPath('BACKEND_URL')}feedback/general/categories`;
 	const result = await httpService.get(url);
 
 	switch (result.status) {

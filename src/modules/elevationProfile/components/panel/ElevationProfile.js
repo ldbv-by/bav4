@@ -66,6 +66,8 @@ export const Empty_Profile_Data = Object.freeze({
 });
 
 /**
+ * @class
+ * @fires chartJsAfterRender Called after the chart has been fully rendered (and animation completed)
  * @author nklein
  */
 export class ElevationProfile extends MvuElement {
@@ -466,6 +468,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartConfig(elevationData, newDataLabels, newDataData, distUnit) {
+		const that = this;
 		const translate = (key) => this._translationService.translate(key);
 		const getElevationEntry = (tooltipItem) => {
 			const index = elevationData.labels.indexOf(tooltipItem.parsed.x);
@@ -484,6 +487,11 @@ export class ElevationProfile extends MvuElement {
 			type: 'line',
 			data: this._getChartData(elevationData, newDataLabels, newDataData),
 			plugins: [
+				{
+					afterRender() {
+						that.dispatchEvent(new CustomEvent('chartJsAfterRender', { bubbles: true }));
+					}
+				},
 				{
 					id: 'terminateHighlightFeatures',
 					beforeEvent(chart, args) {

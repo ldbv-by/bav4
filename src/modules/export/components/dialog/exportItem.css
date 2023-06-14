@@ -1,0 +1,39 @@
+.export-item__content {
+	display: flex;
+	flex-direction: column;
+}
+.export-item__head {
+	width: 17em;
+	text-align: center;
+	min-height: 9.5em;
+	margin-bottom: 1.5em;
+}
+.export-item__label {
+	font-size: 2rem;
+	text-align: center;
+	margin-bottom: 1em;
+}
+.export-item__description {
+	font-style: italic;
+	padding-left: 0.5em;
+	text-align: left;
+}
+.export-item__select {
+	width: 100%;
+	align-self: center;
+}
+ba-button {
+	align-self: center;
+	width: 100%;
+	margin-top: 1em;
+}
+.ba-form-element.disabled {
+	background: var(--secondary-bg-color);
+	background-image: none;
+}
+.ba-form-element.disabled select {
+	background-image: none;
+}
+.ba-form-element.disabled .bar {
+	opacity: 0;
+}

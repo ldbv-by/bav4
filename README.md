@@ -25,7 +25,7 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 ## Concept
 
 - Use of web standards as far as possible
-  - Modern JavaScript (ES12), no transpiler
+  - Modern JavaScript (ES2022), no transpiler
   - Web Components
   - Vanilla CSS
 - Built-in dependency injection
@@ -46,8 +46,8 @@ Next-generation web-map viewer based on web standards ([`live example`](https://
 
 ### Prerequisites
 
-- Node.js 16
-- npm 8
+- Node.js 18
+- npm 9.5.x or higher
 
 Having [nvm](https://github.com/nvm-sh/nvm) installed, just run `nvm install && nvm use`
 

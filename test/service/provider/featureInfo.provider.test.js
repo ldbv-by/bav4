@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { GeoResourceAuthenticationType, WmsGeoResource } from '../../../src/domain/geoResources';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import { loadBvvFeatureInfo } from '../../../src/services/provider/featureInfo.provider';
 
 describe('FeatureInfoResult provider', () => {

@@ -1,7 +1,7 @@
 import { $injector } from '../../../../../src/injection';
 import { loadBvvGeoResourceInfo } from '../../../../../src/modules/geoResourceInfo/services/provider/geoResourceInfoResult.provider';
 import { GeoResourceAuthenticationType, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../../src/domain/geoResources';
-import { MediaType } from '../../../../../src/services/HttpService';
+import { MediaType } from '../../../../../src/domain/mediaTypes';
 
 describe('GeoResourceInfo provider', () => {
 	const configService = {

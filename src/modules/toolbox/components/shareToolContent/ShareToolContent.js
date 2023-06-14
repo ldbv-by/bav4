@@ -101,7 +101,7 @@ export class ShareToolContent extends AbstractToolContent {
 
 		const onPreview = () => {
 			const content = html`<ba-iframe-generator></ba-iframe-generator>`;
-			openModal('BayernAtlas-IFrame', content);
+			openModal(translate('toolbox_shareTool_embed'), content);
 		};
 
 		const getToolTemplate = (tool) => {

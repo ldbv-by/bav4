@@ -14,6 +14,9 @@ const Update_Rating = 'update_rating';
 const Update_Description = 'update_description';
 const Update_EMail = 'update_email';
 
+const Update_Category = 'update_category';
+const Update_CategoryOptions = 'update_categoryoptions';
+
 /**
  * Contains a form for submitting a general feedback.
  * @property {Function} onSubmit
@@ -23,10 +26,12 @@ export class GeneralFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
 			generalFeedback: {
+				category: null,
 				description: null,
 				email: null,
 				rating: null
-			}
+			},
+			categoryOptions: []
 		});
 
 		const {
@@ -43,6 +48,10 @@ export class GeneralFeedbackPanel extends MvuElement {
 		this._onSubmit = () => {};
 	}
 
+	onInitialize() {
+		this._getCategoryOptions();
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Description:
@@ -51,11 +60,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 				return { ...model, generalFeedback: { ...model.generalFeedback, email: data } };
 			case Update_Rating:
 				return { ...model, generalFeedback: { ...model.generalFeedback, rating: data } };
+			case Update_Category:
+				return { ...model, generalFeedback: { ...model.generalFeedback, category: data } };
+			case Update_CategoryOptions:
+				return { ...model, categoryOptions: ['', ...data] };
 		}
 	}
 
 	createView(model) {
-		const { generalFeedback } = model;
+		const { generalFeedback, categoryOptions } = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -83,14 +96,26 @@ export class GeneralFeedbackPanel extends MvuElement {
 			this.signal(Update_Description, this._securityService.sanitizeHtml(value));
 		};
 
+		const onCategoryChange = (event) => {
+			const selectElement = event.target;
+			const selectedCategory = selectElement.options[selectElement.selectedIndex].value;
+
+			this._addVisitedClass(selectElement.parentNode);
+
+			this.signal(Update_Category, this._securityService.sanitizeHtml(selectedCategory));
+		};
+
 		const onSubmit = () => {
 			this.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => el.classList.add(BA_FORM_ELEMENT_VISITED_CLASS));
 
+			const categoryElement = this.shadowRoot.getElementById('category');
 			const descriptionElement = this.shadowRoot.getElementById('description');
 			const emailElement = this.shadowRoot.getElementById('email');
 
-			if (descriptionElement.reportValidity() && emailElement.reportValidity()) {
-				this._saveGeneralFeedback(new GeneralFeedback(generalFeedback.description, generalFeedback.email, generalFeedback.rating));
+			if (categoryElement.reportValidity() && descriptionElement.reportValidity() && emailElement.reportValidity()) {
+				this._saveGeneralFeedback(
+					new GeneralFeedback(generalFeedback.category, generalFeedback.description, generalFeedback.email, generalFeedback.rating)
+				);
 			}
 		};
 
@@ -102,17 +127,15 @@ export class GeneralFeedbackPanel extends MvuElement {
 			<h2 id="feedbackPanelTitle">${translate('feedback_generalFeedback')}</h2>
 
 			<div class="ba-form-element">
-				<label for="rating" class="control-label">${translate('feedback_generalFeedback_rating')}</label>
-				<ba-stars-rating-panel
-					id="rating"
-					@change="${onRatingChange}"
-					placeholder="${translate('feedback_generalFeedback_rating')}"
-					required
-				></ba-stars-rating-panel>
+				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
+					${categoryOptions.map((option) => html` <option value="${option}">${option}</option> `)}
+				</select>
+				<label for="category" class="control-label">${translate('feedback_categorySelection')}</label><i class="bar"></i>
+				<label class="helper-label">${translate('feedback_categorySelection_helper')}</label>
+				<label class="helper-label">${translate('feedback_categorySelection_error')}</label>
 			</div>
 
 			<div class="ba-form-element">
-				<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 				<textarea
 					type="text"
 					id="description"
@@ -121,6 +144,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 					@input="${onDescriptionChange}"
 					required
 				></textarea>
+				<label for="description" class="control-label">${translate('feedback_changeDescription')}</label>
 				<i class="bar"></i>
 				<i class="icon error"></i>
 				<label class="helper-label">${translate('feedback_required_field_helper')}</label>
@@ -136,14 +160,31 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
 			</div>
 
+			<div>${translate('feedback_generalFeedback_rating')}</div>
+			<div class="ba-form-element">
+				<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>
+				<ba-stars-rating-panel id="rating" @change="${onRatingChange}"></ba-stars-rating-panel>
+				<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
+			</div>
+
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">
 				${translate('feedback_disclaimer')} (<a href="${translate('global_privacy_policy_url')}" target="_blank"
-					>${translate('feedback_mapFeedback_privacyPolicy')}</a
+					>${translate('feedback_privacyPolicy')}</a
 				>).
 			</p>
 
-			<ba-button id="button0" .label=${translate('feedback_mapFeedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
+			<ba-button id="button0" .label=${translate('feedback_submit')} .type=${'primary'} @click=${onSubmit}></ba-button>
 		`;
+	}
+
+	async _getCategoryOptions() {
+		try {
+			const categoryOptions = await this._feedbackService.getGeneralFeedbackCategories();
+			this.signal(Update_CategoryOptions, categoryOptions);
+		} catch (e) {
+			console.error(e);
+			this.signal(Update_CategoryOptions, []);
+		}
 	}
 
 	async _saveGeneralFeedback(generalFeedback) {

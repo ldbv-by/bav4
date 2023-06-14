@@ -3,7 +3,7 @@
  */
 
 import { KML, GeoJSON, GPX, WKT } from 'ol/format';
-import { SourceTypeName } from '../domain/sourceType';
+import { SourceTypeName, SourceTypeResultStatus } from '../domain/sourceType';
 import { parse } from '../utils/ewkt';
 import { $injector } from '../injection';
 import { LineString, MultiLineString, Polygon } from 'ol/geom';
@@ -27,12 +27,11 @@ import { Feature } from 'ol';
  */
 
 /**
- * Exports the data in the specified {@link SourceType| dataSourceType} into a
+ * Exports the data into a
  * String containing the data in the specified {@link SourceType| targetSourceType}-Format
  * @function
  * @name module:services/ExportVectorDataService~ExportVectorDataService#forData
  * @param {String} data
- * @param {module:domain/sourceType.SourceType} dataSourceType
  * @param {module:domain/sourceType.SourceType} targetSourceType
  * @returns {String}
  * @throws {Error}
@@ -47,7 +46,8 @@ import { Feature } from 'ol';
  */
 export class OlExportVectorDataService {
 	constructor() {
-		const { ProjectionService } = $injector.inject('ProjectionService');
+		const { SourceTypeService, ProjectionService } = $injector.inject('SourceTypeService', 'ProjectionService');
+		this._sourceTypeService = SourceTypeService;
 		this._projectionService = ProjectionService;
 	}
 	/**
@@ -61,7 +61,7 @@ export class OlExportVectorDataService {
 	forGeoResource(geoResource, targetSourceType) {
 		const data = geoResource.data;
 		if (data) {
-			return this.forData(data, geoResource.sourceType, targetSourceType);
+			return this._forData(data, geoResource.sourceType, targetSourceType);
 		}
 		throw Error(`GeoResource '${geoResource.id}' is empty`);
 	}
@@ -71,12 +71,21 @@ export class OlExportVectorDataService {
 	 * String containing the data in the specified {@link SourceType| targetSourceType}-Format
 	 * @name ExportVectorDataService#forData
 	 * @param {String} data
-	 * @param {module:domain/sourceType.SourceType} dataSourceType
 	 * @param {module:domain/sourceType.SourceType} targetSourceType
 	 * @returns {String}
 	 * @throws {Error}
 	 */
-	forData(data, dataSourceType, targetSourceType) {
+	forData(data, targetSourceType) {
+		const sourceTypeResult = this._sourceTypeService.forData(data);
+		const dataSourceType = sourceTypeResult.sourceType;
+
+		if (sourceTypeResult.status === SourceTypeResultStatus.OK) {
+			return this._forData(data, dataSourceType, targetSourceType);
+		}
+		throw new Error(`Unexpected SourceTypeResultStatus: ${sourceTypeResult.status}`);
+	}
+
+	_forData(data, dataSourceType, targetSourceType) {
 		const needConvert = dataSourceType.name !== targetSourceType.name;
 		const needTransform = dataSourceType.srid !== targetSourceType.srid;
 

@@ -1,6 +1,6 @@
 import { $injector } from '../../../src/injection';
 import { SourceType, SourceTypeMaxFileSize, SourceTypeName, SourceTypeResult, SourceTypeResultStatus } from '../../../src/domain/sourceType';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import {
 	bvvUrlSourceTypeProvider,
 	_createCredentialPanel,
@@ -8,7 +8,6 @@ import {
 	defaultMediaSourceTypeProvider
 } from '../../../src/services/provider/sourceType.provider';
 import { modalReducer } from '../../../src/store/modal/modal.reducer';
-import { isTemplateResultOf } from '../../../src/utils/checks';
 import { TestUtils } from '../../test-utils';
 import { PasswordCredentialPanel } from '../../../src/modules/auth/components/PasswordCredentialPanel';
 import { closeModal } from '../../../src/store/modal/modal.action';
@@ -20,7 +19,8 @@ describe('createCredentialPanel', () => {
 			() => {},
 			() => {}
 		);
-		expect(isTemplateResultOf(templateResult, PasswordCredentialPanel.tag)).toBeTrue();
+		const wrapperElement = TestUtils.renderTemplateResult(templateResult);
+		expect(wrapperElement.querySelectorAll(PasswordCredentialPanel.tag)).toHaveSize(1);
 	});
 });
 

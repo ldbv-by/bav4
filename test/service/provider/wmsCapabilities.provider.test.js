@@ -6,7 +6,7 @@ import {
 	supportedGetMapMediaTypes,
 	_determinePreferredFormat
 } from '../../../src/services/provider/wmsCapabilities.provider';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 
 const Default_Capabilities_Result = {
 	title: 'The Title',

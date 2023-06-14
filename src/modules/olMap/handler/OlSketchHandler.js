@@ -6,7 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
 import { Tools } from '../../../domain/tools';
 
-export const DefaultIdPrefix = Tools.DRAWING + '_';
+export const DefaultIdPrefix = Tools.DRAW + '_';
 
 /**
  * OlSketchHandler monitors changes for geometry based interactions of sketch-features and
@@ -44,7 +44,7 @@ export class OlSketchHandler {
 		}
 	}
 
-	activate(sketchFeature, idPrefix = Tools.DRAWING + '_') {
+	activate(sketchFeature, idPrefix = Tools.DRAW + '_') {
 		if (sketchFeature !== this._sketch) {
 			if (sketchFeature) {
 				sketchFeature.setId(idPrefix + new Date().getTime());

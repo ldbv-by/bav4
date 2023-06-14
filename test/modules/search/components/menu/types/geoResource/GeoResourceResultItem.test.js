@@ -7,7 +7,7 @@ import {
 import { GeoResourceSearchResult } from '../../../../../../../src/modules/search/services/domain/searchResult';
 import { TestUtils } from '../../../../../../test-utils.js';
 import { createNoInitialStateMediaReducer } from '../../../../../../../src/store/media/media.reducer';
-import { TabId } from '../../../../../../../src/store/mainMenu/mainMenu.action';
+import { TabIds } from '../../../../../../../src/domain/mainMenu';
 import { $injector } from '../../../../../../../src/injection';
 import { positionReducer } from '../../../../../../../src/store/position/position.reducer';
 import { Spinner } from '../../../../../../../src/modules/commons/components/spinner/Spinner';
@@ -178,7 +178,7 @@ describe('GeoResourceResultItem', () => {
 						active: [previewLayer]
 					},
 					mainMenu: {
-						tab: TabId.SEARCH,
+						tab: TabIds.SEARCH,
 						open: true
 					},
 					media: {
@@ -206,8 +206,8 @@ describe('GeoResourceResultItem', () => {
 				const target = element.shadowRoot.querySelector('li');
 				target.click();
 
-				expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
-				expect(store.getState().mainMenu.open).toBeTrue;
+				expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
+				expect(store.getState().mainMenu.open).toBeTrue();
 			});
 
 			it('closes the main menu in portrait orientation', async () => {

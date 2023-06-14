@@ -23,7 +23,8 @@ export class MeasureToolContent extends AbstractToolContent {
 	constructor() {
 		super({
 			statistic: { length: null, area: null },
-			mode: null
+			mode: null,
+			fileSaveResult: null
 		});
 
 		const {
@@ -51,15 +52,15 @@ export class MeasureToolContent extends AbstractToolContent {
 				return {
 					...model,
 					statistic: data.statistic,
-					mode: data.mode
+					mode: data.mode,
+					fileSaveResult: data?.fileSaveResult?.payload ?? null
 				};
 		}
 	}
 
 	createView(model) {
 		const translate = (key) => this._translationService.translate(key);
-		const { statistic } = model;
-
+		const { statistic, fileSaveResult } = model;
 		const areaClasses = { 'is-area': statistic.area != null };
 
 		const buttons = this._getButtons(model);
@@ -113,7 +114,9 @@ export class MeasureToolContent extends AbstractToolContent {
 					<div class='sub-text'>${subText}</div>	
 				</div>	
 				<div class='chips__container'> 
-					<ba-profile-chip></ba-profile-chip><ba-share-data-chip></ba-share-data-chip>
+					<ba-profile-chip></ba-profile-chip>
+					<ba-share-data-chip></ba-share-data-chip>
+					<ba-export-vector-data-chip .exportData=${fileSaveResult?.content}></ba-export-vector-data-chip>
 				</div>				
 				<div class="ba-tool-container__actions">                         						 
 					${buttons}					

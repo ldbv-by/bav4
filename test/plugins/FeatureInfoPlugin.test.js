@@ -1,7 +1,7 @@
 import { TestUtils } from '../test-utils.js';
 import { featureInfoReducer } from '../../src/store/featureInfo/featureInfo.reducer';
 import { setClick } from '../../src/store/pointer/pointer.action';
-import { TabId } from '../../src/store/mainMenu/mainMenu.action';
+import { TabIds } from '../../src/domain/mainMenu';
 import { addFeatureInfoItems } from '../../src/store/featureInfo/featureInfo.action.js';
 import { FeatureInfoPlugin } from '../../src/plugins/FeatureInfoPlugin.js';
 import { createNoInitialStateMainMenuReducer } from '../../src/store/mainMenu/mainMenu.reducer.js';
@@ -37,7 +37,7 @@ describe('FeatureInfoPlugin', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tabIndex: TabId.MAPS
+				tabIndex: TabIds.MAPS
 			},
 			...state
 		};

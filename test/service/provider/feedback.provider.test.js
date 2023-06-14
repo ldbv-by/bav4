@@ -1,10 +1,11 @@
 import { $injector } from '../../../src/injection';
-import { MediaType } from '../../../src/services/HttpService';
+import { MediaType } from '../../../src/domain/mediaTypes';
 import { GeneralFeedback, MapFeedback } from '../../../src/services/FeedbackService';
 import {
 	bvvMapFeedbackCategoriesProvider,
 	bvvFeedbackStorageProvider,
-	bvvMapFeedbackOverlayGeoResourceProvider
+	bvvMapFeedbackOverlayGeoResourceProvider,
+	bvvGeneralFeedbackCategoriesProvider
 } from '../../../src/services/provider/feedback.provider';
 
 describe('bvvFeedbackStorageProvider', () => {
@@ -121,6 +122,53 @@ describe('bvvMapFeedbackCategoriesProvider', () => {
 			.and.resolveTo(new Response(null, { status: statusCode }));
 
 		await expectAsync(bvvMapFeedbackCategoriesProvider()).toBeRejectedWithError(
+			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
+		);
+	});
+});
+
+describe('bvvGeneralFeedbackCategoriesProvider', () => {
+	const configService = {
+		getValueAsPath: () => {}
+	};
+
+	const httpService = {
+		get: async () => {}
+	};
+
+	beforeEach(() => {
+		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
+	});
+
+	afterEach(() => {
+		$injector.reset();
+	});
+
+	it('loads feedback categories', async () => {
+		const backendUrl = 'https://backend.url/';
+		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const categories = ['foo', 'bar'];
+		const httpServiceSpy = spyOn(httpService, 'get')
+			.withArgs(backendUrl + 'feedback/general/categories')
+			.and.resolveTo(new Response(JSON.stringify(categories)));
+
+		const result = await bvvGeneralFeedbackCategoriesProvider();
+
+		expect(result).toEqual(categories);
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
+	});
+
+	it('throws an Error when status code != 200', async () => {
+		const backendUrl = 'https://backend.url/';
+		spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
+		const statusCode = 400;
+
+		spyOn(httpService, 'get')
+			.withArgs(backendUrl + 'feedback/general/categories')
+			.and.resolveTo(new Response(null, { status: statusCode }));
+
+		await expectAsync(bvvGeneralFeedbackCategoriesProvider()).toBeRejectedWithError(
 			`MapFeedback categories could not be loaded: Http-Status ${statusCode}`
 		);
 	});

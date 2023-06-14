@@ -223,17 +223,17 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 			const changeTool = (features) => {
 				const changeToMeasureTool = (features) => {
-					return features.some((f) => f.getId().startsWith(Tools.DRAWING + '_'));
+					return features.some((f) => f.getId().startsWith(Tools.DRAW + '_'));
 				};
 				if (changeToMeasureTool(features)) {
-					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAWING + '_')).map((f) => f.getId());
+					const drawIds = features.filter((f) => f.getId().startsWith(Tools.DRAW + '_')).map((f) => f.getId());
 					setDrawSelection(drawIds);
-					setCurrentTool(Tools.DRAWING);
+					setCurrentTool(Tools.DRAW);
 				}
 			};
 
 			const isToolChangeNeeded = (features) => {
-				return features.some((f) => !f.getId().startsWith(Tools.MEASURING + '_'));
+				return features.some((f) => !f.getId().startsWith(Tools.MEASURE + '_'));
 			};
 			const selectableFeatures = getSelectableFeatures(this._map, this._vectorLayer, pixel);
 			const clickAction = isToolChangeNeeded(selectableFeatures) ? changeTool : addToSelection;
@@ -465,7 +465,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
-			this._sketchHandler.activate(event.feature, Tools.MEASURING + '_');
+			this._sketchHandler.activate(event.feature, Tools.MEASURE + '_');
 			this._overlayService.add(this._sketchHandler.active, this._map, StyleTypes.MEASURE);
 			listener = event.feature.on('change', onFeatureChange);
 			zoomListener = this._map.getView().on('change:resolution', onResolutionChange);

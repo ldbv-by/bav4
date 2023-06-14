@@ -9,7 +9,7 @@ import { setFetching } from '../../../../src/store/network/network.action';
 import { searchReducer } from '../../../../src/store/search/search.reducer';
 import { EventLike } from '../../../../src/utils/storeUtils';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { TabId } from '../../../../src/store/mainMenu/mainMenu.action';
+import { TabIds } from '../../../../src/domain/mainMenu';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
@@ -26,7 +26,7 @@ describe('Header', () => {
 		const initialState = {
 			mainMenu: {
 				open: true,
-				tab: TabId.TOPICS
+				tab: TabIds.TOPICS
 			},
 			network: {
 				fetching: false,
@@ -185,9 +185,8 @@ describe('Header', () => {
 
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
 
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title');
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link');
-			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('target')).toBe('_blank');
+			expect(element.shadowRoot.querySelectorAll('div.header__emblem')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('a.header__emblem')).toHaveSize(0);
 		});
 
 		it('adds a close button', async () => {
@@ -243,6 +242,9 @@ describe('Header', () => {
 			const element = await setup({}, { standalone: true });
 
 			expect(element.shadowRoot.querySelectorAll('.is-demo')).toBeTruthy();
+
+			expect(element.shadowRoot.querySelectorAll('div.header__emblem')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('a.header__emblem')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('title')).toBe('header_emblem_title_standalone');
 			expect(element.shadowRoot.querySelector('.header__emblem').getAttribute('href')).toBe('header_emblem_link_standalone');
@@ -376,11 +378,11 @@ describe('Header', () => {
 		it('updates the store', async () => {
 			const element = await setup();
 			expect(element.shadowRoot.querySelector('.header__button-container').children[0].click());
-			expect(store.getState().mainMenu.tab).toBe(TabId.TOPICS);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.TOPICS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[1].click());
-			expect(store.getState().mainMenu.tab).toBe(TabId.MAPS);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].click());
-			expect(store.getState().mainMenu.tab).toBe(TabId.MISC);
+			expect(store.getState().mainMenu.tab).toBe(TabIds.MISC);
 		});
 	});
 
@@ -581,7 +583,7 @@ describe('Header', () => {
 				const element = await setup(state);
 				element.shadowRoot.querySelector('#input').focus();
 
-				expect(store.getState().mainMenu.tab).toBe(TabId.SEARCH);
+				expect(store.getState().mainMenu.tab).toBe(TabIds.SEARCH);
 			});
 
 			describe('in portrait mode and min-width < 80em', () => {

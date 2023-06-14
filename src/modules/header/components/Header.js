@@ -2,7 +2,8 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, TabId, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
@@ -155,19 +156,22 @@ export class Header extends MvuElement {
 			return this._environmentService.isStandalone() ? translate('header_logo_badge_standalone') : translate('header_logo_badge');
 		};
 
-		const getEmblemLink = () => {
-			return this._environmentService.isStandalone() ? translate('header_emblem_link_standalone') : translate('header_emblem_link');
-		};
-
-		const getEmblemLinkTitle = () => {
-			return this._environmentService.isStandalone() ? translate('header_emblem_title_standalone') : translate('header_emblem_title');
+		const getEmblem = () => {
+			return this._environmentService.isStandalone()
+				? html`<a
+						href="${translate('header_emblem_link_standalone')}"
+						title="${translate('header_emblem_title_standalone')}"
+						class="header__emblem"
+						target="_blank"
+				  ></a>`
+				: html`<div class="header__emblem"></div>`;
 		};
 
 		const layerCount = layers.length;
 
 		const onInputFocus = () => {
 			disableResponsiveParameterObservation();
-			setTab(TabId.SEARCH);
+			setTab(TabIds.SEARCH);
 			if (isPortrait || !hasMinWidth) {
 				const popup = this.shadowRoot.getElementById('headerMobile');
 				popup.style.display = 'none';
@@ -199,17 +203,17 @@ export class Header extends MvuElement {
 		};
 
 		const openTopicsTab = () => {
-			setTab(TabId.TOPICS);
+			setTab(TabIds.TOPICS);
 			openMainMenu();
 		};
 
 		const openMapLayerTab = () => {
-			setTab(TabId.MAPS);
+			setTab(TabIds.MAPS);
 			openMainMenu();
 		};
 
 		const openMiscTab = () => {
-			setTab(TabId.MISC);
+			setTab(TabIds.MISC);
 			openMainMenu();
 		};
 
@@ -242,8 +246,7 @@ export class Header extends MvuElement {
 					</div>		
 					<div id='headerMobile' class='${getOverlayClass()} header__text-mobile'>	
 					</div>
-					<a href='${getEmblemLink()}' title='${getEmblemLinkTitle()}' class='header__emblem' target='_blank'>
-					</a>
+					${getEmblem()}					
 					<div class="header ${getOverlayClass()}" ?data-register-for-viewport-calc=${isPortrait}>  
 						<button id='header_toggle' class="close-menu" title=${translate('header_close_button_title')}  @click="${toggle}"">
 							<i class="resize-icon "></i>
@@ -261,14 +264,14 @@ export class Header extends MvuElement {
 							</button>
 						</div>
 						<div  class="header__button-container">
-							<button id="topics_button" data-test-id class="${getActiveClass(TabId.TOPICS)}" title=${translate(
+							<button id="topics_button" data-test-id class="${getActiveClass(TabIds.TOPICS)}" title=${translate(
 			'header_tab_topics_title'
 		)} @click="${openTopicsTab}">
 								<span>
 									${translate('header_tab_topics_button')}
 								</span>
 							</button>
-							<button id="maps_button" data-test-id class="${getActiveClass(TabId.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
+							<button id="maps_button" data-test-id class="${getActiveClass(TabIds.MAPS)}" title=${translate('header_tab_maps_title')}  @click="${openMapLayerTab}">
 								<span>
 									${translate('header_tab_maps_button')}
 								</span>
@@ -276,7 +279,7 @@ export class Header extends MvuElement {
 									${layerCount}
 								</div>
 							</button>
-							<button id="misc_button" data-test-id class="${getActiveClass(TabId.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
+							<button id="misc_button" data-test-id class="${getActiveClass(TabIds.MISC)}" title=${translate('header_tab_misc_title')}  @click="${openMiscTab}">
 								<span>
 									${translate('header_tab_misc_button')}
 								</span>

@@ -12,12 +12,14 @@ import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { createNoInitialStateMediaReducer } from '../../../../../src/store/media/media.reducer';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../src/utils/markup';
 import { ElevationProfileChip } from '../../../../../src/modules/elevationProfile/components/assistChip/ElevationProfileChip';
+import { ExportVectorDataChip } from '../../../../../src/modules/export/components/assistChip/ExportVectorDataChip';
 import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
 window.customElements.define(Icon.tag, Icon);
 window.customElements.define(IconSelect.tag, IconSelect);
 window.customElements.define(DrawToolContent.tag, DrawToolContent);
 window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
+window.customElements.define(ExportVectorDataChip.tag, ExportVectorDataChip);
 
 describe('DrawToolContent', () => {
 	let store;
@@ -33,13 +35,19 @@ describe('DrawToolContent', () => {
 
 	const iconServiceMock = { default: () => new IconResult('marker', 'foo'), all: () => [], getIconResult: () => {} };
 
+	const geoResourceServiceMock = {
+		async init() {},
+		all() {},
+		byId() {}
+	};
+
 	const drawDefaultState = {
 		active: false,
 		style: null,
 		mode: null,
 		type: null,
 		reset: null,
-		fileSaveResult: { adminId: 'init', fileId: 'init' }
+		fileSaveResult: null
 	};
 
 	const StyleOptionTemplate = {
@@ -76,6 +84,7 @@ describe('DrawToolContent', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('IconService', iconServiceMock)
+			.registerSingleton('GeoResourceService', geoResourceServiceMock)
 			.registerSingleton('SecurityService', securityServiceMock);
 		return TestUtils.render(DrawToolContent.tag);
 	};
@@ -101,7 +110,8 @@ describe('DrawToolContent', () => {
 				validGeometry: null,
 				tools: jasmine.any(Array),
 				collapsedInfo: null,
-				collapsedStyle: null
+				collapsedStyle: null,
+				fileSaveResult: null
 			});
 		});
 	});
@@ -631,6 +641,27 @@ describe('DrawToolContent', () => {
 			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
 
 			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+		});
+
+		it('contains the export vector data chip', async () => {
+			const element = await setup({ ...drawDefaultState, mode: 'draw', type: 'polygon', validGeometry: true });
+
+			expect(element.shadowRoot.querySelectorAll('ba-export-vector-data-chip')).toHaveSize(1);
+		});
+
+		it('shows the export vector data chip with exportData', async () => {
+			const exportData = '<kml/>';
+			const element = await setup({
+				...drawDefaultState,
+				mode: 'draw',
+				type: 'polygon',
+				validGeometry: true,
+				fileSaveResult: new EventLike({ fileSaveResult: 'foo', content: exportData })
+			});
+			const chipElement = element.shadowRoot.querySelector('ba-export-vector-data-chip');
+			const chipModel = chipElement.getModel();
+
+			expect(chipModel.data).toBe(exportData);
 		});
 
 		it('finishes the drawing', async () => {

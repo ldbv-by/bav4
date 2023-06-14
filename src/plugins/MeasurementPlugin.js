@@ -31,7 +31,7 @@ export class MeasurementPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		const onToolChanged = (toolId) => {
-			if (toolId !== Tools.MEASURING) {
+			if (toolId !== Tools.MEASURE) {
 				deactivate();
 			} else {
 				// we activate the tool after another possible active tool was deactivated

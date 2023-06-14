@@ -141,13 +141,13 @@ export class ToolBar extends MvuElement {
 					<button
 						id="measure-button"
 						data-test-id
-						@click="${() => toggleTool(Tools.MEASURING)}"
-						class="tool-bar__button ${getActiveClass(Tools.MEASURING)}"
+						@click="${() => toggleTool(Tools.MEASURE)}"
+						class="tool-bar__button ${getActiveClass(Tools.MEASURE)}"
 					>
 						<div class="tool-bar__button_icon measure"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_measure_button')}</div>
 					</button>
-					<button id="draw-button" data-test-id @click="${() => toggleTool(Tools.DRAWING)}" class="tool-bar__button ${getActiveClass(Tools.DRAWING)}">
+					<button id="draw-button" data-test-id @click="${() => toggleTool(Tools.DRAW)}" class="tool-bar__button ${getActiveClass(Tools.DRAW)}">
 						<div class="tool-bar__button_icon pencil"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_draw_button')}</div>
 					</button>
@@ -159,12 +159,7 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button_icon export"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_export_button')}</div>
 					</button>
-					<button
-						id="share-button"
-						data-test-id
-						@click="${() => toggleTool(Tools.SHARING)}"
-						class="tool-bar__button ${getActiveClass(Tools.SHARING)}"
-					>
+					<button id="share-button" data-test-id @click="${() => toggleTool(Tools.SHARE)}" class="tool-bar__button ${getActiveClass(Tools.SHARE)}">
 						<div class="tool-bar__button_icon share"></div>
 						<div class="tool-bar__button-text">${translate('toolbox_toolbar_share_button')}</div>
 					</button>

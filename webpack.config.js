@@ -7,7 +7,9 @@ const portFinderSync = require('portfinder-sync');
 const port = portFinderSync.getPort(8080);
 // load local .env file
 require('dotenv').config({ path: '.env' });
-const templateParameters = require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`);
+const templateParameters = process.env.BACKEND_URL
+	? require(`./src/assets/${process.env.DEFAULT_LANG || 'en'}.json`)
+	: require(`./src/assets/standalone.json`);
 
 module.exports = {
 	mode: 'development',

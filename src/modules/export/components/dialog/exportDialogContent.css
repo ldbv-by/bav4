@@ -1,0 +1,21 @@
+.container {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-column-gap: 1.2em;
+	margin: 3em 0;
+	overflow-x: auto;
+	overscroll-behavior-inline: contain;
+	padding-inline: 0.6em;
+	scroll-padding-inline: 0.6em;
+	padding-block: calc(0.3em / 2);
+	scroll-snap-type: inline mandatory;
+}
+.container ba-export-item {
+	scroll-snap-align: start;
+}
+.container.is-portrait {
+	min-height: calc(100vh - 14em);
+	align-items: center;
+	padding-bottom: 10em;
+	margin: 0;
+}

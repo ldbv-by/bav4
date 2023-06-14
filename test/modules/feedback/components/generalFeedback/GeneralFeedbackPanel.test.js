@@ -10,11 +10,46 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
+const ratingValue = Rating.EXCELLENT;
+const fillRating = (element) => {
+	const starsRatingPanel = element.shadowRoot.getElementById('rating');
+	const ratingChangeEvent = new CustomEvent('change', {
+		detail: { rating: ratingValue }
+	});
+	starsRatingPanel.dispatchEvent(ratingChangeEvent);
+	return starsRatingPanel;
+};
+
+const categoryValue = 'Foo';
+const fillCategory = (element) => {
+	const categorySelectElement = element.shadowRoot.querySelector('#category');
+	categorySelectElement.value = categoryValue;
+	categorySelectElement.dispatchEvent(new Event('change'));
+	return categorySelectElement;
+};
+
+const descriptionValue = 'description';
+const fillDescription = (element) => {
+	const descriptionInputElement = element.shadowRoot.querySelector('#description');
+	descriptionInputElement.value = descriptionValue;
+	descriptionInputElement.dispatchEvent(new Event('input'));
+	return descriptionInputElement;
+};
+
+const emailValue = 'mail@some.com';
+const fillEmail = (element, value = emailValue) => {
+	const emailInputElement = element.shadowRoot.querySelector('#email');
+	emailInputElement.value = value;
+	emailInputElement.dispatchEvent(new Event('input'));
+	return emailInputElement;
+};
+
 const configServiceMock = {
 	getValueAsPath: () => {}
 };
 
 const feedbackServiceMock = {
+	getGeneralFeedbackCategories: () => ['Foo', 'Bar'],
 	save: () => {}
 };
 
@@ -54,10 +89,12 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(element.getModel()).toEqual({
 				generalFeedback: {
+					category: null,
 					description: null,
 					email: null,
 					rating: null
-				}
+				},
+				categoryOptions: []
 			});
 		});
 	});
@@ -66,43 +103,61 @@ describe('GeneralFeedbackPanel', () => {
 		it('renders the view', async () => {
 			// arrange
 			const expectedTitle = 'feedback_generalFeedback';
+			const expectedCategory = '';
+			const expectedCategoryOptions = ['', 'Foo', 'Bar'];
 			const expectedDescription = '';
 			const expectedEmail = '';
 
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(8);
+			expect(element.shadowRoot.children.length).toBe(10);
 			expect(element.shadowRoot.querySelector('#feedbackPanelTitle').textContent).toBe(expectedTitle);
+			const category = element.shadowRoot.querySelector('#category');
+			expect(category.value).toBe(expectedCategory);
+			const actualOptions = Array.from(category.querySelectorAll('option')).map((option) => option.value);
+			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-			expect(element.shadowRoot.querySelector('#rating').rating).toBe(undefined);
+			expect(element.shadowRoot.querySelectorAll('#rating')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('#rating').previousElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_0');
+			expect(element.shadowRoot.querySelector('#rating').nextElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_5');
 		});
 
 		it('renders form elements containing correct attributes', async () => {
 			// arrange
 			const element = await setup();
 
+			const ratingElement = element.shadowRoot.querySelector('#rating');
+			const categoryElement = element.shadowRoot.querySelector('#category');
 			const descriptionElement = element.shadowRoot.querySelector('#description');
 			const emailElement = element.shadowRoot.querySelector('#email');
+			const submitElement = element.shadowRoot.querySelector('#button0');
 
 			// assert
+			expect(ratingElement.hasAttribute('required')).toBeFalse();
+
+			expect(categoryElement.type).toBe('select-one');
+			expect(categoryElement.hasAttribute('required')).toBeTrue();
+			expect(categoryElement.parentElement.querySelector('label').innerText).toBe('feedback_categorySelection');
 
 			expect(descriptionElement.type).toBe('textarea');
-			expect(descriptionElement.hasAttribute('required')).toBeTrue;
-			expect(descriptionElement.hasAttribute('placeholder')).toBeTrue;
+			expect(descriptionElement.hasAttribute('required')).toBeTrue();
+			expect(descriptionElement.getAttribute('placeholder')).toBe('feedback_changeDescription');
 			expect(descriptionElement.parentElement.querySelector('label').innerText).toBe('feedback_changeDescription');
 
 			expect(emailElement.type).toBe('email');
-			expect(emailElement.hasAttribute('placeholder')).toBeTrue;
+			expect(emailElement.getAttribute('placeholder')).toBe('feedback_eMail');
 			expect(emailElement.parentElement.querySelector('label').innerText).toBe('feedback_eMail');
-			expect(descriptionElement.hasAttribute('placeholder')).toBeFalse;
+
+			expect(submitElement.type).toBe('primary');
+			expect(submitElement.label).toBe('feedback_submit');
 		});
 
-		it('contains 3 unvisited ba-form-elements', async () => {
+		it('contains 4 unvisited ba-form-elements', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('.ba-form-element')).toHaveSize(4);
 			element.shadowRoot.querySelectorAll('.ba-form-element').forEach((el) => {
 				expect(el.classList.contains(BA_FORM_ELEMENT_VISITED_CLASS)).toBeFalse();
 			});
@@ -113,7 +168,7 @@ describe('GeneralFeedbackPanel', () => {
 
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer').innerText).toContain('feedback_disclaimer');
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').href).toContain('global_privacy_policy_url');
-			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').innerText).toBe('feedback_mapFeedback_privacyPolicy');
+			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').innerText).toBe('feedback_privacyPolicy');
 			expect(element.shadowRoot.querySelector('#generalFeedback_disclaimer a').target).toBe('_blank');
 		});
 	});
@@ -136,9 +191,9 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'mail@some.com';
-			emailInput.dispatchEvent(new Event('input'));
+			fillCategory(element);
+			fillEmail(element);
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -147,18 +202,15 @@ describe('GeneralFeedbackPanel', () => {
 			expect(saveGeneralFeedbackSpy).not.toHaveBeenCalled();
 		});
 
-		it('does not call _saveGeneralFeedback if email is set and not valid', async () => {
+		it('does not call _saveGeneralFeedback if email is set but not valid', async () => {
 			// arrange
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback');
 
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'another text';
-			descriptionInput.dispatchEvent(new Event('input'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'no email';
-			emailInput.dispatchEvent(new Event('input'));
+			fillCategory(element);
+			fillDescription(element);
+			fillEmail(element, 'no email');
+			fillRating(element);
 
 			// act
 			const submitButton = element.shadowRoot.querySelector('#button0');
@@ -173,19 +225,10 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 			const saveGeneralFeedbackSpy = spyOn(element, '_saveGeneralFeedback').and.callThrough();
 
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.GOOD }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'description';
-			descriptionInput.dispatchEvent(new Event('input'));
-
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = 'email@some.com';
-			emailInput.dispatchEvent(new Event('input'));
+			fillCategory(element);
+			fillDescription(element);
+			fillEmail(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -193,7 +236,7 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', 'email@some.com', Rating.GOOD));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, emailValue, ratingValue));
 		});
 
 		it('calls FeedbackService.save after all fields besides email are filled', async () => {
@@ -202,15 +245,9 @@ describe('GeneralFeedbackPanel', () => {
 			spyOn(securityServiceMock, 'sanitizeHtml').and.callFake((value) => value);
 			const element = await setup();
 
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.GOOD }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
-
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = 'description';
-			descriptionInput.dispatchEvent(new Event('input'));
+			fillCategory(element);
+			fillDescription(element);
+			fillRating(element);
 
 			const submitButton = element.shadowRoot.querySelector('#button0');
 
@@ -218,21 +255,44 @@ describe('GeneralFeedbackPanel', () => {
 			submitButton.click();
 
 			// assert
-			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback('description', null, Rating.GOOD));
+			expect(saveGeneralFeedbackSpy).toHaveBeenCalledWith(new GeneralFeedback(categoryValue, descriptionValue, null, ratingValue));
+		});
+	});
+
+	describe('when category is changed', () => {
+		it('sanitizes the input value', async () => {
+			// arrange
+			const element = await setup();
+			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
+
+			// act
+			fillCategory(element);
+
+			// assert
+			expect(sanitizeSpy).toHaveBeenCalledWith(categoryValue);
+		});
+
+		it('its parent receives the "userVisited" class', async () => {
+			// arrange
+			const element = await setup();
+
+			// act
+			const categoryPanel = fillDescription(element);
+
+			// assert
+			const nodeValue = categoryPanel.parentElement.attributes['class'].nodeValue;
+			expect(nodeValue.includes(BA_FORM_ELEMENT_VISITED_CLASS)).toBeTrue();
 		});
 	});
 
 	describe('when description is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const descriptionValue = 'description';
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+			fillDescription(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(descriptionValue);
@@ -240,13 +300,10 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('its parent receives the "userVisited" class', async () => {
 			// arrange
-			const descriptionValue = 'description';
 			const element = await setup();
 
 			// act
-			const descriptionInput = element.shadowRoot.querySelector('#description');
-			descriptionInput.value = descriptionValue;
-			descriptionInput.dispatchEvent(new Event('input'));
+			const descriptionInput = fillDescription(element);
 
 			// assert
 			const nodeValue = descriptionInput.parentElement.attributes['class'].nodeValue;
@@ -257,14 +314,11 @@ describe('GeneralFeedbackPanel', () => {
 	describe('when email is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const emailValue = 'email@some.com';
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = emailValue;
-			emailInput.dispatchEvent(new Event('input'));
+			fillEmail(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(emailValue);
@@ -272,13 +326,10 @@ describe('GeneralFeedbackPanel', () => {
 
 		it('its parent receives the "userVisited" class', async () => {
 			// arrange
-			const emailValue = 'email';
 			const element = await setup();
 
 			// act
-			const emailInput = element.shadowRoot.querySelector('#email');
-			emailInput.value = emailValue;
-			emailInput.dispatchEvent(new Event('input'));
+			const emailInput = fillEmail(element);
 
 			// assert
 			const nodeValue = emailInput.parentElement.attributes['class'].nodeValue;
@@ -289,16 +340,11 @@ describe('GeneralFeedbackPanel', () => {
 	describe('when rating is changed', () => {
 		it('sanitizes the input value', async () => {
 			// arrange
-			const ratingValue = Rating.EXCELLENT;
 			const element = await setup();
 			const sanitizeSpy = spyOn(securityServiceMock, 'sanitizeHtml').and.callThrough();
 
 			// act
-			const starsRatingPanel = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.EXCELLENT }
-			});
-			starsRatingPanel.dispatchEvent(ratingChangeEvent);
+			fillRating(element);
 
 			// assert
 			expect(sanitizeSpy).toHaveBeenCalledWith(ratingValue);
@@ -309,11 +355,7 @@ describe('GeneralFeedbackPanel', () => {
 			const element = await setup();
 
 			// act
-			const fiveButtonRatingElement = element.shadowRoot.getElementById('rating');
-			const ratingChangeEvent = new CustomEvent('change', {
-				detail: { rating: Rating.EXCELLENT }
-			});
-			fiveButtonRatingElement.dispatchEvent(ratingChangeEvent);
+			const fiveButtonRatingElement = fillRating(element);
 
 			// assert
 			const nodeValue = fiveButtonRatingElement.parentElement.attributes['class'].nodeValue;
@@ -322,6 +364,21 @@ describe('GeneralFeedbackPanel', () => {
 	});
 
 	describe('when using FeedbackService', () => {
+		it('logs an error when getGeneralFeedbackCategories fails', async () => {
+			// arrange
+			const message = 'error message';
+			const getGeneralFeedbackSpy = spyOn(feedbackServiceMock, 'getGeneralFeedbackCategories').and.rejectWith(new Error(message));
+			const errorSpy = spyOn(console, 'error');
+			const element = await setup();
+
+			// act
+			await element._getCategoryOptions();
+
+			// assert
+			expect(getGeneralFeedbackSpy).toHaveBeenCalled();
+			expect(errorSpy).toHaveBeenCalledWith(new Error(message));
+		});
+
 		it('logs an error when save fails', async () => {
 			// arrange
 			const message = 'error message';
