@@ -51,13 +51,14 @@ describe('AdministrationService', () => {
 		it('rejects when no coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getAdministration()).toBeRejectedWithError("Parameter 'coordinate3857' must be a coordinate");
+			await expectAsync(instanceUnderTest.getAdministration()).toBeRejectedWithError(TypeError, "Parameter 'coordinate3857' must be a coordinate");
 		});
 
 		it('rejects when false coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(instanceUnderTest.getAdministration('invalid input')).toBeRejectedWithError(
+				TypeError,
 				"Parameter 'coordinate3857' must be a coordinate"
 			);
 		});
