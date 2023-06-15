@@ -58,8 +58,10 @@ export class ElevationService {
 
 	/**
 	 * Returns an elevation for a coordinate.
-	 * @param {Coordinate} coordinate3857
-	 * @returns {Number} elevation
+	 * @param {module:domain/coordinateTypeDef~Coordinate} coordinate3857
+	 * @returns {Promise<Number>} elevation
+	 * @throws {Error} Error of the underlying provider
+	 * @throws {TypeError} Parameter must be a valid {@link module:domain/coordinateTypeDef~Coordinate}
 	 */
 	async getElevation(coordinate3857) {
 		if (!isCoordinate(coordinate3857)) {
@@ -79,8 +81,10 @@ export class ElevationService {
 
 	/**
 	 * Returns a profile for an array of two or more coordinates
-	 * @param {Array<Coordinate>} coordinates3857
-	 * @returns {Profile} the profile
+	 * @param {Array<module:domain/coordinateTypeDef~Coordinate>} coordinates3857
+	 * @returns {Promise<Profile>} the profile
+	 * @throws {Error} Error of the underlying provider
+	 * @throws {TypeError} Parameter must be a valid Array of {@link module:domain/coordinateTypeDef~Coordinate}
 	 */
 	async getProfile(coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {
