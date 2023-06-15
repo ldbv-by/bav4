@@ -7,6 +7,8 @@ import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById } from '../store/highlight/highlight.action';
 import { TabIds } from '../domain/mainMenu';
 import { createUniqueId } from '../utils/numberUtils';
+import { $injector } from '../injection/index';
+import { QueryParameters } from '../domain/queryParameters';
 
 /**
  * Id of the layer used for highlight visualization.
@@ -84,6 +86,18 @@ export class HighlightPlugin extends BaPlugin {
 				}
 			}
 		};
+
+		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const crosshair = queryParams.get(QueryParameters.CROSSHAIR);
+
+		if (crosshair) {
+			setTimeout(() => {
+				console.log(crosshair);
+				console.log(store.getState().position.center);
+				addHighlightFeatures({ id: createUniqueId(), data: { coordinate: store.getState().position.center }, type: HighlightFeatureType.DEFAULT });
+			});
+		}
 
 		observe(store, (state) => state.highlight.active, onChange);
 		observe(store, (state) => state.pointer.click, onPointerClick);
