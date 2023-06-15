@@ -99,7 +99,7 @@ describe('BvvMfpService', () => {
 				expect(warnSpy).toHaveBeenCalledWith('MfpCapabilities could not be fetched from backend. Using fallback capabilities ...');
 			});
 
-			it('throwns an error when we are NOT in standalone mode', async () => {
+			it('throws an error when we are NOT in standalone mode', async () => {
 				const message = 'something got wrong';
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
 				const instanceUnderTest = setup(async () => {
@@ -188,7 +188,7 @@ describe('BvvMfpService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-			it('it simultates creating the Mfp job when we are in standalone mode', async () => {
+			it('it simulates creating the Mfp job when we are in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(null, async () => {
@@ -206,13 +206,13 @@ describe('BvvMfpService', () => {
 			it('logs an error when we are NOT in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				const mfpError = new Error('MFP spec could not be posted');
 				const instanceUnderTest = setup(null, async () => {
-					throw new Error('MFP spec could not be posted');
+					throw mfpError;
 				});
 
-				const promise = instanceUnderTest.createJob(mfpSpec);
-
-				await expectAsync(promise).toBeRejectedWithError('Pdf request was not successful: Error: MFP spec could not be posted');
+				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWithError('Pdf request was not successful');
+				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWith(jasmine.objectContaining({ cause: mfpError }));
 				expect(instanceUnderTest._abortController).toBeNull();
 			});
 		});
