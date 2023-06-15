@@ -75,7 +75,7 @@ export class ElevationService {
 				console.warn('Could not fetch an elevation from backend. Returning a mocked value ...');
 				return this._createMockElevation();
 			}
-			throw new Error('Could not load an elevation from provider: ' + e.message);
+			throw new Error('Could not load an elevation from provider', { cause: e });
 		}
 	}
 
@@ -103,7 +103,7 @@ export class ElevationService {
 				console.warn('Could not fetch an elevation profile from backend. Returning a mocked profile ...');
 				return this._createMockElevationProfile(coordinates3857);
 			}
-			throw new Error('Could not load an elevation profile from provider: ' + e.message);
+			throw new Error('Could not load an elevation profile from provider', { cause: e });
 		}
 	}
 
