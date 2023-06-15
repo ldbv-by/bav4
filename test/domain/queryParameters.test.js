@@ -2,7 +2,7 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 
 describe('QueryParameters', () => {
 	it('provides an enum of all valid query parameters', () => {
-		expect(Object.keys(QueryParameters).length).toBe(14);
+		expect(Object.keys(QueryParameters).length).toBe(15);
 
 		expect(QueryParameters.CENTER).toBe('c');
 		expect(QueryParameters.ZOOM).toBe('z');
