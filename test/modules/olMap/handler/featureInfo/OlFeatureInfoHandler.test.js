@@ -280,6 +280,15 @@ describe('OlFeatureInfoHandler', () => {
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
 			expect(store.getState().highlight.features).toHaveSize(1);
+
+			// we modify the feature1 by re-setting its name property
+			feature1.set('name', undefined);
+			abortOrReset();
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 
 		it('ignores a clustered feature containing more than one features', async () => {
@@ -333,6 +342,7 @@ describe('OlFeatureInfoHandler', () => {
 			const geometry = new Point(matchingCoordinate);
 			const olVectorSource0 = new VectorSource();
 			const feature0 = new Feature({ geometry: geometry });
+			feature0.set('name', 'name0');
 
 			olVectorSource0.addFeature(feature0);
 			vectorLayer0.setSource(olVectorSource0);
@@ -340,6 +350,7 @@ describe('OlFeatureInfoHandler', () => {
 
 			const olVectorSource1 = new VectorSource();
 			const feature1 = new Feature({ geometry: geometry });
+			feature1.set('name', 'name1');
 
 			olVectorSource1.addFeature(feature1);
 			vectorLayer1.setSource(olVectorSource1);
