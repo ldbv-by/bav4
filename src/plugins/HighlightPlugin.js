@@ -93,8 +93,6 @@ export class HighlightPlugin extends BaPlugin {
 
 		if (crosshair) {
 			setTimeout(() => {
-				console.log(crosshair);
-				console.log(store.getState().position.center);
 				addHighlightFeatures({ id: createUniqueId(), data: { coordinate: store.getState().position.center }, type: HighlightFeatureType.DEFAULT });
 			});
 		}
