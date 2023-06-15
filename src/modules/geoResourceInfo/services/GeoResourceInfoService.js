@@ -46,12 +46,12 @@ export class GeoResourceInfoService {
 				for (const provider of this._providers) {
 					const geoResourceInfoResult = await provider(geoResourceId);
 					if (geoResourceInfoResult) {
-						this._geoResourceInfoResults.set(geoResourceId, this._geoResourceInfoResult);
+						this._geoResourceInfoResults.set(geoResourceId, geoResourceInfoResult);
 						return geoResourceInfoResult;
 					}
 				}
 			} catch (e) {
-				throw new Error('Could not load a GeoResourceInfoResult from provider: ' + e.message);
+				throw new Error('Could not load a GeoResourceInfoResult from provider', { cause: e });
 			}
 		}
 		return this._geoResourceInfoResults.get(geoResourceId) ?? null;
