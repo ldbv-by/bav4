@@ -22,7 +22,7 @@ export const _newLoader = (id) => {
 			}
 			throw new Error(`Unsupported FileStorageServiceDataType '${type}'`);
 		} catch (e) {
-			throw new Error(`Could not load vector data for id '${id}': ${e.message}`);
+			throw new Error(`Could not load vector data for id '${id}'`, { cause: e });
 		}
 	};
 };
