@@ -90,8 +90,6 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 						return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layerProperties: layerProperties };
 					})
 					.filter((olFeatureContainer) => !!olFeatureContainer.olFeature)
-					//only features containing a name are allowed to be selected!
-					.filter((olFeatureContainer) => !!olFeatureContainer.olFeature.get('name'))
 					//map olFeature to FeatureInfo item
 					.map((olFeatureContainer) => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layerProperties))
 					// .filter(featureInfo => !!featureInfo)
