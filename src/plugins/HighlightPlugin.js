@@ -37,12 +37,18 @@ export const SEARCH_RESULT_TEMPORARY_HIGHLIGHT_FEATURE_ID = 'searchResultTempora
  * @author taulinger
  */
 export class HighlightPlugin extends BaPlugin {
+	constructor() {
+		super();
+		const { TranslationService: translationService } = $injector.inject('TranslationService');
+		this._translationService = translationService;
+	}
 	/**
 	 * @override
 	 * @param {Store} store
 	 */
 	async register(store) {
 		const highlightFeatureId = createUniqueId();
+		const translate = (key) => this._translationService.translate(key);
 
 		const onChange = (active) => {
 			if (active) {
@@ -93,7 +99,12 @@ export class HighlightPlugin extends BaPlugin {
 
 		if (crosshair) {
 			setTimeout(() => {
-				addHighlightFeatures({ id: createUniqueId(), data: { coordinate: store.getState().position.center }, type: HighlightFeatureType.DEFAULT });
+				addHighlightFeatures({
+					id: createUniqueId(),
+					label: translate('global_marker_symbol_label'),
+					data: { coordinate: store.getState().position.center },
+					type: HighlightFeatureType.DEFAULT
+				});
 			});
 		}
 
