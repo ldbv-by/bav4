@@ -281,8 +281,17 @@ describe('OlFeatureInfoHandler', () => {
 			expect(store.getState().featureInfo.current).toHaveSize(1);
 			expect(store.getState().highlight.features).toHaveSize(1);
 
-			//we modify the second layer so that it is not queryable anymore
+			//we modify the second layer so that it is not queryable anymore, but the feature1 has a name property
 			modifyLayer(layerId1, { constraints: { hidden: true } });
+			abortOrReset();
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(1);
+			expect(store.getState().highlight.features).toHaveSize(1);
+
+			//we modify feature1 by setting the name property to undefined
+			feature1.set('name', undefined);
 			abortOrReset();
 			startRequest(matchingCoordinate);
 
