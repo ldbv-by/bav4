@@ -20,8 +20,23 @@ import { addFeatureInfoItems, registerQuery, resolveQuery, startRequest } from '
 import { searchReducer } from '../../src/store/search/search.reducer';
 import { EventLike } from '../../src/utils/storeUtils';
 import { setQuery } from '../../src/store/search/search.action';
+import { $injector } from '../../src/injection';
+import { QueryParameters } from '../../src/domain/queryParameters';
+import { positionReducer } from '../../src/store/position/position.reducer';
 
 describe('HighlightPlugin', () => {
+	const windowMock = {
+		location: {
+			get search() {
+				return null;
+			}
+		}
+	};
+
+	const translationService = {
+		translate: (key) => key
+	};
+
 	const setup = (state) => {
 		const initialState = {
 			mainMenu: {
@@ -38,10 +53,12 @@ describe('HighlightPlugin', () => {
 			highlight: highlightReducer,
 			layers: layersReducer,
 			mainMenu: createNoInitialStateMainMenuReducer(),
+			position: positionReducer,
 			pointer: pointerReducer,
 			featureInfo: featureInfoReducer,
 			search: searchReducer
 		});
+		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock }).registerSingleton('TranslationService', translationService);
 		return store;
 	};
 
@@ -244,6 +261,45 @@ describe('HighlightPlugin', () => {
 			// add results
 			addFeatureInfoItems({ title: 'title0', content: 'content0', geometry: {} }, { title: 'title1', content: 'content1', geometry: {} });
 			resolveQuery(queryId);
+
+			expect(store.getState().highlight.features).toHaveSize(0);
+		});
+	});
+
+	describe("when search query parameter 'CROSSHAIR' has a value", () => {
+		it('adds a highlight feature', async () => {
+			const coordinate = [42, 21];
+			const state = {
+				position: { center: coordinate }
+			};
+			const store = setup(state);
+			const queryParam = QueryParameters.CROSSHAIR + '=some';
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout();
+
+			expect(store.getState().highlight.features).toHaveSize(1);
+			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
+			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
+		});
+	});
+
+	describe("when search query parameter 'CROSSHAIR' is empty", () => {
+		it('does NOT add a highlight feature', async () => {
+			const coordinate = [42, 21];
+			const state = {
+				position: { center: coordinate }
+			};
+			const store = setup(state);
+			const emptyQueryParam = QueryParameters.CROSSHAIR + '=';
+			spyOnProperty(windowMock.location, 'search').and.returnValue(emptyQueryParam);
+			const instanceUnderTest = new HighlightPlugin();
+			await instanceUnderTest.register(store);
+
+			await TestUtils.timeout();
 
 			expect(store.getState().highlight.features).toHaveSize(0);
 		});

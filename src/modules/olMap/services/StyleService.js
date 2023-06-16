@@ -233,8 +233,12 @@ export class StyleService {
 				return { color: Array.isArray(currentColor) ? rgbToHex(currentColor) : currentColor, scale: currentScale, text: currentText };
 			};
 
+			const fromAttribute = (feature) => {
+				return { text: feature.get('name') };
+			};
+
 			const styles = getStyleArray(olFeature);
-			return styles ? fromStyle(styles[0]) : {};
+			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
 		const newStyle = textStyleFunction(getStyleOption());
@@ -255,8 +259,12 @@ export class StyleService {
 				return { symbolSrc: symbolSrc, color: rgbToHex(color), scale: scale, text: text };
 			};
 
+			const fromAttribute = (feature) => {
+				return { text: feature.get('name') };
+			};
+
 			const styles = getStyleArray(feature);
-			return styles ? fromStyle(styles[0]) : {};
+			return styles ? fromStyle(styles[0]) : fromAttribute(olFeature);
 		};
 
 		const newStyle = markerStyleFunction(getStyleOption(olFeature));

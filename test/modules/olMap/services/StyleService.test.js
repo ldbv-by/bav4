@@ -200,6 +200,34 @@ describe('StyleService', () => {
 			expect(textStyle).toContain(jasmine.any(Style));
 		});
 
+		it('adds text-style to feature without style but attribute', () => {
+			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
+			featureWithoutStyle.set('name', 'foo-name');
+			featureWithoutStyle.setId('draw_text_noStyle');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			let textStyle = null;
+
+			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (textStyle = f()));
+			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
+
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(textStyle[0].getText().getText()).toBe('foo-name');
+		});
+
 		it('adds marker-style to feature', () => {
 			const featureWithStyleArray = new Feature({ geometry: new Point([0, 0]) });
 			const featureWithStyleFunction = new Feature({ geometry: new Point([0, 0]) });
@@ -246,6 +274,34 @@ describe('StyleService', () => {
 			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
 			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
 			expect(markerStyle).toContain(jasmine.any(Style));
+		});
+
+		it('adds marker-style to feature without style but attribute', () => {
+			const featureWithoutStyle = new Feature({ geometry: new Point([0, 0]) });
+			featureWithoutStyle.set('name', 'bar-name');
+			featureWithoutStyle.setId('draw_marker_noStyle');
+
+			const viewMock = {
+				getResolution() {
+					return 50;
+				},
+				once() {}
+			};
+
+			const mapMock = {
+				getView: () => viewMock,
+				getInteractions() {
+					return { getArray: () => [] };
+				}
+			};
+			const layerMock = {};
+			let markerStyle = null;
+
+			const styleSetterNoStyleSpy = spyOn(featureWithoutStyle, 'setStyle').and.callFake((f) => (markerStyle = f()));
+			instanceUnderTest.addStyle(featureWithoutStyle, mapMock, layerMock);
+
+			expect(styleSetterNoStyleSpy).toHaveBeenCalledWith(jasmine.any(Function));
+			expect(markerStyle[0].getText().getText()).toBe('bar-name');
 		});
 
 		it('adds NO style to feature with style-type of LINE or POLYGON', () => {
