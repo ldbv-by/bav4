@@ -21,7 +21,7 @@ export class TopicsService {
 
 	/**
 	 * Initializes this service, which means all available Topics are loaded and can be served in the future from the internal cache.
-	 * If initialsation fails, a fallback is delivered.
+	 * If initialization fails, a fallback is delivered.
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<Topic>>}
@@ -89,13 +89,13 @@ export class TopicsService {
 				'Topic 1',
 				'This is a fallback topic...',
 				[
-					//see fallback georesources in GeoResourceService
+					//see fallback GeoResources in GeoResourceService
 					'tpo',
 					'tpo_mono',
 					'bmde_vector',
 					'bmde_vector_relief'
 				],
-				[],
+				'tpo',
 				[],
 				[],
 				{
@@ -108,13 +108,13 @@ export class TopicsService {
 				'Topic 2',
 				'This is another fallback topic...',
 				[
-					//see fallback georesources in GeoResourceService
+					//see fallback GeoResources in GeoResourceService
 					'tpo',
 					'tpo_mono',
 					'bmde_vector',
 					'bmde_vector_relief'
 				],
-				[],
+				'tpo',
 				[],
 				[],
 				{
