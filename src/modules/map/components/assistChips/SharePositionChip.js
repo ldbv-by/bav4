@@ -1,3 +1,6 @@
+/**
+ * @module modules/map/components/assistChips/SharePositionChip
+ */
 import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
