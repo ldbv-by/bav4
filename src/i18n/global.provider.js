@@ -15,7 +15,9 @@ export const provide = (lang) => {
 				global_import_authenticationModal_title: 'Authentication required',
 				global_locally_imported_dataset_copyright_label: 'Dataset and/or style provided by third party',
 				global_share_unsupported_geoResource_warning: "The following layers won't be shared:",
-				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html'
+				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
+				global_marker_symbol_label: 'Marker',
+				global_featureInfo_not_available: 'FeatureInfo is not available'
 			};
 
 		case 'de':
@@ -33,7 +35,9 @@ export const provide = (lang) => {
 				global_import_authenticationModal_title: 'Anmeldung erforderlich',
 				global_locally_imported_dataset_copyright_label: 'Mit Darstellung durch den Anwender',
 				global_share_unsupported_geoResource_warning: 'Folgende Ebenen werden nicht geteilt:',
-				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html'
+				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
+				global_marker_symbol_label: 'Markierung',
+				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar'
 			};
 
 		default:

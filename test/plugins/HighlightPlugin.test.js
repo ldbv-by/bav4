@@ -33,6 +33,10 @@ describe('HighlightPlugin', () => {
 		}
 	};
 
+	const translationService = {
+		translate: (key) => key
+	};
+
 	const setup = (state) => {
 		const initialState = {
 			mainMenu: {
@@ -54,7 +58,7 @@ describe('HighlightPlugin', () => {
 			featureInfo: featureInfoReducer,
 			search: searchReducer
 		});
-		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock }).registerSingleton('TranslationService', translationService);
 		return store;
 	};
 
@@ -278,6 +282,7 @@ describe('HighlightPlugin', () => {
 
 			expect(store.getState().highlight.features).toHaveSize(1);
 			expect(store.getState().highlight.features[0].data.coordinate).toEqual(coordinate);
+			expect(store.getState().highlight.features[0].label).toBe('global_marker_symbol_label');
 			expect(store.getState().highlight.features[0].type).toEqual(HighlightFeatureType.DEFAULT);
 		});
 	});
