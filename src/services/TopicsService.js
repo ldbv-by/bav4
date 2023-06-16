@@ -25,6 +25,7 @@ export class TopicsService {
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<Topic>>}
+	 * @throws Error when no topics are available
 	 */
 	async init() {
 		if (!this._topics) {
@@ -36,7 +37,7 @@ export class TopicsService {
 					this._topics.push(...this._newFallbackTopics());
 					console.warn('Topics could not be fetched from backend. Using fallback topics ...');
 				} else {
-					console.error('Topics could not be fetched from backend.', e);
+					throw new Error('No topics available', { cause: e });
 				}
 			}
 		}
