@@ -35,12 +35,8 @@ export class BaseLayerSwitcher extends MvuElement {
 			layersStoreReady: false
 		});
 
-		const { GeoResourceService: geoResourceService, TranslationService: translationService } = $injector.inject(
-			'GeoResourceService',
-			'TranslationService'
-		);
+		const { GeoResourceService: geoResourceService } = $injector.inject('GeoResourceService');
 		this._geoResourceService = geoResourceService;
-		this._translationService = translationService;
 
 		this.observe(
 			(store) => store.layers.active,
@@ -65,8 +61,6 @@ export class BaseLayerSwitcher extends MvuElement {
 
 	createView(model) {
 		const { baseGeoResourceIds, allBaseGeoResourceIds, activeLayers, layersStoreReady } = model;
-
-		// const translate = (key) => this._translationService.translate(key);
 
 		if (layersStoreReady) {
 			/**

@@ -18,7 +18,7 @@ describe('BaseLayerSwitcher', () => {
 	const setup = async (state = {}) => {
 		store = TestUtils.setupStoreAndDi(state, { layers: layersReducer });
 
-		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock).registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('GeoResourceService', geoResourceServiceMock);
 
 		return TestUtils.render(BaseLayerSwitcher.tag);
 	};
