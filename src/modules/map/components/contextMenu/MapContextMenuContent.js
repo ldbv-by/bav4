@@ -152,6 +152,9 @@ export class MapContextMenuContent extends MvuElement {
 							<span class="label">${translate('map_contextMenuContent_elevation_label')}</span><span class="coordinate">${elevation || '-'}</span>
 						</li>
 					</ul>
+					<div class="chips">
+						<ba-share-position-chip .position=${coordinate}></ba-share-position-chip>
+					</div>
 				</div>
 			`;
 		}

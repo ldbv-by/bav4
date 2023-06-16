@@ -4,6 +4,7 @@ import { provide as geolocationButtonProvide } from './geolocationButton.provide
 import { provide as contextMenuProvider } from './contextMenu.provider';
 import { provide as attributionInfoProvider } from './attributionInfo.provider';
 import { provide as rotationButtonProvider } from './rotationButton.provider';
+import { provide as assistChipsProvider } from './assistChips.provider';
 import { $injector } from '../../../injection';
 const { TranslationService: translationService } = $injector.inject('TranslationService');
 translationService.register('infoButtonProvider', infoButtonProvide);
@@ -12,3 +13,4 @@ translationService.register('geolocationButtonProvider', geolocationButtonProvid
 translationService.register('contextMenuProvider', contextMenuProvider);
 translationService.register('attributionInfoProvider', attributionInfoProvider);
 translationService.register('rotationButtonProvider', rotationButtonProvider);
+translationService.register('assistChipsProvider', assistChipsProvider);
