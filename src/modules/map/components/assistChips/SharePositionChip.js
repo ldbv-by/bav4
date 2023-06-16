@@ -72,23 +72,27 @@ export class SharePositionChip extends AbstractAssistChip {
 
 		const transformedPosition = this._coordinateService.transform(position, this._mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
-		const buildShareUrl = async (position) => {
-			const extraParams = { [QueryParameters.CROSSHAIR]: true };
-			const url = new URL(this._shareService.encodeState(extraParams));
-			const searchParams = new URLSearchParams(url.search);
-			searchParams.set(QueryParameters.CENTER, position);
-			url.search = searchParams.toString();
-			try {
-				const shortUrl = await this._urlService.shorten(url.toString());
-				return shortUrl;
-			} catch (error) {
-				console.warn('Could not shorten url', error);
-				return url;
-			}
-		};
-		const url = await buildShareUrl(transformedPosition);
+		const url = await this._buildShareUrl(transformedPosition);
 		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._copyUrlToClipboard(url);
 		shareAction(url);
+	}
+
+	async _buildShareUrl(position) {
+		const extraParams = { [QueryParameters.CROSSHAIR]: true };
+		const url = new URL(this._shareService.encodeState(extraParams));
+		/* We cannot override QueryParameters.CENTER by adding as part of the extraParams array, due to type 
+        of the parameter (Array). The next best solution is, to rebuild the searchParams and override the key explicit.
+        */
+		const searchParams = new URLSearchParams(url.search);
+		searchParams.set(QueryParameters.CENTER, position);
+		url.search = searchParams.toString();
+		try {
+			const shortUrl = await this._urlService.shorten(url.toString());
+			return shortUrl;
+		} catch (error) {
+			console.warn('Could not shorten url', error);
+			return url;
+		}
 	}
 
 	async _shareUrlWithApi(url) {
