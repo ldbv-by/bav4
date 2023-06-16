@@ -15,7 +15,6 @@ import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
-import maplibregl from 'maplibre-gl';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
 
@@ -271,43 +270,35 @@ describe('LayerService', () => {
 
 		describe('VTGeoresource', () => {
 			it('converts a VTGeoresource to a olLayer', () => {
-				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
-				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
-				if (maplibregl.supported()) {
-					const instanceUnderTest = setup();
-					const id = 'id';
-					const geoResourceId = 'geoResourceId';
-					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null);
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null);
 
-					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
 
-					expect(vtOlLayer.get('id')).toBe(id);
-					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
-					expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
-					expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
-					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
-					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
-				}
+				expect(vtOlLayer.get('id')).toBe(id);
+				expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(vtOlLayer.getMinZoom()).toBeNegativeInfinity();
+				expect(vtOlLayer.getMaxZoom()).toBePositiveInfinity();
+				// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
+				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
 			});
 
 			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
-				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
-				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
-				if (maplibregl.supported()) {
-					const instanceUnderTest = setup();
-					const id = 'id';
-					const geoResourceId = 'geoResourceId';
-					const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null).setOpacity(0.5).setMinZoom(5).setMaxZoom(19);
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const geoResourceId = 'geoResourceId';
+				const vtGeoresource = new VTGeoResource(geoResourceId, 'label', null).setOpacity(0.5).setMinZoom(5).setMaxZoom(19);
 
-					const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
-					expect(vtOlLayer.get('id')).toBe(id);
-					expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
-					expect(vtOlLayer.getOpacity()).toBe(0.5);
-					expect(vtOlLayer.getMinZoom()).toBe(5);
-					expect(vtOlLayer.getMaxZoom()).toBe(19);
-					// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
-					expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
-				}
+				const vtOlLayer = instanceUnderTest.toOlLayer(id, vtGeoresource);
+				expect(vtOlLayer.get('id')).toBe(id);
+				expect(vtOlLayer.get('geoResourceId')).toBe(geoResourceId);
+				expect(vtOlLayer.getOpacity()).toBe(0.5);
+				expect(vtOlLayer.getMinZoom()).toBe(5);
+				expect(vtOlLayer.getMaxZoom()).toBe(19);
+				// Todo: currently we have no simple possibility to check the correctness of the styleUrl, so we just check for the expected ol layer class
+				expect(vtOlLayer instanceof MapLibreLayer).toBeTrue();
 			});
 		});
 
