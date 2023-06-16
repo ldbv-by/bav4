@@ -26,7 +26,6 @@
 	margin: auto;
 }
 .chips {
-	border-top: 1px solid var(--header-background-color);
 	display: flex;
 	justify-content: space-evenly;
 	margin: 0;
