@@ -280,6 +280,15 @@ describe('OlFeatureInfoHandler', () => {
 			await TestUtils.timeout(TestDelay);
 			expect(store.getState().featureInfo.current).toHaveSize(1);
 			expect(store.getState().highlight.features).toHaveSize(1);
+
+			//we modify the second layer so that it is not queryable anymore
+			modifyLayer(layerId1, { constraints: { hidden: true } });
+			abortOrReset();
+			startRequest(matchingCoordinate);
+
+			await TestUtils.timeout(TestDelay);
+			expect(store.getState().featureInfo.current).toHaveSize(0);
+			expect(store.getState().highlight.features).toHaveSize(0);
 		});
 
 		it('ignores a clustered feature containing more than one features', async () => {

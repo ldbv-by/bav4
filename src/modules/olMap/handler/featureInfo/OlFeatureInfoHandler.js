@@ -68,7 +68,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		};
 
 		//use only visible and unhidden layers
-		const layerFilter = (layerProperties) => layerProperties.visible;
+		const layerFilter = (layerProperties) => layerProperties.visible && !layerProperties.constraints.hidden;
 
 		observe(
 			this._storeService.getStore(),
