@@ -1,6 +1,7 @@
 /**
  * @module modules/map/components/assistChips/SharePositionChip
  */
+import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
@@ -107,7 +108,8 @@ export class SharePositionChip extends AbstractAssistChip {
 		const translate = (key) => this._translationService.translate(key);
 		try {
 			await this._shareService.copyToClipboard(url);
-			emitNotification(`"${url}" ${translate('map_assistChips_share_position_clipboard_success')}`, LevelTypes.INFO);
+			const content = html`<a href="${url}" target="_blank">${url}</a> ${translate('map_assistChips_share_position_clipboard_success')}`;
+			emitNotification(content, LevelTypes.INFO);
 		} catch {
 			const message = translate('map_assistChips_share_position_clipboard_error');
 			emitNotification(message, LevelTypes.WARN);
