@@ -42,7 +42,7 @@ describe('TopicsPlugin', () => {
 	});
 
 	describe('_init', () => {
-		it('initializes the topics service and calls #_addTopicFromConfig', async () => {
+		it('initializes the TopicsService and calls #_addTopicFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
@@ -57,7 +57,7 @@ describe('TopicsPlugin', () => {
 			expect(store.getState().topics.ready).toBeTrue();
 		});
 
-		it('initializes the topics service and calls #_addTopicFromQueryParams', async () => {
+		it('initializes the TopicsService and calls #_addTopicFromQueryParams', async () => {
 			const store = setup();
 			const queryParam = QueryParameters.TOPIC + '=some';
 			const instanceUnderTest = new TopicsPlugin();
@@ -73,10 +73,24 @@ describe('TopicsPlugin', () => {
 			expect(addTopicFromConfigSpy).not.toHaveBeenCalled();
 			expect(store.getState().topics.ready).toBeTrue();
 		});
+
+		it('throws an error when TopicsService throws', async () => {
+			const store = setup();
+			const queryParam = QueryParameters.TOPIC + '=some';
+			const instanceUnderTest = new TopicsPlugin();
+			const error = new Error('something got wrong');
+			spyOn(topicsServiceMock, 'init').and.rejectWith(error);
+			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+
+			await expectAsync(instanceUnderTest._init()).toBeRejectedWith(
+				jasmine.objectContaining({ message: 'No topics found. Is the backend running and available?', cause: error })
+			);
+			expect(store.getState().topics.ready).toBeFalse();
+		});
 	});
 
 	describe('_addTopicFromConfig', () => {
-		it('initializes the topics service and update the store', async () => {
+		it('initializes the TopicsService and update the store', async () => {
 			const store = setup();
 			const topicId = 'someId';
 			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
