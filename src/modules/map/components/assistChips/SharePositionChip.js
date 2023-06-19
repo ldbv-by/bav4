@@ -15,7 +15,8 @@ const Update = 'update';
 /**
  * A chip to share a specified position with a link. The link refers
  * to the webapp itself with highlight-feature on the specified position.
- * @class@author thiloSchlemmer
+ * @class
+ * @author thiloSchlemmer
  */
 export class SharePositionChip extends AbstractAssistChip {
 	constructor() {
