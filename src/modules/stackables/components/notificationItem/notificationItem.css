@@ -1,25 +1,3 @@
-a {
-	font-weight: 600;
-}
-
-a:link {
-	color: var(--text2);
-}
-
-a:focus {
-	text-decoration: none;
-	background: var(--text3);
-}
-
-a:hover {
-	text-decoration: underline;
-}
-
-a:active {
-	background: var(--secondary-bg-color);
-	color: var(--secondary-color);
-}
-
 .notification_item {
 	animation-name: animateIn;
 	animation-fill-mode: both;
@@ -87,4 +65,31 @@ a:active {
 		opacity: 0;
 		transform: translateY(200%);
 	}
+}
+
+a {
+	outline: 1px;
+}
+
+a:link {
+	color: var(--text2);
+}
+
+a:visited {
+	color: var(--secondary-color);
+}
+
+a:focus {
+	text-decoration: none;
+	background: var(--text3);
+}
+
+a:hover {
+	text-decoration: none;
+	background: var(--primary-bg-color);
+}
+
+a:active {
+	background: var(--secondary-bg-color);
+	color: var(--secondary-color);
 }
