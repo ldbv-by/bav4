@@ -42,9 +42,11 @@ describe('AdministrationService', () => {
 
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getAdministration(mockCoordinate)).toBeRejectedWithError('Could not load administration from provider');
 			await expectAsync(instanceUnderTest.getAdministration(mockCoordinate)).toBeRejectedWith(
-				jasmine.objectContaining({ cause: administrationProviderError })
+				jasmine.objectContaining({
+					message: 'Could not load administration from provider',
+					cause: administrationProviderError
+				})
 			);
 		});
 

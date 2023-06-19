@@ -211,8 +211,12 @@ describe('BvvMfpService', () => {
 					throw mfpError;
 				});
 
-				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWithError('Pdf request was not successful');
-				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWith(jasmine.objectContaining({ cause: mfpError }));
+				await expectAsync(instanceUnderTest.createJob(mfpSpec)).toBeRejectedWith(
+					jasmine.objectContaining({
+						message: 'Pdf request was not successful',
+						cause: mfpError
+					})
+				);
 				expect(instanceUnderTest._abortController).toBeNull();
 			});
 		});

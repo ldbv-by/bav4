@@ -56,8 +56,12 @@ describe('GeoResourceInfoService', () => {
 		};
 		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError('Could not load a GeoResourceInfoResult from provider');
-		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(jasmine.objectContaining({ cause: providerError }));
+		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(
+			jasmine.objectContaining({
+				message: 'Could not load a GeoResourceInfoResult from provider',
+				cause: providerError
+			})
+		);
 	});
 
 	describe('GeoResourceInfoResult', () => {
@@ -101,8 +105,12 @@ describe('GeoResourceInfoService', () => {
 			};
 			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError('Could not load a GeoResourceInfoResult from provider');
-			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(jasmine.objectContaining({ cause: providerError }));
+			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load a GeoResourceInfoResult from provider',
+					cause: providerError
+				})
+			);
 		});
 
 		it('just provides geoResourceInfoResult when geoResourceId already available in locale cache', async () => {

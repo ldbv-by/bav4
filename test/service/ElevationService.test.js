@@ -59,8 +59,12 @@ describe('ElevationService', () => {
 			});
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(`Could not load an elevation from provider`);
-			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWith(jasmine.objectContaining({ cause: providerError }));
+			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load an elevation from provider',
+					cause: providerError
+				})
+			);
 		});
 
 		it('rejects when argument is not a coordinate', async () => {
@@ -112,8 +116,12 @@ describe('ElevationService', () => {
 				[2, 3]
 			];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(`Could not load an elevation profile from provider`);
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWith(jasmine.objectContaining({ cause: providerError }));
+			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load an elevation profile from provider',
+					cause: providerError
+				})
+			);
 		});
 
 		it('rejects when argument is not an Array or does not contain at least two coordinates', async () => {

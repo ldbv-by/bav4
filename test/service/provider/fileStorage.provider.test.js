@@ -98,10 +98,13 @@ describe('BVV GeoResource provider', () => {
 				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
 			const loader = _newLoader(id);
 
-			await expectAsync(loader()).toBeRejectedWithError("Could not load vector data for id 'id'");
-			await expectAsync(loader()).toBeRejectedWith(jasmine.objectContaining({ cause: jasmine.any(Error) }));
 			await expectAsync(loader()).toBeRejectedWith(
-				jasmine.objectContaining({ cause: jasmine.objectContaining({ message: `Unsupported FileStorageServiceDataType '${type}'` }) })
+				jasmine.objectContaining({
+					message: "Could not load vector data for id 'id'",
+					cause: jasmine.objectContaining({
+						message: `Unsupported FileStorageServiceDataType '${type}'`
+					})
+				})
 			);
 		});
 

@@ -47,8 +47,12 @@ describe('CatalogService', () => {
 					throw catalogProviderError;
 				});
 
-				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWithError('Could not load catalog from provider');
-				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWith(jasmine.objectContaining({ cause: catalogProviderError }));
+				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWith(
+					jasmine.objectContaining({
+						message: 'Could not load catalog from provider',
+						cause: catalogProviderError
+					})
+				);
 			});
 
 			it('returns a fallback catalog when we have a fallback topic', async () => {
