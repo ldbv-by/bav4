@@ -19,7 +19,7 @@ export class ShareService {
 	/**
 	 * @public
 	 * @param {string} textToCopy
-	 * @returns {Promise<undefined> | Promise.reject}
+	 * @returns {Promise<undefined>}
 	 */
 	async copyToClipboard(textToCopy) {
 		if (this._environmentService.getWindow().isSecureContext) {
