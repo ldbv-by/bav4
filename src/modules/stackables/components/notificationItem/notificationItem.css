@@ -1,13 +1,9 @@
 a {
-	outline: 1px;
+	font-weight: 600;
 }
 
 a:link {
 	color: var(--text2);
-}
-
-a:visited {
-	color: var(--secondary-color);
 }
 
 a:focus {
@@ -16,8 +12,7 @@ a:focus {
 }
 
 a:hover {
-	text-decoration: none;
-	background: var(--primary-bg-color);
+	text-decoration: underline;
 }
 
 a:active {
