@@ -68,7 +68,7 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 		};
 
 		//use only visible and unhidden layers
-		const layerFilter = (layerProperties) => layerProperties.visible && !layerProperties.constraints.hidden;
+		const layerFilter = (layerProperties) => layerProperties.visible;
 
 		observe(
 			this._storeService.getStore(),
@@ -86,14 +86,22 @@ export class OlFeatureInfoHandler extends OlMapHandler {
 					})
 					//map olLayer to olFeature (wrapper)
 					.map((olLayerContainer) => {
-						const { layerProperties: layerProperties, olLayer } = olLayerContainer;
+						const { layerProperties, olLayer } = olLayerContainer;
 						return { olFeature: findOlFeature(map, map.getPixelFromCoordinate(coordinate.payload), olLayer), layerProperties: layerProperties };
 					})
 					.filter((olFeatureContainer) => !!olFeatureContainer.olFeature)
+					.filter((olFeatureContainer) => {
+						const { layerProperties, olFeature } = olFeatureContainer;
+						//only features containing a name are allowed to be selected for hidden layers!
+						if (layerProperties.constraints.hidden) {
+							return !!olFeature.get('name');
+						}
+						return olFeature;
+					})
 					//map olFeature to FeatureInfo item
 					.map((olFeatureContainer) => this._featureInfoProvider(olFeatureContainer.olFeature, olFeatureContainer.layerProperties))
 					// .filter(featureInfo => !!featureInfo)
-					.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('olMap_handler_featureInfo_not_available'), content: '' }))
+					.map((featureInfo) => (featureInfo ? featureInfo : { title: translate('global_featureInfo_not_available'), content: '' }))
 					//display FeatureInfo items in the same order as layers
 					.reverse();
 

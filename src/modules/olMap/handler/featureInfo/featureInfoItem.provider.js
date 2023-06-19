@@ -62,7 +62,11 @@ export const getBvvFeatureInfo = (olFeature, layerProperties) => {
 	};
 
 	const geoRes = geoResourceService.byId(layerProperties.geoResourceId);
-	const name = olFeature.get('name') ? `${securityService.sanitizeHtml(olFeature.get('name'))} - ${geoRes.label}` : `${geoRes.label}`;
+	const name = geoRes
+		? olFeature.get('name')
+			? `${securityService.sanitizeHtml(olFeature.get('name'))} - ${geoRes.label}`
+			: `${geoRes.label}`
+		: `${securityService.sanitizeHtml(olFeature.get('name') ?? '')}`;
 	const content = getContent();
 	const geometry = { data: new GeoJSON().writeGeometry(olFeature.getGeometry()), geometryType: FeatureInfoGeometryTypes.GEOJSON };
 	return { title: name, content: content, geometry: geometry };
