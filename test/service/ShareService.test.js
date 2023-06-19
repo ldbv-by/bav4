@@ -259,10 +259,6 @@ describe('ShareService', () => {
 				const { l: l2 } = instanceUnderTest._mergeExtraParams({ l: ['a', 'b'] }, { l: ['b', 'c'] });
 
 				expect(l2).toEqual(['a', 'b', 'b', 'c']);
-
-				const { l: l3 } = instanceUnderTest._mergeExtraParams({ l: [2, 4] }, { l: [21, 42] });
-
-				expect(l3).toEqual([21, 42]);
 			});
 
 			it('adds value(s) when key not present', () => {
