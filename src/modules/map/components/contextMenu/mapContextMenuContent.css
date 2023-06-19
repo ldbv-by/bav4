@@ -25,6 +25,7 @@
 	padding-left: 1em;
 	margin: auto;
 }
+
 .chips {
 	display: flex;
 	justify-content: space-evenly;
