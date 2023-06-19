@@ -6,6 +6,9 @@ import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
 
+/**
+ * @class
+ */
 export class ShareService {
 	constructor() {
 		const { EnvironmentService: environmentService, ConfigService: configService } = $injector.inject('EnvironmentService', 'ConfigService');
@@ -27,7 +30,7 @@ export class ShareService {
 
 	_mergeExtraParams(extractedState, extraParams) {
 		for (const [key, value] of Object.entries(extraParams)) {
-			//when a parameter is already present and denotes an array, value(s) will be appendend
+			//when a parameter is already present and denotes an array, value(s) will be appended
 			if (Object.keys(extractedState).includes(key)) {
 				if (Array.isArray(extractedState[key])) {
 					const values = Array.isArray(value) ? [...value] : [value];
@@ -51,9 +54,30 @@ export class ShareService {
 	 * @returns {string} url
 	 */
 	encodeState(extraParams = {}, pathParameters = []) {
+		return this.encodeStateForPosition({}, extraParams, pathParameters);
+	}
+
+	/**
+	 * A combination of zoom and center and rotation. All properties are optional. Missing properties are replaced with the current state.
+	 * @typedef {Object} Position
+	 * @property {module:domain/coordinateTypeDef~Coordinate} [center] coordinate in map projection
+	 * @property {number} [zoom] zoom level
+	 * @property {number} [rotation] rotation in radians
+	 */
+
+	/**
+	 * Same as {@link ShareService#encodeState} but for a designated position.
+	 * @param {module:services/ShareService~Position} position The position
+	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
+	 * In this case, existing values will be concatenated with the additional values.
+	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
+	 * @returns {string} url
+	 */
+	encodeStateForPosition(position, extraParams = {}, pathParameters = []) {
+		const { center, zoom, rotation } = position;
 		const extractedState = this._mergeExtraParams(
 			{
-				...this._extractPosition(),
+				...this._extractPosition(center, zoom, rotation),
 				...this._extractLayers(),
 				...this._extractTopic()
 			},
@@ -70,27 +94,19 @@ export class ShareService {
 	 * @private
 	 * @returns {object} extractedState
 	 */
-	_extractPosition() {
+	_extractPosition(_center, _zoom, _rotation) {
 		const {
 			StoreService: storeService,
 			CoordinateService: coordinateService,
 			MapService: mapService
 		} = $injector.inject('StoreService', 'CoordinateService', 'MapService');
 
-		const state = storeService.getStore().getState();
 		const extractedState = {};
 
-		//position
-		const {
-			position: { center }
-		} = state;
-		const {
-			position: { zoom }
-		} = state;
-		//rotation
-		const {
-			position: { rotation }
-		} = state;
+		const state = storeService.getStore().getState();
+		const center = _center ?? state.position.center;
+		const zoom = _zoom ?? state.position.zoom;
+		const rotation = _rotation ?? state.position.rotation;
 
 		// we use the defined SRID for local projected tasks (if available) otherwise WGS84
 		const { digits, code } =
