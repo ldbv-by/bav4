@@ -1,4 +1,3 @@
-import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 import { QueryParameters } from '../../../../../src/domain/queryParameters';
 import { $injector } from '../../../../../src/injection';
 import { SharePositionChip } from '../../../../../src/modules/map/components/assistChips/SharePositionChip';
