@@ -83,10 +83,10 @@ describe('SharePositionChip', () => {
 		});
 
 		it('does NOT renders the view with invalid center', async () => {
-			const invalidPosition = [42];
+			const invalidCenter = [42];
 
 			const element = await setup();
-			element.center = invalidPosition;
+			element.center = invalidCenter;
 
 			expect(element.isVisible()).toBeFalse();
 		});
