@@ -86,17 +86,14 @@ describe('TopicService', () => {
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 
-			it('logs an error when we are NOT in standalone mode', async () => {
+			it('throws an error when we are NOT in standalone mode', async () => {
 				spyOn(environmentService, 'isStandalone').and.returnValue(false);
+				const error = new Error('Topics could not be loaded');
 				const instanceUnderTest = setup(async () => {
-					throw new Error('Topics could not be loaded');
+					throw error;
 				});
-				const errorSpy = spyOn(console, 'error');
 
-				const topics = await instanceUnderTest.init();
-
-				expect(topics).toEqual([]);
-				expect(errorSpy).toHaveBeenCalledWith('Topics could not be fetched from backend.', jasmine.anything());
+				await expectAsync(instanceUnderTest.init()).toBeRejectedWith(jasmine.objectContaining({ message: 'No topics available', cause: error }));
 			});
 		});
 	});
