@@ -5,6 +5,7 @@ import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
+import { openModal } from '../../../../store/modal/modal.action';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
@@ -73,7 +74,7 @@ export class SharePositionChip extends AbstractAssistChip {
 		const transformedPosition = this._coordinateService.transform(position, this._mapService.getSrid(), code).map((n) => n.toFixed(digits));
 
 		const url = await this._buildShareUrl(transformedPosition);
-		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._copyUrlToClipboard(url);
+		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url);
 		shareAction(url);
 	}
 
@@ -108,17 +109,10 @@ export class SharePositionChip extends AbstractAssistChip {
 		}
 	}
 
-	async _copyUrlToClipboard(url) {
-		const translate = (key) => this._translationService.translate(key);
-		try {
-			await this._shareService.copyToClipboard(url);
-			const content = html`<a href="${url}" target="_blank">${url}</a> ${translate('map_assistChips_share_position_clipboard_success')}`;
-			emitNotification(content, LevelTypes.INFO);
-		} catch {
-			const message = translate('map_assistChips_share_position_clipboard_error');
-			emitNotification(message, LevelTypes.WARN);
-			console.warn('Clipboard API not available');
-		}
+	async _shareUrlDialog(url) {
+		const content = html`<ba-share-content .urls=${url}></ba-share-content>`;
+
+		openModal(this._translationService.translate('map_assistChips_share_position_label'), content);
 	}
 
 	set position(value) {

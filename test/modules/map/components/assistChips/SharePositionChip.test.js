@@ -2,10 +2,11 @@ import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coord
 import { $injector } from '../../../../../src/injection';
 import { SharePositionChip } from '../../../../../src/modules/map/components/assistChips/SharePositionChip';
 import shareSvg from '../../../../../src/modules/map/components/assistChips/assets/share.svg';
-import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
-import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 
+window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(SharePositionChip.tag, SharePositionChip);
 
 describe('SharePositionChip', () => {
@@ -48,7 +49,7 @@ describe('SharePositionChip', () => {
 	const setup = async (config = {}) => {
 		const { share = false } = config;
 		windowMock.navigator.share = share;
-		store = TestUtils.setupStoreAndDi({}, { notifications: notificationReducer });
+		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
@@ -141,43 +142,24 @@ describe('SharePositionChip', () => {
 		});
 
 		describe('and ShareAPI not available', () => {
-			it('copies the shortened url to clipboard', async () => {
+			it('opens the modal with shareDialogContent', async () => {
 				const element = await setup({ share: false });
 				element.position = [42, 21];
 				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
 				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.returnValue(() => Promise.resolve());
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(clipboardSpy).toHaveBeenCalledWith('http://shorten.foo');
-			});
+				expect(store.getState().modal.data.title).toBe('map_assistChips_share_position_label');
 
-			it('logs a warning when copyToClipboard fails', async () => {
-				const element = await setup({ share: false });
-				element.position = [42, 21];
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-
-				const warnSpy = spyOn(console, 'warn');
-				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
-				const clipboardSpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
-
-				const button = element.shadowRoot.querySelector('button');
-				button.click();
-
-				await TestUtils.timeout();
-				expect(shortenerSpy).toHaveBeenCalledTimes(1);
-				expect(clipboardSpy).toHaveBeenCalledWith('http://shorten.foo');
-				//check notification
-				expect(store.getState().notifications.latest.payload.content).toBe('map_assistChips_share_position_clipboard_error');
-				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
-				expect(warnSpy).toHaveBeenCalledWith('Clipboard API not available');
+				const contentElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+				const shareDialogContentElement = contentElement.querySelector('ba-share-content');
+				expect(shareDialogContentElement.shadowRoot.querySelector('input').value).toBe('http://shorten.foo');
 			});
 		});
 
