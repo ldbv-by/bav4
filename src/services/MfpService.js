@@ -74,7 +74,7 @@ import { getMfpCapabilities, postMfpSpec } from './provider/mfp.provider';
  * BVV specific service that communicates with the BVV backend to create a Mapfish Print report.
  * @class
  * @author taulinger
- * @implements {MfpService}
+ * @implements {module:services/MfpService~MfpService}
  */
 export class BvvMfpService {
 	constructor(mfpCapabilitiesProvider = getMfpCapabilities, createMfpSpecProvider = postMfpSpec) {
@@ -153,7 +153,7 @@ export class BvvMfpService {
 				await sleep(2500); // let's fake latency
 				return 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
 			} else {
-				throw new Error(`Pdf request was not successful: ${e}`);
+				throw new Error(`Pdf request was not successful`, { cause: e });
 			}
 		} finally {
 			this._abortController = null;

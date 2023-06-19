@@ -5,6 +5,7 @@ import { $injector } from '../injection';
 import { round } from '../utils/numberUtils';
 import { QueryParameters } from '../domain/queryParameters';
 import { GlobalCoordinateRepresentations } from '../domain/coordinateRepresentation';
+import { isCoordinate } from '../utils/checks';
 
 export class ShareService {
 	constructor() {
@@ -16,7 +17,7 @@ export class ShareService {
 	/**
 	 * @public
 	 * @param {string} textToCopy
-	 * @returns {Promise<undefined> | Promise.reject}
+	 * @returns {Promise}
 	 */
 	async copyToClipboard(textToCopy) {
 		if (this._environmentService.getWindow().isSecureContext) {
@@ -27,11 +28,18 @@ export class ShareService {
 
 	_mergeExtraParams(extractedState, extraParams) {
 		for (const [key, value] of Object.entries(extraParams)) {
-			//when a parameter is already present and denotes an array, value(s) will be appendend
 			if (Object.keys(extractedState).includes(key)) {
+				//when a parameter is already present
 				if (Array.isArray(extractedState[key])) {
-					const values = Array.isArray(value) ? [...value] : [value];
-					extractedState[key] = [...extractedState[key], ...values];
+					// coordinates will be overridden
+					if (isCoordinate(extractedState[key])) {
+						extractedState[key] = value;
+					}
+					//other values will be appended
+					else {
+						const values = Array.isArray(value) ? [...value] : [value];
+						extractedState[key] = [...extractedState[key], ...values];
+					}
 				}
 			}
 			//we add non-existing extra params
@@ -47,6 +55,7 @@ export class ShareService {
 	 * The generated URL is based on the `FRONTEND_URL` config parameter.
 	 * @param {object} [extraParams] Additional parameters. Non-existing entries will be added. Existing values will be ignored except for values that are an array.
 	 * In this case, existing values will be concatenated with the additional values.
+	 * Note: If the new value denotes a coordinate it will always replace the existing value.
 	 * @param {array} [pathParameters] Optional path parameters. Will be appended to the current pathname without further checks
 	 * @returns {string} url
 	 */

@@ -98,28 +98,26 @@ describe('BVV GeoResource provider', () => {
 				.and.returnValue(Promise.resolve({ data: data, type: type, srid: srid }));
 			const loader = _newLoader(id);
 
-			try {
-				await loader();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe(`Could not load vector data for id '${id}': Unsupported FileStorageServiceDataType '${type}'`);
-			}
+			await expectAsync(loader()).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: "Could not load vector data for id 'id'",
+					cause: jasmine.objectContaining({
+						message: `Unsupported FileStorageServiceDataType '${type}'`
+					})
+				})
+			);
 		});
 
 		it('throws an error when FileStorageService throws an error', async () => {
 			const id = 'id';
 			const fileId = 'f_id';
-			const message = 'foo';
+			const serviceError = new Error('foo');
 			spyOn(fileStorageService, 'getFileId').withArgs(id).and.resolveTo(fileId);
-			spyOn(fileStorageService, 'get').withArgs(fileId).and.rejectWith(new Error(message));
+			spyOn(fileStorageService, 'get').withArgs(fileId).and.rejectWith(serviceError);
 			const loader = _newLoader(id);
 
-			try {
-				await loader();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe(`Could not load vector data for id '${id}': ${message}`);
-			}
+			await expectAsync(loader()).toBeRejectedWithError("Could not load vector data for id 'id'");
+			await expectAsync(loader()).toBeRejectedWith(jasmine.objectContaining({ cause: serviceError }));
 		});
 	});
 });
