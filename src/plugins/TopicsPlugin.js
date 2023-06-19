@@ -36,7 +36,7 @@ export class TopicsPlugin extends BaPlugin {
 		try {
 			await topicsService.init();
 		} catch (e) {
-			throw new Error('No topics found. Is the backend running and available?', { cause: e });
+			throw new Error('No topics found. Is the backend running and properly configured?', { cause: e });
 		}
 		//mark the topics state as ready
 		setReady();

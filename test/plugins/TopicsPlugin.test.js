@@ -83,7 +83,7 @@ describe('TopicsPlugin', () => {
 			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
 
 			await expectAsync(instanceUnderTest._init()).toBeRejectedWith(
-				jasmine.objectContaining({ message: 'No topics found. Is the backend running and available?', cause: error })
+				jasmine.objectContaining({ message: 'No topics found. Is the backend running and properly configured?', cause: error })
 			);
 			expect(store.getState().topics.ready).toBeFalse();
 		});
