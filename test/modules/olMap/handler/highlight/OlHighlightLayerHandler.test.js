@@ -159,7 +159,7 @@ describe('OlHighlightLayerHandler', () => {
 			expect(handler._olLayer).toBeNull();
 		});
 
-		it('unregisters observer', () => {
+		it('un-registers observer', () => {
 			const map = setupMap();
 			setup();
 			const handler = new OlHighlightLayerHandler();
@@ -177,9 +177,12 @@ describe('OlHighlightLayerHandler', () => {
 			setup();
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
-			const highlightCoordinateFeature = { data: { coordinate: [1, 0] } };
+			const highlightCoordinateFeature = { data: { coordinate: [1, 0] }, label: 'label' };
 
-			expect(handler._toOlFeature(highlightCoordinateFeature).getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data.coordinate);
+			const olFeature = handler._toOlFeature(highlightCoordinateFeature);
+
+			expect(olFeature.getGeometry().getCoordinates()).toEqual(highlightCoordinateFeature.data.coordinate);
+			expect(olFeature.get('name')).toBe('label');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(1);
 		});
 
@@ -188,14 +191,21 @@ describe('OlHighlightLayerHandler', () => {
 			const handler = new OlHighlightLayerHandler();
 			const appendStyleSpy = spyOn(handler, '_appendStyle').withArgs(jasmine.anything(), jasmine.any(Feature)).and.callThrough();
 			const highlightGeometryWktFeature = {
-				data: { geometry: new WKT().writeGeometry(new Point([21, 42])), geometryType: HighlightGeometryType.WKT }
+				data: { geometry: new WKT().writeGeometry(new Point([21, 42])), geometryType: HighlightGeometryType.WKT },
+				label: 'WKT'
 			};
 			const highlightGeometryGeoJsonFeature = {
-				data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryType.GEOJSON }
+				data: { geometry: new GeoJSON().writeGeometry(new Point([5, 10])), geometryType: HighlightGeometryType.GEOJSON },
+				label: 'GeoJSON'
 			};
 
-			expect(handler._toOlFeature(highlightGeometryWktFeature).getGeometry().getCoordinates()).toEqual([21, 42]);
-			expect(handler._toOlFeature(highlightGeometryGeoJsonFeature).getGeometry().getCoordinates()).toEqual([5, 10]);
+			const olFeature0 = handler._toOlFeature(highlightGeometryWktFeature);
+			const olFeature1 = handler._toOlFeature(highlightGeometryGeoJsonFeature);
+
+			expect(olFeature0.getGeometry().getCoordinates()).toEqual([21, 42]);
+			expect(olFeature0.get('name')).toBe('WKT');
+			expect(olFeature1.getGeometry().getCoordinates()).toEqual([5, 10]);
+			expect(olFeature1.get('name')).toBe('GeoJSON');
 			expect(appendStyleSpy).toHaveBeenCalledTimes(2);
 		});
 
