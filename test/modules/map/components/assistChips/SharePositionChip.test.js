@@ -1,4 +1,5 @@
 import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
+import { QueryParameters } from '../../../../../src/domain/queryParameters';
 import { $injector } from '../../../../../src/injection';
 import { SharePositionChip } from '../../../../../src/modules/map/components/assistChips/SharePositionChip';
 import shareSvg from '../../../../../src/modules/map/components/assistChips/assets/share.svg';
@@ -15,7 +16,7 @@ describe('SharePositionChip', () => {
 		copyToClipboard() {
 			return Promise.resolve();
 		},
-		encodeState() {
+		encodeStateForPosition() {
 			return 'http://this.is.a.url?forTestCase';
 		}
 	};
@@ -36,15 +37,6 @@ describe('SharePositionChip', () => {
 			return Promise.resolve('http://foo');
 		}
 	};
-	const mapServiceMock = {
-		getCoordinateRepresentations() {},
-		getSrid() {},
-		getLocalProjectedSrid: () => []
-	};
-
-	const coordinateServiceMock = {
-		transform: (c) => c
-	};
 
 	const setup = async (config = {}) => {
 		const { share = false } = config;
@@ -56,8 +48,6 @@ describe('SharePositionChip', () => {
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ShareService', shareServiceMock)
-			.registerSingleton('CoordinateService', coordinateServiceMock)
-			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('UrlService', urlServiceMock);
 
 		return TestUtils.render(SharePositionChip.tag);
@@ -67,7 +57,7 @@ describe('SharePositionChip', () => {
 		it('has a model containing default values', async () => {
 			const element = await setup();
 
-			expect(element.getModel()).toEqual({ position: null });
+			expect(element.getModel()).toEqual({ center: null });
 		});
 
 		it('properly implements abstract methods', async () => {
@@ -79,24 +69,24 @@ describe('SharePositionChip', () => {
 	});
 
 	describe('when initialized', () => {
-		it('renders the view with given position', async () => {
+		it('renders the view with given center', async () => {
 			const element = await setup();
-			element.position = [42, 21];
+			element.center = [42, 21];
 
 			expect(element.isVisible()).toBeTrue();
 		});
 
-		it('does NOT renders the view with missing position', async () => {
+		it('does NOT renders the view with missing center', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
 		});
 
-		it('does NOT renders the view with invalid position', async () => {
+		it('does NOT renders the view with invalid center', async () => {
 			const invalidPosition = [42];
 
 			const element = await setup();
-			element.position = invalidPosition;
+			element.center = invalidPosition;
 
 			expect(element.isVisible()).toBeFalse();
 		});
@@ -106,10 +96,8 @@ describe('SharePositionChip', () => {
 		describe('and ShareAPI available', () => {
 			it('shares the shortened url', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) });
-				element.position = [42, 21];
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-
+				element.center = [42, 21];
+				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.resolve(true));
 
@@ -118,14 +106,14 @@ describe('SharePositionChip', () => {
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
+				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
 				expect(shareSpy).toHaveBeenCalledWith({ title: 'map_assistChips_share_position_link_title', url: 'http://shorten.foo' });
 			});
 
 			it('logs a warning when shareApi fails', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) });
-				element.position = [42, 21];
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				element.center = [42, 21];
+				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 
 				const errorSpy = spyOn(console, 'error');
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
@@ -136,6 +124,7 @@ describe('SharePositionChip', () => {
 
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
+				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
 				expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
 				expect(shareSpy).toHaveBeenCalledWith({ title: 'map_assistChips_share_position_link_title', url: 'http://shorten.foo' });
 			});
@@ -144,10 +133,7 @@ describe('SharePositionChip', () => {
 		describe('and ShareAPI not available', () => {
 			it('opens the modal with shareDialogContent', async () => {
 				const element = await setup({ share: false });
-				element.position = [42, 21];
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
-
+				element.center = [42, 21];
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 
 				const button = element.shadowRoot.querySelector('button');
@@ -168,9 +154,7 @@ describe('SharePositionChip', () => {
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.reject('not available'));
 				const warnSpy = spyOn(console, 'warn');
 				const element = await setup({ share: () => Promise.resolve(true) });
-				element.position = [42, 21];
-				spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
-				spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+				element.center = [42, 21];
 
 				const button = element.shadowRoot.querySelector('button');
 				button.click();

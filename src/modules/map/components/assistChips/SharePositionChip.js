@@ -2,7 +2,6 @@
  * @module modules/map/components/assistChips/SharePositionChip
  */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
-import { GlobalCoordinateRepresentations } from '../../../../domain/coordinateRepresentation';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
@@ -16,24 +15,21 @@ const Update = 'update';
  * A chip to share a specified position with a link. The link refers
  * to the webapp itself with highlight-feature on the specified position.
  * @class
+ * @property {module:domain/coordinateTypeDef~Coordinate} center The center coordinate of the shared position
  * @author thiloSchlemmer
  */
 export class SharePositionChip extends AbstractAssistChip {
 	constructor() {
-		super({ position: null });
+		super({ center: null });
 		const {
 			TranslationService: translationService,
 			EnvironmentService: environmentService,
 			UrlService: urlService,
-			CoordinateService: coordinateService,
-			MapService: mapService,
 			ShareService: shareService
-		} = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'CoordinateService', 'MapService', 'ShareService');
+		} = $injector.inject('TranslationService', 'EnvironmentService', 'UrlService', 'ShareService');
 		this._translationService = translationService;
 		this._environmentService = environmentService;
 		this._shareService = shareService;
-		this._coordinateService = coordinateService;
-		this._mapService = mapService;
 		this._urlService = urlService;
 	}
 
@@ -42,7 +38,7 @@ export class SharePositionChip extends AbstractAssistChip {
 			case Update:
 				return {
 					...model,
-					position: data
+					center: data
 				};
 		}
 	}
@@ -57,36 +53,22 @@ export class SharePositionChip extends AbstractAssistChip {
 	}
 
 	isVisible() {
-		const { position } = this.getModel();
-		return isCoordinate(position);
+		const { center } = this.getModel();
+		return isCoordinate(center);
 	}
 
 	async onClick() {
-		const { position } = this.getModel();
+		const { center } = this.getModel();
 		const useShareApi = this._environmentService.getWindow().navigator.share ? true : false;
 
-		const { digits, code } =
-			this._mapService
-				.getCoordinateRepresentations(position)
-				.filter((cr) => cr.code)
-				.filter((cr) => cr.code === this._mapService.getLocalProjectedSrid())[0] ?? GlobalCoordinateRepresentations.WGS84;
-
-		const transformedPosition = this._coordinateService.transform(position, this._mapService.getSrid(), code).map((n) => n.toFixed(digits));
-
-		const url = await this._buildShareUrl(transformedPosition);
+		const url = await this._buildShareUrl(center);
 		const shareAction = useShareApi ? (url) => this._shareUrlWithApi(url) : (url) => this._shareUrlDialog(url);
 		shareAction(url);
 	}
 
-	async _buildShareUrl(position) {
+	async _buildShareUrl(center) {
 		const extraParams = { [QueryParameters.CROSSHAIR]: true };
-		const url = new URL(this._shareService.encodeState(extraParams));
-		/* We cannot override QueryParameters.CENTER by adding as part of the extraParams array, due to type 
-        of the parameter (Array). The next best solution is, to rebuild the searchParams and override the key explicit.
-        */
-		const searchParams = new URLSearchParams(url.search);
-		searchParams.set(QueryParameters.CENTER, position);
-		url.search = searchParams.toString();
+		const url = new URL(this._shareService.encodeStateForPosition({ center: center }, extraParams));
 		try {
 			const shortUrl = await this._urlService.shorten(url.toString());
 			return shortUrl;
@@ -115,7 +97,7 @@ export class SharePositionChip extends AbstractAssistChip {
 		openModal(this._translationService.translate('map_assistChips_share_position_label'), content);
 	}
 
-	set position(value) {
+	set center(value) {
 		if (isCoordinate(value)) {
 			this.signal(Update, value);
 		}
