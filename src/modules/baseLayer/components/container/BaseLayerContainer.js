@@ -1,7 +1,7 @@
 /**
  * @module modules/baseLayer/components/container/BaseLayerContainer
  */
-import { html } from 'lit-html';
+import { html, nothing } from 'lit-html';
 import css from './baseLayerContainer.css';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
@@ -89,18 +89,23 @@ export class BaseLayerContainer extends MvuElement {
 		const isActive = (category) => {
 			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
 		};
+		const isButtonGroupHidden = () => {
+			return Object.keys(categories).length < 2;
+		};
 
 		return html`
 			<style>
 				${css}
 			</style>
 			<div class="title">${translate('baseLayer_switcher_header')}</div>
-			<div class="button-group">
-				${Object.entries(categories).map(
-					([key]) =>
-						html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
-				)}
-			</div>
+			${isButtonGroupHidden()
+				? nothing
+				: html`<div class="button-group">
+						${Object.entries(categories).map(
+							([key]) =>
+								html`<button @click=${() => onClick(key)} class="title ${isActive(key)}">${translate(`baseLayer_container_category_${key}`)}</button>`
+						)}
+				  </div>`}
 			<div id="section" class="section scroll-snap-x">
 				${Object.entries(categories).map(
 					([key, value]) =>

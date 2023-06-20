@@ -56,25 +56,47 @@ describe('BaseLayerContainer', () => {
 
 		describe('and a current topic is available ', () => {
 			describe('and the current topic contains a baseGeoRs definition', () => {
-				it('renders two BaseLayerSwitcher instances', async () => {
-					const topicId = 'topicId';
-					spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
-					const element = await setup({ topics: { current: topicId } });
+				describe('with more than one category', () => {
+					it('renders the UI', async () => {
+						const topicId = 'topicId';
+						spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+						const element = await setup({ topics: { current: topicId } });
 
-					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
-					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
-						managed: baseGeoRs.raster,
-						all: [...baseGeoRs.raster, ...baseGeoRs.vector]
+						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
+							managed: baseGeoRs.raster,
+							all: [...baseGeoRs.raster, ...baseGeoRs.vector]
+						});
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[1].configuration).toEqual({
+							managed: baseGeoRs.vector,
+							all: [...baseGeoRs.raster, ...baseGeoRs.vector]
+						});
+						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
+						expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
+						expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBeTrue();
+						expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
+						expect(element.shadowRoot.querySelectorAll('button')[1].classList.contains('is-active')).toBeFalse();
 					});
-					expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[1].configuration).toEqual({
-						managed: baseGeoRs.vector,
-						all: [...baseGeoRs.raster, ...baseGeoRs.vector]
+				});
+
+				describe('with exactly one category', () => {
+					it('renders the UI', async () => {
+						const topicId = 'topicId';
+						spyOn(topicsServiceMock, 'byId')
+							.withArgs(topicId)
+							.and.returnValue(new Topic(topicId, 'label', 'description', { raster: baseGeoRs.raster }));
+						const element = await setup({ topics: { current: topicId } });
+
+						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(0);
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
+						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)[0].configuration).toEqual({
+							managed: baseGeoRs.raster,
+							all: [...baseGeoRs.raster]
+						});
+
+						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
 					});
-					expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
-					expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
-					expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBeTrue();
-					expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
-					expect(element.shadowRoot.querySelectorAll('button')[1].classList.contains('is-active')).toBeFalse();
 				});
 			});
 
@@ -118,7 +140,7 @@ describe('BaseLayerContainer', () => {
 	});
 
 	describe('when topic changes', () => {
-		it('renders two BaseLayerSwitcher instances', async () => {
+		it('updates the view', async () => {
 			const rasterTopic = new Topic('raster', 'label', 'description', { raster: baseGeoRs.raster });
 			const vectorTopic = new Topic('vector', 'label', 'description', { vector: baseGeoRs.vector });
 			spyOn(topicsServiceMock, 'byId').and.callFake((topicId) => {
@@ -136,7 +158,6 @@ describe('BaseLayerContainer', () => {
 				managed: baseGeoRs.raster,
 				all: baseGeoRs.raster
 			});
-			expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
 
 			setCurrent(vectorTopic.id);
 
@@ -145,7 +166,6 @@ describe('BaseLayerContainer', () => {
 				managed: baseGeoRs.vector,
 				all: baseGeoRs.vector
 			});
-			expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_vector');
 		});
 	});
 });
