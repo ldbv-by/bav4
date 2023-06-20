@@ -5,6 +5,7 @@ import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import { isCoordinate } from '../../../../utils/checks';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
 import shareIcon from './assets/share.svg';
@@ -79,15 +80,14 @@ export class SharePositionChip extends AbstractAssistChip {
 	}
 
 	async _shareUrlWithApi(url) {
-		const translate = (key) => this._translationService.translate(key);
-
 		try {
-			await this._environmentService.getWindow().navigator.share({
-				title: translate('map_assistChips_share_position_link_title'),
+			const content = {
+				// title-property is absent; browser automatically creates a meaningful title from Website-Title
 				url: url
-			});
+			};
+			await this._environmentService.getWindow().navigator.share(content);
 		} catch (error) {
-			console.error('Share-API failed:', error);
+			emitNotification(this._translationService.translate('map_assistChips_share_position_api_failed'), LevelTypes.WARN);
 		}
 	}
 

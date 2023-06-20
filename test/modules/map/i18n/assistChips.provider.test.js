@@ -5,14 +5,14 @@ describe('i18n for map assistChips', () => {
 		const map = provide('en');
 
 		expect(map.map_assistChips_share_position_label).toBe('Share position');
-		expect(map.map_assistChips_share_position_link_title).toBe('shared position with BayernAtlas.de');
+		expect(map.map_assistChips_share_position_api_failed).toBe('Sharing the position has failed');
 	});
 
 	it('provides translation for de', () => {
 		const map = provide('de');
 
 		expect(map.map_assistChips_share_position_label).toBe('Position teilen');
-		expect(map.map_assistChips_share_position_link_title).toBe('Position geteilt über BayernAtlas.de');
+		expect(map.map_assistChips_share_position_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
 	});
 
 	it('have the expected amount of translations', () => {

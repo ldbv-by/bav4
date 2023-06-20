@@ -4,14 +4,14 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				map_assistChips_share_position_label: 'Share position',
-				map_assistChips_share_position_link_title: 'shared position with BayernAtlas.de'
+				map_assistChips_share_position_api_failed: 'Sharing the position has failed'
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				map_assistChips_share_position_label: 'Position teilen',
-				map_assistChips_share_position_link_title: 'Position geteilt über BayernAtlas.de'
+				map_assistChips_share_position_api_failed: 'Teilen der Position ist fehlgeschlagen'
 			};
 
 		default:

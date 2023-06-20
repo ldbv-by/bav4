@@ -4,6 +4,8 @@ import { SharePositionChip } from '../../../../../src/modules/map/components/ass
 import shareSvg from '../../../../../src/modules/map/components/assistChips/assets/share.svg';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
@@ -40,7 +42,7 @@ describe('SharePositionChip', () => {
 	const setup = async (config = {}) => {
 		const { share = false } = config;
 		windowMock.navigator.share = share;
-		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer });
+		store = TestUtils.setupStoreAndDi({}, { modal: modalReducer, notifications: notificationReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock
@@ -106,15 +108,14 @@ describe('SharePositionChip', () => {
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
 				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
-				expect(shareSpy).toHaveBeenCalledWith({ title: 'map_assistChips_share_position_link_title', url: 'http://shorten.foo' });
+				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
 			});
 
-			it('logs a warning when shareApi fails', async () => {
+			it('emits a warn notification when shareApi fails', async () => {
 				const element = await setup({ share: () => Promise.resolve(true) });
 				element.center = [42, 21];
 				const shareServiceSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
 
-				const errorSpy = spyOn(console, 'error');
 				const shortenerSpy = spyOn(urlServiceMock, 'shorten').and.callFake(() => Promise.resolve('http://shorten.foo'));
 				const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
 
@@ -124,8 +125,11 @@ describe('SharePositionChip', () => {
 				await TestUtils.timeout();
 				expect(shortenerSpy).toHaveBeenCalledTimes(1);
 				expect(shareServiceSpy).toHaveBeenCalledWith({ center: [42, 21] }, { [QueryParameters.CROSSHAIR]: true });
-				expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
-				expect(shareSpy).toHaveBeenCalledWith({ title: 'map_assistChips_share_position_link_title', url: 'http://shorten.foo' });
+
+				expect(shareSpy).toHaveBeenCalledWith({ url: 'http://shorten.foo' });
+
+				expect(store.getState().notifications.latest.payload.content).toBe('map_assistChips_share_position_api_failed');
+				expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 			});
 		});
 
