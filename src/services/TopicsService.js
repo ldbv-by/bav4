@@ -118,11 +118,6 @@ export class TopicsService {
 						//see fallback GeoResources in GeoResourceService
 						'tpo',
 						'tpo_mono'
-					],
-					vector: [
-						//see fallback GeoResources in GeoResourceService
-						'bmde_vector',
-						'bmde_vector_relief'
 					]
 				},
 				'tpo',

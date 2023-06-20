@@ -79,8 +79,6 @@ describe('TopicService', () => {
 				expect(topics[1].id).toBe(fallbackId1);
 				expect(topics[1].baseGeoRs.raster[0]).toBe('tpo');
 				expect(topics[1].baseGeoRs.raster[1]).toBe('tpo_mono');
-				expect(topics[1].baseGeoRs.vector[0]).toBe('bmde_vector');
-				expect(topics[1].baseGeoRs.vector[1]).toBe('bmde_vector_relief');
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 
