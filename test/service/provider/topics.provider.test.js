@@ -14,7 +14,7 @@ describe('Topics provider', () => {
 		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 	});
 
-	fit('loads topics', async () => {
+	it('loads topics', async () => {
 		const backendUrl = 'https://backend.url';
 		const topicMock1 = {
 			defaultBaseGeoR: 'mockBaseLayer',
@@ -90,13 +90,8 @@ describe('Topics provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-		try {
-			await loadBvvTopics();
-			throw new Error('Promise should not be resolved');
-		} catch (error) {
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(error.message).toBe('Topics could not be retrieved');
-		}
+		await expectAsync(loadBvvTopics()).toBeRejectedWithError('Topics could not be retrieved');
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
 	});
 });

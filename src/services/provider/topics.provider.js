@@ -28,8 +28,8 @@ export const loadBvvTopics = async () => {
 				definition.selectedGeoRs,
 				definition.style
 			);
-			//at least the id, label, description and baseLayers properties should be set
-			if (topic.id && topic.label && topic.description && topic.baseGeoRs) {
+			//at least the id, label, description properties should be set
+			if (topic.id && topic.label && topic.description) {
 				topics.push(topic);
 			} else {
 				console.warn('Could not create topic');
