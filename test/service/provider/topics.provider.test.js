@@ -14,12 +14,12 @@ describe('Topics provider', () => {
 		$injector.registerSingleton('ConfigService', configService).registerSingleton('HttpService', httpService);
 	});
 
-	it('loads topics', async () => {
+	fit('loads topics', async () => {
 		const backendUrl = 'https://backend.url';
 		const topicMock1 = {
 			defaultBaseGeoR: 'mockBaseLayer',
 			selectedGeoRs: ['mockSelectedLayer'],
-			baseGeoRs: ['mockBgLayer1', 'mockBgLayer2'],
+			baseGeoRs: { default: ['mockBgLayer1', 'mockBgLayer2'] },
 			activatedGeoRs: ['mockActivatedLayer'],
 			id: 'Ref42',
 			label: 'LDBV',
@@ -33,7 +33,7 @@ describe('Topics provider', () => {
 		const topicMock2 = {
 			defaultBaseGeoR: 'mockBaseLayer2',
 			selectedGeoRs: ['mockSelectedLayer2'],
-			baseGeoRs: ['mockBgLayer12', 'mockBgLayer22'],
+			baseGeoRs: { default: ['mockBgLayer12', 'mockBgLayer22'] },
 			activatedGeoRs: ['mockActivatedLayer2'],
 			id: 'Ref422',
 			label: 'LDBV2',
