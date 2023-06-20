@@ -82,7 +82,7 @@ export class SharePositionChip extends AbstractAssistChip {
 	async _shareUrlWithApi(url) {
 		try {
 			const content = {
-				// title-property is absent; browser automatically creates a meaningful title from Website-Title
+				// title-property is absent; browser automatically creates a meaningful title
 				url: url
 			};
 			await this._environmentService.getWindow().navigator.share(content);
