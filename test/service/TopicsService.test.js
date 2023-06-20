@@ -24,8 +24,8 @@ describe('TopicService', () => {
 		$injector.registerSingleton('ConfigService', configService).registerSingleton('EnvironmentService', environmentService);
 	});
 
-	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0']);
-	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...', ['bg1']);
+	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...');
+	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...');
 
 	const loadMockTopics = async () => {
 		return [topic0, topic1];
@@ -72,17 +72,15 @@ describe('TopicService', () => {
 
 				expect(topics.length).toBe(2);
 				expect(topics[0].id).toBe(fallbackId0);
-				expect(topics[0].baseGeoRs.length).toBe(4);
-				expect(topics[0].baseGeoRs[0]).toBe('tpo');
-				expect(topics[0].baseGeoRs[1]).toBe('tpo_mono');
-				expect(topics[0].baseGeoRs[2]).toBe('bmde_vector');
-				expect(topics[0].baseGeoRs[3]).toBe('bmde_vector_relief');
+				expect(topics[0].baseGeoRs.raster[0]).toBe('tpo');
+				expect(topics[0].baseGeoRs.raster[1]).toBe('tpo_mono');
+				expect(topics[0].baseGeoRs.vector[0]).toBe('bmde_vector');
+				expect(topics[0].baseGeoRs.vector[1]).toBe('bmde_vector_relief');
 				expect(topics[1].id).toBe(fallbackId1);
-				expect(topics[1].baseGeoRs.length).toBe(4);
-				expect(topics[1].baseGeoRs[0]).toBe('tpo');
-				expect(topics[1].baseGeoRs[1]).toBe('tpo_mono');
-				expect(topics[1].baseGeoRs[2]).toBe('bmde_vector');
-				expect(topics[1].baseGeoRs[3]).toBe('bmde_vector_relief');
+				expect(topics[1].baseGeoRs.raster[0]).toBe('tpo');
+				expect(topics[1].baseGeoRs.raster[1]).toBe('tpo_mono');
+				expect(topics[1].baseGeoRs.vector[0]).toBe('bmde_vector');
+				expect(topics[1].baseGeoRs.vector[1]).toBe('bmde_vector_relief');
 				expect(warnSpy).toHaveBeenCalledWith('Topics could not be fetched from backend. Using fallback topics ...');
 			});
 
