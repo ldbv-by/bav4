@@ -5,61 +5,81 @@ import { html } from 'lit-html';
 import css from './baseLayerContainer.css';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+import { throttled } from '../../../../utils/timer';
+
+const Update_Current_Category = 'update_current_category';
+const Update_Categories = 'update_categories';
 
 /**
  * Manages multiple {@link BaseLayerSwitcher} instances
  * @class
  */
 export class BaseLayerContainer extends MvuElement {
+	#translationService;
+	#topicsService;
+	#throttledCalculateActiveCategoryFn = throttled(BaseLayerContainer.THROTTLE_DELAY_MS, () => this._calculateActiveCategory());
+
 	constructor() {
 		super({
-			// Todo: Get model data from service
-			categories: {
-				raster: ['atkis', 'luftbild_labels', 'tk', 'historisch', 'atkis_sw'],
-				// vector: ['by_style_standard', 'by_style_luftbild', 'by_style_grau', 'by_style_nacht']
-				vector: [
-					'by_style_standard',
-					'by_style_grau',
-					'by_style_nacht',
-					'by_style_hoehenlinien',
-					'by_style_luftbild',
-					'by_style_wandern',
-					'by_style_radln'
-				]
-			}
+			categories: {},
+			activeCategory: null
 		});
 
-		const { TranslationService: translationService } = $injector.inject('TranslationService');
-		this._translationService = translationService;
-		// Todo: Get model data from service
-		this._activeCategory = 'raster';
+		const { TopicsService: topicsService, TranslationService: translationService } = $injector.inject('TopicsService', 'TranslationService');
+		this.#translationService = translationService;
+		this.#topicsService = topicsService;
+	}
+
+	onInitialize() {
+		this.observe(
+			(store) => store.topics.current,
+			(current) => {
+				if (current) {
+					// if the current topic has no baseGeoRs definition, we take it form the default topic
+					const categories = this.#topicsService.byId(current)?.baseGeoRs ?? this.#topicsService.byId(this.#topicsService.default().id).baseGeoRs;
+					this.signal(Update_Categories, categories);
+				}
+			}
+		);
+		this.observeModel('categories', () => {
+			// after categories are changed we also re-calculate the current active category
+			this._calculateActiveCategory();
+		});
+	}
+
+	update(type, data, model) {
+		switch (type) {
+			case Update_Current_Category:
+				return { ...model, activeCategory: data };
+			case Update_Categories:
+				return { ...model, categories: data };
+		}
+	}
+
+	_calculateActiveCategory() {
+		const section = this.shadowRoot.getElementById('section');
+		const index = section.clientWidth > 0 ? Math.round(section.scrollLeft / section.clientWidth) : 0;
+		const { categories } = this.getModel();
+		const keys = Object.keys(categories);
+		this.signal(Update_Current_Category, keys[index]);
 	}
 
 	/**
 	 * @override
 	 */
-	onAfterRender(firsttime) {
-		const determineActiveTabSection = (section) => {
-			const i = Math.round(section.scrollLeft / section.clientWidth);
-			const { categories } = this.getModel();
-			const keys = Object.keys(categories);
-			this._activeCategory = keys[i];
-			this.render();
-		};
-
-		if (firsttime) {
+	onAfterRender(firstTime) {
+		if (firstTime) {
 			const section = this.shadowRoot.getElementById('section');
-			section.addEventListener('scroll', () => {
-				clearTimeout(section.scrollEndTimer);
-				section.scrollEndTimer = setTimeout(determineActiveTabSection(section), 100);
-			});
+			// scroll event handling should be throttled (https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event)
+			section.addEventListener('scroll', () => this.#throttledCalculateActiveCategoryFn());
+			this._calculateActiveCategory();
 		}
 	}
 
 	createView(model) {
-		const { categories } = model;
+		const { categories, activeCategory } = model;
 		const allBaseGeoResourceIds = Array.from(new Set(Object.values(categories).flat()));
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		const onClick = (category) => {
 			const tab = this.shadowRoot.getElementById(category);
@@ -67,7 +87,7 @@ export class BaseLayerContainer extends MvuElement {
 		};
 
 		const isActive = (category) => {
-			return this._activeCategory === category ? 'is-active' : '';
+			return activeCategory ? (activeCategory === category ? 'is-active' : '') : '';
 		};
 
 		return html`
@@ -96,5 +116,9 @@ export class BaseLayerContainer extends MvuElement {
 
 	static get tag() {
 		return 'ba-base-layer-container';
+	}
+
+	static get THROTTLE_DELAY_MS() {
+		return 100;
 	}
 }
