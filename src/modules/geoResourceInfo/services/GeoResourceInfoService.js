@@ -29,7 +29,7 @@ export class GeoResourceInfoService {
 	}
 
 	/**
-	 * Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrived from backend.
+	 * Returns the corresponding  {@link GeoResourceInfoResult} for an id if present in the internal cache, otherwise retrieved from backend.
 	 * @public
 	 * @param {string} geoResourceId Id of the desired {@link GeoResourceInfoResult}
 	 * @returns {GeoResourceInfoResult | null}
@@ -46,19 +46,19 @@ export class GeoResourceInfoService {
 				for (const provider of this._providers) {
 					const geoResourceInfoResult = await provider(geoResourceId);
 					if (geoResourceInfoResult) {
-						this._geoResourceInfoResults.set(geoResourceId, this._geoResourceInfoResult);
+						this._geoResourceInfoResults.set(geoResourceId, geoResourceInfoResult);
 						return geoResourceInfoResult;
 					}
 				}
 			} catch (e) {
-				throw new Error('Could not load a GeoResourceInfoResult from provider: ' + e.message);
+				throw new Error('Could not load a GeoResourceInfoResult from provider', { cause: e });
 			}
 		}
 		return this._geoResourceInfoResults.get(geoResourceId) ?? null;
 	}
 
 	_newFallbackGeoResourceInfo(geoResourceId) {
-		//see fallback georesources in GeoResourceService
+		//see fallback GeoResources in GeoResourceService
 		return new GeoResourceInfoResult(`This is a fallback GeoResourceInfoResult for '${geoResourceId}'`, geoResourceId);
 	}
 }

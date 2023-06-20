@@ -38,7 +38,7 @@ export class AdministrationService {
 			const administration = await this._administrationProvider(coordinate3857);
 			return administration;
 		} catch (e) {
-			throw new Error('Could not load administration from provider: ' + e.message);
+			throw new Error('Could not load administration from provider', { cause: e });
 		}
 	}
 }

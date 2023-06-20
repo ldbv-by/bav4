@@ -53,21 +53,27 @@ describe('ElevationService', () => {
 		});
 
 		it('rejects when backend is not available', async () => {
-			const message = 'Someting got wrong';
+			const providerError = new Error('Something got wrong');
 			const instanceUnderTest = setup(async () => {
-				throw new Error(message);
+				throw providerError;
 			});
 			const mockCoordinate = [0, 0];
 
-			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWithError(
-				`Could not load an elevation from provider: ${message}`
+			await expectAsync(instanceUnderTest.getElevation(mockCoordinate)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load an elevation from provider',
+					cause: providerError
+				})
 			);
 		});
 
 		it('rejects when argument is not a coordinate', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError("Parameter 'coordinate3857' must be a coordinate");
+			await expectAsync(instanceUnderTest.getElevation('invalid input')).toBeRejectedWithError(
+				TypeError,
+				"Parameter 'coordinate3857' must be a coordinate"
+			);
 		});
 
 		describe('in standalone mode', () => {
@@ -101,17 +107,20 @@ describe('ElevationService', () => {
 		});
 
 		it('rejects when backend is not available', async () => {
-			const message = 'Someting got wrong';
+			const providerError = new Error('Something got wrong');
 			const instanceUnderTest = setup(null, async () => {
-				throw new Error(message);
+				throw providerError;
 			});
 			const mockCoordinates = [
 				[0, 1],
 				[2, 3]
 			];
 
-			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWithError(
-				`Could not load an elevation profile from provider: ${message}`
+			await expectAsync(instanceUnderTest.getProfile(mockCoordinates)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load an elevation profile from provider',
+					cause: providerError
+				})
 			);
 		});
 
@@ -119,9 +128,11 @@ describe('ElevationService', () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(instanceUnderTest.getProfile('foo')).toBeRejectedWithError(
+				TypeError,
 				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
 			);
 			await expectAsync(instanceUnderTest.getProfile([[0, 1]])).toBeRejectedWithError(
+				TypeError,
 				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
 			);
 		});
@@ -130,6 +141,7 @@ describe('ElevationService', () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(instanceUnderTest.getProfile([[0, 1], 'foo'])).toBeRejectedWithError(
+				TypeError,
 				"Parameter 'coordinates3857' contains invalid coordinates"
 			);
 		});

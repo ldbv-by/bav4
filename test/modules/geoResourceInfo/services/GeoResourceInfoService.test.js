@@ -50,14 +50,17 @@ describe('GeoResourceInfoService', () => {
 	});
 
 	it('should throw an error when backend provides unknown response', async () => {
-		const providerErrMsg = "GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
+		const providerError = new Error("GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded");
 		const loadMockBvvGeoResourceInfo = async () => {
-			return Promise.reject(new Error(providerErrMsg));
+			return Promise.reject(providerError);
 		};
 		const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError(
-			'Could not load a GeoResourceInfoResult from provider: ' + providerErrMsg
+		await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(
+			jasmine.objectContaining({
+				message: 'Could not load a GeoResourceInfoResult from provider',
+				cause: providerError
+			})
 		);
 	});
 
@@ -96,14 +99,17 @@ describe('GeoResourceInfoService', () => {
 
 		it('logs an error when we are NOT in standalone mode', async () => {
 			spyOn(environmentService, 'isStandalone').and.returnValue(false);
-			const providerErrMsg = "GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
+			const providerError = new Error("GeoResourceInfo for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded");
 			const loadMockBvvGeoResourceInfo = async () => {
-				return Promise.reject(new Error(providerErrMsg));
+				return Promise.reject(providerError);
 			};
 			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
 
-			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWithError(
-				'Could not load a GeoResourceInfoResult from provider: ' + providerErrMsg
+			await expectAsync(geoResourceInfoSerice.byId(geoResourceId)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load a GeoResourceInfoResult from provider',
+					cause: providerError
+				})
 			);
 		});
 
@@ -131,6 +137,22 @@ describe('GeoResourceInfoService', () => {
 			expect(geoResourceInfoResult instanceof GeoResourceInfoResult);
 			expect(geoResourceInfoResult.content).toBe('<div><content/div>');
 			expect(geoResourceInfoResult.title).toBe(null);
+		});
+
+		it('add geoResourceInfoResult when geoResourceId not already available in locale cache', async () => {
+			const expectedGeoResourceInfoResult = new GeoResourceInfoResult('<div><content/div>');
+			const loadMockBvvGeoResourceInfo = async () => {
+				return expectedGeoResourceInfoResult;
+			};
+			const geoResourceInfoSerice = new GeoResourceInfoService([loadMockBvvGeoResourceInfo]);
+			geoResourceInfoSerice._geoResourceInfoResults.set(FALLBACK_GEORESOURCE_ID_1, null);
+
+			expect(geoResourceInfoSerice._geoResourceInfoResults).toHaveSize(1);
+
+			await geoResourceInfoSerice.byId(FALLBACK_GEORESOURCE_ID_0);
+
+			expect(geoResourceInfoSerice._geoResourceInfoResults).toHaveSize(2);
+			expect(geoResourceInfoSerice._geoResourceInfoResults.get(FALLBACK_GEORESOURCE_ID_0)).toBe(expectedGeoResourceInfoResult);
 		});
 	});
 });

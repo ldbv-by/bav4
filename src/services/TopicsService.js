@@ -21,10 +21,11 @@ export class TopicsService {
 
 	/**
 	 * Initializes this service, which means all available Topics are loaded and can be served in the future from the internal cache.
-	 * If initialsation fails, a fallback is delivered.
+	 * If initialization fails, a fallback is delivered.
 	 * @public
 	 * @async
 	 * @returns {Promise<Array.<Topic>>}
+	 * @throws Error when no topics are available
 	 */
 	async init() {
 		if (!this._topics) {
@@ -36,7 +37,7 @@ export class TopicsService {
 					this._topics.push(...this._newFallbackTopics());
 					console.warn('Topics could not be fetched from backend. Using fallback topics ...');
 				} else {
-					console.error('Topics could not be fetched from backend.', e);
+					throw new Error('No topics available', { cause: e });
 				}
 			}
 		}
@@ -89,13 +90,13 @@ export class TopicsService {
 				'Topic 1',
 				'This is a fallback topic...',
 				[
-					//see fallback georesources in GeoResourceService
+					//see fallback GeoResources in GeoResourceService
 					'tpo',
 					'tpo_mono',
 					'bmde_vector',
 					'bmde_vector_relief'
 				],
-				[],
+				'tpo',
 				[],
 				[],
 				{
@@ -108,13 +109,13 @@ export class TopicsService {
 				'Topic 2',
 				'This is another fallback topic...',
 				[
-					//see fallback georesources in GeoResourceService
+					//see fallback GeoResources in GeoResourceService
 					'tpo',
 					'tpo_mono',
 					'bmde_vector',
 					'bmde_vector_relief'
 				],
-				[],
+				'tpo',
 				[],
 				[],
 				{

@@ -42,17 +42,17 @@ describe('CatalogService', () => {
 
 		describe('and provider throws exception', () => {
 			it('throws an exception when provider throws exception', async () => {
+				const catalogProviderError = new Error('Something got wrong');
 				const instanceUnderTest = setup(async () => {
-					throw new Error('Something got wrong');
+					throw catalogProviderError;
 				});
 
-				try {
-					await instanceUnderTest.byId('foo');
-					throw new Error('Promise should not be resolved');
-				} catch (error) {
-					expect(error.message).toContain('Could not load catalog from provider: Something got wrong');
-					expect(error).toBeInstanceOf(Error);
-				}
+				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWith(
+					jasmine.objectContaining({
+						message: 'Could not load catalog from provider',
+						cause: catalogProviderError
+					})
+				);
 			});
 
 			it('returns a fallback catalog when we have a fallback topic', async () => {

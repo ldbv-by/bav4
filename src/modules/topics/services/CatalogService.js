@@ -45,7 +45,7 @@ export class CatalogService {
 			if (FALLBACK_TOPICS_IDS.includes(topicId)) {
 				return this._newFallbackCatalog(topicId);
 			}
-			throw new Error('Could not load catalog from provider: ' + e.message);
+			throw new Error('Could not load catalog from provider', { cause: e });
 		}
 	}
 
