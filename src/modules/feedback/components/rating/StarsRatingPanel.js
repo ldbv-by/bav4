@@ -69,42 +69,32 @@ export class StarsRatingPanel extends MvuElement {
 				${css}
 			</style>
 
-			<div>
+			<div class="container">
 				<button
-					class="star-button ${Rating.TERRIBLE <= rating ? 'selected' : 'unselected'}"
+					class="star-button ${'rating-' + Rating.TERRIBLE} ${Rating.TERRIBLE === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.TERRIBLE)}"
 					title="${translate('fiveButtonRating_very_unlikely')}"
-				>
-					*
-				</button>
+				></button>
 				<button
-					class="star-button ${Rating.BAD <= rating ? 'selected' : 'unselected'}"
+					class="star-button ${'rating-' + Rating.BAD} ${Rating.BAD === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.BAD)}"
 					title="${translate('fiveButtonRating_unlikely')}"
-				>
-					*
-				</button>
+				></button>
 				<button
-					class="star-button ${Rating.SATISFIED <= rating ? 'selected' : 'unselected'}"
+					class="star-button ${'rating-' + Rating.SATISFIED} ${Rating.SATISFIED === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.SATISFIED)}"
 					title="${translate('fiveButtonRating_neutral')}"
-				>
-					*
-				</button>
+				></button>
 				<button
-					class="star-button ${Rating.GOOD <= rating ? 'selected' : 'unselected'}"
+					class="star-button ${'rating-' + Rating.GOOD} ${Rating.GOOD === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.GOOD)}"
 					title="${translate('fiveButtonRating_likely')}"
-				>
-					*
-				</button>
+				></button>
 				<button
-					class="star-button ${Rating.EXCELLENT <= rating ? 'selected' : 'unselected'}"
+					class="star-button ${'rating-' + Rating.EXCELLENT} ${Rating.EXCELLENT === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.EXCELLENT)}"
 					title="${translate('fiveButtonRating_very_likely')}"
-				>
-					*
-				</button>
+				></button>
 			</div>
 		`;
 	}
