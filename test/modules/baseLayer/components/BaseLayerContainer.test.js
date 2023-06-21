@@ -1,4 +1,3 @@
-import { html } from 'lit-html';
 import { Topic } from '../../../../src/domain/topic';
 import { $injector } from '../../../../src/injection';
 import { BaseLayerContainer } from '../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
