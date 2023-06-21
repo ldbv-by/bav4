@@ -5,7 +5,7 @@ describe('i18n for feedback module', () => {
 		const map = provide('de');
 
 		expect(map.feedback_categorySelection).toBe('Kategorie');
-		expect(map.feedback_categorySelection_helper).toBe('Bitte auswählen');
+		expect(map.feedback_categorySelection_helper).toBe('Bitte auswählen,');
 		expect(map.feedback_categorySelection_error).toBe('Pflichtfeld');
 		expect(map.feedback_changeDescription).toBe('Ihre Nachricht');
 		expect(map.feedback_disclaimer).toBe(
@@ -19,7 +19,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_saved_successfully).toBe('Ihr Feedback wurde gespeichert');
 		expect(map.feedback_submit).toBe('Senden');
 		expect(map.feedback_toggleFeedback_generalButton_sub).toBe(
-			'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinug mit.'
+			'Machen Sie Änderungs- oder Verbesserungsvorschläge oder teilen Sie uns Ihre Meinung mit.'
 		);
 		expect(map.feedback_toggleFeedback_mapButton_sub).toBe('Melden Sie uns Korrekturvorschläge zu den Karteninhalten.');
 		expect(map.feedback_generalFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
@@ -31,9 +31,9 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
 		expect(map.feedback_mapFeedback_text_after).toBe(
-			' und füllen die Felder aus. Wenn die Änderung im BayernAtlas ergänzt wird, erscheint sie öffentlich.'
+			' und füllen das Formular aus. Ihre Meldung wird zeitnah öffentlich im Feedback-Fenster angezeigt.'
 		);
-		expect(map.feedback_mapFeedback_text_before).toBe('Bitte zeichnen Sie Ihrer Änderung in die');
+		expect(map.feedback_mapFeedback_text_before).toBe('Markieren Sie bitte die Stelle, an der Sie einen Korrekturvorschlag machen möchten, in der');
 		expect(map.feedback_mapFeedback_text_map).toBe('Karte');
 		expect(map.feedback_mapFeedback).toBe('Feedback zur Karte');
 	});
@@ -42,8 +42,8 @@ describe('i18n for feedback module', () => {
 		const map = provide('en');
 
 		expect(map.feedback_categorySelection).toBe('Category');
-		expect(map.feedback_categorySelection_helper).toBe('Please choose');
-		expect(map.feedback_categorySelection_error).toBe('Required field');
+		expect(map.feedback_categorySelection_helper).toBe('Please choose,');
+		expect(map.feedback_categorySelection_error).toBe('required field');
 		expect(map.feedback_changeDescription).toBe('Your message');
 		expect(map.feedback_disclaimer).toBe(
 			'In some cases, the LDBV cannot adopt your feedback. For questions relating to your feedback and to keep you informed about the work in progress we recommend submitting your email address as well.'
@@ -65,9 +65,11 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Your feedback could not be saved');
 		expect(map.feedback_mapFeedback_geometry_missing).toBe('Please draw at least one Point to mark the location of your feedback');
 		expect(map.feedback_privacyPolicy).toBe('Privacy Policy');
-		expect(map.feedback_mapFeedback_text_after).toBe(' and fill in the fields. When the change is added to BayernAtlas, it will appear publicly.');
-		expect(map.feedback_mapFeedback_text_before).toBe('Please draw your change on the');
-		expect(map.feedback_mapFeedback_text_map).toBe('Map');
+		expect(map.feedback_mapFeedback_text_after).toBe(
+			' and fill out the form. Your message will be displayed publicly in the feedback window in a timely manner.'
+		);
+		expect(map.feedback_mapFeedback_text_before).toBe('Please mark the place where you would like to make a correction suggestion in the');
+		expect(map.feedback_mapFeedback_text_map).toBe('map');
 		expect(map.feedback_mapFeedback).toBe('Map - Feedback');
 	});
 
