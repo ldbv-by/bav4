@@ -14,7 +14,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_toggle_title).toBe('Eingebettete Karte wird sich erweitern, um sich der Breite seines Containers anzupassen.');
 		expect(map.iframe_generator_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.iframe_activate_map_button).toBe('Karte aktivieren');
-		expect(map.iframe_view_larger_map_chip).toBe('Größere Karte ansehen');
+		expect(map.iframe_view_larger_map_chip).toBe('Im BayernAtlas ansehen');
 		expect(map.iframe_drawTool_label).toBe('Zeichnen');
 		expect(map.iframe_drawTool_enable).toBe('Zeichnen aktivieren');
 		expect(map.iframe_drawTool_disable).toBe('Zeichnen deaktivieren');
@@ -39,7 +39,7 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_toggle_title).toBe('Embedded map will expand to fit the width of its container.');
 		expect(map.iframe_generator_copy_icon).toBe('Copy to clipboard');
 		expect(map.iframe_activate_map_button).toBe('Activate map');
-		expect(map.iframe_view_larger_map_chip).toBe('View larger map');
+		expect(map.iframe_view_larger_map_chip).toBe('View in BayernAtlas');
 		expect(map.iframe_drawTool_label).toBe('Drawing');
 		expect(map.iframe_drawTool_enable).toBe('Enable the drawing tool');
 		expect(map.iframe_drawTool_disable).toBe('Disable the drawing tool');
