@@ -6,10 +6,9 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { Icon } from '../../../../../src/modules/commons/components/icon/Icon';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
-import { SharePositionChip } from '../../../../../src/modules/map/components/assistChips/SharePositionChip';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
-window.customElements.define(SharePositionChip.tag, SharePositionChip);
+
 window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
@@ -30,22 +29,6 @@ describe('OlMapContextMenuContent', () => {
 		getAdministration() {}
 	};
 
-	const urlServiceMock = {
-		shorten() {
-			return Promise.resolve('http://foo');
-		}
-	};
-
-	const windowMock = {
-		matchMedia() {},
-		navigator: () => {
-			return {
-				share() {
-					return false;
-				}
-			};
-		}
-	};
 	let store;
 
 	const setup = () => {
@@ -57,16 +40,13 @@ describe('OlMapContextMenuContent', () => {
 
 		store = TestUtils.setupStoreAndDi(state, { notifications: notificationReducer });
 		$injector
-			.registerSingleton('EnvironmentService', {
-				getWindow: () => windowMock
-			})
 			.registerSingleton('MapService', mapServiceMock)
 			.registerSingleton('CoordinateService', coordinateServiceMock)
 			.registerSingleton('ShareService', shareServiceMock)
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ElevationService', elevationServiceMock)
-			.registerSingleton('AdministrationService', administrationServiceMock)
-			.registerSingleton('UrlService', urlServiceMock);
+			.registerSingleton('AdministrationService', administrationServiceMock);
+
 		return TestUtils.render(MapContextMenuContent.tag);
 	};
 
@@ -118,7 +98,7 @@ describe('OlMapContextMenuContent', () => {
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
 
 			expect(element.shadowRoot.querySelectorAll('ba-share-position-chip')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-share-position-chip')[0].getModel().center).toBe(coordinateMock);
+			expect(element.shadowRoot.querySelectorAll('ba-share-position-chip')[0].center).toBe(coordinateMock);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {
