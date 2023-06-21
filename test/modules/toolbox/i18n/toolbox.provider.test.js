@@ -47,7 +47,6 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
-		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
 		expect(map.toolbox_shareTool_share).toBe('Teilen');
 		expect(map.toolbox_shareTool_button_modal).toBe('Link generieren');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
@@ -150,7 +149,6 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting the terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
-		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
 		expect(map.toolbox_shareTool_share).toBe('Share');
 		expect(map.toolbox_shareTool_button_modal).toBe('Generate URL');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
@@ -212,7 +210,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 97;
+		const expectedSize = 96;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
