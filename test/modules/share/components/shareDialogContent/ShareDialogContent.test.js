@@ -180,25 +180,23 @@ describe('ShareDialogContent', () => {
 
 			await TestUtils.timeout();
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(shareSpy).toHaveBeenCalledWith({ title: 'share_dialog_link_title', url: shareUrls.fileId });
+			expect(shareSpy).toHaveBeenCalledWith({ url: shareUrls.fileId });
 		});
 	});
 
-	it('logs a warning when shareApi fails', async () => {
-		const element = await setup({}, { share: () => Promise.resolve(true) });
-		const shareSpy = spyOn(windowMock.navigator, 'share').and.callFake(() => Promise.reject('because!'));
-		const errorSpy = spyOn(console, 'error');
+	it('emits a warn notification when shareApi fails', async () => {
+		const element = await setup({}, { share: () => Promise.reject() });
 		element.urls = shareUrls;
 		const shareButton = element.shadowRoot.querySelector('.share_item .share_api');
 
 		shareButton.click();
 
 		await TestUtils.timeout();
-		expect(errorSpy).toHaveBeenCalledWith('Share-API failed:', 'because!');
-		expect(shareSpy).toHaveBeenCalledWith({ title: 'share_dialog_link_title', url: shareUrls.fileId });
+		expect(store.getState().notifications.latest.payload.content).toBe('share_dialog_api_failed');
+		expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 	});
 
-	it('logs a warning when copyToClipboard fails', async () => {
+	it('logs a warning and emits a notification when copyToClipboard fails', async () => {
 		const copySpy = spyOn(shareServiceMock, 'copyToClipboard').and.callFake(() => Promise.reject());
 		const warnSpy = spyOn(console, 'warn');
 		const element = await setup();

@@ -5,8 +5,8 @@ describe('i18n for search module', () => {
 		const map = provide('de');
 
 		expect(map.share_dialog_link).toBe('Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten');
-		expect(map.share_dialog_link_title).toBe('geteilt über BayernAtlas.de');
 		expect(map.share_dialog_api).toBe('Klicken, um zu teilen');
+		expect(map.share_dialog_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
 		expect(map.share_dialog_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.share_clipboard_link_notification_text).toBe('Der Link');
 		expect(map.share_clipboard_success).toBe('wurde in die Zwischenablage kopiert');
@@ -18,8 +18,8 @@ describe('i18n for search module', () => {
 		const map = provide('en');
 
 		expect(map.share_dialog_link).toBe('Anyone, who has this link, can edit this drawing');
-		expect(map.share_dialog_link_title).toBe('shared with BayernAtlas.de');
 		expect(map.share_dialog_api).toBe('Click to share');
+		expect(map.share_dialog_api_failed).toBe('Sharing the position has failed');
 		expect(map.share_dialog_copy_icon).toBe('Copy to clipboard');
 		expect(map.share_clipboard_link_notification_text).toBe('The link');
 		expect(map.share_clipboard_success).toBe('was copied to clipboard');
