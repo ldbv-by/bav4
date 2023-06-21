@@ -1,3 +1,4 @@
+import { html } from 'lit-html';
 import { Topic } from '../../../../src/domain/topic';
 import { $injector } from '../../../../src/injection';
 import { BaseLayerContainer } from '../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
@@ -175,6 +176,20 @@ describe('BaseLayerContainer', () => {
 				managed: baseGeoRs.vector,
 				all: baseGeoRs.vector
 			});
+		});
+	});
+
+	describe('_scrollToActiveButton', () => {
+		it('selects the correct element', async () => {
+			const element = await setup();
+			const createdElement = document.createElement('button');
+			const spy = spyOn(createdElement, 'scrollIntoView');
+			createdElement.type = 'primary';
+			element.shadowRoot.append(createdElement);
+
+			element._scrollToActiveButton();
+
+			expect(spy).toHaveBeenCalled();
 		});
 	});
 });
