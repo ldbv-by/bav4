@@ -89,13 +89,18 @@ export class TopicsService {
 				fallbackId0,
 				'Topic 1',
 				'This is a fallback topic...',
-				[
-					//see fallback GeoResources in GeoResourceService
-					'tpo',
-					'tpo_mono',
-					'bmde_vector',
-					'bmde_vector_relief'
-				],
+				{
+					raster: [
+						//see fallback GeoResources in GeoResourceService
+						'tpo',
+						'tpo_mono'
+					],
+					vector: [
+						//see fallback GeoResources in GeoResourceService
+						'bmde_vector',
+						'bmde_vector_relief'
+					]
+				},
 				'tpo',
 				[],
 				[],
@@ -108,13 +113,13 @@ export class TopicsService {
 				fallbackId1,
 				'Topic 2',
 				'This is another fallback topic...',
-				[
-					//see fallback GeoResources in GeoResourceService
-					'tpo',
-					'tpo_mono',
-					'bmde_vector',
-					'bmde_vector_relief'
-				],
+				{
+					raster: [
+						//see fallback GeoResources in GeoResourceService
+						'tpo',
+						'tpo_mono'
+					]
+				},
 				'tpo',
 				[],
 				[],

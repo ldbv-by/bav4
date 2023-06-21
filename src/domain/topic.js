@@ -14,21 +14,21 @@
 export class Topic {
 	/**
 	 *
-	 * @param {string} id id of this Topic
-	 * @param {string} label label of this Topic
-	 * @param {string} description description of this Topic
-	 * @param {string[]} baseGeoRs GeoResources that represent possible base layers
-	 * @param {string} [defaultBaseGeoR] a GeoResource that represent the default base layer
-	 * @param {string[]} [activatedGeoRs] GeoResources that should be displayed "activated"
-	 * @param {string[]} [selectedGeoRs] GeoResources that should displayed "selected"
-	 * @param {TopicStyle} [style] The style of this Topic
+	 * @param {String} id The id of this Topic
+	 * @param {String} label The label of this Topic
+	 * @param {String} description The description of this Topic
+	 * @param {Object<String, Array<String>>} [baseGeoRs] An object containing a list of GeoResources that represent possible default base layers of the map. Each key symbolizes a category of GeoResources.
+	 * @param {String} [defaultBaseGeoR] An id of a GeoResource that represent the default base layer
+	 * @param {String[]} [activatedGeoRs] A list of ids of GeoResources that should be displayed "activated"
+	 * @param {String[]} [selectedGeoRs] A list of ids of GeoResources that should displayed "selected"
+	 * @param {module:domain/topic~TopicStyle} [style] The style of this Topic
 	 */
 	constructor(
 		id,
 		label,
 		description,
-		baseGeoRs,
-		defaultBaseGeoR = baseGeoRs[0],
+		baseGeoRs = null,
+		defaultBaseGeoR = null,
 		activatedGeoRs = [],
 		selectedGeoRs = [],
 		style = { hue: null, icon: null }
@@ -43,34 +43,58 @@ export class Topic {
 		this._style = { hue: null, icon: null, ...style };
 	}
 
+	/**
+	 *  @type {String}
+	 */
 	get id() {
 		return this._id;
 	}
 
+	/**
+	 *  @type {String}
+	 */
 	get label() {
 		return this._label;
 	}
 
+	/**
+	 *  @type {String}
+	 */
 	get description() {
 		return this._description;
 	}
 
+	/**
+	 *  @type {String|null}
+	 */
 	get defaultBaseGeoR() {
 		return this._defaultBaseGeoR;
 	}
 
+	/**
+	 *  @type {Object|null}
+	 */
 	get baseGeoRs() {
-		return [...this._baseGeoRs];
+		return this._baseGeoRs ? { ...this._baseGeoRs } : null;
 	}
 
+	/**
+	 *  @type {Array}
+	 */
 	get selectedGeoRs() {
 		return [...this._selectedGeoRs];
 	}
 
+	/**
+	 *  @type {Array}
+	 */
 	get activatedGeoRs() {
 		return [...this._activatedGeoRs];
 	}
 
+	/**
+	 *  @type {Object}
+	 */
 	get style() {
 		return this._style;
 	}
