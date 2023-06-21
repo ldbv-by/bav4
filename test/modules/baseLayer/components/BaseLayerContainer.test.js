@@ -29,6 +29,7 @@ describe('BaseLayerContainer', () => {
 	describe('class', () => {
 		it('defines constant values', async () => {
 			expect(BaseLayerContainer.THROTTLE_DELAY_MS).toBe(100);
+			expect(BaseLayerContainer.INITIAL_SCROLL_INTO_VIEW_DELAY_MS).toBe(500);
 		});
 	});
 
@@ -61,6 +62,7 @@ describe('BaseLayerContainer', () => {
 						const topicId = 'topicId';
 						spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 						const element = await setup({ topics: { current: topicId } });
+						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
 						expect(element.shadowRoot.querySelectorAll('.button-group')).toHaveSize(1);
 						expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(2);
@@ -74,9 +76,16 @@ describe('BaseLayerContainer', () => {
 						});
 						expect(element.shadowRoot.querySelector('.title').innerText).toBe('baseLayer_switcher_header');
 						expect(element.shadowRoot.querySelectorAll('button')[0].innerText).toBe('baseLayer_container_category_raster');
-						expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBeTrue();
 						expect(element.shadowRoot.querySelectorAll('button')[1].innerText).toBe('baseLayer_container_category_vector');
+
+						await TestUtils.timeout(BaseLayerContainer.INITIAL_SCROLL_INTO_VIEW_DELAY_MS + 100);
+						// Note: Unfortunately #scrollIntoView() seem not to work in this test setup.
+						// We can't trigger real scroll events, so we manually dispatch the event
+						element.shadowRoot.querySelector('#section').dispatchEvent(new Event('scroll'));
+
+						expect(element.shadowRoot.querySelectorAll('button')[0].classList.contains('is-active')).toBeTrue();
 						expect(element.shadowRoot.querySelectorAll('button')[1].classList.contains('is-active')).toBeFalse();
+						expect(scrollToActiveButtonSpy).toHaveBeenCalled();
 					});
 				});
 
@@ -130,8 +139,8 @@ describe('BaseLayerContainer', () => {
 
 			const calculateActiveCategorySpy = spyOn(element, '_calculateActiveCategory');
 			element.shadowRoot.querySelectorAll('button')[1].click();
-			// Note: Unfortunately #scrollIntoView() seem not to work in this test setup. So we can't trigger real scroll events,
-			// so we manually dispatch the event
+			// Note: Unfortunately #scrollIntoView() seem not to work in this test setup.
+			// We can't trigger real scroll events, so we manually dispatch the event
 			element.shadowRoot.querySelector('#section').dispatchEvent(new Event('scroll'));
 
 			expect(scrollIntoViewSpy).toHaveBeenCalled();

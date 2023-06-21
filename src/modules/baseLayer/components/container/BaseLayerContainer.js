@@ -6,6 +6,7 @@ import css from './baseLayerContainer.css';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { throttled } from '../../../../utils/timer';
+import { findAllBySelector } from '../../../../utils/markup';
 
 const Update_Current_Category = 'update_current_category';
 const Update_Categories = 'update_categories';
@@ -64,6 +65,10 @@ export class BaseLayerContainer extends MvuElement {
 		this.signal(Update_Current_Category, keys[index]);
 	}
 
+	_scrollToActiveButton() {
+		findAllBySelector(this, 'button[type="primary"]')[0]?.scrollIntoView();
+	}
+
 	/**
 	 * @override
 	 */
@@ -72,7 +77,9 @@ export class BaseLayerContainer extends MvuElement {
 			const section = this.shadowRoot.getElementById('section');
 			// scroll event handling should be throttled (https://developer.mozilla.org/en-US/docs/Web/API/Document/scroll_event)
 			section.addEventListener('scroll', () => this.#throttledCalculateActiveCategoryFn());
-			this._calculateActiveCategory();
+			setTimeout(() => {
+				this._scrollToActiveButton();
+			}, BaseLayerContainer.INITIAL_SCROLL_INTO_VIEW_DELAY_MS);
 		}
 	}
 
@@ -125,5 +132,8 @@ export class BaseLayerContainer extends MvuElement {
 
 	static get THROTTLE_DELAY_MS() {
 		return 100;
+	}
+	static get INITIAL_SCROLL_INTO_VIEW_DELAY_MS() {
+		return 500;
 	}
 }
