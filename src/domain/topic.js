@@ -19,8 +19,8 @@ export class Topic {
 	 * @param {String} description The description of this Topic
 	 * @param {Object<String, Array<String>>} [baseGeoRs] An object containing a list of GeoResources that represent possible default base layers of the map. Each key symbolizes a category of GeoResources.
 	 * @param {String} [defaultBaseGeoR] An id of a GeoResource that represent the default base layer
-	 * @param {String[]} [activatedGeoRs] An list of ids of GeoResources that should be displayed "activated"
-	 * @param {String[]} [selectedGeoRs] An list of ids of GeoResources that should displayed "selected"
+	 * @param {String[]} [activatedGeoRs] A list of ids of GeoResources that should be displayed "activated"
+	 * @param {String[]} [selectedGeoRs] A list of ids of GeoResources that should displayed "selected"
 	 * @param {module:domain/topic~TopicStyle} [style] The style of this Topic
 	 */
 	constructor(
