@@ -8,6 +8,7 @@ import { $injector } from '../../../../injection';
 import css from './shareToolContent.css';
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { openModal } from '../../../../store/modal/modal.action';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 
 /**
  * @class
@@ -119,13 +120,13 @@ export class ShareToolContent extends AbstractToolContent {
 								const shortUrl = await this._generateShortUrl();
 
 								const shareData = {
-									title: translate('toolbox_shareTool_title'),
+									// title-property is absent; browser automatically creates a meaningful title
 									url: shortUrl
 								};
 
 								await this._window.navigator.share(shareData);
 							} catch (e) {
-								console.warn('ShareAPI not available: ' + e);
+								emitNotification(translate('toolbox_shareTool_share_api_failed'), LevelTypes.WARN);
 							}
 						};
 					} else {

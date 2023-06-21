@@ -4,8 +4,8 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				share_dialog_link: 'Anyone, who has this link, can edit this drawing',
-				share_dialog_link_title: 'shared with BayernAtlas.de',
 				share_dialog_api: 'Click to share',
+				share_dialog_api_failed: 'Sharing the position has failed',
 				share_dialog_copy_icon: 'Copy to clipboard',
 				share_clipboard_link_notification_text: 'The link',
 				share_clipboard_success: 'was copied to clipboard',
@@ -17,8 +17,8 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				share_dialog_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
-				share_dialog_link_title: 'geteilt über BayernAtlas.de',
 				share_dialog_api: 'Klicken, um zu teilen',
+				share_dialog_api_failed: 'Teilen der Position ist fehlgeschlagen',
 				share_dialog_copy_icon: 'In die Zwischenablage kopieren',
 				share_clipboard_link_notification_text: 'Der Link',
 				share_clipboard_success: 'wurde in die Zwischenablage kopiert',
