@@ -51,7 +51,7 @@ describe('LikertItemRatingPanel', () => {
 			// assert
 			expect(element.shadowRoot.children.length).toBe(3);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			expect(starButtons.length).toBe(5);
 			starButtons.forEach((starButton) => {
 				expect(starButton.classList.contains('unselected')).toBeTrue();
@@ -75,7 +75,7 @@ describe('LikertItemRatingPanel', () => {
 			expect(ratingSpy).toHaveBeenCalled();
 			expect(element.rating).toBe(Rating.DISAGREE);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			starButtons.forEach((starButton) => {
 				if (['fiveButtonRating_unlikely'].includes(starButton.title)) {
 					expect(starButton.classList.contains('unselected')).toBeFalse();
@@ -95,7 +95,7 @@ describe('LikertItemRatingPanel', () => {
 			const onRatingClickSpy = spyOn(element, '_onRatingClick');
 
 			// act
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			starButtons.forEach((starButton) => {
 				starButton.click();
 			});
@@ -109,7 +109,7 @@ describe('LikertItemRatingPanel', () => {
 			// arrange
 			const element = await setup();
 
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			starButtons.forEach((starButton) => {
 				// act
 				starButton.click();
@@ -123,7 +123,7 @@ describe('LikertItemRatingPanel', () => {
 			// arrange
 			const element = await setup();
 			const spy = jasmine.createSpy();
-			const starButton = element.shadowRoot.querySelectorAll('.star-button')[0];
+			const starButton = element.shadowRoot.querySelectorAll('.likert-response-button')[0];
 			element.addEventListener('change', spy);
 
 			// act
@@ -139,7 +139,7 @@ describe('LikertItemRatingPanel', () => {
 			const spy = jasmine.createSpy();
 			element.addEventListener('change', spy);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
+			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			starButtons.forEach((starButton) => {
 				// act
 				starButton.click();

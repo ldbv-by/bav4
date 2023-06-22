@@ -76,27 +76,27 @@ export class LikertItemRatingPanel extends MvuElement {
 
 			<div class="container">
 				<button
-					class="star-button ${'rating-' + Rating.STRONGLY_DISAGREE} ${Rating.STRONGLY_DISAGREE === rating ? 'selected' : 'unselected'}"
+					class="likert-response-button ${'rating-' + Rating.STRONGLY_DISAGREE} ${Rating.STRONGLY_DISAGREE === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.STRONGLY_DISAGREE)}"
 					title="${translate('fiveButtonRating_very_unlikely')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.DISAGREE} ${Rating.DISAGREE === rating ? 'selected' : 'unselected'}"
+					class="likert-response-button ${'rating-' + Rating.DISAGREE} ${Rating.DISAGREE === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.DISAGREE)}"
 					title="${translate('fiveButtonRating_unlikely')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.NEUTRAL} ${Rating.NEUTRAL === rating ? 'selected' : 'unselected'}"
+					class="likert-response-button ${'rating-' + Rating.NEUTRAL} ${Rating.NEUTRAL === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.NEUTRAL)}"
 					title="${translate('fiveButtonRating_neutral')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.AGREE} ${Rating.AGREE === rating ? 'selected' : 'unselected'}"
+					class="likert-response-button ${'rating-' + Rating.AGREE} ${Rating.AGREE === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.AGREE)}"
 					title="${translate('fiveButtonRating_likely')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.STRONGLY_AGREE} ${Rating.STRONGLY_AGREE === rating ? 'selected' : 'unselected'}"
+					class="likert-response-button ${'rating-' + Rating.STRONGLY_AGREE} ${Rating.STRONGLY_AGREE === rating ? 'selected' : 'unselected'}"
 					@click="${() => this._onRatingClick(Rating.STRONGLY_AGREE)}"
 					title="${translate('fiveButtonRating_very_likely')}"
 				></button>

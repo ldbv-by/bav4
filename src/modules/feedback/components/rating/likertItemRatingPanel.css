@@ -3,7 +3,7 @@
 	justify-content: center;
 }
 
-.star-button {
+.likert-response-button {
 	height: 2.5em;
 	width: 2.5em;
 	display: inline-block;
@@ -15,7 +15,7 @@
 	border-radius: 2.5em;
 }
 
-.star-button:hover {
+.likert-response-button:hover {
 	transform: scale(1.2);
 }
 
