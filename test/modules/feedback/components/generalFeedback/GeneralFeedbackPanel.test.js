@@ -119,7 +119,7 @@ describe('GeneralFeedbackPanel', () => {
 			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-			expect(element.shadowRoot.querySelectorAll('ba-stars-rating-panel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-likert-item-rating-panel')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.feedback-text-container').childElementCount).toBe(2);
 			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[0].textContent).toBe('feedback_generalFeedback_rating_scale_5');
 			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[1].textContent).toBe('feedback_generalFeedback_rating_scale_0');

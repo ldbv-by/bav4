@@ -162,7 +162,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 
 			<div class="feedback-header">${translate('feedback_generalFeedback_rating')}</div>
 			<div class="ba-form-element">
-				<ba-stars-rating-panel id="rating" @change="${onRatingChange}"></ba-stars-rating-panel>
+				<ba-likert-item-rating-panel id="rating" @change="${onRatingChange}"></ba-likert-item-rating-panel>
 				<div class="feedback-text-container">
 					<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
 					<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>

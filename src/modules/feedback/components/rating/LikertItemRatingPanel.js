@@ -117,6 +117,6 @@ export class LikertItemRatingPanel extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-stars-rating-panel';
+		return 'ba-likert-item-rating-panel';
 	}
 }
