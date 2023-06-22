@@ -122,46 +122,6 @@ describe('EnvironmentService', () => {
 		});
 	});
 
-	describe('screen orientation', () => {
-		it('detects screen orientation by orientation api', () => {
-			const mockWindow = {
-				screen: {
-					orientation: {
-						type: 'portrait-primary'
-					}
-				}
-			};
-			const instanceUnderTest = new EnvironmentService(mockWindow);
-			const { portrait, landscape } = instanceUnderTest.getScreenOrientation();
-			expect(portrait).toBeTrue();
-			expect(landscape).toBeFalse();
-		});
-
-		it('detects screen orientation by sreen width and height', () => {
-			let mockWindow = {
-				screen: {
-					width: 200,
-					height: 100
-				}
-			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
-			let orientation = instanceUnderTest.getScreenOrientation();
-			expect(orientation.portrait).toBeFalse();
-			expect(orientation.landscape).toBeTrue();
-
-			mockWindow = {
-				screen: {
-					width: 100,
-					height: 200
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			orientation = instanceUnderTest.getScreenOrientation();
-			expect(orientation.portrait).toBeTrue();
-			expect(orientation.landscape).toBeFalse();
-		});
-	});
-
 	describe('embedded', () => {
 		it('detects embedded modus', () => {
 			let mockWindow = {

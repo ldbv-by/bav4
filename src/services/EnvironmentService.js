@@ -53,32 +53,6 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * Should not be used anymore.
-	 * Use a media query like
-	 * ```
-	 * window.matchMedia('(orientation: portrait)')
-	 * ```
-	 * </pre></code>
-	 * instead.
-	 * @deprecated
-	 * @see https://caniuse.com/screen-orientation
-	 */
-	getScreenOrientation() {
-		const orientation = (this._window.screen.orientation || {}).type || this._window.screen.mozOrientation || this._window.screen.msOrientation;
-		if (!orientation) {
-			const widthHeightRatio = this._window.screen.width / this._window.screen.height;
-			return {
-				portrait: widthHeightRatio < 1,
-				landscape: widthHeightRatio >= 1
-			};
-		}
-		return {
-			portrait: orientation.startsWith('portrait'),
-			landscape: orientation.startsWith('landscape')
-		};
-	}
-
-	/**
 	 *
 	 * @returns `true` if we are in embedded mode
 	 */
