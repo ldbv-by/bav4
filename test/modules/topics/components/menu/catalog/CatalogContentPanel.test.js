@@ -56,7 +56,7 @@ describe('TopicsContentPanel', () => {
 		it('renders the component exactly twice', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...');
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			spyOn(catalogServiceMock, 'byId')
@@ -85,7 +85,7 @@ describe('TopicsContentPanel', () => {
 		it('shows or hides the component', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...');
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			spyOn(catalogServiceMock, 'byId')
@@ -112,7 +112,7 @@ describe('TopicsContentPanel', () => {
 		it('renders the catalog panel', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0']);
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...');
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 
 			const spy = spyOn(catalogServiceMock, 'byId')
@@ -158,7 +158,7 @@ describe('TopicsContentPanel', () => {
 		it('renders the topic style', async () => {
 			const topicId = 'foo';
 			const topicLabel = 'label';
-			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
+			const topic = new Topic(topicId, topicLabel, 'This is Topic 0...', null, [], [], [], { hue: 42, icon: 'icon' });
 
 			spyOn(topicsServiceMock, 'byId').and.returnValue(topic);
 			spyOn(catalogServiceMock, 'byId')
@@ -195,7 +195,7 @@ describe('TopicsContentPanel', () => {
 	describe('and CatalogService cannot fulfill', () => {
 		it('logs a warn statement and renders nothing', async () => {
 			const topicId = 'foo';
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...'));
 			spyOn(catalogServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(Promise.reject(new Error('Something got wrong')));
@@ -217,7 +217,7 @@ describe('TopicsContentPanel', () => {
 	describe('change topic button clicked', () => {
 		it('changes the index', async () => {
 			const topicId = 'foo';
-			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...', ['atkis', 'atkis_sw']));
+			spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic(topicId, 'label', 'This is a fallback topic...'));
 			spyOn(catalogServiceMock, 'byId')
 				.withArgs(topicId)
 				.and.returnValue(Promise.resolve(await loadExampleCatalog()));

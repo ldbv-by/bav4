@@ -13,7 +13,7 @@ export class MapsContentPanel extends AbstractMvuContentPanel {
 	createView() {
 		return html`
 			<div>
-				<ba-base-layer-switcher></ba-base-layer-switcher>
+				<ba-base-layer-container></ba-base-layer-container>
 				<ba-layer-manager></ba-layer-manager>
 			</div>
 		`;

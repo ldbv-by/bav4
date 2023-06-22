@@ -103,7 +103,7 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource('some1', 'someLabel1', 'someUrl1'),
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -122,7 +122,7 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource(configuredBgId, 'someLabel0', 'someUrl0')
 				]);
 				spyOn(topicsServiceMock, 'byId').and.returnValue(null);
-				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', [configuredBgId]));
+				spyOn(topicsServiceMock, 'default').and.returnValue(new Topic('topicId', 'label', 'description', null, configuredBgId));
 
 				instanceUnderTest._addLayersFromConfig();
 
@@ -137,7 +137,7 @@ describe('LayersPlugin', () => {
 					new XyzGeoResource('someId0', 'someLabel0', 'someUrl0'),
 					new XyzGeoResource('someId1', 'someLabel1', 'someUrl1')
 				]);
-				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', ['somethingDifferent']));
+				spyOn(topicsServiceMock, 'byId').and.returnValue(new Topic('topicId', 'label', 'description', null, 'somethingDifferent'));
 
 				instanceUnderTest._addLayersFromConfig();
 

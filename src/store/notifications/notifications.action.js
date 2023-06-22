@@ -29,7 +29,7 @@ const getStore = () => {
 
 /**
  * Emits a new notification to the system
- * @param {string} content The notification content.
+ * @param {string|TemplateResult} content The notification content.
  * @param {LevelTypes} level the notification level (@see {@link LevelTypes})
  * @function
  */

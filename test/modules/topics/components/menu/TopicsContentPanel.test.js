@@ -22,8 +22,8 @@ describe('TopicsContentPanelIndex', () => {
 });
 
 describe('TopicsContentPanel', () => {
-	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', ['bg0'], [], [], [], { hue: 42, icon: 'icon' });
-	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...', ['bg1']);
+	const topic0 = new Topic('topic0', 'Topic 0', 'This is Topic 0...', null, [], [], [], { hue: 42, icon: 'icon' });
+	const topic1 = new Topic('topic1', 'Topic 1', 'This is Topic 1...');
 
 	let store;
 

@@ -5,6 +5,8 @@ import { Checkbox } from '../../../../../src/modules/commons/components/checkbox
 import { modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { IframeGenerator } from '../../../../../src/modules/iframe/components/generator/IframeGenerator';
 import { ShareDialogContent } from '../../../../../src/modules/share/components/dialog/ShareDialogContent';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 window.customElements.define(ShareDialogContent.tag, ShareDialogContent);
 window.customElements.define(ShareToolContent.tag, ShareToolContent);
@@ -29,7 +31,7 @@ describe('ShareToolContent', () => {
 
 		const state = {};
 
-		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer });
+		store = TestUtils.setupStoreAndDi(state, { modal: modalReducer, notifications: notificationReducer });
 		$injector
 			.registerSingleton('EnvironmentService', {
 				getWindow: () => windowMock,
@@ -90,7 +92,6 @@ describe('ShareToolContent', () => {
 				it('initializes share api button', async () => {
 					const mockShortUrl = 'https://short/url';
 					const mockShareData = {
-						title: 'toolbox_shareTool_title',
 						url: mockShortUrl
 					};
 					const windowMock = {
@@ -119,7 +120,6 @@ describe('ShareToolContent', () => {
 						}
 					};
 					spyOn(windowMock.navigator, 'share').and.returnValue(Promise.reject(new Error(mockErrorMsg)));
-					const warnSpy = spyOn(console, 'warn');
 					const config = { windowMock };
 					const element = await setup(config);
 					spyOn(element, '_generateShortUrl').and.returnValue(mockShortUrl);
@@ -128,7 +128,8 @@ describe('ShareToolContent', () => {
 					shareButton.click();
 
 					await TestUtils.timeout();
-					expect(warnSpy).toHaveBeenCalledWith('ShareAPI not available: Error: ' + mockErrorMsg);
+					expect(store.getState().notifications.latest.payload.content).toBe('toolbox_shareTool_share_api_failed');
+					expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
 				});
 			});
 		});

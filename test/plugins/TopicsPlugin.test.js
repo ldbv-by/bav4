@@ -93,7 +93,7 @@ describe('TopicsPlugin', () => {
 		it('initializes the TopicsService and update the store', async () => {
 			const store = setup();
 			const topicId = 'someId';
-			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
+			const topic = new Topic(topicId, 'label', 'description');
 			const instanceUnderTest = new TopicsPlugin();
 			spyOn(topicsServiceMock, 'default').and.returnValue(topic);
 
@@ -108,7 +108,7 @@ describe('TopicsPlugin', () => {
 			const store = setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
-			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
+			const topic = new Topic(topicId, 'label', 'description');
 			const instanceUnderTest = new TopicsPlugin();
 			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
 
