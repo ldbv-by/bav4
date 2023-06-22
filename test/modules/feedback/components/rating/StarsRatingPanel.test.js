@@ -22,11 +22,11 @@ describe('StarsRatingPanel', () => {
 			expect(Object.keys(Rating).length).toBe(6);
 
 			expect(Rating.NONE).toBe(0);
-			expect(Rating.TERRIBLE).toBe(1);
-			expect(Rating.BAD).toBe(2);
-			expect(Rating.SATISFIED).toBe(3);
-			expect(Rating.GOOD).toBe(4);
-			expect(Rating.EXCELLENT).toBe(5);
+			expect(Rating.VERY_UNLIKELY).toBe(1);
+			expect(Rating.UNLIKELY).toBe(2);
+			expect(Rating.NEUTRAL).toBe(3);
+			expect(Rating.LIKELY).toBe(4);
+			expect(Rating.VERY_LIKELY).toBe(5);
 		});
 	});
 
@@ -69,11 +69,11 @@ describe('StarsRatingPanel', () => {
 			const ratingSpy = spyOnProperty(element, 'rating', 'set').and.callThrough();
 
 			// act
-			element.rating = Rating.BAD;
+			element.rating = Rating.UNLIKELY;
 
 			// assert
 			expect(ratingSpy).toHaveBeenCalled();
-			expect(element.rating).toBe(Rating.BAD);
+			expect(element.rating).toBe(Rating.UNLIKELY);
 
 			const starButtons = element.shadowRoot.querySelectorAll('.star-button');
 			starButtons.forEach((starButton) => {
