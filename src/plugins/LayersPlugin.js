@@ -121,7 +121,7 @@ export class LayersPlugin extends BaPlugin {
 	 * Current strategy to replace the default raster GeoResource with its VT pendant.
 	 * @param {string} topicId
 	 * @param {string} baseGeoRId
-	 * @returns
+	 * @returns the id of the determined VTGeoResource or the unchanged argument
 	 */
 	_replaceForRetinaDisplays(baseGeoRId) {
 		const {
