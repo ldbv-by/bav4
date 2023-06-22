@@ -1,4 +1,4 @@
-import { provide } from '../../../../src/modules/feedback/i18n/likertItemRatingPanel.provider';
+import { provide } from '../../../../src/modules/feedback/i18n/likertItemRating.provider';
 
 describe('i18n for starsRatingPanel', () => {
 	it('provides translation for de', () => {
