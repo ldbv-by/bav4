@@ -1,14 +1,14 @@
 /**
- * @module modules/feedback/components/rating/StarsRatingPanel
+ * @module modules/feedback/components/rating/LikertItemRatingPanel
  */
 
 import { html } from 'lit-html';
-import css from './starsRatingPanel.css';
+import css from './likertItemRatingPanel.css';
 import { MvuElement } from '../../../MvuElement';
 import { $injector } from '../../../../injection';
 
 /**
- * possible rating types
+ * Rating scale values for a Likert-Item, a type of a rating scale (@see {@link https://en.wikipedia.org/wiki/Likert_scale|Likert-Scale})
  * @readonly
  * @enum {number}
  */
@@ -24,13 +24,18 @@ export const Rating = Object.freeze({
 const Update_Rating = 'update_rating';
 
 /**
- * Rating component
+ * Rating component, to display '...a statement that the respondent is asked to evaluate by giving
+ * it a quantitative value on any kind of subjective or objective dimension, with level of
+ * agreement/disagreement being the dimension most commonly used.'
+ * @see {@link https://en.wikipedia.org/wiki/Likert_scale|Likert-Scale Composition}
+ * The component consists of 5 buttons, related to a concrete response value of the rating scale to the asked subject.
  * @fires  change when the rating has changed
  * @property {Rating} rating - The selected rating.
  * @class
  * @author norbertK
+ * @author thiloSchlemmer
  */
-export class StarsRatingPanel extends MvuElement {
+export class LikertItemRatingPanel extends MvuElement {
 	constructor() {
 		super({
 			rating: Rating.NONE

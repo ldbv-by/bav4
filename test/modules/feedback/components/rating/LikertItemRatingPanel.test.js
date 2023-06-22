@@ -1,8 +1,8 @@
 import { $injector } from '../../../../../src/injection';
-import { StarsRatingPanel, Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
+import { LikertItemRatingPanel, Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
 import { TestUtils } from '../../../../test-utils';
 
-window.customElements.define(StarsRatingPanel.tag, StarsRatingPanel);
+window.customElements.define(LikertItemRatingPanel.tag, LikertItemRatingPanel);
 
 const setup = (state = {}) => {
 	const initialState = {
@@ -13,10 +13,10 @@ const setup = (state = {}) => {
 
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-	return TestUtils.renderAndLogLifecycle(StarsRatingPanel.tag);
+	return TestUtils.renderAndLogLifecycle(LikertItemRatingPanel.tag);
 };
 
-describe('StarsRatingPanel', () => {
+describe('LikertItemRatingPanel', () => {
 	describe('Rating', () => {
 		it('provides an enum of possible ratings', () => {
 			expect(Object.keys(Rating).length).toBe(6);
@@ -33,7 +33,7 @@ describe('StarsRatingPanel', () => {
 	describe('when instantiated', () => {
 		it('sets a default model', async () => {
 			await setup();
-			const element = new StarsRatingPanel();
+			const element = new LikertItemRatingPanel();
 
 			expect(element.getModel()).toEqual({
 				rating: Rating.NONE

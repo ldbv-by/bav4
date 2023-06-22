@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
-import { Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
+import { Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
 import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
