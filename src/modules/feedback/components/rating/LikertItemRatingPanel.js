@@ -27,8 +27,10 @@ const Update_Rating = 'update_rating';
  * Rating component, to display '...a statement that the respondent is asked to evaluate by giving
  * it a quantitative value on any kind of subjective or objective dimension, with level of
  * agreement/disagreement being the dimension most commonly used.'
- * @see {@link https://en.wikipedia.org/wiki/Likert_scale|Likert-Scale Composition}
+ * ({@link https://en.wikipedia.org/wiki/Likert_scale|Source})
+ *
  * The component consists of 5 buttons, related to a concrete response value of the rating scale to the asked subject.
+ * @see {@link https://en.wikipedia.org/wiki/Likert_scale|Likert-Scale}
  * @fires  change when the rating has changed
  * @property {Rating} rating - The selected rating.
  * @class
