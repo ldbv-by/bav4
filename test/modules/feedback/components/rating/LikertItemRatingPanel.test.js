@@ -44,7 +44,7 @@ describe('LikertItemRatingPanel', () => {
 	describe('when initialized', () => {
 		it('renders the view', async () => {
 			// arrange
-			const prefix = 'fiveButtonRating_';
+			const prefix = 'likertItem_response_';
 
 			const element = await setup();
 
@@ -77,7 +77,7 @@ describe('LikertItemRatingPanel', () => {
 
 			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
 			starButtons.forEach((starButton) => {
-				if (['fiveButtonRating_unlikely'].includes(starButton.title)) {
+				if (['likertItem_response_unlikely'].includes(starButton.title)) {
 					expect(starButton.classList.contains('unselected')).toBeFalse();
 					expect(starButton.classList.contains('selected')).toBeTrue();
 				} else {
