@@ -18,7 +18,7 @@ const setup = (state = {}) => {
 
 describe('LikertItemRatingPanel', () => {
 	describe('Rating', () => {
-		it('provides an enum of possible ratings', () => {
+		it('provides an enum of possible response values', () => {
 			expect(Object.keys(Rating).length).toBe(6);
 
 			expect(Rating.NONE).toBe(0);
@@ -51,13 +51,13 @@ describe('LikertItemRatingPanel', () => {
 			// assert
 			expect(element.shadowRoot.children.length).toBe(3);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
-			expect(starButtons.length).toBe(5);
-			starButtons.forEach((starButton) => {
-				expect(starButton.classList.contains('unselected')).toBeTrue();
-				expect(starButton.classList.contains('selected')).toBeFalse();
-				expect(starButton.onClick).toEqual(element.onRatingClick);
-				expect(starButton.title).toMatch(new RegExp(`^${prefix}`));
+			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
+			expect(responseButtons.length).toBe(5);
+			responseButtons.forEach((responseButton) => {
+				expect(responseButton.classList.contains('unselected')).toBeTrue();
+				expect(responseButton.classList.contains('selected')).toBeFalse();
+				expect(responseButton.onClick).toEqual(element.onRatingClick);
+				expect(responseButton.title).toMatch(new RegExp(`^${prefix}`));
 			});
 		});
 	});
@@ -75,47 +75,47 @@ describe('LikertItemRatingPanel', () => {
 			expect(ratingSpy).toHaveBeenCalled();
 			expect(element.rating).toBe(Rating.DISAGREE);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
-			starButtons.forEach((starButton) => {
-				if (['likertItem_response_unlikely'].includes(starButton.title)) {
-					expect(starButton.classList.contains('unselected')).toBeFalse();
-					expect(starButton.classList.contains('selected')).toBeTrue();
+			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
+			responseButtons.forEach((responseButton) => {
+				if (['likertItem_response_unlikely'].includes(responseButton.title)) {
+					expect(responseButton.classList.contains('unselected')).toBeFalse();
+					expect(responseButton.classList.contains('selected')).toBeTrue();
 				} else {
-					expect(starButton.classList.contains('unselected')).toBeTrue();
-					expect(starButton.classList.contains('selected')).toBeFalse();
+					expect(responseButton.classList.contains('unselected')).toBeTrue();
+					expect(responseButton.classList.contains('selected')).toBeFalse();
 				}
 			});
 		});
 	});
 
-	describe('when any rating button is pressed', () => {
+	describe('when any response button is pressed', () => {
 		it('calls a registered "onChange" handler', async () => {
 			// arrange
 			const element = await setup();
 			const onRatingClickSpy = spyOn(element, '_onRatingClick');
 
 			// act
-			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
-			starButtons.forEach((starButton) => {
-				starButton.click();
+			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
+			responseButtons.forEach((responseButton) => {
+				responseButton.click();
 			});
 
 			// assert
-			expect(starButtons.length).toBe(5);
+			expect(responseButtons.length).toBe(5);
 			expect(onRatingClickSpy).toHaveBeenCalledTimes(5);
 		});
 
-		it('it will be displayed as selected', async () => {
+		it('displays the button as selected', async () => {
 			// arrange
 			const element = await setup();
 
-			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
-			starButtons.forEach((starButton) => {
+			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
+			responseButtons.forEach((responseButton) => {
 				// act
-				starButton.click();
+				responseButton.click();
 
 				// assert
-				expect(starButton.classList.contains('selected')).toBeTrue();
+				expect(responseButton.classList.contains('selected')).toBeTrue();
 			});
 		});
 
@@ -139,10 +139,10 @@ describe('LikertItemRatingPanel', () => {
 			const spy = jasmine.createSpy();
 			element.addEventListener('change', spy);
 
-			const starButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
-			starButtons.forEach((starButton) => {
+			const responseButtons = element.shadowRoot.querySelectorAll('.likert-response-button');
+			responseButtons.forEach((responseButton) => {
 				// act
-				starButton.click();
+				responseButton.click();
 				// assert
 				expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({ detail: { rating: element.rating } }));
 			});
