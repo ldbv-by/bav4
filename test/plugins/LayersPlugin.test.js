@@ -60,7 +60,7 @@ describe('LayersPlugin', () => {
 	});
 
 	describe('_init', () => {
-		it('initializes the georesource service and calls #_addLayersFromConfig', async () => {
+		it('initializes the GeoResourceService and calls #_addLayersFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
@@ -75,7 +75,7 @@ describe('LayersPlugin', () => {
 			expect(store.getState().layers.ready).toBeTrue();
 		});
 
-		it('initializes the georesource service and calls #_addLayersFromQueryParams', async () => {
+		it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
 			const store = setup();
 			const queryParam = QueryParameters.LAYER + '=some';
 			const instanceUnderTest = new LayersPlugin();
@@ -198,7 +198,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].visible).toBeFalse();
 			});
 
-			it('adds layers considering unuseable visibility params', () => {
+			it('adds layers considering unusable visibility params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
@@ -244,7 +244,7 @@ describe('LayersPlugin', () => {
 				expect(store.getState().layers.active[1].opacity).toBe(0.6);
 			});
 
-			it('adds layers considering unuseable opacity params', () => {
+			it('adds layers considering unusable opacity params', () => {
 				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
