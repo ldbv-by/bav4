@@ -122,6 +122,35 @@ describe('EnvironmentService', () => {
 		});
 	});
 
+	describe('isRetinaDisplay', () => {
+		it('detects a retina display by the devicePixelRatio property', () => {
+			const mockWindow = {
+				devicePixelRatio: 1
+			};
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isRetinaDisplay()).toBeFalse();
+
+			mockWindow.devicePixelRatio = 2;
+
+			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
+		});
+
+		it('detects a retina display by a mediaQuery', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: (mediaQuery) => {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
+				}
+			};
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+
+			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
+		});
+	});
+
 	describe('embedded', () => {
 		it('detects embedded modus', () => {
 			let mockWindow = {

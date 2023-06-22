@@ -18,19 +18,23 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * @returns URLSearchParams
+	 * @returns the current `URLSearchParams`
 	 */
 	getUrlParams() {
 		return new URLSearchParams(this._window.location.search);
 	}
 
 	/**
-	 * @returns the global window object
+	 * @returns the global `window` object
 	 */
 	getWindow() {
 		return this._window;
 	}
 
+	/**
+	 *
+	 * @returns `true` if the current device has touch support
+	 */
 	isTouch() {
 		const navigator = this._window.navigator;
 		const window = this._window;
@@ -54,6 +58,20 @@ export class EnvironmentService {
 
 	/**
 	 *
+	 * @returns `true` if the current device has a retina display
+	 */
+	isRetinaDisplay() {
+		const window = this._window;
+		const mq =
+			window.matchMedia &&
+			window.matchMedia(
+				'only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (min--moz-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (min-device-pixel-ratio: 2), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 2dppx)'
+			);
+		return (mq && mq.matches) ?? window.devicePixelRatio > 1;
+	}
+
+	/**
+	 *
 	 * @returns `true` if we are in embedded mode
 	 */
 	isEmbedded() {
@@ -61,7 +79,7 @@ export class EnvironmentService {
 	}
 
 	/**
-	 *  @returns `false` if a backend is intended to be used
+	 *  @returns `true` if a backend is not configured
 	 */
 	isStandalone() {
 		return !this._configService.getValue('BACKEND_URL', false);
