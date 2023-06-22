@@ -3,7 +3,7 @@ import { TestUtils } from '../../../../test-utils.js';
 import { layersReducer, createDefaultLayerProperties } from '../../../../../src/store/layers/layers.reducer';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
 import { addLayer, removeLayer, modifyLayer } from '../../../../../src/store/layers/layers.action';
-import { XyzGeoResource } from '../../../../../src/domain/geoResources';
+import { AggregateGeoResource, XyzGeoResource } from '../../../../../src/domain/geoResources';
 import { $injector } from '../../../../../src/injection';
 
 window.customElements.define(BaseLayerInfo.tag, BaseLayerInfo);
@@ -40,12 +40,11 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV42');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: LDBV42');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
-		it('renders BaseLayerInfo component with georesource.getAttribution', async () => {
+		it('renders BaseLayerInfo based on the attribution object of a GeoResource', async () => {
 			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId0' };
 			const state = {
 				layers: {
@@ -65,11 +64,40 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_label');
-			expect(element.shadowRoot.querySelector('div').innerText).toContain('foo, bar');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: foo, bar');
 
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
+		});
+
+		it('renders BaseLayerInfo for a aggregated GeoResource', async () => {
+			const layer = { ...createDefaultLayerProperties(), id: 'id0', geoResourceId: 'geoResourceId2' };
+			const state = {
+				layers: {
+					active: [layer]
+				},
+				position: {
+					zoom: 12
+				}
+			};
+
+			const xyz0 = new XyzGeoResource('geoResourceId0', 'label0', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyz1 = new XyzGeoResource('geoResourceId1', 'label1', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const aggregateGeoResource = new AggregateGeoResource('geoResourceId2', 'label2', ['geoResourceId0', 'geoResourceId1']);
+			spyOn(geoResourceServiceMock, 'byId').and.callFake((grId) => {
+				switch (grId) {
+					case xyz0.id:
+						return xyz0;
+					case xyz1.id:
+						return xyz1;
+					case aggregateGeoResource.id:
+						return aggregateGeoResource;
+				}
+			});
+
+			const element = await setup(state);
+
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: label1, label0');
 		});
 
 		it('renders nothing when no layers are set', async () => {
@@ -84,7 +112,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelector('div')).toBeFalsy();
+			expect(element.shadowRoot.querySelectorAll('div')).toHaveSize(0);
 		});
 
 		it('renders fallback content when GeoResource could not be fetched', async () => {
@@ -101,7 +129,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_fallback');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: map_baseLayerInfo_fallback');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
@@ -121,7 +149,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('map_baseLayerInfo_fallback');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: map_baseLayerInfo_fallback');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
@@ -143,27 +171,23 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerText).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('Ref42');
 
 			addLayer(layer2.id, layer2);
 
-			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerText).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('LDBV');
 
 			modifyLayer(layer.id, { zIndex: 0 });
 
-			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('LDBV');
-			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerText).toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('Ref42');
 
 			removeLayer(layer.id);
 
-			expect(element.shadowRoot.querySelector('div')).toBeTruthy();
-			expect(element.shadowRoot.querySelector('div').innerHTML).toContain('Ref42');
-			expect(element.shadowRoot.querySelector('div').innerHTML).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerText).toContain('Ref42');
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('LDBV');
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.geoResourceId);
