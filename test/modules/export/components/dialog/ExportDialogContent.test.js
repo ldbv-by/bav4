@@ -10,6 +10,10 @@ window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportDialogContent', () => {
+	const projectionServiceMock = {
+		getProjections: () => [4326, 3857]
+	};
+
 	const setup = (state = {}) => {
 		// state of store
 		const initialState = {
@@ -34,6 +38,7 @@ describe('ExportDialogContent', () => {
 				forData: () => 'foo/bar'
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ProjectionService', projectionServiceMock)
 			.registerSingleton('FileSaveService', { saveAs: () => {} });
 
 		return TestUtils.render(ExportDialogContent.tag);
@@ -41,9 +46,11 @@ describe('ExportDialogContent', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
+			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => []);
 			const element = await setup();
 			const model = element.getModel();
 			expect(model).toEqual({ exportData: null, isPortrait: false });
+			expect(projSpy).toHaveBeenCalled();
 		});
 	});
 
@@ -59,8 +66,10 @@ describe('ExportDialogContent', () => {
 	describe('_getExportTypes', () => {
 		it('creates a list of available exportTypes', async () => {
 			const element = await setup();
+			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => [42, 21]);
 			const exportTypes = element._getExportTypes();
 
+			expect(projSpy).toHaveBeenCalled();
 			expect(exportTypes).toHaveSize(4);
 			expect(exportTypes[0]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, srids: [4326] }));
 			expect(exportTypes[1]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, srids: [4326] }));
@@ -71,7 +80,7 @@ describe('ExportDialogContent', () => {
 				jasmine.objectContaining({
 					sourceTypeName: SourceTypeName.EWKT,
 					mediaType: MediaType.TEXT_PLAIN,
-					srids: [4326, 3857, 25832, 25833]
+					srids: [42, 21]
 				})
 			);
 		});
