@@ -14,11 +14,11 @@ import { $injector } from '../../../../injection';
  */
 export const Rating = Object.freeze({
 	NONE: 0,
-	VERY_UNLIKELY: 1,
-	UNLIKELY: 2,
+	STRONGLY_DISAGREE: 1,
+	DISAGREE: 2,
 	NEUTRAL: 3,
-	LIKELY: 4,
-	VERY_LIKELY: 5
+	AGREE: 4,
+	STRONGLY_AGREE: 5
 });
 
 const Update_Rating = 'update_rating';
@@ -71,13 +71,13 @@ export class StarsRatingPanel extends MvuElement {
 
 			<div class="container">
 				<button
-					class="star-button ${'rating-' + Rating.VERY_UNLIKELY} ${Rating.VERY_UNLIKELY === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.VERY_UNLIKELY)}"
+					class="star-button ${'rating-' + Rating.STRONGLY_DISAGREE} ${Rating.STRONGLY_DISAGREE === rating ? 'selected' : 'unselected'}"
+					@click="${() => this._onRatingClick(Rating.STRONGLY_DISAGREE)}"
 					title="${translate('fiveButtonRating_very_unlikely')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.UNLIKELY} ${Rating.UNLIKELY === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.UNLIKELY)}"
+					class="star-button ${'rating-' + Rating.DISAGREE} ${Rating.DISAGREE === rating ? 'selected' : 'unselected'}"
+					@click="${() => this._onRatingClick(Rating.DISAGREE)}"
 					title="${translate('fiveButtonRating_unlikely')}"
 				></button>
 				<button
@@ -86,13 +86,13 @@ export class StarsRatingPanel extends MvuElement {
 					title="${translate('fiveButtonRating_neutral')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.LIKELY} ${Rating.LIKELY === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.LIKELY)}"
+					class="star-button ${'rating-' + Rating.AGREE} ${Rating.AGREE === rating ? 'selected' : 'unselected'}"
+					@click="${() => this._onRatingClick(Rating.AGREE)}"
 					title="${translate('fiveButtonRating_likely')}"
 				></button>
 				<button
-					class="star-button ${'rating-' + Rating.VERY_LIKELY} ${Rating.VERY_LIKELY === rating ? 'selected' : 'unselected'}"
-					@click="${() => this._onRatingClick(Rating.VERY_LIKELY)}"
+					class="star-button ${'rating-' + Rating.STRONGLY_AGREE} ${Rating.STRONGLY_AGREE === rating ? 'selected' : 'unselected'}"
+					@click="${() => this._onRatingClick(Rating.STRONGLY_AGREE)}"
 					title="${translate('fiveButtonRating_very_likely')}"
 				></button>
 			</div>

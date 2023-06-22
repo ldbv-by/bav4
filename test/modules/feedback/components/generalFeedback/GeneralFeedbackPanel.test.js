@@ -10,7 +10,7 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
-const ratingValue = Rating.VERY_LIKELY;
+const ratingValue = Rating.STRONGLY_AGREE;
 const fillRating = (element) => {
 	const starsRatingPanel = element.shadowRoot.getElementById('rating');
 	const ratingChangeEvent = new CustomEvent('change', {
