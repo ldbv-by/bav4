@@ -49,8 +49,9 @@ describe('MapFeedbackChip', () => {
 
 	describe('when chip is clicked', () => {
 		it('opens the modal with the toggleFeedbackPanel', async () => {
+			const expectedCenter = [42, 21];
 			const element = await setup();
-			element.center = [42, 21];
+			element.center = expectedCenter;
 
 			const button = element.shadowRoot.querySelector('button');
 			button.click();
@@ -61,6 +62,7 @@ describe('MapFeedbackChip', () => {
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
+			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).center).toEqual(expectedCenter);
 		});
 	});
 });
