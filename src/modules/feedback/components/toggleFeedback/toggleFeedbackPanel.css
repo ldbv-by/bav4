@@ -13,6 +13,7 @@
 }
 .toggleGeneral {
 	display: none;
+	max-width: 55em;
 }
 .toggleGeneral.active {
 	display: block;
