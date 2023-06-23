@@ -1,4 +1,5 @@
 import { $injector } from '../../../../../src/injection';
+import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
@@ -47,7 +48,7 @@ describe('ToggleFeedbackPanel', () => {
 			const element = await setup();
 
 			// assert
-			expect(element.shadowRoot.children.length).toBe(5);
+			expect(element.shadowRoot.children.length).toBe(3);
 
 			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
 			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('block');
@@ -60,13 +61,8 @@ describe('ToggleFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__primary-text').innerText).toBe(expectedGeneralButton);
 			expect(element.shadowRoot.querySelector('#feedbackGeneralButton .ba-list-item__secondary-text').innerText).toBe(expectedGeneralButtonSub);
 
-			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
-			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
-			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
-			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
-
-			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
-			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
 		});
 	});
 
@@ -80,14 +76,10 @@ describe('ToggleFeedbackPanel', () => {
 			mapButton.click();
 
 			// assert
-			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
-			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
-
-			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
-			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('block');
-
-			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
-			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 		});
 	});
 
@@ -101,19 +93,14 @@ describe('ToggleFeedbackPanel', () => {
 			generalButton.click();
 
 			// assert
-			const mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
-			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
-
-			const mapPanel = element.shadowRoot.querySelector('.toggleMap');
-			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
-
-			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
-			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelector(GeneralFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 		});
 	});
-	
-			
-	describe('property "type" is set', () => {
+
+	describe('property "type"', () => {
 		it('displays the corresponding panel', async () => {
 			// arrange
 			const element = await setup();
@@ -122,22 +109,27 @@ describe('ToggleFeedbackPanel', () => {
 			element.type = FeedbackType.GENERAL;
 
 			// assert
-			let mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
-			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
-			let mapPanel = element.shadowRoot.querySelector('.toggleMap');
-			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
-			let generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
-			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('block');
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
 
 			//act
 			element.type = FeedbackType.MAP;
 
-			mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
-			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
-			mapPanel = element.shadowRoot.querySelector('.toggleMap');
-			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('block');
-			generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
-			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
+		});
+	});
+
+	describe('property "onSubmbit"', () => {
+		it('displays the corresponding panel', async () => {
+			const onSubmbitFn = () => {};
+			const element = await setup();
+
+			element.onSubmit = onSubmbitFn;
+
+			expect(element._onSubmit).toEqual(onSubmbitFn);
 		});
 	});
 });
