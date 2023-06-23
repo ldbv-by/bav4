@@ -23,6 +23,7 @@ const feedbackServiceMock = {
 
 const shareServiceMock = {
 	encodeState: () => 'http://foo.bar?x=0',
+	encodeStateForPosition: () => 'http://foo.bar.baz?x=0',
 	copyToClipboard() {}
 };
 
@@ -80,7 +81,8 @@ describe('MapFeedbackPanel', () => {
 					fileId: null
 				},
 				categoryOptions: [],
-				isPortrait: false
+				isPortrait: false,
+				center: null
 			});
 		});
 
@@ -168,6 +170,29 @@ describe('MapFeedbackPanel', () => {
 			await setup();
 
 			expect(encodeSpy).toHaveBeenCalledWith({ ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [PathParameters.EMBED]);
+		});
+
+		describe('and the center property is set', () => {
+			it('calls shareService for iframe-source', async () => {
+				const expectedCenter = [42, 21];
+				const element = await setup();
+				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+				element.center = expectedCenter;
+
+				expect(encodeSpy).toHaveBeenCalledWith({ center: expectedCenter }, { ifc: [IFrameComponents.DRAW_TOOL], l: jasmine.any(String) }, [
+					PathParameters.EMBED
+				]);
+			});
+
+			it('does NOT calls shareService for iframe-source with invalid center', async () => {
+				const invalidCenter = [42];
+
+				const element = await setup();
+				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
+				element.center = invalidCenter;
+
+				expect(encodeSpy).not.toHaveBeenCalled();
+			});
 		});
 
 		it('filters iframe-source for user-generated layers', async () => {
