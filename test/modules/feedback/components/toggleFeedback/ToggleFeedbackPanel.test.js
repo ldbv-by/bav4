@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
-import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
@@ -109,6 +109,35 @@ describe('ToggleFeedbackPanel', () => {
 
 			const generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
 			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('block');
+		});
+	});
+	
+			
+	describe('property "type" is set', () => {
+		it('displays the corresponding panel', async () => {
+			// arrange
+			const element = await setup();
+
+			//act
+			element.type = FeedbackType.GENERAL;
+
+			// assert
+			let mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
+			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
+			let mapPanel = element.shadowRoot.querySelector('.toggleMap');
+			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('none');
+			let generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
+			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('block');
+
+			//act
+			element.type = FeedbackType.MAP;
+
+			mapButtonContainer = element.shadowRoot.querySelector('.toggleButtons');
+			expect(window.getComputedStyle(mapButtonContainer).getPropertyValue('display')).toBe('none');
+			mapPanel = element.shadowRoot.querySelector('.toggleMap');
+			expect(window.getComputedStyle(mapPanel).getPropertyValue('display')).toBe('block');
+			generalPanel = element.shadowRoot.querySelector('.toggleGeneral');
+			expect(window.getComputedStyle(generalPanel).getPropertyValue('display')).toBe('none');
 		});
 	});
 });

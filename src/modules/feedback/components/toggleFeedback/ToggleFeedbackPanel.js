@@ -21,6 +21,8 @@ const Select_Feedback_Type = 'select_feedback_type';
 
 /**
  * Allows the user to either select a map-related or a general feedback.
+ * @property {Function} onSubmit callback function
+ * @property {FeedbackType} type
  * @class
  */
 export class ToggleFeedbackPanel extends MvuElement {
@@ -96,6 +98,14 @@ export class ToggleFeedbackPanel extends MvuElement {
 	 */
 	set onSubmit(callback) {
 		this._onSubmit = callback;
+	}
+
+	/**
+	 * Sets the selected feedback type.
+	 * @type {FeedbackType}
+	 */
+	set type(feedbackType) {
+		this.signal(Select_Feedback_Type, feedbackType);
 	}
 
 	static get tag() {
