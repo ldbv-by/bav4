@@ -183,16 +183,6 @@ describe('MapFeedbackPanel', () => {
 					PathParameters.EMBED
 				]);
 			});
-
-			it('does NOT calls shareService for iframe-source with invalid center', async () => {
-				const invalidCenter = [42];
-
-				const element = await setup();
-				const encodeSpy = spyOn(shareServiceMock, 'encodeStateForPosition').and.callThrough();
-				element.center = invalidCenter;
-
-				expect(encodeSpy).not.toHaveBeenCalled();
-			});
 		});
 
 		it('filters iframe-source for user-generated layers', async () => {

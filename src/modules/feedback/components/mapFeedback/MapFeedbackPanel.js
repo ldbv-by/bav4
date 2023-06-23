@@ -321,9 +321,7 @@ export class MapFeedbackPanel extends MvuElement {
 	}
 
 	set center(value) {
-		if (isCoordinate(value)) {
-			this.signal(Update_Center, value);
-		}
+		this.signal(Update_Center, value);
 	}
 
 	static get tag() {
