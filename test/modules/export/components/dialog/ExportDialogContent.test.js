@@ -10,6 +10,10 @@ window.customElements.define(ExportDialogContent.tag, ExportDialogContent);
 window.customElements.define(ExportItem.tag, ExportItem);
 
 describe('ExportDialogContent', () => {
+	const projectionServiceMock = {
+		getProjections: () => [4326, 3857]
+	};
+
 	const setup = (state = {}) => {
 		// state of store
 		const initialState = {
@@ -34,6 +38,7 @@ describe('ExportDialogContent', () => {
 				forData: () => 'foo/bar'
 			})
 			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ProjectionService', projectionServiceMock)
 			.registerSingleton('FileSaveService', { saveAs: () => {} });
 
 		return TestUtils.render(ExportDialogContent.tag);
@@ -41,26 +46,30 @@ describe('ExportDialogContent', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
-			const element = await setup();
+			const element = new ExportDialogContent();
 			const model = element.getModel();
-			expect(model).toEqual({ exportData: null, isPortrait: false });
+			expect(model).toEqual({ exportData: null, isPortrait: false, exportTypes: null });
 		});
 	});
 
 	describe('when initialized', () => {
 		it('renders the component', async () => {
+			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => []);
 			const element = await setup();
 			element.exportData = '<kml/>';
 
 			expect(element.shadowRoot.querySelectorAll('ba-export-item')).toHaveSize(4);
+			expect(projSpy).toHaveBeenCalled();
 		});
 	});
 
 	describe('_getExportTypes', () => {
 		it('creates a list of available exportTypes', async () => {
 			const element = await setup();
+			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => [42, 21]);
 			const exportTypes = element._getExportTypes();
 
+			expect(projSpy).toHaveBeenCalled();
 			expect(exportTypes).toHaveSize(4);
 			expect(exportTypes[0]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, srids: [4326] }));
 			expect(exportTypes[1]).toEqual(jasmine.objectContaining({ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, srids: [4326] }));
@@ -71,7 +80,7 @@ describe('ExportDialogContent', () => {
 				jasmine.objectContaining({
 					sourceTypeName: SourceTypeName.EWKT,
 					mediaType: MediaType.TEXT_PLAIN,
-					srids: [4326, 3857, 25832, 25833]
+					srids: [42, 21]
 				})
 			);
 		});
