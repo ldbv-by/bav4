@@ -25,7 +25,8 @@ describe('ToggleFeedbackPanel', () => {
 			const element = new ToggleFeedbackPanel();
 
 			expect(element.getModel()).toEqual({
-				selectedFeedbackPanel: null
+				selectedFeedbackPanel: null,
+				center: null
 			});
 		});
 
@@ -34,6 +35,7 @@ describe('ToggleFeedbackPanel', () => {
 			const instanceUnderTest = new ToggleFeedbackPanel();
 
 			expect(instanceUnderTest._onSubmit).toBeDefined();
+			expect(instanceUnderTest._onSubmit()).toBeUndefined();
 		});
 	});
 
@@ -80,6 +82,7 @@ describe('ToggleFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
+			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).center).toBeNull();
 		});
 	});
 
@@ -101,7 +104,7 @@ describe('ToggleFeedbackPanel', () => {
 	});
 
 	describe('property "type"', () => {
-		it('displays the corresponding panel', async () => {
+		it('updates the view', async () => {
 			// arrange
 			const element = await setup();
 
@@ -122,14 +125,25 @@ describe('ToggleFeedbackPanel', () => {
 		});
 	});
 
-	describe('property "onSubmbit"', () => {
-		it('displays the corresponding panel', async () => {
+	describe('property "onSubmit"', () => {
+		it('sets the onSubmit callback', async () => {
 			const onSubmbitFn = () => {};
 			const element = await setup();
 
 			element.onSubmit = onSubmbitFn;
 
 			expect(element._onSubmit).toEqual(onSubmbitFn);
+		});
+	});
+
+	describe('property "center"', () => {
+		it('sets the center coordinate and updates the view', async () => {
+			const element = await setup();
+			element.type = FeedbackType.MAP;
+
+			element.center = [21, 42];
+
+			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).center).toEqual([21, 42]);
 		});
 	});
 });

@@ -17,17 +17,20 @@ export const FeedbackType = Object.freeze({
 });
 
 const Select_Feedback_Type = 'select_feedback_type';
+const Center_Coordinate = 'center_coordinate';
 
 /**
  * Allows the user to either select a map-related or a general feedback.
- * @property {Function} onSubmit Registers a callback function which will be called when one of the forms was submitted successfully.
- * @property {FeedbackType|null} type Sets the selected feedback type.
+ * @property {Function} onSubmit Initially registers a callback function which will be called when one of the forms was submitted successfully
+ * @property {module:domain/coordinateTypeDef~Coordinate|null} center Sets a coordinate and passes it to the MapFeedbackPanel by updating the view
+ * @property {FeedbackType|null} type Sets the selected feedback type and updates the view
  * @class
  */
 export class ToggleFeedbackPanel extends MvuElement {
 	constructor() {
 		super({
-			selectedFeedbackPanel: null
+			selectedFeedbackPanel: null,
+			center: null
 		});
 
 		const { TranslationService: translationService } = $injector.inject('TranslationService');
@@ -40,11 +43,13 @@ export class ToggleFeedbackPanel extends MvuElement {
 		switch (type) {
 			case Select_Feedback_Type:
 				return { ...model, selectedFeedbackPanel: data };
+			case Center_Coordinate:
+				return { ...model, center: data };
 		}
 	}
 
 	createView(model) {
-		const { selectedFeedbackPanel } = model;
+		const { selectedFeedbackPanel, center } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		return html`
@@ -78,7 +83,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 			${selectedFeedbackPanel === FeedbackType.MAP
 				? html`
 						<div class="toggleMap active">
-							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-mapfeedbackpanel>
+							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${center}></ba-mvu-mapfeedbackpanel>
 						</div>
 				  `
 				: nothing}
@@ -98,6 +103,10 @@ export class ToggleFeedbackPanel extends MvuElement {
 
 	set type(feedbackType) {
 		this.signal(Select_Feedback_Type, feedbackType);
+	}
+
+	set center(coordinate) {
+		this.signal(Center_Coordinate, coordinate);
 	}
 
 	static get tag() {
