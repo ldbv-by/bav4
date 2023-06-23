@@ -58,7 +58,7 @@ export class ToggleFeedbackPanel extends MvuElement {
 			</style>
 			${selectedFeedbackPanel === null
 				? html`
-						<div class="toggleButtons active">
+						<div class="toggleButtons">
 							<button id="feedbackGeneralButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}>
 								<span class="ba-list-item__pre ">
 									<span class="ba-list-item__icon chatleftdots"> </span>
@@ -82,14 +82,14 @@ export class ToggleFeedbackPanel extends MvuElement {
 				: nothing}
 			${selectedFeedbackPanel === FeedbackType.MAP
 				? html`
-						<div class="toggleMap active">
+						<div>
 							<ba-mvu-mapfeedbackpanel .onSubmit=${this._onSubmit} .center=${center}></ba-mvu-mapfeedbackpanel>
 						</div>
 				  `
 				: nothing}
 			${selectedFeedbackPanel === FeedbackType.GENERAL
 				? html`
-						<div class="toggleGeneral active">
+						<div class="toggleGeneral">
 							<ba-mvu-generalfeedbackpanel .onSubmit=${this._onSubmit}></ba-mvu-generalfeedbackpanel>
 						</div>
 				  `
