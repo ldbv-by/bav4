@@ -11,6 +11,7 @@ import { MediaType } from '../../../../domain/mediaTypes';
 import { $injector } from '../../../../injection/index';
 
 const Update = 'update';
+const Update_Export_Types = 'update_export_types';
 const Update_Media_Related_Properties = 'update_isPortrait';
 /**
  * A content component to show available export actions
@@ -20,10 +21,8 @@ const Update_Media_Related_Properties = 'update_isPortrait';
  * @author thiloSchlemmer
  */
 export class ExportDialogContent extends MvuElement {
-	#exportTypes;
 	constructor() {
-		super({ exportData: null, isPortrait: false });
-		this.#exportTypes = this._getExportTypes();
+		super({ exportData: null, isPortrait: false, exportTypes: null });
 	}
 
 	update(type, data, model) {
@@ -32,21 +31,21 @@ export class ExportDialogContent extends MvuElement {
 				return { ...model, exportData: data };
 			case Update_Media_Related_Properties:
 				return { ...model, ...data };
+			case Update_Export_Types:
+				return { ...model, exportTypes: data };
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	onInitialize() {
 		this.observe(
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
+		this.signal(Update_Export_Types, this._getExportTypes());
 	}
 
 	createView(model) {
-		const { exportData, isPortrait } = model;
+		const { exportData, isPortrait, exportTypes } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -57,7 +56,7 @@ export class ExportDialogContent extends MvuElement {
 			</style>
 			<div class="container ${getOrientationClass()}">
 				${repeat(
-					this.#exportTypes,
+					exportTypes,
 					(exportType) => exportType.sourceType,
 					(exportType) => html`<ba-export-item .exportType=${exportType} .exportData=${exportData}></ba-export-item>`
 				)}

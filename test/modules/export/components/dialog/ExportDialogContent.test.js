@@ -46,20 +46,20 @@ describe('ExportDialogContent', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
-			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => []);
-			const element = await setup();
+			const element = new ExportDialogContent();
 			const model = element.getModel();
-			expect(model).toEqual({ exportData: null, isPortrait: false });
-			expect(projSpy).toHaveBeenCalled();
+			expect(model).toEqual({ exportData: null, isPortrait: false, exportTypes: null });
 		});
 	});
 
 	describe('when initialized', () => {
 		it('renders the component', async () => {
+			const projSpy = spyOn(projectionServiceMock, 'getProjections').and.callFake(() => []);
 			const element = await setup();
 			element.exportData = '<kml/>';
 
 			expect(element.shadowRoot.querySelectorAll('ba-export-item')).toHaveSize(4);
+			expect(projSpy).toHaveBeenCalled();
 		});
 	});
 
