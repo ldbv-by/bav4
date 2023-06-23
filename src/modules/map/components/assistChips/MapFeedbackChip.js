@@ -52,7 +52,7 @@ export class MapFeedbackChip extends AbstractAssistChip {
 		const content = html`<ba-mvu-togglefeedbackpanel
 			.onSubmit=${closeModal}
 			.type=${FeedbackType.MAP}
-			center=${center}
+			.center=${center}
 		></ba-mvu-togglefeedbackpanel>`;
 
 		openModal(title, content);
