@@ -1,5 +1,5 @@
 import { $injector } from '../../../../../src/injection';
-import { ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
 import { MapFeedbackChip } from '../../../../../src/modules/map/components/assistChips/MapFeedbackChip';
 import mapSvg from '../../../../../src/modules/map/components/assistChips/assets/map.svg';
 import { closeModal } from '../../../../../src/store/modal/modal.action';
@@ -63,6 +63,7 @@ describe('MapFeedbackChip', () => {
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).center).toEqual(expectedCenter);
+			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).type).toEqual(FeedbackType.MAP);
 		});
 	});
 });
