@@ -8,7 +8,6 @@
 	width: 2.5em;
 	display: inline-block;
 	border: none;
-	border-radius: 2.5em;
 	font-size: 2rem;
 	cursor: pointer;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
