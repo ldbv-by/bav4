@@ -2,17 +2,12 @@
  * @module modules/topics/services/provider/catalog_provider
  */
 import { $injector } from '../../../../injection';
-import {
-	FALLBACK_GEORESOURCE_ID_0,
-	FALLBACK_GEORESOURCE_ID_1,
-	FALLBACK_GEORESOURCE_ID_2,
-	FALLBACK_GEORESOURCE_ID_3
-} from '../../../../services/GeoResourceService';
 
 /**
- * Uses the BVV endpoint to load catalog definitions.
+ * Uses the BVV endpoint to load the catalog definition for a topic
  * @function
- * @returns {Promise<Array<Object>>}
+ * @param {string} topicId Id of the Topic
+ * @type {module:modules/topics/services/CatalogService~catalogProvider}
  */
 export const loadBvvCatalog = async (topicId) => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
@@ -25,42 +20,4 @@ export const loadBvvCatalog = async (topicId) => {
 		return await result.json();
 	}
 	throw new Error(`Catalog for '${topicId}' could not be loaded`);
-};
-
-/**
- * Loads an example catalog without a backend.
- * @function
- * @returns {Promise<Array<Object>>}
- */
-export const loadExampleCatalog = async (topicId) => {
-	return loadFallbackCatalog(topicId);
-};
-
-export const loadFallbackCatalog = () => {
-	//for geoResourceIds: see fallback GeoResources in GeoResourceService
-	return [
-		{
-			label: 'Subtopic 1',
-			open: true,
-			children: [
-				{
-					geoResourceId: FALLBACK_GEORESOURCE_ID_0
-				},
-				{
-					geoResourceId: FALLBACK_GEORESOURCE_ID_1
-				},
-				{
-					label: 'Suptopic 2',
-					children: [
-						{
-							geoResourceId: FALLBACK_GEORESOURCE_ID_2
-						}
-					]
-				}
-			]
-		},
-		{
-			geoResourceId: FALLBACK_GEORESOURCE_ID_3
-		}
-	];
 };
