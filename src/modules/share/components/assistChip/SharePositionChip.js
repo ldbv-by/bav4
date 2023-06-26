@@ -1,7 +1,7 @@
 /**
  * @module modules/map/components/assistChips/SharePositionChip
  */
-import { html } from '../../../../../node_modules/lit-html/lit-html';
+import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { $injector } from '../../../../injection/index';
 import { openModal } from '../../../../store/modal/modal.action';
