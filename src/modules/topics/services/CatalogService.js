@@ -13,6 +13,7 @@ import { loadBvvCatalog } from './provider/catalog.provider';
 /**
  * @typedef {Object} CatalogEntry
  * @property {string} label The label of this CatalogEntry
+ * @property {boolean} [open] `true` if this entry should be displayed opened
  * @property {Array<module:modules/topics/services/CatalogService~GeoResouceRef|module:modules/topics/services/CatalogService~CatalogEntry>} children The elements of this CatalogEntry
  */
 
