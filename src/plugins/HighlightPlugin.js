@@ -94,8 +94,7 @@ export class HighlightPlugin extends BaPlugin {
 		};
 
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
-		const crosshair = queryParams.get(QueryParameters.CROSSHAIR);
+		const crosshair = environmentService.getQueryParams().get(QueryParameters.CROSSHAIR);
 
 		if (crosshair) {
 			setTimeout(() => {

@@ -11,19 +11,16 @@ describe('TopicsPlugin', () => {
 		default() {},
 		byId() {}
 	};
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			topics: topicsReducer
 		});
-		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
@@ -59,12 +56,12 @@ describe('TopicsPlugin', () => {
 
 		it('initializes the TopicsService and calls #_addTopicFromQueryParams', async () => {
 			const store = setup();
-			const queryParam = QueryParameters.TOPIC + '=some';
+			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest._init();
 
@@ -76,11 +73,11 @@ describe('TopicsPlugin', () => {
 
 		it('throws an error when TopicsService throws', async () => {
 			const store = setup();
-			const queryParam = QueryParameters.TOPIC + '=some';
+			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
 			const instanceUnderTest = new TopicsPlugin();
 			const error = new Error('something got wrong');
 			spyOn(topicsServiceMock, 'init').and.rejectWith(error);
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await expectAsync(instanceUnderTest._init()).toBeRejectedWith(
 				jasmine.objectContaining({ message: 'No topics found. Is the backend running and properly configured?', cause: error })

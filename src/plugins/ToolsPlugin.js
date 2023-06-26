@@ -20,10 +20,9 @@ export class ToolsPlugin extends BaPlugin {
 	 */
 	async register() {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
 		// check if we have a query parameter defining the tab id
-		const toolId = queryParams.get(QueryParameters.TOOL_ID);
+		const toolId = environmentService.getQueryParams().get(QueryParameters.TOOL_ID);
 		if (Object.values(Tools).includes(toolId)) {
 			setCurrentTool(toolId);
 		}

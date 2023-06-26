@@ -20,7 +20,7 @@ export class EnvironmentService {
 	/**
 	 * @returns the current `URLSearchParams`
 	 */
-	getUrlParams() {
+	getQueryParams() {
 		return new URLSearchParams(this._window.location.search);
 	}
 

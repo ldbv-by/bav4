@@ -18,7 +18,7 @@ describe('DrawTool', () => {
 		reset: null
 	};
 	const environmentServiceMock = {
-		getUrlParams: () => new URLSearchParams()
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = async (drawState = drawDefaultState) => {
@@ -49,6 +49,11 @@ describe('DrawTool', () => {
 	});
 
 	describe('when initialized', () => {
+		const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
+
+		beforeEach(() => {
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(drawToolQueryParams);
+		});
 		it('builds list of tools', async () => {
 			const element = await setup();
 
@@ -57,12 +62,6 @@ describe('DrawTool', () => {
 		});
 
 		describe('when queryParam for drawTool is set', () => {
-			const drawToolQueryParams = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.DRAW_TOOL + ',foo,bar');
-
-			beforeEach(() => {
-				spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(drawToolQueryParams);
-			});
-
 			it('shows a label', async () => {
 				const element = await setup();
 
