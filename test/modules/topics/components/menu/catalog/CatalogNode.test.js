@@ -9,6 +9,7 @@ describe('CatalogNode', () => {
 	const testCatalog = [
 		{
 			label: 'Subtopic 1',
+			open: true,
 			children: [
 				{
 					geoResourceId: 'gr0'
