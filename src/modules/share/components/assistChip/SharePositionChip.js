@@ -1,5 +1,5 @@
 /**
- * @module modules/map/components/assistChips/SharePositionChip
+ * @module modules/share/components/assistChip/SharePositionChip
  */
 import { html } from 'lit-html';
 import { QueryParameters } from '../../../../domain/queryParameters';
