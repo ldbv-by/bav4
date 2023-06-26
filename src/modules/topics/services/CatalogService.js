@@ -11,9 +11,9 @@ import { FALLBACK_TOPICS_IDS } from '../../../services/TopicsService';
 import { loadBvvCatalog } from './provider/catalog.provider';
 
 /**
- * @typedef {Object} CatalogSegment
- * @property {string} label The label of this CatalogSegment
- * @property {Array<module:modules/topics/services/CatalogService~GeoResouceRef|module:modules/topics/services/CatalogService~CatalogSegment>} children The elements of this CatalogSegment
+ * @typedef {Object} CatalogEntry
+ * @property {string} label The label of this CatalogEntry
+ * @property {Array<module:modules/topics/services/CatalogService~GeoResouceRef|module:modules/topics/services/CatalogService~CatalogEntry>} children The elements of this CatalogEntry
  */
 
 /**
@@ -22,12 +22,12 @@ import { loadBvvCatalog } from './provider/catalog.provider';
  */
 
 /**
- * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogSegment}.
+ * An async function that provides an array of {@link module:modules/topics/services/CatalogService~CatalogEntry}.
  *
  * @async
  * @typedef {function} catalogProvider
- * @throws May throw when CatalogSegments cannot be loaded
- * @return {module:modules/topics/services/CatalogService~CatalogSegment[]}
+ * @throws May throw when entries cannot be loaded
+ * @return {module:modules/topics/services/CatalogService~CatalogEntry[]}
  */
 
 /**
@@ -49,7 +49,7 @@ export class CatalogService {
 	 * Returns a catalog definition for an id.
 	 * @public
 	 * @param {string} topicId Id of the desired {@link Catalog}
-	 * @returns {Array<module:modules/topics/services/CatalogService~CatalogSegment> | null}
+	 * @returns {Array<module:modules/topics/services/CatalogService~CatalogEntry> | null}
 	 */
 	async byId(topicId) {
 		try {
