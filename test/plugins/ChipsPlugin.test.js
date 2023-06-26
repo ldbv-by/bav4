@@ -14,12 +14,8 @@ describe('ChipsPlugin', () => {
 		all() {}
 	};
 
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
@@ -31,7 +27,7 @@ describe('ChipsPlugin', () => {
 		});
 		$injector
 			.registerSingleton('ChipsConfigurationService', chipsConfigurationService)
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+			.registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
@@ -72,7 +68,7 @@ describe('ChipsPlugin', () => {
 
 		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
 			const chipId = 'id1';
-			const queryParam = `${QueryParameters.CHIP_ID}=${chipId}`;
+			const queryParam = new URLSearchParams(`${QueryParameters.CHIP_ID}=${chipId}`);
 			const mockChips = [
 				{
 					id: 'id0',
@@ -86,7 +82,7 @@ describe('ChipsPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 

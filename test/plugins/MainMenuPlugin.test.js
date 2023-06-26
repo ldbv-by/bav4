@@ -12,14 +12,9 @@ import { searchReducer } from '../../src/store/search/search.reducer.js';
 import { setQuery } from '../../src/store/search/search.action.js';
 
 describe('MainMenuPlugin', () => {
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
-
 	const defaultTabId = TabIds.MAPS;
 
 	const setup = (state) => {
@@ -39,7 +34,7 @@ describe('MainMenuPlugin', () => {
 			featureInfo: featureInfoReducer,
 			search: searchReducer
 		});
-		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 		return store;
 	};
 
@@ -56,8 +51,8 @@ describe('MainMenuPlugin', () => {
 	describe('_init', () => {
 		describe('query parameter available', () => {
 			it('sets the requested tab id', async () => {
-				const queryParam = `${QueryParameters.MENU_ID}=3`;
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=3`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 
@@ -67,8 +62,9 @@ describe('MainMenuPlugin', () => {
 			});
 
 			it('sets the default tab id when param is not parseable', async () => {
-				const queryParam = `${QueryParameters.MENU_ID}=foo`;
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				const queryParam = new URLSearchParams(`${QueryParameters.MENU_ID}=foo`);
+				spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+
 				const store = setup();
 				const instanceUnderTest = new MainMenuPlugin();
 

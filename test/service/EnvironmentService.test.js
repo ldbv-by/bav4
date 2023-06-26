@@ -30,8 +30,8 @@ describe('EnvironmentService', () => {
 		});
 	});
 
-	describe('url parameter', () => {
-		it('provides current url parameter', () => {
+	describe('query parameter', () => {
+		it('provides current query parameter', () => {
 			const mockWindow = {
 				location: {
 					search: '?foo=true'
@@ -39,8 +39,8 @@ describe('EnvironmentService', () => {
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.getUrlParams().has('foo')).toBeTrue();
-			expect(instanceUnderTest.getUrlParams().has('bar')).toBeFalse();
+			expect(instanceUnderTest.getQueryParams().has('foo')).toBeTrue();
+			expect(instanceUnderTest.getQueryParams().has('bar')).toBeFalse();
 		});
 	});
 

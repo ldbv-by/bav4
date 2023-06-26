@@ -20,19 +20,13 @@ describe('LayersPlugin', () => {
 		default() {},
 		byId() {}
 	};
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
-	};
+
 	const translationService = {
 		register() {},
 		translate: (key) => key
 	};
 	const environmentService = {
-		getWindow: () => windowMock,
+		getQueryParams: () => new URLSearchParams(),
 		isRetinaDisplay: () => false
 	};
 
@@ -81,13 +75,12 @@ describe('LayersPlugin', () => {
 
 		it('initializes the GeoResourceService and calls #_addLayersFromQueryParams', async () => {
 			const store = setup();
-			const queryParam = QueryParameters.LAYER + '=some';
+			const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some');
 			const instanceUnderTest = new LayersPlugin();
 			const addLayersFromQueryParamsSpy = spyOn(instanceUnderTest, '_addLayersFromQueryParams');
 			const addLayersFromConfigSpy = spyOn(instanceUnderTest, '_addLayersFromConfig');
 			const geoResourceServiceSpy = spyOn(geoResourceServiceMock, 'init').and.returnValue(Promise.resolve());
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
-
+			spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 			await instanceUnderTest._init();
 
 			expect(geoResourceServiceSpy).toHaveBeenCalled();
@@ -226,10 +219,10 @@ describe('LayersPlugin', () => {
 
 		describe('_addLayersFromQueryParams', () => {
 			it('adds layers loading existing and on-demand geoResources', () => {
-				const queryParam = QueryParameters.LAYER + '=some0,some1,some2';
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=some0,some1,some2');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
@@ -254,10 +247,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers for existing geoResources considering visibility', () => {
-				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`;
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=true,false`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
@@ -277,10 +270,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering unusable visibility params', () => {
-				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`;
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_VISIBILITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
@@ -300,10 +293,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering opacity', () => {
-				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`;
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=0.8,.6`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
@@ -323,10 +316,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('adds layers considering unusable opacity params', () => {
-				const queryParam = `${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`;
+				const queryParam = new URLSearchParams(`${QueryParameters.LAYER}=some0,some1&${QueryParameters.LAYER_OPACITY}=some,thing`);
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
 					switch (id) {
 						case 'some0':
@@ -346,10 +339,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('does NOT add a layer when geoResourceService cannot fulfill', () => {
-				const queryParam = QueryParameters.LAYER + '=unknown';
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=unknown');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 				spyOn(geoResourceServiceMock, 'all').and.returnValue(null);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
@@ -358,10 +351,10 @@ describe('LayersPlugin', () => {
 			});
 
 			it('does NOT add a layer when id is not present', () => {
-				const queryParam = QueryParameters.LAYER + '=';
+				const queryParam = new URLSearchParams(QueryParameters.LAYER + '=');
 				const store = setup();
 				const instanceUnderTest = new LayersPlugin();
-				spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+				spyOn(environmentService, 'getQueryParams').and.returnValue(queryParam);
 
 				instanceUnderTest._addLayersFromQueryParams(new URLSearchParams(queryParam));
 

@@ -100,7 +100,7 @@ export class LayersPlugin extends BaPlugin {
 			'EnvironmentService'
 		);
 
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
 		//no try-catch needed, service at least delivers a fallback
 		await geoResourceService.init();
