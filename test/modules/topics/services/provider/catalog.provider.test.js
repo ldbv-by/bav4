@@ -1,7 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { loadBvvCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
 
-
 describe('catalog provider', () => {
 	describe('Bvv catalog provider', () => {
 		const testCatalog = [
