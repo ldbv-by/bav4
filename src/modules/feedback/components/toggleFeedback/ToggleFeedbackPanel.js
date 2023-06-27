@@ -5,6 +5,7 @@ import { html, nothing } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import css from './toggleFeedbackPanel.css';
+import { incrementStep } from '../../../../store/modal/modal.action';
 
 /**
  * Possible feedback types
@@ -39,6 +40,17 @@ export class ToggleFeedbackPanel extends MvuElement {
 		this._onSubmit = () => {};
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.modal.currentStep,
+			(currentStep) => {
+				if (currentStep === 0) {
+					this.signal(Select_Feedback_Type, null);
+				}
+			}
+		);
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Select_Feedback_Type:
@@ -59,7 +71,14 @@ export class ToggleFeedbackPanel extends MvuElement {
 			${selectedFeedbackPanel === null
 				? html`
 						<div class="toggleButtons">
-							<button id="feedbackGeneralButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.GENERAL)}>
+							<button
+								id="feedbackGeneralButton"
+								class="ba-list-item"
+								@click=${() => {
+									incrementStep();
+									this.signal(Select_Feedback_Type, FeedbackType.GENERAL);
+								}}
+							>
 								<span class="ba-list-item__pre ">
 									<span class="ba-list-item__icon chatleftdots"> </span>
 								</span>
@@ -68,7 +87,14 @@ export class ToggleFeedbackPanel extends MvuElement {
 									<span class="ba-list-item__secondary-text">${translate('feedback_toggleFeedback_generalButton_sub')}</span>
 								</span>
 							</button>
-							<button id="feedbackMapButton" class="ba-list-item" @click=${() => this.signal(Select_Feedback_Type, FeedbackType.MAP)}>
+							<button
+								id="feedbackMapButton"
+								class="ba-list-item"
+								@click=${() => {
+									incrementStep();
+									this.signal(Select_Feedback_Type, FeedbackType.MAP);
+								}}
+							>
 								<span class="ba-list-item__pre ">
 									<span class="ba-list-item__icon map"> </span>
 								</span>
