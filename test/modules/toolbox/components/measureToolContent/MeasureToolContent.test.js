@@ -104,8 +104,9 @@ describe('MeasureToolContent', () => {
 
 	describe('when initialized', () => {
 		it('has a model with default values', async () => {
-			const element = await setup();
-			const model = element.getModel();
+			await setup();
+			const model = new MeasureToolContent().getModel();
+
 			expect(model).toEqual({ statistic: { length: null, area: null }, mode: null, fileSaveResult: null });
 		});
 

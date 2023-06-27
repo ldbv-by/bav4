@@ -45,13 +45,10 @@ describe('ExportDialogContent', () => {
 	};
 
 	describe('when instantiated', () => {
-		beforeEach(async () => {
-			TestUtils.setupStoreAndDi({});
-		});
-
 		it('has a model with default values', async () => {
-			const element = new ExportDialogContent();
-			const model = element.getModel();
+			await setup();
+			const model = new ExportDialogContent().getModel();
+
 			expect(model).toEqual({ exportData: null, isPortrait: false, exportTypes: null });
 		});
 	});
