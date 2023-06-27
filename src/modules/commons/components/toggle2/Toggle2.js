@@ -29,7 +29,7 @@ const Update_Title = 'update_title';
  * @class
  * @author nklein
  */
-export class Toggle2 extends MvuElement {
+export class GuiSwitch extends MvuElement {
 	constructor() {
 		super({
 			checked: false,
@@ -42,11 +42,11 @@ export class Toggle2 extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Checked:
-				console.log('🚀 ~ Update_Checked ~ model:', model);
+				console.log('🚀 ~ Update_Checked ~ data:', data);
 				return { ...model, checked: data, indeterminate: false };
 
 			case Update_Indeterminate:
-				console.log('🚀 ~ Update_Indeterminate ~ model:', model);
+				console.log('🚀 ~ Update_Indeterminate ~ data:', data);
 				return { ...model, indeterminate: data };
 
 			case Update_Disabled:
@@ -64,7 +64,8 @@ export class Toggle2 extends MvuElement {
 
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
-		console.log('🚀 ~ Toggle2 ~ createView ~ indeterminate:', indeterminate);
+		console.log('🚀 ~ GuiSwitch ~ createView ~ checked:', checked);
+		console.log('🚀 ~ GuiSwitch ~ createView ~ indeterminate:', indeterminate);
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
@@ -77,37 +78,29 @@ export class Toggle2 extends MvuElement {
 			this._onToggle(event);
 		};
 
-		const classes = {
-			disabled: disabled,
-			active: checked
-		};
+		// const classes = {
+		// 	disabled: disabled,
+		// 	active: checked
+		// };
 
 		return html`
 			<style>
 				${css}
 			</style>
 
-			<label class="switch ${classMap(classes)}" title="${title}">
-				<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} .indeterminate=${indeterminate} tabindex="0" />
-				<span class="slider${checked ? ' checked' : ''} ${indeterminate ? 'indeterminate' : ''}"></span>
+			<label class="gui-switch">
+				<input type="checkbox" ?checked=${checked} @change=${onChange} tabindex="0" />
+				<span class="gui-slider"></span>
 			</label>
 		`;
 	}
 
 	/** 
-     * 
-     * <div class="toggle-container">
-				<div class="toggle-title">${title}</div>
-     * </div>
-     * 
-     * org toggle
-     * 	<label title="${title}" class="switch ${classMap(classes)}">
-				<slot></slot>
-				<div>
-					<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} />
-					<span class="slider round"></span>
-				</div>
+     * 	<label class="switch ${classMap(classes)}" title="${title}">
+				<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} .indeterminate=${indeterminate} tabindex="0" />
+				<span class="slider${checked ? ' checked' : ''} ${indeterminate ? 'indeterminate' : ''}"></span>
 			</label>
+     * 
 	 */
 
 	/**
@@ -166,6 +159,6 @@ export class Toggle2 extends MvuElement {
 	}
 
 	static get tag() {
-		return 'ba-toggle2';
+		return 'gui-switch';
 	}
 }
