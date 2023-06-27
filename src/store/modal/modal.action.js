@@ -1,7 +1,7 @@
 /**
  * @module store/modal/modal_action
  */
-import { MODAL_CHANGED } from './modal.reducer';
+import { MODAL_CHANGED, MODAL_NEXT_STEP, MODAL_PREVIOUS_STEP } from './modal.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -12,6 +12,8 @@ const getStore = () => {
 /**
  * Options of the modal.
  * @typedef {Object} ModalOptions
+ * @property {number} [steps] Number of steps, Default is `1`
+ *
  */
 
 /**
@@ -21,7 +23,7 @@ const getStore = () => {
  * @param {ModalOptions} options
  * @function
  */
-export const openModal = (title, content, options = {}) => {
+export const openModal = (title, content, options = { steps: 1 }) => {
 	getStore().dispatch({
 		type: MODAL_CHANGED,
 		payload: {
@@ -39,6 +41,28 @@ export const openModal = (title, content, options = {}) => {
 export const closeModal = () => {
 	getStore().dispatch({
 		type: MODAL_CHANGED,
+		payload: null
+	});
+};
+
+/**
+ * Increments the current step by one.
+ * @function
+ */
+export const incrementStep = () => {
+	getStore().dispatch({
+		type: MODAL_NEXT_STEP,
+		payload: null
+	});
+};
+
+/**
+ * Decrements the current step by one.
+ * @function
+ */
+export const decrementStep = () => {
+	getStore().dispatch({
+		type: MODAL_PREVIOUS_STEP,
 		payload: null
 	});
 };
