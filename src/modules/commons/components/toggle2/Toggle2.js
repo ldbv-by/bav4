@@ -87,10 +87,13 @@ export class Toggle2 extends MvuElement {
 				${css}
 			</style>
 
-			<label class="switch ${classMap(classes)}" title="${title}">
-				<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} .indeterminate=${indeterminate} tabindex="0" />
-				<span class="slider${checked ? ' checked' : ''} ${indeterminate ? 'indeterminate' : ''}"></span>
-			</label>
+			<div class="toggle-container">
+				<div class="toggle-title">${title}</div>
+				<label class="switch ${classMap(classes)}" title="${title}">
+					<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} .indeterminate=${indeterminate} tabindex="0" />
+					<span class="slider${checked ? ' checked' : ''} ${indeterminate ? 'indeterminate' : ''}"></span>
+				</label>
+			</div>
 		`;
 	}
 
