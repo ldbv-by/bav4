@@ -45,13 +45,11 @@ describe('ExportDialogContent', () => {
 	};
 
 	describe('when instantiated', () => {
+		beforeEach(async () => {
+			TestUtils.setupStoreAndDi({});
+		});
+
 		it('has a model with default values', async () => {
-			TestUtils.setupStoreAndDi(
-				{},
-				{
-					media: createNoInitialStateMediaReducer()
-				}
-			);
 			const element = new ExportDialogContent();
 			const model = element.getModel();
 			expect(model).toEqual({ exportData: null, isPortrait: false, exportTypes: null });
