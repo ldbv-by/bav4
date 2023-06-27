@@ -1,6 +1,6 @@
-export const MODAL_CHANGED = 'modal/contentChanged';
-export const MODAL_NEXT_STEP = 'modal/nextStep';
-export const MODAL_PREVIOUS_STEP = 'modal/previousStep';
+export const MODAL_OPEN_CLOSE = 'modal/open-close';
+export const MODAL_INCREMENT_STEP = 'modal/incrementStep';
+export const MODAL_DECREMENT_STEP = 'modal/decrementStep';
 
 export const initialState = {
 	/**
@@ -25,7 +25,7 @@ export const initialState = {
 export const modalReducer = (state = initialState, action) => {
 	const { type, payload } = action;
 	switch (type) {
-		case MODAL_CHANGED: {
+		case MODAL_OPEN_CLOSE: {
 			return {
 				...state,
 				data: payload,
@@ -34,13 +34,13 @@ export const modalReducer = (state = initialState, action) => {
 				steps: payload ? payload.options.steps : 1
 			};
 		}
-		case MODAL_NEXT_STEP: {
+		case MODAL_INCREMENT_STEP: {
 			return {
 				...state,
 				currentStep: state.currentStep < state.steps - 1 ? state.currentStep + 1 : state.steps - 1
 			};
 		}
-		case MODAL_PREVIOUS_STEP: {
+		case MODAL_DECREMENT_STEP: {
 			return {
 				...state,
 				currentStep: state.currentStep > 0 ? state.currentStep - 1 : 0

@@ -1,7 +1,7 @@
 /**
  * @module store/modal/modal_action
  */
-import { MODAL_CHANGED, MODAL_NEXT_STEP, MODAL_PREVIOUS_STEP } from './modal.reducer';
+import { MODAL_OPEN_CLOSE, MODAL_INCREMENT_STEP, MODAL_DECREMENT_STEP } from './modal.reducer';
 import { $injector } from '../../injection';
 
 const getStore = () => {
@@ -25,7 +25,7 @@ const getStore = () => {
  */
 export const openModal = (title, content, options = { steps: 1 }) => {
 	getStore().dispatch({
-		type: MODAL_CHANGED,
+		type: MODAL_OPEN_CLOSE,
 		payload: {
 			title: title,
 			content: content,
@@ -40,7 +40,7 @@ export const openModal = (title, content, options = { steps: 1 }) => {
  */
 export const closeModal = () => {
 	getStore().dispatch({
-		type: MODAL_CHANGED,
+		type: MODAL_OPEN_CLOSE,
 		payload: null
 	});
 };
@@ -51,7 +51,7 @@ export const closeModal = () => {
  */
 export const incrementStep = () => {
 	getStore().dispatch({
-		type: MODAL_NEXT_STEP,
+		type: MODAL_INCREMENT_STEP,
 		payload: null
 	});
 };
@@ -62,7 +62,7 @@ export const incrementStep = () => {
  */
 export const decrementStep = () => {
 	getStore().dispatch({
-		type: MODAL_PREVIOUS_STEP,
+		type: MODAL_DECREMENT_STEP,
 		payload: null
 	});
 };
