@@ -12,6 +12,7 @@ import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
+const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
 
 /**
@@ -32,6 +33,7 @@ export class Toggle2 extends MvuElement {
 	constructor() {
 		super({
 			checked: false,
+			indeterminate: false,
 			disabled: false,
 			title: ''
 		});
@@ -40,7 +42,12 @@ export class Toggle2 extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Checked:
-				return { ...model, checked: data };
+				console.log('🚀 ~ Update_Checked ~ model:', model);
+				return { ...model, checked: data, indeterminate: false };
+
+			case Update_Indeterminate:
+				console.log('🚀 ~ Update_Indeterminate ~ model:', model);
+				return { ...model, indeterminate: data };
 
 			case Update_Disabled:
 				return { ...model, disabled: data };
@@ -56,7 +63,8 @@ export class Toggle2 extends MvuElement {
 	}
 
 	createView(model) {
-		const { checked, disabled, title } = model;
+		const { checked, indeterminate, disabled, title } = model;
+		console.log('🚀 ~ Toggle2 ~ createView ~ indeterminate:', indeterminate);
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
@@ -80,13 +88,13 @@ export class Toggle2 extends MvuElement {
 			</style>
 
 			<label class="switch ${classMap(classes)}" title="${title}">
-				<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} />
-				<span class="slider"></span>
+				<input type="checkbox" @change=${onChange} ?disabled=${disabled} .checked=${checked} .indeterminate=${indeterminate} tabindex="0" />
+				<span class="slider${checked ? ' checked' : ''} ${indeterminate ? 'indeterminate' : ''}"></span>
 			</label>
 		`;
 	}
 
-	/**
+	/** org toggle
      * 	<label title="${title}" class="switch ${classMap(classes)}">
 				<slot></slot>
 				<div>
@@ -127,6 +135,17 @@ export class Toggle2 extends MvuElement {
 
 	get checked() {
 		return this.getModel().checked;
+	}
+
+	/**
+	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
+	 */
+	set indeterminate(value) {
+		this.signal(Update_Indeterminate, value);
+	}
+
+	get indeterminate() {
+		return this.getModel().indeterminate;
 	}
 
 	/**
