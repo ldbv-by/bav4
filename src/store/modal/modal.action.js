@@ -12,7 +12,7 @@ const getStore = () => {
 /**
  * Options of the modal.
  * @typedef {Object} ModalOptions
- * @property {number} [steps] Number of steps, Default is `1`
+ * @property {number} [steps] Number of steps (used for multiple dialogs, e.g. as a wizard). Default is `1`
  *
  */
 
