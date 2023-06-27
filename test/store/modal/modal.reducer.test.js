@@ -46,7 +46,6 @@ describe('modalReducer', () => {
 		expect(store.getState().modal.steps).toBe(2);
 
 		incrementStep();
-
 		closeModal();
 
 		expect(store.getState().modal.data).toBeNull();
