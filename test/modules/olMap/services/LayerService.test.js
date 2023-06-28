@@ -324,7 +324,7 @@ describe('LayerService', () => {
 						return wmsGeoresource;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, xyzGeoresource.id]);
+			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, wmsGeoresource.id]);
 
 			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
 
@@ -334,7 +334,7 @@ describe('LayerService', () => {
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
 			expect(layers.item(0).get('id')).toBe(xyzGeoresource.id);
-			expect(layers.item(1).get('id')).toBe(xyzGeoresource.id);
+			expect(layers.item(1).get('id')).toBe(wmsGeoresource.id);
 		});
 
 		it('converts a AggregateGeoresource containing optional properties to a olLayer(Group)', () => {
@@ -350,7 +350,7 @@ describe('LayerService', () => {
 						return wmsGeoresource;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, xyzGeoresource.id])
+			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, wmsGeoresource.id])
 				.setOpacity(0.5)
 				.setMinZoom(5)
 				.setMaxZoom(19);
@@ -364,10 +364,10 @@ describe('LayerService', () => {
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
 			expect(layers.item(0).get('id')).toBe(xyzGeoresource.id);
-			expect(layers.item(1).get('id')).toBe(xyzGeoresource.id);
+			expect(layers.item(1).get('id')).toBe(wmsGeoresource.id);
 		});
 
-		it('registers a opacity change listener in order to manually set the opacity for a MapLibreLayer', () => {
+		it('registers an opacity change listener in order to synchronize the opacity of a MapLibreLayer', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
 			const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
