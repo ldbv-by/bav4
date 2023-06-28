@@ -116,6 +116,8 @@ li:before {
 	align-items: center;
 	grid: [track] 1fr / [track] 1fr;
 	--thumb-position: 0%;
+
+	touch-action: pan-y;
 }
 
 .gui-switch > input::before {
