@@ -367,6 +367,31 @@ describe('LayerService', () => {
 			expect(layers.item(1).get('id')).toBe(xyzGeoresource.id);
 		});
 
+		it('registers a opacity change listener in order to manually set the opacity for a MapLibreLayer', () => {
+			const instanceUnderTest = setup();
+			const id = 'id';
+			const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', null);
+			spyOn(georesourceService, 'byId').and.callFake((id) => {
+				switch (id) {
+					case xyzGeoresource.id:
+						return xyzGeoresource;
+					case vtGeoresource.id:
+						return vtGeoresource;
+				}
+			});
+			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id]);
+			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
+			const layers = olLayerGroup.getLayers();
+			const otherOlLayerSetOpacitySpy = spyOn(layers.item(0), 'setOpacity').and.callThrough();
+			const mapLibreLayerSetOpacitySpy = spyOn(layers.item(1), 'setOpacity').and.callThrough();
+
+			olLayerGroup.setOpacity(0.66);
+
+			expect(mapLibreLayerSetOpacitySpy).toHaveBeenCalledOnceWith(0.66);
+			expect(otherOlLayerSetOpacitySpy).not.toHaveBeenCalled();
+		});
+
 		it('throws an error when georesource type is not supported', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
