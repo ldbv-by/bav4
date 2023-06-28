@@ -71,23 +71,28 @@
 }
 
 .gui-switch > .gui-slider {
-	position: relative;
+	position: absolute;
 	flex: 0 0 var(--track-size);
 
 	background-color: var(--track-color-inactive);
 	border-radius: calc(var(--track-size) / 2);
 	transition: background-color 0.4s;
-	left: calc(-1 * var(--track-padding));
 
-	right: calc(var(--thumb-size) + var(--track-padding));
+	right: initial;
 	left: initial;
 }
 
 .gui-switch > .gui-slider::before {
 	content: '';
 	position: absolute;
-	left: 0;
-	bottom: var(--track-padding);
+	left: var(--track-padding);
+	/* bottom: var(--track-padding); */
+	/* bottom: calc(var(--track-padding) - (var(--thumb-size) - var(--track-size)) / 2); */
+	top: calc(var(--track-padding) + (var(--thumb-size) - var(--track-size)) / 2);
+
+	/* top: calc(var(--track-padding) - (var(--thumb-size) - var(--track-size)) / 2); */
+	/* top: var(--track-padding); */
+
 	width: calc(var(--thumb-size) - var(--track-padding) * 2);
 	height: calc(var(--thumb-size) - var(--track-padding) * 2);
 	background-color: var(--thumb);
