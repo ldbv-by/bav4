@@ -2,16 +2,19 @@ import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
 import { MapFeedbackPanel } from '../../../../../src/modules/feedback/components/mapFeedback/MapFeedbackPanel';
 import { FeedbackType, ToggleFeedbackPanel } from '../../../../../src/modules/feedback/components/toggleFeedback/ToggleFeedbackPanel';
+import { decrementStep } from '../../../../../src/store/modal/modal.action';
+import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
 import { TestUtils } from '../../../../test-utils';
 
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
 
+let store;
 const setup = (state = {}) => {
 	const initialState = {
 		...state
 	};
 
-	TestUtils.setupStoreAndDi(initialState);
+	store = TestUtils.setupStoreAndDi(initialState, { modal: modalReducer });
 
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
@@ -71,7 +74,7 @@ describe('ToggleFeedbackPanel', () => {
 	describe('when map button is pressed', () => {
 		it('shows the map feedback panel', async () => {
 			// arrange
-			const element = await setup();
+			const element = await setup({ modal: { ...initialState, steps: 2, currentStep: 0 } });
 
 			// act
 			const mapButton = element.shadowRoot.querySelector('#feedbackMapButton');
@@ -83,14 +86,14 @@ describe('ToggleFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).center).toBeNull();
+			expect(store.getState().modal.currentStep).toBe(1);
 		});
 	});
 
 	describe('when general button is pressed', () => {
 		it('shows the general feedback panel', async () => {
 			// arrange
-			const element = await setup();
-
+			const element = await setup({ modal: { ...initialState, steps: 2, currentStep: 0 } });
 			// act
 			const generalButton = element.shadowRoot.querySelector('#feedbackGeneralButton');
 			generalButton.click();
@@ -100,6 +103,26 @@ describe('ToggleFeedbackPanel', () => {
 			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelector(GeneralFeedbackPanel.tag).onSubmit).toEqual(element._onSubmit);
+			expect(store.getState().modal.currentStep).toBe(1);
+		});
+	});
+
+	describe('when modal state property "currentStep" changes', () => {
+		it('updates the UI', async () => {
+			// arrange
+			const element = await setup({ modal: { ...initialState, steps: 2, currentStep: 0 } });
+			// act
+			const generalButton = element.shadowRoot.querySelector('#feedbackGeneralButton');
+			generalButton.click();
+
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+
+			decrementStep();
+
+			// assert
+			expect(element.shadowRoot.querySelectorAll('.toggleButtons')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(MapFeedbackPanel.tag)).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(0);
 		});
 	});
 
