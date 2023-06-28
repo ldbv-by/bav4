@@ -249,26 +249,57 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
-					</div>
-
 					<h3>slider</h3>
 					<div class="example row">
 						<input type="range" />
 					</div>
 
 					<h3>Toggle-Button</h3>
+
+					<div class="example row">
+						<section>
+							<h2>States</h2>
+
+							<label for="switch-1" class="gui-switch" tabindex="0">
+								Default
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-1" checked="true" />
+							</label>
+
+							<label for="switch-3" class="gui-switch">
+								Indeterminate
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-3" .indeterminate=${true} />
+							</label>
+
+							<label for="switch-4" class="gui-switch">
+								Disabled
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-4" disabled />
+							</label>
+
+							<label for="switch-5" class="gui-switch">
+								Disabled (checked)
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-5" disabled checked />
+							</label>
+
+							<label for="switch-vertical" class="gui-switch -vertical" dir="rtl">
+								Vertical
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-vertical" />
+							</label>
+						</section>
+					</div>
 					<div class="example row">
 						<div>Toggle me!</div>
 						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 
 						<div>Toggle me 2!</div>
-						<toggle2 .title=${'Toggle'}></toggle2>
+						<gui-switch .title=${'Toggle'}></gui-switch>
 
 						<div>Toggle me I!</div>
-						<toggle2 .title=${'Toggle'} .indeterminate=${'indeterminate'}></toggle2>
+						<gui-switch .title=${'Toggle'} .indeterminate=${true}></gui-switch>
+					</div>
+
+					<h3>Theme-Toggle</h3>
+					<div class="example">
+						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 					</div>
 
 					<h3>Profile</h3>

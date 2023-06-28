@@ -1,7 +1,7 @@
 import './i18n';
 import './components/button';
 import './components/toggle';
-import './components/toggle2';
+import './components/guiSwitch';
 import './components/checkbox';
 import './components/icon';
 import './components/autocomplete';

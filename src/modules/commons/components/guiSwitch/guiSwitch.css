@@ -1,0 +1,100 @@
+/* 
+base from: Checkbox
+base from: https://codepen.io/avstorm/pen/vYYBxRM
+
+.ba-checkbox {
+	-webkit-user-select: none;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	cursor: pointer;
+	display: flex;
+}
+.ba-checkbox span {
+	display: inline-block;
+	vertical-align: middle;
+	transform: translate3d(0, 0, 0);
+}
+.ba-checkbox span:first-child {
+	position: relative;
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 50%;
+	transform: scale(1);
+	vertical-align: middle;
+	border: 1px solid var(--text2);
+	transition: all 0.2s ease;
+	margin: auto 0;
+}
+.ba-checkbox span:first-child svg {
+	position: absolute;
+	z-index: 1;
+	fill: none;
+	stroke: var(--text3);
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-dasharray: 1.2em;
+	stroke-dashoffset: 1.2em;
+	transition: all var(--animation-duration-small-open) var(--animation-easing-open);
+	transition-delay: 0.1s;
+	transform: translate3d(0, 0, 0);
+	top: 0;
+	left: 0;
+	padding: 0.3em;
+}
+.ba-checkbox span:first-child:before {
+	content: '';
+	width: 100%;
+	min-width: 1.5em;
+	height: 100%;
+	background: var(--primary-color);
+	display: block;
+	transform: scale(0);
+	opacity: 1;
+	border-radius: 50%;
+	transition-delay: 0.2s;
+}
+.ba-checkbox span:last-child {
+	margin: auto 1em;
+}
+.ba-checkbox span:last-child:after {
+	content: '';
+	position: absolute;
+	top: 0.5em;
+	left: 0;
+	height: 1px;
+	width: 100%;
+	background: var(--icon-default-color);
+	transform-origin: 0 0;
+	transform: scaleX(0);
+}
+.ba-checkbox:hover span:first-child {
+	border-color: var(--primary-color);
+}
+.input:checked + .ba-checkbox span:first-child {
+	border-color: var(--primary-color);
+	background: var(--primary-color);
+	animation: check 0.6s ease;
+}
+.input:disabled + .ba-checkbox span:first-child {
+	border-color: var(--secondary-bg-color);
+	background: var(--secondary-bg-color);
+	animation: check 0.6s ease;
+}
+.input:checked + .ba-checkbox span:first-child svg {
+	stroke-dashoffset: 0;
+}
+.input:disabled + .ba-checkbox span:first-child svg {
+	stroke: var(--text2);
+}
+.input:checked + .ba-checkbox span:first-child:before {
+	transform: scale(2.2);
+	opacity: 0;
+	transition: all 0.6s ease;
+}
+@keyframes check {
+	50% {
+		transform: scale(1.1);
+	}
+}
+*/
