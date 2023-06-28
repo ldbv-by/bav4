@@ -35,7 +35,7 @@ export class IconService {
 			return (color) => {
 				try {
 					const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
-					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}`;
+					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}.png`;
 				} catch (e) {
 					console.warn('No backend-information available.');
 				}
