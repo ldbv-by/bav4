@@ -35,6 +35,11 @@ export class GuiSwitch extends MvuElement {
 		});
 	}
 
+	onInitialize() {
+		this._onToggle = () => {};
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
+	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Checked:
@@ -51,11 +56,9 @@ export class GuiSwitch extends MvuElement {
 		}
 	}
 
-	onInitialize() {
-		this._onToggle = () => {};
-		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
-	}
-
+	/**
+	 * @override
+	 */
 	createView(model) {
 		const { checked, indeterminate } = model;
 

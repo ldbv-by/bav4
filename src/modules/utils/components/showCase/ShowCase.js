@@ -292,15 +292,13 @@ export class ShowCase extends BaElement {
 						</section>
 					</div>
 					<div class="example row">
-						<div>Toggle me!</div>
+						<div>Toggle me (old)!</div>
 						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 					</div>
 					<div class="example row">
-						<div>Toggle me 2!</div>
-						<gui-switch .title=${'Toggle'}></gui-switch>
-
-						<div>Toggle me I!</div>
-						<gui-switch .title=${'Toggle'} .indeterminate=${true}></gui-switch>
+						<gui-switch .title=${'Toggle me (new)'}></gui-switch>
+						<gui-switch .title=${'Toggle me (new).checked'} .checked=${true}></gui-switch>
+						<gui-switch .title=${'Toggle me (new).indeterminate'} .indeterminate=${true}></gui-switch>
 					</div>
 
 					<h3>Theme-Toggle</h3>
