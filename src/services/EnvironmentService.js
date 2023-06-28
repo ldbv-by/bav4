@@ -18,19 +18,23 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * @returns URLSearchParams
+	 * @returns the current `URLSearchParams`
 	 */
-	getUrlParams() {
+	getQueryParams() {
 		return new URLSearchParams(this._window.location.search);
 	}
 
 	/**
-	 * @returns the global window object
+	 * @returns the global `window` object
 	 */
 	getWindow() {
 		return this._window;
 	}
 
+	/**
+	 *
+	 * @returns `true` if the current device has touch support
+	 */
 	isTouch() {
 		const navigator = this._window.navigator;
 		const window = this._window;
@@ -53,29 +57,17 @@ export class EnvironmentService {
 	}
 
 	/**
-	 * Should not be used anymore.
-	 * Use a media query like
-	 * ```
-	 * window.matchMedia('(orientation: portrait)')
-	 * ```
-	 * </pre></code>
-	 * instead.
-	 * @deprecated
-	 * @see https://caniuse.com/screen-orientation
+	 *
+	 * @returns `true` if the current device has a retina display
 	 */
-	getScreenOrientation() {
-		const orientation = (this._window.screen.orientation || {}).type || this._window.screen.mozOrientation || this._window.screen.msOrientation;
-		if (!orientation) {
-			const widthHeightRatio = this._window.screen.width / this._window.screen.height;
-			return {
-				portrait: widthHeightRatio < 1,
-				landscape: widthHeightRatio >= 1
-			};
-		}
-		return {
-			portrait: orientation.startsWith('portrait'),
-			landscape: orientation.startsWith('landscape')
-		};
+	isRetinaDisplay() {
+		const window = this._window;
+		const mq =
+			window.matchMedia &&
+			window.matchMedia(
+				'only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min-device-pixel-ratio: 1.5), only screen and (min-resolution: 192dpi), only screen and (min-resolution: 1.5dppx)'
+			);
+		return (mq && mq.matches) ?? window.devicePixelRatio > 1;
 	}
 
 	/**
@@ -87,7 +79,7 @@ export class EnvironmentService {
 	}
 
 	/**
-	 *  @returns `false` if a backend is intended to be used
+	 *  @returns `true` if a backend is not configured
 	 */
 	isStandalone() {
 		return !this._configService.getValue('BACKEND_URL', false);

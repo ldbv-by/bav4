@@ -73,7 +73,7 @@ export class ChipsConfigurationService {
 			{
 				id: 'smart_mapping',
 				title: 'Smart Mapping', // required
-				href: 'https://www.adv-smart.de/', // required
+				href: 'https://dev.adv-smart.de/index_en.html', // required
 				permanent: false, // required
 				target: 'external', // required ["modal", "external"]
 				observer: {

@@ -41,7 +41,7 @@ describe('Help', () => {
 		});
 		$injector.registerSingleton('EnvironmentService', {
 			isEmbedded: () => embed,
-			getUrlParams: () => urlParams
+			getQueryParams: () => new URLSearchParams(urlParams)
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		$injector.registerSingleton('ConfigService', configServiceMock);

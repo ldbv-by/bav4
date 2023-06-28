@@ -1,12 +1,36 @@
 import { CatalogLeaf } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogLeaf';
 import { CatalogNode } from '../../../../../../src/modules/topics/components/menu/catalog/CatalogNode';
-import { loadExampleCatalog } from '../../../../../../src/modules/topics/services/provider/catalog.provider';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../../../src/utils/markup';
 import { TestUtils } from '../../../../../test-utils.js';
 
 window.customElements.define(CatalogNode.tag, CatalogNode);
 
 describe('CatalogNode', () => {
+	const testCatalog = [
+		{
+			label: 'Subtopic 1',
+			open: true,
+			children: [
+				{
+					geoResourceId: 'gr0'
+				},
+				{
+					geoResourceId: 'gr1'
+				},
+				{
+					label: 'Suptopic 2',
+					children: [
+						{
+							geoResourceId: 'gr3'
+						}
+					]
+				}
+			]
+		},
+		{
+			geoResourceId: 'gr3'
+		}
+	];
 	const setup = (levelAttribute = { level: 0 }) => {
 		const state = {
 			topics: { current: 'foo' }
@@ -37,7 +61,7 @@ describe('CatalogNode', () => {
 	describe('when model changes', () => {
 		it('renders a leaf', async () => {
 			//load node data
-			const [node] = await loadExampleCatalog('foo');
+			const [node] = testCatalog;
 			const element = await setup();
 
 			//assign data
@@ -59,7 +83,7 @@ describe('CatalogNode', () => {
 
 		it('renders level 2', async () => {
 			//load node data
-			const [node] = await loadExampleCatalog('foo');
+			const [node] = testCatalog;
 			const element = await setup({ level: 1 });
 
 			//assign data
@@ -75,7 +99,7 @@ describe('CatalogNode', () => {
 
 		it('click collapse', async () => {
 			//load node data
-			const [node] = await loadExampleCatalog('foo');
+			const [node] = await testCatalog;
 			const element = await setup();
 
 			//assign data

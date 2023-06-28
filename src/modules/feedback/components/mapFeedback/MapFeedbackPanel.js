@@ -19,11 +19,13 @@ const Update_EMail = 'update_email';
 const Update_CategoryOptions = 'update_categoryoptions';
 const Update_Geometry_Id = 'update_geometry_id';
 const Update_State = 'update_state';
+const Update_Center = 'update_center';
 const Update_Media_Related_Properties = 'update_isPortrait_hasMinWidth';
 
 /**
  * Contains a map-iframe and a form for submitting a {@link module:services/FeedbackService~MapFeedback}.
- * @property {Function} onSubmit
+ * @property {Function} onSubmit Registers a callback function which will be called when the form was submitted successfully.
+ * @property {module:domain/coordinateTypeDef~Coordinate} [center] The optional predefined center coordinate of the map-iframe
  * @class
  */
 export class MapFeedbackPanel extends MvuElement {
@@ -37,7 +39,8 @@ export class MapFeedbackPanel extends MvuElement {
 				fileId: null
 			},
 			categoryOptions: [],
-			isPortrait: false
+			isPortrait: false,
+			center: null
 		});
 
 		const {
@@ -115,13 +118,15 @@ export class MapFeedbackPanel extends MvuElement {
 				return { ...model, mapFeedback: { ...model.mapFeedback, fileId: data } };
 			case Update_State:
 				return { ...model, mapFeedback: { ...model.mapFeedback, state: data } };
+			case Update_Center:
+				return { ...model, center: data };
 			case Update_Media_Related_Properties:
 				return { ...model, ...data };
 		}
 	}
 
 	createView(model) {
-		const { mapFeedback, categoryOptions, isPortrait } = model;
+		const { mapFeedback, categoryOptions, isPortrait, center } = model;
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -191,7 +196,11 @@ export class MapFeedbackPanel extends MvuElement {
 		};
 
 		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
-		const iframeSrc = filterUserGeneratedLayers(this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED]));
+		const iframeSrc = filterUserGeneratedLayers(
+			center
+				? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
+				: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED])
+		);
 
 		return html`
 			<style>
@@ -306,12 +315,12 @@ export class MapFeedbackPanel extends MvuElement {
 		return `${this._configService.getValueAsPath('FRONTEND_URL')}?${decodeURIComponent(iframeParams.toString())}`;
 	}
 
-	/**
-	 * Registers a callback function which will be called when the form was submitted successfully.
-	 * @type {Function}
-	 */
 	set onSubmit(callback) {
 		this._onSubmit = callback;
+	}
+
+	set center(value) {
+		this.signal(Update_Center, value);
 	}
 
 	static get tag() {

@@ -6,6 +6,12 @@ import { Topic } from '../../domain/topic';
 /**
  * @returns {Array} with topics loaded from backend
  */
+
+/**
+ * Uses the BVV endpoint to load Topics
+ * @function
+ * @type {module:services/TopicsService~topicsProvider}
+ */
 export const loadBvvTopics = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
@@ -28,8 +34,8 @@ export const loadBvvTopics = async () => {
 				definition.selectedGeoRs,
 				definition.style
 			);
-			//at least the id, label, description and baseLayers properties should be set
-			if (topic.id && topic.label && topic.description && topic.baseGeoRs) {
+			//at least the id, label, description properties should be set
+			if (topic.id && topic.label && topic.description) {
 				topics.push(topic);
 			} else {
 				console.warn('Could not create topic');

@@ -30,8 +30,8 @@ describe('EnvironmentService', () => {
 		});
 	});
 
-	describe('url parameter', () => {
-		it('provides current url parameter', () => {
+	describe('query parameter', () => {
+		it('provides current query parameter', () => {
 			const mockWindow = {
 				location: {
 					search: '?foo=true'
@@ -39,8 +39,8 @@ describe('EnvironmentService', () => {
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
 
-			expect(instanceUnderTest.getUrlParams().has('foo')).toBeTrue();
-			expect(instanceUnderTest.getUrlParams().has('bar')).toBeFalse();
+			expect(instanceUnderTest.getQueryParams().has('foo')).toBeTrue();
+			expect(instanceUnderTest.getQueryParams().has('bar')).toBeFalse();
 		});
 	});
 
@@ -122,43 +122,32 @@ describe('EnvironmentService', () => {
 		});
 	});
 
-	describe('screen orientation', () => {
-		it('detects screen orientation by orientation api', () => {
+	describe('isRetinaDisplay', () => {
+		it('detects a retina display by the devicePixelRatio property', () => {
 			const mockWindow = {
-				screen: {
-					orientation: {
-						type: 'portrait-primary'
-					}
+				devicePixelRatio: 1
+			};
+			const instanceUnderTest = new EnvironmentService(mockWindow);
+			expect(instanceUnderTest.isRetinaDisplay()).toBeFalse();
+
+			mockWindow.devicePixelRatio = 2;
+
+			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
+		});
+
+		it('detects a retina display by a mediaQuery', () => {
+			const mockWindow = {
+				navigator: {},
+				matchMedia: (mediaQuery) => {
+					return {
+						media: mediaQuery,
+						matches: true
+					};
 				}
 			};
 			const instanceUnderTest = new EnvironmentService(mockWindow);
-			const { portrait, landscape } = instanceUnderTest.getScreenOrientation();
-			expect(portrait).toBeTrue();
-			expect(landscape).toBeFalse();
-		});
 
-		it('detects screen orientation by sreen width and height', () => {
-			let mockWindow = {
-				screen: {
-					width: 200,
-					height: 100
-				}
-			};
-			let instanceUnderTest = new EnvironmentService(mockWindow);
-			let orientation = instanceUnderTest.getScreenOrientation();
-			expect(orientation.portrait).toBeFalse();
-			expect(orientation.landscape).toBeTrue();
-
-			mockWindow = {
-				screen: {
-					width: 100,
-					height: 200
-				}
-			};
-			instanceUnderTest = new EnvironmentService(mockWindow);
-			orientation = instanceUnderTest.getScreenOrientation();
-			expect(orientation.portrait).toBeTrue();
-			expect(orientation.landscape).toBeFalse();
+			expect(instanceUnderTest.isRetinaDisplay()).toBeTrue();
 		});
 	});
 

@@ -31,7 +31,7 @@ describe('i18n for map module', () => {
 			'Ihre Zeichnung wird automatisch gespeichert. Durch die Nutzung dieses Dienstes stimmen Sie den <a href="https://geoportal.bayern.de/geoportalbayern/seiten/nutzungsbedingungen.html" target="_blank" tabindex="0">Nutzungsbedingungen</a> zu.'
 		);
 		expect(map.olMap_handler_mfp_distortion_warning).toBe(
-			'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen die nicht für Längenmessungen geeignet sind.'
+			'Die für den Export verwendete Projektion besitzt in einigen Bereichen\nVerzerrungen, die nicht für Längenmessungen geeignet sind.'
 		);
 		expect(map.olMap_handler_mfp_distortion_more_info).toBe('Mehr erfahren...');
 		expect(map.olMap_handler_mfp_id_a4_landscape).toBe('DIN A4 Querformat');

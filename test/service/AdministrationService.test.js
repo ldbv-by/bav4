@@ -35,42 +35,34 @@ describe('AdministrationService', () => {
 
 	describe('Error handling', () => {
 		it('rejects when backend is not available', async () => {
+			const administrationProviderError = new Error('Administration Provider error');
 			const instanceUnderTest = setup(async () => {
-				throw new Error('Administration Provider error');
+				throw administrationProviderError;
 			});
 
 			const mockCoordinate = [0, 0];
 
-			try {
-				await instanceUnderTest.getAdministration(mockCoordinate);
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error.message).toBe('Could not load administration from provider: Administration Provider error');
-			}
+			await expectAsync(instanceUnderTest.getAdministration(mockCoordinate)).toBeRejectedWith(
+				jasmine.objectContaining({
+					message: 'Could not load administration from provider',
+					cause: administrationProviderError
+				})
+			);
 		});
 
 		it('rejects when no coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			try {
-				await instanceUnderTest.getAdministration();
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe("Parameter 'coordinate3857' must be a coordinate");
-			}
+			await expectAsync(instanceUnderTest.getAdministration()).toBeRejectedWithError(TypeError, "Parameter 'coordinate3857' must be a coordinate");
 		});
 
 		it('rejects when false coordinates are delivered', async () => {
 			const instanceUnderTest = setup();
 
-			try {
-				await instanceUnderTest.getAdministration('invalid input');
-				throw new Error('Promise should not be resolved');
-			} catch (error) {
-				expect(error).toEqual(jasmine.any(TypeError));
-				expect(error.message).toBe("Parameter 'coordinate3857' must be a coordinate");
-			}
+			await expectAsync(instanceUnderTest.getAdministration('invalid input')).toBeRejectedWithError(
+				TypeError,
+				"Parameter 'coordinate3857' must be a coordinate"
+			);
 		});
 	});
 });

@@ -47,10 +47,10 @@ describe('i18n for menu module', () => {
 		);
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
-		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - der Kartenviewer des Freistaates Bayern');
 		expect(map.toolbox_shareTool_share).toBe('Teilen');
 		expect(map.toolbox_shareTool_button_modal).toBe('Link generieren');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link zum teilen des BayernAtlas');
+		expect(map.toolbox_shareTool_share_api_failed).toBe('Das Teilen ist fehlgeschlagen');
 		expect(map.toolbox_shareTool_link).toBe('Link');
 		expect(map.toolbox_measureTool_delete_point).toBe('letzten Punkt löschen');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Messung löschen');
@@ -149,10 +149,10 @@ describe('i18n for menu module', () => {
 		expect(map.toolbox_shareTool_disclaimer).toBe('You can embed the map into your website or blog by accepting the terms of use.');
 		expect(map.toolbox_shareTool_mail).toBe('Mail');
 		expect(map.toolbox_shareTool_qr).toBe('QR-Code');
-		expect(map.toolbox_shareTool_title).toBe('BayernAtlas - official map viewer of the Bavarian Government');
 		expect(map.toolbox_shareTool_share).toBe('Share');
 		expect(map.toolbox_shareTool_button_modal).toBe('Generate URL');
 		expect(map.toolbox_shareTool_share_link_readonly).toBe('Link to share BayernAtlas');
+		expect(map.toolbox_shareTool_share_api_failed).toBe('Sharing has failed');
 		expect(map.toolbox_shareTool_link).toBe('Link');
 		expect(map.toolbox_measureTool_delete_point).toBe('Delete last point');
 		expect(map.toolbox_measureTool_delete_measure).toBe('Delete measure');

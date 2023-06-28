@@ -70,16 +70,21 @@ export class LayersPlugin extends BaPlugin {
 			StoreService: storeService
 		} = $injector.inject('GeoResourceService', 'TopicsService', 'StoreService');
 
-		//we take the bg layer from the topic configuration
-		const {
-			topics: { current }
-		} = storeService.getStore().getState();
-		const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
+		const getDefaultBaseGeoR = () => {
+			const {
+				topics: { current }
+			} = storeService.getStore().getState();
+			//we take the bg layer from the topic configuration
+			const { defaultBaseGeoR } = topicsService.byId(current) || topicsService.default();
+			return this._replaceForRetinaDisplays(defaultBaseGeoR);
+		};
+
+		const defaultBaseGeoR = getDefaultBaseGeoR();
 
 		const geoResources = georesourceService.all();
 
 		const bgGeoresources = geoResources.filter((geoResource) => geoResource.id === defaultBaseGeoR);
-		//fallback: add the first available georesource as bg
+		//fallback: add the first available GeoResource as bg
 		if (bgGeoresources.length === 0) {
 			bgGeoresources.push(geoResources[0]);
 		}
@@ -87,7 +92,7 @@ export class LayersPlugin extends BaPlugin {
 	}
 
 	/**
-	 * Initializes the georesource service and adds layers to the list of layers in the store
+	 * Initializes the GeoResourceService and adds layers to the list of layers in the store
 	 */
 	async _init() {
 		const { GeoResourceService: geoResourceService, EnvironmentService: environmentService } = $injector.inject(
@@ -95,7 +100,7 @@ export class LayersPlugin extends BaPlugin {
 			'EnvironmentService'
 		);
 
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
 		//no try-catch needed, service at least delivers a fallback
 		await geoResourceService.init();
@@ -110,6 +115,31 @@ export class LayersPlugin extends BaPlugin {
 		else {
 			this._addLayersFromConfig();
 		}
+	}
+
+	/**
+	 * Current strategy to replace the default raster GeoResource with its VT pendant.
+	 * @param {string} baseGeoRId
+	 * @returns the id of the determined VTGeoResource or the unchanged argument
+	 */
+	_replaceForRetinaDisplays(baseGeoRId) {
+		const {
+			EnvironmentService: environmentService,
+			TopicsService: topicsService,
+			StoreService: storeService
+		} = $injector.inject('EnvironmentService', 'TopicsService', 'StoreService');
+
+		if (environmentService.isRetinaDisplay()) {
+			const {
+				topics: { current }
+			} = storeService.getStore().getState();
+			const baseGeoRs = topicsService.byId(current)?.baseGeoRs ?? topicsService.default()?.baseGeoRs;
+			const { raster, vector } = baseGeoRs;
+			if (Array.isArray(raster) && Array.isArray(vector) && raster.indexOf(baseGeoRId) === 0) {
+				return vector[0];
+			}
+		}
+		return baseGeoRId;
 	}
 
 	/**

@@ -11,19 +11,16 @@ describe('TopicsPlugin', () => {
 		default() {},
 		byId() {}
 	};
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
 		const store = TestUtils.setupStoreAndDi(state, {
 			topics: topicsReducer
 		});
-		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('TopicsService', topicsServiceMock).registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
@@ -42,7 +39,7 @@ describe('TopicsPlugin', () => {
 	});
 
 	describe('_init', () => {
-		it('initializes the topics service and calls #_addTopicFromConfig', async () => {
+		it('initializes the TopicsService and calls #_addTopicFromConfig', async () => {
 			const store = setup();
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
@@ -57,14 +54,14 @@ describe('TopicsPlugin', () => {
 			expect(store.getState().topics.ready).toBeTrue();
 		});
 
-		it('initializes the topics service and calls #_addTopicFromQueryParams', async () => {
+		it('initializes the TopicsService and calls #_addTopicFromQueryParams', async () => {
 			const store = setup();
-			const queryParam = QueryParameters.TOPIC + '=some';
+			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
 			const instanceUnderTest = new TopicsPlugin();
 			const addTopicFromQueryParamsSpy = spyOn(instanceUnderTest, '_addTopicFromQueryParams');
 			const addTopicFromConfigSpy = spyOn(instanceUnderTest, '_addTopicFromConfig');
 			const topicServiceSpy = spyOn(topicsServiceMock, 'init').and.returnValue(Promise.resolve());
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest._init();
 
@@ -73,13 +70,27 @@ describe('TopicsPlugin', () => {
 			expect(addTopicFromConfigSpy).not.toHaveBeenCalled();
 			expect(store.getState().topics.ready).toBeTrue();
 		});
+
+		it('throws an error when TopicsService throws', async () => {
+			const store = setup();
+			const queryParam = new URLSearchParams(QueryParameters.TOPIC + '=some');
+			const instanceUnderTest = new TopicsPlugin();
+			const error = new Error('something got wrong');
+			spyOn(topicsServiceMock, 'init').and.rejectWith(error);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
+
+			await expectAsync(instanceUnderTest._init()).toBeRejectedWith(
+				jasmine.objectContaining({ message: 'No topics found. Is the backend running and properly configured?', cause: error })
+			);
+			expect(store.getState().topics.ready).toBeFalse();
+		});
 	});
 
 	describe('_addTopicFromConfig', () => {
-		it('initializes the topics service and update the store', async () => {
+		it('initializes the TopicsService and update the store', async () => {
 			const store = setup();
 			const topicId = 'someId';
-			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
+			const topic = new Topic(topicId, 'label', 'description');
 			const instanceUnderTest = new TopicsPlugin();
 			spyOn(topicsServiceMock, 'default').and.returnValue(topic);
 
@@ -94,7 +105,7 @@ describe('TopicsPlugin', () => {
 			const store = setup();
 			const topicId = 'someId';
 			const queryParam = `${QueryParameters.TOPIC}=${topicId}`;
-			const topic = new Topic(topicId, 'label', 'description', ['someLayerId']);
+			const topic = new Topic(topicId, 'label', 'description');
 			const instanceUnderTest = new TopicsPlugin();
 			const topicServiceSpy = spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(topic);
 

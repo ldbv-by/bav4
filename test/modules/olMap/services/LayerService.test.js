@@ -15,9 +15,9 @@ import VectorLayer from 'ol/layer/Vector';
 import { TestUtils } from '../../../test-utils';
 import { getBvvBaaImageLoadFunction } from '../../../../src/modules/olMap/utils/baaImageLoadFunction.provider';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
-import maplibregl from 'maplibre-gl';
 import { createXYZ } from 'ol/tilegrid';
 import { AdvWmtsTileGrid } from '../../../../src/modules/olMap/ol/tileGrid/AdvWmtsTileGrid';
+import supported from 'mapbox-gl-supported';
 
 describe('LayerService', () => {
 	const vectorLayerService = {
@@ -273,7 +273,7 @@ describe('LayerService', () => {
 			it('converts a VTGeoresource to a olLayer', () => {
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
-				if (maplibregl.supported()) {
+				if (supported()) {
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';
@@ -293,7 +293,7 @@ describe('LayerService', () => {
 			it('converts a VTGeoresource containing optional properties to a olLayer', () => {
 				// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
 				// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
-				if (maplibregl.supported()) {
+				if (supported()) {
 					const instanceUnderTest = setup();
 					const id = 'id';
 					const geoResourceId = 'geoResourceId';

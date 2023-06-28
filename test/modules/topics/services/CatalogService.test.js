@@ -1,9 +1,39 @@
 /* eslint-disable no-undef */
 import { CatalogService } from '../../../../src/modules/topics/services/CatalogService';
-import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
+import { loadBvvCatalog } from '../../../../src/modules/topics/services/provider/catalog.provider';
+import {
+	FALLBACK_GEORESOURCE_ID_0,
+	FALLBACK_GEORESOURCE_ID_1,
+	FALLBACK_GEORESOURCE_ID_2,
+	FALLBACK_GEORESOURCE_ID_3
+} from '../../../../src/services/GeoResourceService';
 import { FALLBACK_TOPICS_IDS } from '../../../../src/services/TopicsService';
 
 describe('CatalogService', () => {
+	const testCatalog = [
+		{
+			label: 'Subtopic 1',
+			children: [
+				{
+					geoResourceId: 'gr0'
+				},
+				{
+					geoResourceId: 'gr1'
+				},
+				{
+					label: 'Suptopic 2',
+					children: [
+						{
+							geoResourceId: 'gr3'
+						}
+					]
+				}
+			]
+		},
+		{
+			geoResourceId: 'gr3'
+		}
+	];
 	const setup = (provider) => {
 		return new CatalogService(provider);
 	};
@@ -27,32 +57,32 @@ describe('CatalogService', () => {
 	describe('byId', () => {
 		it('provides and caches a catalog definition by id', async () => {
 			const topicId = 'foo';
-			const spyProvider = jasmine.createSpy().and.returnValue(await loadExampleCatalog());
+			const spyProvider = jasmine.createSpy().and.returnValue(testCatalog);
 			const instanceUnderTest = setup(spyProvider);
 
-			//first call shoud be served from the provider
+			//first call should be served from the provider
 			const catalog0 = await instanceUnderTest.byId(topicId);
-			//a second call shoukd be served from cache
+			//a second call should be served from cache
 			const catalog1 = await instanceUnderTest.byId(topicId);
 
-			expect(catalog0).toEqual(await loadExampleCatalog());
-			expect(catalog1).toEqual(await loadExampleCatalog());
+			expect(catalog0).toEqual(testCatalog);
+			expect(catalog1).toEqual(testCatalog);
 			expect(spyProvider).toHaveBeenCalledOnceWith('foo');
 		});
 
 		describe('and provider throws exception', () => {
 			it('throws an exception when provider throws exception', async () => {
+				const catalogProviderError = new Error('Something got wrong');
 				const instanceUnderTest = setup(async () => {
-					throw new Error('Something got wrong');
+					throw catalogProviderError;
 				});
 
-				try {
-					await instanceUnderTest.byId('foo');
-					throw new Error('Promise should not be resolved');
-				} catch (error) {
-					expect(error.message).toContain('Could not load catalog from provider: Something got wrong');
-					expect(error).toBeInstanceOf(Error);
-				}
+				await expectAsync(instanceUnderTest.byId('foo')).toBeRejectedWith(
+					jasmine.objectContaining({
+						message: 'Could not load catalog from provider',
+						cause: catalogProviderError
+					})
+				);
 			});
 
 			it('returns a fallback catalog when we have a fallback topic', async () => {
@@ -61,9 +91,33 @@ describe('CatalogService', () => {
 					throw new Error('Something got wrong');
 				});
 
-				const catalog0 = await instanceUnderTest.byId(fallbackTopicId);
+				const catalog = await instanceUnderTest.byId(fallbackTopicId);
 
-				expect(catalog0).toEqual(loadFallbackCatalog());
+				expect(catalog).toEqual(instanceUnderTest._newFallbackCatalog());
+				expect(catalog).toEqual([
+					{
+						label: 'Subtopic 1',
+						children: [
+							{
+								geoResourceId: FALLBACK_GEORESOURCE_ID_0
+							},
+							{
+								geoResourceId: FALLBACK_GEORESOURCE_ID_1
+							},
+							{
+								label: 'Suptopic 2',
+								children: [
+									{
+										geoResourceId: FALLBACK_GEORESOURCE_ID_2
+									}
+								]
+							}
+						]
+					},
+					{
+						geoResourceId: FALLBACK_GEORESOURCE_ID_3
+					}
+				]);
 			});
 		});
 	});

@@ -19,7 +19,7 @@ describe('Topics provider', () => {
 		const topicMock1 = {
 			defaultBaseGeoR: 'mockBaseLayer',
 			selectedGeoRs: ['mockSelectedLayer'],
-			baseGeoRs: ['mockBgLayer1', 'mockBgLayer2'],
+			baseGeoRs: { default: ['mockBgLayer1', 'mockBgLayer2'] },
 			activatedGeoRs: ['mockActivatedLayer'],
 			id: 'Ref42',
 			label: 'LDBV',
@@ -33,7 +33,7 @@ describe('Topics provider', () => {
 		const topicMock2 = {
 			defaultBaseGeoR: 'mockBaseLayer2',
 			selectedGeoRs: ['mockSelectedLayer2'],
-			baseGeoRs: ['mockBgLayer12', 'mockBgLayer22'],
+			baseGeoRs: { default: ['mockBgLayer12', 'mockBgLayer22'] },
 			activatedGeoRs: ['mockActivatedLayer2'],
 			id: 'Ref422',
 			label: 'LDBV2',
@@ -90,13 +90,8 @@ describe('Topics provider', () => {
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 404 })));
 
-		try {
-			await loadBvvTopics();
-			throw new Error('Promise should not be resolved');
-		} catch (error) {
-			expect(configServiceSpy).toHaveBeenCalled();
-			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(error.message).toBe('Topics could not be retrieved');
-		}
+		await expectAsync(loadBvvTopics()).toBeRejectedWithError('Topics could not be retrieved');
+		expect(configServiceSpy).toHaveBeenCalled();
+		expect(httpServiceSpy).toHaveBeenCalled();
 	});
 });

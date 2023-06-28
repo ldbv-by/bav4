@@ -31,10 +31,13 @@ export class TopicsPlugin extends BaPlugin {
 
 	async _init() {
 		const { TopicsService: topicsService, EnvironmentService: environmentService } = $injector.inject('TopicsService', 'EnvironmentService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
-		//no try-catch needed, service at least delivers a fallback
-		await topicsService.init();
+		try {
+			await topicsService.init();
+		} catch (e) {
+			throw new Error('No topics found. Is the backend running and properly configured?', { cause: e });
+		}
 		//mark the topics state as ready
 		setReady();
 
