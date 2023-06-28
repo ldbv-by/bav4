@@ -115,6 +115,8 @@ describe('ToggleFeedbackPanel', () => {
 			const generalButton = element.shadowRoot.querySelector('#feedbackGeneralButton');
 			generalButton.click();
 
+			expect(element.shadowRoot.querySelectorAll(GeneralFeedbackPanel.tag)).toHaveSize(1);
+
 			decrementStep();
 
 			// assert
