@@ -258,7 +258,7 @@ export class ShowCase extends BaElement {
 
 					<div class="example row">
 						<section>
-							<h2>States</h2>
+							<h2 style="margin-top: 0px;">States</h2>
 
 							<label for="switch-1" class="gui-switch" tabindex="0">
 								Default

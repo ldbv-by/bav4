@@ -59,6 +59,12 @@ li:before {
 	width: 25em;
 }
 
+section {
+	display: grid;
+	gap: 2ch;
+	align-items: flex-start;
+}
+
 .gui-switch {
 	display: flex;
 	align-items: center;
