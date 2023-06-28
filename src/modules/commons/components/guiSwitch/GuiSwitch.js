@@ -82,8 +82,6 @@ export class GuiSwitch extends MvuElement {
 	 */
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
-		console.log('🚀 ~ GuiSwitch ~ createView ~ checked:', checked);
-		console.log('🚀 ~ GuiSwitch ~ createView ~ indeterminate:', indeterminate);
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
@@ -103,25 +101,19 @@ export class GuiSwitch extends MvuElement {
 
 			<label for="guiswitch" class="gui-switch">
 				${title}
-				<input @change=${onChange} id="guiswitch" type="checkbox" role="switch" ?checked=${checked} ?indeterminate=${indeterminate} tabindex="0" />
+				<input
+					@change=${onChange}
+					id="guiswitch"
+					type="checkbox"
+					role="switch"
+					.checked=${checked}
+					.indeterminate=${indeterminate}
+					.disabled=${disabled}
+					tabindex="0"
+				/>
 			</label>
 		`;
 	}
-
-	// <label for guiswitch title="${title}" class="gui-switch">
-	// 	<input
-	// 		@change=${onChange}
-	// 		class="input"
-	// 		id="guiswitch"
-	// 		type="checkbox"
-	// 		role="switch"
-	// 		style="display: none;"
-	// 		?checked=${checked}
-	// 		?indeterminate=${indeterminate}
-	// 		?disabled=${disabled}
-	// 		tabindex="0"
-	// 	/>
-	// </label>
 
 	// _click() {
 	// 	this._root.querySelector('#guiswitch').click();
@@ -131,7 +123,6 @@ export class GuiSwitch extends MvuElement {
 	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
 	 */
 	set indeterminate(value) {
-		console.log('🚀 ~ GuiSwitch ~ setindeterminate ~ value:', value);
 		this.signal(Update_Indeterminate, value);
 	}
 
@@ -143,7 +134,6 @@ export class GuiSwitch extends MvuElement {
 	 * @property {string} title='' - The title of the button
 	 */
 	set title(value) {
-		console.log('🚀 ~ GuiSwitch ~ settitle ~ value:', value);
 		this.signal(Update_Title, value);
 	}
 
@@ -155,7 +145,6 @@ export class GuiSwitch extends MvuElement {
 	 * @property {boolean} disabled=false - Checkbox clickable?
 	 */
 	set disabled(value) {
-		console.log('🚀 ~ GuiSwitch ~ setdisabled ~ value:', value);
 		this.signal(Update_Disabled, value);
 	}
 
@@ -167,7 +156,6 @@ export class GuiSwitch extends MvuElement {
 	 * @property {boolean} checked=false - Checkbox checked?
 	 */
 	set checked(value) {
-		console.log('🚀 ~ GuiSwitch ~ setchecked ~ value:', value);
 		this.signal(Update_Checked, value);
 	}
 
