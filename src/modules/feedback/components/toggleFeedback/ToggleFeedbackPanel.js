@@ -47,7 +47,8 @@ export class ToggleFeedbackPanel extends MvuElement {
 				if (currentStep === 0) {
 					this.signal(Select_Feedback_Type, null);
 				}
-			}
+			},
+			false
 		);
 	}
 
