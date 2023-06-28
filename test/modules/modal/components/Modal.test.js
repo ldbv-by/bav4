@@ -167,7 +167,7 @@ describe('Modal', () => {
 			expect(store.getState().modal.active).toBeFalse();
 		});
 
-		it('closes the modal even we are not on the first step', async () => {
+		it('closes the modal, even if we are not in the first step', async () => {
 			const state = {
 				media: {
 					portrait: false
