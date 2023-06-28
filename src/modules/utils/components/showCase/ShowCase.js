@@ -254,6 +254,23 @@ export class ShowCase extends BaElement {
 						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 					</div>
 
+					<h3>slider</h3>
+					<div class="example row">
+						<input type="range" />
+					</div>
+
+					<h3>Toggle-Button</h3>
+					<div class="example row">
+						<div>Toggle me!</div>
+						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+
+						<div>Toggle me 2!</div>
+						<gui-switch .title=${'Toggle'}"></gui-switch>
+
+						<div>Toggle me V!</div>
+						<gui-switch .title=${'Toggle'} .vertical=${true}></gui-switch>
+					</div>
+
 					<h3>Profile</h3>
 					<div class="example row">
 						<ba-button id="button1" .label=${'Show/Hide elevation profile'} .type=${'primary'} @click=${onClickOpenProfile}></ba-button>
@@ -416,20 +433,6 @@ export class ShowCase extends BaElement {
 								<label for="select" class="control-label">with label</label><i class="bar"></i>
 							</div>
 						</div>
-					</div>
-
-					<h3>slider</h3>
-					<div class="example row">
-						<input type="range" />
-					</div>
-
-					<h3>Toggle-Button</h3>
-					<div class="example row">
-						<div>Toggle me!</div>
-						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-
-						<div>Toggle me 2!</div>
-						<gui-switch>XXX</gui-switch>
 					</div>
 
 					<h3>Loading hint</h3>

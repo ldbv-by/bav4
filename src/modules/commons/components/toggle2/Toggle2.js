@@ -64,8 +64,6 @@ export class GuiSwitch extends MvuElement {
 
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
-		console.log('🚀 ~ GuiSwitch ~ createView ~ checked:', checked);
-		console.log('🚀 ~ GuiSwitch ~ createView ~ indeterminate:', indeterminate);
 
 		const onChange = (event) => {
 			const checked = event.target.checked;

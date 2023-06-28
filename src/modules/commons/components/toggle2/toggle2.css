@@ -12,15 +12,13 @@
 	@media (prefers-color-scheme: dark) {
 		--track-inactive: hsl(80 0% 35%);
 		--track-active: hsl(80 60% 60%);
+		--thumb-highlight: hsl(0 0% 100% / 25%);
 	}
 
-	position: relative;
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 	gap: 2ch;
 	justify-content: space-between;
-	width: calc(var(--thumb-size) + var(--track-size) + var(--track-padding) * 2);
-	height: var(--thumb-size);
 
 	cursor: pointer;
 	user-select: none;
@@ -31,18 +29,21 @@
 	--thumb-position: 0%;
 	--thumb-transition-duration: 0.25s;
 
+	background: transparent;
+
+	appearance: none;
+	border: none;
+	outline-offset: 5px;
+	box-sizing: content-box;
+
 	padding: var(--track-padding);
 	background: var(--track-color-inactive);
 	inline-size: var(--track-size);
 	block-size: var(--thumb-size);
 	border-radius: var(--track-size);
 
-	appearance: none;
 	pointer-events: none;
 	touch-action: pan-y;
-	border: none;
-	outline-offset: 5px;
-	box-sizing: content-box;
 
 	flex-shrink: 0;
 	display: grid;
@@ -56,13 +57,13 @@
 	--highlight-size: 0;
 
 	content: '';
-	cursor: pointer;
-	pointer-events: auto;
-	grid-area: track;
+	position: absolute;
+	left: 0;
+	bottom: 0;
 	inline-size: var(--thumb-size);
 	block-size: var(--thumb-size);
 	background: var(--thumb-color);
-	box-shadow: 0 0 0 var(--highlight-size) var(--thumb-color-highlight);
+	box-shadow: 0 0 0 var(--highlight-size) var(--thumb-highlight);
 	border-radius: 50%;
 	transform: translateX(var(--thumb-position));
 
@@ -71,20 +72,24 @@
 
 .gui-switch > .gui-slider {
 	position: relative;
-	width: var(--track-size);
-	height: var(--thumb-size);
+	flex: 0 0 var(--track-size);
+
 	background-color: var(--track-color-inactive);
 	border-radius: calc(var(--track-size) / 2);
 	transition: background-color 0.4s;
+	left: calc(-1 * var(--track-padding));
+
+	right: calc(var(--thumb-size) + var(--track-padding));
+	left: initial;
 }
 
 .gui-switch > .gui-slider::before {
 	content: '';
 	position: absolute;
-	left: 2px;
-	bottom: 2px;
-	width: calc(var(--thumb-size) - 4px);
-	height: calc(var(--thumb-size) - 4px);
+	left: 0;
+	bottom: var(--track-padding);
+	width: calc(var(--thumb-size) - var(--track-padding) * 2);
+	height: calc(var(--thumb-size) - var(--track-padding) * 2);
 	background-color: var(--thumb);
 	border-radius: 50%;
 	transition: transform 0.4s, box-shadow 0.4s;
@@ -100,11 +105,11 @@
 }
 
 .gui-switch > input:checked + .gui-slider::before {
-	transform: translateX(calc(var(--track-size) - var(--thumb-size) + 2px));
+	transform: translateX(calc(var(--track-size) - var(--thumb-size) + var(--track-padding)));
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.8);
 }
 
 .gui-switch > .gui-slider:active::before {
-	width: calc(var(--thumb-size) - 4px);
+	width: calc(var(--thumb-size) - var(--track-padding) * 2);
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.8);
 }
