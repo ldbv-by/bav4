@@ -152,6 +152,7 @@ section {
 	}
 }
 
+.gui-switch > input:focus::before,
 .gui-switch > input:not(:disabled):hover::before {
 	--highlight-size: 0.5rem;
 }

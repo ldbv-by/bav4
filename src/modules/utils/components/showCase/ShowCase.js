@@ -260,12 +260,12 @@ export class ShowCase extends BaElement {
 						<section>
 							<h2 style="margin-top: 0px;">States</h2>
 
-							<label for="switch-default" class="gui-switch" tabindex="0">
+							<label for="switch-default" class="gui-switch">
 								Default
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-default" />
 							</label>
 
-							<label for="switch-1" class="gui-switch" tabindex="0">
+							<label for="switch-1" class="gui-switch">
 								Checked
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-1" checked="true" />
 							</label>
