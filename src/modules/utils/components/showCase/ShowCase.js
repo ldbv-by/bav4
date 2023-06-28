@@ -260,8 +260,13 @@ export class ShowCase extends BaElement {
 						<section>
 							<h2 style="margin-top: 0px;">States</h2>
 
-							<label for="switch-1" class="gui-switch" tabindex="0">
+							<label for="switch-default" class="gui-switch" tabindex="0">
 								Default
+								<input is="gui-switch" type="checkbox" role="switch" id="switch-default" />
+							</label>
+
+							<label for="switch-1" class="gui-switch" tabindex="0">
+								Checked
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-1" checked="true" />
 							</label>
 
@@ -280,7 +285,7 @@ export class ShowCase extends BaElement {
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-5" disabled checked />
 							</label>
 
-							<label for="switch-vertical" class="gui-switch -vertical" dir="rtl">
+							<label for="switch-vertical" class="gui-switch -vertical"">
 								Vertical
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-vertical" />
 							</label>
@@ -289,7 +294,8 @@ export class ShowCase extends BaElement {
 					<div class="example row">
 						<div>Toggle me!</div>
 						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-
+					</div>
+					<div class="example row">
 						<div>Toggle me 2!</div>
 						<gui-switch .title=${'Toggle'}></gui-switch>
 
