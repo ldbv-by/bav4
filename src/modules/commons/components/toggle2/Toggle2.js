@@ -64,8 +64,10 @@ export class GuiSwitch extends MvuElement {
 
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
+		console.log('🚀 ~ GuiSwitch ~ createView ~ indeterminate:', indeterminate);
 
 		const onChange = (event) => {
+			console.log('🚀 ~ GuiSwitch ~ onChange ');
 			const checked = event.target.checked;
 			this.signal(Update_Checked, checked);
 			this.dispatchEvent(
@@ -81,13 +83,36 @@ export class GuiSwitch extends MvuElement {
 		// 	active: checked
 		// };
 
+		// const shadowRoot = this.shadowRoot;
+		// console.log('🚀 ~ GuiSwitch ~ createView ~ this.shadowRoot:', shadowRoot);
+		// const myswitch = shadowRoot.getElementById('myswitch');
+		// console.log('🚀 ~ GuiSwitch ~ createView ~ myswitch:', myswitch);
+
+		// // console.log('🚀 ~ GuiSwitch ~ createView ~ this.shadowRoot:', this.shadowRoot);
+		// // const guiswitch = this.shadowRoot.querySelector('.toggle2');
+		// // console.log('🚀 ~ GuiSwitch ~ createView ~ guiswitch:', guiswitch);
+		// // const label = this.shadowRoot.querySelector('label');
+		// // console.log('🚀 ~ GuiSwitch ~ createView ~ label:', label);
+		// // const input = this.shadowRoot.querySelector('input');
+		// // console.log('🚀 ~ GuiSwitch ~ createView ~ input:', input);
+
+		// // const guiSwitch = this.shadowRoot.querySelector('.toggle2');
+		// // console.log('🚀 ~ GuiSwitch ~ createView ~ guiSwitch:', guiSwitch);
+		// // if (guiSwitch !== null) {
+		// const inputElement = this.shadowRoot.querySelectorAll('input');
+		// console.log('🚀 ~ GuiSwitch ~ createView ~ inputElement:', inputElement);
+		// if (inputElement !== null && inputElement.length > 0) {
+		// 	inputElement[0].setAttribute('indeterminate', indeterminate);
+		// }
+		// // }
+
 		return html`
 			<style>
 				${css}
 			</style>
 
-			<label class="gui-switch">
-				<input type="checkbox" ?checked=${checked} @change=${onChange} tabindex="0" />
+			<label class="toggle2">
+				<input id="myswitch" type="checkbox" ?checked=${checked} @change=${onChange} ?indeterminate=${indeterminate} tabindex="0" />
 				<span class="gui-slider"></span>
 			</label>
 		`;
@@ -100,6 +125,26 @@ export class GuiSwitch extends MvuElement {
 			</label>
      * 
 	 */
+
+	/**
+	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
+	 */
+	set indeterminate(value) {
+		console.log('🚀 ~ GuiSwitch ~ setindeterminate ~ value:', value);
+
+		this.signal(Update_Indeterminate, value);
+
+		// console.log('🚀 ~ GuiSwitch ~ setindeterminate ~ this.shadowRoot:', this.shadowRoot);
+		// const inputElement = this.shadowRoot.querySelector('.toggle2 > input');
+		// console.log('🚀 ~ GuiSwitch ~ setindeterminate ~ inputElement:', inputElement);
+		// if (inputElement) {
+		// 	inputElement.indeterminate = true;
+		// }
+	}
+
+	get indeterminate() {
+		return this.getModel().indeterminate;
+	}
 
 	/**
 	 * @property {string} title='' - The title of the button
@@ -135,17 +180,6 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
-	 */
-	set indeterminate(value) {
-		this.signal(Update_Indeterminate, value);
-	}
-
-	get indeterminate() {
-		return this.getModel().indeterminate;
-	}
-
-	/**
 	 * @property {function} onToggle - Callback function
 	 */
 	set onToggle(callback) {
@@ -157,6 +191,6 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	static get tag() {
-		return 'gui-switch';
+		return 'toggle2';
 	}
 }

@@ -265,10 +265,10 @@ export class ShowCase extends BaElement {
 						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 
 						<div>Toggle me 2!</div>
-						<gui-switch .title=${'Toggle'}"></gui-switch>
+						<toggle2 .title=${'Toggle'}></toggle2>
 
-						<div>Toggle me V!</div>
-						<gui-switch .title=${'Toggle'} .vertical=${true}></gui-switch>
+						<div>Toggle me I!</div>
+						<toggle2 .title=${'Toggle'} .indeterminate=${'indeterminate'}></toggle2>
 					</div>
 
 					<h3>Profile</h3>

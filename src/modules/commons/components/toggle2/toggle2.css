@@ -1,4 +1,4 @@
-.gui-switch {
+.toggle2 {
 	--thumb-size: 2rem;
 	--thumb: hsl(0 0% 100%);
 	--thumb-highlight: hsl(0 0% 0% / 25%);
@@ -25,7 +25,7 @@
 	-webkit-tap-highlight-color: transparent;
 }
 
-.gui-switch > input {
+.toggle2 > input {
 	--thumb-position: 0%;
 	--thumb-transition-duration: 0.25s;
 
@@ -53,7 +53,7 @@
 	transition: background-color 0.25s ease;
 }
 
-.gui-switch > input::before {
+.toggle2 > input::before {
 	--highlight-size: 0;
 
 	content: '';
@@ -70,7 +70,7 @@
 	transition: transform var(--thumb-transition-duration) ease, box-shadow 0.25s ease;
 }
 
-.gui-switch > .gui-slider {
+.toggle2 > .gui-slider {
 	position: absolute;
 	flex: 0 0 var(--track-size);
 
@@ -82,7 +82,7 @@
 	left: initial;
 }
 
-.gui-switch > .gui-slider::before {
+.toggle2 > .gui-slider::before {
 	content: '';
 	position: absolute;
 	left: var(--track-padding);
@@ -100,21 +100,21 @@
 	transition: transform 0.4s, box-shadow 0.4s;
 }
 
-.gui-switch > input:checked + .gui-slider {
+.toggle2 > input:checked + .gui-slider {
 	background-color: var(--track-color-active);
 }
 
-.gui-switch > input:focus + .gui-slider::before,
-.gui-switch > .gui-slider:hover::before {
+.toggle2 > input:focus + .gui-slider::before,
+.toggle2 > .gui-slider:hover::before {
 	box-shadow: 0 0 0 8px rgba(33, 150, 243, 0.6);
 }
 
-.gui-switch > input:checked + .gui-slider::before {
+.toggle2 > input:checked + .gui-slider::before {
 	transform: translateX(calc(var(--track-size) - var(--thumb-size) + var(--track-padding)));
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.8);
 }
 
-.gui-switch > .gui-slider:active::before {
+.toggle2 > .gui-slider:active::before {
 	width: calc(var(--thumb-size) - var(--track-padding) * 2);
 	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.8);
 }
