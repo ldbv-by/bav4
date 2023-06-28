@@ -368,28 +368,32 @@ describe('LayerService', () => {
 		});
 
 		it('registers an opacity change listener in order to synchronize the opacity of a MapLibreLayer', () => {
-			const instanceUnderTest = setup();
-			const id = 'id';
-			const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', null);
-			spyOn(georesourceService, 'byId').and.callFake((id) => {
-				switch (id) {
-					case xyzGeoresource.id:
-						return xyzGeoresource;
-					case vtGeoresource.id:
-						return vtGeoresource;
-				}
-			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id]);
-			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
-			const layers = olLayerGroup.getLayers();
-			const otherOlLayerSetOpacitySpy = spyOn(layers.item(0), 'setOpacity').and.callThrough();
-			const mapLibreLayerSetOpacitySpy = spyOn(layers.item(1), 'setOpacity').and.callThrough();
+			// FF currently throws a WebGL error when running in headless mode, so we first check if it does make sense to perform the test, otherwise, we skip them
+			// See https://bugzilla.mozilla.org/show_bug.cgi?id=1375585#c27 for more information
+			if (supported()) {
+				const instanceUnderTest = setup();
+				const id = 'id';
+				const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+				const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', null);
+				spyOn(georesourceService, 'byId').and.callFake((id) => {
+					switch (id) {
+						case xyzGeoresource.id:
+							return xyzGeoresource;
+						case vtGeoresource.id:
+							return vtGeoresource;
+					}
+				});
+				const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id]);
+				const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
+				const layers = olLayerGroup.getLayers();
+				const otherOlLayerSetOpacitySpy = spyOn(layers.item(0), 'setOpacity').and.callThrough();
+				const mapLibreLayerSetOpacitySpy = spyOn(layers.item(1), 'setOpacity').and.callThrough();
 
-			olLayerGroup.setOpacity(0.66);
+				olLayerGroup.setOpacity(0.66);
 
-			expect(mapLibreLayerSetOpacitySpy).toHaveBeenCalledOnceWith(0.66);
-			expect(otherOlLayerSetOpacitySpy).not.toHaveBeenCalled();
+				expect(mapLibreLayerSetOpacitySpy).toHaveBeenCalledOnceWith(0.66);
+				expect(otherOlLayerSetOpacitySpy).not.toHaveBeenCalled();
+			}
 		});
 
 		it('throws an error when georesource type is not supported', () => {
