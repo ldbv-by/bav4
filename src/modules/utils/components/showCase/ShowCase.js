@@ -290,16 +290,87 @@ export class ShowCase extends BaElement {
 								<input is="gui-switch" type="checkbox" role="switch" id="switch-vertical" />
 							</label>
 						</section>
+
+                        <section>
+                        <h2>Overrides</h2>
+                
+                        <label for="switch-2" class="gui-switch" style="--track-active: hotpink">
+                          Custom Active Color
+                          <input type="checkbox" role="switch" id="switch-2" checked="true">
+                        </label>
+                
+                        <label for="switch-xs" class="gui-switch" style="--thumb-size: 15px;">
+                          XS
+                          <input type="checkbox" role="switch" id="switch-xs" checked>
+                        </label>
+                
+                        <label for="switch-xl" class="gui-switch" style="--thumb-size: 50px;">
+                          XL
+                          <input type="checkbox" role="switch" id="switch-xl">
+                        </label>
+                
+                        <label for="switch-7" class="gui-switch" style="--track-size: 8rem;">
+                          Length
+                          <input type="checkbox" role="switch" id="switch-7" checked>
+                        </label>
+                
+                        <label for="switch-padded" class="gui-switch" style="--track-padding: 8px">
+                          Track Padding
+                          <input type="checkbox" role="switch" id="switch-padded">
+                        </label>
+                
+                        <label for="switch-8" class="gui-switch" style="flex-direction: column; gap: .5ch; align-items: flex-start;">
+                          Stacked Label
+                          <input type="checkbox" role="switch" id="switch-8">
+                        </label>
+                
+                        <div style="display: flex; justify-content: flex-end;">
+                          <label for="switch-9" class="gui-switch -vertical" dir="rtl" style="flex-direction: column; justify-content: flex-start; --track-inactive: red; --track-active: lime;">
+                            On
+                            <input type="checkbox" role="switch" id="switch-9">
+                            Off
+                          </label>
+                        </div>
+                
+                        <style>
+                          .ios-light {
+                            flex-direction: column; 
+                            gap: .5ch; 
+                            align-items: flex-start; 
+                            --track-active: hsl(212deg, 100%, 50%); 
+                            --track-inactive: white; 
+                            --thumb-size: 1.5rem; 
+                            --thumb-color: white; 
+                            --thumb-highlight: hsla(212, 100%, 50%, 0.25);
+                          }
+                          .ios-light > input {
+                            border: 1px solid hsla(0, 0%, 0%, 0.15);
+                          }
+                          .ios-light > input::before {
+                            box-shadow: 
+                              0 0 0 var(--highlight-size) var(--thumb-color-highlight),
+                              0 0 0 1px hsla(0, 0%, 0%, 0.15),
+                              0px 3px 4px 1px hsla(0, 0%, 0%, 0.2);
+                          }
+                        </style>
+                
+                        <label for="switch-10" class="gui-switch ios-light">
+                          Size & Colors & Position
+                          <input type="checkbox" role="switch" id="switch-10">
+                        </label>
+                      </section>
+
 					</div>
 					<div class="example row">
 						<div>Toggle me (old)!</div>
 						<ba-toggle id="toggle" .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
 					</div>
 					<div class="example row">
-						<gui-switch .title=${'Toggle me (new)'}></gui-switch>
-						<gui-switch .title=${'Toggle me (new).checked'} .checked=${true}></gui-switch> 
-						<gui-switch .title=${'Toggle me (new).indeterminate'} .indeterminate=${true}></gui-switch>
-						<gui-switch .title=${'Toggle me (new).disabled'} .disabled=${true}></gui-switch>
+						<div>Toggle new!</div>
+						<gui-switch .title=${'Toggle me'}></gui-switch>
+						<gui-switch .title=${'Toggle me.checked'} .checked=${true}></gui-switch> 
+						<gui-switch .title=${'Toggle me.indeterminate'} .indeterminate=${true}></gui-switch>
+						<gui-switch .title=${'Toggle me.disabled'} .disabled=${true}></gui-switch>
 					</div>
 
 					<h3>Theme-Toggle</h3>
