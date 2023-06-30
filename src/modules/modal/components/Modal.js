@@ -20,6 +20,9 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * @author taulinger
  */
 export class Modal extends MvuElement {
+	#translationService;
+	#escKeyListener;
+
 	constructor() {
 		super({
 			data: null,
@@ -28,8 +31,13 @@ export class Modal extends MvuElement {
 			currentStep: 0
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._escKeyListener = null;
+		this.#translationService = TranslationService;
+		this.#escKeyListener = (e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+			}
+		};
 	}
 
 	onInitialize() {
@@ -42,24 +50,24 @@ export class Modal extends MvuElement {
 			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
 		);
 
-		this._escKeyListener = (e) => {
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				closeModal();
-			}
-		};
-
 		this.observeModel('active', (active) => {
 			if (active) {
-				document.addEventListener('keydown', this._escKeyListener);
+				document.addEventListener('keydown', this.#escKeyListener);
 				setTimeout(() => {
 					//focus the first element containing the autofocus attribute
 					findAllBySelector(this, '*[autofocus]')[0]?.focus();
 				});
 			} else {
-				document.removeEventListener('keydown', this._escKeyListener);
+				this.#removeKeyDownListener();
 			}
 		});
+	}
+	#removeKeyDownListener() {
+		document.removeEventListener('keydown', this.#escKeyListener);
+	}
+
+	onDisconnect() {
+		this.#removeKeyDownListener();
 	}
 
 	update(type, data, model) {
@@ -76,7 +84,7 @@ export class Modal extends MvuElement {
 	 */
 	createView(model) {
 		const { active, portrait, currentStep } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 
 		const hide = (force) => {
 			if (currentStep === 0 || force) {

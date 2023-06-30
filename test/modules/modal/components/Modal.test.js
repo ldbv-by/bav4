@@ -279,12 +279,23 @@ describe('Modal', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			await setup(state);
 			openModal('title', 'content');
 
 			closeModal();
 
-			expect(spy).toHaveBeenCalledWith('keydown', element._escKeyListener);
+			expect(spy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all event listeners', async () => {
+			const element = await setup();
+			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
 		});
 	});
 });
