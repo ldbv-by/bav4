@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/iconUrl_provider
+ */
 import { $injector } from '../../injection/index';
 /**
  * A function that returns a factory to create a URL from a color.
