@@ -1,3 +1,4 @@
+const path = require('path');
 module.exports = {
 	mode: 'development',
 	devtool: 'inline-source-map',
@@ -28,6 +29,9 @@ module.exports = {
 		]
 	},
 	resolve: {
+		alias: {
+			'@chunk': path.resolve(__dirname, './test/chunkUtil')
+		},
 		fallback: {
 			https: false,
 			http: false,
