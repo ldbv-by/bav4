@@ -1,18 +1,10 @@
 import { IconResult, IconService } from '../../src/services/IconService';
 import { loadBvvIcons } from '../../src/services/provider/icons.provider';
-import { $injector } from '../../src/injection';
 import { getBvvIconColor } from '../../src/services/provider/iconColor.provider';
+import { getBvvIconUrlFactory } from '../../src/services/provider/iconUrl.provider';
+import { $injector } from '../../src/injection';
 
 describe('IconsService', () => {
-	const configServiceMock = {
-		getValue: () => {},
-		getValueAsPath: () => {}
-	};
-
-	beforeAll(() => {
-		$injector.registerSingleton('ConfigService', configServiceMock);
-	});
-
 	const getMatcher = (id) => {
 		return (idOrUrl) => idOrUrl === id || idOrUrl?.endsWith(id);
 	};
@@ -23,8 +15,14 @@ describe('IconsService', () => {
 		return [iconResult1, iconResult2];
 	};
 
-	const setup = (iconProvider = loadMockIcons) => {
-		return new IconService(iconProvider);
+	const iconColorMock = () => [0, 0, 0];
+
+	const iconUrlFactoryMock = () => {
+		return (color) => `http://some.url/icons/${color[0]},${color[1]},${color[2]}/icon.png`;
+	};
+
+	const setup = (iconProvider = loadMockIcons, iconColorProvider = iconColorMock, iconUrlFactoryProvider = iconUrlFactoryMock) => {
+		return new IconService(iconProvider, iconColorProvider, iconUrlFactoryProvider);
 	};
 
 	describe('initialization', () => {
@@ -40,9 +38,24 @@ describe('IconsService', () => {
 		});
 
 		it('initializes the service with default provider', async () => {
+			const configServiceMock = {
+				getValueAsPath: () => {}
+			};
+			$injector.registerSingleton('ConfigService', configServiceMock);
 			const instanceUnderTest = new IconService();
 			expect(instanceUnderTest._iconProvider).toEqual(loadBvvIcons);
 			expect(instanceUnderTest._iconColorProvider).toEqual(getBvvIconColor);
+			expect(instanceUnderTest._iconUrlFactoryProvider).toEqual(getBvvIconUrlFactory);
+		});
+
+		it('initializes the service with custom provider', async () => {
+			const customIconProvider = async () => {};
+			const customIconColorProvider = () => {};
+			const customIconUrlProvider = async () => {};
+			const instanceUnderTest = setup(customIconProvider, customIconColorProvider, customIconUrlProvider);
+			expect(instanceUnderTest._iconProvider).toEqual(customIconProvider);
+			expect(instanceUnderTest._iconColorProvider).toEqual(customIconColorProvider);
+			expect(instanceUnderTest._iconUrlFactoryProvider).toEqual(customIconUrlProvider);
 		});
 
 		it('just provides the icons when already initialized', async () => {
@@ -153,22 +166,11 @@ describe('IconsService', () => {
 	describe('getDefault', () => {
 		it('provides a default icon', async () => {
 			const instanceUnderTest = setup();
-			spyOn(configServiceMock, 'getValueAsPath').and.callFake(() => 'http://some.url/');
 			const defaultIcon = instanceUnderTest.getDefault();
 
 			expect(defaultIcon).toBeInstanceOf(IconResult);
 			expect(defaultIcon.id).toBe('marker');
-			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/marker.png');
-		});
-
-		it('provides a default icon, without url', async () => {
-			spyOn(configServiceMock, 'getValueAsPath').and.throwError('something');
-			const instanceUnderTest = setup();
-			const warnSpy = spyOn(console, 'warn');
-			const defaultIcon = instanceUnderTest.getDefault();
-
-			expect(defaultIcon.getUrl([1, 2, 3])).toBeNull();
-			expect(warnSpy).toHaveBeenCalledWith('No backend-information available.');
+			expect(defaultIcon.getUrl([1, 2, 3])).toBe('http://some.url/icons/1,2,3/icon.png');
 		});
 	});
 

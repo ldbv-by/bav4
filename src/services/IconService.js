@@ -3,7 +3,7 @@
  */
 import { loadBvvIcons } from './provider/icons.provider';
 import { getBvvIconColor } from './provider/iconColor.provider';
-import { $injector } from '../injection';
+import { getBvvIconUrlFactory } from './provider/iconUrl.provider';
 
 const Svg_Encoding_B64_Flag = 'data:image/svg+xml;base64,';
 const Svg_Marker_Name = 'marker';
@@ -18,9 +18,10 @@ const Svg_Marker_Content =
  * @author thiloSchlemmer
  */
 export class IconService {
-	constructor(iconProvider = loadBvvIcons, iconColorProvider = getBvvIconColor) {
+	constructor(iconProvider = loadBvvIcons, iconColorProvider = getBvvIconColor, iconUrlFactoryProvider = getBvvIconUrlFactory) {
 		this._iconProvider = iconProvider;
 		this._iconColorProvider = iconColorProvider;
+		this._iconUrlFactoryProvider = iconUrlFactoryProvider;
 		this._default = this._createDefault();
 		this._icons = null;
 		this._load();
@@ -30,20 +31,9 @@ export class IconService {
 		const matcher = (idOrUrl) => {
 			return idOrUrl === Svg_Marker_Name || !!idOrUrl?.endsWith(`/${Svg_Marker_Name}`);
 		};
-		const urlFactoryFunction = () => {
-			const { ConfigService: configService } = $injector.inject('ConfigService');
-			return (color) => {
-				try {
-					const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
-					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}.png`;
-				} catch (e) {
-					console.warn('No backend-information available.');
-				}
-				return null;
-			};
-		};
+		const urlFactoryFunction = this._iconUrlFactoryProvider(Svg_Marker_Name);
 
-		return new IconResult(Svg_Marker_Name, Svg_Marker_Content, matcher, urlFactoryFunction());
+		return new IconResult(Svg_Marker_Name, Svg_Marker_Content, matcher, urlFactoryFunction);
 	}
 
 	/**
