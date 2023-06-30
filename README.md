@@ -170,6 +170,10 @@ All redux related files like reducers and actions.
 
 Contains global utilities.
 
+### `src/chunks`
+
+Contains chunk definitions for dynamically loading an MvuElement.
+
 ### Overview
 
 Here's an overview of what project folder structure looks like:
