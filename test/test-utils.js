@@ -29,11 +29,22 @@ export class TestUtils {
 	 * and returns a promise which resolves as soon as the
 	 * rendered element becomes available.
 	 * @param {string} tag the tag of the HTMLElement
+	 * @param {object} [properties] initial properties for this element
 	 * @param {object} [attributes]
 	 * @param {object} [slotContent]
 	 * @returns {Promise<HTMLElement>}
 	 */
-	static async render(tag, attributes = {}, slotContent = '') {
+	static async render(tag, properties = {}, attributes = {}, slotContent = '') {
+		window.ba_fireConnectedEvent = true;
+		const connectedListener = (e) => {
+			const element = e.detail;
+			for (const key in properties) {
+				element[key] = properties[key];
+			}
+			window.ba_fireConnectedCallbackEvent = false;
+			document.removeEventListener('connected', this);
+		};
+		document.addEventListener('connected', connectedListener);
 		TestUtils._renderToDocument(tag, attributes, slotContent);
 		return TestUtils._waitForComponentToRender(tag);
 	}
@@ -44,13 +55,14 @@ export class TestUtils {
 	 * rendered element becomes available.
 	 * Additionally enables logging of the elements lifecycle (if available).
 	 * @param {string} tag the tag of the MvuElement
+	 * @param {object} [properties] initial properties for this element
 	 * @param {object} [attributes]
 	 * @param {object} [slotContent]
 	 * @returns {Promise<HTMLElement>}
 	 */
-	static async renderAndLogLifecycle(tag, attributes = {}, slotContent = '') {
+	static async renderAndLogLifecycle(tag, properties = {}, attributes = {}, slotContent = '') {
 		TestUtils._renderToDocument(tag, { [LOG_LIFECYLE_ATTRIBUTE_NAME]: '', ...attributes }, slotContent);
-		return TestUtils._waitForComponentToRender(tag);
+		return TestUtils.render(tag, properties, { [LOG_LIFECYLE_ATTRIBUTE_NAME]: '', ...attributes }, slotContent);
 	}
 
 	/**
