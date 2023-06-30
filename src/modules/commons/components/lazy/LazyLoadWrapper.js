@@ -1,5 +1,5 @@
 /**
- * @module modules/commons/components/lazy/LazyLoad
+ * @module modules/commons/components/lazy/LazyLoadWrapper
  */
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
