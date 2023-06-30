@@ -131,7 +131,7 @@ describe('Icon', () => {
 
 		it('calls the onClick callback via attribute binding', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Icon.tag, { onClick: "alert('called')" });
+			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 
 			element.click();
 
@@ -140,7 +140,7 @@ describe('Icon', () => {
 
 		it('does nothing when disabled', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Icon.tag, { onClick: "alert('called')" });
+			const element = await TestUtils.render(Icon.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
 			element.onClick = jasmine.createSpy();
 			const anchor = element.shadowRoot.querySelector('.anchor');

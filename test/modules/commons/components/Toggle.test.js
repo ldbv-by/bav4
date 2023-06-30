@@ -19,7 +19,7 @@ describe('Toggle', () => {
 		});
 
 		it('renders the view', async () => {
-			const element = await TestUtils.render(Toggle.tag, {}, '<span>some</span>');
+			const element = await TestUtils.render(Toggle.tag, {}, {}, '<span>some</span>');
 
 			//view
 			expect(element.shadowRoot.querySelector('.switch')).toBeTruthy();
@@ -109,7 +109,7 @@ describe('Toggle', () => {
 
 			it('calls the onToggle callback via attribute callback', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Toggle.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Toggle.tag, {}, { onToggle: "alert('called')" });
 
 				element.click();
 
@@ -119,7 +119,7 @@ describe('Toggle', () => {
 
 			it('does nothing when disabled', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Toggle.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Toggle.tag, {}, { onToggle: "alert('called')" });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
