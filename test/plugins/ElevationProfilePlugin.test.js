@@ -8,6 +8,8 @@ import { drawReducer, initialState as drawInitialState } from '../../src/store/d
 import { measurementReducer, initialState as measurementInitialState } from '../../src/store/measurement/measurement.reducer';
 import { deactivate as deactivateDraw } from '../../src/store/draw/draw.action';
 import { deactivate as deactivateMeasurement } from '../../src/store/measurement/measurement.action';
+import { LazyLoadWrapper } from '../../src/modules/commons/components/lazy/LazyLoadWrapper';
+import { ElevationProfile } from '../../src/modules/elevationProfile/components/panel/ElevationProfile';
 
 describe('ElevationProfilePlugin', () => {
 	const setup = (state) => {
@@ -40,7 +42,10 @@ describe('ElevationProfilePlugin', () => {
 			]);
 
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().bottomSheet.data);
-			expect(wrapperElement.querySelectorAll('ba-elevation-profile')).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].chunkName).toBe('elevation-profile');
+			const wrapperElementForContent = TestUtils.renderTemplateResult(wrapperElement.querySelectorAll(LazyLoadWrapper.tag)[0].content);
+			expect(wrapperElementForContent.querySelectorAll(ElevationProfile.tag)).toHaveSize(1);
 
 			closeProfile();
 
