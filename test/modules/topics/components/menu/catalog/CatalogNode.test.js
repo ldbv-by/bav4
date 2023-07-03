@@ -39,7 +39,7 @@ describe('CatalogNode', () => {
 		TestUtils.setupStoreAndDi(state);
 
 		if (levelAttribute) {
-			return TestUtils.render(CatalogNode.tag, levelAttribute);
+			return TestUtils.render(CatalogNode.tag, {}, levelAttribute);
 		}
 		return TestUtils.render(CatalogNode.tag);
 	};
