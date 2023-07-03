@@ -49,8 +49,8 @@ describe('ShareDialogContent', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
-			const element = await setup();
-			const model = element.getModel();
+			await setup();
+			const model = new ShareDialogContent().getModel();
 			expect(model).toEqual({ checkedToggle: false, url: null, fileSaveUrl: null });
 		});
 	});

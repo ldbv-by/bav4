@@ -2,7 +2,7 @@ import { Modal } from '../../../../src/modules/modal/components/Modal';
 import { $injector } from '../../../../src/injection';
 import { TestUtils } from '../../../test-utils';
 import { html } from 'lit-html';
-import { closeModal, openModal } from '../../../../src/store/modal/modal.action';
+import { closeModal, incrementStep, openModal } from '../../../../src/store/modal/modal.action';
 import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
@@ -38,7 +38,8 @@ describe('Modal', () => {
 			expect(element.getModel()).toEqual({
 				data: null,
 				active: false,
-				portrait: true
+				portrait: true,
+				currentStep: 0
 			});
 		});
 	});
@@ -165,25 +166,65 @@ describe('Modal', () => {
 
 			expect(store.getState().modal.active).toBeFalse();
 		});
-	});
 
-	describe('when back button clicked', () => {
-		it('closes the modal', async () => {
+		it('closes the modal, even if we are not in the first step', async () => {
 			const state = {
 				media: {
 					portrait: false
 				}
 			};
 			const element = await setup(state);
-			openModal('title', 'content');
+			openModal('title', 'content', { steps: 2 });
+			incrementStep();
 
-			const backIcon = element.shadowRoot.querySelector('ba-icon');
-			backIcon.click();
+			const closeBtn = element.shadowRoot.querySelector('ba-button');
+			closeBtn.click();
 
 			const elementModal = element.shadowRoot.querySelector('.modal__container');
 			elementModal.dispatchEvent(new Event('animationend'));
 
 			expect(store.getState().modal.active).toBeFalse();
+		});
+	});
+
+	describe('when back button clicked', () => {
+		describe('we are on the first step', () => {
+			it('closes the modal', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state);
+				openModal('title', 'content');
+
+				const backIcon = element.shadowRoot.querySelector('ba-icon');
+				backIcon.click();
+
+				const elementModal = element.shadowRoot.querySelector('.modal__container');
+				elementModal.dispatchEvent(new Event('animationend'));
+
+				expect(store.getState().modal.active).toBeFalse();
+			});
+		});
+		describe('we are NOT on the first step', () => {
+			it('updates the modal slice-of-state', async () => {
+				const state = {
+					media: {
+						portrait: false
+					}
+				};
+				const element = await setup(state);
+				openModal('title', 'content', { steps: 2 });
+				incrementStep();
+
+				expect(store.getState().modal.currentStep).toBe(1);
+
+				const backIcon = element.shadowRoot.querySelector('ba-icon');
+				backIcon.click();
+
+				expect(store.getState().modal.currentStep).toBe(0);
+			});
 		});
 	});
 
@@ -238,12 +279,23 @@ describe('Modal', () => {
 					portrait: false
 				}
 			};
-			const element = await setup(state);
+			await setup(state);
 			openModal('title', 'content');
 
 			closeModal();
 
-			expect(spy).toHaveBeenCalledWith('keydown', element._escKeyListener);
+			expect(spy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all event listeners', async () => {
+			const element = await setup();
+			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
 		});
 	});
 });
