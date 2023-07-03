@@ -43,7 +43,7 @@ export class IconService {
 	 *  2. if provided, move the marker-icon to the first position, otherwise start
 	 * 	with a default marker-icon
 	 *  3. if all fails: load default marker-icon and some fallbackIcons
-	 *  @returns {Array<IconResult>}
+	 *  @returns {Promise<Array<IconResult>>}
 	 */
 	async _load() {
 		try {
@@ -63,7 +63,7 @@ export class IconService {
 
 	/**
 	 * Creates a list of all icons as IconResult
-	 * @returns {Array<IconResult>}
+	 * @returns {Promise<Array<IconResult>>}
 	 */
 	async all() {
 		if (this._icons === null) {
@@ -114,13 +114,13 @@ export class IconResult {
 	 *
 	 * @param {string} id the id(name) of this IconResult
 	 * @param {string} svg the content of this Icon as SVG
-	 * @param {function():(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
+	 * @param {function(string):(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
 	 * @param {function(Array<number>): (string)} urlProvider a function, which provides a url as remote-location for this icon with a specified rgb-color as Array<number>
 	 */
 	constructor(id, svg, urlMatcher = null, urlProvider = null) {
 		this._id = id;
 		this._svg = svg;
-		this._base64 = this._toBase64(svg);
+		this._base64 = this._toBase64();
 		this._urlMatcher = urlMatcher ? urlMatcher : () => false;
 		this._urlProvider = urlProvider ? urlProvider : () => null;
 	}
@@ -129,12 +129,11 @@ export class IconResult {
 	 * creates a base64-encoded Version of the svg for embedding-purposes
 	 * based on this article:
 	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
-	 * @param {IconResult} iconResult
 	 * @returns {string} the encoded (base64) string
 	 */
 	_toBase64() {
 		const b64EncodeUnicode = (str) => {
-			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(Number('0x' + p1))));
 		};
 
 		return Svg_Encoding_B64_Flag + b64EncodeUnicode(this._svg);
@@ -162,7 +161,7 @@ export class IconResult {
 }
 
 /**
- * @returns {Map} with fallback icons loaded locally
+ * @returns {Array<IconResult>} with fallback icons loaded locally
  */
 const loadFallbackIcons = () => {
 	return [
