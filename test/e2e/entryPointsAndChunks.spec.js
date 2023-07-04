@@ -6,10 +6,24 @@ test.describe('entry points', () => {
 	test('should provide the bundle.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/bundle.js`);
 		expect(response.ok()).toBeTruthy();
+		expect((await response.body()).byteLength).toBe(15209266);
+	});
+
+	test('should provide the embed.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/embed.js`);
+		expect(response.ok()).toBeTruthy();
+		expect((await response.body()).byteLength).toBe(12364167);
 	});
 
 	test('should provide the config.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/config.js`);
+		expect(response.ok()).toBeTruthy();
+	});
+});
+
+test.describe('entry points', () => {
+	test('should provide the ba-elevation.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/elevation-profile.js`);
 		expect(response.ok()).toBeTruthy();
 	});
 });
