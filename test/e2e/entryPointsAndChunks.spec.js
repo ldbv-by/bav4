@@ -21,7 +21,7 @@ test.describe('entry points', () => {
 	});
 });
 
-test.describe('entry points', () => {
+test.describe('chunks', () => {
 	test('should provide the ba-elevation.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/elevation-profile.js`);
 		expect(response.ok()).toBeTruthy();
