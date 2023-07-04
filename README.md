@@ -172,7 +172,7 @@ Contains global utilities.
 
 ### `src/chunks`
 
-Contains chunk definitions for dynamically loading an MvuElement.
+Contains chunk definitions for dynamically loading js resources (code splitting).
 
 ### Overview
 
