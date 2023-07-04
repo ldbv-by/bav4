@@ -9,7 +9,7 @@ import { TestUtils } from '../../../../test-utils';
 window.customElements.define(ToggleFeedbackPanel.tag, ToggleFeedbackPanel);
 
 let store;
-const setup = (state = {}) => {
+const setup = (state = {}, properties = {}) => {
 	const initialState = {
 		...state
 	};
@@ -18,7 +18,7 @@ const setup = (state = {}) => {
 
 	$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-	return TestUtils.renderAndLogLifecycle(ToggleFeedbackPanel.tag);
+	return TestUtils.renderAndLogLifecycle(ToggleFeedbackPanel.tag, properties);
 };
 
 describe('ToggleFeedbackPanel', () => {
@@ -151,9 +151,7 @@ describe('ToggleFeedbackPanel', () => {
 	describe('property "onSubmit"', () => {
 		it('sets the onSubmit callback', async () => {
 			const onSubmbitFn = () => {};
-			const element = await setup();
-
-			element.onSubmit = onSubmbitFn;
+			const element = await setup({}, { onSubmit: onSubmbitFn });
 
 			expect(element._onSubmit).toEqual(onSubmbitFn);
 		});
@@ -161,10 +159,8 @@ describe('ToggleFeedbackPanel', () => {
 
 	describe('property "center"', () => {
 		it('sets the center coordinate and updates the view', async () => {
-			const element = await setup();
+			const element = await setup({}, { center: [21, 42] });
 			element.type = FeedbackType.MAP;
-
-			element.center = [21, 42];
 
 			expect(element.shadowRoot.querySelector(MapFeedbackPanel.tag).center).toEqual([21, 42]);
 		});
