@@ -3,4 +3,4 @@ import { ElevationProfileChip } from './components/assistChip/ElevationProfileCh
 if (!window.customElements.get(ElevationProfileChip.tag)) {
 	window.customElements.define(ElevationProfileChip.tag, ElevationProfileChip);
 }
-// Note: ElevationProfile is omitted, because the component will be provided by its own chunk (see .src/chunks/elevation-profile.js)
+// Note: ElevationProfile is omitted here, because the component will be provided by its own chunk (see .src/chunks/elevation-profile.js)
