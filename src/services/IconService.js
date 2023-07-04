@@ -11,6 +11,28 @@ const Svg_Marker_Content =
 	'<svg id="marker" xmlns="http://www.w3.org/2000/svg" width="48.0" height="48.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M36.28125,19.28125Q36.28125,20.875,35.515625,23.0Q34.765625,25.125,33.828125,26.921875Q32.90625,28.71875,31.171875,31.28125Q29.453125,33.828125,28.515625,35.0625Q27.59375,36.28125,25.828125,38.609375Q24.0625,40.9375,24.0,41.0Q23.9375,40.9375,22.171875,38.609375Q20.421875,36.28125,19.484375,35.0625Q18.5625,33.828125,16.828125,31.28125Q15.109375,28.71875,14.171875,26.921875Q13.25,25.125,12.484375,23.0Q11.71875,20.875,11.71875,19.28125Q11.71875,14.375,15.53125,10.6875Q19.359375,7.0,24.0,7.0Q28.65625,7.0,32.46875,10.6875Q36.28125,14.375,36.28125,19.28125Z" /></svg>';
 
 /**
+ * A function that returns a promise with a Array of IconResults.
+ *
+ * @typedef {Function} iconProvider
+ * @returns {(Promise<Array<IconResult>>)}
+ */
+
+/**
+ * A function that returns a rgb-color as Array of numbers from a icon-url.
+ *
+ * @typedef {Function} iconColorProvider
+ * @param {string} iconUrl the url for a valid icon
+ * @returns {Array<number>} the rgb-color as array
+ */
+
+/**
+ * A function that returns a factory to create a URL from a color.
+ * @param {string} iconName the icon name
+ * @typedef {Function} iconUrlProvider
+ * @returns {string|null}
+ */
+
+/**
  * Service for managing icons
  *
  * This service provides a default-icon as IconResult with iconResult.id==='marker' and a list of icons based on svg-graphics as IconResult.

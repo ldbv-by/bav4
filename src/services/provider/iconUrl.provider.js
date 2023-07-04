@@ -3,16 +3,11 @@
  */
 
 import { $injector } from '../../injection/index';
-/**
- * A function that returns a factory to create a URL from a color.
- *
- * @typedef {function(): function} IconUrlProvider
- */
 
 /**
- * Provides BVV specific implementation to create a icon url factory.
- * @param {string} iconName the icon name
- * @returns {function(Array<number>)} the function, which creates a icon url based on an Array of numbers, representing a rgb-color
+ * Bvv specific implementation of {@link module:services/IconService~iconUrlProvider}
+ * @function
+ * @type {module:services/IconService~iconUrlProvider}
  */
 export const getBvvIconUrlFactory = (iconName) => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
