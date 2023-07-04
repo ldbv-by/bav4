@@ -123,32 +123,113 @@ export class GuiSwitch extends MvuElement {
 			this.guiswitch = this.shadowRoot.getElementById('guiswitch');
 
 			const thumbsize = getPseudoStyle(this.guiswitch, 'width');
+			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ thumbsize:', thumbsize);
 			const padding = getStyle(this.guiswitch, 'padding-left') + getStyle(this.guiswitch, 'padding-right');
+			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ padding:', padding);
+
+			const clientWidth = this.guiswitch.clientWidth;
+			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ clientWidth:', clientWidth);
 
 			this.#thumbsize = thumbsize;
 			this.#padding = padding;
 			this.#bounds = {
 				lower: 0,
-				middle: (this.clientWidth - padding) / 4,
-				upper: this.clientWidth - thumbsize - padding
+				middle: (clientWidth - padding) / 4,
+				upper: clientWidth - thumbsize - padding
 			};
 
 			const dragInit = () => {
+				console.log('🚀 ~ GuiSwitch ~ dragInit ~ this.disabled:', this.disabled);
 				if (this.disabled) {
 					return;
 				}
 
 				this.#isDragging = true;
 
-				this.addEventListener('pointermove', this.dragging.bind(this.guiswitch));
-				this.style.setProperty('--thumb-transition-duration', '0s');
+				this.addEventListener('pointermove', dragging.bind(this.guiswitch));
+				this.guiswitch.style.setProperty('--thumb-transition-duration', '0s');
+			};
+
+			const dragEnd = () => {
+				console.log('🚀 ~ GuiSwitch ~ dragEnd ~ this.#isDragging:', this.#isDragging);
+				if (this.#isDragging !== true) {
+					return;
+				}
+
+				this.checked = determineChecked();
+
+				if (this.indeterminate) {
+					this.indeterminate = false;
+				}
+
+				this.guiswitch.style.removeProperty('--thumb-transition-duration');
+				this.guiswitch.style.removeProperty('--thumb-position');
+				this.removeEventListener('pointermove', dragging.bind(this.guiswitch));
+
+				this.#isDragging = false;
+
+				padRelease();
+			};
+
+			const dragging = (event) => {
+				if (event.type !== 'pointermove') {
+					console.log('🚀 ~ GuiSwitch ~ dragging ~ event:', event);
+					console.log('🚀 ~ GuiSwitch ~ dragging ~ this.#isDragging:', this.#isDragging);
+				}
+				if (this.#isDragging !== true) {
+					return;
+				}
+
+				const directionality = getStyle(this.guiswitch, '--isLTR');
+				console.log('🚀 ~ GuiSwitch ~ dragging ~ directionality:', directionality);
+				const track = directionality === -1 ? this.guiswitch.clientWidth * -1 + this.#thumbsize + this.#padding : 0;
+				console.log('🚀 ~ GuiSwitch ~ dragging ~ track:', track);
+
+				let pos = Math.round(event.offsetX - this.#thumbsize / 2);
+				console.log('🚀 ~ GuiSwitch ~ dragging ~ pos:', pos);
+
+				if (pos < this.#bounds.lower) {
+					pos = 0;
+				}
+
+				if (pos > this.#bounds.upper) {
+					pos = this.#bounds.upper;
+				}
+
+				this.guiswitch.style.setProperty('--thumb-position', `${track + pos}px`);
+			};
+
+			const determineChecked = () => {
+				const thumbPos = this.guiswitch.style.getPropertyValue('--thumb-position');
+				console.log('🚀 ~ GuiSwitch ~ determineChecked ~ thumbPos:', thumbPos);
+				let curpos = Math.abs(Number.parseInt(thumbPos));
+				console.log('🚀 ~ GuiSwitch ~ determineChecked ~ curpos:', curpos);
+
+				if (!curpos) {
+					curpos = this.checked ? this.#bounds.lower : this.#bounds.upper;
+				}
+
+				return curpos >= this.#bounds.middle;
+			};
+
+			const padRelease = () => {
+				this.#recentlyDragged = true;
+
+				setTimeout(() => (this.#recentlyDragged = false), 300);
+			};
+
+			const preventBlubbling = () => {
+				if (this.#recentlyDragged && event) {
+					event.preventDefault();
+					event.stopPropagation();
+				}
 			};
 
 			this.addEventListener('pointerdown', dragInit.bind(this.guiswitch));
-			this.addEventListener('pointerup', this.dragEnd.bind(this.guiswitch));
-			this.addEventListener('click', this.preventBlubbling.bind(this.guiswitch));
+			this.addEventListener('pointerup', dragEnd.bind(this.guiswitch));
+			this.addEventListener('click', preventBlubbling.bind(this.guiswitch));
 
-			window.addEventListener('pointerup', this.dragEnd.bind(this.guiswitch));
+			window.addEventListener('pointerup', dragEnd.bind(this.guiswitch));
 		}
 	}
 
@@ -193,109 +274,45 @@ export class GuiSwitch extends MvuElement {
 	// _click() {
 	// 	this._root.querySelector('#guiswitch').click();
 	// }
+	// handleDragStart = (event) => {
+	// 	if (event.type === 'mousemove') {
+	// 		return;
+	// 	}
 
-	dragEnd() {
-		if (this.#isDragging !== true) {
-			return;
-		}
+	// 	console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event.target:', event.target);
+	// 	console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event:', event);
+	// 	// if (event.target === this.sliderElement) {
+	// 	//   this.isDragging = true;
+	// 	//   this.startX = this.getClientX(event);
+	// 	//   this.currentX = this.startX;
+	// 	// }
+	// };
 
-		this.checked = this.determineChecked();
+	// handleDrag = (event) => {
+	// 	if (event.type === 'mousemove') {
+	// 		return;
+	// 	}
 
-		if (this.indeterminate) {
-			this.indeterminate = false;
-		}
+	// 	console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event.target:', event.target);
+	// 	console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event:', event);
+	// 	// if (this.isDragging) {
+	// 	//   const newX = this.getClientX(event);
+	// 	//   const diffX = newX - this.currentX;
+	// 	//   this.currentX = newX;
+	// 	//   this.toggleElement.checked = newX >= this.startX;
+	// 	//   this.sliderElement.style.transform = `translateX(${newX - this.startX}px)`;
+	// 	// }
+	// };
 
-		this.style.removeProperty('--thumb-transition-duration');
-		this.style.removeProperty('--thumb-position');
-		this.removeEventListener('pointermove', this.dragging.bind(this.guiswitch));
-
-		this.#isDragging = false;
-
-		this.padRelease();
-	}
-
-	dragging(event) {
-		if (this.#isDragging !== true) {
-			return;
-		}
-
-		const directionality = getStyle(this, '--isLTR');
-		const track = directionality === -1 ? this.clientWidth * -1 + this.#thumbsize + this.#padding : 0;
-
-		let pos = Math.round(event.offsetX - this.#thumbsize / 2);
-
-		if (pos < this.#bounds.lower) {
-			pos = 0;
-		}
-
-		if (pos > this.#bounds.upper) {
-			pos = this.#bounds.upper;
-		}
-
-		this.style.setProperty('--thumb-position', `${track + pos}px`);
-	}
-
-	determineChecked() {
-		let curpos = Math.abs(Number.parseInt(this.style.getPropertyValue('--thumb-position')));
-
-		if (!curpos) {
-			curpos = this.checked ? this.#bounds.lower : this.#bounds.upper;
-		}
-
-		return curpos >= this.#bounds.middle;
-	}
-
-	padRelease() {
-		this.#recentlyDragged = true;
-
-		setTimeout((_) => (this.#recentlyDragged = false), 300);
-	}
-
-	preventBlubbling() {
-		if (this.#recentlyDragged) {
-			event.preventDefault() && event.stopPropagation();
-		}
-	}
-
-	handleDragStart = (event) => {
-		if (event.type === 'mousemove') {
-			return;
-		}
-
-		console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event.target:', event.target);
-		console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event:', event);
-		// if (event.target === this.sliderElement) {
-		//   this.isDragging = true;
-		//   this.startX = this.getClientX(event);
-		//   this.currentX = this.startX;
-		// }
-	};
-
-	handleDrag = (event) => {
-		if (event.type === 'mousemove') {
-			return;
-		}
-
-		console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event.target:', event.target);
-		console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event:', event);
-		// if (this.isDragging) {
-		//   const newX = this.getClientX(event);
-		//   const diffX = newX - this.currentX;
-		//   this.currentX = newX;
-		//   this.toggleElement.checked = newX >= this.startX;
-		//   this.sliderElement.style.transform = `translateX(${newX - this.startX}px)`;
-		// }
-	};
-
-	handleDragEnd = () => {
-		console.log('🚀 ~ GuiSwitch ~ handleDragEnd');
-		// if (this.isDragging) {
-		//   this.isDragging = false;
-		//   this.startX = 0;
-		//   this.currentX = 0;
-		//   this.updateToggleState();
-		// }
-	};
+	// handleDragEnd = () => {
+	// 	console.log('🚀 ~ GuiSwitch ~ handleDragEnd');
+	// 	// if (this.isDragging) {
+	// 	//   this.isDragging = false;
+	// 	//   this.startX = 0;
+	// 	//   this.currentX = 0;
+	// 	//   this.updateToggleState();
+	// 	// }
+	// };
 
 	/**
 	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
