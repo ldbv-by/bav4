@@ -5,15 +5,9 @@ import { $injector } from '../../injection';
 import { IconResult } from '../IconService';
 
 /**
- * A function that returns a promise with a Array of IconResults.
- *
- * @typedef {Function} iconProvider
- * @returns {(Promise<Array<IconResult>>)}
- */
-
-/**
- *  Uses the BVV services to load icons
- * @returns {Array<IconResult>} with icons loaded from backend
+ * Bvv specific implementation of {@link module:services/IconService~iconProvider}
+ * @function
+ * @type {module:services/IconService~iconProvider}
  */
 export const loadBvvIcons = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
