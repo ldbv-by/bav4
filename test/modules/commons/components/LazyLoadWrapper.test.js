@@ -24,12 +24,14 @@ describe('LazyLoadWrapper', () => {
 		it('displays a loading hint', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll('.loading')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(0);
 		});
 
 		it('displays the content after the chunk was loaded', async () => {
 			const element = await setup({ chunkName: 'mockChunk', content: html`<div class="content"></div>` });
 
+			expect(element.shadowRoot.querySelectorAll('ba-spinner')).toHaveSize(0);
 			expect(element.shadowRoot.querySelectorAll('.content')).toHaveSize(1);
 		});
 	});

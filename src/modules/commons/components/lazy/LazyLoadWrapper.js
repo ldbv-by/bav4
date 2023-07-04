@@ -7,6 +7,7 @@ const Update_Loaded = 'update_loaded';
 
 /**
  * Wrapper component for a component which resources should be lazily imported.
+ * Uses the webpack dynamic import feature.
  * @class
  * @property {String/TemplateResult} content The (configured) component displayed after its resources are available
  * @property {String} chunkName The chunk name of the js resource which should be dynamically be imported
@@ -40,11 +41,7 @@ export class LazyLoadWrapper extends MvuElement {
 
 	createView(model) {
 		const { loaded } = model;
-		if (!loaded) {
-			return html`<div class="loading">Loading...</div>`;
-		}
-
-		return html`${this.#content}`;
+		return loaded ? html`${this.#content}` : html`<ba-spinner></ba-spinner>`;
 	}
 
 	set content(value) {
