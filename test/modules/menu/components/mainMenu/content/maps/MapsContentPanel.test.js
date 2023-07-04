@@ -1,4 +1,4 @@
-import { BaseLayerSwitcher } from '../../../../../../../src/modules/baseLayer/components/switcher/BaseLayerSwitcher';
+import { BaseLayerContainer } from '../../../../../../../src/modules/baseLayer/components/container/BaseLayerContainer';
 import { LayerManager } from '../../../../../../../src/modules/layerManager/components/LayerManager';
 import { AbstractMvuContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { MapsContentPanel } from '../../../../../../../src/modules/menu/components/mainMenu/content/maps/MapsContentPanel';
@@ -24,7 +24,7 @@ describe('MapsContentPanel', () => {
 		it('renders the view', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.querySelectorAll(BaseLayerSwitcher.tag)).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll(BaseLayerContainer.tag)).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll(LayerManager.tag)).toHaveSize(1);
 		});
 	});

@@ -18,6 +18,8 @@ describe('global i18n', () => {
 		expect(map.global_locally_imported_dataset_copyright_label).toBe('Dataset and/or style provided by third party');
 		expect(map.global_share_unsupported_geoResource_warning).toBe("The following layers won't be shared:");
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
+		expect(map.global_marker_symbol_label).toBe('Marker');
+		expect(map.global_featureInfo_not_available).toBe('FeatureInfo is not available');
 	});
 
 	it('provides translation for de', () => {
@@ -37,10 +39,12 @@ describe('global i18n', () => {
 		expect(map.global_locally_imported_dataset_copyright_label).toBe('Mit Darstellung durch den Anwender');
 		expect(map.global_share_unsupported_geoResource_warning).toBe('Folgende Ebenen werden nicht geteilt:');
 		expect(map.global_privacy_policy_url).toBe('https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html');
+		expect(map.global_marker_symbol_label).toBe('Markierung');
+		expect(map.global_featureInfo_not_available).toBe('FeatureInfo ist nicht verfügbar');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 12;
+		const expectedSize = 14;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

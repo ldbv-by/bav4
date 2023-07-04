@@ -8,6 +8,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { GlobalCoordinateRepresentations } from '../../../../../src/domain/coordinateRepresentation';
 
 window.customElements.define(MapContextMenuContent.tag, MapContextMenuContent);
+
 window.customElements.define(Icon.tag, Icon);
 
 describe('OlMapContextMenuContent', () => {
@@ -27,6 +28,7 @@ describe('OlMapContextMenuContent', () => {
 	const administrationServiceMock = {
 		getAdministration() {}
 	};
+
 	let store;
 
 	const setup = () => {
@@ -44,6 +46,7 @@ describe('OlMapContextMenuContent', () => {
 			.registerSingleton('TranslationService', { translate: (key) => key })
 			.registerSingleton('ElevationService', elevationServiceMock)
 			.registerSingleton('AdministrationService', administrationServiceMock);
+
 		return TestUtils.render(MapContextMenuContent.tag);
 	};
 
@@ -93,6 +96,13 @@ describe('OlMapContextMenuContent', () => {
 			expect(stringifyMock).toHaveBeenCalledWith(coordinateMock, GlobalCoordinateRepresentations.WGS84);
 			expect(elevationMock).toHaveBeenCalledOnceWith(coordinateMock);
 			expect(administrationMock).toHaveBeenCalledOnceWith(coordinateMock);
+
+			// assistChips
+			expect(element.shadowRoot.querySelectorAll('ba-share-position-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-share-position-chip')[0].center).toBe(coordinateMock);
+
+			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toBe(coordinateMock);
 		});
 
 		it('copies a coordinate to the clipboard', async () => {

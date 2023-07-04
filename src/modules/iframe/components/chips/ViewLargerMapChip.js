@@ -49,7 +49,7 @@ export class ViewLargerMapChip extends MvuElement {
 	}
 
 	isRenderingSkipped() {
-		const queryParams = this._environmentService.getUrlParams();
+		const queryParams = this._environmentService.getQueryParams();
 
 		// check if we have a query parameter defining the iframe ViewLargerMapChip
 		const iframeComponents = queryParams.get(QueryParameters.IFRAME_COMPONENTS);

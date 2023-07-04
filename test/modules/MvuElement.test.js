@@ -479,4 +479,15 @@ describe('MvuElement', () => {
 			expect(errorSpy).toHaveBeenCalledOnceWith("Could not register observer --> 'someUnknowField' is not a field in the Model of MvuElementImpl");
 		});
 	});
+
+	describe('when "window.ba_fireConnectedEvent" property is true', () => {
+		fit('fires a custom event', async () => {
+			const spy = jasmine.createSpy();
+			document.addEventListener('connected', spy);
+
+			const element = await TestUtils.render(MvuElementImpl.tag);
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: element, bubbles: true }));
+		});
+	});
 });

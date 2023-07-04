@@ -302,7 +302,7 @@ describe('OlDrawHandler', () => {
 			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -320,7 +320,7 @@ describe('OlDrawHandler', () => {
 
 			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -807,11 +807,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
 			});
 
-			it('re-inits the drawing and sets the store with defaultText for marker', () => {
+			it('re-inits the drawing and sets the store with defaultText for marker', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
 				const state = { ...initialState, style: style };
 
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -825,11 +825,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBe('');
 			});
 
-			it('re-inits the drawing and sets the store with defaultText for text', () => {
+			it('re-inits the drawing and sets the store with defaultText for text', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
 				const state = { ...initialState, style: style };
 
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -1169,7 +1169,7 @@ describe('OlDrawHandler', () => {
 		it('writes features to kml format for persisting purpose', async () => {
 			const fileSaveResultMock = { fileId: 'barId', adminId: null };
 			const state = { ...initialState, fileSaveResult: new EventLike(null) };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -1228,7 +1228,7 @@ describe('OlDrawHandler', () => {
 
 		it('adds layer with specific contraints', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();

@@ -66,19 +66,24 @@ export class OlHighlightLayerHandler extends OlLayerHandler {
 	}
 
 	_toOlFeature(feature) {
-		const { data } = feature;
+		const { data, label } = feature;
+
+		const addLabel = (olFeature) => {
+			olFeature.set('name', label);
+			return olFeature;
+		};
 
 		//we have a HighlightCoordinate
 		if (data.coordinate) {
-			return this._appendStyle(feature, new Feature(new Point(data.coordinate)));
+			return this._appendStyle(feature, addLabel(new Feature(new Point(data.coordinate))));
 		}
 
 		//we have a HighlightGeometry
 		switch (data.geometryType) {
 			case HighlightGeometryType.WKT:
-				return this._appendStyle(feature, new WKT().readFeature(data.geometry));
+				return this._appendStyle(feature, addLabel(new WKT().readFeature(data.geometry)));
 			case HighlightGeometryType.GEOJSON:
-				return this._appendStyle(feature, new GeoJSON().readFeature(data.geometry));
+				return this._appendStyle(feature, addLabel(new GeoJSON().readFeature(data.geometry)));
 		}
 		return null;
 	}

@@ -24,8 +24,9 @@ describe('ExportItem', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
-			const element = await setup();
-			const model = element.getModel();
+			await setup();
+			const model = new ExportItem().getModel();
+
 			expect(model).toEqual({ exportType: null, selectedSrid: null, exportData: null });
 		});
 	});

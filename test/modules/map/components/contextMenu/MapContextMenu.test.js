@@ -3,20 +3,29 @@ import { MapContextMenu } from '../../../../../src/modules/map/components/contex
 import { TestUtils } from '../../../../test-utils.js';
 import { $injector } from '../../../../../src/injection';
 import { html } from 'lit-html';
-import { mapContextMenuReducer, initialState } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
+import { mapContextMenuReducer } from '../../../../../src/store/mapContextMenu/mapContextMenu.reducer';
 import { close, open } from '../../../../../src/store/mapContextMenu/mapContextMenu.action';
+import { initialState, modalReducer } from '../../../../../src/store/modal/modal.reducer';
 window.customElements.define(MapContextMenu.tag, MapContextMenu);
 
 describe('MapContextMenu', () => {
-	const setup = (state = initialState) => {
-		const mapContextMenuState = {
-			mapContextMenu: state
-		};
-
-		TestUtils.setupStoreAndDi(mapContextMenuState, { mapContextMenu: mapContextMenuReducer });
+	const setup = (state = {}) => {
+		TestUtils.setupStoreAndDi(state, { mapContextMenu: mapContextMenuReducer, modal: modalReducer });
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(MapContextMenu.tag);
+		return TestUtils.renderAndLogLifecycle(MapContextMenu.tag);
 	};
+
+	describe('constructor', () => {
+		it('sets a default model', async () => {
+			setup();
+			const element = new MapContextMenu();
+
+			expect(element.getModel()).toEqual({
+				coordinate: null,
+				content: null
+			});
+		});
+	});
 
 	describe('when initialized', () => {
 		it('renders nothing', async () => {
@@ -45,7 +54,7 @@ describe('MapContextMenu', () => {
 
 	describe('when opened', () => {
 		it('shows a header and a close button which closes the menu', async () => {
-			const element = await setup({ coordinate: [10, 20], content: 'someId' });
+			const element = await setup({ mapContextMenu: { coordinate: [10, 20], content: 'someId' } });
 
 			const header = element.shadowRoot.querySelector('.header');
 			expect(header).toBeTruthy();
@@ -136,6 +145,53 @@ describe('MapContextMenu', () => {
 			expect(container.classList.length).toBe(2);
 			expect(container.classList.contains('context-menu')).toBeTrue();
 			expect(container.classList.contains('sector-3')).toBeTrue();
+		});
+	});
+
+	describe('when disconnected', () => {
+		it('removes all event listeners', async () => {
+			const element = await setup();
+			const removeEventListenerSpy = spyOn(document, 'removeEventListener').and.callThrough();
+
+			element.onDisconnect(); // we call onDisconnect manually
+
+			expect(removeEventListenerSpy).toHaveBeenCalledWith('keydown', jasmine.anything());
+		});
+	});
+
+	describe('when "ESC" key is pressed', () => {
+		it('closes the component', async () => {
+			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+			const element = await setup();
+
+			open([300, 350], 'someId');
+
+			expect(element.shadowRoot.children.length).not.toBe(0);
+
+			document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' })); //should do nothing
+
+			expect(element.shadowRoot.children.length).not.toBe(0);
+
+			document.dispatchEvent(escEvent);
+
+			expect(element.shadowRoot.children.length).toBe(0);
+			expect(preventDefaultSpy).toHaveBeenCalled();
+		});
+
+		it('does nothing when modal component is active', async () => {
+			const element = await setup({ modal: { ...initialState, active: true } });
+			const escEvent = new KeyboardEvent('keydown', { key: 'Escape' });
+			const preventDefaultSpy = spyOn(escEvent, 'preventDefault');
+
+			open([300, 350], 'someId');
+
+			expect(element.shadowRoot.children.length).not.toBe(0);
+
+			document.dispatchEvent(escEvent);
+
+			expect(element.shadowRoot.children.length).not.toBe(0);
+			expect(preventDefaultSpy).not.toHaveBeenCalled();
 		});
 	});
 });

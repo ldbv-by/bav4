@@ -20,6 +20,7 @@ export const QueryParameters = Object.freeze({
 	MENU_ID: 'mid',
 	TOOL_ID: 'tid',
 	IFRAME_COMPONENTS: 'ifc',
+	CROSSHAIR: 'crh',
 	// technical parameters
 	T_ENABLE_TEST_IDS: 't_enable-test-ids',
 	T_DISABLE_INITIAL_UI_HINTS: 't_disable-initial-ui-hints'

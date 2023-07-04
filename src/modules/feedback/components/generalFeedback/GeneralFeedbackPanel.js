@@ -124,7 +124,7 @@ export class GeneralFeedbackPanel extends MvuElement {
 				${css}
 			</style>
 
-			<h2 id="feedbackPanelTitle">${translate('feedback_generalFeedback')}</h2>
+			<div id="feedbackPanelTitle" class="feedback-main-header">${translate('feedback_generalFeedback')}</div>
 
 			<div class="ba-form-element">
 				<select id="category" .value="${generalFeedback.category}" @change="${onCategoryChange}" required>
@@ -160,11 +160,13 @@ export class GeneralFeedbackPanel extends MvuElement {
 				<label class="error-label">${translate('feedback_eMail_error')}</label>
 			</div>
 
-			<div>${translate('feedback_generalFeedback_rating')}</div>
+			<div class="feedback-header">${translate('feedback_generalFeedback_rating')}</div>
 			<div class="ba-form-element">
-				<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>
-				<ba-stars-rating-panel id="rating" @change="${onRatingChange}"></ba-stars-rating-panel>
-				<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
+				<ba-likert-item-rating-panel id="rating" @change="${onRatingChange}"></ba-likert-item-rating-panel>
+				<div class="feedback-text-container">
+					<span>${translate('feedback_generalFeedback_rating_scale_5')}</span>
+					<span>${translate('feedback_generalFeedback_rating_scale_0')}</span>
+				</div>
 			</div>
 
 			<p id="generalFeedback_disclaimer" class="map-feedback__disclaimer">
