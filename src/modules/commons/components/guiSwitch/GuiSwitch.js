@@ -52,51 +52,6 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onInitialize() {
 		this._onToggle = () => {};
-
-		// this.addEventListener('click', (event) => {
-		// 	this._click();
-		// 	event.stopPropagation();
-		// });
-
-		// // this.addEventListener('mousedown', this.handleDragStart);
-		// // this.addEventListener('touchstart', this.handleDragStart);
-
-		// // this.addEventListener('mousemove', this.handleDrag);
-		// // this.addEventListener('touchmove', this.handleDrag);
-
-		// // this.addEventListener('mouseup', this.handleDragEnd);
-		// // this.addEventListener('touchend', this.handleDragEnd);
-
-		// this.addEventListener('keydown', (event) => {
-		// 	//handle Enter and Space events
-		// 	if (event.key === 'Enter' || event.key === ' ') {
-		// 		this._click();
-		// 		event.preventDefault();
-		// 		event.stopPropagation();
-		// 	}
-		// });
-
-		// todo why everywhere
-		// this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
-
-		// this.guiswitch = this.shadowRoot.getElementById('guiswitch');
-
-		// const thumbsize = getPseudoStyle(this.guiswitch, 'width');
-		// const padding = getStyle(this.guiswitch, 'padding-left') + getStyle(this.guiswitch, 'padding-right');
-
-		// this.#thumbsize = thumbsize;
-		// this.#padding = padding;
-		// this.#bounds = {
-		// 	lower: 0,
-		// 	middle: (this.clientWidth - padding) / 4,
-		// 	upper: this.clientWidth - thumbsize - padding
-		// };
-
-		// this.addEventListener('pointerdown', this.dragInit.bind(this.guiswitch));
-		// this.addEventListener('pointerup', this.dragEnd.bind(this.guiswitch));
-		// this.addEventListener('click', this.preventBlubbling.bind(this.guiswitch));
-
-		// window.addEventListener('pointerup', this.dragEnd.bind(this.guiswitch));
 	}
 
 	update(type, data, model) {
@@ -120,116 +75,112 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			this.guiswitch = this.shadowRoot.getElementById('guiswitch');
-
-			const thumbsize = getPseudoStyle(this.guiswitch, 'width');
-			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ thumbsize:', thumbsize);
-			const padding = getStyle(this.guiswitch, 'padding-left') + getStyle(this.guiswitch, 'padding-right');
-			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ padding:', padding);
-
-			const clientWidth = this.guiswitch.clientWidth;
-			console.log('🚀 ~ GuiSwitch ~ onAfterRender ~ clientWidth:', clientWidth);
-
-			this.#thumbsize = thumbsize;
-			this.#padding = padding;
-			this.#bounds = {
-				lower: 0,
-				middle: (clientWidth - padding) / 4,
-				upper: clientWidth - thumbsize - padding
+			const elements = this.shadowRoot.querySelectorAll('.gui-switch');
+			const switches = new WeakMap();
+			const state = {
+				activethumb: null,
+				recentlyDragged: false
 			};
 
-			const dragInit = () => {
-				console.log('🚀 ~ GuiSwitch ~ dragInit ~ this.disabled:', this.disabled);
-				if (this.disabled) {
-					return;
-				}
+			const dragInit = (event) => {
+				if (event.target.disabled) return;
 
-				this.#isDragging = true;
+				state.activethumb = event.target;
+				state.activethumb.addEventListener('pointermove', dragging);
+				state.activethumb.style.setProperty('--thumb-transition-duration', '0s');
+			};
 
-				this.addEventListener('pointermove', dragging.bind(this.guiswitch));
-				this.guiswitch.style.setProperty('--thumb-transition-duration', '0s');
+			const dragging = (event) => {
+				if (!state.activethumb) return;
+
+				const { thumbsize, bounds, padding } = switches.get(state.activethumb.parentElement);
+				const directionality = getStyle(state.activethumb, '--isLTR');
+
+				const track = directionality === -1 ? state.activethumb.clientWidth * -1 + thumbsize + padding : 0;
+
+				let pos = Math.round(event.offsetX - thumbsize / 2);
+
+				if (pos < bounds.lower) pos = 0;
+				if (pos > bounds.upper) pos = bounds.upper;
+
+				state.activethumb.style.setProperty('--thumb-position', `${track + pos}px`);
 			};
 
 			const dragEnd = () => {
-				console.log('🚀 ~ GuiSwitch ~ dragEnd ~ this.#isDragging:', this.#isDragging);
-				if (this.#isDragging !== true) {
-					return;
-				}
+				if (!state.activethumb) return;
 
-				this.checked = determineChecked();
+				state.activethumb.checked = determineChecked();
 
-				if (this.indeterminate) {
-					this.indeterminate = false;
-				}
+				if (state.activethumb.indeterminate) state.activethumb.indeterminate = false;
 
-				this.guiswitch.style.removeProperty('--thumb-transition-duration');
-				this.guiswitch.style.removeProperty('--thumb-position');
-				this.removeEventListener('pointermove', dragging.bind(this.guiswitch));
-
-				this.#isDragging = false;
+				state.activethumb.style.removeProperty('--thumb-transition-duration');
+				state.activethumb.style.removeProperty('--thumb-position');
+				state.activethumb.removeEventListener('pointermove', dragging);
+				state.activethumb = null;
 
 				padRelease();
 			};
 
-			const dragging = (event) => {
-				if (event.type !== 'pointermove') {
-					console.log('🚀 ~ GuiSwitch ~ dragging ~ event:', event);
-					console.log('🚀 ~ GuiSwitch ~ dragging ~ this.#isDragging:', this.#isDragging);
-				}
-				if (this.#isDragging !== true) {
-					return;
-				}
-
-				const directionality = getStyle(this.guiswitch, '--isLTR');
-				console.log('🚀 ~ GuiSwitch ~ dragging ~ directionality:', directionality);
-				const track = directionality === -1 ? this.guiswitch.clientWidth * -1 + this.#thumbsize + this.#padding : 0;
-				console.log('🚀 ~ GuiSwitch ~ dragging ~ track:', track);
-
-				let pos = Math.round(event.offsetX - this.#thumbsize / 2);
-				console.log('🚀 ~ GuiSwitch ~ dragging ~ pos:', pos);
-
-				if (pos < this.#bounds.lower) {
-					pos = 0;
-				}
-
-				if (pos > this.#bounds.upper) {
-					pos = this.#bounds.upper;
-				}
-
-				this.guiswitch.style.setProperty('--thumb-position', `${track + pos}px`);
-			};
-
-			const determineChecked = () => {
-				const thumbPos = this.guiswitch.style.getPropertyValue('--thumb-position');
-				console.log('🚀 ~ GuiSwitch ~ determineChecked ~ thumbPos:', thumbPos);
-				let curpos = Math.abs(Number.parseInt(thumbPos));
-				console.log('🚀 ~ GuiSwitch ~ determineChecked ~ curpos:', curpos);
-
-				if (!curpos) {
-					curpos = this.checked ? this.#bounds.lower : this.#bounds.upper;
-				}
-
-				return curpos >= this.#bounds.middle;
-			};
-
 			const padRelease = () => {
-				this.#recentlyDragged = true;
+				state.recentlyDragged = true;
 
-				setTimeout(() => (this.#recentlyDragged = false), 300);
+				setTimeout(() => {
+					state.recentlyDragged = false;
+				}, 300);
 			};
 
-			const preventBlubbling = () => {
-				if (this.#recentlyDragged && event) {
+			const preventBubbles = (event) => {
+				if (state.recentlyDragged) {
 					event.preventDefault();
 					event.stopPropagation();
 				}
 			};
 
-			this.addEventListener('pointerdown', dragInit.bind(this.guiswitch));
-			this.addEventListener('pointerup', dragEnd.bind(this.guiswitch));
-			this.addEventListener('click', preventBlubbling.bind(this.guiswitch));
+			const labelClick = (event) => {
+				if (state.recentlyDragged || !event.target.classList.contains('gui-switch') || event.target.querySelector('input').disabled) return;
 
-			window.addEventListener('pointerup', dragEnd.bind(this.guiswitch));
+				const checkbox = event.target.querySelector('input');
+				checkbox.checked = !checkbox.checked;
+				event.preventDefault();
+			};
+
+			const determineChecked = () => {
+				const { bounds } = switches.get(state.activethumb.parentElement);
+				let curpos = Math.abs(parseInt(state.activethumb.style.getPropertyValue('--thumb-position')));
+
+				if (!curpos) {
+					curpos = state.activethumb.checked ? bounds.lower : bounds.upper;
+				}
+
+				return curpos >= bounds.middle;
+			};
+
+			elements.forEach((guiswitch) => {
+				const checkbox = guiswitch.querySelector('input');
+				const thumbsize = getPseudoStyle(checkbox, 'width');
+				const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
+
+				checkbox.addEventListener('pointerdown', dragInit);
+				checkbox.addEventListener('pointerup', dragEnd);
+				checkbox.addEventListener('click', preventBubbles);
+				guiswitch.addEventListener('click', labelClick);
+
+				switches.set(guiswitch, {
+					thumbsize,
+					padding,
+					bounds: {
+						lower: 0,
+						middle: (checkbox.clientWidth - padding) / 4,
+						upper: checkbox.clientWidth - thumbsize - padding
+					}
+				});
+			});
+
+			window.addEventListener('pointerup', () => {
+				if (!state.activethumb) return;
+
+				dragEnd();
+			});
 		}
 	}
 
