@@ -14,7 +14,7 @@ const Update_Title = 'update_title';
 const Update_Label = 'update_label';
 
 /**
- * new 'nicer' toggle element
+ * new 'nicer' toggle element based on https://web.dev/building-a-switch-component/
  *
  * Events:
  * - onToggle()
@@ -48,6 +48,9 @@ export class GuiSwitch extends MvuElement {
 		this._onToggle = () => {};
 	}
 
+	/**
+	 * @override
+	 */
 	update(type, data, model) {
 		switch (type) {
 			case Update_Checked:
@@ -163,6 +166,7 @@ export class GuiSwitch extends MvuElement {
 				checkbox.addEventListener('pointerdown', dragInit);
 				checkbox.addEventListener('pointerup', dragEnd);
 				checkbox.addEventListener('click', preventBubbles);
+
 				guiswitch.addEventListener('click', labelClick);
 
 				switches.set(guiswitch, {
@@ -201,12 +205,6 @@ export class GuiSwitch extends MvuElement {
 			this._onToggle(event);
 		};
 
-		// const classes = {
-		// 	disabled: disabled,
-		// 	active: checked
-		// };
-		// 	<labelclass="switch ${classMap(classes)}">
-
 		return html`
 			<style>
 				${css}
@@ -229,7 +227,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
+	 * @property {boolean} indeterminate = false - Checkbox is indeterminate
 	 */
 	set indeterminate(value) {
 		this.signal(Update_Indeterminate, value);
@@ -240,7 +238,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {string} title='' - The title of the button
+	 * @property {string} title = '' - The title of the button
 	 */
 	set title(value) {
 		this.signal(Update_Title, value);
@@ -251,7 +249,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {string} label='' - The label of the button
+	 * @property {string} label = '' - The label of the button
 	 */
 	set label(value) {
 		this.signal(Update_Label, value);
@@ -262,7 +260,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {boolean} disabled=false - Checkbox clickable?
+	 * @property {boolean} disabled = false - Checkbox is clickable
 	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
@@ -273,7 +271,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	/**
-	 * @property {boolean} checked=false - Checkbox checked?
+	 * @property {boolean} checked = false - Checkbox is checked
 	 */
 	set checked(value) {
 		this.signal(Update_Checked, value);
