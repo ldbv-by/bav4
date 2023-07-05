@@ -183,7 +183,7 @@ export class GuiSwitch extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { checked, indeterminate, disabled, title } = model;
+		const { checked, indeterminate, disabled, title, label } = model;
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
@@ -208,7 +208,7 @@ export class GuiSwitch extends MvuElement {
 			</style>
 
 			<label title="${title}" for="guiswitch" class="ba-switch">
-				${this.label}
+				${label}
 				<input
 					@change=${onChange}
 					id="guiswitch"
@@ -223,9 +223,9 @@ export class GuiSwitch extends MvuElement {
 		`;
 	}
 
-	// _click() {
-	// 	this._root.querySelector('#guiswitch').click();
-	// }
+	click() {
+		this._root.querySelector('#guiswitch').click();
+	}
 
 	/**
 	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
