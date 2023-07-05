@@ -66,6 +66,9 @@ export const Empty_Profile_Data = Object.freeze({
 });
 
 /**
+ * Chart.js based elevation profile.
+ * Note: This component and its dependencies are intended to be loaded dynamically and should therefore be wrapped within the {@link LazyLoadComponent}.
+ * Its corresponding chunk name is `elevation-profile`.
  * @class
  * @fires chartJsAfterRender Called after the chart has been fully rendered (and animation completed)
  * @author nklein
