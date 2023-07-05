@@ -75,7 +75,7 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			const elements = this.shadowRoot.querySelectorAll('.gui-switch');
+			const elements = this.shadowRoot.querySelectorAll('.ba-switch');
 			const switches = new WeakMap();
 			const state = {
 				activethumb: null,
@@ -137,7 +137,7 @@ export class GuiSwitch extends MvuElement {
 			};
 
 			const labelClick = (event) => {
-				if (state.recentlyDragged || !event.target.classList.contains('gui-switch') || event.target.querySelector('input').disabled) return;
+				if (state.recentlyDragged || !event.target.classList.contains('ba-switch') || event.target.querySelector('input').disabled) return;
 
 				const checkbox = event.target.querySelector('input');
 				checkbox.checked = !checkbox.checked;
@@ -206,7 +206,7 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label for="guiswitch" class="gui-switch">
+			<label for="guiswitch" class="ba-switch">
 				${title}
 				<input
 					@change=${onChange}
@@ -321,6 +321,6 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	static get tag() {
-		return 'gui-switch';
+		return 'ba-switch';
 	}
 }

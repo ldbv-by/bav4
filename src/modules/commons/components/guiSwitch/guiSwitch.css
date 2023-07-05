@@ -1,4 +1,4 @@
-.gui-switch {
+.ba-switch {
 	display: flex;
 	align-items: center;
 	gap: 2ch;
@@ -38,7 +38,7 @@
 	}
 }
 
-.gui-switch > input {
+.ba-switch > input {
 	appearance: none;
 	pointer-events: none;
 	border: none;
@@ -63,7 +63,7 @@
 	transition: background-color 0.25s ease;
 }
 
-.gui-switch > input::before {
+.ba-switch > input::before {
 	transform: translateX(var(--thumb-position));
 	--highlight-size: 0;
 
@@ -85,23 +85,23 @@
 	}
 }
 
-.gui-switch > input:focus::before,
-.gui-switch > input:not(:disabled):hover::before {
+.ba-switch > input:focus::before,
+.ba-switch > input:not(:disabled):hover::before {
 	--highlight-size: 0.5rem;
 }
 
 /* positioned at the end of the track: track length - 100% (thumb width) */
-.gui-switch > input:checked {
+.ba-switch > input:checked {
 	background: var(--track-color-active);
 	--thumb-position: calc((var(--track-size) - 100%) * var(--isLTR));
 }
 
 /* positioned in the center of the track: half the track - half the thumb */
-.gui-switch > input:indeterminate {
+.ba-switch > input:indeterminate {
 	--thumb-position: calc(((var(--track-size) / 2) - (var(--thumb-size) / 2)) * var(--isLTR));
 }
 
-.gui-switch.-vertical {
+.ba-switch.-vertical {
 	min-block-size: calc(var(--track-size) + calc(var(--track-padding) * 2));
 
 	& > input {
@@ -110,7 +110,7 @@
 	}
 }
 
-.gui-switch > input:disabled {
+.ba-switch > input:disabled {
 	cursor: not-allowed;
 	--thumb-color: transparent;
 
