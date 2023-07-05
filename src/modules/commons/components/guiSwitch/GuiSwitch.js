@@ -11,6 +11,7 @@ const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
+const Update_Label = 'update_label';
 
 /**
  * new 'nicer' toggle element
@@ -28,22 +29,13 @@ const Update_Title = 'update_title';
  * @author nklein
  */
 export class GuiSwitch extends MvuElement {
-	#isDragging = false;
-	#recentlyDragged = false;
-	#thumbsize = 0;
-	#padding = 0;
-	#bounds = {
-		lower: 0,
-		middle: 0,
-		upper: 0
-	};
-
 	constructor() {
 		super({
 			checked: false,
 			indeterminate: false,
 			disabled: false,
-			title: ''
+			title: '',
+			label: ''
 		});
 	}
 
@@ -67,6 +59,9 @@ export class GuiSwitch extends MvuElement {
 
 			case Update_Title:
 				return { ...model, title: data };
+
+			case Update_Label:
+				return { ...model, label: data };
 		}
 	}
 
@@ -201,13 +196,19 @@ export class GuiSwitch extends MvuElement {
 			this._onToggle(event);
 		};
 
+		// const classes = {
+		// 	disabled: disabled,
+		// 	active: checked
+		// };
+		// 	<labelclass="switch ${classMap(classes)}">
+
 		return html`
 			<style>
 				${css}
 			</style>
 
-			<label for="guiswitch" class="ba-switch">
-				${title}
+			<label title="${title}" for="guiswitch" class="ba-switch">
+				${this.label}
 				<input
 					@change=${onChange}
 					id="guiswitch"
@@ -225,45 +226,6 @@ export class GuiSwitch extends MvuElement {
 	// _click() {
 	// 	this._root.querySelector('#guiswitch').click();
 	// }
-	// handleDragStart = (event) => {
-	// 	if (event.type === 'mousemove') {
-	// 		return;
-	// 	}
-
-	// 	console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event.target:', event.target);
-	// 	console.log('🚀 ~ GuiSwitch ~ handleDragStart ~ event:', event);
-	// 	// if (event.target === this.sliderElement) {
-	// 	//   this.isDragging = true;
-	// 	//   this.startX = this.getClientX(event);
-	// 	//   this.currentX = this.startX;
-	// 	// }
-	// };
-
-	// handleDrag = (event) => {
-	// 	if (event.type === 'mousemove') {
-	// 		return;
-	// 	}
-
-	// 	console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event.target:', event.target);
-	// 	console.log('🚀 ~ GuiSwitch ~ handleDrag ~ event:', event);
-	// 	// if (this.isDragging) {
-	// 	//   const newX = this.getClientX(event);
-	// 	//   const diffX = newX - this.currentX;
-	// 	//   this.currentX = newX;
-	// 	//   this.toggleElement.checked = newX >= this.startX;
-	// 	//   this.sliderElement.style.transform = `translateX(${newX - this.startX}px)`;
-	// 	// }
-	// };
-
-	// handleDragEnd = () => {
-	// 	console.log('🚀 ~ GuiSwitch ~ handleDragEnd');
-	// 	// if (this.isDragging) {
-	// 	//   this.isDragging = false;
-	// 	//   this.startX = 0;
-	// 	//   this.currentX = 0;
-	// 	//   this.updateToggleState();
-	// 	// }
-	// };
 
 	/**
 	 * @property {boolean} indeterminate=false - Checkbox indeterminate?
@@ -285,6 +247,17 @@ export class GuiSwitch extends MvuElement {
 
 	get title() {
 		return this.getModel().title;
+	}
+
+	/**
+	 * @property {string} label='' - The label of the button
+	 */
+	set label(value) {
+		this.signal(Update_Label, value);
+	}
+
+	get label() {
+		return this.getModel().label;
 	}
 
 	/**
