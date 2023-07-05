@@ -481,7 +481,7 @@ describe('MvuElement', () => {
 	});
 
 	describe('when "window.ba_fireConnectedEvent" property is true', () => {
-		fit('fires a custom event', async () => {
+		it('fires a custom event', async () => {
 			const spy = jasmine.createSpy();
 			document.addEventListener('connected', spy);
 
