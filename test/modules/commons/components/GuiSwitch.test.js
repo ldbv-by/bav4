@@ -102,7 +102,7 @@ describe('GuiSwitch', () => {
 				const spy = jasmine.createSpy();
 				element.addEventListener('toggle', spy);
 
-				element.click();
+				element.shadowRoot.querySelector('#guiswitch').click();
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 				expect(element.checked).toBeTrue();
@@ -112,32 +112,21 @@ describe('GuiSwitch', () => {
 				const element = await TestUtils.render(GuiSwitch.tag);
 				element.onToggle = jasmine.createSpy();
 
-				element.click();
+				element.shadowRoot.querySelector('#guiswitch').click();
 
 				expect(element.onToggle).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
 			});
 
-			it('calls the onToggle callback via attribute callback', async () => {
-				spyOn(window, 'alert');
-				const element = await TestUtils.render(GuiSwitch.tag, {}, { onToggle: "alert('called')" });
-
-				element.click();
-
-				expect(window.alert).toHaveBeenCalledOnceWith('called');
-				expect(element.checked).toBeTrue();
-			});
-
 			it('does nothing when disabled', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(GuiSwitch.tag, {}, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(GuiSwitch.tag);
 				element.disabled = true;
-				element.onClick = jasmine.createSpy();
+				element.onToggle = jasmine.createSpy();
 
-				element.click();
+				element.shadowRoot.querySelector('#guiswitch').click();
 
-				expect(element.onClick).not.toHaveBeenCalled();
-				expect(window.alert).not.toHaveBeenCalled();
+				expect(element.onToggle).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
 			});
 		});

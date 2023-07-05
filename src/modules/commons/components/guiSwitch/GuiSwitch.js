@@ -22,7 +22,9 @@ const Update_Label = 'update_label';
  * Properties:
  * - `checked`
  * - `disabled`
+ * - `indeterminate`
  * - `title`
+ * - `label`
  *
  *
  * @class
@@ -132,7 +134,10 @@ export class GuiSwitch extends MvuElement {
 			};
 
 			const labelClick = (event) => {
-				if (state.recentlyDragged || !event.target.classList.contains('ba-switch') || event.target.querySelector('input').disabled) return;
+				const target = event.target;
+				if (state.recentlyDragged || !target.classList.contains('ba-switch') || target.querySelector('input').disabled) {
+					return;
+				}
 
 				const checkbox = event.target.querySelector('input');
 				checkbox.checked = !checkbox.checked;
@@ -221,10 +226,6 @@ export class GuiSwitch extends MvuElement {
 				/>
 			</label>
 		`;
-	}
-
-	click() {
-		this._root.querySelector('#guiswitch').click();
 	}
 
 	/**
