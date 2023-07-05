@@ -3,12 +3,34 @@
  */
 import { loadBvvIcons } from './provider/icons.provider';
 import { getBvvIconColor } from './provider/iconColor.provider';
-import { $injector } from '../injection';
+import { getBvvIconUrlFactory } from './provider/iconUrl.provider';
 
 const Svg_Encoding_B64_Flag = 'data:image/svg+xml;base64,';
 const Svg_Marker_Name = 'marker';
 const Svg_Marker_Content =
 	'<svg id="marker" xmlns="http://www.w3.org/2000/svg" width="48.0" height="48.0" viewBox="0.0 0.0 48.0 48.0" fill="rgb(255,255,255)"><!-- SIL OFL 1.1 --><path d="M36.28125,19.28125Q36.28125,20.875,35.515625,23.0Q34.765625,25.125,33.828125,26.921875Q32.90625,28.71875,31.171875,31.28125Q29.453125,33.828125,28.515625,35.0625Q27.59375,36.28125,25.828125,38.609375Q24.0625,40.9375,24.0,41.0Q23.9375,40.9375,22.171875,38.609375Q20.421875,36.28125,19.484375,35.0625Q18.5625,33.828125,16.828125,31.28125Q15.109375,28.71875,14.171875,26.921875Q13.25,25.125,12.484375,23.0Q11.71875,20.875,11.71875,19.28125Q11.71875,14.375,15.53125,10.6875Q19.359375,7.0,24.0,7.0Q28.65625,7.0,32.46875,10.6875Q36.28125,14.375,36.28125,19.28125Z" /></svg>';
+
+/**
+ * A function that returns a promise with a Array of IconResults.
+ *
+ * @typedef {Function} iconProvider
+ * @returns {(Promise<Array<IconResult>>)}
+ */
+
+/**
+ * A function that returns a rgb-color as Array of numbers from a icon-url.
+ *
+ * @typedef {Function} iconColorProvider
+ * @param {string} iconUrl the url for a valid icon
+ * @returns {Array<number>} the rgb-color as array
+ */
+
+/**
+ * A function that returns a factory to create a URL from a color.
+ * @param {string} iconName the icon name
+ * @typedef {Function} iconUrlProvider
+ * @returns {string|null}
+ */
 
 /**
  * Service for managing icons
@@ -18,9 +40,10 @@ const Svg_Marker_Content =
  * @author thiloSchlemmer
  */
 export class IconService {
-	constructor(iconProvider = loadBvvIcons, iconColorProvider = getBvvIconColor) {
+	constructor(iconProvider = loadBvvIcons, iconColorProvider = getBvvIconColor, iconUrlFactoryProvider = getBvvIconUrlFactory) {
 		this._iconProvider = iconProvider;
 		this._iconColorProvider = iconColorProvider;
+		this._iconUrlFactoryProvider = iconUrlFactoryProvider;
 		this._default = this._createDefault();
 		this._icons = null;
 		this._load();
@@ -30,20 +53,9 @@ export class IconService {
 		const matcher = (idOrUrl) => {
 			return idOrUrl === Svg_Marker_Name || !!idOrUrl?.endsWith(`/${Svg_Marker_Name}`);
 		};
-		const urlFactoryFunction = () => {
-			const { ConfigService: configService } = $injector.inject('ConfigService');
-			return (color) => {
-				try {
-					const url = configService.getValueAsPath('BACKEND_URL') + 'icons';
-					return `${url}/${color[0]},${color[1]},${color[2]}/${Svg_Marker_Name}.png`;
-				} catch (e) {
-					console.warn('No backend-information available.');
-				}
-				return null;
-			};
-		};
+		const urlFactoryFunction = this._iconUrlFactoryProvider(Svg_Marker_Name);
 
-		return new IconResult(Svg_Marker_Name, Svg_Marker_Content, matcher, urlFactoryFunction());
+		return new IconResult(Svg_Marker_Name, Svg_Marker_Content, matcher, urlFactoryFunction);
 	}
 
 	/**
@@ -53,7 +65,7 @@ export class IconService {
 	 *  2. if provided, move the marker-icon to the first position, otherwise start
 	 * 	with a default marker-icon
 	 *  3. if all fails: load default marker-icon and some fallbackIcons
-	 *  @returns {Array<IconResult>}
+	 *  @returns {Promise<Array<IconResult>>}
 	 */
 	async _load() {
 		try {
@@ -73,7 +85,7 @@ export class IconService {
 
 	/**
 	 * Creates a list of all icons as IconResult
-	 * @returns {Array<IconResult>}
+	 * @returns {Promise<Array<IconResult>>}
 	 */
 	async all() {
 		if (this._icons === null) {
@@ -124,13 +136,13 @@ export class IconResult {
 	 *
 	 * @param {string} id the id(name) of this IconResult
 	 * @param {string} svg the content of this Icon as SVG
-	 * @param {function():(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
+	 * @param {function(string):(boolean)} urlMatcher a function to check, when a url is matching as remote-location for this icon
 	 * @param {function(Array<number>): (string)} urlProvider a function, which provides a url as remote-location for this icon with a specified rgb-color as Array<number>
 	 */
 	constructor(id, svg, urlMatcher = null, urlProvider = null) {
 		this._id = id;
 		this._svg = svg;
-		this._base64 = this._toBase64(svg);
+		this._base64 = this._toBase64();
 		this._urlMatcher = urlMatcher ? urlMatcher : () => false;
 		this._urlProvider = urlProvider ? urlProvider : () => null;
 	}
@@ -139,12 +151,11 @@ export class IconResult {
 	 * creates a base64-encoded Version of the svg for embedding-purposes
 	 * based on this article:
 	 * https://newbedev.com/using-javascript-s-atob-to-decode-base64-doesn-t-properly-decode-utf-8-strings
-	 * @param {IconResult} iconResult
 	 * @returns {string} the encoded (base64) string
 	 */
 	_toBase64() {
 		const b64EncodeUnicode = (str) => {
-			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode('0x' + p1)));
+			return window.btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => String.fromCharCode(Number('0x' + p1))));
 		};
 
 		return Svg_Encoding_B64_Flag + b64EncodeUnicode(this._svg);
@@ -172,7 +183,7 @@ export class IconResult {
 }
 
 /**
- * @returns {Map} with fallback icons loaded locally
+ * @returns {Array<IconResult>} with fallback icons loaded locally
  */
 const loadFallbackIcons = () => {
 	return [
