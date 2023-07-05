@@ -138,11 +138,17 @@ describe('GuiSwitch', () => {
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
 					const spyPointerdown = spyOn(element, 'dragInit').and.callThrough();
 					guiswitch.addEventListener('pointerdown', element.dragInit);
-					const pointerdown = new Event('pointerdown');
 
+					const pointerdown = new Event('pointerdown');
 					guiswitch.dispatchEvent(pointerdown);
 
 					expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
+
+					const computedStyle = window.getComputedStyle(element.state.activethumb);
+					console.log('🚀 ~ it ~ element.state.activethumb:', element.state.activethumb);
+					const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
+
+					expect(thumbTransitionDuration).toBe('0s');
 				});
 			});
 		});
