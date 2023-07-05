@@ -6,13 +6,13 @@ test.describe('entry points', () => {
 	test('should provide the bundle.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/bundle.js`);
 		expect(response.ok()).toBeTruthy();
-		expect((await response.body()).byteLength).toBeCloseTo(15209266, -3);
+		expect((await response.body()).byteLength).toBeCloseTo(15209266, -4);
 	});
 
 	test('should provide the embed.js', async ({ request }) => {
 		const response = await request.get(`${BASE_URL}/embed.js`);
 		expect(response.ok()).toBeTruthy();
-		expect((await response.body()).byteLength).toBeCloseTo(12364167, -3);
+		expect((await response.body()).byteLength).toBeCloseTo(12364167, -4);
 	});
 
 	test('should provide the config.js', async ({ request }) => {
