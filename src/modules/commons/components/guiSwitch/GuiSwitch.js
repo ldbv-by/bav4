@@ -75,101 +75,25 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			const elements = this.shadowRoot.querySelectorAll('.ba-switch');
-			const switches = new WeakMap();
-			const state = {
+			this.elements = this.shadowRoot.querySelectorAll('.ba-switch');
+			this.switches = new WeakMap();
+			this.state = {
 				activethumb: null,
 				recentlyDragged: false
 			};
 
-			const dragInit = (event) => {
-				if (event.target.disabled) return;
-
-				state.activethumb = event.target;
-				state.activethumb.addEventListener('pointermove', dragging);
-				state.activethumb.style.setProperty('--thumb-transition-duration', '0s');
-			};
-
-			const dragging = (event) => {
-				if (!state.activethumb) return;
-
-				const { thumbsize, bounds, padding } = switches.get(state.activethumb.parentElement);
-				const directionality = getStyle(state.activethumb, '--isLTR');
-
-				const track = directionality === -1 ? state.activethumb.clientWidth * -1 + thumbsize + padding : 0;
-
-				let pos = Math.round(event.offsetX - thumbsize / 2);
-
-				if (pos < bounds.lower) pos = 0;
-				if (pos > bounds.upper) pos = bounds.upper;
-
-				state.activethumb.style.setProperty('--thumb-position', `${track + pos}px`);
-			};
-
-			const dragEnd = () => {
-				if (!state.activethumb) return;
-
-				state.activethumb.checked = determineChecked();
-
-				if (state.activethumb.indeterminate) state.activethumb.indeterminate = false;
-
-				state.activethumb.style.removeProperty('--thumb-transition-duration');
-				state.activethumb.style.removeProperty('--thumb-position');
-				state.activethumb.removeEventListener('pointermove', dragging);
-				state.activethumb = null;
-
-				padRelease();
-			};
-
-			const padRelease = () => {
-				state.recentlyDragged = true;
-
-				setTimeout(() => {
-					state.recentlyDragged = false;
-				}, 300);
-			};
-
-			const preventBubbles = (event) => {
-				if (state.recentlyDragged) {
-					event.preventDefault();
-					event.stopPropagation();
-				}
-			};
-
-			const labelClick = (event) => {
-				const target = event.target;
-				if (state.recentlyDragged || !target.classList.contains('ba-switch') || target.querySelector('input').disabled) {
-					return;
-				}
-
-				const checkbox = event.target.querySelector('input');
-				checkbox.checked = !checkbox.checked;
-				event.preventDefault();
-			};
-
-			const determineChecked = () => {
-				const { bounds } = switches.get(state.activethumb.parentElement);
-				let curpos = Math.abs(parseInt(state.activethumb.style.getPropertyValue('--thumb-position')));
-
-				if (!curpos) {
-					curpos = state.activethumb.checked ? bounds.lower : bounds.upper;
-				}
-
-				return curpos >= bounds.middle;
-			};
-
-			elements.forEach((guiswitch) => {
+			this.elements.forEach((guiswitch) => {
 				const checkbox = guiswitch.querySelector('input');
 				const thumbsize = getPseudoStyle(checkbox, 'width');
 				const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
-				checkbox.addEventListener('pointerdown', dragInit);
-				checkbox.addEventListener('pointerup', dragEnd);
-				checkbox.addEventListener('click', preventBubbles);
+				checkbox.addEventListener('pointerdown', this.dragInit);
+				checkbox.addEventListener('pointerup', this.dragEnd);
+				checkbox.addEventListener('click', this.preventBubbles);
 
-				guiswitch.addEventListener('click', labelClick);
+				guiswitch.addEventListener('click', this.labelClick);
 
-				switches.set(guiswitch, {
+				this.switches.set(guiswitch, {
 					thumbsize,
 					padding,
 					bounds: {
@@ -181,9 +105,9 @@ export class GuiSwitch extends MvuElement {
 			});
 
 			window.addEventListener('pointerup', () => {
-				if (!state.activethumb) return;
+				if (!this.state.activethumb) return;
 
-				dragEnd();
+				this.dragEnd();
 			});
 		}
 	}
@@ -225,6 +149,82 @@ export class GuiSwitch extends MvuElement {
 			</label>
 		`;
 	}
+
+	dragInit = (event) => {
+		if (event.target.disabled) return;
+
+		this.state.activethumb = event.target;
+		this.state.activethumb.addEventListener('pointermove', this.dragging);
+		this.state.activethumb.style.setProperty('--thumb-transition-duration', '0s');
+	};
+
+	dragging = (event) => {
+		if (!this.state.activethumb) return;
+
+		const { thumbsize, bounds, padding } = this.switches.get(this.state.activethumb.parentElement);
+		const directionality = getStyle(this.state.activethumb, '--isLTR');
+
+		const track = directionality === -1 ? this.state.activethumb.clientWidth * -1 + thumbsize + padding : 0;
+
+		let pos = Math.round(event.offsetX - thumbsize / 2);
+
+		if (pos < bounds.lower) pos = 0;
+		if (pos > bounds.upper) pos = bounds.upper;
+
+		this.state.activethumb.style.setProperty('--thumb-position', `${track + pos}px`);
+	};
+
+	dragEnd = () => {
+		if (!this.state.activethumb) return;
+
+		this.state.activethumb.checked = this.determineChecked();
+
+		if (this.state.activethumb.indeterminate) this.state.activethumb.indeterminate = false;
+
+		this.state.activethumb.style.removeProperty('--thumb-transition-duration');
+		this.state.activethumb.style.removeProperty('--thumb-position');
+		this.state.activethumb.removeEventListener('pointermove', this.dragging);
+		this.state.activethumb = null;
+
+		this.padRelease();
+	};
+
+	padRelease = () => {
+		this.state.recentlyDragged = true;
+
+		setTimeout(() => {
+			this.state.recentlyDragged = false;
+		}, 300);
+	};
+
+	preventBubbles = (event) => {
+		if (this.state.recentlyDragged) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	};
+
+	labelClick = (event) => {
+		const target = event.target;
+		if (this.state.recentlyDragged || !target.classList.contains('ba-switch') || target.querySelector('input').disabled) {
+			return;
+		}
+
+		const checkbox = event.target.querySelector('input');
+		checkbox.checked = !checkbox.checked;
+		event.preventDefault();
+	};
+
+	determineChecked = () => {
+		const { bounds } = this.switches.get(this.state.activethumb.parentElement);
+		let curpos = Math.abs(parseInt(this.state.activethumb.style.getPropertyValue('--thumb-position')));
+
+		if (!curpos) {
+			curpos = this.state.activethumb.checked ? bounds.lower : bounds.upper;
+		}
+
+		return curpos >= bounds.middle;
+	};
 
 	/**
 	 * @property {boolean} indeterminate = false - Checkbox is indeterminate
