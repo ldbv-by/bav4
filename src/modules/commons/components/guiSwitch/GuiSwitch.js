@@ -75,42 +75,40 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			this.elements = this.shadowRoot.querySelectorAll('.ba-switch');
-			this.switches = new WeakMap();
+			const switchLabelElement = this.shadowRoot.querySelector('.ba-switch');
+			this.switch = {};
 			this.state = {
 				activethumb: null,
 				recentlyDragged: false
 			};
 
-			this.elements.forEach((guiswitch) => {
-				const checkbox = guiswitch.querySelector('input');
-				const thumbsize = getPseudoStyle(checkbox, 'width');
-				const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
+			const checkbox = switchLabelElement.querySelector('input');
+			const thumbsize = getPseudoStyle(checkbox, 'width');
+			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
-				checkbox.addEventListener('pointerdown', (event) => {
-					this._dragInit(event);
-				});
-				checkbox.addEventListener('pointerup', () => {
-					this._dragEnd();
-				});
-				checkbox.addEventListener('click', (event) => {
-					this._preventBubbles(event);
-				});
-
-				guiswitch.addEventListener('click', (event) => {
-					this._labelClick(event);
-				});
-
-				this.switches.set(guiswitch, {
-					thumbsize,
-					padding,
-					bounds: {
-						lower: 0,
-						middle: (checkbox.clientWidth - padding) / 4,
-						upper: checkbox.clientWidth - thumbsize - padding
-					}
-				});
+			checkbox.addEventListener('pointerdown', (event) => {
+				this._dragInit(event);
 			});
+			checkbox.addEventListener('pointerup', () => {
+				this._dragEnd();
+			});
+			checkbox.addEventListener('click', (event) => {
+				this._preventBubbles(event);
+			});
+
+			switchLabelElement.addEventListener('click', (event) => {
+				this._labelClick(event);
+			});
+
+			this.switch = {
+				thumbsize,
+				padding,
+				bounds: {
+					lower: 0,
+					middle: (checkbox.clientWidth - padding) / 4,
+					upper: checkbox.clientWidth - thumbsize - padding
+				}
+			};
 
 			window.addEventListener('pointerup', () => {
 				if (!this.state.activethumb) return;
@@ -171,7 +169,7 @@ export class GuiSwitch extends MvuElement {
 	_dragging(event) {
 		if (!this.state.activethumb) return;
 
-		const { thumbsize, bounds, padding } = this.switches.get(this.state.activethumb.parentElement);
+		const { thumbsize, bounds, padding } = this.switch;
 		const directionality = getStyle(this.state.activethumb, '--isLTR');
 
 		const track = directionality === -1 ? this.state.activethumb.clientWidth * -1 + thumbsize + padding : 0;
@@ -189,7 +187,9 @@ export class GuiSwitch extends MvuElement {
 
 		this.state.activethumb.checked = this._determineChecked();
 
-		if (this.state.activethumb.indeterminate) this.state.activethumb.indeterminate = false;
+		if (this.state.activethumb.indeterminate) {
+			this.state.activethumb.indeterminate = false;
+		}
 
 		this.state.activethumb.style.removeProperty('--thumb-transition-duration');
 		this.state.activethumb.style.removeProperty('--thumb-position');
@@ -226,7 +226,7 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	_determineChecked() {
-		const { bounds } = this.switches.get(this.state.activethumb.parentElement);
+		const { bounds } = this.switch;
 		let curpos = Math.abs(parseInt(this.state.activethumb.style.getPropertyValue('--thumb-position')));
 
 		if (!curpos) {
