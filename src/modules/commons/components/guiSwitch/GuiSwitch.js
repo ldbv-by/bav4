@@ -87,11 +87,19 @@ export class GuiSwitch extends MvuElement {
 				const thumbsize = getPseudoStyle(checkbox, 'width');
 				const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
-				checkbox.addEventListener('pointerdown', this.dragInit);
-				checkbox.addEventListener('pointerup', this.dragEnd);
-				checkbox.addEventListener('click', this.preventBubbles);
+				checkbox.addEventListener('pointerdown', (event) => {
+					this._dragInit(event);
+				});
+				checkbox.addEventListener('pointerup', () => {
+					this._dragEnd();
+				});
+				checkbox.addEventListener('click', (event) => {
+					this._preventBubbles(event);
+				});
 
-				guiswitch.addEventListener('click', this.labelClick);
+				guiswitch.addEventListener('click', (event) => {
+					this._labelClick(event);
+				});
 
 				this.switches.set(guiswitch, {
 					thumbsize,
@@ -107,7 +115,7 @@ export class GuiSwitch extends MvuElement {
 			window.addEventListener('pointerup', () => {
 				if (!this.state.activethumb) return;
 
-				this.dragEnd();
+				this._dragEnd();
 			});
 		}
 	}
@@ -150,15 +158,17 @@ export class GuiSwitch extends MvuElement {
 		`;
 	}
 
-	dragInit = (event) => {
+	_dragInit(event) {
 		if (event.target.disabled) return;
 
 		this.state.activethumb = event.target;
-		this.state.activethumb.addEventListener('pointermove', this.dragging);
+		this.state.activethumb.addEventListener('pointermove', (event) => {
+			this._dragging(event);
+		});
 		this.state.activethumb.style.setProperty('--thumb-transition-duration', '0s');
-	};
+	}
 
-	dragging = (event) => {
+	_dragging(event) {
 		if (!this.state.activethumb) return;
 
 		const { thumbsize, bounds, padding } = this.switches.get(this.state.activethumb.parentElement);
@@ -172,39 +182,39 @@ export class GuiSwitch extends MvuElement {
 		if (pos > bounds.upper) pos = bounds.upper;
 
 		this.state.activethumb.style.setProperty('--thumb-position', `${track + pos}px`);
-	};
+	}
 
-	dragEnd = () => {
+	_dragEnd() {
 		if (!this.state.activethumb) return;
 
-		this.state.activethumb.checked = this.determineChecked();
+		this.state.activethumb.checked = this._determineChecked();
 
 		if (this.state.activethumb.indeterminate) this.state.activethumb.indeterminate = false;
 
 		this.state.activethumb.style.removeProperty('--thumb-transition-duration');
 		this.state.activethumb.style.removeProperty('--thumb-position');
-		this.state.activethumb.removeEventListener('pointermove', this.dragging);
+		this.state.activethumb.removeEventListener('pointermove', this._dragging);
 		this.state.activethumb = null;
 
-		this.padRelease();
-	};
+		this._padRelease();
+	}
 
-	padRelease = () => {
+	_padRelease() {
 		this.state.recentlyDragged = true;
 
 		setTimeout(() => {
 			this.state.recentlyDragged = false;
 		}, 300);
-	};
+	}
 
-	preventBubbles = (event) => {
+	_preventBubbles(event) {
 		if (this.state.recentlyDragged) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
-	};
+	}
 
-	labelClick = (event) => {
+	_labelClick(event) {
 		const target = event.target;
 		if (this.state.recentlyDragged || !target.classList.contains('ba-switch') || target.querySelector('input').disabled) {
 			return;
@@ -213,9 +223,9 @@ export class GuiSwitch extends MvuElement {
 		const checkbox = event.target.querySelector('input');
 		checkbox.checked = !checkbox.checked;
 		event.preventDefault();
-	};
+	}
 
-	determineChecked = () => {
+	_determineChecked() {
 		const { bounds } = this.switches.get(this.state.activethumb.parentElement);
 		let curpos = Math.abs(parseInt(this.state.activethumb.style.getPropertyValue('--thumb-position')));
 
@@ -224,7 +234,7 @@ export class GuiSwitch extends MvuElement {
 		}
 
 		return curpos >= bounds.middle;
-	};
+	}
 
 	/**
 	 * @property {boolean} indeterminate = false - Checkbox is indeterminate
