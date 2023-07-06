@@ -80,7 +80,9 @@
 
 	@media (--motionOK) {
 		& {
-			transition: transform var(--thumb-transition-duration) ease, box-shadow 0.25s ease;
+			transition:
+				transform var(--thumb-transition-duration) ease,
+				box-shadow 0.25s ease;
 		}
 	}
 }
