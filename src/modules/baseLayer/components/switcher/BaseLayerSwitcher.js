@@ -100,9 +100,10 @@ export class BaseLayerSwitcher extends MvuElement {
 				</style>
 				<div class="baselayer__container">
 					${geoRs.map(
-						(geoR) => html` <button class="baselayer__button  ${geoR.id}" @click=${() => onClick(geoR)} type=${getType(geoR)}>
-							<div class="baselayer__label">${geoR.label}</div>
-						</button>`
+						(geoR) =>
+							html` <button class="baselayer__button  ${geoR.id}" @click=${() => onClick(geoR)} type=${getType(geoR)}>
+								<div class="baselayer__label">${geoR.label}</div>
+							</button>`
 					)}
 				</div>
 			`;

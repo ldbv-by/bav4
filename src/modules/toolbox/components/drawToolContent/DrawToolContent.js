@@ -410,8 +410,8 @@ export class DrawToolContent extends AbstractToolContent {
 												<div class='color-row'>
 													<div class="tool-container__style_symbol" title="${translate('toolbox_drawTool_style_symbol')}">								
 														<ba-iconselect  id="style_symbol" .title="${translate('toolbox_drawTool_style_symbol_select')}" .value=${style.symbolSrc} .color=${
-							style.color
-						} @select=${onChangeSymbol} ></ba-iconselect>													
+															style.color
+														} @select=${onChangeSymbol} ></ba-iconselect>													
 													</div>	
 												</div>									
 											</div>							
@@ -437,8 +437,8 @@ export class DrawToolContent extends AbstractToolContent {
 								<div class="form-container">
 									<div class="ba-form-element" title="${translate('toolbox_drawTool_style_text')}"">								
 										<input   type="text" id="style_text" name="${translate('toolbox_drawTool_style_text')}" .value=${
-							style.text
-						} @input=${onChangeText} @blur=${preventEmptyString}>
+											style.text
+										} @input=${onChangeText} @blur=${preventEmptyString}>
 										<label for="style_text" class="control-label">${translate('toolbox_drawTool_style_text')}</label><i class="bar"></i>
 										<label class="helper-label">${translate('toolbox_drawTool_style_text_helper')}</label>
 									</div>

@@ -60,7 +60,9 @@ describe('BaseLayerContainer', () => {
 				describe('with more than one category', () => {
 					it('renders the UI', async () => {
 						const topicId = 'topicId';
-						spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+						spyOn(topicsServiceMock, 'byId')
+							.withArgs(topicId)
+							.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 						const element = await setup({ topics: { current: topicId } });
 						const scrollToActiveButtonSpy = spyOn(element, '_scrollToActiveButton');
 
@@ -133,7 +135,9 @@ describe('BaseLayerContainer', () => {
 	describe('when the user changes the category', () => {
 		it('updates the layout', async () => {
 			const topicId = 'topicId';
-			spyOn(topicsServiceMock, 'byId').withArgs(topicId).and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
+			spyOn(topicsServiceMock, 'byId')
+				.withArgs(topicId)
+				.and.returnValue(new Topic(topicId, 'label', 'description', baseGeoRs));
 			const element = await setup({ topics: { current: topicId } });
 			const scrollIntoViewSpy = spyOn(element.shadowRoot.querySelector('#vector'), 'scrollIntoView');
 

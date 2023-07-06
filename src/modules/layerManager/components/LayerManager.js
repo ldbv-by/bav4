@@ -184,18 +184,19 @@ export class LayerManager extends MvuElement {
 					${repeat(
 						draggableItems,
 						(layerItem) => layerItem.listIndex + '_' + layerItem.id,
-						(layerItem, index) => html` <li
-							draggable=${layerItem.isDraggable}
-							@dragstart=${(e) => onDragStart(e, layerItem)}
-							@dragend=${onDragEnd}
-							@drop=${(e) => onDrop(e, layerItem)}
-							@dragover=${(e) => onDragOver(e, layerItem)}
-							@dragenter=${(e) => onDragEnter(e, layerItem)}
-							@dragleave=${onDragLeave}
-							index=${index}
-						>
-							${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
-						</li>`
+						(layerItem, index) =>
+							html` <li
+								draggable=${layerItem.isDraggable}
+								@dragstart=${(e) => onDragStart(e, layerItem)}
+								@dragend=${onDragEnd}
+								@drop=${(e) => onDrop(e, layerItem)}
+								@dragover=${(e) => onDragOver(e, layerItem)}
+								@dragenter=${(e) => onDragEnter(e, layerItem)}
+								@dragleave=${onDragLeave}
+								index=${index}
+							>
+								${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
+							</li>`
 					)}
 				</ul>
 				${buttons}
