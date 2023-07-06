@@ -216,12 +216,13 @@ export class GuiSwitch extends MvuElement {
 
 	_labelClick(event) {
 		const target = event.target;
-		if (this.state.recentlyDragged || !target.classList.contains('ba-switch') || target.querySelector('input').disabled) {
+		const checkbox = target.querySelector('input');
+
+		if (this.state.recentlyDragged || !target.classList.contains('ba-switch') || checkbox.disabled) {
 			return;
 		}
 
-		const checkbox = event.target.querySelector('input');
-		checkbox.checked = !checkbox.checked;
+		this.signal(Update_Checked, !checkbox.checked);
 		event.preventDefault();
 	}
 
