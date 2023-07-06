@@ -209,9 +209,11 @@ input[type='range']:focus {
 	position: absolute;
 	background: var(--primary-color);
 	z-index: 2;
-	-webkit-transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+	-webkit-transition:
+		left var(--animation-duration-medium-open) var(--animation-easing-linear),
 		width var(--animation-duration-medium-open) var(--animation-easing-linear);
-	transition: left var(--animation-duration-medium-open) var(--animation-easing-linear),
+	transition:
+		left var(--animation-duration-medium-open) var(--animation-easing-linear),
 		width var(--animation-duration-medium-open) var(--animation-easing-linear);
 }
 .ba-form-element input,
