@@ -6,6 +6,7 @@ import { html } from 'lit-html';
 // import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import { getPseudoStyle, getStyle } from '../../../../utils/style-utils';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
@@ -46,6 +47,7 @@ export class GuiSwitch extends MvuElement {
 	 */
 	onInitialize() {
 		this._onToggle = () => {};
+		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
 	/**

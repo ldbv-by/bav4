@@ -1,4 +1,5 @@
 import { GuiSwitch } from '../../../../src/modules/commons/components/guiSwitch/GuiSwitch';
+import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(GuiSwitch.tag, GuiSwitch);
 
@@ -31,9 +32,9 @@ describe('GuiSwitch', () => {
 			expect(inputElement.indeterminate).toBeFalse();
 		});
 
-		// it('automatically appends the "data-test-id" attribute', async () => {
-		// 	expect((await TestUtils.render(GuiSwitch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
-		// });
+		it('automatically appends the "data-test-id" attribute', async () => {
+			expect((await TestUtils.render(GuiSwitch.tag)).getAttribute(TEST_ID_ATTRIBUTE_NAME)).toBe('');
+		});
 	});
 
 	describe("when property 'disabled' changes", () => {
