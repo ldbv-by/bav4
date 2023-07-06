@@ -20,7 +20,8 @@ const findInDir = (dir, fileList = []) => {
 		.filter((fp) => fp.endsWith('.js'))
 		.filter((fp) => !excludesFiles.includes(path.basename(fp))) // remove excluded files
 		.filter((fp) => !path.dirname(fp).includes('i18n')) // remove i18n provider
-		.filter((fp) => !fp.includes('reducer')); // remove reducer
+		.filter((fp) => !fp.includes('reducer')) // remove reducer dirs
+		.filter((fp) => !fp.includes('chunks')); // remove lazy dir
 };
 
 findInDir('./src').forEach((fp) => {

@@ -37,7 +37,7 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when context-click state changed', () => {
-			it('updates the mapContextMenu and the highlight store section', () => {
+			it('updates the mapContextMenu and the highlight slice-of-state', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
 
@@ -56,37 +56,63 @@ describe('ContextClickPlugin', () => {
 			});
 
 			describe('when move-start state changed', () => {
-				it('updates the highlight store section', () => {
+				it('updates the highlight and bottomSheet slice-of-state', () => {
 					const store = setup();
 					new ContextClickPlugin().register(store);
 
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.data).not.toBeNull();
+					expect(store.getState().bottomSheet.active).toBeTrue();
 
 					setMoveStart();
 
 					expect(store.getState().highlight.features).toHaveSize(0);
-					expect(store.getState().bottomSheet.data).toBeNull();
+					expect(store.getState().bottomSheet.active).toBeFalse();
 				});
 			});
 
 			describe('when pointer-click state changed', () => {
-				it('updates the highlight store section', () => {
+				it('updates the highlight and bottomSheet slice-of-state', () => {
 					const store = setup();
 					new ContextClickPlugin().register(store);
 
 					setContextClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(1);
-					expect(store.getState().bottomSheet.data).not.toBeNull();
+					expect(store.getState().bottomSheet.active).toBeTrue();
 
 					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
 
 					expect(store.getState().highlight.features).toHaveSize(0);
+					expect(store.getState().bottomSheet.active).toBeFalse();
+				});
+			});
+		});
+		describe('when context-click state does NOT change', () => {
+			describe('when move-start state changed', () => {
+				it('does nothing', () => {
+					const store = setup({ bottomSheet: { active: true } });
+					new ContextClickPlugin().register(store);
 
-					expect(store.getState().bottomSheet.data).toBeNull();
+					expect(store.getState().bottomSheet.active).toBeTrue();
+
+					setMoveStart();
+
+					expect(store.getState().bottomSheet.active).toBeTrue();
+				});
+			});
+
+			describe('when pointer-click state changed', () => {
+				it('does nothing', () => {
+					const store = setup({ bottomSheet: { active: true } });
+					new ContextClickPlugin().register(store);
+
+					expect(store.getState().bottomSheet.active).toBeTrue();
+
+					setClick({ coordinate: [2121, 4242], screenCoordinate: [21, 42] });
+
+					expect(store.getState().bottomSheet.active).toBeTrue();
 				});
 			});
 		});
@@ -98,7 +124,7 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when context-click state changed', () => {
-			it('updates the mapContextMenu store section', () => {
+			it('updates the mapContextMenu slice-of-state', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
 
@@ -111,7 +137,7 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when move-start state changed', () => {
-			it('updates the mapContextMenu store section', () => {
+			it('updates the mapContextMenu slice-of-state', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
 
@@ -126,7 +152,7 @@ describe('ContextClickPlugin', () => {
 		});
 
 		describe('when pointer-click state changed', () => {
-			it('updates the mapContextMenu store section', () => {
+			it('updates the mapContextMenu slice-of-state', () => {
 				const store = setup();
 				new ContextClickPlugin().register(store);
 
