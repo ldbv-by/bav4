@@ -60,9 +60,7 @@ export class GuiSwitch extends MvuElement {
 						detail: { checked: data }
 					})
 				);
-				if (this._onToggle) {
-					this._onToggle(data);
-				}
+				this._onToggle(data);
 
 				return { ...model, checked: data, indeterminate: false };
 

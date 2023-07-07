@@ -131,5 +131,105 @@ describe('GuiSwitch', () => {
 				expect(element.checked).toBeFalse();
 			});
 		});
+
+		describe('"drag" events', () => {
+			it('handles all pointer - events and calls the onToggle callback', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+
+				element.onToggle = jasmine.createSpy();
+
+				const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+
+				const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
+				const pointerdown = new Event('pointerdown');
+				guiswitch.dispatchEvent(pointerdown);
+
+				const computedStyle = window.getComputedStyle(element.state.activethumb);
+				const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
+				expect(thumbTransitionDuration).toBe('0s');
+
+				const pointerX = 100; // just more than needed
+				const pointerY = 0;
+
+				const spyPointermove = spyOn(element, '_dragging').and.callThrough();
+				const pointermove = new PointerEvent('pointermove', {
+					bubbles: true,
+					clientX: pointerX,
+					clientY: pointerY
+				});
+				guiswitch.dispatchEvent(pointermove);
+
+				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+				const pointerup = new Event('pointerup');
+				guiswitch.dispatchEvent(pointerup);
+
+				expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
+				expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(Event));
+				expect(spyPointerup).toHaveBeenCalled();
+
+				expect(element.onToggle).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
+
+			// it('checks that css properties are set correctly after moving the marker', async () => {
+			// 	const element = await TestUtils.render(GuiSwitch.tag);
+			// 	const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+
+			// 	// test dragInit
+			// 	const spyPointerdown = spyOn(element, 'dragInit').and.callThrough();
+			// 	guiswitch.addEventListener('pointerdown', element.dragInit);
+			// 	const pointerdown = new Event('pointerdown');
+			// 	guiswitch.dispatchEvent(pointerdown);
+
+			// 	expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
+
+			// 	const computedStyle = window.getComputedStyle(element.state.activethumb);
+			// 	const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
+			// 	expect(thumbTransitionDuration).toBe('0s');
+
+			// 	// dragging
+			// 	const pointerX = 100; // Adjust based on the pointer position
+			// 	const pointerY = 0; // Adjust based on the pointer position
+
+			// 	const spyPointermove = spyOn(element, 'dragging').and.callThrough();
+			// 	guiswitch.addEventListener('pointermove', element.dragging);
+			// 	const pointermove = new PointerEvent('pointermove', {
+			// 		bubbles: true,
+			// 		clientX: pointerX,
+			// 		clientY: pointerY
+			// 	});
+			// 	guiswitch.dispatchEvent(pointermove);
+
+			// 	expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(PointerEvent));
+
+			// 	// Calculate the expected thumbPosition value
+			// 	const remThumbsize = parseFloat(computedStyle.getPropertyValue('--thumb-size'));
+			// 	console.log('🚀 ~ fit ~ remThumbsize:', remThumbsize);
+			// 	const thumbsize = remToPx(remThumbsize);
+			// 	console.log('🚀 ~ fit ~ thumbsize:', thumbsize);
+			// 	const padding = parseFloat(computedStyle.getPropertyValue('--track-padding'));
+			// 	console.log('🚀 ~ fit ~ padding:', padding);
+			// 	const directionality = parseFloat(computedStyle.getPropertyValue('--isLTR'));
+			// 	console.log('🚀 ~ fit ~ directionality:', directionality);
+
+			// 	const track = directionality === -1 ? thumbsize * -1 + padding : 0;
+			// 	console.log('🚀 ~ fit ~ track:', track);
+
+			// 	let expectedPos = Math.round(pointermove.clientX - thumbsize / 2 + padding);
+			// 	console.log('🚀 ~ fit ~ expectedPos:', expectedPos);
+
+			// 	const lowerBound = 0;
+			// 	const upperBound = 100;
+
+			// 	if (expectedPos < lowerBound) expectedPos = 0;
+			// 	if (expectedPos > upperBound) expectedPos = upperBound;
+
+			// 	const expectedThumbPosition = `${track + expectedPos}px`;
+			// 	const thumbPosition = computedStyle.getPropertyValue('--thumb-position');
+			// 	console.log('🚀 ~ fit ~ thumbPosition:', thumbPosition);
+			// 	console.log('🚀 ~ fit ~ expectedThumbPosition:', expectedThumbPosition);
+			// 	expect(thumbPosition).toBe(expectedThumbPosition);
+			// });
+		});
 	});
 });
