@@ -443,7 +443,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
 	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
 	const partitionLength = partition * length;
-	console.log(length);
 	const partitionTickDistance = partitionLength / resolution;
 	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
@@ -464,7 +463,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	};
 
 	const getSubTickStroke = (residual, partitionTickDistance) => {
-		console.log('subtickStroke:', { residual: residual, partitionTickDistance: partitionTickDistance });
 		return new Stroke({
 			color: Red_Color.concat([1]),
 			width: 5 * pixelRatio,
