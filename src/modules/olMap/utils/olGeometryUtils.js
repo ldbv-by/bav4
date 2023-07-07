@@ -167,7 +167,7 @@ export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HI
 			const isWithinProjectionExtent = calculationHints.toProjectionExtent
 				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
 				: true;
-			return isWithinProjectionExtent && !forceGeodesic ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
+			return isWithinProjectionExtent || forceGeodesic ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
 	}
 	return 0;

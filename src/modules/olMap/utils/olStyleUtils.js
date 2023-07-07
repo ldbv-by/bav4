@@ -7,7 +7,8 @@ import {
 	calculatePartitionResidualOfSegments,
 	getPartitionDelta,
 	moveParallel,
-	getPartitionDeltaFrom
+	getPartitionDeltaFrom,
+	NO_CALCULATION_HINTS
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -21,6 +22,7 @@ import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors'
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
 import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
 import { Feature } from 'ol';
+import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
@@ -439,7 +441,9 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
 	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geometry, {}, true);
+	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
+	const partitionLength = partition * length;
+	console.log(length);
 	const partitionTickDistance = partitionLength / resolution;
 	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
@@ -460,6 +464,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	};
 
 	const getSubTickStroke = (residual, partitionTickDistance) => {
+		console.log('subtickStroke:', { residual: residual, partitionTickDistance: partitionTickDistance });
 		return new Stroke({
 			color: Red_Color.concat([1]),
 			width: 5 * pixelRatio,
@@ -498,6 +503,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		};
 
 		const cancel = () => false;
+		console.log(segment);
 		return segment[1] ? draw() : cancel();
 	};
 
@@ -506,7 +512,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon ? pixelCoordinates[0] : pixelCoordinates;
+	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
 
 	segmentCoordinates.every((coordinate, index, coordinates) => {
 		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
