@@ -153,7 +153,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('it registers an observer for Topic related chips', async () => {
+		it('registers an observer for Topic related chips', async () => {
 			const topicId = 'topic0';
 			const mockChips = [
 				{
@@ -186,7 +186,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('it registers an observer for GeoResource related chips', async () => {
+		it('registers an observer for GeoResource related chips', async () => {
 			const geoResourceId = 'geoResourceId0';
 			const mockChips = [
 				{
@@ -215,7 +215,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('it registers an observer for GeoResource related chip (negated configuration)', async () => {
+		it('registers an observer for GeoResource related chip (negated configuration)', async () => {
 			const geoResourceId = 'geoResourceId0';
 			const mockChips = [
 				{
