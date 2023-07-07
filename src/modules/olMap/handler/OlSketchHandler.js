@@ -51,7 +51,7 @@ export class OlSketchHandler {
 				const onFeatureChange = (event) => {
 					this._monitorProperties(event.target);
 				};
-				sketchFeature.geodesic = new GeodesicGeometry(sketchFeature);
+				sketchFeature.geodesic = new GeodesicGeometry(sketchFeature, () => !this._isFinishOnFirstPoint);
 				this._listener = sketchFeature.on('change', onFeatureChange);
 			}
 			this._pointCount = 1;

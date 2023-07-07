@@ -570,7 +570,6 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		const geometry = feature.geodesic ? feature.geodesic.getGeodesicGeom() : feature.getGeometry();
 		if (feature.getGeometry() instanceof Polygon) {
 			const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
-
 			if (!this._sketchHandler.isFinishOnFirstPoint) {
 				return new LineString(lineCoordinates);
 			}

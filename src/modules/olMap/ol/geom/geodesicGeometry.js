@@ -22,23 +22,25 @@ const DEG360_IN_WEBMERCATOR = 2 * Math.PI * 6378137; // FIXME: move to coordinat
  *
  */
 export class GeodesicGeometry {
-	constructor(feature) {
+	constructor(feature, isDrawingCallback = () => false) {
 		this.feature = feature;
 		this.featureRevision = feature.getRevision();
 		if (!(this.feature.getGeometry() instanceof Polygon) && !(this.feature.getGeometry() instanceof LineString)) {
 			throw new Error('This class only accepts Polygons (and Linestrings ' + 'after initial drawing is finished)');
 		}
+		this._isDrawing = isDrawingCallback;
 		this._calculateEverything();
 	}
 
 	_calculateEverything() {
 		this.geom = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
 		this.coords = this.geom.getCoordinates();
-		this.isDrawing = this.feature.get('isDrawing');
+		// this.isDrawing = this.feature.get('isDrawing');
 		this.isPolygon = false;
 		if (this.geom instanceof Polygon) {
 			this.coords = this.geom.getCoordinates()[0];
-			if (this.isDrawing) {
+			//if (this.isDrawing) {
+			if (this._isDrawing()) {
 				this.coords = this.coords.slice(0, -1);
 			} else {
 				this.isPolygon = true;

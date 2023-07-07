@@ -189,7 +189,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
 			if (olFeature.getGeometry() instanceof Polygon) {
 				const geom = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
-				simplifiedGeometry = new LineString(geom.getCoordinates(false)[0]);
+
+				simplifiedGeometry = new LineString(geom instanceof Polygon ? geom.getCoordinates(false)[0] : geom.getCoordinates(false));
 			}
 		}
 
