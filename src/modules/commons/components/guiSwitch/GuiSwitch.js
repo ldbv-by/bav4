@@ -55,6 +55,15 @@ export class GuiSwitch extends MvuElement {
 	update(type, data, model) {
 		switch (type) {
 			case Update_Checked:
+				this.dispatchEvent(
+					new CustomEvent('toggle', {
+						detail: { checked: data }
+					})
+				);
+				if (this._onToggle) {
+					this._onToggle(data);
+				}
+
 				return { ...model, checked: data, indeterminate: false };
 
 			case Update_Indeterminate:
@@ -128,12 +137,6 @@ export class GuiSwitch extends MvuElement {
 		const onChange = (event) => {
 			const checked = event.target.checked;
 			this.signal(Update_Checked, checked);
-			this.dispatchEvent(
-				new CustomEvent('toggle', {
-					detail: { checked: checked }
-				})
-			);
-			this._onToggle(event);
 		};
 
 		return html`
@@ -187,6 +190,7 @@ export class GuiSwitch extends MvuElement {
 		if (!this.state.activethumb) return;
 
 		this.state.activethumb.checked = this._determineChecked();
+		this.signal(Update_Checked, this.state.activethumb.checked);
 
 		if (this.state.activethumb.indeterminate) {
 			this.state.activethumb.indeterminate = false;
