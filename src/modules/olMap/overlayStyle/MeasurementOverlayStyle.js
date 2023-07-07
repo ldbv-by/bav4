@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getLineString, getPartitionDelta } from '../utils/olGeometryUtils';
+import { getAzimuth, getLineString, getPartitionDelta, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -81,7 +81,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const distanceOverlay = olFeature.get('measurement');
 		const measureGeometry = properties.geometry ? properties.geometry : olFeature.getGeometry();
 		if (distanceOverlay) {
-			this._updateOlOverlay(distanceOverlay, measureGeometry, '');
+			this._updateOlOverlay(distanceOverlay, measureGeometry, olFeature.geodesic, '');
 			this._createOrRemoveAreaOverlay(olFeature, olMap);
 			this._createOrRemovePartitionOverlays(olFeature, olMap, measureGeometry);
 		}
@@ -144,7 +144,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 
 		const distanceOverlay = olFeature.get('measurement') || createNew();
-		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry());
+		this._updateOlOverlay(distanceOverlay, olFeature.getGeometry(), olFeature.geodesic);
 		return distanceOverlay;
 	}
 
@@ -195,7 +195,9 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const delta = getPartitionDelta(simplifiedGeometry, resolution, getProjectionHints());
+		const delta = olFeature.geodesic
+			? getPartitionDelta(olFeature.geodesic.totalLength, resolution)
+			: getPartitionDeltaFrom(simplifiedGeometry, resolution, getProjectionHints());
 
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
@@ -210,7 +212,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
 			}
-			this._updateOlOverlay(partition, simplifiedGeometry, i);
+			this._updateOlOverlay(partition, simplifiedGeometry, olFeature.geodesic, i);
 		}
 		if (partitionIndex < partitions.length) {
 			for (let j = partitions.length - 1; j >= partitionIndex; j--) {
@@ -281,10 +283,11 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		return overlay;
 	}
 
-	_updateOlOverlay(overlay, geometry, value) {
+	_updateOlOverlay(overlay, geometry, geodesic = null, value) {
 		const element = overlay.getElement();
 		element.value = value;
 		element.geometry = geometry;
+		element.geodesic = geodesic;
 		if (!overlay.get('manualPositioning')) {
 			overlay.setPosition(element.position);
 		}

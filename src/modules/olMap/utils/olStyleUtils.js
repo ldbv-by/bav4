@@ -1,7 +1,14 @@
 /**
  * @module modules/olMap/utils/olStyleUtils
  */
-import { getGeometryLength, canShowAzimuthCircle, calculatePartitionResidualOfSegments, getPartitionDelta, moveParallel } from './olGeometryUtils';
+import {
+	getGeometryLength,
+	canShowAzimuthCircle,
+	calculatePartitionResidualOfSegments,
+	getPartitionDelta,
+	moveParallel,
+	getPartitionDeltaFrom
+} from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
@@ -431,8 +438,8 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const pixelRatio = state.pixelRatio;
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
-	const partition = getPartitionDelta(geometry, resolution, calculationHints);
-	const partitionLength = partition * getGeometryLength(geometry);
+	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
+	const partitionLength = partition * getGeometryLength(geometry, {}, true);
 	const partitionTickDistance = partitionLength / resolution;
 	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
@@ -546,8 +553,8 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		//resolution ? getRulerStyle(feature) : getFallbackStyle()
-		getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
+		//getFallbackStyle()
 	];
 	return styles;
 };

@@ -104,6 +104,7 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
+		const length = this.geodesic ? this.geodesic.totalLength : getGeometryLength(this._geometry, this._projectionHints);
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 				if (this.geometry instanceof Polygon) {
@@ -115,15 +116,26 @@ export class MeasurementOverlay extends BaOverlay {
 					const azimuthValue = getAzimuth(this.geometry);
 					const azimuth = azimuthValue ? azimuthValue.toFixed(2) : '-';
 
-					return azimuth + '°/' + this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
+					return azimuth + '°/' + this._unitsService.formatDistance(length, 2);
 				}
-				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
+				return this._unitsService.formatDistance(length, 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this.projectionHints) * this._value, 0);
+				return this._unitsService.formatDistance(length * this._value, 0);
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 				return this._value;
 		}
+	}
+
+	set geodesic(value) {
+		if (value !== this.geodesic) {
+			this._geodesic = value;
+			this.render();
+		}
+	}
+
+	get geodesic() {
+		return this._geodesic;
 	}
 
 	set placement(value) {

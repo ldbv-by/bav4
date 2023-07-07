@@ -15,6 +15,8 @@ const transformGeometry = (geometry, fromProjection, toProjection) => {
 	return geometry;
 };
 
+export const NO_CALCULATION_HINTS = { fromProjection: null, toProjection: null };
+
 /**
  * Coerce the provided geometry to a LineString or null,
  * if the geometry is not a LineString,LinearRing or Polygon
@@ -123,7 +125,7 @@ export const getBoundingBoxFrom = (centerCoordinate, size) => {
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not area-like
  */
-export const getArea = (geometry, calculationHints = {}) => {
+export const getArea = (geometry, calculationHints = NO_CALCULATION_HINTS) => {
 	if (!(geometry instanceof Polygon) && !(geometry instanceof Circle) && !(geometry instanceof LinearRing)) {
 		return 0;
 	}
@@ -150,7 +152,7 @@ export const getArea = (geometry, calculationHints = {}) => {
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
-export const getGeometryLength = (geometry, calculationHints = {}) => {
+export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HINTS, forceGeodesic = false) => {
 	if (geometry) {
 		const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
 		const wgs84LineString = getLineString(wgs84Geometry);
@@ -165,7 +167,7 @@ export const getGeometryLength = (geometry, calculationHints = {}) => {
 			const isWithinProjectionExtent = calculationHints.toProjectionExtent
 				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
 				: true;
-			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
+			return isWithinProjectionExtent && !forceGeodesic ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
 	}
 	return 0;
@@ -290,8 +292,12 @@ export const getAzimuthFrom = (polygon) => {
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the delta, a value between 0 and 1
  */
-export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {}) => {
+export const getPartitionDeltaFrom = (geometry, resolution = 1, calculationHints = NO_CALCULATION_HINTS) => {
 	const length = getGeometryLength(geometry, calculationHints);
+	return getPartitionDelta(length, resolution);
+};
+
+export const getPartitionDelta = (length, resolution) => {
 	const minLengthResolution = 40;
 	const isValidForResolution = (partition) => {
 		const partitionResolution = partition / resolution;
@@ -316,7 +322,7 @@ export const getPartitionDelta = (geometry, resolution = 1, calculationHints = {
 		return findBestFittingDelta(nextPartitionLength);
 	};
 
-	return findBestFittingDelta(minPartitionLength);
+	return isNaN(length) ? 1 : findBestFittingDelta(minPartitionLength);
 };
 
 /**
@@ -370,8 +376,8 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
-	if (lineString) {
-		const partitionLength = getGeometryLength(lineString) * partition;
+	if (lineString instanceof LineString) {
+		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
 		let currentLength = 0;
 		let lastResidual = 0;
 		lineString.forEachSegment((from, to) => {
