@@ -79,7 +79,7 @@ describe('ShareDialogContent', () => {
 			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(0);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(0);
 		});
 
 		it('checks the toggle default value to be not checked => false', async () => {
@@ -117,7 +117,7 @@ describe('ShareDialogContent', () => {
 				.and.returnValue(() => Promise.resolve());
 			const element = await setup();
 			element.urls = shareUrls;
-			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
+			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
 
 			copyButton.click();
 
@@ -134,7 +134,7 @@ describe('ShareDialogContent', () => {
 			const toggleElement = element.shadowRoot.querySelector('ba-toggle');
 			toggleElement.click();
 
-			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
+			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
 
 			copyButton.click();
 
@@ -148,7 +148,7 @@ describe('ShareDialogContent', () => {
 			element.urls = shareUrls;
 
 			expect(element.shadowRoot.querySelectorAll('.share_item .share_api')).toHaveSize(0);
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
 		});
 	});
 
@@ -158,12 +158,12 @@ describe('ShareDialogContent', () => {
 
 			const element = await setup();
 			element.urls = shareUrls;
-			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy');
+			const copyButton = element.shadowRoot.querySelector('.share_item .share_copy_icon');
 
 			copyButton.click();
 
 			await TestUtils.timeout();
-			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('.share_item .share_copy_icon')).toHaveSize(1);
 			expect(copySpy).toHaveBeenCalledWith(shareUrls.fileId);
 			//check notification
 			expect(store.getState().notifications.latest.payload.content).toBe('share_clipboard_link_notification_text share_clipboard_success');
@@ -201,7 +201,7 @@ describe('ShareDialogContent', () => {
 		const warnSpy = spyOn(console, 'warn');
 		const element = await setup();
 		element.urls = shareUrls;
-		const copyElement = element.shadowRoot.querySelector('.share_item .share_copy');
+		const copyElement = element.shadowRoot.querySelector('.share_item .share_copy_icon');
 
 		copyElement.click();
 
