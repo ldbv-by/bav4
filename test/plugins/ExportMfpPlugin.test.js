@@ -145,7 +145,7 @@ describe('ExportMfpPlugin', () => {
 
 	describe('when jobSpec property changes', () => {
 		describe('and jobSpec is available', () => {
-			it('it creates a new job by calling the MfpService', async () => {
+			it('creates a new job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
@@ -198,7 +198,7 @@ describe('ExportMfpPlugin', () => {
 		});
 
 		describe('and jobSpec is NOT available', () => {
-			it('it cancels the current job by calling the MfpService', async () => {
+			it('cancels the current job by calling the MfpService', async () => {
 				const store = setup();
 				const instanceUnderTest = new ExportMfpPlugin();
 				await instanceUnderTest.register(store);
