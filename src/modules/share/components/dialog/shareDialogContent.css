@@ -13,10 +13,7 @@
 	flex-grow: 1;
 }
 
-.share_api {
-	margin-left: 1em;
-}
-
+.share_api,
 .share_copy_icon {
 	margin-left: 1em;
 }
