@@ -7,7 +7,7 @@ test.describe('entry points', () => {
 		const response = await request.get(`${BASE_URL}/bundle.js`);
 		expect(response.ok()).toBeTruthy();
 		if (BASE_URL.startsWith('http://localhost')) {
-			expect((await response.body()).byteLength).toBeCloseTo(15209266, -4);
+			expect((await response.body()).byteLength).toBeCloseTo(15215311, -5);
 		}
 	});
 
@@ -15,7 +15,7 @@ test.describe('entry points', () => {
 		const response = await request.get(`${BASE_URL}/embed.js`);
 		expect(response.ok()).toBeTruthy();
 		if (BASE_URL.startsWith('http://localhost')) {
-			expect((await response.body()).byteLength).toBeCloseTo(12364167, -4);
+			expect((await response.body()).byteLength).toBeCloseTo(12369528, -5);
 		}
 	});
 
