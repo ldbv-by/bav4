@@ -11,6 +11,9 @@
 	flex: 1;
 	position: relative;
 }
+.map-feedback__iframe iframe {
+	border: 0;
+}
 .map-feedback__iframe.userVisited iframe {
 	border-bottom: 5px solid var(--error-color);
 }
