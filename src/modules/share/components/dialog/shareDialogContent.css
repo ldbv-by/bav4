@@ -1,15 +1,18 @@
 .share_item {
 	min-width: 25em;
 }
+
 .share_label {
 	padding: 0.8em 0;
 }
+
 .link {
 	display: flex;
 }
 .share_url {
 	flex-grow: 1;
 }
+
 .share_api {
 	margin-left: 1em;
 }
@@ -23,6 +26,7 @@
 	max-width: 40em;
 	padding: 0.8em 0;
 }
+
 .toggle {
 	margin: 1em 0;
 }
