@@ -39,7 +39,7 @@ describe('CatalogNode', () => {
 		TestUtils.setupStoreAndDi(state);
 
 		if (levelAttribute) {
-			return TestUtils.render(CatalogNode.tag, levelAttribute);
+			return TestUtils.render(CatalogNode.tag, {}, levelAttribute);
 		}
 		return TestUtils.render(CatalogNode.tag);
 	};
@@ -51,7 +51,7 @@ describe('CatalogNode', () => {
 			expect(element.shadowRoot.children.length).toBe(0);
 		});
 
-		it('it has a default level of 0', async () => {
+		it('has a default level of 0', async () => {
 			const element = await setup(null);
 
 			expect(element._level).toBe(0);

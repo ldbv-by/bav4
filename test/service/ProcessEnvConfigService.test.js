@@ -118,7 +118,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(() => configService.getValue('unknown')).toThrowError(Error, "No value found for 'unknown'");
 		});
 
-		it('provides the the default value for a non-existing key', () => {
+		it('provides the default value for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
 			expect(configService.getValue('unknown', 42)).toBe(42);

@@ -190,8 +190,8 @@ export class PasswordCredentialPanel extends MvuElement {
 				</div>
 				<div class="ba-form-element" title="${translate('auth_passwordCredentialPanel_credential_password')}"">								
 					<input placeholder='${translate('auth_passwordCredentialPanel_credential_password')}'  type=${
-			showPassword ? 'text' : 'password'
-		} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
+						showPassword ? 'text' : 'password'
+					} id="credential_password"  @input=${onChangePassword} @keydown=${onEnterAuthenticate} >
 					<label for="credential_password" class="control-label">${translate('auth_passwordCredentialPanel_credential_password')}</label><i class="bar"></i>
 					<i class="eye-slash ${classMap(passwordClasses)}" id="toggle_password" @click=${togglePassword} ></i>
 				</div>

@@ -294,7 +294,7 @@ describe('OlMeasurementHandler', () => {
 			it('calls the InteractionService and updates the measurement slice-of-state ', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -313,7 +313,7 @@ describe('OlMeasurementHandler', () => {
 
 			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -669,7 +669,7 @@ describe('OlMeasurementHandler', () => {
 		it('writes features to kml format for persisting purpose', async () => {
 			const fileSaveResultMock = { fileId: 'barId', adminId: null };
 			const state = { ...initialState, fileSaveResult: new EventLike(null) };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -727,9 +727,9 @@ describe('OlMeasurementHandler', () => {
 			);
 		});
 
-		it('adds layer with specific contrainsts', async () => {
+		it('adds layer with specific constraints', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();

@@ -82,7 +82,7 @@ describe('layersReducer', () => {
 		expect(array[2].zIndex).toBe(2);
 	});
 
-	it("sorts an array based on the the 'zIndex' property", () => {
+	it("sorts an array based on the 'zIndex' property", () => {
 		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', zIndex: 2 };
 		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', zIndex: 0 };
 		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'id2', zIndex: 1 };
@@ -94,7 +94,7 @@ describe('layersReducer', () => {
 		expect(array[2].id).toBe('id0');
 	});
 
-	it("sorts an array based on the the 'zIndex' property and the 'alwaysTop' constraint", () => {
+	it("sorts an array based on the 'zIndex' property and the 'alwaysTop' constraint", () => {
 		const layerProperties0 = { ...createDefaultLayerProperties(), id: 'id0', zIndex: 2 };
 		const layerProperties1 = { ...createDefaultLayerProperties(), id: 'id1', zIndex: 0, constraints: { alwaysTop: true } };
 		const layerProperties2 = { ...createDefaultLayerProperties(), id: 'id2', zIndex: 1 };

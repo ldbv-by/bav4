@@ -132,13 +132,23 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
-				return new LayerGroup({
+				const layerGroup = new LayerGroup({
 					id: id,
 					opacity: opacity,
 					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, georesourceService.byId(id))),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
+
+				// synchronizes the MapLibre layers's opacity with the layer group's one
+				layerGroup.on('change:opacity', (evt) =>
+					evt.target.getLayers().forEach((el) => {
+						if (el instanceof MapLibreLayer) {
+							el.setOpacity(evt.target.getOpacity());
+						}
+					})
+				);
+				return layerGroup;
 			}
 		}
 		throw new Error(geoResource.getType() + ' currently not supported');

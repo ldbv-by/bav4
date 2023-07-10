@@ -96,6 +96,7 @@ describe('MiscContentPanel', () => {
 			feedbackButton.click();
 
 			expect(store.getState().modal.data.title).toBe('menu_misc_content_panel_feedback_title');
+			expect(store.getState().modal.steps).toBe(2);
 			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
 			expect(wrapperElement.querySelectorAll(ToggleFeedbackPanel.tag)).toHaveSize(1);
 			expect(wrapperElement.querySelector(ToggleFeedbackPanel.tag).onSubmit).toEqual(closeModal);

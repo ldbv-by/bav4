@@ -326,7 +326,9 @@ describe('LayerItem', () => {
 				opacity: 1,
 				collapsed: true
 			};
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
@@ -430,7 +432,9 @@ describe('LayerItem', () => {
 
 		it('does not show a loading hint for Non-GeoResourceFutures', async () => {
 			const geoResourceId = 'geoResourceId0';
-			spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
+			spyOn(geoResourceService, 'byId')
+				.withArgs(geoResourceId)
+				.and.returnValue(new VectorGeoResource(geoResourceId, 'label0', VectorSourceType.KML));
 			const layer = {
 				...createDefaultLayerProperties(),
 				id: 'id0',

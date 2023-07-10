@@ -23,7 +23,15 @@ export class ChipsPlugin extends BaPlugin {
 
 		const findActiveGeoResourceChips = () => {
 			const geoResourceIds = state.layers.active.map((l) => l.geoResourceId);
-			return chips.filter((c) => geoResourceIds.some((grId) => c.observer?.geoResources.includes(grId)));
+			const chipsByNegatedConfiguration = chips.filter((c) => {
+				const negatedGrIds = c.observer?.geoResources.filter((id) => id.startsWith('!')) ?? [];
+				if (geoResourceIds.length && negatedGrIds.length) {
+					return negatedGrIds.filter((id) => geoResourceIds.includes(id.split('!')[1])).length === 0;
+				}
+				return false;
+			});
+			const chipsByConfiguration = chips.filter((c) => geoResourceIds.some((grId) => c.observer?.geoResources.includes(grId)));
+			return [...chipsByNegatedConfiguration, ...chipsByConfiguration];
 		};
 
 		setCurrent([...new Set([...permanentChips, ...findTopicsChips(), ...findActiveGeoResourceChips()])]);
