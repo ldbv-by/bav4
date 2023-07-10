@@ -152,7 +152,7 @@ export const getArea = (geometry, calculationHints = NO_CALCULATION_HINTS) => {
  * @param {CalculationHints} calculationHints calculationHints for a optional transformation
  * @returns {number} the calculated length or 0 if the geometry-object is not a LineString/LinearRing/Polygon
  */
-export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HINTS, forceGeodesic = false) => {
+export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HINTS) => {
 	if (geometry) {
 		const wgs84Geometry = transformGeometry(geometry, calculationHints.fromProjection, EPSG_WGS84);
 		const wgs84LineString = getLineString(wgs84Geometry);
@@ -167,8 +167,7 @@ export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HI
 			const isWithinProjectionExtent = calculationHints.toProjectionExtent
 				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
 				: true;
-			console.log(isWithinProjectionExtent);
-			return isWithinProjectionExtent || forceGeodesic ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
+			return isWithinProjectionExtent ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
 	}
 	return 0;
@@ -378,7 +377,7 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
 	if (lineString instanceof LineString) {
-		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
+		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS) * partition;
 		let currentLength = 0;
 		let lastResidual = 0;
 		lineString.forEachSegment((from, to) => {

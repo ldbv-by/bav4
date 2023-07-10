@@ -6,6 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../BaElement';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { NO_CALCULATION_HINTS } from '../utils/olGeometryUtils';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',
@@ -41,7 +42,7 @@ export class BaOverlay extends BaElement {
 		this._value = null;
 		this._static = false;
 		this._type = BaOverlayTypes.TEXT;
-		this._projectionHints = false;
+		this._projectionHints = NO_CALCULATION_HINTS;
 		this._isDraggable = false;
 	}
 
