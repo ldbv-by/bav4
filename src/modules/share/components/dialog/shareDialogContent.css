@@ -10,12 +10,19 @@
 .share_url {
 	flex-grow: 1;
 }
-.share_api,
-.share_copy {
+.share_api {
 	margin-left: 1em;
 }
-.toggle {
+
+.share_copy_icon {
+	margin-left: 1em;
+}
+
+.share_copy_toggle {
 	display: flex;
-	justify-content: flex-start;
+	max-width: 40em;
+	padding: 0.8em 0;
+}
+.toggle {
 	margin: 1em 0;
 }
