@@ -168,7 +168,7 @@ ba-checkbox:focus {
 	justify-content: center;
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
-	padding: 1em 0.8em;
+	padding: 0.8em 1.2em;
 	border-bottom: 1px solid var(--header-background-color);
 }
 
