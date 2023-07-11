@@ -1,6 +1,4 @@
-import { getHeight, getWidth } from 'ol/extent';
 import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../../../../../src/modules/olMap/ol/source/LimitedImageWMS';
-import { get as getProjection } from 'ol/proj.js';
 import { ImageWMS } from 'ol/source';
 
 describe('LimitedImageWMS', () => {
@@ -27,70 +25,96 @@ describe('LimitedImageWMS', () => {
 		});
 	});
 
-	describe('#getImage', () => {
-		// #getImage tests are adopted from ol.ImageWMS
-
-		it('returns the expected image URL', () => {
-			const pixelRatio = 1;
-			const projection = getProjection('EPSG:4326');
-			const resolution = 1;
-			[1, 1.5].forEach(function (ratio) {
-				const options = {
-					params: {
-						LAYERS: 'layer'
-					},
-					ratio: ratio,
-					url: 'http://example.com/wms'
+	describe('imageLoadFunction', () => {
+		describe('when NO scaling is needed', () => {
+			it('just set the "src" of the image', async () => {
+				const instanceUnderTest = new LimitedImageWMS();
+				const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
+				const mockImage = { src: null };
+				const mockImageWrapper = {
+					getImage: () => mockImage
 				};
-				const source = new LimitedImageWMS(options);
-				const viewExtent = [10, 20, 30.1, 39.9];
-				const viewWidth = getWidth(viewExtent);
-				const viewHeight = getHeight(viewExtent);
+				const src = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
 
-				const image = source.getImage(viewExtent, resolution, pixelRatio, projection);
+				imageLoadFunction(mockImageWrapper, src);
 
-				const uri = new URL(image.src_);
-				const queryData = uri.searchParams;
-				const imageWidth = Number(queryData.get('WIDTH'));
-				const imageHeight = Number(queryData.get('HEIGHT'));
-				const bbox = queryData.get('BBOX').split(',').map(Number);
-				const bboxAspectRatio = (bbox[3] - bbox[1]) / (bbox[2] - bbox[0]);
-				const imageAspectRatio = imageWidth / imageHeight;
-				expect(imageWidth).toBe(Math.ceil((viewWidth / resolution) * ratio));
-				expect(imageHeight).toBe(Math.ceil((viewHeight / resolution) * ratio));
-				expect(bboxAspectRatio).toBeCloseTo(imageAspectRatio, 1e-12);
+				expect(mockImageWrapper.getImage().src).toBe(src);
 			});
 		});
 
-		it('returns the expected image URL containing re-calculated WIDTH and HEIGHT params', () => {
-			const maxSize = [5, 6];
-			const pixelRatio = 1;
-			const projection = getProjection('EPSG:4326');
-			const resolution = 0.1;
-			[1, 1.5].forEach(function (ratio) {
-				const options = {
-					params: {
-						LAYERS: 'layer'
-					},
-					ratio: ratio,
-					url: 'http://example.com/wms',
-					maxSize: maxSize
-				};
-				const source = new LimitedImageWMS(options);
-				const viewExtent = [10, 20, 30.1, 39.9];
+		describe('when scaling is needed', () => {
+			describe('for WIDTH', () => {
+				it('scales the image using a canvas element', async () => {
+					const instanceUnderTest = new LimitedImageWMS();
+					const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
+					const mockImage = { src: null };
+					const mockImageWrapper = {
+						getImage: () => mockImage
+					};
+					const mockTempImage = {};
+					const mockCanvasDataURL = 'canvasDataUrl';
+					const mockCanvasContext = { drawImage: () => {} };
+					const drawImageSpy = spyOn(mockCanvasContext, 'drawImage');
+					const mockCanvas = { getContext: () => {}, toDataURL: () => {} };
+					spyOn(mockCanvas, 'getContext').withArgs('2d').and.returnValue(mockCanvasContext);
+					spyOn(mockCanvas, 'toDataURL').and.returnValue(mockCanvasDataURL);
+					spyOn(document, 'createElement').and.callFake((tag) => {
+						switch (tag) {
+							case 'img':
+								return mockTempImage;
+							case 'canvas':
+								return mockCanvas;
+						}
+					});
+					const originalSrc = 'http://foo.var?WIDTH=2001&HEIGHT=2000';
 
-				const image = source.getImage(viewExtent, resolution, pixelRatio, projection);
+					imageLoadFunction(mockImageWrapper, originalSrc);
 
-				const uri = new URL(image.src_);
-				const queryData = uri.searchParams;
-				const imageWidth = Number(queryData.get('WIDTH'));
-				const imageHeight = Number(queryData.get('HEIGHT'));
-				const bbox = queryData.get('BBOX').split(',').map(Number);
-				const bboxAspectRatio = (bbox[3] - bbox[1]) / (bbox[2] - bbox[0]);
-				const imageAspectRatio = imageWidth / imageHeight;
-				expect(imageWidth).toBe(maxSize[0]);
-				expect(imageHeight).toBe(maxSize[1]);
-				expect(bboxAspectRatio).toBeCloseTo(imageAspectRatio, 1e-12);
+					expect(mockTempImage.crossOrigin).toBe('anonymous');
+					expect(mockTempImage.src).toBe('http://foo.var?WIDTH=2000&HEIGHT=2000');
+					mockTempImage.onload();
+					expect(mockCanvas.width).toBe(2001);
+					expect(mockCanvas.height).toBe(2000);
+					expect(mockImageWrapper.getImage().src).toBe(mockCanvasDataURL);
+					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 2001, 2000);
+				});
+			});
+
+			describe('for HEIGHT', () => {
+				it('scales the image using a canvas element', async () => {
+					const instanceUnderTest = new LimitedImageWMS();
+					const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
+					const mockImage = { src: null };
+					const mockImageWrapper = {
+						getImage: () => mockImage
+					};
+					const mockTempImage = {};
+					const mockCanvasDataURL = 'canvasDataUrl';
+					const mockCanvasContext = { drawImage: () => {} };
+					const drawImageSpy = spyOn(mockCanvasContext, 'drawImage');
+					const mockCanvas = { getContext: () => {}, toDataURL: () => {} };
+					spyOn(mockCanvas, 'getContext').withArgs('2d').and.returnValue(mockCanvasContext);
+					spyOn(mockCanvas, 'toDataURL').and.returnValue(mockCanvasDataURL);
+					spyOn(document, 'createElement').and.callFake((tag) => {
+						switch (tag) {
+							case 'img':
+								return mockTempImage;
+							case 'canvas':
+								return mockCanvas;
+						}
+					});
+					const originalSrc = 'http://foo.var?WIDTH=2000&HEIGHT=2001';
+
+					imageLoadFunction(mockImageWrapper, originalSrc);
+
+					expect(mockTempImage.crossOrigin).toBe('anonymous');
+					expect(mockTempImage.src).toBe('http://foo.var?WIDTH=2000&HEIGHT=2000');
+					mockTempImage.onload();
+					expect(mockCanvas.width).toBe(2000);
+					expect(mockCanvas.height).toBe(2001);
+					expect(mockImageWrapper.getImage().src).toBe(mockCanvasDataURL);
+					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 2000, 2001);
+				});
 			});
 		});
 	});
