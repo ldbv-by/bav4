@@ -161,7 +161,7 @@ export class ShareService {
 		if (layer_opacity.filter((lo) => lo !== 1).length === 0) {
 			layer_opacity = null;
 		}
-		extractedState[QueryParameters.LAYER] = encodeURIComponent(geoResourceIds);
+		extractedState[QueryParameters.LAYER] = geoResourceIds;
 		if (layer_visibility) {
 			extractedState[QueryParameters.LAYER_VISIBILITY] = layer_visibility;
 		}
