@@ -61,6 +61,7 @@ export class OlSketchHandler {
 
 	deactivate() {
 		unByKey(this._listener);
+		this._sketch.geodesic = new GeodesicGeometry(this._sketch.clone());
 		this._sketch = null;
 		this._isFinishOnFirstPoint = false;
 		this._isSnapOnLastPoint = false;
