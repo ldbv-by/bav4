@@ -441,7 +441,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const calculationHints = { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832', toProjectionExtent: [5, -80, 14, 80] };
 
 	const partition = getPartitionDeltaFrom(geometry, resolution, calculationHints);
-	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS);
+	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
 	const partitionLength = partition * length;
 	const partitionTickDistance = partitionLength / resolution;
 	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
