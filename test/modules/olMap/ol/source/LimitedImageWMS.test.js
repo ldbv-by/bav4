@@ -27,7 +27,7 @@ describe('LimitedImageWMS', () => {
 
 	describe('imageLoadFunction', () => {
 		describe('when NO scaling is needed', () => {
-			it('justs set the "src" of the image', async () => {
+			it('just set the "src" of the image', async () => {
 				const instanceUnderTest = new LimitedImageWMS();
 				const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
 				const mockImage = { src: null };
