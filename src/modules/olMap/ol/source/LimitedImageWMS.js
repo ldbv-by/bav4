@@ -2,7 +2,6 @@
  * @module modules/olMap/ol/source/LimitedImageWMS
  */
 import ImageWMS from 'ol/source/ImageWMS';
-import { getWidth, getHeight } from 'ol/extent';
 
 /**
  * @typedef {Object} Options
@@ -10,8 +9,9 @@ import { getWidth, getHeight } from 'ol/extent';
  */
 
 /**
- * Source for WMS servers providing single, untiled images.
- * The requested maximum width and height of the image is limited to a configurable size.
+ * Source for WMS servers providing single, un-tiled images.
+ * The requested maximum width and height of the image is limited to a configurable size (default is 2000x2000).
+ * If width and/or height exceed the configured maximum size, the image will be scaled.
  * @class
  * @author taulinger
  */
@@ -23,37 +23,36 @@ export class LimitedImageWMS extends ImageWMS {
 	constructor(opt_options = {}) {
 		super(opt_options);
 		this._maxSize = opt_options.maxSize ?? [2000, 2000];
+
+		super.setImageLoadFunction((image, src) => {
+			const params = new URLSearchParams(src.split('?')[1]);
+			const width = parseInt(params.get('WIDTH'));
+			const height = parseInt(params.get('HEIGHT'));
+			const scalingWidth = this._maxSize[0] / width;
+			const scalingHeight = this._maxSize[1] / height;
+			if (scalingWidth >= 1 && scalingHeight >= 1) {
+				image.getImage().src = src;
+			} else {
+				params.set('WIDTH', `${scalingWidth >= 1 ? width : Math.round(width * scalingWidth)}`);
+				params.set('HEIGHT', `${scalingHeight >= 1 ? height : Math.round(height * scalingHeight)}`);
+				const url = `${src.split('?')[0]}?${params.toString()}`;
+				const tempImage = document.createElement('img');
+				tempImage.onload = () => {
+					const canvas = document.createElement('canvas');
+					canvas.width = width;
+					canvas.height = height;
+					const ctx = canvas.getContext('2d');
+					ctx.drawImage(tempImage, 0, 0, width, height);
+					image.getImage().src = canvas.toDataURL();
+				};
+				tempImage.crossOrigin = 'anonymous';
+				tempImage.src = url;
+			}
+		});
 	}
 
 	getMaxSize() {
 		return this._maxSize;
-	}
-
-	/**
-	 * @override
-	 */
-	getImage(extent, resolution, pixelRatio, projection) {
-		/**
-		 * If the current extent would result in a dimension greater than the configured maximum size,
-		 * we calculate a cropped extent.
-		 */
-		const imageResolution = resolution / pixelRatio;
-
-		const widthPx = (getWidth(extent) / imageResolution) * this.ratio_;
-		const width = widthPx > this._maxSize[0] ? (this._maxSize[0] * imageResolution) / this.ratio_ : getWidth(extent);
-
-		const heightPx = (getHeight(extent) / imageResolution) * this.ratio_;
-		const height = heightPx > this._maxSize[1] ? (this._maxSize[1] * imageResolution) / this.ratio_ : getHeight(extent);
-
-		const centerX = (extent[0] + extent[2]) / 2;
-		const centerY = (extent[1] + extent[3]) / 2;
-
-		extent[0] = centerX - width / 2;
-		extent[2] = centerX + width / 2;
-		extent[1] = centerY - height / 2;
-		extent[3] = centerY + height / 2;
-
-		return super.getImage(extent, resolution, pixelRatio, projection);
 	}
 }
 
