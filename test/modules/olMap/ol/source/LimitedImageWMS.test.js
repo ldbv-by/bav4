@@ -43,7 +43,7 @@ describe('LimitedImageWMS', () => {
 		});
 
 		describe('when scaling is needed', () => {
-			describe('for width', () => {
+			describe('for WIDTH', () => {
 				it('scales the image using a canvas element', async () => {
 					const instanceUnderTest = new LimitedImageWMS();
 					const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
@@ -80,7 +80,7 @@ describe('LimitedImageWMS', () => {
 				});
 			});
 
-			describe('for height', () => {
+			describe('for HEIGHT', () => {
 				it('scales the image using a canvas element', async () => {
 					const instanceUnderTest = new LimitedImageWMS();
 					const imageLoadFunction = instanceUnderTest.getImageLoadFunction();
