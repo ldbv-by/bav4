@@ -43,7 +43,8 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		this._storeService = StoreService;
 		this._projectionHints = {
 			fromProjection: 'EPSG:' + this._mapService.getSrid(),
-			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid()
+			toProjection: 'EPSG:' + this._mapService.getLocalProjectedSrid(),
+			toProjectionExtent: this._mapService.getLocalProjectedSridExtent()
 		};
 	}
 
@@ -175,7 +176,6 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 	}
 
 	_createOrRemovePartitionOverlays(olFeature, olMap, simplifiedGeometry = null) {
-		const getProjectionHints = () => (olFeature.geodesic ? {} : this._projectionHints);
 		const getPartitions = () => {
 			const partitions = olFeature.get('partitions') || [];
 			if (simplifiedGeometry) {
@@ -197,7 +197,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const resolution = olMap.getView().getResolution();
 		const delta = olFeature.geodesic
 			? getPartitionDelta(olFeature.geodesic.totalLength, resolution)
-			: getPartitionDeltaFrom(simplifiedGeometry, resolution, getProjectionHints());
+			: getPartitionDeltaFrom(simplifiedGeometry, resolution, this._projectionHints);
 
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
@@ -207,7 +207,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 					olMap,
 					{ offset: [0, -25], positioning: 'top-center' },
 					MeasurementOverlayTypes.DISTANCE_PARTITION,
-					getProjectionHints()
+					this._projectionHints
 				);
 				this._add(partition, olFeature, olMap);
 				partitions.push(partition);
