@@ -376,7 +376,9 @@ describe('LayerItem', () => {
 				opacity: 1,
 				collapsed: true
 			};
-			spyOn(geoResourceService, 'byId').withArgs('geoResourceId0').and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
+			spyOn(geoResourceService, 'byId')
+				.withArgs('geoResourceId0')
+				.and.returnValue(new WmsGeoResource('geoResourceId0', 'id0', '', [], ''));
 			const element = await setup(layer);
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
