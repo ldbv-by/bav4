@@ -160,14 +160,13 @@ export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HI
 		const getLength = (geometry, calculationHints) => {
 			const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
 			const lineString = getLineString(calculationGeometry);
-			return lineString instanceof MultiLineString ? lineString.getLineStrings().reduce((p, c) => p + c.getLength(), 0) : lineString.getLength();
+			return lineString.getLength();
 		};
 
 		if (wgs84LineString) {
 			const isWithinProjectionExtent = calculationHints.toProjectionExtent
 				? !wgs84LineString.getCoordinates().some((coordinate) => !containsCoordinate(calculationHints.toProjectionExtent, coordinate))
 				: true;
-			console.log(isWithinProjectionExtent);
 			return isWithinProjectionExtent || forceGeodesic ? getLength(geometry, calculationHints) : getGeodesicLength(wgs84LineString);
 		}
 	}

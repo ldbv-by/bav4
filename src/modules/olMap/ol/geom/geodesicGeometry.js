@@ -176,7 +176,6 @@ export class GeodesicGeometry {
 					arcLength * i + this.rotation,
 					this.totalLength
 				);
-
 				circleCoords.add({ lon: res.lon2, lat: res.lat2 });
 			}
 			this.azimuthCircle = circleCoords.generateGeom();
@@ -301,17 +300,10 @@ class CoordinateBag {
 		this.lastCoord = coordinate;
 	}
 	_push(coordinate, offset = 0) {
-		const getCoord = (coordinate) => {
-			if (Object.hasOwn(coordinate, 'lat') && Object.hasOwn(coordinate, 'lon')) {
-				return [coordinate.lon + offset * 360, coordinate.lat];
-			}
-			return [coordinate[0] + offset * 360, coordinate[1]];
-		};
-		const coord = getCoord(coordinate);
+		const coord = [coordinate[0] + offset * 360, coordinate[1]];
 		const polygonId = 'polygon_' + this.worldNr;
 		this.worldNr += offset;
 		//Push to lineString (border of the shape)
-
 		this.lineStrings[this.lineStrNr].push(coord);
 		//Push to polygons (To color the area of the shape)
 		if (this.polygons[polygonId] == null) {
@@ -342,7 +334,6 @@ class CoordinateBag {
 		if (this.lineStrings[this.lineStrNr].length <= 1) {
 			this.lineStrings.pop();
 		}
-		//	console.log(this.lineStrings);
 		return new MultiLineString(this.lineStrings).transform(WGS84, WEBMERCATOR);
 	}
 	/**

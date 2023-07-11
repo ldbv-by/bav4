@@ -501,6 +501,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		};
 
 		const cancel = () => false;
+		console.log(segment);
 		return segment[1] ? draw() : cancel();
 	};
 
@@ -544,20 +545,18 @@ export const measureStyleFunction = (feature, resolution) => {
 		});
 	};
 	const styles = [
-		feature.geodesic
-			? feature.geodesic.azimuthCircleStyle
-			: new Style({
-					stroke: stroke,
-					geometry: (feature) => {
-						if (canShowAzimuthCircle(feature.getGeometry())) {
-							const coords = feature.getGeometry().getCoordinates();
-							const radius = getGeometryLength(feature.getGeometry());
-							const circle = new Circle(coords[0], radius);
-							return circle;
-						}
-					},
-					zIndex: 0
-			  }),
+		new Style({
+			stroke: stroke,
+			geometry: (feature) => {
+				if (canShowAzimuthCircle(feature.getGeometry())) {
+					const coords = feature.getGeometry().getCoordinates();
+					const radius = getGeometryLength(feature.getGeometry());
+					const circle = new Circle(coords[0], radius);
+					return circle;
+				}
+			},
+			zIndex: 0
+		}),
 		resolution ? getRulerStyle(feature) : getFallbackStyle()
 		//getFallbackStyle()
 	];
