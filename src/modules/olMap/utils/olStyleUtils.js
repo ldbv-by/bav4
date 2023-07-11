@@ -501,7 +501,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		};
 
 		const cancel = () => false;
-		console.log(segment);
 		return segment[1] ? draw() : cancel();
 	};
 
@@ -727,7 +726,7 @@ export const createSketchStyleFunction = (styleFunction) => {
 			styles = [sketchCircle];
 		} else {
 			if (!feature.geodesic) {
-				feature.geodesic = new GeodesicGeometry(feature);
+				feature.geodesic = new GeodesicGeometry(feature, () => true);
 			}
 			styles = styleFunction(feature, resolution);
 		}
