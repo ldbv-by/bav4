@@ -57,7 +57,7 @@
 
 .modal__content {
 	padding: 0.8em 1.5em;
-	max-height: calc(100vh - 11em);
+
 	overflow-y: auto;
 }
 .modal__actions {
