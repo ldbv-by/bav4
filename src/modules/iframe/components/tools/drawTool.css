@@ -17,7 +17,7 @@
 
 .draw-tool__actions {
 	display: flex;
-	border-top: 1px solid var(--surface3-light);
+	border-top: 1px solid var(--header-background-color);
 	margin-top: 0.5em;
 }
 
