@@ -455,13 +455,13 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		draw.on('drawstart', (event) => {
 			const onFeatureChange = (event) => {
-				const measureGeometry = this._createMeasureGeometry(event.target, true);
+				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 				this._setStatistics(event.target);
 			};
 
 			const onResolutionChange = () => {
-				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active, true);
+				const measureGeometry = this._createMeasureGeometry(this._sketchHandler.active);
 				this._overlayService.update(this._sketchHandler.active, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
 			};
 
@@ -536,7 +536,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		if (!this._sketchHandler.isFinishOnFirstPoint) {
 			// As long as the draw-interaction is active, the current geometry is a closed and maybe invalid Polygon
 			// (snapping from pointer-position to first point) and must be corrected into a valid LineString
-			const measureGeometry = this._createMeasureGeometry(feature, this._draw.getActive());
+			const measureGeometry = this._createMeasureGeometry(feature);
 			const nonAreaStats = getStats(measureGeometry, this._projectionHints);
 			setStatistic({ length: nonAreaStats.length, area: stats.area });
 		} else {
@@ -568,12 +568,12 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 	_createMeasureGeometry(feature, isDrawing = false) {
 		const geometry = feature.geodesic ? feature.geodesic.getGeodesicGeom() : feature.getGeometry();
-		if (feature.getGeometry() instanceof Polygon) {
-			const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
-			if (!this._sketchHandler.isFinishOnFirstPoint) {
-				return new LineString(lineCoordinates);
-			}
-		}
+		// if (feature.getGeometry() instanceof Polygon) {
+		// 	const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
+		// 	if (!this._sketchHandler.isFinishOnFirstPoint) {
+		// 		return new LineString(lineCoordinates);
+		// 	}
+		// }
 		return geometry;
 	}
 
