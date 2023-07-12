@@ -176,7 +176,7 @@ export class GeodesicGeometry {
 					arcLength * i + this.rotation,
 					this.totalLength
 				);
-				circleCoords.add({ lon: res.lon2, lat: res.lat2 });
+				circleCoords.add([res.lon2, res.lat2]);
 			}
 			this.azimuthCircle = circleCoords.generateGeom();
 			this.azimuthCircleStyle = new Style({
