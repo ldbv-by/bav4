@@ -758,6 +758,26 @@ describe('OlMeasurementHandler', () => {
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
 		});
+
+		fit('clears the drawing listeners', async () => {
+			await setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(classUnderTest._drawingListeners).toHaveSize(2);
+
+			classUnderTest.deactivate(map);
+
+			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
+		});
 	});
 
 	describe('when draw a line', () => {
