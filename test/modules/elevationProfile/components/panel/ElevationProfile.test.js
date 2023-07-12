@@ -728,7 +728,7 @@ describe('ElevationProfile', () => {
 			expect(textTypeGradientSpy).toHaveBeenCalled();
 		});
 
-		it('calles _getFixedColorGradient with a valid color and returns a gradient', async () => {
+		it('calls _getFixedColorGradient with a valid color and returns a gradient', async () => {
 			// arrange
 			const element = await setup();
 			const chart = element._chart;
