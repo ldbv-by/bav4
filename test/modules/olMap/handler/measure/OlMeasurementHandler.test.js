@@ -759,7 +759,7 @@ describe('OlMeasurementHandler', () => {
 			expect(store.getState().layers.active.length).toBe(0);
 		});
 
-		fit('clears the drawing listeners', async () => {
+		it('clears the drawing listeners', async () => {
 			await setup();
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
