@@ -124,6 +124,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		this._storedContent = null;
 		this._sketchHandler = new OlSketchHandler();
 		this._mapListeners = [];
+		this._drawingListeners = [];
 		this._keyActionMapper = new KeyActionMapper(document).addForKeyUp('Delete', () => this._remove()).addForKeyUp('Escape', () => this._reset());
 
 		this._projectionHints = {
@@ -316,7 +317,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	/**
 	 *  @override
-	 *  @param {Map} olMap
+	 *  @param {OlMap} olMap
 	 */
 	onDeactivate(olMap) {
 		//use the map to unregister event listener, interactions, etc
@@ -329,6 +330,7 @@ export class OlDrawHandler extends OlLayerHandler {
 				.forEach((d) => map.removeInteraction(d));
 		};
 		this._unreg(this._mapListeners);
+		this._unreg(this._drawingListeners);
 		setStyle(INITIAL_STYLE);
 		setSelectedStyle(null);
 		olMap.removeInteraction(this._modify);
@@ -423,7 +425,6 @@ export class OlDrawHandler extends OlLayerHandler {
 
 	_init(type) {
 		const styleOption = this._getStyleOption();
-		let listener;
 		if (this._draw) {
 			this._draw.abortDrawing();
 			this._draw.setActive(false);
@@ -457,12 +458,12 @@ export class OlDrawHandler extends OlLayerHandler {
 				const styleFunction = this._getStyleFunctionByDrawType(type, this._getStyleOption());
 				const styles = styleFunction(this._sketchHandler.active);
 				this._sketchHandler.active.setStyle(styles);
-				listener = event.feature.on('change', onFeatureChange);
+				this._drawingListeners.push(event.feature.on('change', onFeatureChange));
 			});
 			this._draw.on('drawend', (event) => {
 				this._activateModify(event.feature);
 				this._sketchHandler.deactivate();
-				unByKey(listener);
+				this._unreg(this._drawingListeners);
 			});
 
 			this._map.addInteraction(this._draw);
