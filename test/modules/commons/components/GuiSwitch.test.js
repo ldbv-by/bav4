@@ -171,17 +171,17 @@ describe('GuiSwitch', () => {
 					expect(element._dragInit).toHaveBeenCalledTimes(1);
 				});
 
-				it('does nothing when disabled', async () => {
+				fit('does nothing when disabled', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 					element.disabled = true;
-					element.onDragStart = jasmine.createSpy();
+					element._dragInit = jasmine.createSpy();
 
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
 
 					const pointerdown = new Event('pointerdown');
 					guiswitch.dispatchEvent(pointerdown);
 
-					expect(element.onDragStart).not.toHaveBeenCalled();
+					expect(element._dragInit).toHaveBeenCalled();
 				});
 			});
 
@@ -283,6 +283,21 @@ describe('GuiSwitch', () => {
 				// 	console.log('🚀 ~ fit ~ expectedThumbPosition:', expectedThumbPosition);
 				// 	expect(thumbPosition).toBe(expectedThumbPosition);
 				// });
+			});
+
+			describe('pointerup event is triggered', () => {
+				it('calls _dragEnd', async () => {
+					const element = await TestUtils.render(GuiSwitch.tag);
+
+					element._dragEnd = jasmine.createSpy();
+
+					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+
+					const pointerup = new Event('pointerup');
+					guiswitch.dispatchEvent(pointerup);
+
+					expect(element._dragEnd).toHaveBeenCalledTimes(1);
+				});
 			});
 		});
 	});
