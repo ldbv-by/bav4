@@ -548,10 +548,13 @@ export const measureStyleFunction = (feature, resolution) => {
 			stroke: stroke,
 			geometry: (feature) => {
 				if (canShowAzimuthCircle(feature.getGeometry())) {
-					const coords = feature.getGeometry().getCoordinates();
-					const radius = getGeometryLength(feature.getGeometry());
-					const circle = new Circle(coords[0], radius);
-					return circle;
+					const getCircle = () => {
+						const coords = feature.getGeometry().getCoordinates();
+						const radius = getGeometryLength(feature.getGeometry());
+						return new Circle(coords[0], radius);
+					};
+
+					return feature.geodesic ? feature.geodesic.azimuthCircle : getCircle();
 				}
 			},
 			zIndex: 0
