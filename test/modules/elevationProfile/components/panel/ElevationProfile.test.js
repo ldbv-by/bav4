@@ -17,6 +17,7 @@ import { highlightReducer } from '../../../../../src/store/highlight/highlight.r
 import { fromLonLat } from 'ol/proj.js';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer.js';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action.js';
+import { Chart } from 'chart.js';
 
 window.customElements.define(ElevationProfile.tag, ElevationProfile);
 
@@ -727,16 +728,18 @@ describe('ElevationProfile', () => {
 			expect(textTypeGradientSpy).toHaveBeenCalled();
 		});
 
-		it('returns a valid bordercolor for "selectedAttribute alt"', async () => {
+		it('calls _getFixedColorGradient with a valid color and returns a gradient', async () => {
 			// arrange
 			const element = await setup();
 			const chart = element._chart;
+			const getFixedColorGradientSpy = spyOn(element, '_getFixedColorGradient').and.callThrough();
 
 			// act
-			const value = element._getBorder(chart, elevationData);
+			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(value).toBe('#2c5a93');
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), jasmine.any(Object), '#2c5a93');
+			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
 		});
 	});
 
