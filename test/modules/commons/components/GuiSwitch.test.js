@@ -17,7 +17,6 @@ describe('GuiSwitch', () => {
 			expect(element.checked).toBeFalse();
 			expect(element.indeterminate).toBeFalse();
 			expect(element.title).toBe('');
-			expect(element.label).toBe('');
 		});
 
 		it('renders the view', async () => {
@@ -30,6 +29,13 @@ describe('GuiSwitch', () => {
 			expect(inputElement.disabled).toBeFalse();
 			expect(inputElement.checked).toBeFalse();
 			expect(inputElement.indeterminate).toBeFalse();
+
+			const slotElements = element.shadowRoot.querySelectorAll('slot');
+			expect(slotElements).toBeTruthy();
+			expect(slotElements.length).toBe(3);
+			expect(slotElements[0].assignedNodes().length).toBe(0);
+			expect(slotElements[0].assignedNodes().length).toBe(0);
+			expect(slotElements[0].assignedNodes().length).toBe(0);
 		});
 
 		it('automatically appends the "data-test-id" attribute', async () => {
@@ -37,62 +43,54 @@ describe('GuiSwitch', () => {
 		});
 	});
 
-	describe("when property 'disabled' changes", () => {
-		it('updates the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
-			const input = element.shadowRoot.querySelector('input');
+	describe('properties', () => {
+		describe("when property 'disabled' changes", () => {
+			it('updates the view', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const input = element.shadowRoot.querySelector('input');
 
-			expect(input.disabled).toBeFalse();
-			element.disabled = true;
-			expect(input.disabled).toBeTrue();
-			element.disabled = false;
-			expect(input.disabled).toBeFalse();
+				expect(input.disabled).toBeFalse();
+				element.disabled = true;
+				expect(input.disabled).toBeTrue();
+				element.disabled = false;
+				expect(input.disabled).toBeFalse();
+			});
 		});
-	});
 
-	describe("when property 'indeterminate' changes", () => {
-		it('updates the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
-			const input = element.shadowRoot.querySelector('input');
+		describe("when property 'indeterminate' changes", () => {
+			it('updates the view', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const input = element.shadowRoot.querySelector('input');
 
-			expect(input.indeterminate).toBeFalse();
-			element.indeterminate = true;
-			expect(input.indeterminate).toBeTrue();
-			element.indeterminate = false;
-			expect(input.indeterminate).toBeFalse();
+				expect(input.indeterminate).toBeFalse();
+				element.indeterminate = true;
+				expect(input.indeterminate).toBeTrue();
+				element.indeterminate = false;
+				expect(input.indeterminate).toBeFalse();
+			});
 		});
-	});
 
-	describe("when property 'checked' changes", () => {
-		it('updates the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
-			const input = element.shadowRoot.querySelector('input');
+		describe("when property 'checked' changes", () => {
+			it('updates the view', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const input = element.shadowRoot.querySelector('input');
 
-			expect(input.checked).toBeFalse();
-			element.checked = true;
-			expect(input.checked).toBeTrue();
-			element.checked = false;
-			expect(input.checked).toBeFalse();
+				expect(input.checked).toBeFalse();
+				element.checked = true;
+				expect(input.checked).toBeTrue();
+				element.checked = false;
+				expect(input.checked).toBeFalse();
+			});
 		});
-	});
 
-	describe("when property 'title' changes", () => {
-		it('updates the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
+		describe("when property 'title' changes", () => {
+			it('updates the view', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
 
-			expect(element.title).toBe('');
-			element.title = 'foo';
-			expect(element.title).toBe('foo');
-		});
-	});
-
-	describe("when property 'label' changes", () => {
-		it('updates the view', async () => {
-			const element = await TestUtils.render(GuiSwitch.tag);
-
-			expect(element.label).toBe('');
-			element.label = 'foo';
-			expect(element.label).toBe('foo');
+				expect(element.title).toBe('');
+				element.title = 'foo';
+				expect(element.title).toBe('foo');
+			});
 		});
 	});
 
@@ -174,7 +172,6 @@ describe('GuiSwitch', () => {
 				it('does nothing when disabled', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 					element.disabled = true;
-					// expect(element.disabled).toBe(true);
 					const dragInitSpy = spyOn(element, '_dragInit').and.callThrough();
 
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
@@ -186,119 +183,191 @@ describe('GuiSwitch', () => {
 					expect(element._state.activethumb).toBe(null);
 				});
 			});
+		});
 
-			describe('all pointer events at once', () => {
-				it('handles all pointer - events and calls the onToggle callback', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
-					const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
-					const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
+		describe('all pointer events at once', () => {
+			it('handles all pointer - events and calls the onToggle callback', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
 
-					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
-					const pointerdown = new Event('pointerdown');
-					guiswitch.dispatchEvent(pointerdown);
+				const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+				const pointerdown = new Event('pointerdown');
+				guiswitch.dispatchEvent(pointerdown);
 
-					const computedStyle = window.getComputedStyle(element._state.activethumb);
-					const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
-					expect(thumbTransitionDuration).toBe('0s');
+				const computedStyle = window.getComputedStyle(element._state.activethumb);
+				const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
+				expect(thumbTransitionDuration).toBe('0s');
 
-					const pointerX = 100; // just more than needed
-					const pointerY = 0;
+				const pointerX = 100; // just more than needed
+				const pointerY = 0;
 
-					const spyPointermove = spyOn(element, '_dragging').and.callThrough();
-					const pointermove = new PointerEvent('pointermove', {
-						bubbles: true,
-						clientX: pointerX,
-						clientY: pointerY
-					});
-					guiswitch.dispatchEvent(pointermove);
-
-					const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
-					const pointerup = new Event('pointerup');
-					guiswitch.dispatchEvent(pointerup);
-
-					expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
-					expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(Event));
-					expect(spyPointerup).toHaveBeenCalled();
-
-					expect(onToggleSpy).toHaveBeenCalledTimes(1);
-					expect(element.checked).toBeTrue();
+				const spyPointermove = spyOn(element, '_dragging').and.callThrough();
+				const pointermove = new PointerEvent('pointermove', {
+					bubbles: true,
+					clientX: pointerX,
+					clientY: pointerY
 				});
+				guiswitch.dispatchEvent(pointermove);
 
-				// it('checks that css properties are set correctly after moving the marker', async () => {
-				// 	const element = await TestUtils.render(GuiSwitch.tag);
-				// 	const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+				const pointerup = new Event('pointerup');
+				guiswitch.dispatchEvent(pointerup);
 
-				// 	// test dragInit
-				// 	const spyPointerdown = spyOn(element, 'dragInit').and.callThrough();
-				// 	guiswitch.addEventListener('pointerdown', element.dragInit);
-				// 	const pointerdown = new Event('pointerdown');
-				// 	guiswitch.dispatchEvent(pointerdown);
+				expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
+				expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(Event));
+				expect(spyPointerup).toHaveBeenCalled();
 
-				// 	expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
-
-				// 	const computedStyle = window.getComputedStyle(element._state.activethumb);
-				// 	const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
-				// 	expect(thumbTransitionDuration).toBe('0s');
-
-				// 	// dragging
-				// 	const pointerX = 100; // Adjust based on the pointer position
-				// 	const pointerY = 0; // Adjust based on the pointer position
-
-				// 	const spyPointermove = spyOn(element, 'dragging').and.callThrough();
-				// 	guiswitch.addEventListener('pointermove', element.dragging);
-				// 	const pointermove = new PointerEvent('pointermove', {
-				// 		bubbles: true,
-				// 		clientX: pointerX,
-				// 		clientY: pointerY
-				// 	});
-				// 	guiswitch.dispatchEvent(pointermove);
-
-				// 	expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(PointerEvent));
-
-				// 	// Calculate the expected thumbPosition value
-				// 	const remThumbsize = parseFloat(computedStyle.getPropertyValue('--thumb-size'));
-				// 	console.log('🚀 ~ fit ~ remThumbsize:', remThumbsize);
-				// 	const thumbsize = remToPx(remThumbsize);
-				// 	console.log('🚀 ~ fit ~ thumbsize:', thumbsize);
-				// 	const padding = parseFloat(computedStyle.getPropertyValue('--track-padding'));
-				// 	console.log('🚀 ~ fit ~ padding:', padding);
-				// 	const directionality = parseFloat(computedStyle.getPropertyValue('--isLTR'));
-				// 	console.log('🚀 ~ fit ~ directionality:', directionality);
-
-				// 	const track = directionality === -1 ? thumbsize * -1 + padding : 0;
-				// 	console.log('🚀 ~ fit ~ track:', track);
-
-				// 	let expectedPos = Math.round(pointermove.clientX - thumbsize / 2 + padding);
-				// 	console.log('🚀 ~ fit ~ expectedPos:', expectedPos);
-
-				// 	const lowerBound = 0;
-				// 	const upperBound = 100;
-
-				// 	if (expectedPos < lowerBound) expectedPos = 0;
-				// 	if (expectedPos > upperBound) expectedPos = upperBound;
-
-				// 	const expectedThumbPosition = `${track + expectedPos}px`;
-				// 	const thumbPosition = computedStyle.getPropertyValue('--thumb-position');
-				// 	console.log('🚀 ~ fit ~ thumbPosition:', thumbPosition);
-				// 	console.log('🚀 ~ fit ~ expectedThumbPosition:', expectedThumbPosition);
-				// 	expect(thumbPosition).toBe(expectedThumbPosition);
-				// });
+				expect(onToggleSpy).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
 			});
 
-			describe('pointerup event is triggered', () => {
-				it('calls _dragEnd', async () => {
-					const element = await TestUtils.render(GuiSwitch.tag);
+			// it('checks that css properties are set correctly after moving the marker', async () => {
+			// 	const element = await TestUtils.render(GuiSwitch.tag);
+			// 	const guiswitch = element.shadowRoot.querySelector('#guiswitch');
 
-					element._dragEnd = jasmine.createSpy();
+			// 	// test dragInit
+			// 	const spyPointerdown = spyOn(element, 'dragInit').and.callThrough();
+			// 	guiswitch.addEventListener('pointerdown', element.dragInit);
+			// 	const pointerdown = new Event('pointerdown');
+			// 	guiswitch.dispatchEvent(pointerdown);
 
-					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+			// 	expect(spyPointerdown).toHaveBeenCalledOnceWith(jasmine.any(Event));
 
-					const pointerup = new Event('pointerup');
-					guiswitch.dispatchEvent(pointerup);
+			// 	const computedStyle = window.getComputedStyle(element._state.activethumb);
+			// 	const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
+			// 	expect(thumbTransitionDuration).toBe('0s');
 
-					expect(element._dragEnd).toHaveBeenCalledTimes(1);
-				});
+			// 	// dragging
+			// 	const pointerX = 100; // Adjust based on the pointer position
+			// 	const pointerY = 0; // Adjust based on the pointer position
+
+			// 	const spyPointermove = spyOn(element, 'dragging').and.callThrough();
+			// 	guiswitch.addEventListener('pointermove', element.dragging);
+			// 	const pointermove = new PointerEvent('pointermove', {
+			// 		bubbles: true,
+			// 		clientX: pointerX,
+			// 		clientY: pointerY
+			// 	});
+			// 	guiswitch.dispatchEvent(pointermove);
+
+			// 	expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(PointerEvent));
+
+			// 	// Calculate the expected thumbPosition value
+			// 	const remThumbsize = parseFloat(computedStyle.getPropertyValue('--thumb-size'));
+			// 	console.log('🚀 ~ fit ~ remThumbsize:', remThumbsize);
+			// 	const thumbsize = remToPx(remThumbsize);
+			// 	console.log('🚀 ~ fit ~ thumbsize:', thumbsize);
+			// 	const padding = parseFloat(computedStyle.getPropertyValue('--track-padding'));
+			// 	console.log('🚀 ~ fit ~ padding:', padding);
+			// 	const directionality = parseFloat(computedStyle.getPropertyValue('--isLTR'));
+			// 	console.log('🚀 ~ fit ~ directionality:', directionality);
+
+			// 	const track = directionality === -1 ? thumbsize * -1 + padding : 0;
+			// 	console.log('🚀 ~ fit ~ track:', track);
+
+			// 	let expectedPos = Math.round(pointermove.clientX - thumbsize / 2 + padding);
+			// 	console.log('🚀 ~ fit ~ expectedPos:', expectedPos);
+
+			// 	const lowerBound = 0;
+			// 	const upperBound = 100;
+
+			// 	if (expectedPos < lowerBound) expectedPos = 0;
+			// 	if (expectedPos > upperBound) expectedPos = upperBound;
+
+			// 	const expectedThumbPosition = `${track + expectedPos}px`;
+			// 	const thumbPosition = computedStyle.getPropertyValue('--thumb-position');
+			// 	console.log('🚀 ~ fit ~ thumbPosition:', thumbPosition);
+			// 	console.log('🚀 ~ fit ~ expectedThumbPosition:', expectedThumbPosition);
+			// 	expect(thumbPosition).toBe(expectedThumbPosition);
+			// });
+		});
+
+		describe('pointerup event is triggered', () => {
+			it('calls _dragEnd', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+
+				const dragEndSpy = spyOn(element, '_dragEnd').and.callThrough();
+
+				const guiswitch = element.shadowRoot.querySelector('#guiswitch');
+
+				const pointerup = new Event('pointerup');
+				guiswitch.dispatchEvent(pointerup);
+
+				expect(dragEndSpy).toHaveBeenCalledTimes(1);
 			});
+		});
+
+		describe('on keyboard SPACE', () => {
+			const event = new KeyboardEvent('keydown', {
+				key: ' '
+			});
+
+			xit('fires a "toggle" event', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const spy = jasmine.createSpy();
+				element.addEventListener('toggle', spy);
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				element.dispatchEvent(event);
+
+				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+				expect(onToggleSpy).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
+		});
+	});
+
+	describe('when slots are used', () => {
+		it('renders content in the  before slot', async () => {
+			const beforeSlotContent = '<div>Before Slot Content</div>';
+
+			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span slot="before">${beforeSlotContent}</span>`);
+
+			const beforeSlot = element.querySelector('[slot="before"]');
+
+			expect(beforeSlot.innerHTML).toBe(beforeSlotContent);
+
+			const slotElements = element.shadowRoot.querySelectorAll('slot');
+			expect(slotElements).toBeTruthy();
+			expect(slotElements.length).toBe(3);
+			expect(slotElements[0].assignedNodes().length).toBe(1);
+			expect(slotElements[1].assignedNodes().length).toBe(0);
+			expect(slotElements[2].assignedNodes().length).toBe(0);
+		});
+
+		it('renders content in the after slot', async () => {
+			const afterSlotContent = '<div>After Slot Content</div>';
+
+			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span slot="after">${afterSlotContent}</span>`);
+
+			const afterSlot = element.querySelector('[slot="after"]');
+
+			expect(afterSlot.innerHTML).toBe(afterSlotContent);
+
+			const slotElements = element.shadowRoot.querySelectorAll('slot');
+			expect(slotElements).toBeTruthy();
+			expect(slotElements.length).toBe(3);
+			expect(slotElements[0].assignedNodes().length).toBe(0);
+			expect(slotElements[1].assignedNodes().length).toBe(1);
+			expect(slotElements[2].assignedNodes().length).toBe(0);
+		});
+
+		it('renders content in the default slot', async () => {
+			const defaultSlotContent = '<div>Default Slot Content</div>';
+
+			const element = await TestUtils.render(GuiSwitch.tag, {}, {}, `<span>${defaultSlotContent}</span>`);
+
+			const defaultSlot = element.querySelector(':not([slot])');
+
+			expect(defaultSlot.innerHTML).toBe(defaultSlotContent);
+
+			const slotElements = element.shadowRoot.querySelectorAll('slot');
+			expect(slotElements).toBeTruthy();
+			expect(slotElements.length).toBe(3);
+			expect(slotElements[0].assignedNodes().length).toBe(0);
+			expect(slotElements[1].assignedNodes().length).toBe(0);
+			expect(slotElements[2].assignedNodes().length).toBe(1);
 		});
 	});
 });
