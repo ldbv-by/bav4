@@ -174,26 +174,26 @@ describe('GuiSwitch', () => {
 				fit('does nothing when disabled', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 					element.disabled = true;
-					element._dragInit = jasmine.createSpy();
+					// expect(element.disabled).toBe(true);
+					const dragInitSpy = spyOn(element, '_dragInit').and.callThrough();
 
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
 
 					const pointerdown = new Event('pointerdown');
 					guiswitch.dispatchEvent(pointerdown);
 
-					expect(element._dragInit).toHaveBeenCalled();
+					expect(dragInitSpy).toHaveBeenCalled();
+					expect(element._state.activethumb).toBe(null);
 				});
 			});
 
 			describe('all pointer events at once', () => {
 				it('handles all pointer - events and calls the onToggle callback', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
-
-					element.onToggle = jasmine.createSpy();
+					const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+					const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
 
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
-
-					const spyPointerdown = spyOn(element, '_dragInit').and.callThrough();
 					const pointerdown = new Event('pointerdown');
 					guiswitch.dispatchEvent(pointerdown);
 
@@ -220,7 +220,7 @@ describe('GuiSwitch', () => {
 					expect(spyPointermove).toHaveBeenCalledOnceWith(jasmine.any(Event));
 					expect(spyPointerup).toHaveBeenCalled();
 
-					expect(element.onToggle).toHaveBeenCalledTimes(1);
+					expect(onToggleSpy).toHaveBeenCalledTimes(1);
 					expect(element.checked).toBeTrue();
 				});
 

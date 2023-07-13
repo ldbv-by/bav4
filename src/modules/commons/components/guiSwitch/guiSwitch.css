@@ -31,6 +31,18 @@
 	}
 }
 
+.ba-switch > label,
+.cursor-disabled {
+	cursor: not-allowed;
+	--thumb-color: transparent;
+}
+
+.ba-switch > label,
+.cursor-disabled::before {
+	cursor: not-allowed;
+	box-shadow: inset 0 0 0 2px hsl(0 0% 0% / 50%);
+}
+
 .ba-switch > input {
 	appearance: none;
 	pointer-events: none;

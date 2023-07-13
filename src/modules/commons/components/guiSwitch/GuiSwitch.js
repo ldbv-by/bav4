@@ -30,7 +30,6 @@ const Update_Label = 'update_label';
  * @class
  * @author nklein
  *
- *  todo: change pointer cursor when disabled for whole label
  *  todo: ignore dragging in wrong direction
  *  todo: more tests
  *
@@ -150,7 +149,7 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="guiswitch" class="ba-switch">
+			<label title="${title}" for="guiswitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				${label}
 				<input
 					@change=${onChange}
