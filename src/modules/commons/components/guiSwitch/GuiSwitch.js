@@ -144,6 +144,7 @@ export class GuiSwitch extends MvuElement {
 			</style>
 
 			<label title="${title}" for="guiswitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+				<slot name="before"></slot>
 				<input
 					@change=${onChange}
 					id="guiswitch"
@@ -154,10 +155,8 @@ export class GuiSwitch extends MvuElement {
 					.disabled=${disabled}
 					tabindex="0"
 				/>
-
-				<span>
-					<slot></slot>
-				</span>
+				<slot name="after"></slot>
+				<slot></slot>
 			</label>
 		`;
 	}
