@@ -161,17 +161,17 @@ describe('GuiSwitch', () => {
 				it('calls _dragInit ', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 
-					element._dragInit = jasmine.createSpy();
+					const dragInitSpy = spyOn(element, '_dragInit').and.callThrough();
 
 					const guiswitch = element.shadowRoot.querySelector('#guiswitch');
 
 					const pointerdown = new Event('pointerdown');
 					guiswitch.dispatchEvent(pointerdown);
 
-					expect(element._dragInit).toHaveBeenCalledTimes(1);
+					expect(dragInitSpy).toHaveBeenCalledTimes(1);
 				});
 
-				fit('does nothing when disabled', async () => {
+				it('does nothing when disabled', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 					element.disabled = true;
 					// expect(element.disabled).toBe(true);

@@ -11,7 +11,6 @@ const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
-const Update_Label = 'update_label';
 
 /**
  * new 'nicer' toggle element based on https://web.dev/building-a-switch-component/
@@ -24,7 +23,6 @@ const Update_Label = 'update_label';
  * - `disabled`
  * - `indeterminate`
  * - `title`
- * - `label`
  *
  *
  * @class
@@ -42,8 +40,7 @@ export class GuiSwitch extends MvuElement {
 			checked: false,
 			indeterminate: false,
 			disabled: false,
-			title: '',
-			label: ''
+			title: ''
 		});
 	}
 
@@ -80,9 +77,6 @@ export class GuiSwitch extends MvuElement {
 
 			case Update_Title:
 				return { ...model, title: data };
-
-			case Update_Label:
-				return { ...model, label: data };
 		}
 	}
 
@@ -137,7 +131,7 @@ export class GuiSwitch extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { checked, indeterminate, disabled, title, label } = model;
+		const { checked, indeterminate, disabled, title } = model;
 
 		const onChange = (event) => {
 			const checked = event.target.checked;
@@ -150,7 +144,6 @@ export class GuiSwitch extends MvuElement {
 			</style>
 
 			<label title="${title}" for="guiswitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
-				${label}
 				<input
 					@change=${onChange}
 					id="guiswitch"
@@ -161,6 +154,10 @@ export class GuiSwitch extends MvuElement {
 					.disabled=${disabled}
 					tabindex="0"
 				/>
+
+				<span>
+					<slot></slot>
+				</span>
 			</label>
 		`;
 	}
@@ -238,11 +235,7 @@ export class GuiSwitch extends MvuElement {
 
 	_determineChecked() {
 		const { bounds } = this.#switch;
-		let curpos = Math.abs(parseInt(this._state.activethumb.style.getPropertyValue('--thumb-position')));
-
-		if (!curpos) {
-			curpos = this._state.activethumb.checked ? bounds.lower : bounds.upper;
-		}
+		const curpos = parseInt(this._state.activethumb.style.getPropertyValue('--thumb-position'));
 
 		return curpos >= bounds.middle;
 	}
@@ -267,17 +260,6 @@ export class GuiSwitch extends MvuElement {
 
 	get title() {
 		return this.getModel().title;
-	}
-
-	/**
-	 * @property {string} label = '' - The label of the button
-	 */
-	set label(value) {
-		this.signal(Update_Label, value);
-	}
-
-	get label() {
-		return this.getModel().label;
 	}
 
 	/**
