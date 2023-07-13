@@ -60,7 +60,7 @@ describe('BvvMfp3Encoder', () => {
 
 	const mfpServiceMock = {
 		getCapabilities() {
-			return { grSubstitutions: { test_xyz: 'wmts_print', test_wmts: 'wmts_print' }, layouts: [] };
+			return { grSubstitutions: { test_xyz: 'wmts_print', test_wmts: 'wmts_print', test_vt: 'wmts_vt_print' }, layouts: [] };
 		},
 		getLayoutById() {
 			return { scales: [42, 21, 1] };
@@ -674,6 +674,44 @@ describe('BvvMfp3Encoder', () => {
 				});
 			});
 			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, xyzGeoResource, groupOpacity);
+
+			expect(actualSpec).toEqual({
+				opacity: 1,
+				type: 'wmts',
+				layer: 'geoResourceId',
+				requestEncoding: 'REST',
+				matrixSet: 'EPSG:25832',
+				matrices: jasmine.any(Object),
+				baseURL: 'https://some.url/to/wmts/bar/{TileMatrix}/{TileCol}/{TileRow}'
+			});
+		});
+
+		it("resolves vt layer to a mfp 'wmts' spec", () => {
+			const wmtsLayerMock = { get: () => 'foo', getOpacity: () => 1, id: 'wmts' };
+
+			const encoder = setup();
+			const groupOpacity = 1;
+			const vtGeoResource = new TestGeoResource(GeoResourceTypes.VT, 'vt');
+			spyOnProperty(vtGeoResource, 'url', 'get').and.returnValue('https://some.url/to/foo/{z}/{x}/{y}');
+			spyOn(geoResourceServiceMock, 'byId').withArgs('wmts_vt_print').and.returnValue(vtGeoResource);
+			spyOn(layerServiceMock, 'toOlLayer').and.callFake(() => {
+				const tileGrid = new TileGrid({ extent: [0, 0, 42, 42], resolutions: [40, 30, 20, 10] });
+
+				const xyzSource = new XYZ({
+					tileGrid: tileGrid,
+					layer: 'bar',
+					matrixSet: 'foo',
+					url: 'https://some.url/to/wmts/bar/{z}/{x}/{y}',
+					requestEncoding: 'REST'
+				});
+				return new TileLayer({
+					id: 'foo',
+					geoResourceId: 'geoResourceId',
+					source: xyzSource,
+					opacity: 0.42
+				});
+			});
+			const actualSpec = encoder._encodeWMTS(wmtsLayerMock, vtGeoResource, groupOpacity);
 
 			expect(actualSpec).toEqual({
 				opacity: 1,
@@ -2645,6 +2683,32 @@ describe('BvvMfp3Encoder', () => {
 
 			expect(spy).toHaveBeenCalledWith('test_xyz');
 			expect(spy).toHaveBeenCalledWith('wmts_print');
+		});
+
+		it('replace vt geoResource with the related substitution', () => {
+			const encodingProperties = { scale: 1000 };
+			const classUnderTest = setup(encodingProperties);
+			const layersMock = [{ get: () => 'test_vt' }, { get: () => 'no_geoResource' }];
+			const geoResource = new TestGeoResource(GeoResourceTypes.VT, 'vt', 'something vector');
+			const substitutionGeoResource = new TestGeoResource(GeoResourceTypes.XYZ, 'xyz_vt_substitution', 'something');
+			const attribution = {
+				copyright: { label: 'foo' }
+			};
+			spyOn(geoResource, 'getAttribution').and.callFake(() => attribution);
+			const spy = spyOn(geoResourceServiceMock, 'byId').and.callFake((id) => {
+				if (id === 'test_vt') {
+					return geoResource;
+				}
+				if (id === 'no_geoResource') {
+					return null;
+				}
+				return substitutionGeoResource;
+			});
+
+			classUnderTest._getCopyrights(mapMock, layersMock);
+
+			expect(spy).toHaveBeenCalledWith('test_vt');
+			expect(spy).toHaveBeenCalledWith('wmts_vt_print');
 		});
 	});
 
