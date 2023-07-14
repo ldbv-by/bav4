@@ -6,6 +6,7 @@ import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { BaElement } from '../../BaElement';
 import css from './baOverlay.css';
 import { classMap } from 'lit-html/directives/class-map.js';
+import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 export const BaOverlayTypes = {
 	TEXT: 'text',

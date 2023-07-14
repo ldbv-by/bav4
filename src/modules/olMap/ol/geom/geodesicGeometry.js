@@ -230,6 +230,9 @@ export class GeodesicGeometry {
 		this._update();
 		return this.subsegmentRTrees[segmentIndex].getInExtent(extent);
 	}
+	get isDrawing() {
+		return this._isDrawing();
+	}
 }
 
 const coordNormalize = (coord) => {
@@ -335,7 +338,7 @@ class CoordinateBag {
 		return new MultiLineString(this.lineStrings).transform(WGS84, WEBMERCATOR);
 	}
 	/**
-	 * @param {GeodesicGeometries} geodesic
+	 * @param {GeodesicGeometry} geodesic
 	 * @returns {MultiPolygon | null}
 	 */
 	generatePolygonGeom(geodesic) {

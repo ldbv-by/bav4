@@ -250,24 +250,28 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const lineString = getLineString(geometry);
 		const collectedSegments = { minPartition: 0, length: 0 };
 
-		lineString.forEachSegment((from, to) => {
-			const segment = new LineString([from, to]);
+		const lineStrings = lineString instanceof LineString ? [lineString] : lineString.getLineStrings();
 
-			const currentLength = collectedSegments.length + segment.getLength();
-			const currentMinPartition = currentLength / lineString.getLength();
-			const azimuth = getAzimuth(segment);
-			partitions.forEach((overlay) => {
-				const element = overlay.getElement();
-				const partition = element.value;
-				if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
-					element.placement = this._getPlacement(azimuth);
-					overlay.setOffset(element.placement.offset);
-					overlay.setPositioning(element.placement.positioning);
-				}
+		lineStrings.forEach((lineString) => {
+			lineString.forEachSegment((from, to) => {
+				const segment = new LineString([from, to]);
+
+				const currentLength = collectedSegments.length + segment.getLength();
+				const currentMinPartition = currentLength / lineString.getLength();
+				const azimuth = getAzimuth(segment);
+				partitions.forEach((overlay) => {
+					const element = overlay.getElement();
+					const partition = element.value;
+					if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
+						element.placement = this._getPlacement(azimuth);
+						overlay.setOffset(element.placement.offset);
+						overlay.setPositioning(element.placement.positioning);
+					}
+				});
+
+				collectedSegments.minPartition = currentMinPartition;
+				collectedSegments.length = currentLength;
 			});
-
-			collectedSegments.minPartition = currentMinPartition;
-			collectedSegments.length = currentLength;
 		});
 	}
 

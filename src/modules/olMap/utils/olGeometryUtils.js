@@ -5,6 +5,7 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
+import { composeCssTransform } from '../../../../node_modules/ol/transform';
 
 const EPSG_WGS84 = 'EPSG:4326';
 
@@ -160,7 +161,8 @@ export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HI
 		const getLength = (geometry, calculationHints) => {
 			const calculationGeometry = transformGeometry(geometry, calculationHints.fromProjection, calculationHints.toProjection);
 			const lineString = getLineString(calculationGeometry);
-			return lineString.getLength();
+
+			return lineString instanceof LineString ? lineString.getLength() : lineString.getLineStrings().reduce((p, c) => p + c.getLength(), 0);
 		};
 
 		if (wgs84LineString) {
@@ -216,9 +218,25 @@ const getGeodesicArea = (wgs84Polygon) => {
 export const getCoordinateAt = (geometry, fraction) => {
 	const lineString = getLineString(geometry);
 
-	if (lineString) {
+	if (lineString && lineString instanceof LineString) {
 		return lineString.getCoordinateAt(fraction);
 	}
+
+	if (lineString && lineString instanceof MultiLineString) {
+		let fractionResidual = fraction;
+		console.log('fractionResidual', fractionResidual);
+		const totalLength = lineString.getLineStrings().reduce((p, c) => p + c.getLength(), 0);
+		lineString.getLineStrings().forEach((lineString) => {
+			const partFraction = lineString.getLength() / totalLength;
+			if (partFraction > fractionResidual) {
+				return lineString.getCoordinateAt(fractionResidual);
+			}
+			fractionResidual -= partFraction;
+		});
+
+		return lineString.getLineStrings()[0].getCoordinateAt(fraction);
+	}
+	console.log('------', lineString.getType());
 	return null;
 };
 
