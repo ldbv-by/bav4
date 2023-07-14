@@ -233,7 +233,7 @@ describe('GuiSwitch', () => {
 		});
 
 		describe('on keyboard SPACE', () => {
-			fit('fires a "toggle" event', async () => {
+			it('fires a "toggle" event', async () => {
 				const element = await TestUtils.render(GuiSwitch.tag);
 				const spy = jasmine.createSpy();
 
