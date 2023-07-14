@@ -135,7 +135,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		};
 
 		const createLayer = () => {
-			const source = new VectorSource({ wrapX: false });
+			const source = new VectorSource();
 			const layer = new VectorLayer({
 				source: source,
 				style: this._styleService.getStyleFunction(StyleTypes.MEASURE)

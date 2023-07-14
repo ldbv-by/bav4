@@ -224,7 +224,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 
 	if (lineString && lineString instanceof MultiLineString) {
 		let fractionResidual = fraction;
-		console.log('fractionResidual', fractionResidual);
+
 		const totalLength = lineString.getLineStrings().reduce((p, c) => p + c.getLength(), 0);
 		lineString.getLineStrings().forEach((lineString) => {
 			const partFraction = lineString.getLength() / totalLength;
@@ -236,7 +236,7 @@ export const getCoordinateAt = (geometry, fraction) => {
 
 		return lineString.getLineStrings()[0].getCoordinateAt(fraction);
 	}
-	console.log('------', lineString.getType());
+
 	return null;
 };
 
