@@ -54,7 +54,7 @@ export class LayersPlugin extends BaPlugin {
 		};
 
 		const parsedLayers = parseLayer(
-			decodeURIComponent(queryParams.get(QueryParameters.LAYER)),
+			queryParams.get(QueryParameters.LAYER),
 			queryParams.get(QueryParameters.LAYER_VISIBILITY),
 			queryParams.get(QueryParameters.LAYER_OPACITY)
 		);
