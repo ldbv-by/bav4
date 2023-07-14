@@ -105,6 +105,10 @@ export class GuiSwitch extends MvuElement {
 				this._preventBubbles(event);
 			});
 
+			checkbox.addEventListener('keydown', (event) => {
+				this._keydown(event);
+			});
+
 			switchLabelElement.addEventListener('click', (event) => {
 				this._labelClick(event);
 			});
@@ -215,6 +219,26 @@ export class GuiSwitch extends MvuElement {
 
 	_preventBubbles(event) {
 		if (this._state.recentlyDragged) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	}
+
+	_keydown(event) {
+		console.log('🚀 ~ file: GuiSwitch.js:228 ~ GuiSwitch ~ _keydown ~ event:', event);
+		const target = event.target;
+		console.log('🚀 ~ file: GuiSwitch.js:230 ~ GuiSwitch ~ _keydown ~ target:', target);
+		const checkbox = target.querySelector('input');
+
+		if (event.key === ' ') {
+			console.log('🚀 ~ file: GuiSwitch.js:234 ~ GuiSwitch ~ _keydown ~ event.key:', event.key);
+
+			if (!target.classList.contains('ba-switch') || checkbox.disabled) {
+				return;
+			}
+
+			this.signal(Update_Checked, !checkbox.checked);
+
 			event.preventDefault();
 			event.stopPropagation();
 		}
