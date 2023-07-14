@@ -116,7 +116,7 @@ describe('markup utils', () => {
 			it('provides the correct test id for MvuElements', async () => {
 				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
-				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
+				const element = await TestUtils.render(MvuElementParent.tag, {}, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
 				const mvuChildElements = element.shadowRoot.querySelectorAll(MvuElementChild.tag);
@@ -138,7 +138,7 @@ describe('markup utils', () => {
 			});
 
 			it('does nothing', async () => {
-				const element = await TestUtils.render(MvuElementParent.tag, { 'data-test-id': '' });
+				const element = await TestUtils.render(MvuElementParent.tag, {}, { 'data-test-id': '' });
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(MvuElementChild.tag)];
 
@@ -153,7 +153,7 @@ describe('markup utils', () => {
 			it('provides the correct test id for MvuElements', async () => {
 				window.ba_enableTestIds = true;
 				const warnSpy = spyOn(console, 'warn');
-				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
+				const element = await TestUtils.render(BaElementParent.tag, {}, { 'data-test-id': '' });
 
 				const divElements = element.shadowRoot.querySelectorAll('div');
 				const baChildElements = element.shadowRoot.querySelectorAll(BaElementChild.tag);
@@ -175,7 +175,7 @@ describe('markup utils', () => {
 			});
 
 			it('does nothing', async () => {
-				const element = await TestUtils.render(BaElementParent.tag, { 'data-test-id': '' });
+				const element = await TestUtils.render(BaElementParent.tag, {}, { 'data-test-id': '' });
 
 				const all = [...element.shadowRoot.querySelectorAll('div'), ...element.shadowRoot.querySelectorAll(BaElementChild.tag)];
 

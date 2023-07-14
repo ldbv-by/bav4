@@ -48,13 +48,12 @@ describe('tests for ProcessEnvConfigService', () => {
 				PROXY_URL: 'PROXY_URL_value',
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
-				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value',
-				FIRST_STEPS_CONTENT_URL: 'HFIRST_STEPS_CONTENT_URL_value'
+				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(8);
+			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
@@ -62,7 +61,6 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(configService.getValue('FRONTEND_URL')).toBe('FRONTEND_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
-			expect(configService.getValue('FIRST_STEPS_CONTENT_URL')).toBe('HFIRST_STEPS_CONTENT_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
@@ -76,20 +74,18 @@ describe('tests for ProcessEnvConfigService', () => {
 				PROXY_URL: 'PROXY_URL_value',
 				FRONTEND_URL: 'FRONTEND_URL_value',
 				BACKEND_URL: 'BACKEND_URL_value',
-				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value',
-				FIRST_STEPS_CONTENT_URL: 'FIRST_STEPS_CONTENT_URL_value'
+				SHORTENING_SERVICE_URL: 'SHORTENING_SERVICE_URL_value'
 			};
 
 			const configService = new ProcessEnvConfigService();
 
-			expect(configService._properties.size).toBe(8);
+			expect(configService._properties.size).toBe(7);
 			expect(configService.getValue('RUNTIME_MODE')).toBe('development');
 			expect(configService.getValue('SOFTWARE_INFO')).toBe('SOFTWARE_INFO_value');
 			expect(configService.getValue('DEFAULT_LANG')).toBe('DEFAULT_LANG_value');
 			expect(configService.getValue('PROXY_URL')).toBe('PROXY_URL_value');
 			expect(configService.getValue('BACKEND_URL')).toBe('BACKEND_URL_value');
 			expect(configService.getValue('SHORTENING_SERVICE_URL')).toBe('SHORTENING_SERVICE_URL_value');
-			expect(configService.getValue('FIRST_STEPS_CONTENT_URL')).toBe('FIRST_STEPS_CONTENT_URL_value');
 
 			expect(warnSpy).not.toHaveBeenCalled();
 		});
@@ -118,7 +114,7 @@ describe('tests for ProcessEnvConfigService', () => {
 			expect(() => configService.getValue('unknown')).toThrowError(Error, "No value found for 'unknown'");
 		});
 
-		it('provides the the default value for a non-existing key', () => {
+		it('provides the default value for a non-existing key', () => {
 			const configService = new ProcessEnvConfigService();
 
 			expect(configService.getValue('unknown', 42)).toBe(42);

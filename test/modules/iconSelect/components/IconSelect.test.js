@@ -22,7 +22,7 @@ describe('IconSelect', () => {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('IconService', iconServiceMock);
-		return TestUtils.render(IconSelect.tag, attributes);
+		return TestUtils.render(IconSelect.tag, {}, attributes);
 	};
 
 	describe('when initialized', () => {

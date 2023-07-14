@@ -15,7 +15,7 @@ describe('ViewLargerMapChip', () => {
 
 	const environmentServiceMock = {
 		isEmbedded: () => {},
-		getUrlParams: () => new URLSearchParams()
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = async (state = {}, config = {}) => {
@@ -73,7 +73,7 @@ describe('ViewLargerMapChip', () => {
 	describe('QueryParameters.IFRAME_COMPONENTS includes IFrameComponents.VIEW_LARGER_MAP_CHIP', () => {
 		it('renders the button', async () => {
 			const queryParam = new URLSearchParams(QueryParameters.IFRAME_COMPONENTS + '=' + IFrameComponents.VIEW_LARGER_MAP_CHIP + ',foo,bar');
-			spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
 
 			expect(element.shadowRoot.styleSheets.length).toBe(2);
@@ -92,7 +92,7 @@ describe('ViewLargerMapChip', () => {
 	describe('QueryParameters.IFRAME_COMPONENTS does NOT include IFrameComponents.VIEW_LARGER_MAP_CHIP', () => {
 		it('renders nothing', async () => {
 			const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.DRAW_TOOL}`);
-			spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const element = await setup({ embed: true });
 
 			expect(element.shadowRoot.children.length).toBe(0);

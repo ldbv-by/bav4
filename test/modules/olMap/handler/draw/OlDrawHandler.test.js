@@ -302,7 +302,7 @@ describe('OlDrawHandler', () => {
 			it('calls the InteractionService and updates the draw slice-of-state with a fileSaveResult', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -320,7 +320,7 @@ describe('OlDrawHandler', () => {
 
 			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -807,11 +807,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBe('olMap_handler_draw_new_text');
 			});
 
-			it('re-inits the drawing and sets the store with defaultText for marker', () => {
+			it('re-inits the drawing and sets the store with defaultText for marker', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
 				const state = { ...initialState, style: style };
 
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -825,11 +825,11 @@ describe('OlDrawHandler', () => {
 				expect(store.getState().draw.style.text).toBe('');
 			});
 
-			it('re-inits the drawing and sets the store with defaultText for text', () => {
+			it('re-inits the drawing and sets the store with defaultText for text', async () => {
 				const style = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: null };
 				const state = { ...initialState, style: style };
 
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlDrawHandler();
 				const map = setupMap();
 				const drawStateFake = {
@@ -1169,7 +1169,7 @@ describe('OlDrawHandler', () => {
 		it('writes features to kml format for persisting purpose', async () => {
 			const fileSaveResultMock = { fileId: 'barId', adminId: null };
 			const state = { ...initialState, fileSaveResult: new EventLike(null) };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -1226,9 +1226,9 @@ describe('OlDrawHandler', () => {
 			);
 		});
 
-		it('adds layer with specific contraints', async () => {
+		it('adds layer with specific constraints', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlDrawHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -1296,6 +1296,27 @@ describe('OlDrawHandler', () => {
 			expect(classUnderTest._draw).toBeNull();
 			expect(initSpy).toHaveBeenCalled();
 		});
+
+		it('clears the drawing listeners', async () => {
+			await setup();
+			const classUnderTest = new OlDrawHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			setType('line');
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(classUnderTest._drawingListeners).toHaveSize(1);
+
+			classUnderTest.deactivate(map);
+
+			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}]));
+		});
 	});
 
 	describe('when draw a line', () => {
@@ -1311,7 +1332,6 @@ describe('OlDrawHandler', () => {
 
 			classUnderTest.activate(map);
 			setType('line');
-
 			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
 
 			const id = feature.getId();

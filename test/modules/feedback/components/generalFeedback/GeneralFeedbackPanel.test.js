@@ -1,6 +1,6 @@
 import { $injector } from '../../../../../src/injection';
 import { GeneralFeedbackPanel } from '../../../../../src/modules/feedback/components/generalFeedback/GeneralFeedbackPanel';
-import { Rating } from '../../../../../src/modules/feedback/components/rating/StarsRatingPanel';
+import { Rating } from '../../../../../src/modules/feedback/components/rating/LikertItemRatingPanel';
 import { GeneralFeedback } from '../../../../../src/services/FeedbackService';
 import { BA_FORM_ELEMENT_VISITED_CLASS } from '../../../../../src/utils/markup';
 import { TestUtils } from '../../../../test-utils';
@@ -10,7 +10,7 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 
 window.customElements.define(GeneralFeedbackPanel.tag, GeneralFeedbackPanel);
 
-const ratingValue = Rating.EXCELLENT;
+const ratingValue = Rating.STRONGLY_AGREE;
 const fillRating = (element) => {
 	const starsRatingPanel = element.shadowRoot.getElementById('rating');
 	const ratingChangeEvent = new CustomEvent('change', {
@@ -119,9 +119,10 @@ describe('GeneralFeedbackPanel', () => {
 			expect(actualOptions).toEqual(expectedCategoryOptions);
 			expect(element.shadowRoot.querySelector('#description').textContent).toBe(expectedDescription);
 			expect(element.shadowRoot.querySelector('#email').textContent).toBe(expectedEmail);
-			expect(element.shadowRoot.querySelectorAll('#rating')).toHaveSize(1);
-			expect(element.shadowRoot.querySelector('#rating').previousElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_0');
-			expect(element.shadowRoot.querySelector('#rating').nextElementSibling.textContent).toBe('feedback_generalFeedback_rating_scale_5');
+			expect(element.shadowRoot.querySelectorAll('ba-likert-item-rating-panel')).toHaveSize(1);
+			expect(element.shadowRoot.querySelector('.feedback-text-container').childElementCount).toBe(2);
+			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[0].textContent).toBe('feedback_generalFeedback_rating_scale_5');
+			expect(element.shadowRoot.querySelectorAll('.feedback-text-container span')[1].textContent).toBe('feedback_generalFeedback_rating_scale_0');
 		});
 
 		it('renders form elements containing correct attributes', async () => {

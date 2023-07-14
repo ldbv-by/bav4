@@ -188,7 +188,7 @@ describe('BvvMfpService', () => {
 		});
 
 		describe('provider cannot fulfill', () => {
-			it('it simulates creating the Mfp job when we are in standalone mode', async () => {
+			it('simulates creating the Mfp job when we are in standalone mode', async () => {
 				const mfpSpec = { foo: 'bar' };
 				spyOn(environmentService, 'isStandalone').and.returnValue(true);
 				const instanceUnderTest = setup(null, async () => {

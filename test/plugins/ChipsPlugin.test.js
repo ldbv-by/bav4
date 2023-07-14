@@ -14,12 +14,8 @@ describe('ChipsPlugin', () => {
 		all() {}
 	};
 
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = (state) => {
@@ -31,7 +27,7 @@ describe('ChipsPlugin', () => {
 		});
 		$injector
 			.registerSingleton('ChipsConfigurationService', chipsConfigurationService)
-			.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+			.registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
@@ -72,7 +68,7 @@ describe('ChipsPlugin', () => {
 
 		it('loads all chip configurations and publishes all chips requested by query parameter', async () => {
 			const chipId = 'id1';
-			const queryParam = `${QueryParameters.CHIP_ID}=${chipId}`;
+			const queryParam = new URLSearchParams(`${QueryParameters.CHIP_ID}=${chipId}`);
 			const mockChips = [
 				{
 					id: 'id0',
@@ -86,7 +82,7 @@ describe('ChipsPlugin', () => {
 			const store = setup();
 			const instanceUnderTest = new ChipsPlugin();
 			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -157,7 +153,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('it registes an observer for Topic related chips', async () => {
+		it('registers an observer for Topic related chips', async () => {
 			const topicId = 'topic0';
 			const mockChips = [
 				{
@@ -190,7 +186,7 @@ describe('ChipsPlugin', () => {
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
 		});
 
-		it('it registes an observer for GeoResource related chips', async () => {
+		it('registers an observer for GeoResource related chips', async () => {
 			const geoResourceId = 'geoResourceId0';
 			const mockChips = [
 				{
@@ -217,6 +213,39 @@ describe('ChipsPlugin', () => {
 
 			expect(store.getState().chips.current).toHaveSize(1);
 			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+		});
+
+		it('registers an observer for GeoResource related chip (negated configuration)', async () => {
+			const geoResourceId = 'geoResourceId0';
+			const mockChips = [
+				{
+					id: 'id0',
+					permanent: false
+				},
+				{
+					id: 'id1',
+					permanent: false,
+					observer: {
+						geoResources: [`!${geoResourceId}`],
+						topics: []
+					}
+				}
+			];
+			const store = setup();
+			const instanceUnderTest = new ChipsPlugin();
+			spyOn(chipsConfigurationService, 'all').and.resolveTo(mockChips);
+			await instanceUnderTest.register(store);
+
+			expect(store.getState().chips.current).toHaveSize(0);
+
+			addLayer('foo', { geoResourceId: 'something' });
+
+			expect(store.getState().chips.current).toHaveSize(1);
+			expect(store.getState().chips.current[0]).toEqual(mockChips[1]);
+
+			addLayer('bar', { geoResourceId: geoResourceId });
+
+			expect(store.getState().chips.current).toHaveSize(0);
 		});
 	});
 });

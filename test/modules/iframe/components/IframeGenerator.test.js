@@ -26,8 +26,8 @@ describe('IframeGenerator', () => {
 
 	describe('when instantiated', () => {
 		it('has a model with default values', async () => {
-			const element = await setup();
-			const model = element.getModel();
+			await setup();
+			const model = new IframeGenerator().getModel();
 			expect(model).toEqual({
 				size: [800, 600],
 				autoWidth: false,

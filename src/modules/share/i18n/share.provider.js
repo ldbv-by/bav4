@@ -3,7 +3,9 @@ export const provide = (lang) => {
 		case 'en':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				share_dialog_link: 'Anyone, who has this link, can edit this drawing',
+				share_dialog_link_title: 'Editability',
+				share_dialog_link:
+					'Everyone who has this link can modify the drawing without having to generate a new link. This function is useful for drawings that are edited by several people.',
 				share_dialog_api: 'Click to share',
 				share_dialog_api_failed: 'Sharing the position has failed',
 				share_dialog_copy_icon: 'Copy to clipboard',
@@ -16,7 +18,9 @@ export const provide = (lang) => {
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
-				share_dialog_link: 'Jeder, der diesen Link hat, kann an dieser Zeichnung mitarbeiten',
+				share_dialog_link_title: 'Editierbarkeit',
+				share_dialog_link:
+					'Alle, die über diesen Link verfügen, können die Zeichnung verändern, ohne dass ein neuer Link generiert werden muss. Diese Funkion ist sinnvoll für Zeichnungen, die von mehreren Personen bearbeitet werden.',
 				share_dialog_api: 'Klicken, um zu teilen',
 				share_dialog_api_failed: 'Teilen der Position ist fehlgeschlagen',
 				share_dialog_copy_icon: 'In die Zwischenablage kopieren',

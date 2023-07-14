@@ -33,7 +33,7 @@ describe('proxyUrlTemplate', () => {
 		});
 
 		describe('when config param PROXY_URL is not available', () => {
-			it('it returns the the unproxified URL and logs a warn statement', () => {
+			it('returns the unproxified URL and logs a warn statement', () => {
 				const unproxifiedUrl = 'https://some.one';
 				const errorMessage = 'foo';
 				spyOn(configService, 'getValueAsPath').and.throwError(errorMessage);

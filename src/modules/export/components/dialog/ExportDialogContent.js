@@ -8,8 +8,10 @@ import { repeat } from 'lit-html/directives/repeat.js';
 // @ts-ignore
 import css from './exportDialogContent.css';
 import { MediaType } from '../../../../domain/mediaTypes';
+import { $injector } from '../../../../injection/index';
 
 const Update = 'update';
+const Update_Export_Types = 'update_export_types';
 const Update_Media_Related_Properties = 'update_isPortrait';
 /**
  * A content component to show available export actions
@@ -20,7 +22,7 @@ const Update_Media_Related_Properties = 'update_isPortrait';
  */
 export class ExportDialogContent extends MvuElement {
 	constructor() {
-		super({ exportData: null, isPortrait: false });
+		super({ exportData: null, isPortrait: false, exportTypes: null });
 	}
 
 	update(type, data, model) {
@@ -29,22 +31,21 @@ export class ExportDialogContent extends MvuElement {
 				return { ...model, exportData: data };
 			case Update_Media_Related_Properties:
 				return { ...model, ...data };
+			case Update_Export_Types:
+				return { ...model, exportTypes: data };
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	onInitialize() {
 		this.observe(
 			(state) => state.media,
 			(media) => this.signal(Update_Media_Related_Properties, { isPortrait: media.portrait })
 		);
+		this.signal(Update_Export_Types, this._getExportTypes());
 	}
 
 	createView(model) {
-		const { exportData, isPortrait } = model;
-		const exportTypes = this._getExportTypes();
+		const { exportData, isPortrait, exportTypes } = model;
 
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
@@ -62,15 +63,17 @@ export class ExportDialogContent extends MvuElement {
 			</div>`;
 	}
 
-	// todo: could be moved to an exportTypes.provider to get the exportTypes as bvv-specific list,
-	// nonetheless must this bvv-specific list match up with the list of possible (technically) formats
-	// from the ExportVectorDataService
 	_getExportTypes() {
+		const { ProjectionService: projectionService } = $injector.inject('ProjectionService');
 		return [
-			{ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, srids: [4326] },
-			{ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, srids: [4326] },
-			{ sourceTypeName: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, srids: [4326] },
-			{ sourceTypeName: SourceTypeName.EWKT, mediaType: MediaType.TEXT_PLAIN, srids: [4326, 3857, 25832, 25833] }
+			{ sourceTypeName: SourceTypeName.KML, mediaType: MediaType.KML, srids: [4326] /* defined by KML standard specification */ },
+			{ sourceTypeName: SourceTypeName.GPX, mediaType: MediaType.GPX, srids: [4326] /* defined by GPX standard specification */ },
+			{ sourceTypeName: SourceTypeName.GEOJSON, mediaType: MediaType.GeoJSON, srids: [4326] /* defined by GeoJSON standard specification */ },
+			{
+				sourceTypeName: SourceTypeName.EWKT,
+				mediaType: MediaType.TEXT_PLAIN,
+				srids: projectionService.getProjections() /* various srids, defined by application capabilities */
+			}
 		];
 	}
 

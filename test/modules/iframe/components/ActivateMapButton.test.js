@@ -13,7 +13,7 @@ window.customElements.define(OlMap.tag, OlMap);
 describe('ActivateMapButton', () => {
 	const environmentServiceMock = {
 		isEmbedded: () => {},
-		getUrlParams: () => new URLSearchParams()
+		getQueryParams: () => new URLSearchParams()
 	};
 	const setup = (config) => {
 		const { embed } = config;
@@ -38,7 +38,7 @@ describe('ActivateMapButton', () => {
 					const queryParam = new URLSearchParams(
 						`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.ACTIVATE_MAP_BUTTON},${IFrameComponents.DRAW_TOOL}`
 					);
-					spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
+					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
 					expect(element.shadowRoot.styleSheets.length).toBe(2);
@@ -57,7 +57,7 @@ describe('ActivateMapButton', () => {
 			describe('QueryParameters.IFRAME_COMPONENTS does NOT include IFrameComponents.ACTIVATE_MAP_BUTTON', () => {
 				it('renders nothing', async () => {
 					const queryParam = new URLSearchParams(`${QueryParameters.IFRAME_COMPONENTS}=${IFrameComponents.DRAW_TOOL}`);
-					spyOn(environmentServiceMock, 'getUrlParams').and.returnValue(queryParam);
+					spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 					const element = await setup({ embed: true });
 
 					expect(element.shadowRoot.children.length).toBe(0);

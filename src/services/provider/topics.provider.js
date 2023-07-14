@@ -6,6 +6,12 @@ import { Topic } from '../../domain/topic';
 /**
  * @returns {Array} with topics loaded from backend
  */
+
+/**
+ * Uses the BVV endpoint to load Topics
+ * @function
+ * @type {module:services/TopicsService~topicsProvider}
+ */
 export const loadBvvTopics = async () => {
 	const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 

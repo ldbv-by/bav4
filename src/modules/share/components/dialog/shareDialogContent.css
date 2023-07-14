@@ -1,21 +1,29 @@
 .share_item {
 	min-width: 25em;
 }
+
 .share_label {
 	padding: 0.8em 0;
 }
+
 .link {
 	display: flex;
 }
 .share_url {
 	flex-grow: 1;
 }
+
 .share_api,
-.share_copy {
+.share_copy_icon {
 	margin-left: 1em;
 }
-.toggle {
+
+.share_copy_toggle {
 	display: flex;
-	justify-content: flex-start;
+	max-width: 40em;
+	padding: 0.8em 0;
+}
+
+.toggle {
 	margin: 1em 0;
 }

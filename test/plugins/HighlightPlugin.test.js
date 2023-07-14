@@ -25,12 +25,8 @@ import { QueryParameters } from '../../src/domain/queryParameters';
 import { positionReducer } from '../../src/store/position/position.reducer';
 
 describe('HighlightPlugin', () => {
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const translationService = {
@@ -58,7 +54,7 @@ describe('HighlightPlugin', () => {
 			featureInfo: featureInfoReducer,
 			search: searchReducer
 		});
-		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock }).registerSingleton('TranslationService', translationService);
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock).registerSingleton('TranslationService', translationService);
 		return store;
 	};
 
@@ -273,8 +269,8 @@ describe('HighlightPlugin', () => {
 				position: { center: coordinate }
 			};
 			const store = setup(state);
-			const queryParam = QueryParameters.CROSSHAIR + '=some';
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			const queryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=some');
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 
@@ -294,8 +290,8 @@ describe('HighlightPlugin', () => {
 				position: { center: coordinate }
 			};
 			const store = setup(state);
-			const emptyQueryParam = QueryParameters.CROSSHAIR + '=';
-			spyOnProperty(windowMock.location, 'search').and.returnValue(emptyQueryParam);
+			const emptyQueryParam = new URLSearchParams(QueryParameters.CROSSHAIR + '=');
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(emptyQueryParam);
 			const instanceUnderTest = new HighlightPlugin();
 			await instanceUnderTest.register(store);
 

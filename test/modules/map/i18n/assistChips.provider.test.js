@@ -6,6 +6,8 @@ describe('i18n for map assistChips', () => {
 
 		expect(map.map_assistChips_share_position_label).toBe('Share position');
 		expect(map.map_assistChips_share_position_api_failed).toBe('Sharing the position has failed');
+		expect(map.map_assistChips_map_feedback_label).toBe('Improve map');
+		expect(map.map_assistChips_map_feedback_title).toBe('Feedback');
 	});
 
 	it('provides translation for de', () => {
@@ -13,10 +15,12 @@ describe('i18n for map assistChips', () => {
 
 		expect(map.map_assistChips_share_position_label).toBe('Position teilen');
 		expect(map.map_assistChips_share_position_api_failed).toBe('Teilen der Position ist fehlgeschlagen');
+		expect(map.map_assistChips_map_feedback_label).toBe('Karte verbessern');
+		expect(map.map_assistChips_map_feedback_title).toBe('Feedback');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 2;
+		const expectedSize = 4;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

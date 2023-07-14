@@ -293,7 +293,7 @@ describe('NetworkStateSyncHttpService', () => {
 			}
 		});
 
-		it('it updates the store when fetch call fails', async () => {
+		it('updates the store when fetch call fails', async () => {
 			const store = setup();
 			const instanceUnderTest = new NetworkStateSyncHttpService();
 			spyOn(window, 'fetch').and.callFake(() => {

@@ -31,7 +31,7 @@ export class TopicsPlugin extends BaPlugin {
 
 	async _init() {
 		const { TopicsService: topicsService, EnvironmentService: environmentService } = $injector.inject('TopicsService', 'EnvironmentService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
 		try {
 			await topicsService.init();

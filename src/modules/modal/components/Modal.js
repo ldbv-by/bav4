@@ -4,7 +4,7 @@
 import { html, nothing } from 'lit-html';
 import css from './modal.css';
 import { $injector } from '../../../injection';
-import { closeModal } from '../../../store/modal/modal.action';
+import { closeModal, decrementStep } from '../../../store/modal/modal.action';
 import arrowLeftShort from '../assets/arrowLeftShort.svg';
 import { MvuElement } from '../../MvuElement';
 import { findAllBySelector } from '../../../utils/markup';
@@ -20,15 +20,24 @@ const Update_IsPortrait_Value = 'update_isportrait_value';
  * @author taulinger
  */
 export class Modal extends MvuElement {
+	#translationService;
+	#escKeyListener;
+
 	constructor() {
 		super({
 			data: null,
 			active: false,
-			portrait: true
+			portrait: true,
+			currentStep: 0
 		});
 		const { TranslationService } = $injector.inject('TranslationService');
-		this._translationService = TranslationService;
-		this._escKeyListener = null;
+		this.#translationService = TranslationService;
+		this.#escKeyListener = (e) => {
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				closeModal();
+			}
+		};
 	}
 
 	onInitialize() {
@@ -41,30 +50,30 @@ export class Modal extends MvuElement {
 			(portrait) => this.signal(Update_IsPortrait_Value, portrait)
 		);
 
-		this._escKeyListener = (e) => {
-			if (e.key === 'Escape') {
-				e.preventDefault();
-				closeModal();
-			}
-		};
-
 		this.observeModel('active', (active) => {
 			if (active) {
-				document.addEventListener('keydown', this._escKeyListener);
+				document.addEventListener('keydown', this.#escKeyListener);
 				setTimeout(() => {
 					//focus the first element containing the autofocus attribute
 					findAllBySelector(this, '*[autofocus]')[0]?.focus();
 				});
 			} else {
-				document.removeEventListener('keydown', this._escKeyListener);
+				this.#removeKeyDownListener();
 			}
 		});
+	}
+	#removeKeyDownListener() {
+		document.removeEventListener('keydown', this.#escKeyListener);
+	}
+
+	onDisconnect() {
+		this.#removeKeyDownListener();
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Modal_Data:
-				return { ...model, data: data.data, active: data.active };
+				return { ...model, data: data.data, active: data.active, currentStep: data.currentStep };
 			case Update_IsPortrait_Value:
 				return { ...model, portrait: data };
 		}
@@ -74,16 +83,20 @@ export class Modal extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { active, portrait } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const { active, portrait, currentStep } = model;
+		const translate = (key) => this.#translationService.translate(key);
 
-		const hide = () => {
-			const elementModal = this.shadowRoot.querySelector('.modal__container');
-			elementModal.classList.remove('modal_show');
-			elementModal.classList.add('modal_hide');
-			elementModal.addEventListener('animationend', () => {
-				closeModal();
-			});
+		const hide = (force) => {
+			if (currentStep === 0 || force) {
+				const elementModal = this.shadowRoot.querySelector('.modal__container');
+				elementModal.classList.remove('modal_show');
+				elementModal.classList.add('modal_hide');
+				elementModal.addEventListener('animationend', () => {
+					closeModal();
+				});
+			} else {
+				decrementStep();
+			}
 		};
 
 		const getOrientationClass = () => {
@@ -101,7 +114,7 @@ export class Modal extends MvuElement {
 				<div class="modal__container modal_show ${getOrientationClass()}">
 					<div class="modal ">
 						<div class="modal__title">
-							<span class="ba-list-item__pre back-icon" @click="${hide}">
+							<span class="ba-list-item__pre back-icon" @click="${() => hide()}">
 								<ba-icon id="back_button" data-test-id .icon="${arrowLeftShort}" .color=${'var(--primary-color)'} .size=${4}></ba-icon>
 							</span>
 							<span class="modal__title-text">${title}</span>
@@ -112,7 +125,7 @@ export class Modal extends MvuElement {
 						</div>
 					</div>
 				</div>
-				<div class="modal__background" @click="${hide}"></div>
+				<div class="modal__background" @click="${() => hide(true)}"></div>
 			`;
 		}
 		return nothing;

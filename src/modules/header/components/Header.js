@@ -265,8 +265,8 @@ export class Header extends MvuElement {
 						</div>
 						<div  class="header__button-container">
 							<button id="topics_button" data-test-id class="${getActiveClass(TabIds.TOPICS)}" title=${translate(
-			'header_tab_topics_title'
-		)} @click="${openTopicsTab}">
+								'header_tab_topics_title'
+							)} @click="${openTopicsTab}">
 								<span>
 									${translate('header_tab_topics_button')}
 								</span>

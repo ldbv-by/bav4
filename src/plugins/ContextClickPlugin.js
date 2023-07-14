@@ -11,18 +11,22 @@ import { addHighlightFeatures, HighlightFeatureType, removeHighlightFeaturesById
 import { closeBottomSheet, openBottomSheet } from '../store/bottomSheet/bottomSheet.action';
 
 /**
- * Plugin for contextClick state management.
+ * Plugin for context-click related slice-of-state management.
  * @class
  * @author taulinger
  */
 export class ContextClickPlugin extends BaPlugin {
-	/**
-	 * @override
-	 * @param {Store} store
-	 */
 	async register(store) {
-		const highlightFeatureId = createUniqueId();
+		// flag indicating if the BottomSheet was opened from here
+		let bottomSheetOpenedFromHere = false;
+		const highlightFeatureId = `${createUniqueId()}`;
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
+
+		const onBottomSheetChanged = (active) => {
+			if (!active) {
+				bottomSheetOpenedFromHere = false;
+			}
+		};
 
 		const onContextClick = ({ payload }) => {
 			const { coordinate, screenCoordinate } = payload;
@@ -32,6 +36,7 @@ export class ContextClickPlugin extends BaPlugin {
 				removeHighlightFeaturesById(highlightFeatureId);
 				addHighlightFeatures({ id: highlightFeatureId, data: { coordinate: coordinate }, type: HighlightFeatureType.QUERY_SUCCESS });
 				openBottomSheet(content);
+				bottomSheetOpenedFromHere = true;
 			} else {
 				open([screenCoordinate[0], screenCoordinate[1]], content);
 			}
@@ -40,7 +45,9 @@ export class ContextClickPlugin extends BaPlugin {
 		const onMoveOrClick = () => {
 			if (environmentService.isTouch()) {
 				removeHighlightFeaturesById(highlightFeatureId);
-				closeBottomSheet();
+				if (bottomSheetOpenedFromHere) {
+					closeBottomSheet();
+				}
 			} else {
 				close();
 			}
@@ -49,5 +56,6 @@ export class ContextClickPlugin extends BaPlugin {
 		observe(store, (state) => state.pointer.contextClick, onContextClick);
 		observe(store, (state) => state.pointer.click, onMoveOrClick);
 		observe(store, (state) => state.map.moveStart, onMoveOrClick);
+		observe(store, (state) => state.bottomSheet.active, onBottomSheetChanged);
 	}
 }

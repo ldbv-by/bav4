@@ -66,6 +66,9 @@ export const Empty_Profile_Data = Object.freeze({
 });
 
 /**
+ * Chart.js based elevation profile.
+ * Note: This component and its dependencies are intended to be loaded dynamically and should therefore be wrapped within the {@link LazyLoadComponent}.
+ * Its corresponding chunk name is `elevation-profile`.
  * @class
  * @fires chartJsAfterRender Called after the chart has been fully rendered (and animation completed)
  * @author nklein
@@ -368,7 +371,7 @@ export class ElevationProfile extends MvuElement {
 					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 				default:
-					return ElevationProfile.BORDER_COLOR;
+					return this._getFixedColorGradient(chart, elevationData, ElevationProfile.BORDER_COLOR);
 			}
 		}
 		return ElevationProfile.BORDER_COLOR;
@@ -439,6 +442,20 @@ export class ElevationProfile extends MvuElement {
 
 				gradientBg.addColorStop(xPoint, slopeClass.color);
 			}
+		});
+		return gradientBg;
+	}
+
+	_getFixedColorGradient(chart, elevationData, color) {
+		// hint: workaround for Safari Problem displaying horizontal lines with fixed color
+		const { ctx, chartArea } = chart;
+		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+		const numberOfPoints = elevationData.elevations.length;
+		const xPointWidth = chartArea.width / numberOfPoints;
+
+		elevationData?.elevations.forEach((element, index) => {
+			const xPoint = (xPointWidth / chartArea.width) * index;
+			gradientBg.addColorStop(xPoint, color);
 		});
 		return gradientBg;
 	}

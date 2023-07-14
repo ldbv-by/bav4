@@ -21,7 +21,7 @@ export class MainMenuPlugin extends BaPlugin {
 
 	_init() {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
 		// check if we have a query parameter defining the tab id
 		const tabId = TabIds.valueOf(parseInt(queryParams.get(QueryParameters.MENU_ID), 10));

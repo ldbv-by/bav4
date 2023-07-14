@@ -44,7 +44,7 @@ describe('olMapUtils', () => {
 			expect(myLayer.get('id')).toBe('someId');
 		});
 
-		it('it passes return values from a handler', () => {
+		it('passes return values from a handler', () => {
 			const mockHandler = {
 				activate() {}
 			};

@@ -35,7 +35,9 @@
 	height: 3.4em;
 	width: 3.4em;
 	background-color: var(--primary-color) !important;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.5),
+		0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .tool-container__icon {
@@ -67,7 +69,9 @@
 	height: 3.4em;
 	width: 3.4em;
 	background-color: var(--secondary-color);
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 0.2em var(--primary-color-lighter);
+	box-shadow:
+		0 1px 2px rgba(0, 0, 0, 0.5),
+		0 0 0 0.2em var(--primary-color-lighter);
 }
 
 .tool-container__button:focus-visible {
@@ -164,7 +168,7 @@ ba-checkbox:focus {
 	justify-content: center;
 	flex-flow: wrap;
 	gap: 0.5em 0.8em;
-	padding: 1em 0.8em;
+	padding: 0.8em 1.2em;
 	border-bottom: 1px solid var(--header-background-color);
 }
 

@@ -31,7 +31,9 @@ describe('GeoResourceInfo provider', () => {
 
 	it('should load a GeoResourceInfo', async () => {
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
+		spyOn(geoResourceService, 'byId')
+			.withArgs(geoResourceId)
+			.and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -113,7 +115,9 @@ describe('GeoResourceInfo provider', () => {
 
 	it('should return null when backend provides empty payload', async () => {
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
+		spyOn(geoResourceService, 'byId')
+			.withArgs(geoResourceId)
+			.and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -130,7 +134,9 @@ describe('GeoResourceInfo provider', () => {
 
 	it('should reject when backend request cannot be fulfilled', async () => {
 		const geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
+		spyOn(geoResourceService, 'byId')
+			.withArgs(geoResourceId)
+			.and.returnValue(new WmsGeoResource(geoResourceId, 'label', 'url', 'layer', 'format'));
 		const backendUrl = 'https://backend.url/';
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
@@ -152,7 +158,9 @@ describe('GeoResourceInfo provider', () => {
 
 	it('should return NULL for an unsupported imported GeoResource', async () => {
 		const geoResourceId = 'http://some.url||foo';
-		spyOn(geoResourceService, 'byId').withArgs(geoResourceId).and.returnValue(new VectorGeoResource(geoResourceId, 'label', VectorSourceType.KML));
+		spyOn(geoResourceService, 'byId')
+			.withArgs(geoResourceId)
+			.and.returnValue(new VectorGeoResource(geoResourceId, 'label', VectorSourceType.KML));
 
 		const result = await loadBvvGeoResourceInfo(geoResourceId);
 

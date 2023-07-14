@@ -6,7 +6,7 @@ import { styleMap } from 'lit-html/directives/style-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './mapContextMenu.css';
 import { $injector } from '../../../../injection';
-import { close as closeContextMenu } from '../../../../store/mapContextMenu/mapContextMenu.action';
+import { close } from '../../../../store/mapContextMenu/mapContextMenu.action';
 import closeIcon from './assets/x-square.svg';
 
 const Update = 'update';
@@ -17,14 +17,24 @@ const Update = 'update';
  * @author taulinger
  */
 export class MapContextMenu extends MvuElement {
+	#translationService;
+	#escKeyListener;
+
 	constructor() {
 		super({
 			coordinate: null,
 			content: null
 		});
-		const { TranslationService: translastionService } = $injector.inject('TranslationService');
+		const { TranslationService: translationService, StoreService: storeService } = $injector.inject('TranslationService', 'StoreService');
 
-		this._translationService = translastionService;
+		this.#translationService = translationService;
+
+		this.#escKeyListener = (e) => {
+			if (e.key === 'Escape' && !storeService.getStore().getState().modal.active) {
+				e.preventDefault();
+				close();
+			}
+		};
 	}
 
 	onInitialize() {
@@ -32,6 +42,22 @@ export class MapContextMenu extends MvuElement {
 			(state) => state.mapContextMenu,
 			(data) => this.signal(Update, data)
 		);
+
+		this.observeModel(['coordinate'], (coordinate) => {
+			if (coordinate) {
+				document.addEventListener('keydown', this.#escKeyListener);
+			} else {
+				this.#removeKeyDownListener();
+			}
+		});
+	}
+
+	#removeKeyDownListener() {
+		document.removeEventListener('keydown', this.#escKeyListener);
+	}
+
+	onDisconnect() {
+		this.#removeKeyDownListener();
 	}
 
 	update(type, data) {
@@ -64,7 +90,7 @@ export class MapContextMenu extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const translate = (key) => this._translationService.translate(key);
+		const translate = (key) => this.#translationService.translate(key);
 		const { coordinate, content } = model;
 
 		if (!coordinate || !content) {
@@ -95,7 +121,7 @@ export class MapContextMenu extends MvuElement {
 						.size=${1.5}
 						.color=${'var(--text2)'}
 						.color_hover=${'var(--text2)'}
-						@click=${closeContextMenu}
+						@click=${close}
 					></ba-icon>
 				</div>
 				${content}

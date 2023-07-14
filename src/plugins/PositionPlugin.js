@@ -73,8 +73,7 @@ export class PositionPlugin extends BaPlugin {
 
 	_init() {
 		const { EnvironmentService: environmentService } = $injector.inject('EnvironmentService');
-
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
+		const queryParams = environmentService.getQueryParams();
 
 		//from query params
 		if (queryParams.has(QueryParameters.CENTER) || queryParams.has(QueryParameters.ZOOM)) {

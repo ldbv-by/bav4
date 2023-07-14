@@ -7,7 +7,7 @@ import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
-import { getPrerenderFunctionForImageLayer, LimitedImageWMS } from '../ol/source/LimitedImageWMS';
+import { LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
@@ -78,8 +78,6 @@ export class LayerService {
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
-				const onPrerenderFunctionKey = layer.on('prerender', getPrerenderFunctionForImageLayer());
-				layer.set('onPrerenderFunctionKey', onPrerenderFunctionKey);
 				return layer;
 			}
 
@@ -132,13 +130,23 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.AGGREGATE: {
-				return new LayerGroup({
+				const layerGroup = new LayerGroup({
 					id: id,
 					opacity: opacity,
 					layers: geoResource.geoResourceIds.map((id) => this.toOlLayer(id, georesourceService.byId(id))),
 					minZoom: minZoom ?? undefined,
 					maxZoom: maxZoom ?? undefined
 				});
+
+				// synchronizes the MapLibre layers's opacity with the layer group's one
+				layerGroup.on('change:opacity', (evt) =>
+					evt.target.getLayers().forEach((el) => {
+						if (el instanceof MapLibreLayer) {
+							el.setOpacity(evt.target.getOpacity());
+						}
+					})
+				);
+				return layerGroup;
 			}
 		}
 		throw new Error(geoResource.getType() + ' currently not supported');

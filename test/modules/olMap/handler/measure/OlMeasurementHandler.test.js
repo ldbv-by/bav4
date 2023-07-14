@@ -294,7 +294,7 @@ describe('OlMeasurementHandler', () => {
 			it('calls the InteractionService and updates the measurement slice-of-state ', async () => {
 				const fileSaveResultMock = { fileId: 'barId', adminId: null };
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -313,7 +313,7 @@ describe('OlMeasurementHandler', () => {
 
 			it('calls the InteractionService and updates the draw slice-of-state with null', async () => {
 				const state = { ...initialState, fileSaveResult: new EventLike(null) };
-				const store = setup(state);
+				const store = await setup(state);
 				const classUnderTest = new OlMeasurementHandler();
 				const map = setupMap();
 				const feature = createFeature();
@@ -669,7 +669,7 @@ describe('OlMeasurementHandler', () => {
 		it('writes features to kml format for persisting purpose', async () => {
 			const fileSaveResultMock = { fileId: 'barId', adminId: null };
 			const state = { ...initialState, fileSaveResult: new EventLike(null) };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -727,9 +727,9 @@ describe('OlMeasurementHandler', () => {
 			);
 		});
 
-		it('adds layer with specific contrainsts', async () => {
+		it('adds layer with specific constraints', async () => {
 			const state = { ...initialState, fileSaveResult: { fileId: null, adminId: null } };
-			const store = setup(state);
+			const store = await setup(state);
 			const classUnderTest = new OlMeasurementHandler();
 			const map = setupMap();
 			const feature = createFeature();
@@ -757,6 +757,26 @@ describe('OlMeasurementHandler', () => {
 
 			await TestUtils.timeout();
 			expect(store.getState().layers.active.length).toBe(0);
+		});
+
+		it('clears the drawing listeners', async () => {
+			await setup();
+			const classUnderTest = new OlMeasurementHandler();
+			const map = setupMap();
+			const geometry = new LineString([
+				[0, 0],
+				[1, 0]
+			]);
+			const feature = new Feature({ geometry: geometry });
+
+			classUnderTest.activate(map);
+			simulateDrawEvent('drawstart', classUnderTest._draw, feature);
+
+			expect(classUnderTest._drawingListeners).toHaveSize(2);
+
+			classUnderTest.deactivate(map);
+
+			expect(classUnderTest._drawingListeners).toEqual(jasmine.arrayWithExactContents([{}, {}]));
 		});
 	});
 

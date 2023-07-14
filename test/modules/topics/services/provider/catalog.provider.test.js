@@ -1,14 +1,32 @@
 import { $injector } from '../../../../../src/injection';
-import { loadBvvCatalog, loadExampleCatalog, loadFallbackCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
-import {
-	FALLBACK_GEORESOURCE_ID_0,
-	FALLBACK_GEORESOURCE_ID_1,
-	FALLBACK_GEORESOURCE_ID_2,
-	FALLBACK_GEORESOURCE_ID_3
-} from '../../../../../src/services/GeoResourceService';
+import { loadBvvCatalog } from '../../../../../src/modules/topics/services/provider/catalog.provider';
 
-describe('Catalog provider', () => {
+describe('catalog provider', () => {
 	describe('Bvv catalog provider', () => {
+		const testCatalog = [
+			{
+				label: 'Subtopic 1',
+				children: [
+					{
+						geoResourceId: 'gr0'
+					},
+					{
+						geoResourceId: 'gr1'
+					},
+					{
+						label: 'Suptopic 2',
+						children: [
+							{
+								geoResourceId: 'gr3'
+							}
+						]
+					}
+				]
+			},
+			{
+				geoResourceId: 'gr3'
+			}
+		];
 		const configService = {
 			getValueAsPath: () => {}
 		};
@@ -28,13 +46,13 @@ describe('Catalog provider', () => {
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get')
 				.withArgs(expectedArgs0)
-				.and.returnValue(Promise.resolve(new Response(JSON.stringify(await loadExampleCatalog()))));
+				.and.returnValue(Promise.resolve(new Response(JSON.stringify(testCatalog))));
 
 			const catalog = await loadBvvCatalog(topicId);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
-			expect(catalog).toEqual(await loadExampleCatalog());
+			expect(catalog).toEqual(testCatalog);
 		});
 
 		it('rejects when backend request cannot be fulfilled', async () => {
@@ -54,32 +72,6 @@ describe('Catalog provider', () => {
 				expect(httpServiceSpy).toHaveBeenCalled();
 				expect(error.message).toBe(`Catalog for '${topicId}' could not be loaded`);
 			}
-		});
-	});
-
-	describe('Example catalog provider', () => {
-		it('loads an example catalog', async () => {
-			const catalog = await loadExampleCatalog('foo');
-
-			expect(catalog.length).toBe(2);
-			expect(catalog[0].open).toBeTrue();
-			expect(catalog[0].children.length).toBe(3);
-			expect(catalog[0].children[2].children.length).toBe(1);
-		});
-	});
-
-	describe('Util function for a fallback catalog', () => {
-		it('loads a fallback catalog', async () => {
-			const catalog = loadFallbackCatalog();
-
-			expect(catalog.length).toBe(2);
-			expect(catalog[0].open).toBeTrue();
-			expect(catalog[0].children.length).toBe(3);
-			expect(catalog[0].children[2].children.length).toBe(1);
-			expect(catalog[0].children[0].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_0);
-			expect(catalog[0].children[1].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_1);
-			expect(catalog[0].children[2].children[0].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_2);
-			expect(catalog[1].geoResourceId).toBe(FALLBACK_GEORESOURCE_ID_3);
 		});
 	});
 });

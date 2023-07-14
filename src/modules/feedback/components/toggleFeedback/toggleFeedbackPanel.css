@@ -1,22 +1,11 @@
 .toggleButtons {
-	display: none;
 	max-width: 50em;
 }
-.toggleButtons.active {
-	display: block;
-}
-.toggleMap {
-	display: none;
-}
-.toggleMap.active {
-	display: block;
-}
+
 .toggleGeneral {
-	display: none;
+	max-width: 55em;
 }
-.toggleGeneral.active {
-	display: block;
-}
+
 .ba-list-item {
 	display: flex;
 	text-decoration: none;

@@ -6,11 +6,23 @@ import { Topic } from '../domain/topic';
 import { loadBvvTopics } from './provider/topics.provider';
 
 /**
+ * An async function that provides an array of {@link Topic}.
+ *
+ * @async
+ * @typedef {function} topicsProvider
+ * @throws May throw when topics cannot be loaded
+ * @return {Topic[]}
+ */
+
+/**
  * Service for managing topics.
  * @class
  * @author taulinger
  */
 export class TopicsService {
+	/**
+	 * @param {module:services/TopicsService~topicsProvider} [provider=loadBvvCatalog]
+	 */
 	constructor(provider = loadBvvTopics) {
 		this._provider = provider;
 		const { ConfigService: configService, EnvironmentService: environmentService } = $injector.inject('ConfigService', 'EnvironmentService');

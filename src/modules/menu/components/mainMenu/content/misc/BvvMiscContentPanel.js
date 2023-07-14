@@ -26,7 +26,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 		const openFeedbackDialog = () => {
 			const title = translate('menu_misc_content_panel_feedback_title');
 			const content = html`<ba-mvu-togglefeedbackpanel .onSubmit=${closeModal}></ba-mvu-togglefeedbackpanel>`;
-			openModal(title, content);
+			openModal(title, content, { steps: 2 });
 		};
 
 		return html`

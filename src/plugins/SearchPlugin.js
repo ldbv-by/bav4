@@ -16,9 +16,8 @@ export class SearchPlugin extends BaPlugin {
 	 */
 	async register() {
 		const { EnvironmentService: environmentService, SecurityService: securityService } = $injector.inject('EnvironmentService', 'SecurityService');
-		const queryParams = new URLSearchParams(environmentService.getWindow().location.search);
 
-		const query = queryParams.get(QueryParameters.QUERY);
+		const query = environmentService.getQueryParams().get(QueryParameters.QUERY);
 		if (query) {
 			setQuery(securityService.sanitizeHtml(query));
 		}

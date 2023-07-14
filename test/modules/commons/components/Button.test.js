@@ -133,7 +133,7 @@ describe('Button', () => {
 
 		it('calls the onClick callback via attribute binding', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Button.tag, { onClick: "alert('called')" });
+			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
 
 			element.click();
 
@@ -142,7 +142,7 @@ describe('Button', () => {
 
 		it('does nothing when disabled', async () => {
 			spyOn(window, 'alert');
-			const element = await TestUtils.render(Button.tag, { onClick: "alert('called')" });
+			const element = await TestUtils.render(Button.tag, {}, { onClick: "alert('called')" });
 			element.disabled = true;
 
 			element.onClick = jasmine.createSpy();

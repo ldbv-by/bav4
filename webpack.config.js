@@ -80,6 +80,9 @@ module.exports = {
 		port: port
 	},
 	resolve: {
+		alias: {
+			'@chunk': path.resolve(__dirname, './src/chunks')
+		},
 		fallback: {
 			https: false,
 			http: false,

@@ -93,8 +93,11 @@ export class ShareDialogContent extends MvuElement {
 
 		return isToggleNeeded
 			? html`<div class="toggle">
-					<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
-					<span class="share_copy">${translate('share_dialog_link')}</span>
+					<h4>${translate('share_dialog_link_title')}</h4>
+					<div class="share_copy_toggle">
+						<span class="share_copy">${translate('share_dialog_link')}</span>
+						<ba-toggle id="toggle" .checked=${checkedToggle} .title=${'Toggle'} @toggle=${onToggle}></ba-toggle>
+					</div>
 			  </div>`
 			: html.nothing;
 	}
@@ -122,7 +125,7 @@ export class ShareDialogContent extends MvuElement {
 				</ba-icon>`;
 			}
 			return html`<ba-icon
-				class="share_copy"
+				class="share_copy_icon"
 				.icon="${clipboardIcon}"
 				.title=${translate('share_dialog_copy_icon')}
 				.size=${2}

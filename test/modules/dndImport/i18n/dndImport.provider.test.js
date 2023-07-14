@@ -5,7 +5,7 @@ describe('i18n for dndImport module', () => {
 		const map = provide('de');
 
 		expect(map.dndImport_import_textcontent).toBe('Text oder URL hierhin ziehen');
-		expect(map.dndImport_import_filecontent).toBe('KML/GPX/GeoJSON Datei hierhin ziehen');
+		expect(map.dndImport_import_filecontent).toBe('KML/GPX/GeoJSON/EWKT Datei hierhin ziehen');
 		expect(map.dndImport_import_unknown).toBe('Die Import-Daten sind unbekannt');
 		expect(map.dndImport_import_unsupported).toBe('Der Dateityp wird nicht unterstützt');
 		expect(map.dndImport_import_file_error).toBe('Die Datei kann nicht gelesen werden');
@@ -17,7 +17,7 @@ describe('i18n for dndImport module', () => {
 		const map = provide('en');
 
 		expect(map.dndImport_import_textcontent).toBe('Drop Text-Data or URL here');
-		expect(map.dndImport_import_filecontent).toBe('Drop KML/GPX/GeoJSON file here');
+		expect(map.dndImport_import_filecontent).toBe('Drop KML/GPX/GeoJSON/EWKT file here');
 		expect(map.dndImport_import_unknown).toBe('Cannot read import-data');
 		expect(map.dndImport_import_unsupported).toBe('The file-type is not supported');
 		expect(map.dndImport_import_file_error).toBe('File is not readable');

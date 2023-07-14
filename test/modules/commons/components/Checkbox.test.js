@@ -19,7 +19,7 @@ describe('Checkbox', () => {
 		});
 
 		it('renders the view', async () => {
-			const element = await TestUtils.render(Checkbox.tag, {}, '<span>some</span>');
+			const element = await TestUtils.render(Checkbox.tag, {}, {}, '<span>some</span>');
 
 			//view
 			expect(element.shadowRoot.querySelector('.ba-checkbox')).toBeTruthy();
@@ -109,7 +109,7 @@ describe('Checkbox', () => {
 
 			it('calls the onToggle callback via attribute callback', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 
 				element.click();
 
@@ -119,7 +119,7 @@ describe('Checkbox', () => {
 
 			it('does nothing when disabled', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.disabled = true;
 				element.onClick = jasmine.createSpy();
 
@@ -173,7 +173,7 @@ describe('Checkbox', () => {
 
 			it('calls the onToggle callback via attribute binding', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.onToggle = jasmine.createSpy();
 
 				element.dispatchEvent(event);
@@ -236,7 +236,7 @@ describe('Checkbox', () => {
 
 			it('calls the onToggle callback via attribute callback', async () => {
 				spyOn(window, 'alert');
-				const element = await TestUtils.render(Checkbox.tag, { onToggle: "alert('called')" });
+				const element = await TestUtils.render(Checkbox.tag, {}, { onToggle: "alert('called')" });
 				element.onToggle = jasmine.createSpy();
 
 				element.dispatchEvent(event);

@@ -6,12 +6,8 @@ import { ToolsPlugin } from '../../src/plugins/ToolsPlugin';
 import { Tools } from '../../src/domain/tools.js';
 
 describe('ToolsPlugin', () => {
-	const windowMock = {
-		location: {
-			get search() {
-				return null;
-			}
-		}
+	const environmentServiceMock = {
+		getQueryParams: () => new URLSearchParams()
 	};
 
 	const setup = () => {
@@ -21,7 +17,7 @@ describe('ToolsPlugin', () => {
 				tools: toolsReducer
 			}
 		);
-		$injector.registerSingleton('EnvironmentService', { getWindow: () => windowMock });
+		$injector.registerSingleton('EnvironmentService', environmentServiceMock);
 
 		return store;
 	};
@@ -29,9 +25,9 @@ describe('ToolsPlugin', () => {
 	describe('register', () => {
 		it('updates the "tools" slice-of-state', async () => {
 			const store = setup();
-			const queryParam = `${QueryParameters.TOOL_ID}=${Tools.EXPORT}`;
+			const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=${Tools.EXPORT}`);
 			const instanceUnderTest = new ToolsPlugin();
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -40,9 +36,9 @@ describe('ToolsPlugin', () => {
 
 		it('does NOTHING when the ToolId is not available', async () => {
 			const store = setup();
-			const queryParam = ``;
+			const queryParam = new URLSearchParams(``);
 			const instanceUnderTest = new ToolsPlugin();
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 
@@ -51,9 +47,9 @@ describe('ToolsPlugin', () => {
 
 		it('does NOTHING when the ToolId is not valid', async () => {
 			const store = setup();
-			const queryParam = `${QueryParameters.TOOL_ID}=something`;
+			const queryParam = new URLSearchParams(`${QueryParameters.TOOL_ID}=something`);
 			const instanceUnderTest = new ToolsPlugin();
-			spyOnProperty(windowMock.location, 'search').and.returnValue(queryParam);
+			spyOn(environmentServiceMock, 'getQueryParams').and.returnValue(queryParam);
 
 			await instanceUnderTest.register(store);
 

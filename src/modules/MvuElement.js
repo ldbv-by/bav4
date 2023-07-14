@@ -127,6 +127,10 @@ export class MvuElement extends HTMLElement {
 	 * @private
 	 */
 	connectedCallback() {
+		// see TestUtils
+		if (window.ba_fireConnectedEvent) {
+			document.dispatchEvent(new CustomEvent('connected', { detail: this, bubbles: true }));
+		}
 		window.addEventListener('load', () => {
 			this.onWindowLoad();
 		});

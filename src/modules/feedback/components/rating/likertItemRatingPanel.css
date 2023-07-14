@@ -1,0 +1,85 @@
+.container {
+	display: flex;
+	justify-content: center;
+}
+
+.likert-response-button {
+	height: 2.5em;
+	width: 2.5em;
+	display: inline-block;
+	border: none;
+	font-size: 2rem;
+	cursor: pointer;
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+	border-radius: 2.5em;
+}
+
+.likert-response-button:hover {
+	transform: scale(1.2);
+}
+
+.selected {
+	transform: scale(1.2);
+}
+
+.unselected {
+	background-color: var(--text2);
+}
+
+.error-message {
+	color: red;
+	font-size: 12px;
+	margin-top: 5px;
+}
+
+.rating-1 {
+	mask: url('assets/1.svg');
+	-webkit-mask: url('assets/1.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.rating-2 {
+	mask: url('assets/2.svg');
+	-webkit-mask: url('assets/2.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.rating-3 {
+	mask: url('assets/3.svg');
+	-webkit-mask: url('assets/3.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.rating-4 {
+	mask: url('assets/4.svg');
+	-webkit-mask: url('assets/4.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.rating-5 {
+	mask: url('assets/5.svg');
+	-webkit-mask: url('assets/5.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.rating-1.selected {
+	border: 0.5em solid red;
+	background: var(--text1);
+}
+.rating-2.selected {
+	border: 0.5em solid orange;
+	background: var(--text1);
+}
+.rating-3.selected {
+	border: 0.5em solid var(--text1);
+	background: var(--text1);
+}
+.rating-4.selected {
+	border: 0.5em solid olive;
+	background: var(--text1);
+}
+
+.rating-5.selected {
+	border: 0.5em solid green;
+	background: var(--text1);
+}
