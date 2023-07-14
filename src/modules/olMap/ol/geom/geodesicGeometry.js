@@ -35,11 +35,9 @@ export class GeodesicGeometry {
 	_calculateEverything() {
 		this.geom = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
 		this.coords = this.geom.getCoordinates();
-		// this.isDrawing = this.feature.get('isDrawing');
 		this.isPolygon = false;
 		if (this.geom instanceof Polygon) {
 			this.coords = this.geom.getCoordinates()[0];
-			//if (this.isDrawing) {
 			if (this._isDrawing()) {
 				this.coords = this.coords.slice(0, -1);
 			} else {
@@ -291,7 +289,7 @@ class CoordinateBag {
 			if (coordinate[0] < 0 && this.lastCoord[0] > 0) {
 				this._push(coordinate, 1);
 				this.lineStrings[++this.lineStrNr] = [];
-			} else if (coordinate[0] > 0 && this.lastlon < 0) {
+			} else if (coordinate[0] > 0 && this.lastCoord[0] < 0) {
 				this._push(coordinate, -1);
 				this.lineStrings[++this.lineStrNr] = [];
 			}
