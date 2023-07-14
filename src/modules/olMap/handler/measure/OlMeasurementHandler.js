@@ -436,7 +436,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 			type: 'Polygon',
 			minPoints: 2,
 			snapTolerance: getSnapTolerancePerDevice(),
-			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE))
+			style: createSketchStyleFunction(this._styleService.getStyleFunction(StyleTypes.MEASURE)),
+			wrapX: true
 		});
 
 		const finishDistanceOverlay = (event) => {

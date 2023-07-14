@@ -557,14 +557,16 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Point',
 					minPoints: 1,
 					snapTolerance: snapTolerance,
-					style: this._getStyleFunctionByDrawType(type, styleOption)
+					style: this._getStyleFunctionByDrawType(type, styleOption),
+					wrapX: true
 				});
 			case StyleTypes.LINE:
 				return new Draw({
 					source: source,
 					type: 'LineString',
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('line', styleOption)),
+					wrapX: true
 				});
 			case StyleTypes.POLYGON:
 				return new Draw({
@@ -572,7 +574,8 @@ export class OlDrawHandler extends OlLayerHandler {
 					type: 'Polygon',
 					minPoints: 3,
 					snapTolerance: snapTolerance,
-					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption))
+					style: createSketchStyleFunction(this._getStyleFunctionByDrawType('polygon', styleOption)),
+					wrapX: true
 				});
 			default:
 				console.warn('unknown Drawtype: ' + type);
