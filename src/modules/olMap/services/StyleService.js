@@ -5,9 +5,6 @@ import { getUid } from 'ol';
 import { $injector } from '../../../injection';
 import { rgbToHex } from '../../../utils/colors';
 import {
-	markerStyleFunction,
-	highlightStyleFunction,
-	highlightTemporaryStyleFunction,
 	measureStyleFunction,
 	nullStyleFunction,
 	lineStyleFunction,
