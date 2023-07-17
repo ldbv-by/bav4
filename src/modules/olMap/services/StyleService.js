@@ -14,7 +14,8 @@ import {
 	getStyleArray,
 	geojsonStyleFunction,
 	defaultStyleFunction,
-	defaultClusterStyleFunction
+	defaultClusterStyleFunction,
+	markerStyleFunction
 } from '../utils/olStyleUtils';
 
 /**
