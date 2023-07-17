@@ -19,6 +19,10 @@
 	border-right: none;
 }
 
+.is-portrait .tool-bar > *:nth-last-child(-n + 2) {
+	border-right: none;
+}
+
 .tool-bar__tools-nav {
 	position: absolute;
 	top: 0rem;
@@ -76,7 +80,7 @@
 }
 
 .is-active .tool-bar__button_icon {
-	background: var(--primary-bg-color);
+	background: var(--text3);
 }
 
 .share {
@@ -122,7 +126,7 @@
 }
 
 .is-active .tool-bar__button-text {
-	color: var(--primary-bg-color);
+	color: var(--text3);
 }
 
 .tool-bar__tools {
@@ -167,6 +171,7 @@
 	right: 0;
 	width: auto;
 	max-width: unset;
+	justify-content: center;
 }
 
 .is-desktop .is-open {

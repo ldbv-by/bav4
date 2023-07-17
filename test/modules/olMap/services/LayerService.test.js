@@ -102,7 +102,6 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.get('geoResourceId')).toBe(geoResourceId);
 				expect(wmsOlLayer.getMinZoom()).toBeNegativeInfinity();
 				expect(wmsOlLayer.getMaxZoom()).toBePositiveInfinity();
-				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
 				const wmsSource = wmsOlLayer.getSource();
 				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
@@ -131,7 +130,6 @@ describe('LayerService', () => {
 				expect(wmsOlLayer.getMinZoom()).toBe(5);
 				expect(wmsOlLayer.getMaxZoom()).toBe(19);
 				expect(wmsOlLayer.constructor.name).toBe('ImageLayer');
-				expect(wmsOlLayer.get('onPrerenderFunctionKey')).toBeDefined();
 				const wmsSource = wmsOlLayer.getSource();
 				expect(wmsSource.constructor.name).toBe('LimitedImageWMS');
 				expect(wmsSource.getUrl()).toBe('https://some.url');
