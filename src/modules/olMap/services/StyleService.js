@@ -167,10 +167,6 @@ export class StyleService {
 				return nullStyleFunction;
 			case StyleTypes.MEASURE:
 				return measureStyleFunction;
-			case StyleTypes.HIGHLIGHT:
-				return highlightStyleFunction;
-			case StyleTypes.HIGHLIGHT_TEMP:
-				return highlightTemporaryStyleFunction;
 			case StyleTypes.LINE:
 				return lineStyleFunction;
 			case StyleTypes.POLYGON:
