@@ -187,31 +187,26 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
 			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
-			if (olFeature.getGeometry() instanceof Polygon) {
-				const geom = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
-
-				simplifiedGeometry = new LineString(geom instanceof Polygon ? geom.getCoordinates(false)[0] : geom.getCoordinates(false));
-			}
 		}
 
 		const resolution = olMap.getView().getResolution();
-		const delta = olFeature.geodesic
-			? getPartitionDelta(olFeature.geodesic.totalLength, resolution)
-			: getPartitionDeltaFrom(simplifiedGeometry, resolution, this._projectionHints);
 
+		const delta = getPartitionDeltaFrom(simplifiedGeometry, resolution, this._projectionHints);
 		let partitionIndex = 0;
 		for (let i = delta; i < 1; i += delta, partitionIndex++) {
-			let partition = partitions[partitionIndex] || false;
-			if (partition === false) {
-				partition = this._createOlOverlay(
+			const createAndAdd = () => {
+				const newPartition = this._createOlOverlay(
 					olMap,
 					{ offset: [0, -25], positioning: 'top-center' },
 					MeasurementOverlayTypes.DISTANCE_PARTITION,
 					this._projectionHints
 				);
-				this._add(partition, olFeature, olMap);
-				partitions.push(partition);
-			}
+				this._add(newPartition, olFeature, olMap);
+				partitions.push(newPartition);
+				return newPartition;
+			};
+
+			const partition = partitions[partitionIndex] ?? createAndAdd();
 			this._updateOlOverlay(partition, simplifiedGeometry, olFeature.geodesic, i);
 		}
 		if (partitionIndex < partitions.length) {

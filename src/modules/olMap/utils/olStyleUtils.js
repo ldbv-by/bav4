@@ -509,11 +509,12 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	contextRenderFunction(geometry, fill, baseStroke);
 
 	// per segment
-	const segmentCoordinates = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates[0] : pixelCoordinates;
-
-	segmentCoordinates.every((coordinate, index, coordinates) => {
-		return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-	});
+	const segmentsArray = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates : [pixelCoordinates];
+	segmentsArray.forEach((segmentCoordinates) =>
+		segmentCoordinates.every((coordinate, index, coordinates) => {
+			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
+		})
+	);
 };
 
 /**

@@ -5,7 +5,6 @@ import { Geodesic, PolygonArea } from 'geographiclib-geodesic';
 import { containsCoordinate } from 'ol/extent';
 import { Point, LineString, Polygon, LinearRing, Circle, MultiLineString, Geometry } from 'ol/geom';
 import { isNumber } from '../../../utils/checks';
-import { composeCssTransform } from '../../../../node_modules/ol/transform';
 
 const EPSG_WGS84 = 'EPSG:4326';
 
@@ -182,9 +181,13 @@ export const getGeometryLength = (geometry, calculationHints = NO_CALCULATION_HI
  */
 const getGeodesicLength = (wgs84LineString) => {
 	const geodesicPolygon = new PolygonArea.PolygonArea(Geodesic.WGS84, true);
-	for (const [lon, lat] of wgs84LineString.getCoordinates()) {
-		geodesicPolygon.AddPoint(lat, lon);
-	}
+	const lineStrings = wgs84LineString instanceof MultiLineString ? wgs84LineString.getLineStrings() : [wgs84LineString];
+	lineStrings.forEach((l) => {
+		for (const [lon, lat] of l.getCoordinates()) {
+			geodesicPolygon.AddPoint(lat, lon);
+		}
+	});
+
 	const res = geodesicPolygon.Compute(false, true);
 	return res.perimeter;
 };
@@ -218,25 +221,20 @@ const getGeodesicArea = (wgs84Polygon) => {
 export const getCoordinateAt = (geometry, fraction) => {
 	const lineString = getLineString(geometry);
 
-	if (lineString && lineString instanceof LineString) {
-		return lineString.getCoordinateAt(fraction);
-	}
+	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : lineString ? [lineString] : null;
 
-	if (lineString && lineString instanceof MultiLineString) {
+	if (lineStrings) {
 		let fractionResidual = fraction;
 
-		const totalLength = lineString.getLineStrings().reduce((p, c) => p + c.getLength(), 0);
-		lineString.getLineStrings().forEach((lineString) => {
+		const totalLength = lineStrings.reduce((p, c) => p + c.getLength(), 0);
+		for (const lineString of lineStrings) {
 			const partFraction = lineString.getLength() / totalLength;
 			if (partFraction > fractionResidual) {
 				return lineString.getCoordinateAt(fractionResidual);
 			}
 			fractionResidual -= partFraction;
-		});
-
-		return lineString.getLineStrings()[0].getCoordinateAt(fraction);
+		}
 	}
-
 	return null;
 };
 
@@ -339,7 +337,6 @@ export const getPartitionDelta = (length, resolution) => {
 		const nextPartitionLength = partitionLength * stepFactor;
 		return findBestFittingDelta(nextPartitionLength);
 	};
-
 	return isNaN(length) ? 1 : findBestFittingDelta(minPartitionLength);
 };
 
@@ -406,6 +403,19 @@ export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 		});
 	}
 
+	if (lineString instanceof MultiLineString) {
+		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
+		let currentLength = 0;
+		let lastResidual = 0;
+		lineString.getLineStrings().forEach((l) =>
+			l.forEachSegment((from, to) => {
+				const segmentGeometry = new LineString([from, to]);
+				currentLength = currentLength + segmentGeometry.getLength();
+				residuals.push(lastResidual);
+				lastResidual = (currentLength % partitionLength) / partitionLength;
+			})
+		);
+	}
 	return residuals;
 };
 /**
