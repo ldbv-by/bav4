@@ -7,7 +7,8 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_username: 'Username',
 				auth_passwordCredentialPanel_credential_password: 'Password',
 				auth_passwordCredentialPanel_submit: 'Submit',
-				auth_passwordCredentialPanel_credential_rejected: 'Authentication failed. Invalid username or password!',
+				auth_passwordCredentialPanel_credential_failed: 'Authentication failed. Invalid username or password!',
+				auth_passwordCredentialPanel_credential_rejected: 'Authentication failed. Something got wrong!',
 				auth_passwordCredentialPanel_authenticate: 'Authenticating'
 			};
 
@@ -18,7 +19,8 @@ export const provide = (lang) => {
 				auth_passwordCredentialPanel_credential_username: 'Name',
 				auth_passwordCredentialPanel_credential_password: 'Passwort',
 				auth_passwordCredentialPanel_submit: 'Senden',
-				auth_passwordCredentialPanel_credential_rejected: 'Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!',
+				auth_passwordCredentialPanel_credential_failed: 'Authentifizierung fehlgeschlagen. Name oder Passwort ungültig!',
+				auth_passwordCredentialPanel_credential_rejected: 'Authentifizierung fehlgeschlagen. Es ist ein technisches Problem aufgetreten!',
 				auth_passwordCredentialPanel_authenticate: 'Authentifiziere'
 			};
 

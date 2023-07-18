@@ -233,11 +233,16 @@ export class PasswordCredentialPanel extends MvuElement {
 	async _tryAuthenticate(credential, url) {
 		const translate = (key) => this._translationService.translate(key);
 		this.signal(Update_Authenticating, true);
-		const result = await this._authenticate(credential, url);
-		if (result) {
-			this._onClose(credential, result);
-		} else {
-			emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.WARN);
+		try {
+			const result = await this._authenticate(credential, url);
+			if (result) {
+				this._onClose(credential, result);
+			} else {
+				emitNotification(translate('auth_passwordCredentialPanel_credential_failed'), LevelTypes.WARN);
+			}
+		} catch (e) {
+			console.error(e);
+			emitNotification(translate('auth_passwordCredentialPanel_credential_rejected'), LevelTypes.ERROR);
 		}
 		this.signal(Update_Authenticating, false);
 	}
