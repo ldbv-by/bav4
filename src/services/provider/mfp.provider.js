@@ -54,7 +54,7 @@ export const postMfpSpec = async (spec, urlId, abortController) => {
 				headers: {
 					'Content-Type': MediaType.JSON
 				},
-				timeout: 20000
+				timeout: 40000
 			},
 			abortController
 		);
