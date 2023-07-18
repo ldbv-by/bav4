@@ -220,19 +220,18 @@ const getGeodesicArea = (wgs84Polygon) => {
  */
 export const getCoordinateAt = (geometry, fraction) => {
 	const lineString = getLineString(geometry);
-
+	const totalLength = getGeometryLength(geometry);
 	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : lineString ? [lineString] : null;
 
 	if (lineStrings) {
 		let fractionResidual = fraction;
-
-		const totalLength = lineStrings.reduce((p, c) => p + c.getLength(), 0);
 		for (const lineString of lineStrings) {
-			const partFraction = lineString.getLength() / totalLength;
-			if (partFraction > fractionResidual) {
-				return lineString.getCoordinateAt(fractionResidual);
+			const lineStringFraction = lineString.getLength() / totalLength;
+			if (fractionResidual >= lineStringFraction) {
+				fractionResidual = fractionResidual - lineStringFraction;
+			} else {
+				return lineString.getCoordinateAt(fractionResidual / lineStringFraction);
 			}
-			fractionResidual -= partFraction;
 		}
 	}
 	return null;

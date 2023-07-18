@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getLineString, getPartitionDelta, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
+import { getAzimuth, getGeometryLength, getLineString, getPartitionDelta, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -246,28 +246,59 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		const collectedSegments = { minPartition: 0, length: 0 };
 
 		const lineStrings = lineString instanceof LineString ? [lineString] : lineString.getLineStrings();
-
-		lineStrings.forEach((lineString) => {
-			lineString.forEachSegment((from, to) => {
-				const segment = new LineString([from, to]);
-
-				const currentLength = collectedSegments.length + segment.getLength();
-				const currentMinPartition = currentLength / lineString.getLength();
-				const azimuth = getAzimuth(segment);
-				partitions.forEach((overlay) => {
-					const element = overlay.getElement();
-					const partition = element.value;
-					if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
-						element.placement = this._getPlacement(azimuth);
-						overlay.setOffset(element.placement.offset);
-						overlay.setPositioning(element.placement.positioning);
+		const createSegments = (lineStrings) => {
+			const segments = [];
+			lineStrings.forEach((lineString) =>
+				lineString.getCoordinates().forEach((coordinate, index, coordinates) => {
+					const nextCoordinate = coordinates[index + 1];
+					if (nextCoordinate) {
+						segments.push([coordinate, nextCoordinate]);
 					}
-				});
+				})
+			);
+			return segments;
+		};
+		const segments = createSegments(lineStrings);
+		segments.forEach(([from, to]) => {
+			const segment = new LineString([from, to]);
 
-				collectedSegments.minPartition = currentMinPartition;
-				collectedSegments.length = currentLength;
+			const currentLength = collectedSegments.length + segment.getLength();
+			const currentMinPartition = currentLength / getGeometryLength(lineString);
+			const azimuth = getAzimuth(segment);
+			partitions.forEach((overlay) => {
+				const element = overlay.getElement();
+				const partition = element.value;
+				if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
+					element.placement = this._getPlacement(azimuth);
+					overlay.setOffset(element.placement.offset);
+					overlay.setPositioning(element.placement.positioning);
+				}
 			});
+
+			collectedSegments.minPartition = currentMinPartition;
+			collectedSegments.length = currentLength;
 		});
+		// lineStrings.forEach((lineString) => {
+		// 	lineString.forEachSegment((from, to) => {
+		// 		const segment = new LineString([from, to]);
+
+		// 		const currentLength = collectedSegments.length + segment.getLength();
+		// 		const currentMinPartition = currentLength / lineString.getLength();
+		// 		const azimuth = getAzimuth(segment);
+		// 		partitions.forEach((overlay) => {
+		// 			const element = overlay.getElement();
+		// 			const partition = element.value;
+		// 			if (collectedSegments.minPartition < partition && partition < currentMinPartition) {
+		// 				element.placement = this._getPlacement(azimuth);
+		// 				overlay.setOffset(element.placement.offset);
+		// 				overlay.setPositioning(element.placement.positioning);
+		// 			}
+		// 		});
+
+		// 		collectedSegments.minPartition = currentMinPartition;
+		// 		collectedSegments.length = currentLength;
+		// 	});
+		// });
 	}
 
 	_createOlOverlay(olMap, overlayOptions = {}, type, projectionHints, isDraggable = false) {
