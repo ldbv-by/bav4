@@ -390,32 +390,32 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
  */
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	const residuals = [];
-	const lineString = getLineString(geometry);
-	if (lineString instanceof LineString) {
-		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
-		let currentLength = 0;
-		let lastResidual = 0;
-		lineString.forEachSegment((from, to) => {
-			const segmentGeometry = new LineString([from, to]);
-			currentLength = currentLength + segmentGeometry.getLength();
-			residuals.push(lastResidual);
-			lastResidual = (currentLength % partitionLength) / partitionLength;
-		});
-	}
+	const lineString = getLineString(geometry.clone().transform('EPSG:3857', 'EPSG:4326'));
+	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : [lineString];
 
-	if (lineString instanceof MultiLineString) {
-		const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
-		let currentLength = 0;
-		let lastResidual = 0;
-		lineString.getLineStrings().forEach((l) =>
-			l.forEachSegment((from, to) => {
-				const segmentGeometry = new LineString([from, to]);
-				currentLength = currentLength + segmentGeometry.getLength();
-				residuals.push(lastResidual);
-				lastResidual = (currentLength % partitionLength) / partitionLength;
+	const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
+	let currentLength = 0;
+	let lastResidual = 0;
+	const createSegments = (lineStrings) => {
+		const segments = [];
+		lineStrings.forEach((lineString) =>
+			lineString.getCoordinates().forEach((coordinate, index, coordinates) => {
+				const nextCoordinate = coordinates[index + 1];
+				if (nextCoordinate) {
+					segments.push([coordinate, nextCoordinate]);
+				}
 			})
 		);
-	}
+		return segments;
+	};
+	const segments = createSegments(lineStrings);
+	segments.forEach(([from, to]) => {
+		const segmentGeometry = new LineString([from, to]);
+		currentLength = currentLength + segmentGeometry.getLength();
+		residuals.push(lastResidual);
+		lastResidual = (currentLength % partitionLength) / partitionLength;
+	});
+
 	return residuals;
 };
 /**

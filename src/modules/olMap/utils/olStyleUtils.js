@@ -444,7 +444,6 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	const length = getGeometryLength(geometry, NO_CALCULATION_HINTS, true);
 	const partitionLength = partition * length;
 	const partitionTickDistance = partitionLength / resolution;
-	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
@@ -508,13 +507,28 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	geometry.setCoordinates(pixelCoordinates);
 	contextRenderFunction(geometry, fill, baseStroke);
 
+	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
+
 	// per segment
+	const createSegments = (coordinatesArray) => {
+		const segments = [];
+		coordinatesArray.forEach((coordinates) =>
+			coordinates.forEach((coordinate, index, coordinates) => {
+				const nextCoordinate = coordinates[index + 1];
+				if (nextCoordinate) {
+					segments.push([coordinate, nextCoordinate]);
+				}
+			})
+		);
+		return segments;
+	};
+
 	const segmentsArray = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates : [pixelCoordinates];
-	segmentsArray.forEach((segmentCoordinates) =>
-		segmentCoordinates.every((coordinate, index, coordinates) => {
-			return drawTicks(contextRenderFunction, [coordinate, coordinates[index + 1]], residuals[index], partitionTickDistance);
-		})
-	);
+
+	const segments = createSegments(segmentsArray);
+	segments.forEach((segment, index) => {
+		return drawTicks(contextRenderFunction, segment, residuals[index], partitionTickDistance);
+	});
 };
 
 /**
