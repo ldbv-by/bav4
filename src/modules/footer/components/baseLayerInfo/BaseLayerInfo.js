@@ -1,7 +1,7 @@
 /**
  * @module modules/footer/components/baseLayerInfo/BaseLayerInfo
  */
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
 import { AggregateGeoResource } from '../../../../domain/geoResources';
