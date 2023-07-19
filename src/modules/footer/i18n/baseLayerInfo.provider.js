@@ -4,14 +4,14 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				map_baseLayerInfo_label: 'Basemap',
-				map_baseLayerInfo_fallback: 'No information available'
+				map_baseLayerInfo_fallback: ' - '
 			};
 
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				map_baseLayerInfo_label: 'Basiskarte',
-				map_baseLayerInfo_fallback: 'Keine Informationen verfügbar'
+				map_baseLayerInfo_fallback: ' - '
 			};
 
 		default:
