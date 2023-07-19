@@ -447,7 +447,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 	const fill = new Fill({ color: Red_Color.concat([0.4]) });
 	const baseStroke = new Stroke({
-		color: Green_Color.concat([1]),
+		color: Red_Color.concat([1]),
 		width: 3 * pixelRatio
 	});
 
@@ -531,6 +531,10 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	});
 };
 
+export const getRulerTextStyles = (feature) => {
+	return [new Style({})];
+};
+
 /**
  * StyleFunction for measurement-feature
  *
@@ -574,8 +578,8 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle(feature) : getFallbackStyle()
-		//getFallbackStyle()
+		resolution ? getRulerStyle(feature) : getFallbackStyle(),
+		...getRulerTextStyles(feature)
 	];
 	return styles;
 };
