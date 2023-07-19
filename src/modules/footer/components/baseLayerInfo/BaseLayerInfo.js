@@ -64,7 +64,9 @@ export class BaseLayerInfo extends MvuElement {
 		};
 
 		const getDescription = () => {
-			const geoResource = activeLayers[0] ? this._georesourceService.byId(activeLayers[0].geoResourceId) : null;
+			const layer = activeLayers.find((l) => l.visible);
+
+			const geoResource = layer ? this._georesourceService.byId(layer.geoResourceId) : null;
 			if (geoResource) {
 				const geoResources =
 					geoResource instanceof AggregateGeoResource
@@ -85,7 +87,7 @@ export class BaseLayerInfo extends MvuElement {
 		};
 
 		const content = getDescription() ?? translate('map_baseLayerInfo_fallback');
-		return activeLayers.length > 0 ? html` <div>${translate('map_baseLayerInfo_label')}: ${content}</div> ` : nothing;
+		return html` <div>${content}</div> `;
 	}
 
 	static get tag() {

@@ -40,7 +40,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: LDBV42');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('LDBV42');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
@@ -64,7 +64,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: foo, bar');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('foo, bar');
 
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 			expect(getAttrMock).toHaveBeenCalledOnceWith(12);
@@ -97,10 +97,10 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: label1, label0');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('label1, label0');
 		});
 
-		it('renders nothing when no layers are set', async () => {
+		it('renders fallback when no layers are set', async () => {
 			const stateEmpty = {
 				layers: {
 					active: []
@@ -112,7 +112,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(stateEmpty);
 
-			expect(element.shadowRoot.querySelectorAll('div')).toHaveSize(0);
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_fallback');
 		});
 
 		it('renders fallback content when GeoResource could not be fetched', async () => {
@@ -129,7 +129,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: map_baseLayerInfo_fallback');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_fallback');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
@@ -149,7 +149,7 @@ describe('BaseLayerInfo', () => {
 
 			const element = await setup(state);
 
-			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_label: map_baseLayerInfo_fallback');
+			expect(element.shadowRoot.querySelector('div').innerText).toBe('map_baseLayerInfo_fallback');
 			expect(geoServiceMock).toHaveBeenCalledOnceWith(layer.geoResourceId);
 		});
 
@@ -188,6 +188,11 @@ describe('BaseLayerInfo', () => {
 
 			expect(element.shadowRoot.querySelector('div').innerText).toContain('Ref42');
 			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('LDBV');
+
+			modifyLayer(layer2.id, { visible: false });
+
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('LDBV');
+			expect(element.shadowRoot.querySelector('div').innerText).not.toContain('Ref42');
 
 			expect(geoServiceMock).toHaveBeenCalledWith(layer.geoResourceId);
 			expect(geoServiceMock).toHaveBeenCalledWith(layer2.geoResourceId);
