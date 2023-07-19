@@ -105,8 +105,8 @@ export class OverflowMenu extends MvuElement {
          <button class='anchor'>
             <span id="menu-icon" data-test-id class='menu__button ${type} ' @click=${onClick} >
             </span>
-         </button>	         
-         ${menu}
+			${menu}
+			</button>				      
      </div>`;
 	}
 
