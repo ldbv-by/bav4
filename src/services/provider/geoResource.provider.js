@@ -4,7 +4,7 @@
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
-import { isExternalGeoResourceId, isHttpUrl } from '../../utils/checks';
+import { isExternalGeoResourceId } from '../../utils/checks';
 import { createUniqueId } from '../../utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -142,7 +142,6 @@ export const loadBvvGeoResourceById = (id) => {
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadExternalGeoResource = (urlBasedAsId) => {
-	
 	if (isExternalGeoResourceId(urlBasedAsId)) {
 		const parts = urlBasedAsId.split('||');
 		const {
