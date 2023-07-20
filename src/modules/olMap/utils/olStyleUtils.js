@@ -15,8 +15,6 @@ import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } f
 import { Polygon, LineString, Circle, MultiPoint } from 'ol/geom';
 import { $injector } from '../../../injection';
 import markerIcon from '../assets/marker.svg';
-import locationIcon from '../assets/location.svg';
-import tempLocationIcon from '../assets/temporaryLocation.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
@@ -289,28 +287,6 @@ export const defaultClusterStyleFunction = () => {
 		return size === 1 ? getFeatureStyle() : getClusterStyle();
 	};
 };
-
-export const highlightStyleFunction = () => [
-	new Style({
-		image: new Icon({
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: locationIcon
-		})
-	})
-];
-
-export const highlightTemporaryStyleFunction = () => [
-	new Style({
-		image: new Icon({
-			anchor: [0.5, 1],
-			anchorXUnits: 'fraction',
-			anchorYUnits: 'fraction',
-			src: tempLocationIcon
-		})
-	})
-];
 
 /**
  * Function to style a marker symbol

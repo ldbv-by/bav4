@@ -3,8 +3,6 @@ import {
 	createSketchStyleFunction,
 	modifyStyleFunction,
 	nullStyleFunction,
-	highlightStyleFunction,
-	highlightTemporaryStyleFunction,
 	markerStyleFunction,
 	selectStyleFunction,
 	getColorFrom,
@@ -408,38 +406,6 @@ describe('defaultStyleFunction', () => {
 		expect(collectionStyles[0].getStroke().getColor()).toEqual([0, 0, 0]);
 		expect(collectionStyles[0].getStroke().getWidth()).toBe(2);
 		expect(collectionStyles[0].getFill().getColor()).toEqual([0, 0, 0, 0]);
-	});
-});
-
-describe('highlightStyleFunction', () => {
-	it('should return a style', () => {
-		const styles = highlightStyleFunction();
-
-		expect(styles).toBeDefined();
-		expect(styles.length).toBe(1);
-	});
-
-	it('should return a style with a ImageIcon', () => {
-		const styles = highlightStyleFunction();
-
-		expect(styles).toBeDefined();
-		expect(styles[0].getImage()).toBeTruthy();
-	});
-});
-
-describe('highlightTemporaryStyleFunction', () => {
-	it('should return a style', () => {
-		const styles = highlightTemporaryStyleFunction();
-
-		expect(styles).toBeDefined();
-		expect(styles.length).toBe(1);
-	});
-
-	it('should return a style with a ImageIcon', () => {
-		const styles = highlightTemporaryStyleFunction();
-
-		expect(styles).toBeDefined();
-		expect(styles[0].getImage()).toBeTruthy();
 	});
 });
 

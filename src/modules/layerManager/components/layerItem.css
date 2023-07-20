@@ -34,7 +34,7 @@ ba-icon:focus {
 }
 
 .iscollapse {
-	grid-template-rows: 0fr;
+	display: none;
 }
 
 .ishidden {

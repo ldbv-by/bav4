@@ -5,9 +5,6 @@ import { getUid } from 'ol';
 import { $injector } from '../../../injection';
 import { rgbToHex } from '../../../utils/colors';
 import {
-	markerStyleFunction,
-	highlightStyleFunction,
-	highlightTemporaryStyleFunction,
 	measureStyleFunction,
 	nullStyleFunction,
 	lineStyleFunction,
@@ -17,7 +14,8 @@ import {
 	getStyleArray,
 	geojsonStyleFunction,
 	defaultStyleFunction,
-	defaultClusterStyleFunction
+	defaultClusterStyleFunction,
+	markerStyleFunction
 } from '../utils/olStyleUtils';
 
 /**
@@ -167,10 +165,6 @@ export class StyleService {
 				return nullStyleFunction;
 			case StyleTypes.MEASURE:
 				return measureStyleFunction;
-			case StyleTypes.HIGHLIGHT:
-				return highlightStyleFunction;
-			case StyleTypes.HIGHLIGHT_TEMP:
-				return highlightTemporaryStyleFunction;
 			case StyleTypes.LINE:
 				return lineStyleFunction;
 			case StyleTypes.POLYGON:
