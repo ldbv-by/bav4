@@ -772,11 +772,11 @@ export class OlDrawHandler extends OlLayerHandler {
 		const currentStyleOption = this._getStyleOption();
 		const featureColor = getColorFrom(feature);
 		const featureSymbol = getSymbolFrom(feature);
-		const featureText = getTextFrom(feature) ?? '';
+		const featureText = getTextFrom(feature);
 		const featureScale = getSizeFrom(feature);
 		const color = featureColor ? featureColor : currentStyleOption.color;
 		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
-		const text = featureText != null ? featureText : currentStyleOption.text;
+		const text = featureText ? featureText : '';
 		const scale = featureScale ? featureScale : currentStyleOption.scale;
 		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };
