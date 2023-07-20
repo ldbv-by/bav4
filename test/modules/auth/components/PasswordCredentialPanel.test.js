@@ -183,8 +183,24 @@ describe('PasswordCredentialPanel', () => {
 			submitButton.click();
 
 			await TestUtils.timeout();
-			expect(store.getState().notifications.latest.payload.content).toBe('auth_passwordCredentialPanel_credential_rejected');
+			expect(store.getState().notifications.latest.payload.content).toBe('auth_passwordCredentialPanel_credential_failed');
 			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.WARN);
+		});
+
+		it('emits notification on rejected credential-authentication', async () => {
+			const authenticateCallback = jasmine.createSpy().and.rejectWith('fail');
+			const element = await setup();
+			element.url = 'someUrl';
+			element.authenticate = authenticateCallback;
+			const errorSpy = spyOn(console, 'error');
+
+			const submitButton = element.shadowRoot.querySelector('#authenticate-credential-button');
+			submitButton.click();
+
+			await TestUtils.timeout();
+			expect(store.getState().notifications.latest.payload.content).toBe('auth_passwordCredentialPanel_credential_rejected');
+			expect(store.getState().notifications.latest.payload.level).toEqual(LevelTypes.ERROR);
+			expect(errorSpy).toHaveBeenCalledOnceWith('fail');
 		});
 
 		it('displays spinner-button while authenticating', async () => {
