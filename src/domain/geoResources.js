@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isExternalGeoResourceId, isHttpUrl } from '../utils/checks';
+import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
