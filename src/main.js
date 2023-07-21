@@ -1,6 +1,7 @@
 import './setupPage';
 
 // register required modules
+import './modules/admin';
 import './modules/header';
 import './modules/footer';
 import './modules/map';
