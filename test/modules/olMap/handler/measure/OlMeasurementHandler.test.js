@@ -1565,7 +1565,8 @@ describe('OlMeasurementHandler', () => {
 					snap: null,
 					coordinate: [10, 0],
 					pointCount: 0,
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: jasmine.any(String)
 				});
 			});
 
@@ -1591,7 +1592,8 @@ describe('OlMeasurementHandler', () => {
 					snap: InteractionSnapType.EDGE,
 					coordinate: [50, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: jasmine.any(String)
 				});
 			});
 
@@ -1616,7 +1618,8 @@ describe('OlMeasurementHandler', () => {
 					snap: InteractionSnapType.VERTEX,
 					coordinate: [0, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
