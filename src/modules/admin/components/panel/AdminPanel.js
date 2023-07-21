@@ -62,35 +62,77 @@ export class AdminPanel extends MvuElement {
 	async onInitialize() {
 		const mergeCatalogWithResources = () => {
 			const catalog = this.getModel().catalog;
-			const geoResources = this.getModel().geoResources;
+			const georesources = this.getModel().geoResources;
 
-			if (geoResources.length === 0 || catalog.length === 0) {
+			if (georesources.length === 0 || catalog.length === 0) {
 				return;
 			}
 
+			// // Define a mapping object for property name correspondence
+			// const propertyMapping = {
+			// 	id: 'geoResourceId',
+			// 	label: '_label',
+			// 	attribution: '_attribution',
+			// 	url: '_url',
+			// 	layers: '_layers',
+			// 	format: '_format',
+			// 	type: '_type',
+			// 	sourceType: '_sourceType'
+			// };
+
+			// // Helper function to map properties
+			// const mapProperties = (sourceObject, mapping) => {
+			// 	return Object.entries(sourceObject).reduce((mappedObj, [key, value]) => {
+			// 		const mappedKey = mapping[key] || key;
+			// 		mappedObj[mappedKey] = value;
+			// 		return mappedObj;
+			// 	}, {});
+			// };
+
+			// Create the catalogWithResourceData array with the mapped properties
 			const catalogWithResourceData = catalog.map((category) => {
 				if (!category.children) {
-					// If the category has no children, return the category with additional properties
-					const georesource = geoResources.find((geoResource) => geoResource.id === category.geoResourceId);
-					return georesource ? { ...category, ...georesource } : category;
+					const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
+					if (georesource) {
+						// Map the properties from georesource to category
+						return { ...category, label: georesource.label };
+					}
 				} else {
-					// If the category has children, update each child with the corresponding georesource data
 					const updatedChildren = category.children.map((child) => {
-						const georesource = geoResources.find((geoResource) => geoResource.id === child.geoResourceId);
-
+						const georesource = georesources.find((geoResource) => geoResource.id === child.geoResourceId);
 						if (georesource) {
-							// If a matching georesource is found, merge it with the child and return the updated child object
-							return { ...child, ...georesource };
-						} else {
-							// If no matching georesource is found, return the original child object
-							return child;
+							// Map the properties from georesource to child
+							return { ...child, label: georesource.label };
 						}
+						return child;
 					});
-
-					// Return the updated category object with the updated children
 					return { ...category, children: updatedChildren };
 				}
 			});
+
+			// const catalogWithResourceData = catalog.map((category) => {
+			// 	if (!category.children) {
+			// 		// If the category has no children, return the category with additional properties
+			// 		const georesource = geoResources.find((geoResource) => geoResource.id === category.geoResourceId);
+			// 		return georesource ? { ...category, ...georesource } : category;
+			// 	} else {
+			// 		// If the category has children, update each child with the corresponding georesource data
+			// 		const updatedChildren = category.children.map((child) => {
+			// 			const georesource = geoResources.find((geoResource) => geoResource.id === child.geoResourceId);
+
+			// 			if (georesource) {
+			// 				// If a matching georesource is found, merge it with the child and return the updated child object
+			// 				return { ...child, ...georesource };
+			// 			} else {
+			// 				// If no matching georesource is found, return the original child object
+			// 				return child;
+			// 			}
+			// 		});
+
+			// 		// Return the updated category object with the updated children
+			// 		return { ...category, children: updatedChildren };
+			// 	}
+			// });
 
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 

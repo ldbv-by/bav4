@@ -12,7 +12,7 @@ import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
-const Update_Categories = 'update_categories';
+const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
 
 /**
@@ -51,7 +51,7 @@ export class LayerTree extends MvuElement {
 				return { ...model, selectedTopicId: data };
 			case Update_Topics:
 				return { ...model, topics: data };
-			case Update_Categories:
+			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
@@ -60,6 +60,18 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, selectedTopicId } = model;
+
+		if (
+			catalogWithResourceData === null ||
+			(catalogWithResourceData && catalogWithResourceData.length === 0) ||
+			topics === null ||
+			(topics && topics.length === 0)
+		) {
+			console.log('🚀 ~ LayerTree ~ createView ~ return nothing');
+			return nothing;
+		}
+		console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
+		console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		if (topics) {
 			return html`
@@ -76,10 +88,14 @@ export class LayerTree extends MvuElement {
 						${catalogWithResourceData.map(
 							(catalogEntry) => html`
 								<li>
-									${catalogEntry.label}
-									<ul>
-										${catalogEntry.children.map((child) => html` <li>${child.label}</li> `)}
-									</ul>
+									${catalogEntry.label ? html` ${catalogEntry.label} ` : ''}}
+									${catalogEntry.children
+										? html`
+												<ul>
+													${catalogEntry.children.map((child) => html`<li>${child.label}</li>`)}
+												</ul>
+										  `
+										: ''}
 								</li>
 							`
 						)}
@@ -92,7 +108,6 @@ export class LayerTree extends MvuElement {
 
 	handleTopicChange(event) {
 		const selectedTopicId = event.target.value;
-		console.log('🚀 ~ LayerTree ~ handleTopicChange ~ selectedTopicId:', selectedTopicId);
 		updateStore(selectedTopicId);
 	}
 
@@ -108,14 +123,14 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {Array} categories = []
+	 * @property {Array} catalogWithResourceData = []
 	 */
-	set categories(value) {
-		this.signal(Update_Categories, value);
+	set catalogWithResourceData(value) {
+		this.signal(Update_CatalogWithResourceData, value);
 	}
 
-	get categories() {
-		return this.getModel().categories;
+	get catalogWithResourceData() {
+		return this.getModel().catalogWithResourceData;
 	}
 
 	/**
