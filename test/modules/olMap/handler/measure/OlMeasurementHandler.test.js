@@ -1588,7 +1588,7 @@ describe('OlMeasurementHandler', () => {
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(measureStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
-					snap: InteractionSnapType.EGDE,
+					snap: InteractionSnapType.EDGE,
 					coordinate: [50, 0],
 					pointCount: jasmine.anything(),
 					dragging: jasmine.any(Boolean)
