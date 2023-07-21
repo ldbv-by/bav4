@@ -4,7 +4,7 @@
 import { AggregateGeoResource, VectorGeoResource, WmsGeoResource, XyzGeoResource, GeoResourceFuture, VTGeoResource } from '../../domain/geoResources';
 import { SourceTypeName, SourceTypeResultStatus } from '../../domain/sourceType';
 import { $injector } from '../../injection';
-import { isHttpUrl } from '../../utils/checks';
+import { isExternalGeoResourceId } from '../../utils/checks';
 import { createUniqueId } from '../../utils/numberUtils';
 import { getBvvAttribution } from './attribution.provider';
 
@@ -142,9 +142,8 @@ export const loadBvvGeoResourceById = (id) => {
  * @type {module:services/GeoResourceService~geoResourceByIdProvider}
  */
 export const loadExternalGeoResource = (urlBasedAsId) => {
-	const parts = urlBasedAsId.split('||');
-
-	if (parts.length && isHttpUrl(parts[0])) {
+	if (isExternalGeoResourceId(urlBasedAsId)) {
+		const parts = urlBasedAsId.split('||');
 		const {
 			SourceTypeService: sourceTypeService,
 			ImportVectorDataService: importVectorDataService,
