@@ -371,7 +371,6 @@ describe('LayerItem', () => {
 				...createDefaultLayerProperties(),
 				id: 'id0',
 				geoResourceId: 'geoResourceId0',
-				label: 'labe0',
 				visible: true,
 				zIndex: 0,
 				opacity: 1,
