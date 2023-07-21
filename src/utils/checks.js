@@ -87,8 +87,8 @@ export const isHttpUrl = (val) => {
 };
 
 /**
- * Checks if a object is a string and denotes an external GeoResource (URL-based ID).
- *  An URL-based ID basically matches the following pattern:
+ * Checks if an object is a string and denotes an external GeoResource (URL-based ID).
+ * An URL-based ID basically matches the following pattern:
  * `{url}||{extraParam1}||{extraParam2}`
  * @function
  * @param {*} id ID of a GeoResource
