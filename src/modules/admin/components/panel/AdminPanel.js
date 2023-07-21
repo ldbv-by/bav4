@@ -7,6 +7,7 @@ import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
@@ -22,10 +23,10 @@ const Update_GeoResources = 'update_geoResources';
 export class AdminPanel extends MvuElement {
 	constructor() {
 		super({
-			currentTopicId: 'ba',
-			topics: null,
-			catalog: null,
-			geoResources: null,
+			currentTopicId: null,
+			topics: [],
+			catalog: [],
+			geoResources: [],
 			catalogWithResourceData: null
 		});
 
@@ -61,35 +62,75 @@ export class AdminPanel extends MvuElement {
 	async onInitialize() {
 		const mergeCatalogWithResources = () => {
 			const catalog = this.getModel().catalog;
-			console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ catalog:', catalog);
-			const georesources = this.getModel().georesources;
-			console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ georesources:', georesources);
+			const geoResources = this.getModel().geoResources;
 
-			const mergedData = {};
-			if (georesources === null || catalog === null) {
+			if (geoResources.length === 0 || catalog.length === 0) {
 				return;
 			}
-			console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ OK');
 
-			for (const georesource of georesources) {
-				mergedData[georesource.id] = georesource;
-			}
-			for (let entry of catalog) {
-				if (entry.geoResourceId) {
-					entry = { ...entry, ...mergedData[entry.geoResourceId] };
+			const catalogWithResourceData = catalog.map((category) => {
+				if (!category.children) {
+					// If the category has no children, return the category with additional properties
+					const georesource = geoResources.find((geoResource) => geoResource.id === category.geoResourceId);
+					return georesource ? { ...category, ...georesource } : category;
+				} else {
+					// If the category has children, update each child with the corresponding georesource data
+					const updatedChildren = category.children.map((child) => {
+						const georesource = geoResources.find((geoResource) => geoResource.id === child.geoResourceId);
+
+						if (georesource) {
+							// If a matching georesource is found, merge it with the child and return the updated child object
+							return { ...child, ...georesource };
+						} else {
+							// If no matching georesource is found, return the original child object
+							return child;
+						}
+					});
+
+					// Return the updated category object with the updated children
+					return { ...category, children: updatedChildren };
 				}
-			}
-			this.signal(Update_CatalogWithResourceData, catalog);
+			});
+
+			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+
+			// const catalogWithResources = [];
+			// const geoResourceDictionary = {};
+			// for (const geoResource of geoResources) {
+			// 	geoResourceDictionary[geoResource.id] = geoResource;
+			// }
+
+			// for (const entry of catalog) {
+			// 	if (entry.label) {
+			// 		for (let child of entry.children) {
+			// 			if (child.geoResourceId) {
+			// 				child = { geoResourceId: child.geoResourceId, label: geoResourceDictionary[child.geoResourceId].label };
+			// 				entry.children.push(child);
+			// 			}
+			// 			console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ entry:', entry);
+			// 			catalogWithResources.push(entry);
+			// 		}
+			// 	}
+			// }
+			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ entry.geoResourceId:', entry.geoResourceId);
+			// if (entry.geoResourceId) {
+			// 	console.log(
+			// 		'🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ mergedData[entry.geoResourceId].label:',
+			// 		geoResourceDictionary[entry.geoResourceId].label
+			// 	);
+			// 	entry = { ...entry, label: geoResourceDictionary[entry.geoResourceId].label };
+			// }
+			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ mergedData:', geoResourceDictionary);
+			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ catalog:', catalog);
 		};
 
 		const updateCatalog = async (currentTopicId) => {
-			console.log('🚀 ~ AdminPanel ~ updateCatalog ~ currentTopicId:', currentTopicId);
 			try {
 				if (currentTopicId) {
 					const catalog = await this._catalogService.byId(currentTopicId);
 					this.signal(Update_Catalog, catalog);
 				} else {
-					const defaultCatalog = await this._catalogService.default();
+					const defaultCatalog = await this._catalogService.byId('ba');
 					this.signal(Update_Catalog, defaultCatalog);
 				}
 				mergeCatalogWithResources();
@@ -107,7 +148,6 @@ export class AdminPanel extends MvuElement {
 
 		try {
 			const geoResources = await this._geoResourceService.all();
-			console.log('🚀 ~ AdminPanel ~ onInitialize ~ geoResources:', geoResources);
 			this.signal(Update_GeoResources, geoResources);
 
 			mergeCatalogWithResources();
@@ -118,6 +158,11 @@ export class AdminPanel extends MvuElement {
 		this.observe(
 			(state) => state.admin.currentTopicId,
 			(currentTopicId) => {
+				if (!currentTopicId) {
+					const defaultTopic = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
+					this.signal(Update_SelectedTopic, defaultTopic);
+					return;
+				}
 				updateCatalog(currentTopicId);
 			}
 		);
@@ -125,10 +170,22 @@ export class AdminPanel extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
+			case Update_Topics:
+				return { ...model, topics: [...data] };
+
+			case Update_GeoResources:
+				return { ...model, geoResources: [...data] };
+
 			case Update_Catalog:
-				return { ...model, topics: data };
+				return { ...model, catalog: [...data] };
+
 			case Update_CatalogWithResourceData:
-				return { ...model, catalogWithResourceData: data };
+				console.log('🚀 ~ AdminPanel ~ update ~ data:', data);
+				return { ...model, catalogWithResourceData: [...data] };
+
+			case Update_SelectedTopic:
+				updateStore(data);
+				return { ...model, currentTopicId: data };
 		}
 	}
 

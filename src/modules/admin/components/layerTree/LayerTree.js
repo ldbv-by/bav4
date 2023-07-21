@@ -8,6 +8,8 @@ import { MvuElement } from '../../../MvuElement';
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
+import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
+
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_Categories = 'update_categories';
@@ -91,7 +93,7 @@ export class LayerTree extends MvuElement {
 	handleTopicChange(event) {
 		const selectedTopicId = event.target.value;
 		console.log('🚀 ~ LayerTree ~ handleTopicChange ~ selectedTopicId:', selectedTopicId);
-		// this.signal(Update_Topics, selectedTopicId);
+		updateStore(selectedTopicId);
 	}
 
 	/**

@@ -10,7 +10,7 @@ export const adminReducer = (state = initialState, action) => {
 		case SELECTED_TOPIC_CHANGED: {
 			return {
 				...state,
-				currentTopicId: [...payload]
+				currentTopicId: payload
 			};
 		}
 	}
