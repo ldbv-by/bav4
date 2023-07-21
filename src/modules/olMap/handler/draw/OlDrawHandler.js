@@ -694,6 +694,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify.getActive()) {
 			drawState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
+			drawState.geometryType = this._select.getFeatures().getLength() === 0 ? null : this._select.getFeatures().item(0)?.getGeometry().getType();
 		}
 
 		drawState.dragging = dragging;
