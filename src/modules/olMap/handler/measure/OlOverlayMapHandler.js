@@ -21,7 +21,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 		const wgs84Extent = transformExtent(viewExtent, 'EPSG:3857', 'EPSG:4326');
 
 		const getOffset = (latitude) => {
-			return -180 > latitude ? (latitude - (latitude % 180)) / 180 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 180)) / 180;
+			return -180 > latitude ? (latitude - (latitude % 360)) / 360 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 360)) / 360;
 		};
 		const worldOffset = [
 			getOffset(getBottomLeft(wgs84Extent)[0]),
@@ -46,6 +46,12 @@ export class OlOverlayMapHandler extends OlMapHandler {
 						return fromLonLat(wgs84Coordinate, 'EPSG:3857');
 					};
 					const findBestOffset = (minMax, position, extent) => {
+						// const bestOffset = minMax.find((offset) => {
+						// 	const candidate = withOffset(offset, position);
+						// 	return containsCoordinate(extent, candidate);
+						// });
+						// return bestOffset ?? null;
+
 						const [min, max] = minMax;
 						let bestOffset = null;
 						for (let offset = min - 1; offset <= max + 1; offset++) {
@@ -59,7 +65,6 @@ export class OlOverlayMapHandler extends OlMapHandler {
 					};
 
 					const bestOffset = findBestOffset(offsetMinMax, wgs84Position, viewExtent);
-
 					if (bestOffset) {
 						const newPos = withOffset(bestOffset, wgs84Position);
 						o.setPosition(newPos);
