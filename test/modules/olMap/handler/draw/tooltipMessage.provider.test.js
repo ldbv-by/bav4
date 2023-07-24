@@ -6,7 +6,7 @@ import { provide as drawProvide } from '../../../../../src/modules/olMap/handler
 TestUtils.setupStoreAndDi({});
 $injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-describe('Measure tooltipMessageProvider', () => {
+describe('Draw tooltipMessageProvider', () => {
 	const drawStateTemplate = {
 		type: null,
 		snap: null,
@@ -27,9 +27,16 @@ describe('Measure tooltipMessageProvider', () => {
 			'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
 		);
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY })).toBe('olMap_handler_draw_modify_key_for_delete');
-		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX })).toBe(
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: null })).toBe(
 			'olMap_handler_measure_modify_click_or_drag'
 		);
+		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: 'Polygon' })).toBe(
+			'olMap_handler_measure_modify_polygon_click_or_drag'
+		);
+		expect(
+			drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: 'LineString' })
+		).toBe('olMap_handler_measure_modify_linestring_click_or_drag');
+
 		expect(drawProvide({ ...drawStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE })).toBe(
 			'olMap_handler_measure_modify_click_new_point'
 		);

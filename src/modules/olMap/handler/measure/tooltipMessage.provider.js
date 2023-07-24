@@ -32,6 +32,13 @@ export const provide = (interactionState) => {
 
 	if (interactionState.type === InteractionStateType.MODIFY) {
 		if (interactionState.snap === InteractionSnapType.VERTEX) {
+			if (interactionState.geometryType && interactionState.geometryType === 'Polygon') {
+				return translate('olMap_handler_measure_modify_polygon_click_or_drag');
+			}
+			if (interactionState.geometryType && interactionState.geometryType === 'LineString') {
+				return translate('olMap_handler_measure_modify_linestring_click_or_drag');
+			}
+
 			return translate('olMap_handler_measure_modify_click_or_drag');
 		}
 		if (interactionState.snap === InteractionSnapType.EDGE) {

@@ -46,7 +46,7 @@ describe('olInteractionUtils', () => {
 			expect(InteractionSnapType.FIRSTPOINT).toEqual('firstPoint');
 			expect(InteractionSnapType.LASTPOINT).toEqual('lastPoint');
 			expect(InteractionSnapType.VERTEX).toEqual('vertex');
-			expect(InteractionSnapType.EGDE).toEqual('edge');
+			expect(InteractionSnapType.EDGE).toEqual('edge');
 			expect(InteractionSnapType.FACE).toEqual('face');
 		});
 	});
@@ -142,7 +142,7 @@ describe('olInteractionUtils', () => {
 				}
 			};
 
-			expect(getSnapState(mapMock, mockLayer, pixel)).toBe(InteractionSnapType.EGDE);
+			expect(getSnapState(mapMock, mockLayer, pixel)).toBe(InteractionSnapType.EDGE);
 		});
 
 		it('detects a snap on a vertex', () => {
