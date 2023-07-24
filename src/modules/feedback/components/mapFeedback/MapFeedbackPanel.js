@@ -12,6 +12,7 @@ import { BA_FORM_ELEMENT_VISITED_CLASS, IFRAME_ENCODED_STATE, IFRAME_GEOMETRY_RE
 import { IFrameComponents } from '../../../../domain/iframeComponents';
 import { QueryParameters } from '../../../../domain/queryParameters';
 import { nothing } from 'lit-html';
+import { isExternalGeoResourceId } from '../../../../utils/checks';
 
 const Update_Category = 'update_category';
 const Update_Description = 'update_description';
@@ -183,20 +184,23 @@ export class MapFeedbackPanel extends MvuElement {
 			return queryParameters;
 		};
 
-		const filterUserGeneratedLayers = (encodedState) => {
-			const [baseUrl, searchParamsString] = encodedState.split('?');
+		const filterUserGeneratedAndExternalLayers = (encodedState) => {
+			const [baseUrl, searchParamsString] = decodeURIComponent(encodedState).split('?');
 			const searchParams = new URLSearchParams(searchParamsString);
 			const layers = searchParams.has(QueryParameters.LAYER) ? searchParams.get(QueryParameters.LAYER).split(',') : [];
 
 			searchParams.set(
 				QueryParameters.LAYER,
-				layers.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l)).join(',')
+				layers
+					.filter((l) => !this._fileStorageService.isAdminId(l) && !this._fileStorageService.isFileId(l))
+					.filter((l) => !isExternalGeoResourceId(l))
+					.join(',')
 			);
-			return `${baseUrl}?${decodeURIComponent(searchParams.toString())}`;
+			return `${baseUrl}?${searchParams.toString()}`;
 		};
 
 		// Create an iframe source without any user-generated GeoResources that could be unintentionally affect the feedback or the GeoResources itself.
-		const iframeSrc = filterUserGeneratedLayers(
+		const iframeSrc = filterUserGeneratedAndExternalLayers(
 			center
 				? this._shareService.encodeStateForPosition({ center: center }, getExtraParameters(), [PathParameters.EMBED])
 				: this._shareService.encodeState(getExtraParameters(), [PathParameters.EMBED])

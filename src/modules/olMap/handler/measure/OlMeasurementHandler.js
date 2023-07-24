@@ -602,7 +602,9 @@ export class OlMeasurementHandler extends OlLayerHandler {
 
 		if (this._modify.getActive()) {
 			measureState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
+			measureState.geometryType = this._select.getFeatures().getLength() === 0 ? null : this._select.getFeatures().item(0)?.getGeometry().getType();
 		}
+
 		const dragableOverlay = getOverlays(this._vectorLayer).find((o) => o.get('dragable') === true);
 		if (dragableOverlay) {
 			measureState.type = InteractionStateType.OVERLAY;
