@@ -1707,7 +1707,8 @@ describe('OlDrawHandler', () => {
 					snap: null,
 					coordinate: [10, 0],
 					pointCount: 0,
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
@@ -1731,10 +1732,11 @@ describe('OlDrawHandler', () => {
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(drawStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
-					snap: InteractionSnapType.EGDE,
+					snap: InteractionSnapType.EDGE,
 					coordinate: [50, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
@@ -1761,7 +1763,8 @@ describe('OlDrawHandler', () => {
 					snap: InteractionSnapType.VERTEX,
 					coordinate: [0, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
