@@ -1,3 +1,6 @@
+/**
+ * @module store/admin/admin_action
+ */
 import { SELECTED_TOPIC_CHANGED } from './admin.reducer';
 import { $injector } from '../../injection';
 

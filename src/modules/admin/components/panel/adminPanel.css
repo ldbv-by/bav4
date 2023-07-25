@@ -1,0 +1,9 @@
+.container {
+	display: flex;
+}
+
+.container > div {
+	flex: 1;
+	margin: 10px;
+	flex-basis: 50%;
+}

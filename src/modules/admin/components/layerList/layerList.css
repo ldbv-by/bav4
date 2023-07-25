@@ -1,0 +1,20 @@
+li > ul {
+	display: none;
+}
+li.show-children > ul {
+	display: block;
+}
+
+li > span.has-children::before {
+	margin-right: 4px;
+	content: '▲';
+}
+
+li > span.has-children {
+	cursor: pointer;
+	font-weight: bold;
+}
+
+li.show-children > span::before {
+	content: '▼';
+}

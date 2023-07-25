@@ -1,7 +1,6 @@
 /**
- * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
+ * @module modules/admin/components/panel/AdminPanel
  */
-
 import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
@@ -68,28 +67,6 @@ export class AdminPanel extends MvuElement {
 				return;
 			}
 
-			// // Define a mapping object for property name correspondence
-			// const propertyMapping = {
-			// 	id: 'geoResourceId',
-			// 	label: '_label',
-			// 	attribution: '_attribution',
-			// 	url: '_url',
-			// 	layers: '_layers',
-			// 	format: '_format',
-			// 	type: '_type',
-			// 	sourceType: '_sourceType'
-			// };
-
-			// // Helper function to map properties
-			// const mapProperties = (sourceObject, mapping) => {
-			// 	return Object.entries(sourceObject).reduce((mappedObj, [key, value]) => {
-			// 		const mappedKey = mapping[key] || key;
-			// 		mappedObj[mappedKey] = value;
-			// 		return mappedObj;
-			// 	}, {});
-			// };
-
-			// Create the catalogWithResourceData array with the mapped properties
 			const catalogWithResourceData = catalog.map((category) => {
 				if (!category.children) {
 					const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
@@ -110,60 +87,7 @@ export class AdminPanel extends MvuElement {
 				}
 			});
 
-			// const catalogWithResourceData = catalog.map((category) => {
-			// 	if (!category.children) {
-			// 		// If the category has no children, return the category with additional properties
-			// 		const georesource = geoResources.find((geoResource) => geoResource.id === category.geoResourceId);
-			// 		return georesource ? { ...category, ...georesource } : category;
-			// 	} else {
-			// 		// If the category has children, update each child with the corresponding georesource data
-			// 		const updatedChildren = category.children.map((child) => {
-			// 			const georesource = geoResources.find((geoResource) => geoResource.id === child.geoResourceId);
-
-			// 			if (georesource) {
-			// 				// If a matching georesource is found, merge it with the child and return the updated child object
-			// 				return { ...child, ...georesource };
-			// 			} else {
-			// 				// If no matching georesource is found, return the original child object
-			// 				return child;
-			// 			}
-			// 		});
-
-			// 		// Return the updated category object with the updated children
-			// 		return { ...category, children: updatedChildren };
-			// 	}
-			// });
-
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
-
-			// const catalogWithResources = [];
-			// const geoResourceDictionary = {};
-			// for (const geoResource of geoResources) {
-			// 	geoResourceDictionary[geoResource.id] = geoResource;
-			// }
-
-			// for (const entry of catalog) {
-			// 	if (entry.label) {
-			// 		for (let child of entry.children) {
-			// 			if (child.geoResourceId) {
-			// 				child = { geoResourceId: child.geoResourceId, label: geoResourceDictionary[child.geoResourceId].label };
-			// 				entry.children.push(child);
-			// 			}
-			// 			console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ entry:', entry);
-			// 			catalogWithResources.push(entry);
-			// 		}
-			// 	}
-			// }
-			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ entry.geoResourceId:', entry.geoResourceId);
-			// if (entry.geoResourceId) {
-			// 	console.log(
-			// 		'🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ mergedData[entry.geoResourceId].label:',
-			// 		geoResourceDictionary[entry.geoResourceId].label
-			// 	);
-			// 	entry = { ...entry, label: geoResourceDictionary[entry.geoResourceId].label };
-			// }
-			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ mergedData:', geoResourceDictionary);
-			// console.log('🚀 ~ AdminPanel ~ mergeCatalogWithResources ~ catalog:', catalog);
 		};
 
 		const updateCatalog = async (currentTopicId) => {
@@ -231,7 +155,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { currentTopicId, topics, catalogWithResourceData } = model;
+		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 
 		if (currentTopicId) {
 			return html`
@@ -242,7 +166,17 @@ export class AdminPanel extends MvuElement {
 				<h1>Admin App</h1>
 
 				<div class="container">
-					<ba-layer-tree .topics="${topics}" .selectedTheme="${currentTopicId}" .catalogWithResourceData="${catalogWithResourceData}"></ba-layer-tree>
+					<div>
+						<ba-layer-tree
+							.topics="${topics}"
+							.selectedTheme="${currentTopicId}"
+							.catalogWithResourceData="${catalogWithResourceData}"
+						></ba-layer-tree>
+					</div>
+
+					<div>
+						<ba-layer-list .geoResources=${geoResources}></ba-layer-list>
+					</div>
 				</div>
 			`;
 		}

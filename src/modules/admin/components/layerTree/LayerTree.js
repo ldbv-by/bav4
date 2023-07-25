@@ -1,7 +1,6 @@
 /**
- * @module modules/feedback/components/generalFeedback/GeneralFeedbackPanel
+ * @module modules/admin/components/layerTree/LayerTree
  */
-
 import { html } from 'lit-html';
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
@@ -62,7 +61,7 @@ export class LayerTree extends MvuElement {
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, selectedTopicId } = model;
+		const { topics, catalogWithResourceData } = model; // todo , selectedTopicId
 
 		if (
 			catalogWithResourceData === null ||
