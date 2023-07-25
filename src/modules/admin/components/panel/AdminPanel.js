@@ -222,7 +222,6 @@ export class AdminPanel extends MvuElement {
 				return { ...model, catalog: [...data] };
 
 			case Update_CatalogWithResourceData:
-				console.log('🚀 ~ AdminPanel ~ update ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data] };
 
 			case Update_SelectedTopic:

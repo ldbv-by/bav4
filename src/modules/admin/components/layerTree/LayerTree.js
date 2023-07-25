@@ -15,6 +15,8 @@ const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
 
+// Define a CSS class to show or hide the children <ul> element
+const toggleClass = 'show-children';
 /**
  * Contains
  *
@@ -67,11 +69,21 @@ export class LayerTree extends MvuElement {
 			topics === null ||
 			(topics && topics.length === 0)
 		) {
-			console.log('🚀 ~ LayerTree ~ createView ~ return nothing');
 			return nothing;
 		}
-		console.log('🚀 ~ LayerTree ~ createView ~ topics:', topics);
-		console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+
+		const handleCategoryClick = (event) => {
+			// Get the clicked <li> element and its children <ul> element
+			const categoryElement = event.target;
+			const childElement = categoryElement.querySelector('ul');
+
+			if (!childElement) {
+				return;
+			}
+
+			// Toggle the 'show-children' class on the children <ul> element
+			childElement.classList.toggle(toggleClass);
+		};
 
 		if (topics) {
 			return html`
@@ -87,8 +99,8 @@ export class LayerTree extends MvuElement {
 					<ul>
 						${catalogWithResourceData.map(
 							(catalogEntry) => html`
-								<li>
-									${catalogEntry.label ? html` ${catalogEntry.label} ` : ''}}
+								<li @click="${handleCategoryClick}">
+									${catalogEntry.label}
 									${catalogEntry.children
 										? html`
 												<ul>
