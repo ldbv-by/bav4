@@ -11,6 +11,7 @@ import { EventLike } from '../../../../src/utils/storeUtils';
 import { positionReducer } from '../../../../src/store/position/position.reducer';
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
+import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -42,14 +43,17 @@ describe('LayerItem', () => {
 		};
 	};
 
+	let store;
+
 	describe('when layer item is rendered', () => {
 		const geoResourceService = { byId: () => {}, addOrReplace: () => {} };
 
 		const setup = async (layer) => {
-			TestUtils.setupStoreAndDi(
+			store = TestUtils.setupStoreAndDi(
 				{},
 				{
-					layers: layersReducer
+					layers: layersReducer,
+					modal: modalReducer
 				}
 			);
 			$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('GeoResourceService', geoResourceService);
@@ -423,13 +427,16 @@ describe('LayerItem', () => {
 				collapsed: true
 			};
 			const element = await setup(layer);
-			const spy = spyOn(element, '_getInfoPanelFor').and.callThrough();
 
 			const menu = element.shadowRoot.querySelector('ba-overflow-menu');
 			const infoMenuItem = menu.items.find((item) => item.label === 'Info');
+
 			infoMenuItem.action();
 
-			expect(spy).toHaveBeenCalledWith(layer.geoResourceId);
+			expect(store.getState().modal.data.title).toBe('label0');
+			const wrapperElement = TestUtils.renderTemplateResult(store.getState().modal.data.content);
+			expect(wrapperElement.querySelectorAll(GeoResourceInfoPanel.tag)).toHaveSize(1);
+			expect(wrapperElement.querySelector(GeoResourceInfoPanel.tag).geoResourceId).toBe('geoResourceId0');
 		});
 
 		it('does not show a loading hint for Non-GeoResourceFutures', async () => {
