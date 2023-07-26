@@ -320,17 +320,17 @@ describe('LayerService', () => {
 		it('converts a AggregateGeoresource to a olLayer(Group)', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
-			const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', 'https://some.url');
+			const xyzGeoresource0 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyzGeoresource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			spyOn(georesourceService, 'byId').and.callFake((id) => {
 				switch (id) {
-					case xyzGeoresource.id:
-						return xyzGeoresource;
-					case vtGeoresource.id:
-						return vtGeoresource;
+					case xyzGeoresource0.id:
+						return xyzGeoresource0;
+					case xyzGeoresource1.id:
+						return xyzGeoresource1;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id]);
+			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource0.id, xyzGeoresource1.id]);
 
 			const olLayerGroup = instanceUnderTest.toOlLayer(id, aggreggateGeoResource);
 
@@ -339,24 +339,24 @@ describe('LayerService', () => {
 			expect(olLayerGroup.getMaxZoom()).toBePositiveInfinity();
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
-			expect(layers.item(0).get('id')).toBe(xyzGeoresource.id);
-			expect(layers.item(1).get('id')).toBe(vtGeoresource.id);
+			expect(layers.item(0).get('id')).toBe(xyzGeoresource0.id);
+			expect(layers.item(1).get('id')).toBe(xyzGeoresource1.id);
 		});
 
 		it('converts a AggregateGeoresource containing optional properties to a olLayer(Group)', () => {
 			const instanceUnderTest = setup();
 			const id = 'id';
-			const xyzGeoresource = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
-			const vtGeoresource = new VTGeoResource('geoResourceId2', 'label', 'https://some.url');
+			const xyzGeoresource0 = new XyzGeoResource('geoResourceId0', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
+			const xyzGeoresource1 = new XyzGeoResource('geoResourceId1', 'label', 'https://some{1-2}/layer/{z}/{x}/{y}');
 			spyOn(georesourceService, 'byId').and.callFake((id) => {
 				switch (id) {
-					case xyzGeoresource.id:
-						return xyzGeoresource;
-					case vtGeoresource.id:
-						return vtGeoresource;
+					case xyzGeoresource0.id:
+						return xyzGeoresource0;
+					case xyzGeoresource1.id:
+						return xyzGeoresource1;
 				}
 			});
-			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource.id, vtGeoresource.id])
+			const aggreggateGeoResource = new AggregateGeoResource('geoResourceId0', 'label', [xyzGeoresource0.id, xyzGeoresource1.id])
 				.setOpacity(0.5)
 				.setMinZoom(5)
 				.setMaxZoom(19);
@@ -369,8 +369,8 @@ describe('LayerService', () => {
 			expect(olLayerGroup.getMaxZoom()).toBe(19);
 			expect(olLayerGroup.constructor.name).toBe('LayerGroup');
 			const layers = olLayerGroup.getLayers();
-			expect(layers.item(0).get('id')).toBe(xyzGeoresource.id);
-			expect(layers.item(1).get('id')).toBe(vtGeoresource.id);
+			expect(layers.item(0).get('id')).toBe(xyzGeoresource0.id);
+			expect(layers.item(1).get('id')).toBe(xyzGeoresource1.id);
 		});
 
 		it('registers an opacity change listener in order to synchronize the opacity of a MapLibreLayer', () => {
