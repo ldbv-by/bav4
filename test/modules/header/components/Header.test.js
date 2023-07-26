@@ -181,6 +181,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].innerText).toBe('header_tab_misc_button');
 			expect(element.shadowRoot.querySelector('.header__button-container').children[2].classList.contains('is-active')).toBeFalse();
 
+			expect(element.shadowRoot.querySelectorAll('.header_search_icon')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__search').getAttribute('placeholder')).toBe('header_search_placeholder');
 
 			expect(element.shadowRoot.querySelector('.header__logo-badge').innerText).toBe('header_logo_badge');
