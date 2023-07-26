@@ -2,11 +2,11 @@
 	"name": "bav4",
 	"dependencies": {
 		"@geoblocks/ol-maplibre-layer": "0.1.1",
-		"chart.js": "4.3.0",
+		"chart.js": "4.3.1",
 		"dompurify": "3.0.5",
 		"geographiclib-geodesic": "2.0.0",
 		"lit-html": "2.7.5",
-		"maplibre-gl": "3.2.0",
+		"maplibre-gl": "3.2.1",
 		"ol": "^7.4.0",
 		"proj4": "2.9.0",
 		"redux": "4.2.1",
