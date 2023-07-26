@@ -8,7 +8,7 @@ import { $injector } from '../../../injection';
  * The requested maximum width and height of the image is limited to a configurable size (default is 2000x2000).
  * If width and/or height exceed the configured maximum size, the image will be scaled.
  * @param {Credential} credential
- * @param {number[]} maxSize max size [width, height] in px
+ * @param {number[]} maxSize maximum width and height of the requested image in px. Default is 2000*2000.
  * @returns ol.image.LoadFunction
  */
 export const getBvvBaaImageLoadFunction = (credential, maxSize = [2000, 2000]) => {
