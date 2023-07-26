@@ -143,8 +143,8 @@ describe('imageLoadFunction.provider', () => {
 			describe('when scaling is needed', () => {
 				it('scales the image using a canvas element', async () => {
 					const fakeImageWrapper = getFakeImageWrapperInstance();
-					const src = 'http://foo.var?WIDTH=2000&HEIGHT=2001';
-					const adjustedSrc = 'http://foo.var?WIDTH=2000&HEIGHT=2000';
+					const src = 'http://foo.var?WIDTH=1000&HEIGHT=1001';
+					const adjustedSrc = 'http://foo.var?WIDTH=1000&HEIGHT=1000';
 					const mockTempImage = {};
 					const mockCanvasDataURL = 'canvasDataUrl';
 					const mockCanvasContext = { drawImage: () => {} };
@@ -160,17 +160,17 @@ describe('imageLoadFunction.provider', () => {
 								return mockCanvas;
 						}
 					});
-					const imageLoadFunction = getBvvBaaImageLoadFunction();
+					const imageLoadFunction = getBvvBaaImageLoadFunction(null, [1000, 1000]);
 
 					await imageLoadFunction(fakeImageWrapper, src);
 
 					expect(mockTempImage.crossOrigin).toBe('anonymous');
 					expect(mockTempImage.src).toBe(adjustedSrc);
 					mockTempImage.onload();
-					expect(mockCanvas.width).toBe(2000);
-					expect(mockCanvas.height).toBe(2001);
+					expect(mockCanvas.width).toBe(1000);
+					expect(mockCanvas.height).toBe(1001);
 					expect(fakeImageWrapper.getImage().src).toBe(mockCanvasDataURL);
-					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 2000, 2001);
+					expect(drawImageSpy).toHaveBeenCalledWith(mockTempImage, 0, 0, 1000, 1001);
 				});
 			});
 		});
