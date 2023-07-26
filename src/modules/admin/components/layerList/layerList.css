@@ -1,20 +1,11 @@
-li > ul {
-	display: none;
-}
-li.show-children > ul {
-	display: block;
-}
-
-li > span.has-children::before {
-	margin-right: 4px;
-	content: '▲';
+.draggable {
+	background-color: rgb(153, 209, 228);
+	border: 1px solid black;
+	padding: 10px;
 }
 
-li > span.has-children {
-	cursor: pointer;
-	font-weight: bold;
-}
-
-li.show-children > span::before {
-	content: '▼';
+.droppable {
+	background-color: rgb(207, 127, 127);
+	border: 1px solid black;
+	padding: 10px;
 }

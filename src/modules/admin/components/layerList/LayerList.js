@@ -67,7 +67,7 @@ export class LayerList extends MvuElement {
 				<input type="text" @input="${handleFilterChange}" placeholder="Filter" />
 
 				<ul>
-					${filteredGeoResources.map((geoResource) => html`<li>${geoResource.label}</li>`)}
+					${filteredGeoResources.map((geoResource) => html`<li id="${geoResource.id}" class="draggable" draggable="true">${geoResource.label}</li>`)}
 				</ul>
 			</div>
 		`;

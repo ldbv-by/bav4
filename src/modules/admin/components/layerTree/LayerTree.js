@@ -1,9 +1,12 @@
 /**
  * @module modules/admin/components/layerTree/LayerTree
  */
+// @ts-ignore
 import { html } from 'lit-html';
+// @ts-ignore
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+// @ts-ignore
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
@@ -16,6 +19,7 @@ const Update_Layers = 'update_layers';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
+const droppableClass = 'droppable';
 
 /**
  * Contains
@@ -45,6 +49,28 @@ export class LayerTree extends MvuElement {
 
 	onInitialize() {
 		// this._getCategoryOptions();
+
+		const xxx = () => {
+			const droppables = this.shadowRoot.querySelectorAll('span');
+			console.log('🚀 ~ LayerTree ~ createView ~ this.shadowRoot:', this.shadowRoot);
+			console.log('🚀 ~ LayerTree ~ createView ~ droppables:', droppables);
+
+			for (let i = 0; i < droppables.length; i++) {
+				droppables[i].addEventListener('dragover', function (event) {
+					event.preventDefault();
+					// @ts-ignore
+					event.target.classList.add('drag-over');
+				});
+
+				droppables[i].addEventListener('dragleave', function (event) {
+					// @ts-ignore
+					event.target.classList.remove('drag-over');
+				});
+
+				// @ts-ignore
+			}
+		};
+		xxx();
 	}
 
 	update(type, data, model) {
@@ -82,6 +108,22 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
+		const onDragOver = (e, catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ onDragOver ~ catalogEntry:', catalogEntry);
+			e.target.classList.remove('isdragged');
+			e.target.classList.add('drag-over');
+			e.preventDefault();
+			const droppables = this.shadowRoot.querySelectorAll('span.droppable');
+			console.log('🚀 ~ LayerTree ~ onDragOver ~ droppables:', droppables);
+		};
+
+		const onDragLeave = (e) => {
+			console.log('🚀 ~ LayerTree ~ onDragOver ~ e:', e);
+			e.target.classList.add('isdragged');
+			e.target.classList.remove('drag-over');
+			e.preventDefault();
+		};
+
 		if (topics) {
 			return html`
 				<style>
@@ -97,7 +139,12 @@ export class LayerTree extends MvuElement {
 						${catalogWithResourceData.map(
 							(catalogEntry) => html`
 								<li @click="${handleCategoryClick}">
-									<span class="${catalogEntry.children ? hasChildrenClass : ''}">${catalogEntry.label}</span>
+									<span
+										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : ''}"
+										@dragover=${(e) => onDragOver(e, catalogEntry)}
+										@dragleave=${onDragLeave}
+										>${catalogEntry.label}</span
+									>
 									${catalogEntry.children
 										? html`
 												<ul>

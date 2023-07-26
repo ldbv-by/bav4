@@ -18,3 +18,23 @@ li > span.has-children {
 li.show-children > span::before {
 	content: '▼';
 }
+
+/* .draggable {
+	background-color: rgb(153, 209, 228);
+	border: 1px solid black;
+	padding: 10px;
+} */
+
+.droppable {
+	background-color: rgb(221, 109, 109);
+	border: 1px solid black;
+	padding: 10px;
+}
+
+.droppable.drag-over {
+	background-color: rgb(163, 240, 140);
+}
+
+.droppable.dropped {
+	background-color: rgb(93, 138, 235);
+}
