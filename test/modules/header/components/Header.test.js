@@ -98,6 +98,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('block');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('none');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('1');
 		});
 
 		it('layouts for portrait and width >= 80em', async () => {
@@ -116,6 +117,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 
 		it('layouts for landscape and width < 80em', async () => {
@@ -134,6 +136,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 
 		it('layouts for portrait and layouts for width < 80em', async () => {
@@ -152,6 +155,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__logo')).display).toBe('none');
 			expect(window.getComputedStyle(element.shadowRoot.querySelector('#headerMobile')).display).toBe('block');
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 		});
 	});
 
@@ -466,12 +470,14 @@ describe('Header', () => {
 				const element = await setup(state);
 				const input = element.shadowRoot.querySelector('#input');
 
-				input.focus();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 
+				input.focus();
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('1');
 				expect(store.getState().media.observeResponsiveParameter).toBeFalse();
 
 				input.blur();
-
+				expect(window.getComputedStyle(element.shadowRoot.querySelector('.header_search_icon')).opacity).toBe('0');
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
