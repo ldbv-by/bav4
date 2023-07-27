@@ -9,7 +9,7 @@ describe('topicsReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().topics.current).toBeNull();
 		expect(store.getState().topics.ready).toBeFalse();

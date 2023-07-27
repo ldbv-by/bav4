@@ -9,7 +9,7 @@ describe('mapContextMenu', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().mapContextMenu.coordinate).toBeNull();
 		expect(store.getState().mapContextMenu.content).toBeNull();
