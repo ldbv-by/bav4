@@ -55,6 +55,7 @@ import { FeedbackService } from '../services/FeedbackService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
+import { BvvRoutingService } from '../services/RoutingService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -88,6 +89,7 @@ $injector
 	.registerSingleton('MfpService', new BvvMfpService())
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
+	.registerSingleton('RoutingService', new BvvRoutingService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
