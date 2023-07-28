@@ -38,19 +38,6 @@ describe('BvvRoutingService', () => {
 
 			expect(categoriesProvider).toHaveBeenCalledTimes(1);
 		});
-
-		// it('just provides the categories when already initialized', async () => {
-		// 	const mockCategories = ['foo', 'bar'];
-		// 	const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
-		// 	const instanceUnderTest = setup(categoriesProvider);
-
-		// 	expect(instanceUnderTest._categories).toBeNull();
-
-		// 	await expectAsync(instanceUnderTest.init()).toBeResolvedTo(mockCategories);
-		// 	await expectAsync(instanceUnderTest.init()).toBeResolvedTo(mockCategories); // second call served from cache
-
-		// 	expect(categoriesProvider).toHaveBeenCalledTimes(1);
-		// });
 	});
 
 	describe('getCategories', () => {
