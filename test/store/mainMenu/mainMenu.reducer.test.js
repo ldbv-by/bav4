@@ -43,7 +43,7 @@ describe('mainMenuReducer', () => {
 
 	describe('createNoInitialStateMediaReducer', () => {
 		describe('returns a reducer function', () => {
-			it('initiales the store by null', () => {
+			it('initializes the store by null', () => {
 				const store = setup(createNoInitialStateMainMenuReducer());
 
 				expect(store.getState().mainMenu).toBeNull();
