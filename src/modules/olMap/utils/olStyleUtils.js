@@ -570,7 +570,6 @@ export const modifyStyleFunction = (feature) => {
 
 	return [
 		new Style({
-			geometry: feature?.geodesic?.getGeodesicGeom(),
 			image: new CircleStyle({
 				radius: 6,
 				stroke: new Stroke({

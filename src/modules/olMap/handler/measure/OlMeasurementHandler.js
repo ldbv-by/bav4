@@ -521,6 +521,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		this._modify.setActive(true);
 		this._modifyActivated = true;
 		if (feature) {
+			feature.geodesic = new GeodesicGeometry(feature, () => false); // refresh geodesic with the completed feature from the finished drawing
 			const onFeatureChange = (event) => {
 				const measureGeometry = this._createMeasureGeometry(event.target);
 				this._overlayService.update(event.target, this._map, StyleTypes.MEASURE, { geometry: measureGeometry });
@@ -565,7 +566,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 		}
 	}
 
-	_createMeasureGeometry(feature, isDrawing = false) {
+	_createMeasureGeometry(feature) {
 		const geometry = feature.geodesic ? feature.geodesic.getGeodesicGeom() : feature.getGeometry();
 		// if (feature.getGeometry() instanceof Polygon) {
 		// 	const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
