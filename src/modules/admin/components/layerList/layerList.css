@@ -4,6 +4,10 @@
 	padding: 10px;
 }
 
+.draggable.isdragged {
+	opacity: 0;
+}
+
 .droppable {
 	background-color: rgb(207, 127, 127);
 	border: 1px solid black;

@@ -1,3 +1,12 @@
+ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+li {
+	margin-bottom: 8px;
+}
+
 li > ul {
 	display: none;
 }
@@ -5,36 +14,62 @@ li.show-children > ul {
 	display: block;
 }
 
-li > span.has-children::before {
-	margin-right: 4px;
-	content: '▲';
+li > span {
+	display: inline-block;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	background-color: #3498db;
+	color: #fff;
 }
 
-li > span.has-children {
+li > button {
+	margin-left: 10px;
+	padding: 5px 10px;
+	border: none;
+	background-color: #e74c3c;
+	color: white;
+	border-radius: 4px;
 	cursor: pointer;
-	font-weight: bold;
+}
+
+li > span::before {
+	content: '▶';
+	margin-right: 8px;
 }
 
 li.show-children > span::before {
 	content: '▼';
 }
 
-/* .draggable {
-	background-color: rgb(153, 209, 228);
-	border: 1px solid black;
-	padding: 10px;
-} */
+li > span:hover {
+	background-color: #f2f2f2;
+}
 
-.droppable {
-	background-color: rgb(221, 109, 109);
-	border: 1px solid black;
-	padding: 10px;
+li > button:hover {
+	background-color: #c0392b;
+}
+
+ul ul {
+	margin-top: 5px;
+	margin-left: 20px;
+}
+
+.droppable.has-children {
+	background-color: #e67e22;
 }
 
 .droppable.drag-over {
-	background-color: rgb(163, 240, 140);
+	background-color: #27ae60;
 }
 
 .droppable.dropped {
-	background-color: rgb(93, 138, 235);
+	background-color: #9b59b6;
+}
+
+input[type='text'] {
+	font-size: inherit;
+	border: none;
+	outline: none;
+	background-color: transparent;
 }

@@ -47,39 +47,52 @@ export class LayerTree extends MvuElement {
 		this._onSubmit = () => {};
 	}
 
-	onInitialize() {
-		// this._getCategoryOptions();
+	// onInitialize() {
+	// 	this.observeModel('catalogWithResourceData', () => {
+	// 		this._initDragAndDrop();
+	// 	});
+	// }
 
-		const xxx = () => {
-			const droppables = this.shadowRoot.querySelectorAll('span');
-			console.log('🚀 ~ LayerTree ~ createView ~ this.shadowRoot:', this.shadowRoot);
-			console.log('🚀 ~ LayerTree ~ createView ~ droppables:', droppables);
+	// _initDragAndDrop() {
+	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop');
+	// 	const droppables = this.shadowRoot.querySelectorAll('.droppable');
+	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop ~ this.shadowRoot:', this.shadowRoot);
+	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop ~ droppables:', droppables);
 
-			for (let i = 0; i < droppables.length; i++) {
-				droppables[i].addEventListener('dragover', function (event) {
-					event.preventDefault();
-					// @ts-ignore
-					event.target.classList.add('drag-over');
-				});
+	// 	// for (let i = 0; i < droppables.length; i++) {
+	// 	// 	droppables[i].addEventListener('dragover', function (event) {
+	// 	// 		event.preventDefault();
+	// 	// 		// @ts-ignore
+	// 	// 		event.target.classList.add('drag-over');
+	// 	// 	});
 
-				droppables[i].addEventListener('dragleave', function (event) {
-					// @ts-ignore
-					event.target.classList.remove('drag-over');
-				});
+	// 	// 	droppables[i].addEventListener('dragleave', function (event) {
+	// 	// 		// @ts-ignore
+	// 	// 		event.target.classList.remove('drag-over');
+	// 	// 	});
 
-				// @ts-ignore
-			}
-		};
-		xxx();
-	}
+	// 	// 	// @ts-ignore
+	// 	// }
+	// }
 
 	update(type, data, model) {
+		const sortChildrenById = (entry) => {
+			if (entry.children) {
+				entry.children.sort((a, b) => a.id - b.id);
+			}
+		};
+
 		switch (type) {
 			case Update_SelectedTopic:
 				return { ...model, selectedTopicId: data };
 			case Update_Topics:
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
+				if (data && data.length > 0) {
+					data.sort((a, b) => a.id - b.id);
+
+					data.forEach((item) => sortChildrenById(item));
+				}
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
@@ -98,6 +111,15 @@ export class LayerTree extends MvuElement {
 			return nothing;
 		}
 
+		// this._initDragAndDrop();
+		// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view');
+
+		// const dumdum = () => {
+		// 	this._initDragAndDrop();
+		// };
+		// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view dumdum');
+		// dumdum();
+
 		const handleCategoryClick = (event) => {
 			const li = event.currentTarget;
 
@@ -109,19 +131,30 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (e, catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ onDragOver ~ catalogEntry:', catalogEntry);
+			// console.log('🚀 ~ LayerTree ~ onDragOver ~ catalogEntry:', catalogEntry);
 			e.target.classList.remove('isdragged');
 			e.target.classList.add('drag-over');
 			e.preventDefault();
-			const droppables = this.shadowRoot.querySelectorAll('span.droppable');
-			console.log('🚀 ~ LayerTree ~ onDragOver ~ droppables:', droppables);
+			// const droppables = this.shadowRoot.querySelectorAll('span.droppable');
+			// console.log('🚀 ~ LayerTree ~ onDragOver ~ droppables:', droppables);
 		};
 
 		const onDragLeave = (e) => {
-			console.log('🚀 ~ LayerTree ~ onDragOver ~ e:', e);
+			// console.log('🚀 ~ LayerTree ~ onDragLeave ~ e:', e);
 			e.target.classList.add('isdragged');
 			e.target.classList.remove('drag-over');
 			e.preventDefault();
+
+			// // todo remove dum dum
+			// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view onDragLeave');
+			// this._initDragAndDrop();
+		};
+
+		const handleEditClick = (catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ createView ~ catalogEntry:', catalogEntry);
+		};
+		const handleDeleteClick = (catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 		};
 
 		if (topics) {
@@ -135,23 +168,36 @@ export class LayerTree extends MvuElement {
 					<select @change="${this.handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
+
 					<ul>
 						${catalogWithResourceData.map(
 							(catalogEntry) => html`
-								<li @click="${handleCategoryClick}">
+								<li @click="${handleCategoryClick}" class="${catalogEntry.children ? 'has-children' : ''}">
 									<span
-										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : ''}"
+										draggable="true"
+										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
 										@dragover=${(e) => onDragOver(e, catalogEntry)}
 										@dragleave=${onDragLeave}
 										>${catalogEntry.label}</span
 									>
 									${catalogEntry.children
 										? html`
+												<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
+												<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>
 												<ul>
-													${catalogEntry.children.map((child) => html`<li>${child.label}</li>`)}
+													${catalogEntry.children.map(
+														(child) =>
+															html`<li>
+																<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, catalogEntry)} @dragleave=${onDragLeave}
+																	>${child.label}</span
+																>
+															</li>`
+													)}
 												</ul>
 										  `
-										: ''}
+										: html`<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>`}
+
+									<i class="uil uil-draggabledots"></i>
 								</li>
 							`
 						)}

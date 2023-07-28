@@ -67,23 +67,29 @@ export class AdminPanel extends MvuElement {
 				return;
 			}
 
+			let topLevelCounter = 0;
+			let withChildrenCounter = 0;
 			const catalogWithResourceData = catalog.map((category) => {
 				if (!category.children) {
+					topLevelCounter += 100000;
 					const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
 					if (georesource) {
 						// Map the properties from georesource to category
-						return { ...category, label: georesource.label };
+						return { ...category, label: georesource.label, id: topLevelCounter };
 					}
 				} else {
+					withChildrenCounter += 1000;
+					let childrenCounter = 0;
 					const updatedChildren = category.children.map((child) => {
+						childrenCounter += 100;
 						const georesource = georesources.find((geoResource) => geoResource.id === child.geoResourceId);
 						if (georesource) {
 							// Map the properties from georesource to child
-							return { ...child, label: georesource.label };
+							return { ...child, label: georesource.label, id: childrenCounter };
 						}
 						return child;
 					});
-					return { ...category, children: updatedChildren };
+					return { ...category, id: withChildrenCounter, children: updatedChildren };
 				}
 			});
 

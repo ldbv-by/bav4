@@ -43,6 +43,20 @@ export class LayerList extends MvuElement {
 		}
 	}
 
+	draggables = [];
+	/**
+	 * @override
+	 */
+	onAfterRender() {
+		const elements = this.shadowRoot.querySelectorAll('.draggable');
+		if (this.draggables.length === 0 && elements) {
+			this.draggables = elements;
+
+			console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
+			elements.forEach((element) => {});
+		}
+	}
+
 	createView(model) {
 		const { geoResources, filterText } = model;
 
@@ -57,6 +71,38 @@ export class LayerList extends MvuElement {
 			this.signal(Update_FilterText, filterText);
 		};
 
+		const onDragStart = (event, geoResourceId) => {
+			const target = event.target;
+			const id = event.target.id;
+			console.log('🚀 ~ LayerList ~ onDragStart ~ id:', id);
+
+			// console.log('🚀 ~ LayerList ~ event:', event);
+			console.log('🚀 ~ LayerList ~ event.target:', target);
+			// console.log('🚀 ~ LayerList ~ onDragStart ~ geoResourceId:', geoResourceId);
+
+			const addIsDragged = () => {
+				// console.log('🚀 ~ LayerList ~ addIsDragged ~ event:', event);
+				console.log('🚀 ~ LayerList ~ addIsDragged ~ event.target:', target);
+				target.classList.add('isdragged');
+			};
+
+			// event.target.classList.add('isdragged');
+			setTimeout(addIsDragged, 0);
+
+			// this.signal(Update_FilterText, filterText);
+		};
+
+		const onDragEnd = (event) => {
+			event.target.classList.remove('isdragged');
+		};
+
+		// const elements = this.shadowRoot.querySelectorAll('.draggable');
+		// // console.log('🚀 ~ LayerList ~ createView ~ this.shadowRoot:', this.shadowRoot);
+		// // console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
+		// elements.forEach((el) => {
+		// 	// console.log('🚀 ~ LayerList ~ elements.forEach ~ el:', el);
+		// });
+
 		return html`
 			<style>
 				${css}
@@ -67,7 +113,18 @@ export class LayerList extends MvuElement {
 				<input type="text" @input="${handleFilterChange}" placeholder="Filter" />
 
 				<ul>
-					${filteredGeoResources.map((geoResource) => html`<li id="${geoResource.id}" class="draggable" draggable="true">${geoResource.label}</li>`)}
+					${filteredGeoResources.map(
+						(geoResource) =>
+							html`<li
+								id="${geoResource.id}"
+								class="draggable"
+								draggable="true"
+								@dragstart=${(e) => onDragStart(e, geoResource.id)}
+								@dragend=${onDragEnd}
+							>
+								${geoResource.label}
+							</li>`
+					)}
 				</ul>
 			</div>
 		`;
