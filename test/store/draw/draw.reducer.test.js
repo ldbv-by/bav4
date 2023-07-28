@@ -28,7 +28,7 @@ describe('drawReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().draw.active).toBeFalse();
 		expect(store.getState().draw.createPermanentLayer).toBeTrue();

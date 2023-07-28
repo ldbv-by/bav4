@@ -9,7 +9,7 @@ describe('geolocationReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().geolocation.active).toBeFalse();
 		expect(store.getState().geolocation.denied).toBeFalse();
