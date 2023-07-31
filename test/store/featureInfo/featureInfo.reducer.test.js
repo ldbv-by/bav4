@@ -9,7 +9,7 @@ describe('featureInfoReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().featureInfo.current).toEqual([]);
 		expect(store.getState().featureInfo.queries).toEqual([]);

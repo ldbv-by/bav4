@@ -9,7 +9,7 @@ describe('elevationProfileReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().elevationProfile.active).toBeFalse();
 		expect(store.getState().elevationProfile.coordinates).toEqual([]);

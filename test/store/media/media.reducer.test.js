@@ -36,7 +36,7 @@ describe('mediaReducer', () => {
 
 	describe('createNoInitialStateMediaReducer', () => {
 		describe('returns a reducer function', () => {
-			it('initiales the store by null', () => {
+			it('initializes the store by null', () => {
 				const store = setup(createNoInitialStateMediaReducer());
 
 				expect(store.getState().media).toBeNull();
@@ -46,7 +46,7 @@ describe('mediaReducer', () => {
 
 	describe('createMediaReducer', () => {
 		describe('returns a reducer function', () => {
-			it('initiales the store by media query for ORIENTATION', () => {
+			it('initializes the store by media query for ORIENTATION', () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs(ORIENTATION_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(true))
@@ -63,7 +63,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
-			it('initiales the store by media query for MIN_WIDTH', () => {
+			it('initializes the store by media query for MIN_WIDTH', () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs(ORIENTATION_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false))
@@ -80,7 +80,7 @@ describe('mediaReducer', () => {
 				expect(store.getState().media.observeResponsiveParameter).toBeTrue();
 			});
 
-			it('initiales the store by media query for PREFERS_COLOR_SCHEMA', () => {
+			it('initializes the store by media query for PREFERS_COLOR_SCHEMA', () => {
 				spyOn(windowMock, 'matchMedia')
 					.withArgs(ORIENTATION_MEDIA_QUERY)
 					.and.returnValue(TestUtils.newMediaQueryList(false))
