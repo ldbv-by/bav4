@@ -9,7 +9,7 @@ describe('networkReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().network.fetching).toBeFalse();
 		expect(store.getState().network.pendingRequests).toBe(0);
