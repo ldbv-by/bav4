@@ -43,19 +43,19 @@ export class LayerList extends MvuElement {
 		}
 	}
 
-	draggables = [];
-	/**
-	 * @override
-	 */
-	onAfterRender() {
-		const elements = this.shadowRoot.querySelectorAll('.draggable');
-		if (this.draggables.length === 0 && elements) {
-			this.draggables = elements;
+	// draggables = [];
+	// /**
+	//  * @override
+	//  */
+	// onAfterRender() {
+	// 	const elements = this.shadowRoot.querySelectorAll('.draggable');
+	// 	if (this.draggables.length === 0 && elements) {
+	// 		this.draggables = elements;
 
-			console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
-			elements.forEach((element) => {});
-		}
-	}
+	// 		console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
+	// 		elements.forEach((element) => {});
+	// 	}
+	// }
 
 	createView(model) {
 		const { geoResources, filterText } = model;

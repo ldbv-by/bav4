@@ -1,28 +1,59 @@
+/* LayerTree component CSS */
+
+/* Set the component to occupy all available width */
+:host {
+	display: block;
+	width: 100%;
+}
+
+/* Reset margin and padding on the component's container to avoid any unwanted spacing */
+div {
+	margin: 0;
+	padding: 0;
+}
+
+/* The <ul> element should take up the full width of the parent container */
 ul {
-	list-style: none;
-	padding-left: 0;
+	width: 100%;
 }
 
+/* Ensure that each <li> element occupies the full width */
 li {
-	margin-bottom: 8px;
+	width: 100%;
 }
 
+/* Use flexbox to create a row layout for the <li> elements */
+li {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* Make sure the <span> element within <li> fills the available width */
+li > span {
+	flex: 1;
+}
+
+/* Add a flex container for the children list to appear below the parent */
+li > ul {
+	display: flex;
+	flex-direction: column;
+	margin-left: 20px; /* Indent the children list */
+	padding: 0;
+	list-style: none;
+}
+
+/* Hide the children list by default */
 li > ul {
 	display: none;
 }
+
+/* Show the children list when the parent is opened */
 li.show-children > ul {
 	display: block;
 }
 
-li > span {
-	display: inline-block;
-	padding: 5px 10px;
-	border-radius: 4px;
-	cursor: pointer;
-	background-color: #3498db;
-	color: #fff;
-}
-
+/* Button styles */
 li > button {
 	margin-left: 10px;
 	padding: 5px 10px;
@@ -33,26 +64,22 @@ li > button {
 	cursor: pointer;
 }
 
-li > span::before {
-	content: '▶';
-	margin-right: 8px;
-}
-
-li.show-children > span::before {
-	content: '▼';
-}
-
-li > span:hover {
-	background-color: #f2f2f2;
-}
-
 li > button:hover {
 	background-color: #c0392b;
 }
 
-ul ul {
-	margin-top: 5px;
-	margin-left: 20px;
+/* Droppable styles */
+li > span {
+	display: inline-block;
+	padding: 5px 10px;
+	border-radius: 4px;
+	cursor: pointer;
+	background-color: #3498db;
+	color: #fff;
+}
+
+li > span:hover {
+	background-color: #f2f2f2;
 }
 
 .droppable.has-children {
@@ -67,9 +94,22 @@ ul ul {
 	background-color: #9b59b6;
 }
 
+/* Restore the original arrow styles */
+li > span::before {
+	content: '▶';
+	margin-right: 8px;
+}
+
+li.show-children > span::before {
+	content: '▼';
+}
+
+/* Input styles */
 input[type='text'] {
 	font-size: inherit;
 	border: none;
 	outline: none;
 	background-color: transparent;
 }
+
+/* Other styles for the component... */
