@@ -54,7 +54,8 @@ export class LayerTree extends MvuElement {
 		this._configService = configService;
 		this._translationService = translationService;
 		this._securityService = securityService;
-		// this._onDrop = () => {};
+
+		this._afterDrop = () => {};
 	}
 
 	onInitialize() {
@@ -135,10 +136,10 @@ export class LayerTree extends MvuElement {
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 
-			logOnce('newGeoresourceId', newGeoresourceId);
+			// logOnce('newGeoresourceId', newGeoresourceId);
 
 			if (catalogEntry.geoResourceId) {
-				logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+				// logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
 
 				if (currentGeoResourceId !== newGeoresourceId) {
 					this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
@@ -150,7 +151,7 @@ export class LayerTree extends MvuElement {
 						// const currentCatalogEntry = catalogWithResourceData[currentIndex];
 						if (currentIndex > 0) {
 							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-							logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
+							// logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
 
 							const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
 							this._addGeoResource(newGeoresourceId, inBetween);
@@ -160,8 +161,8 @@ export class LayerTree extends MvuElement {
 						}
 					}
 				}
-			} else {
-				logOnce(catalogEntry.label, catalogEntry);
+				// } else {
+				// 	logOnce(catalogEntry.label, catalogEntry);
 			}
 
 			const spanElement = e.target;
@@ -177,23 +178,25 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = (e, catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
-			console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
+			// console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
+			/**
+			 * I do not care where the drop takes place
+			 * Everything should be fixed already so i just can update catalog
+			 * from catalogWithResourceData
+			 */
+			this.afterDrop();
+
 			// // const draggedData = e.dataTransfer.getData('georesourceid');
 			// // console.log('Dragged data:', draggedData);
-
 			// const types = e.dataTransfer.types;
 			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-
 			// logOnce('newGeoresourceId', newGeoresourceId);
-
 			// if (catalogEntry.geoResourceId) {
 			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
-
 			// 	if (currentGeoResourceId !== newGeoresourceId) {
 			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
-
 			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
 			// 		//
 			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
@@ -202,9 +205,7 @@ export class LayerTree extends MvuElement {
 			// 			if (currentIndex > 0) {
 			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
 			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-
 			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-
 			// 				this._addGeoResource(newGeoresourceId, inBetween);
 			// 			}
 			// 		}
@@ -212,16 +213,12 @@ export class LayerTree extends MvuElement {
 			// } else {
 			// 	logOnce(catalogEntry.label, catalogEntry);
 			// }
-
 			// const spanElement = e.target;
-
 			// const liElement = spanElement.parentNode;
-
 			// if (liElement.classList.contains('has-children')) {
 			// 	liElement.classList.add('show-children');
 			// }
 			// spanElement.classList.add('drag-over');
-
 			// e.preventDefault();
 		};
 
@@ -364,6 +361,17 @@ export class LayerTree extends MvuElement {
 
 	get removeGeoResource() {
 		return this._removeGeoResource;
+	}
+
+	/**
+	 * @property {function} afterDrop - Callback function
+	 */
+	set afterDrop(callback) {
+		this._afterDrop = callback;
+	}
+
+	get afterDrop() {
+		return this._afterDrop;
 	}
 
 	static get tag() {

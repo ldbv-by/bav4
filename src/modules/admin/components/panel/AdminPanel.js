@@ -175,12 +175,14 @@ export class AdminPanel extends MvuElement {
 				entry.children.forEach((child) => sortChildrenByIdRecursive(child)); // Recursively sort children's children
 			}
 		};
-		// const logIds = (catalog) => {
-		// 	let xxx = '';
-		// 	catalog.forEach((item) => {
-		// 		xxx += item.id + ' ';
+		// const logXs = (arrayOfX, x) => {
+		// 	let xs = '';
+		// 	arrayOfX.forEach((item) => {
+		// 		if (item[x]) {
+		// 			xs += item[x] + ' ';
+		// 		}
 		// 	});
-		// 	console.log(xxx);
+		// 	console.log(xs);
 		// };
 
 		switch (type) {
@@ -191,10 +193,12 @@ export class AdminPanel extends MvuElement {
 				return { ...model, geoResources: [...data] };
 
 			case Update_Catalog:
+				console.log('🚀 ~ update ~ Update_Catalog ~ data:', data);
 				return { ...model, catalog: data };
 
 			case Update_CatalogWithResourceData:
-				// console.log('🚀 ~ update ~ Update_Catalog: vor sort');
+				// console.log('🚀 ~ update ~ Update_CatalogWithResourceData ~ data:', data);
+				// console.log('🚀 ~ update ~ Update_CatalogWithResourceData: vor sort');
 				// logIds(data);
 
 				if (data && data.length > 0) {
@@ -203,7 +207,8 @@ export class AdminPanel extends MvuElement {
 				}
 
 				// console.log('🚀 ~ update ~ Update_Catalog: nach sort');
-				// logIds(data);
+				// logXs(data, 'id');
+				// logXs(data, 'geoResourceId');
 
 				return { ...model, catalogWithResourceData: [...data] };
 
@@ -215,63 +220,11 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
-
-		// const onDrop = (e, catalogEntry) => {
-		// 	console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
-		// 	console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
-		// 	// // const draggedData = e.dataTransfer.getData('georesourceid');
-		// 	// // console.log('Dragged data:', draggedData);
-
-		// 	// const types = e.dataTransfer.types;
-		// 	// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-		// 	// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-
-		// 	// logOnce('newGeoresourceId', newGeoresourceId);
-
-		// 	// if (catalogEntry.geoResourceId) {
-		// 	// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
-
-		// 	// 	if (currentGeoResourceId !== newGeoresourceId) {
-		// 	// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
-
-		// 	// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-		// 	// 		//
-		// 	// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-		// 	// 			const currentIndex = currentLocationIndexArray[0];
-		// 	// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-		// 	// 			if (currentIndex > 0) {
-		// 	// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-		// 	// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-
-		// 	// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-
-		// 	// 				this._addGeoResource(newGeoresourceId, inBetween);
-		// 	// 			}
-		// 	// 		}
-		// 	// 	}
-		// 	// } else {
-		// 	// 	logOnce(catalogEntry.label, catalogEntry);
-		// 	// }
-
-		// 	// const spanElement = e.target;
-
-		// 	// const liElement = spanElement.parentNode;
-
-		// 	// if (liElement.classList.contains('has-children')) {
-		// 	// 	liElement.classList.add('show-children');
-		// 	// }
-		// 	// spanElement.classList.add('drag-over');
-
-		// 	// e.preventDefault();
-		// };
+		// console.log('🚀 ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const addGeoResource = (geoResourceId, topLevelPosition) => {
-			console.log('🚀 ~ addGeoResource ~ geoResourceId:', geoResourceId);
-			console.log('🚀 ~ addGeoResource ~ topLevelPosition:', topLevelPosition);
 			const newCatalogWithResourceData = this._mergeCatalogWithResources();
-			console.log('🚀 ~ addGeoResource ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
-			console.log('🚀 ~ addGeoResource ~ georesource:', georesource);
 			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
 		};
 
@@ -286,6 +239,25 @@ export class AdminPanel extends MvuElement {
 				newCatalogWithResourceData.splice(indexToRemove, 1);
 				this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 			}
+		};
+
+		const afterDrop = () => {
+			catalogWithResourceData;
+
+			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
+				if (category.children) {
+					const updatedChildren = category.children.map((child) => {
+						return { geoResourceId: child.geoResourceId, id: child.id };
+					});
+
+					return { id: category.id, label: category.label, children: updatedChildren };
+				} else {
+					return { geoResourceId: category.geoResourceId, id: category.id };
+				}
+			});
+			console.log('🚀 ~ catalogWithPositioningInfo ~ catalogWithPositioningInfo:', catalogWithPositioningInfo);
+
+			this.signal(Update_Catalog, catalogWithPositioningInfo);
 		};
 
 		if (currentTopicId) {
@@ -304,6 +276,7 @@ export class AdminPanel extends MvuElement {
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.removeGeoResource="${removeGeoResource}"
+							.afterDrop="${afterDrop}"
 						></ba-layer-tree>
 					</div>
 
