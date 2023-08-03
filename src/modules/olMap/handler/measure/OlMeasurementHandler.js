@@ -45,6 +45,7 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
 import { GeodesicGeometry } from '../../ol/geom/geodesicGeometry';
+import { MeasurementModify } from './MeasurementModify';
 
 const Debounce_Delay = 1000;
 
@@ -502,6 +503,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
+		///const modify = new MeasurementModify(getModifyOptions(this._select.getFeatures()));
 		const modify = new Modify(getModifyOptions(this._select.getFeatures()));
 		modify.on('modifystart', (event) => {
 			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
