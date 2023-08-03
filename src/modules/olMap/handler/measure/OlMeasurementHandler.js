@@ -503,8 +503,8 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		///const modify = new MeasurementModify(getModifyOptions(this._select.getFeatures()));
-		const modify = new Modify(getModifyOptions(this._select.getFeatures()));
+		const modify = new MeasurementModify(getModifyOptions(this._select.getFeatures()));
+		//const modify = new Modify(getModifyOptions(this._select.getFeatures()));
 		modify.on('modifystart', (event) => {
 			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
 				this._mapContainer.classList.add('grabbing');

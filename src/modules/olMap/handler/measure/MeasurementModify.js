@@ -1,4 +1,5 @@
 import { Modify } from 'ol/interaction';
+
 export class MeasurementModify extends Modify {
 	constructor(option) {
 		super(option);
@@ -7,7 +8,6 @@ export class MeasurementModify extends Modify {
 	}
 
 	writeLineStringGeometry_(feature, geometry) {
-		console.log({ feature, geometry });
 		if (feature.geodesic) {
 			super.writeMultiLineStringGeometry_(feature, feature.geodesic.getGeodesicGeom());
 		} else {

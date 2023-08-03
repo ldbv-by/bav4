@@ -120,19 +120,18 @@ export class GeodesicGeometry {
 
 	_calculateGeodesicCoords() {
 		let currentDistance = 0;
-		// const measurePoints = new MeasureStyles(this.resolution)
 		const geodesicCoords = new CoordinateBag();
-		const segments = [];
+
+		let segmentIndex = 0;
 		for (let i = 0; i < this.coords.length - 1; i++) {
 			const from = coordNormalize(this.coords[i]);
 			const to = coordNormalize(this.coords[i + 1]);
-			segments[i] = [];
-			// const segment = segments[i]; /** unneeded variable */
-			geodesicCoords.add(from, true);
+			geodesicCoords.add(from, i);
 			const geodesicLine = geod.InverseLine(from[1], from[0], to[1], to[0]);
 			let length = geodesicLine.s13;
 			let distToPoint = 0;
 			while ((currentDistance % this.resolution) + length >= this.resolution) {
+				segmentIndex = segmentIndex + 1;
 				const partialLength = this.resolution - (currentDistance % this.resolution);
 				distToPoint += partialLength;
 				const positionCalcRes = geodesicLine.Position(distToPoint);
@@ -140,7 +139,6 @@ export class GeodesicGeometry {
 				currentDistance += partialLength;
 				length -= partialLength;
 				if (geodesicLine.s13 >= 1000) geodesicCoords.add(pos);
-				// measurePoints.push(pos, currentDistance);
 			}
 			currentDistance += length;
 		}
@@ -157,7 +155,6 @@ export class GeodesicGeometry {
 		this.geodesicCoords = geodesicCoords;
 		this.geodesicGeom = geodesicCoords.generateGeom();
 		this.geodesicPolygonGeom = geodesicCoords.generatePolygonGeom(this);
-		//this.measurePoints = measurePoints;
 		this.subsegmentRTrees = subsegmentRTrees;
 	}
 
@@ -273,6 +270,7 @@ class CoordinateBag {
 		this.subsegments = [[]];
 		this.subsegmentExtents = [[]];
 		this.segmentNr = -1;
+		this.segmentIndices = [];
 
 		this.polygons = {};
 		this.worldNr = 0;
@@ -281,24 +279,29 @@ class CoordinateBag {
 	/**
 	 * adds a new coordinate to the bag
 	 *
-	 * @param {Coordinate } coordinate The coordinate to add
-	 * @param {boolean} newSegment whether this vertex is the binding vertex of two segments or not
+	 * @param {Coordinate } geodesicCoordinate The coordinate to add
+	 * @param {Number} startCoordinateIndex the startCoordinate of a whether this vertex is the binding vertex of two segments or not
 	 */
-	add(coordinate, newSegment) {
-		if (newSegment) {
+	add(geodesicCoordinate, startCoordinateIndex = null) {
+		if (startCoordinateIndex !== null) {
+			const getStartIndex = (segmentNr) => {
+				return segmentNr === 0 ? 0 : this.segmentIndices[this.segmentNr][0];
+			};
+			this.segmentIndices[this.segmentNr] = [getStartIndex(this.segmentNr), startCoordinateIndex - 1];
 			this.segmentNr++;
+			this.segmentIndices[this.segmentNr] = [startCoordinateIndex];
 		}
 		if (this.lastCoord && 180 - Math.abs(this.lastCoord[0]) < 40) {
-			if (coordinate[0] < 0 && this.lastCoord[0] > 0) {
-				this._push(coordinate, 1);
+			if (geodesicCoordinate[0] < 0 && this.lastCoord[0] > 0) {
+				this._push(geodesicCoordinate, 1);
 				this.lineStrings[++this.lineStrNr] = [];
-			} else if (coordinate[0] > 0 && this.lastCoord[0] < 0) {
-				this._push(coordinate, -1);
+			} else if (geodesicCoordinate[0] > 0 && this.lastCoord[0] < 0) {
+				this._push(geodesicCoordinate, -1);
 				this.lineStrings[++this.lineStrNr] = [];
 			}
 		}
-		this._push(coordinate);
-		this.lastCoord = coordinate;
+		this._push(geodesicCoordinate);
+		this.lastCoord = geodesicCoordinate;
 	}
 	_push(coordinate, offset = 0) {
 		const coord = [coordinate[0] + offset * 360, coordinate[1]];
