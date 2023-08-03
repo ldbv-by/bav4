@@ -159,6 +159,7 @@ export class AdminPanel extends MvuElement {
 				return { ...model, catalog: [...data] };
 
 			case Update_CatalogWithResourceData:
+				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);
 				return { ...model, catalogWithResourceData: [...data] };
 
 			case Update_SelectedTopic:
@@ -170,10 +171,72 @@ export class AdminPanel extends MvuElement {
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 
+		const onDrop = (e, catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
+			console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
+			// // const draggedData = e.dataTransfer.getData('georesourceid');
+			// // console.log('Dragged data:', draggedData);
+
+			// const types = e.dataTransfer.types;
+			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+
+			// logOnce('newGeoresourceId', newGeoresourceId);
+
+			// if (catalogEntry.geoResourceId) {
+			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+
+			// 	if (currentGeoResourceId !== newGeoresourceId) {
+			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+
+			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
+			// 		//
+			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
+			// 			const currentIndex = currentLocationIndexArray[0];
+			// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
+			// 			if (currentIndex > 0) {
+			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
+
+			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
+
+			// 				this._addGeoResource(newGeoresourceId, inBetween);
+			// 			}
+			// 		}
+			// 	}
+			// } else {
+			// 	logOnce(catalogEntry.label, catalogEntry);
+			// }
+
+			// const spanElement = e.target;
+
+			// const liElement = spanElement.parentNode;
+
+			// if (liElement.classList.contains('has-children')) {
+			// 	liElement.classList.add('show-children');
+			// }
+			// spanElement.classList.add('drag-over');
+
+			// e.preventDefault();
+		};
+
 		const addGeoResource = (geoResourceId, topLevelPosition) => {
 			const newCatalogWithResourceData = this._mergeCatalogWithResources();
 			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
 			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
+		};
+
+		const removeGeoResource = (geoResourceId) => {
+			if (!geoResourceId) {
+				return;
+			}
+			const newCatalogWithResourceData = [...catalogWithResourceData];
+			const indexToRemove = newCatalogWithResourceData.findIndex((geoResource) => geoResource.geoResourceId === geoResourceId);
+
+			if (indexToRemove !== -1) {
+				newCatalogWithResourceData.splice(indexToRemove, 1);
+				this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+			}
 		};
 
 		if (currentTopicId) {
@@ -191,11 +254,12 @@ export class AdminPanel extends MvuElement {
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
+							.removeGeoResource="${removeGeoResource}"
 						></ba-layer-tree>
 					</div>
 
 					<div>
-						<ba-layer-list .geoResources=${geoResources}></ba-layer-list>
+						<ba-layer-list .geoResources=${geoResources} .onDrop="${onDrop}"></ba-layer-list>
 					</div>
 				</div>
 			`;

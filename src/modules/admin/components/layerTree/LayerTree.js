@@ -54,11 +54,12 @@ export class LayerTree extends MvuElement {
 		this._configService = configService;
 		this._translationService = translationService;
 		this._securityService = securityService;
-		this._onSubmit = () => {};
+		// this._onDrop = () => {};
 	}
 
 	onInitialize() {
 		this._addGeoResource = () => {};
+		this._removeGeoResource = () => {};
 		// 	this.observeModel('catalogWithResourceData', () => {
 		// 		this._initDragAndDrop();
 		// 	});
@@ -66,24 +67,6 @@ export class LayerTree extends MvuElement {
 
 	// _initDragAndDrop() {
 	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop');
-	// 	const droppables = this.shadowRoot.querySelectorAll('.droppable');
-	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop ~ this.shadowRoot:', this.shadowRoot);
-	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop ~ droppables:', droppables);
-
-	// 	// for (let i = 0; i < droppables.length; i++) {
-	// 	// 	droppables[i].addEventListener('dragover', function (event) {
-	// 	// 		event.preventDefault();
-	// 	// 		// @ts-ignore
-	// 	// 		event.target.classList.add('drag-over');
-	// 	// 	});
-
-	// 	// 	droppables[i].addEventListener('dragleave', function (event) {
-	// 	// 		// @ts-ignore
-	// 	// 		event.target.classList.remove('drag-over');
-	// 	// 	});
-
-	// 	// 	// @ts-ignore
-	// 	// }
 	// }
 
 	update(type, data, model) {
@@ -124,15 +107,6 @@ export class LayerTree extends MvuElement {
 			return nothing;
 		}
 
-		// this._initDragAndDrop();
-		// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view');
-
-		// const dumdum = () => {
-		// 	this._initDragAndDrop();
-		// };
-		// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view dumdum');
-		// dumdum();
-
 		const handleCategoryClick = (event) => {
 			const li = event.currentTarget;
 
@@ -168,9 +142,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (e, catalogEntry) => {
-			// const draggedData = e.dataTransfer.getData('georesourceid');
-			// console.log('Dragged data:', draggedData);
-
 			const types = e.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
@@ -264,15 +235,14 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragLeave = (e) => {
+			const lastGeoResourceId = currentGeoResourceId;
 			this.signal(Update_CurrentGeoResourceId, '');
-			// console.log('🚀 ~ LayerTree ~ onDragLeave ~ e:', e);
+
+			this._removeGeoResource(lastGeoResourceId);
+
 			e.target.classList.add('isdragged');
 			e.target.classList.remove('drag-over');
 			e.preventDefault();
-
-			// // todo remove dum dum
-			// console.log('🚀 ~ LayerTree ~ createView ~ this._initDragAndDrop() from create view onDragLeave');
-			// this._initDragAndDrop();
 		};
 
 		const handleEditClick = (catalogEntry) => {
@@ -392,6 +362,17 @@ export class LayerTree extends MvuElement {
 
 	get addGeoResource() {
 		return this._addGeoResource;
+	}
+
+	/**
+	 * @property {function} removeGeoResource - Callback function
+	 */
+	set removeGeoResource(callback) {
+		this._removeGeoResource = callback;
+	}
+
+	get removeGeoResource() {
+		return this._removeGeoResource;
 	}
 
 	static get tag() {

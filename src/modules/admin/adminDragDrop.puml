@@ -1,0 +1,72 @@
+@startuml startup LayerList to LayerTree
+
+hide footbox
+
+mainframe **DragDrop "LayerList to LayerTree"**
+
+box "AdminPanel" #SkyBlue
+
+participant AdminPanel as ap
+
+
+
+end box
+
+
+
+
+box "Services" #Pink
+
+
+participant cService as cs
+' participant mdc [
+'     =MassnahmeDetails
+'     ----
+'     nextVerkehrshalt 
+'     verkehrshalte 
+'     zlmFahrplan
+' ] 
+
+end box
+
+
+box "LayerTree" #Azure
+
+participant LayerTree as lt
+
+end box
+
+
+box "LayerList" #Azure
+
+participant LayerList as ll
+
+end box
+
+
+ap --> cs: get C
+activate ap #LightGoldenRodYellow
+cs --> ap
+' abc -> adc: DispatchAction
+deactivate ap
+
+note left: this is a first note
+
+note right: this is another note
+
+' activate mfc #LightGoldenRodYellow
+' activate zis #LightGoldenRodYellow
+' mfc --> zis
+' deactivate zis
+' deactivate mfc
+
+' activate fds #SkyBlue
+' mdc --> fds
+' deactivate fds
+' activate mdc #SkyBlue
+' activate zis #SkyBlue
+' mdc --> zis
+' deactivate zis
+
+
+@enduml

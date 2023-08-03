@@ -31,7 +31,7 @@ export class LayerList extends MvuElement {
 		this._configService = configService;
 		this._translationService = translationService;
 		this._securityService = securityService;
-		this._onSubmit = () => {};
+		// this._onDrop = () => {};
 	}
 
 	update(type, data, model) {
@@ -42,20 +42,6 @@ export class LayerList extends MvuElement {
 				return { ...model, filterText: data };
 		}
 	}
-
-	// draggables = [];
-	// /**
-	//  * @override
-	//  */
-	// onAfterRender() {
-	// 	const elements = this.shadowRoot.querySelectorAll('.draggable');
-	// 	if (this.draggables.length === 0 && elements) {
-	// 		this.draggables = elements;
-
-	// 		console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
-	// 		elements.forEach((element) => {});
-	// 	}
-	// }
 
 	createView(model) {
 		const { geoResources, filterText } = model;
@@ -77,7 +63,6 @@ export class LayerList extends MvuElement {
 
 			e.dataTransfer.clearData();
 			e.dataTransfer.setData('geoResourceId' + id, id);
-			e.dataTransfer.setData('geoResourceId', id);
 
 			const addIsDragged = () => {
 				target.classList.add('isdragged');
@@ -89,13 +74,6 @@ export class LayerList extends MvuElement {
 		const onDragEnd = (event) => {
 			event.target.classList.remove('isdragged');
 		};
-
-		// const elements = this.shadowRoot.querySelectorAll('.draggable');
-		// // console.log('🚀 ~ LayerList ~ createView ~ this.shadowRoot:', this.shadowRoot);
-		// // console.log('🚀 ~ LayerList ~ createView ~ elements:', elements);
-		// elements.forEach((el) => {
-		// 	// console.log('🚀 ~ LayerList ~ elements.forEach ~ el:', el);
-		// });
 
 		return html`
 			<style>
@@ -109,13 +87,7 @@ export class LayerList extends MvuElement {
 				<ul>
 					${filteredGeoResources.map(
 						(geoResource) =>
-							html`<li
-								id="${geoResource.id}"
-								class="draggable"
-								draggable="true"
-								@dragstart=${(e) => onDragStart(e, geoResource.id)}
-								@dragend=${onDragEnd}
-							>
+							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${(e) => onDragStart(e)} @dragend=${onDragEnd}>
 								${geoResource.label}
 							</li>`
 					)}
@@ -123,6 +95,7 @@ export class LayerList extends MvuElement {
 			</div>
 		`;
 	}
+	// @drop=${this._onDrop}
 
 	/**
 	 * @property {Array} geoResources = []
@@ -134,6 +107,17 @@ export class LayerList extends MvuElement {
 	get geoResources() {
 		return this.getModel().geoResources;
 	}
+
+	// /**
+	//  * @property {function} onDrop - Callback function
+	//  */
+	// set onDrop(callback) {
+	// 	this._onDrop = callback;
+	// }
+
+	// get onDrop() {
+	// 	return this._onDrop;
+	// }
 
 	static get tag() {
 		return 'ba-layer-list';
