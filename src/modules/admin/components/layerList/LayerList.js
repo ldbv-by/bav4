@@ -71,25 +71,19 @@ export class LayerList extends MvuElement {
 			this.signal(Update_FilterText, filterText);
 		};
 
-		const onDragStart = (event, geoResourceId) => {
-			const target = event.target;
-			const id = event.target.id;
-			console.log('🚀 ~ LayerList ~ onDragStart ~ id:', id);
+		const onDragStart = (e) => {
+			const target = e.target;
+			const id = e.target.id;
 
-			// console.log('🚀 ~ LayerList ~ event:', event);
-			console.log('🚀 ~ LayerList ~ event.target:', target);
-			// console.log('🚀 ~ LayerList ~ onDragStart ~ geoResourceId:', geoResourceId);
+			e.dataTransfer.clearData();
+			e.dataTransfer.setData('geoResourceId' + id, id);
+			e.dataTransfer.setData('geoResourceId', id);
 
 			const addIsDragged = () => {
-				// console.log('🚀 ~ LayerList ~ addIsDragged ~ event:', event);
-				console.log('🚀 ~ LayerList ~ addIsDragged ~ event.target:', target);
 				target.classList.add('isdragged');
 			};
 
-			// event.target.classList.add('isdragged');
 			setTimeout(addIsDragged, 0);
-
-			// this.signal(Update_FilterText, filterText);
 		};
 
 		const onDragEnd = (event) => {

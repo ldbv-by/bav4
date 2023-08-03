@@ -7,6 +7,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
+import { GeoResource } from '../../../../domain/geoResources';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
@@ -58,44 +59,44 @@ export class AdminPanel extends MvuElement {
 		// this._onSubmit = () => {};
 	}
 
-	async onInitialize() {
-		const mergeCatalogWithResources = () => {
-			const catalog = this.getModel().catalog;
-			const georesources = this.getModel().geoResources;
+	_mergeCatalogWithResources() {
+		const catalog = this.getModel().catalog;
+		const georesources = this.getModel().geoResources;
 
-			if (georesources.length === 0 || catalog.length === 0) {
-				return;
-			}
+		if (georesources.length === 0 || catalog.length === 0) {
+			return null;
+		}
 
-			let topLevelCounter = 0;
-			let withChildrenCounter = 0;
-			const catalogWithResourceData = catalog.map((category) => {
-				if (!category.children) {
-					topLevelCounter += 100000;
-					const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
-					if (georesource) {
-						// Map the properties from georesource to category
-						return { ...category, label: georesource.label, id: topLevelCounter };
-					}
-				} else {
-					withChildrenCounter += 1000;
-					let childrenCounter = 0;
-					const updatedChildren = category.children.map((child) => {
-						childrenCounter += 100;
-						const georesource = georesources.find((geoResource) => geoResource.id === child.geoResourceId);
-						if (georesource) {
-							// Map the properties from georesource to child
-							return { ...child, label: georesource.label, id: childrenCounter };
-						}
-						return child;
-					});
-					return { ...category, id: withChildrenCounter, children: updatedChildren };
+		let topLevelCounter = 0;
+		let withChildrenCounter = 0;
+		const catalogWithResourceData = catalog.map((category) => {
+			if (!category.children) {
+				topLevelCounter += 100000;
+				const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
+				if (georesource) {
+					// Map the properties from georesource to category
+					return { ...category, label: georesource.label, id: topLevelCounter };
 				}
-			});
+			} else {
+				withChildrenCounter += 1000;
+				let childrenCounter = 0;
+				const updatedChildren = category.children.map((child) => {
+					childrenCounter += 100;
+					const georesource = georesources.find((geoResource) => geoResource.id === child.geoResourceId);
+					if (georesource) {
+						// Map the properties from georesource to child
+						return { ...child, label: georesource.label, id: childrenCounter };
+					}
+					return child;
+				});
+				return { ...category, id: withChildrenCounter, children: updatedChildren };
+			}
+		});
 
-			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
-		};
+		return catalogWithResourceData;
+	}
 
+	async onInitialize() {
 		const updateCatalog = async (currentTopicId) => {
 			try {
 				if (currentTopicId) {
@@ -105,7 +106,10 @@ export class AdminPanel extends MvuElement {
 					const defaultCatalog = await this._catalogService.byId('ba');
 					this.signal(Update_Catalog, defaultCatalog);
 				}
-				mergeCatalogWithResources();
+				const catalogWithResourceData = this._mergeCatalogWithResources();
+				if (catalogWithResourceData) {
+					this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+				}
 			} catch (error) {
 				console.warn(error.message);
 			}
@@ -122,7 +126,10 @@ export class AdminPanel extends MvuElement {
 			const geoResources = await this._geoResourceService.all();
 			this.signal(Update_GeoResources, geoResources);
 
-			mergeCatalogWithResources();
+			const catalogWithResourceData = this._mergeCatalogWithResources();
+			if (catalogWithResourceData) {
+				this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
+			}
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -163,6 +170,12 @@ export class AdminPanel extends MvuElement {
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 
+		const addGeoResource = (geoResourceId, topLevelPosition) => {
+			const newCatalogWithResourceData = this._mergeCatalogWithResources();
+			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
+			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
+		};
+
 		if (currentTopicId) {
 			return html`
 				<style>
@@ -177,6 +190,7 @@ export class AdminPanel extends MvuElement {
 							.topics="${topics}"
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
+							.addGeoResource="${addGeoResource}"
 						></ba-layer-tree>
 					</div>
 
@@ -193,3 +207,18 @@ export class AdminPanel extends MvuElement {
 		return 'ba-adminpanel';
 	}
 }
+/*
+todo
+
+
+
+
+notes
+
+dragenter
+dragover
+dragleave or drop
+
+
+
+*/

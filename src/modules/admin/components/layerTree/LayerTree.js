@@ -16,10 +16,19 @@ const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
+const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
+
+const logOnceDictionary = {};
+const logOnce = (key, objectToShow) => {
+	if (!logOnceDictionary[key]) {
+		console.log(key + ' : ', JSON.stringify(objectToShow));
+		logOnceDictionary[key] = objectToShow;
+	}
+};
 
 /**
  * Contains
@@ -32,7 +41,8 @@ export class LayerTree extends MvuElement {
 			topics: [],
 			catalogWithResourceData: [],
 			layers: [],
-			selectedTopicId: ''
+			selectedTopicId: '',
+			currentGeoResourceId: null
 		});
 
 		const {
@@ -47,11 +57,12 @@ export class LayerTree extends MvuElement {
 		this._onSubmit = () => {};
 	}
 
-	// onInitialize() {
-	// 	this.observeModel('catalogWithResourceData', () => {
-	// 		this._initDragAndDrop();
-	// 	});
-	// }
+	onInitialize() {
+		this._addGeoResource = () => {};
+		// 	this.observeModel('catalogWithResourceData', () => {
+		// 		this._initDragAndDrop();
+		// 	});
+	}
 
 	// _initDragAndDrop() {
 	// 	console.log('🚀 ~ LayerTree ~ _initDragAndDrop');
@@ -96,11 +107,13 @@ export class LayerTree extends MvuElement {
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
+			case Update_CurrentGeoResourceId:
+				return { ...model, currentGeoResourceId: data };
 		}
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData } = model; // todo , selectedTopicId
+		const { topics, catalogWithResourceData, currentGeoResourceId } = model; // todo , selectedTopicId
 
 		if (
 			catalogWithResourceData === null ||
@@ -130,16 +143,128 @@ export class LayerTree extends MvuElement {
 			}
 		};
 
+		const findGeoResourceIdIndex = (resourceId) => {
+			for (let i = 0; i < catalogWithResourceData.length; i++) {
+				const catalogEntry = catalogWithResourceData[i];
+
+				if (catalogEntry.geoResourceId === resourceId) {
+					// Found the geoResourceId in the top-level entries
+					return [i];
+				}
+
+				if (catalogEntry.children) {
+					// Check the children for the geoResourceId
+					for (let j = 0; j < catalogEntry.children.length; j++) {
+						if (catalogEntry.children[j].geoResourceId === resourceId) {
+							// Found the geoResourceId in the children
+							return [i, j];
+						}
+					}
+				}
+			}
+
+			// geoResourceId not found in the array
+			return null;
+		};
+
 		const onDragOver = (e, catalogEntry) => {
-			// console.log('🚀 ~ LayerTree ~ onDragOver ~ catalogEntry:', catalogEntry);
-			e.target.classList.remove('isdragged');
-			e.target.classList.add('drag-over');
+			// const draggedData = e.dataTransfer.getData('georesourceid');
+			// console.log('Dragged data:', draggedData);
+
+			const types = e.dataTransfer.types;
+			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+
+			logOnce('newGeoresourceId', newGeoresourceId);
+
+			if (catalogEntry.geoResourceId) {
+				logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+
+				if (currentGeoResourceId !== newGeoresourceId) {
+					this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+
+					const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
+					//
+					if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
+						const currentIndex = currentLocationIndexArray[0];
+						// const currentCatalogEntry = catalogWithResourceData[currentIndex];
+						if (currentIndex > 0) {
+							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+							logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
+
+							const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
+
+							this._addGeoResource(newGeoresourceId, inBetween);
+						}
+					}
+				}
+			} else {
+				logOnce(catalogEntry.label, catalogEntry);
+			}
+
+			const spanElement = e.target;
+
+			const liElement = spanElement.parentNode;
+
+			if (liElement.classList.contains('has-children')) {
+				liElement.classList.add('show-children');
+			}
+			spanElement.classList.add('drag-over');
+
 			e.preventDefault();
-			// const droppables = this.shadowRoot.querySelectorAll('span.droppable');
-			// console.log('🚀 ~ LayerTree ~ onDragOver ~ droppables:', droppables);
+		};
+
+		const onDrop = (e, catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
+			console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
+			// // const draggedData = e.dataTransfer.getData('georesourceid');
+			// // console.log('Dragged data:', draggedData);
+
+			// const types = e.dataTransfer.types;
+			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+
+			// logOnce('newGeoresourceId', newGeoresourceId);
+
+			// if (catalogEntry.geoResourceId) {
+			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+
+			// 	if (currentGeoResourceId !== newGeoresourceId) {
+			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+
+			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
+			// 		//
+			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
+			// 			const currentIndex = currentLocationIndexArray[0];
+			// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
+			// 			if (currentIndex > 0) {
+			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
+
+			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
+
+			// 				this._addGeoResource(newGeoresourceId, inBetween);
+			// 			}
+			// 		}
+			// 	}
+			// } else {
+			// 	logOnce(catalogEntry.label, catalogEntry);
+			// }
+
+			// const spanElement = e.target;
+
+			// const liElement = spanElement.parentNode;
+
+			// if (liElement.classList.contains('has-children')) {
+			// 	liElement.classList.add('show-children');
+			// }
+			// spanElement.classList.add('drag-over');
+
+			// e.preventDefault();
 		};
 
 		const onDragLeave = (e) => {
+			this.signal(Update_CurrentGeoResourceId, '');
 			// console.log('🚀 ~ LayerTree ~ onDragLeave ~ e:', e);
 			e.target.classList.add('isdragged');
 			e.target.classList.remove('drag-over');
@@ -177,6 +302,7 @@ export class LayerTree extends MvuElement {
 										draggable="true"
 										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
 										@dragover=${(e) => onDragOver(e, catalogEntry)}
+										@drop=${(e) => onDrop(e, catalogEntry)}
 										@dragleave=${onDragLeave}
 										>${catalogEntry.label}</span
 									>
@@ -255,6 +381,17 @@ export class LayerTree extends MvuElement {
 
 	get selectedTopic() {
 		return this.getModel().selectedTheme;
+	}
+
+	/**
+	 * @property {function} addGeoResource - Callback function
+	 */
+	set addGeoResource(callback) {
+		this._addGeoResource = callback;
+	}
+
+	get addGeoResource() {
+		return this._addGeoResource;
 	}
 
 	static get tag() {
