@@ -70,23 +70,12 @@ export class LayerTree extends MvuElement {
 	// }
 
 	update(type, data, model) {
-		const sortChildrenById = (entry) => {
-			if (entry.children) {
-				entry.children.sort((a, b) => a.id - b.id);
-			}
-		};
-
 		switch (type) {
 			case Update_SelectedTopic:
 				return { ...model, selectedTopicId: data };
 			case Update_Topics:
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
-				if (data && data.length > 0) {
-					data.sort((a, b) => a.id - b.id);
-
-					data.forEach((item) => sortChildrenById(item));
-				}
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
@@ -164,7 +153,9 @@ export class LayerTree extends MvuElement {
 							logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
 
 							const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-
+							this._addGeoResource(newGeoresourceId, inBetween);
+						} else {
+							const inBetween = Math.round(catalogEntry.id / 2);
 							this._addGeoResource(newGeoresourceId, inBetween);
 						}
 					}
@@ -246,10 +237,10 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleEditClick = (catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ createView ~ catalogEntry:', catalogEntry);
+			console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ catalogEntry:', catalogEntry);
 		};
 		const handleDeleteClick = (catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
+			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 		};
 
 		if (topics) {

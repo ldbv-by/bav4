@@ -249,14 +249,14 @@ export class ShowCase extends BaElement {
 				<h2>Specific components</h2>
 
 				<div class="section">
-					<h3>Theme-Toggle</h3>
-					<div class="example">
-						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
-					</div>
-
 					<h3>Admin Panel</h3>
 					<div class="example row">
 						<ba-adminpanel></ba-adminpanel>
+					</div>
+
+					<h3>Theme-Toggle</h3>
+					<div class="example">
+						<div class="theme-toggle" style="display: flex;justify-content: flex-start;"><ba-theme-toggle></ba-theme-toggle></div>
 					</div>
 
 					<h3>Profile</h3>

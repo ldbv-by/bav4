@@ -59,6 +59,30 @@ export class AdminPanel extends MvuElement {
 		// this._onSubmit = () => {};
 	}
 
+	_checkAndAugmentPositioningInfo(catalog) {
+		// todo
+		// First ensure that the sort order stays OK
+		// Then fill all the gaps
+		// for now, I take the sorting as is, but provide my own IDs
+		let topLevelCounter = 0;
+		const catalogWithPositioningInfo = catalog.map((category) => {
+			topLevelCounter += 100000;
+			if (category.children) {
+				let childrenCounter = 0;
+				const updatedChildren = category.children.map((child) => {
+					childrenCounter += 100000;
+					// console.log("🚀 ~ AdminPanel ~ updatedChildren ~ { ...child, id: childrenCounter }:", { ...child, id: childrenCounter })
+					return { ...child, id: childrenCounter };
+				});
+
+				return { ...category, id: topLevelCounter, children: updatedChildren };
+			} else {
+				return { ...category, id: topLevelCounter };
+			}
+		});
+		return catalogWithPositioningInfo;
+	}
+
 	_mergeCatalogWithResources() {
 		const catalog = this.getModel().catalog;
 		const georesources = this.getModel().geoResources;
@@ -67,29 +91,23 @@ export class AdminPanel extends MvuElement {
 			return null;
 		}
 
-		let topLevelCounter = 0;
-		let withChildrenCounter = 0;
 		const catalogWithResourceData = catalog.map((category) => {
 			if (!category.children) {
-				topLevelCounter += 100000;
 				const georesource = georesources.find((geoResource) => geoResource.id === category.geoResourceId);
 				if (georesource) {
-					// Map the properties from georesource to category
-					return { ...category, label: georesource.label, id: topLevelCounter };
+					return { ...category, label: georesource.label };
 				}
+				return { ...category, label: 'missing georesource.label' }; // todo ? missing georesource.label
 			} else {
-				withChildrenCounter += 1000;
-				let childrenCounter = 0;
 				const updatedChildren = category.children.map((child) => {
-					childrenCounter += 100;
 					const georesource = georesources.find((geoResource) => geoResource.id === child.geoResourceId);
 					if (georesource) {
-						// Map the properties from georesource to child
-						return { ...child, label: georesource.label, id: childrenCounter };
+						return { ...child, label: georesource.label };
+					} else {
+						return { ...child, label: 'missing georesource.label' }; // todo ? missing georesource.label}
 					}
-					return child;
 				});
-				return { ...category, id: withChildrenCounter, children: updatedChildren };
+				return { ...category, children: updatedChildren };
 			}
 		});
 
@@ -99,13 +117,16 @@ export class AdminPanel extends MvuElement {
 	async onInitialize() {
 		const updateCatalog = async (currentTopicId) => {
 			try {
+				let catalogWithIds = [];
 				if (currentTopicId) {
 					const catalog = await this._catalogService.byId(currentTopicId);
-					this.signal(Update_Catalog, catalog);
+					catalogWithIds = this._checkAndAugmentPositioningInfo(catalog);
 				} else {
 					const defaultCatalog = await this._catalogService.byId('ba');
-					this.signal(Update_Catalog, defaultCatalog);
+					catalogWithIds = this._checkAndAugmentPositioningInfo(defaultCatalog);
 				}
+				this.signal(Update_Catalog, catalogWithIds);
+
 				const catalogWithResourceData = this._mergeCatalogWithResources();
 				if (catalogWithResourceData) {
 					this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
@@ -148,6 +169,20 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		const sortChildrenByIdRecursive = (entry) => {
+			if (entry.children) {
+				entry.children.sort((a, b) => a.id - b.id);
+				entry.children.forEach((child) => sortChildrenByIdRecursive(child)); // Recursively sort children's children
+			}
+		};
+		// const logIds = (catalog) => {
+		// 	let xxx = '';
+		// 	catalog.forEach((item) => {
+		// 		xxx += item.id + ' ';
+		// 	});
+		// 	console.log(xxx);
+		// };
+
 		switch (type) {
 			case Update_Topics:
 				return { ...model, topics: [...data] };
@@ -156,10 +191,20 @@ export class AdminPanel extends MvuElement {
 				return { ...model, geoResources: [...data] };
 
 			case Update_Catalog:
-				return { ...model, catalog: [...data] };
+				return { ...model, catalog: data };
 
 			case Update_CatalogWithResourceData:
-				console.log('🚀 ~ AdminPanel ~ update ~ Update_CatalogWithResourceData ~ data:', data);
+				// console.log('🚀 ~ update ~ Update_Catalog: vor sort');
+				// logIds(data);
+
+				if (data && data.length > 0) {
+					data.sort((a, b) => a.id - b.id);
+					data.forEach((item) => sortChildrenByIdRecursive(item));
+				}
+
+				// console.log('🚀 ~ update ~ Update_Catalog: nach sort');
+				// logIds(data);
+
 				return { ...model, catalogWithResourceData: [...data] };
 
 			case Update_SelectedTopic:
@@ -171,58 +216,62 @@ export class AdminPanel extends MvuElement {
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 
-		const onDrop = (e, catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
-			console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
-			// // const draggedData = e.dataTransfer.getData('georesourceid');
-			// // console.log('Dragged data:', draggedData);
+		// const onDrop = (e, catalogEntry) => {
+		// 	console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
+		// 	console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
+		// 	// // const draggedData = e.dataTransfer.getData('georesourceid');
+		// 	// // console.log('Dragged data:', draggedData);
 
-			// const types = e.dataTransfer.types;
-			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+		// 	// const types = e.dataTransfer.types;
+		// 	// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+		// 	// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 
-			// logOnce('newGeoresourceId', newGeoresourceId);
+		// 	// logOnce('newGeoresourceId', newGeoresourceId);
 
-			// if (catalogEntry.geoResourceId) {
-			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+		// 	// if (catalogEntry.geoResourceId) {
+		// 	// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
 
-			// 	if (currentGeoResourceId !== newGeoresourceId) {
-			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+		// 	// 	if (currentGeoResourceId !== newGeoresourceId) {
+		// 	// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
 
-			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-			// 		//
-			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-			// 			const currentIndex = currentLocationIndexArray[0];
-			// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-			// 			if (currentIndex > 0) {
-			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
+		// 	// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
+		// 	// 		//
+		// 	// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
+		// 	// 			const currentIndex = currentLocationIndexArray[0];
+		// 	// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
+		// 	// 			if (currentIndex > 0) {
+		// 	// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+		// 	// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
 
-			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
+		// 	// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
 
-			// 				this._addGeoResource(newGeoresourceId, inBetween);
-			// 			}
-			// 		}
-			// 	}
-			// } else {
-			// 	logOnce(catalogEntry.label, catalogEntry);
-			// }
+		// 	// 				this._addGeoResource(newGeoresourceId, inBetween);
+		// 	// 			}
+		// 	// 		}
+		// 	// 	}
+		// 	// } else {
+		// 	// 	logOnce(catalogEntry.label, catalogEntry);
+		// 	// }
 
-			// const spanElement = e.target;
+		// 	// const spanElement = e.target;
 
-			// const liElement = spanElement.parentNode;
+		// 	// const liElement = spanElement.parentNode;
 
-			// if (liElement.classList.contains('has-children')) {
-			// 	liElement.classList.add('show-children');
-			// }
-			// spanElement.classList.add('drag-over');
+		// 	// if (liElement.classList.contains('has-children')) {
+		// 	// 	liElement.classList.add('show-children');
+		// 	// }
+		// 	// spanElement.classList.add('drag-over');
 
-			// e.preventDefault();
-		};
+		// 	// e.preventDefault();
+		// };
 
 		const addGeoResource = (geoResourceId, topLevelPosition) => {
+			console.log('🚀 ~ addGeoResource ~ geoResourceId:', geoResourceId);
+			console.log('🚀 ~ addGeoResource ~ topLevelPosition:', topLevelPosition);
 			const newCatalogWithResourceData = this._mergeCatalogWithResources();
+			console.log('🚀 ~ addGeoResource ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
+			console.log('🚀 ~ addGeoResource ~ georesource:', georesource);
 			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
 		};
 
@@ -259,7 +308,7 @@ export class AdminPanel extends MvuElement {
 					</div>
 
 					<div>
-						<ba-layer-list .geoResources=${geoResources} .onDrop="${onDrop}"></ba-layer-list>
+						<ba-layer-list .geoResources=${geoResources}></ba-layer-list>
 					</div>
 				</div>
 			`;
