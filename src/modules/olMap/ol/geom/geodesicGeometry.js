@@ -126,7 +126,7 @@ export class GeodesicGeometry {
 		for (let i = 0; i < this.coords.length - 1; i++) {
 			const from = coordNormalize(this.coords[i]);
 			const to = coordNormalize(this.coords[i + 1]);
-			geodesicCoords.add(from, i);
+			geodesicCoords.add(from, true);
 			const geodesicLine = geod.InverseLine(from[1], from[0], to[1], to[0]);
 			let length = geodesicLine.s13;
 			let distToPoint = 0;
@@ -280,16 +280,11 @@ class CoordinateBag {
 	 * adds a new coordinate to the bag
 	 *
 	 * @param {Coordinate } geodesicCoordinate The coordinate to add
-	 * @param {Number} startCoordinateIndex the startCoordinate of a whether this vertex is the binding vertex of two segments or not
+	 * @param {Boolean} newSegment the startCoordinate of a whether this vertex is the binding vertex of two segments or not
 	 */
-	add(geodesicCoordinate, startCoordinateIndex = null) {
-		if (startCoordinateIndex !== null) {
-			const getStartIndex = (segmentNr) => {
-				return segmentNr === -1 ? 0 : this.segmentIndices[this.segmentNr][0];
-			};
-			this.segmentIndices.push([getStartIndex(this.segmentNr), startCoordinateIndex - 1]);
+	add(geodesicCoordinate, newSegment = false) {
+		if (newSegment) {
 			this.segmentNr++;
-			this.segmentIndices.push([startCoordinateIndex]);
 		}
 		if (this.lastCoord && 180 - Math.abs(this.lastCoord[0]) < 40) {
 			if (geodesicCoordinate[0] < 0 && this.lastCoord[0] > 0) {
