@@ -285,11 +285,11 @@ class CoordinateBag {
 	add(geodesicCoordinate, startCoordinateIndex = null) {
 		if (startCoordinateIndex !== null) {
 			const getStartIndex = (segmentNr) => {
-				return segmentNr === 0 ? 0 : this.segmentIndices[this.segmentNr][0];
+				return segmentNr === -1 ? 0 : this.segmentIndices[this.segmentNr][0];
 			};
-			this.segmentIndices[this.segmentNr] = [getStartIndex(this.segmentNr), startCoordinateIndex - 1];
+			this.segmentIndices.push([getStartIndex(this.segmentNr), startCoordinateIndex - 1]);
 			this.segmentNr++;
-			this.segmentIndices[this.segmentNr] = [startCoordinateIndex];
+			this.segmentIndices.push([startCoordinateIndex]);
 		}
 		if (this.lastCoord && 180 - Math.abs(this.lastCoord[0]) < 40) {
 			if (geodesicCoordinate[0] < 0 && this.lastCoord[0] > 0) {
