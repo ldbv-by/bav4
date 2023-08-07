@@ -23,9 +23,15 @@ const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
 const logOnceDictionary = {};
-const logOnce = (key, objectToShow) => {
+const logOnce = (key, objectToShow = 'nix') => {
 	if (!logOnceDictionary[key]) {
-		console.log(key + ' : ', JSON.stringify(objectToShow));
+		if (objectToShow === 'nix') {
+			// eslint-disable-next-line no-console
+			console.log(key);
+		} else {
+			// eslint-disable-next-line no-console
+			console.log(key + ' : ', JSON.stringify(objectToShow));
+		}
 		logOnceDictionary[key] = objectToShow;
 	}
 };
@@ -131,95 +137,73 @@ export class LayerTree extends MvuElement {
 			return null;
 		};
 
-		const onDragOver = (e, catalogEntry) => {
+		const insertDraggedGeoResource = (layerTreeCatalogEntry, newGeoresourceId) => {
+			if (currentGeoResourceId === newGeoresourceId) {
+				logOnce('🚀 ~ nothing new - return (' + layerTreeCatalogEntry.label + ')');
+				return;
+			}
+			logOnce('🚀 ~ new - GeoResourceId ' + layerTreeCatalogEntry.label);
+
+			if (layerTreeCatalogEntry.geoResourceId) {
+				logOnce('current ' + layerTreeCatalogEntry.geoResourceId, layerTreeCatalogEntry);
+				const currentLocationIndexArray = findGeoResourceIdIndex(layerTreeCatalogEntry.geoResourceId);
+				logOnce('currentLocationIndexArray ' + layerTreeCatalogEntry.geoResourceId, currentLocationIndexArray);
+
+				if (currentLocationIndexArray) {
+					if (currentLocationIndexArray.length === 1) {
+						logOnce('currentLocationIndexArray.length === 1 ' + layerTreeCatalogEntry.geoResourceId, '');
+						const currentIndex = currentLocationIndexArray[0];
+						let inBetween = 0;
+						if (currentIndex > 0) {
+							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+							inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+						} else {
+							inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+						}
+						this._addGeoResource(newGeoresourceId, inBetween);
+					}
+					if (currentLocationIndexArray.length === 2) {
+						logOnce('currentLocationIndexArray.length === 2 ' + layerTreeCatalogEntry.geoResourceId, '');
+						const currentIndex = currentLocationIndexArray[1];
+						let inBetween = 0;
+						if (currentIndex > 0) {
+							const priorCatalogEntry = catalogWithResourceData[(currentLocationIndexArray[0], currentIndex - 1)];
+							inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+						} else {
+							inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+						}
+						this._addGeoResource(newGeoresourceId, inBetween, currentLocationIndexArray[0]);
+					}
+				} else {
+					logOnce(layerTreeCatalogEntry.label, layerTreeCatalogEntry);
+				}
+			}
+			this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+		};
+
+		const onDragOver = (e, layerTreeCatalogEntry) => {
 			const types = e.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 
-			// logOnce('newGeoresourceId', newGeoresourceId);
+			logOnce('newGeoresourceId', newGeoresourceId);
 
-			if (catalogEntry.geoResourceId) {
-				// logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
-
-				if (currentGeoResourceId !== newGeoresourceId) {
-					this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
-
-					const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-					//
-					if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-						const currentIndex = currentLocationIndexArray[0];
-						// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-						if (currentIndex > 0) {
-							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-							// logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-
-							const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-							this._addGeoResource(newGeoresourceId, inBetween);
-						} else {
-							const inBetween = Math.round(catalogEntry.id / 2);
-							this._addGeoResource(newGeoresourceId, inBetween);
-						}
-					}
-				}
-				// } else {
-				// 	logOnce(catalogEntry.label, catalogEntry);
-			}
+			insertDraggedGeoResource(layerTreeCatalogEntry, newGeoresourceId);
 
 			const spanElement = e.target;
 
 			const liElement = spanElement.parentNode;
 
-			if (liElement.classList.contains('has-children')) {
-				liElement.classList.add('show-children');
+			if (liElement.classList.contains(hasChildrenClass)) {
+				liElement.classList.add(showChildrenClass);
 			}
 			spanElement.classList.add('drag-over');
 
 			e.preventDefault();
 		};
 
-		const onDrop = (e, catalogEntry) => {
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
-			/**
-			 * I do not care where the drop takes place
-			 * Everything should be fixed already so i just can update catalog
-			 * from catalogWithResourceData
-			 */
+		const onDrop = () => {
 			this.afterDrop();
-
-			// // const draggedData = e.dataTransfer.getData('georesourceid');
-			// // console.log('Dragged data:', draggedData);
-			// const types = e.dataTransfer.types;
-			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// logOnce('newGeoresourceId', newGeoresourceId);
-			// if (catalogEntry.geoResourceId) {
-			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
-			// 	if (currentGeoResourceId !== newGeoresourceId) {
-			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
-			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-			// 		//
-			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-			// 			const currentIndex = currentLocationIndexArray[0];
-			// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-			// 			if (currentIndex > 0) {
-			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-			// 				this._addGeoResource(newGeoresourceId, inBetween);
-			// 			}
-			// 		}
-			// 	}
-			// } else {
-			// 	logOnce(catalogEntry.label, catalogEntry);
-			// }
-			// const spanElement = e.target;
-			// const liElement = spanElement.parentNode;
-			// if (liElement.classList.contains('has-children')) {
-			// 	liElement.classList.add('show-children');
-			// }
-			// spanElement.classList.add('drag-over');
-			// e.preventDefault();
 		};
 
 		const onDragLeave = (e) => {
@@ -240,6 +224,10 @@ export class LayerTree extends MvuElement {
 			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 		};
 
+		const handleCopyClick = (catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleCopyClick ~ catalogEntry:', catalogEntry);
+		};
+
 		if (topics) {
 			return html`
 				<style>
@@ -255,12 +243,12 @@ export class LayerTree extends MvuElement {
 					<ul>
 						${catalogWithResourceData.map(
 							(catalogEntry) => html`
-								<li @click="${handleCategoryClick}" class="${catalogEntry.children ? 'has-children' : ''}">
+								<li @click="${handleCategoryClick}" class="${catalogEntry.children ? hasChildrenClass : ''}">
 									<span
 										draggable="true"
 										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
 										@dragover=${(e) => onDragOver(e, catalogEntry)}
-										@drop=${(e) => onDrop(e, catalogEntry)}
+										@drop=${onDrop}
 										@dragleave=${onDragLeave}
 										>${catalogEntry.label}</span
 									>
@@ -268,11 +256,12 @@ export class LayerTree extends MvuElement {
 										? html`
 												<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
 												<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>
+												<button @click="${() => handleCopyClick(catalogEntry)}">X</button>
 												<ul>
 													${catalogEntry.children.map(
 														(child) =>
 															html`<li>
-																<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, catalogEntry)} @dragleave=${onDragLeave}
+																<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, child)} @drop=${onDrop} @dragleave=${onDragLeave}
 																	>${child.label}</span
 																>
 															</li>`

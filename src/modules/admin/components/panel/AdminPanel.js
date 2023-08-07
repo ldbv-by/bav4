@@ -222,10 +222,23 @@ export class AdminPanel extends MvuElement {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 		// console.log('🚀 ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
-		const addGeoResource = (geoResourceId, topLevelPosition) => {
+		const addGeoResource = (geoResourceId, position, childOf = null) => {
+			console.log('🚀 ~ addGeoResource ~ geoResourceId:', geoResourceId);
+			console.log('🚀 ~ addGeoResource ~ position:', position);
+			console.log('🚀 ~ addGeoResource ~ childOf:', childOf);
+			// reset
 			const newCatalogWithResourceData = this._mergeCatalogWithResources();
+
 			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
-			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
+
+			if (childOf) {
+				const child = newCatalogWithResourceData[childOf];
+				newCatalogWithResourceData.splice(childOf);
+				child.children.push({ geoResourceId, label: georesource.label, id: position });
+				this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, child]);
+			} else {
+				this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: position }]);
+			}
 		};
 
 		const removeGeoResource = (geoResourceId) => {
