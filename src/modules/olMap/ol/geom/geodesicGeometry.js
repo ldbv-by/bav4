@@ -10,7 +10,7 @@ import RBush from 'ol/structs/RBush'; /* Warning: private class of openlayers; W
 import proj4 from 'proj4';
 import { Stroke, Style } from 'ol/style';
 
-const geod = Geodesic.WGS84;
+const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
 const WGS84 = 'EPSG:4326';
 const DEG360_IN_WEBMERCATOR = 2 * Math.PI * 6378137; // FIXME: move to coordinateSystem-utils or something like that
@@ -29,34 +29,50 @@ export class GeodesicGeometry {
 			throw new Error('This class only accepts Polygons (and Linestrings ' + 'after initial drawing is finished)');
 		}
 		this._isDrawing = isDrawingCallback;
-		this._calculateEverything();
+		this._calculateGeodesicGeometry();
 	}
 
-	_calculateEverything() {
-		this.geom = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
-		this.coords = this.geom.getCoordinates();
+	_calculateGeodesicGeometry() {
+		const geometry = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
+		this.coordinates = geometry.getCoordinates();
 		this.isPolygon = false;
-		if (this.geom instanceof Polygon) {
-			this.coords = this.geom.getCoordinates()[0];
+		if (geometry instanceof Polygon) {
+			this.coordinates = geometry.getCoordinates()[0];
 			if (this._isDrawing()) {
-				this.coords = this.coords.slice(0, -1);
+				this.coordinates = this.coordinates.slice(0, -1);
 			} else {
 				this.isPolygon = true;
 			}
 		}
 		this.hasAzimuthCircle =
 			!this.isPolygon &&
-			(this.coords.length === 2 || (this.coords.length === 3 && this.coords[1][0] === this.coords[2][0] && this.coords[1][1] === this.coords[2][1]));
+			(this.coordinates.length === 2 ||
+				(this.coordinates.length === 3 && this.coordinates[1][0] === this.coordinates[2][0] && this.coordinates[1][1] === this.coordinates[2][1]));
 		this.stylesReady = !(
-			this.coords.length < 2 ||
-			(this.coords.length === 2 && this.coords[0][0] === this.coords[1][0] && this.coords[0][1] === this.coords[1][1])
+			this.coordinates.length < 2 ||
+			(this.coordinates.length === 2 && this.coordinates[0][0] === this.coordinates[1][0] && this.coordinates[0][1] === this.coordinates[1][1])
 		);
 		/* The order of these calculations is important, as some methods require information
         calculated by previous methods. */
-		this._calculateGlobalProperties();
-		this._calculateResolution();
-		this._calculateGeodesicCoords();
-		this._calculateAzimuthCircle();
+		const geodesicProperties = this._calculateGlobalProperties(this.isPolygon, this.hasAzimuthCircle);
+		const resolution = this._calculateResolution(geodesicProperties.length);
+		const geodesicCoords = this._calculateGeodesicCoords(this.coordinates, resolution);
+		this.geodesicGeom = geodesicCoords.generateGeom();
+		this.geodesicPolygonGeom = geodesicCoords.generatePolygonGeom(this);
+
+		this.subsegmentRTrees = this._calculateSubsegmentRTree(geodesicCoords);
+		if (this.hasAzimuthCircle) {
+			this.azimuthCircle = this._calculateAzimuthCircle(geodesicProperties.rotation, this.coordinates, geodesicProperties.lengths);
+
+			this.azimuthCircleStyle = new Style({
+				stroke: new Stroke({
+					width: 3,
+					color: [255, 0, 0]
+				}),
+				geometry: this.azimuthCircle,
+				zIndex: 0
+			});
+		}
 
 		// Overwrites public method getExtent of the feature to include the whole geodesic geometry.
 		// FIXME: resolve private ol-method
@@ -75,24 +91,27 @@ export class GeodesicGeometry {
 	}
 
 	/* The following "_calculate*" methods are helper methods of "_calculateEverything" */
-	_calculateGlobalProperties() {
-		const geodesicPolygon = new PolygonArea.PolygonArea(geod, !this.isPolygon);
-		for (const coord of this.coords) {
+	_calculateGlobalProperties(isPolygon, hasAzimuthCircle) {
+		const geodesicPolygon = new PolygonArea.PolygonArea(GEODESIC_WGS84, !isPolygon);
+		for (const coord of this.coordinates) {
 			geodesicPolygon.AddPoint(coord[1], coord[0]);
 		}
 		const res = geodesicPolygon.Compute(false, true);
 		this.totalLength = res.perimeter;
 		this.totalArea = res.area;
-		if (this.hasAzimuthCircle) {
-			const geodesicLine = geod.InverseLine(this.coords[0][1], this.coords[0][0], this.coords[1][1], this.coords[1][0]);
-			this.rotation = geodesicLine.azi1 < 0 ? geodesicLine.azi1 + 360 : geodesicLine.azi1;
-		}
+
+		const calculateRotation = () => {
+			const geodesicLine = GEODESIC_WGS84.InverseLine(this.coordinates[0][1], this.coordinates[0][0], this.coordinates[1][1], this.coordinates[1][0]);
+			return geodesicLine.azi1 < 0 ? geodesicLine.azi1 + 360 : geodesicLine.azi1;
+		};
+
+		return { length: res.perimeter, area: res.area, rotation: hasAzimuthCircle ? calculateRotation() : null };
 	}
 
-	_calculateResolution() {
+	_calculateResolution(totalLength) {
 		/*
         Warning: the following numbers were only graphically measured, not calculated. So there is
-        no guarantee to mathematical accuracy whatsover.
+        no guarantee to mathematical accuracy whatsoever.
 
         Here is the maximal measured difference between webmercator linear lines and wgs84
         geodesic lines at 47° (switzerland) and 70° (north of Norway). (At the equator, there
@@ -114,25 +133,25 @@ export class GeodesicGeometry {
         */
 
 		// FIXME: verify whether this calculation suites to our approach or not
-		const resolution = Math.pow(10, Math.trunc(this.totalLength / 1000).toString(10).length);
-		this.resolution = Math.max(1000, resolution);
+		const resolution = Math.pow(10, Math.trunc(totalLength / 1000).toString(10).length);
+		return Math.max(1000, resolution);
 	}
 
-	_calculateGeodesicCoords() {
+	_calculateGeodesicCoords(coords, resolution) {
 		let currentDistance = 0;
 		const geodesicCoords = new CoordinateBag();
 
 		let segmentIndex = 0;
-		for (let i = 0; i < this.coords.length - 1; i++) {
-			const from = coordNormalize(this.coords[i]);
-			const to = coordNormalize(this.coords[i + 1]);
+		for (let i = 0; i < coords.length - 1; i++) {
+			const from = coordNormalize(coords[i]);
+			const to = coordNormalize(coords[i + 1]);
 			geodesicCoords.add(from, true);
-			const geodesicLine = geod.InverseLine(from[1], from[0], to[1], to[0]);
+			const geodesicLine = GEODESIC_WGS84.InverseLine(from[1], from[0], to[1], to[0]);
 			let length = geodesicLine.s13;
 			let distToPoint = 0;
-			while ((currentDistance % this.resolution) + length >= this.resolution) {
+			while ((currentDistance % resolution) + length >= resolution) {
 				segmentIndex = segmentIndex + 1;
-				const partialLength = this.resolution - (currentDistance % this.resolution);
+				const partialLength = resolution - (currentDistance % resolution);
 				distToPoint += partialLength;
 				const positionCalcRes = geodesicLine.Position(distToPoint);
 				const pos = [positionCalcRes.lon2, positionCalcRes.lat2];
@@ -142,53 +161,44 @@ export class GeodesicGeometry {
 			}
 			currentDistance += length;
 		}
-		if (this.coords.length) {
-			geodesicCoords.add(coordNormalize(this.coords[this.coords.length - 1]));
+		if (coords.length) {
+			geodesicCoords.add(coordNormalize(coords[coords.length - 1]));
 		}
 
+		return geodesicCoords;
+	}
+
+	_calculateSubsegmentRTree(geodesicCoords) {
 		const subsegmentRTrees = [];
 		for (let i = 0; i < geodesicCoords.subsegments.length; i++) {
 			subsegmentRTrees[i] = new RBush();
 			subsegmentRTrees[i].load(geodesicCoords.subsegmentExtents[i], geodesicCoords.subsegments[i]);
 		}
 
-		this.geodesicCoords = geodesicCoords;
-		this.geodesicGeom = geodesicCoords.generateGeom();
-		this.geodesicPolygonGeom = geodesicCoords.generatePolygonGeom(this);
-		this.subsegmentRTrees = subsegmentRTrees;
+		return subsegmentRTrees;
 	}
 
-	_calculateAzimuthCircle() {
-		if (this.hasAzimuthCircle) {
-			const nbPoints = 1000;
-			const arcLength = 360 / nbPoints;
-			const circleCoords = new CoordinateBag();
-			for (let i = 0; i <= nbPoints; i++) {
-				const res = geod.Direct(
-					this.coords[0][1],
-					this.coords[0][0],
-					//Adding "this.rotation" to be sure that the line meets the circle perfectly
-					arcLength * i + this.rotation,
-					this.totalLength
-				);
-				circleCoords.add([res.lon2, res.lat2]);
-			}
-			this.azimuthCircle = circleCoords.generateGeom();
-			this.azimuthCircleStyle = new Style({
-				stroke: new Stroke({
-					width: 3,
-					color: [255, 0, 0]
-				}),
-				geometry: this.azimuthCircle,
-				zIndex: 0
-			});
+	_calculateAzimuthCircle(rotation, coords, length) {
+		const nbPoints = 1000;
+		const arcLength = 360 / nbPoints;
+		const circleCoords = new CoordinateBag();
+		for (let i = 0; i <= nbPoints; i++) {
+			const res = GEODESIC_WGS84.Direct(
+				coords[0][1],
+				coords[0][0],
+				//Adding "this.rotation" to be sure that the line meets the circle perfectly
+				arcLength * i + rotation,
+				length
+			);
+			circleCoords.add([res.lon2, res.lat2]);
 		}
+		return circleCoords.generateGeom();
 	}
 
 	_update() {
 		if (this.feature.getRevision() !== this.featureRevision) {
 			this.featureRevision = this.feature.getRevision();
-			this._calculateEverything();
+			this._calculateGeodesicGeometry();
 		}
 	}
 
@@ -233,12 +243,6 @@ export class GeodesicGeometry {
 }
 
 const coordNormalize = (coord) => {
-	/* if (Array.isArray(coord)) {
-		coord = { lon: coord[0], lat: coord[1] };
-	}
-	return [geographicMath.AngNormalize(coord.lon), coord.lat]; */
-
-	// FIXME: actually no need to check for object
 	return [geographicMath.AngNormalize(coord[0]), coord[1]];
 };
 
