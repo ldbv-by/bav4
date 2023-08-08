@@ -240,41 +240,43 @@ export class LayerTree extends MvuElement {
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 
-					<ul>
-						${catalogWithResourceData.map(
-							(catalogEntry) => html`
-								<li @click="${handleCategoryClick}" class="${catalogEntry.children ? hasChildrenClass : ''}">
-									<span
-										draggable="true"
-										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
-										@dragover=${(e) => onDragOver(e, catalogEntry)}
-										@drop=${onDrop}
-										@dragleave=${onDragLeave}
-										>${catalogEntry.label}</span
-									>
-									${catalogEntry.children
-										? html`
-												<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
-												<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>
-												<button @click="${() => handleCopyClick(catalogEntry)}">X</button>
-												<ul>
-													${catalogEntry.children.map(
-														(child) =>
-															html`<li>
-																<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, child)} @drop=${onDrop} @dragleave=${onDragLeave}
-																	>${child.label}</span
-																>
-															</li>`
-													)}
-												</ul>
-										  `
-										: html`<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>`}
+					<div class="tree">
+						<ul>
+							${catalogWithResourceData.map(
+								(catalogEntry) => html`
+									<li @click="${handleCategoryClick}" class="${catalogEntry.children ? hasChildrenClass : ''}">
+										<span
+											draggable="true"
+											class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
+											@dragover=${(e) => onDragOver(e, catalogEntry)}
+											@drop=${onDrop}
+											@dragleave=${onDragLeave}
+											>${catalogEntry.label}</span
+										>
+										${catalogEntry.children
+											? html`
+													<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
+													<button @click="${() => handleDeleteClick(catalogEntry)}">Copy</button>
+													<button @click="${() => handleCopyClick(catalogEntry)}">X</button>
+													<ul>
+														${catalogEntry.children.map(
+															(child) =>
+																html`<li>
+																	<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, child)} @drop=${onDrop} @dragleave=${onDragLeave}
+																		>${child.label}</span
+																	>
+																</li>`
+														)}
+													</ul>
+											  `
+											: html`<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>`}
 
-									<i class="uil uil-draggabledots"></i>
-								</li>
-							`
-						)}
-					</ul>
+										<i class="uil uil-draggabledots"></i>
+									</li>
+								`
+							)}
+						</ul>
+					</div>
 				</div>
 			`;
 		}

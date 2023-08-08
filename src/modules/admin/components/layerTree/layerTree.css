@@ -8,6 +8,21 @@ div {
 	padding: 0;
 }
 
+.tree {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+li {
+	width: 100%;
+	text-align: start;
+	margin: 5px;
+	cursor: pointer;
+	align-items: center;
+	justify-content: space-between;
+}
+/* 
 ul {
 	width: 100%;
 }
@@ -15,9 +30,10 @@ ul {
 li {
 	width: 100%;
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
 }
+
+
+ */
 
 li > ul {
 	display: none;
