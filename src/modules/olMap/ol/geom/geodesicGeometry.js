@@ -29,40 +29,33 @@ export class GeodesicGeometry {
 			throw new Error('This class only accepts Polygons (and Linestrings ' + 'after initial drawing is finished)');
 		}
 		this._isDrawing = isDrawingCallback;
-		this._calculateGeodesicGeometry();
+		this._initialize();
 	}
 
-	_calculateGeodesicGeometry() {
+	_initialize() {
 		const geometry = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
-		this.coordinates = geometry.getCoordinates();
-		this.isPolygon = false;
-		if (geometry instanceof Polygon) {
-			this.coordinates = geometry.getCoordinates()[0];
-			if (this._isDrawing()) {
-				this.coordinates = this.coordinates.slice(0, -1);
-			} else {
-				this.isPolygon = true;
-			}
-		}
-		this.hasAzimuthCircle =
-			!this.isPolygon &&
-			(this.coordinates.length === 2 ||
-				(this.coordinates.length === 3 && this.coordinates[1][0] === this.coordinates[2][0] && this.coordinates[1][1] === this.coordinates[2][1]));
+		const isPolygon = geometry instanceof Polygon && !this._isDrawing();
+		const coordinates = this._getCoordinates(geometry);
+
+		const hasAzimuthCircle =
+			!isPolygon &&
+			(coordinates.length === 2 || (coordinates.length === 3 && coordinates[1][0] === coordinates[2][0] && coordinates[1][1] === coordinates[2][1]));
 		this.stylesReady = !(
-			this.coordinates.length < 2 ||
-			(this.coordinates.length === 2 && this.coordinates[0][0] === this.coordinates[1][0] && this.coordinates[0][1] === this.coordinates[1][1])
+			coordinates.length < 2 ||
+			(coordinates.length === 2 && coordinates[0][0] === coordinates[1][0] && coordinates[0][1] === coordinates[1][1])
 		);
-		/* The order of these calculations is important, as some methods require information
-        calculated by previous methods. */
-		const geodesicProperties = this._calculateGlobalProperties(this.isPolygon, this.hasAzimuthCircle);
+
+		const geodesicProperties = this._calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
 		const resolution = this._calculateResolution(geodesicProperties.length);
-		const geodesicCoords = this._calculateGeodesicCoords(this.coordinates, resolution);
+		const geodesicCoords = this._calculateGeodesicCoords(coordinates, resolution);
 		this.geodesicGeom = geodesicCoords.generateGeom();
 		this.geodesicPolygonGeom = geodesicCoords.generatePolygonGeom(this);
+		this.totalLength = geodesicProperties.length;
+		this.totalArea = geodesicProperties.area;
 
 		this.subsegmentRTrees = this._calculateSubsegmentRTree(geodesicCoords);
-		if (this.hasAzimuthCircle) {
-			this.azimuthCircle = this._calculateAzimuthCircle(geodesicProperties.rotation, this.coordinates, geodesicProperties.lengths);
+		if (hasAzimuthCircle) {
+			this.azimuthCircle = this._calculateAzimuthCircle(geodesicProperties.rotation, coordinates, geodesicProperties.lengths);
 
 			this.azimuthCircleStyle = new Style({
 				stroke: new Stroke({
@@ -90,25 +83,29 @@ export class GeodesicGeometry {
 		};
 	}
 
-	/* The following "_calculate*" methods are helper methods of "_calculateEverything" */
-	_calculateGlobalProperties(isPolygon, hasAzimuthCircle) {
+	_getCoordinates(geometry) {
+		if (geometry instanceof Polygon) {
+			return this._isDrawing() ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates()[0];
+		}
+		return geometry.getCoordinates();
+	}
+
+	_calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle) {
 		const geodesicPolygon = new PolygonArea.PolygonArea(GEODESIC_WGS84, !isPolygon);
-		for (const coord of this.coordinates) {
+		for (const coord of coordinates) {
 			geodesicPolygon.AddPoint(coord[1], coord[0]);
 		}
-		const res = geodesicPolygon.Compute(false, true);
-		this.totalLength = res.perimeter;
-		this.totalArea = res.area;
+		const result = geodesicPolygon.Compute(false, true);
 
 		const calculateRotation = () => {
-			const geodesicLine = GEODESIC_WGS84.InverseLine(this.coordinates[0][1], this.coordinates[0][0], this.coordinates[1][1], this.coordinates[1][0]);
+			const geodesicLine = GEODESIC_WGS84.InverseLine(coordinates[0][1], coordinates[0][0], coordinates[1][1], coordinates[1][0]);
 			return geodesicLine.azi1 < 0 ? geodesicLine.azi1 + 360 : geodesicLine.azi1;
 		};
 
-		return { length: res.perimeter, area: res.area, rotation: hasAzimuthCircle ? calculateRotation() : null };
+		return { length: result.perimeter, area: result.area, rotation: hasAzimuthCircle ? calculateRotation() : null };
 	}
 
-	_calculateResolution(totalLength) {
+	_calculateResolution(geodesicLength) {
 		/*
         Warning: the following numbers were only graphically measured, not calculated. So there is
         no guarantee to mathematical accuracy whatsoever.
@@ -133,7 +130,7 @@ export class GeodesicGeometry {
         */
 
 		// FIXME: verify whether this calculation suites to our approach or not
-		const resolution = Math.pow(10, Math.trunc(totalLength / 1000).toString(10).length);
+		const resolution = Math.pow(10, Math.trunc(geodesicLength / 1000).toString(10).length);
 		return Math.max(1000, resolution);
 	}
 
@@ -198,7 +195,7 @@ export class GeodesicGeometry {
 	_update() {
 		if (this.feature.getRevision() !== this.featureRevision) {
 			this.featureRevision = this.feature.getRevision();
-			this._calculateGeodesicGeometry();
+			this._initialize();
 		}
 	}
 
