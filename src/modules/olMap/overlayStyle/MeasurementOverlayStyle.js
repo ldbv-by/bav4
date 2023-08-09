@@ -4,7 +4,7 @@
 import { $injector } from '../../../injection';
 import { OverlayStyle } from './OverlayStyle';
 import { MeasurementOverlayTypes } from '../components/MeasurementOverlay';
-import { getAzimuth, getGeometryLength, getLineString, getPartitionDelta, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
+import { getAzimuth, getGeometryLength, getLineString, getPartitionDeltaFrom } from '../utils/olGeometryUtils';
 import Overlay from 'ol/Overlay';
 import { LineString, Polygon } from 'ol/geom';
 import MapBrowserEventType from 'ol/MapBrowserEventType';

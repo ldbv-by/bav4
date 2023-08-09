@@ -1,18 +1,19 @@
+/**
+ * @module modules/olMap/ol/geodesic/geodesicGeometry
+ */
 import { Geodesic, PolygonArea, Math as geographicMath } from 'geographiclib-geodesic';
-import { LineString, MultiLineString, MultiPolygon, Polygon } from 'ol/geom';
+import { LineString, Polygon } from 'ol/geom';
 import {
 	createOrUpdateFromFlatCoordinates /* Warning: private method of openlayers */,
 	buffer as bufferExtent,
-	returnOrUpdate /* Warning: private method of openlayers */,
-	boundingExtent
+	returnOrUpdate /* Warning: private method of openlayers */
 } from 'ol/extent';
 import RBush from 'ol/structs/RBush'; /* Warning: private class of openlayers; Wrapper for rbush-lib */
-import proj4 from 'proj4';
+import { CoordinateBag } from './coordinateBag';
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
 const WGS84 = 'EPSG:4326';
-const DEG360_IN_WEBMERCATOR = 2 * Math.PI * 6378137; // FIXME: move to coordinateSystem-utils or something like that
 
 /**
  * A geodesic-geometry
@@ -37,11 +38,11 @@ export class GeodesicGeometry {
 		const hasAzimuthCircle = !this.isPolygon && this._isEffectiveSegment(coordinates);
 		const geodesicProperties = this._calculateGlobalProperties(coordinates, this.isPolygon, hasAzimuthCircle);
 		const resolution = this._calculateResolution(geodesicProperties.length);
-		const geodesicCoords = this._calculateGeodesicCoords(coordinates, resolution);
+		const geodesicCoords = this._calculateGeodesicCoordinates(coordinates, resolution);
 
-		this.azimuthCircle = hasAzimuthCircle ? this._calculateAzimuthCircle(geodesicProperties.rotation, coordinates, geodesicProperties.length) : null;
-		this.geometry = geodesicCoords.generateGeom();
-		this.polygon = geodesicCoords.generatePolygonGeom(this);
+		this.azimuthCircle = hasAzimuthCircle ? this._calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
+		this.geometry = geodesicCoords.createGeometry();
+		this.polygon = geodesicCoords.createPolygon(this);
 		this.subsegmentRTrees = this._calculateSubsegmentRTree(geodesicCoords);
 		this.extent = this._getExtent(this.geometry);
 
@@ -63,8 +64,9 @@ export class GeodesicGeometry {
 	}
 
 	/**
-	 * Whether or not the coordinates can effectively define a line segment.
-	 * This is true if the coordinates array consists of two (start, end) or three (start, end, start) coordinates
+	 * Whether or not the coordinates effectively define a line segment.
+	 * This is true if the coordinates array consists of two
+	 * distinct (start -> end) or (start -> end -> start) coordinates
 	 * @param {Array<Array<Number>>} coordinates
 	 * @returns {boolean}
 	 */
@@ -132,11 +134,10 @@ export class GeodesicGeometry {
 		return Math.max(1000, resolution);
 	}
 
-	_calculateGeodesicCoords(coordinates, resolution) {
+	_calculateGeodesicCoordinates(coordinates, resolution) {
 		let currentDistance = 0;
 		const geodesicCoordinates = new CoordinateBag();
 
-		let segmentIndex = 0;
 		for (let i = 0; i < coordinates.length - 1; i++) {
 			const from = coordNormalize(coordinates[i]);
 			const to = coordNormalize(coordinates[i + 1]);
@@ -147,7 +148,6 @@ export class GeodesicGeometry {
 			let length = geodesicLine.s13;
 			let distToPoint = 0;
 			while ((currentDistance % resolution) + length >= resolution) {
-				segmentIndex = segmentIndex + 1;
 				const partialLength = resolution - (currentDistance % resolution);
 				distToPoint += partialLength;
 				const positionCalcRes = geodesicLine.Position(distToPoint);
@@ -175,30 +175,31 @@ export class GeodesicGeometry {
 		return subsegmentRTrees;
 	}
 
-	_calculateAzimuthCircle(rotation, coords, length) {
-		const nbPoints = 1000;
-		const arcLength = 360 / nbPoints;
+	_calculateAzimuthCircle(coords, rotation, length) {
+		const center = coords[0];
+		const pointsOnArc = 1000;
+		const arcLength = 360 / pointsOnArc;
 		const circleCoords = new CoordinateBag();
-		for (let i = 0; i <= nbPoints; i++) {
+		for (let i = 0; i <= pointsOnArc; i++) {
 			const res = GEODESIC_WGS84.Direct(
-				coords[0][1],
-				coords[0][0],
+				center[1],
+				center[0],
 				//Adding "this.rotation" to be sure that the line meets the circle perfectly
 				arcLength * i + rotation,
 				length
 			);
 			circleCoords.add([res.lon2, res.lat2]);
 		}
-		return circleCoords.generateGeom();
+		return circleCoords.createGeometry();
 	}
 
-	/** @returns {MultiLineString} Represents the drawn LineString or the border of the drawn Polygon */
+	/** @returns {import('ol').MultiLineString} Represents the drawn LineString or the border of the drawn Polygon */
 	getGeometry() {
 		this._update();
 		return this.geometry;
 	}
 
-	/** @returns {MultiLineString} Represents the filling of the feature */
+	/** @returns {import('ol').MultiLineString} Represents the filling of the feature */
 	getPolygon() {
 		this._update();
 		return this.polygon;
@@ -221,7 +222,7 @@ export class GeodesicGeometry {
 	 *
 	 * @param {number} segmentIndex
 	 * @param {Extent} extent
-	 * @returns {[[number]]}
+	 * @returns {Array<Array<Number>>}
 	 */
 	getSubsegments(segmentIndex, extent) {
 		this._update();
@@ -251,120 +252,5 @@ export function segmentExtent(feature, segmentIndex) {
 export function subsegments(feature, segmentIndex, viewExtent) {
 	if (feature.geodesic) {
 		return feature.geodesic.getSubsegments(segmentIndex, viewExtent);
-	}
-}
-
-/**
- * Class to organize spherical coordinates and create geometries as
- * - a MultiLineString (geodesicGeom)
- * - a MultiPolygon (geodesicPolygonGeom)
- * - a list of subsegments
- */
-class CoordinateBag {
-	constructor() {
-		this.lastCoord = null;
-
-		this.lineStrNr = 0;
-		this.lineStrings = [[]];
-
-		this.subsegments = [[]];
-		this.subsegmentExtents = [[]];
-		this.segmentNr = -1;
-		this.segmentIndices = [];
-
-		this.polygons = {};
-		this.worldNr = 0;
-	}
-
-	/**
-	 * adds a new coordinate to the bag
-	 *
-	 * @param {Coordinate } geodesicCoordinate The coordinate to add
-	 * @param {Boolean} newSegment the startCoordinate of a whether this vertex is the binding vertex of two segments or not
-	 */
-	add(geodesicCoordinate, newSegment = false) {
-		if (newSegment) {
-			this.segmentNr++;
-		}
-		if (this.lastCoord && 180 - Math.abs(this.lastCoord[0]) < 40) {
-			if (geodesicCoordinate[0] < 0 && this.lastCoord[0] > 0) {
-				this._push(geodesicCoordinate, 1);
-				this.lineStrings[++this.lineStrNr] = [];
-			} else if (geodesicCoordinate[0] > 0 && this.lastCoord[0] < 0) {
-				this._push(geodesicCoordinate, -1);
-				this.lineStrings[++this.lineStrNr] = [];
-			}
-		}
-		this._push(geodesicCoordinate);
-		this.lastCoord = geodesicCoordinate;
-	}
-	_push(coordinate, offset = 0) {
-		const coord = [coordinate[0] + offset * 360, coordinate[1]];
-		const polygonId = 'polygon_' + this.worldNr;
-		this.worldNr += offset;
-		//Push to lineString (border of the shape)
-		this.lineStrings[this.lineStrNr].push(coord);
-		//Push to polygons (To color the area of the shape)
-		if (this.polygons[polygonId] == null) {
-			this.polygons[polygonId] = [];
-		}
-		this.polygons[polygonId].push(coord);
-		/* Push to subsegments (Used to calculate distances form mouse cursor to shape and to
-        calculate the extent of each segment and subsegment) */
-		if (this.segmentNr >= 0 && this.lineStrings[this.lineStrNr].length > 1) {
-			const lastCoord = [...this.lastCoord];
-			const subsegment = [proj4(WGS84, WEBMERCATOR, lastCoord), proj4(WGS84, WEBMERCATOR, coord)];
-			subsegment[1][0] += offset * DEG360_IN_WEBMERCATOR;
-			const subsegmentExtent = boundingExtent(subsegment);
-			if (!this.subsegments[this.segmentNr]) {
-				if (this.segmentNr > 0) {
-					this.subsegments[this.segmentNr - 1].push(subsegment);
-					this.subsegmentExtents[this.segmentNr - 1].push(subsegmentExtent);
-				}
-				this.subsegments[this.segmentNr] = [];
-				this.subsegmentExtents[this.segmentNr] = [];
-			} else {
-				this.subsegments[this.segmentNr].push(subsegment);
-				this.subsegmentExtents[this.segmentNr].push(subsegmentExtent);
-			}
-		}
-	}
-	generateGeom() {
-		if (this.lineStrings[this.lineStrNr].length <= 1) {
-			this.lineStrings.pop();
-		}
-		return new MultiLineString(this.lineStrings).transform(WGS84, WEBMERCATOR);
-	}
-	/**
-	 * @param {GeodesicGeometry} geodesic
-	 * @returns {MultiPolygon | null}
-	 */
-	generatePolygonGeom(geodesic) {
-		if (
-			(!geodesic.isDrawing && !geodesic.isPolygon) ||
-			(geodesic.isDrawing && this.lineStrNr === 1) ||
-			(this.lineStrNr > 1 && this.worldNr !== 0) ||
-			this.lineStrNr > 2
-		) {
-			/* If polygon should not be filled OR
-            the chance for the algorithm to not color the polygon correctly is too high.*/
-			return null;
-		}
-		return new MultiPolygon(
-			Object.values(this.polygons).map((coords) => {
-				const first = coords[0];
-				if (this.lineStrNr === 1) {
-					/* The polygon goes through north or south pol. The coloring will be correct as
-                    long as the shape is not too complex (no overlapping) */
-					if (coords.length <= 1) return [coords];
-					const last = coords[coords.length - 1];
-					// Drawing at 90deg breaks things, thats why we stop at 89
-					const lat = geographicMath.copysign(89, this.worldNr * geodesic.totalArea);
-					coords.push([last[0], lat], [first[0], lat]);
-				}
-				coords.push(first);
-				return [coords];
-			})
-		).transform(WGS84, WEBMERCATOR);
 	}
 }

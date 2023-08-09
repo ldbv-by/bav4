@@ -45,7 +45,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
-import { GeodesicGeometry, segmentExtent, subsegments } from '../../ol/geom/geodesicGeometry';
+import { GeodesicGeometry, segmentExtent, subsegments } from '../../ol/geodesic/geodesicGeometry';
 
 const Debounce_Delay = 1000;
 

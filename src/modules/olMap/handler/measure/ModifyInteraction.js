@@ -1,3 +1,8 @@
+/* eslint-disable */
+
+/**
+ * @module modules/olMap/handler/measure/ModifyInteraction
+ */
 /**
  * #############################################################
  * Shameless copy from https://github.com/geoadmin/web-mapviewer

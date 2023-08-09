@@ -1,3 +1,6 @@
+/**
+ * @module modules/olMap/handler/measure/OlOverlayMapHandler
+ */
 import { containsCoordinate, getBottomLeft, getBottomRight, getTopLeft, getTopRight } from '../../../../../node_modules/ol/extent';
 import { fromLonLat, toLonLat, transformExtent } from '../../../../../node_modules/ol/proj';
 import { MeasurementOverlay } from '../../components/MeasurementOverlay';

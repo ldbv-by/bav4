@@ -5,7 +5,6 @@ import {
 	getGeometryLength,
 	canShowAzimuthCircle,
 	calculatePartitionResidualOfSegments,
-	getPartitionDelta,
 	moveParallel,
 	getPartitionDeltaFrom,
 	NO_CALCULATION_HINTS
@@ -18,12 +17,13 @@ import markerIcon from '../assets/marker.svg';
 import { isString } from '../../../utils/checks';
 import { getContrastColorFrom, hexToRgb, rgbToHex } from '../../../utils/colors';
 import { AssetSourceType, getAssetSource } from '../../../utils/assets';
-import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
-import { Feature } from 'ol';
+import { GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
+
 import { MultiLineString } from '../../../../node_modules/ol/geom';
 
 const Z_Point = 30;
 const Red_Color = [255, 0, 0];
+// eslint-disable-next-line no-unused-vars
 const Green_Color = [0, 255, 0];
 const White_Color = [255, 255, 255];
 // eslint-disable-next-line no-unused-vars
@@ -507,6 +507,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	});
 };
 
+// eslint-disable-next-line no-unused-vars
 export const getRulerTextStyles = (feature) => {
 	return [new Style({})];
 };
@@ -515,7 +516,7 @@ export const getRulerTextStyles = (feature) => {
  * StyleFunction for measurement-feature
  *
  * Inspired by example from https://stackoverflow.com/questions/57421223/openlayers-3-offset-stroke-style
- * @param {Feature} feature the feature to be styled
+ * @param {import('ol').Feature} feature the feature to be styled
  * @param {number} resolution the resolution of the Map-View
  * @returns {Array<Style>} the measurement styles for the specified feature
  */

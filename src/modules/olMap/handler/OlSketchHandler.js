@@ -3,7 +3,7 @@
  */
 import { Polygon } from 'ol/geom';
 import { unByKey } from 'ol/Observable';
-import { GeodesicGeometry } from '../ol/geom/geodesicGeometry';
+import { GeodesicGeometry } from '../ol/geodesic/geodesicGeometry';
 import { Tools } from '../../../domain/tools';
 
 export const DefaultIdPrefix = Tools.DRAW + '_';
