@@ -401,7 +401,7 @@ const getRulerStyle = (feature) => {
 		};
 	};
 	return new Style({
-		geometry: () => feature?.geodesic?.getGeodesicGeom(),
+		geometry: () => feature?.geodesic?.getGeometry(),
 		renderer: (pixelCoordinates, state) => {
 			const getContextRenderFunction = (state) =>
 				state.customContextRenderFunction ? state.customContextRenderFunction : getCanvasContextRenderFunction(state);
@@ -527,7 +527,7 @@ export const measureStyleFunction = (feature, resolution) => {
 
 	const getFallbackStyle = () => {
 		return new Style({
-			geometry: () => feature?.geodesic?.getGeodesicGeom(),
+			geometry: () => feature?.geodesic?.getGeometry(),
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],
@@ -693,7 +693,7 @@ export const defaultStyleFunction = (color) => {
 export const createSketchStyleFunction = (styleFunction) => {
 	const getSketchPolygon = (feature) =>
 		new Style({
-			geometry: feature?.geodesic?.getGeodesicGeom(),
+			geometry: feature?.geodesic?.getGeometry(),
 			fill: new Fill({
 				color: White_Color.concat([0.4])
 			}),

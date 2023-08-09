@@ -573,7 +573,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createMeasureGeometry(feature) {
-		const geometry = feature.geodesic ? feature.geodesic.getGeodesicGeom() : feature.getGeometry();
+		const geometry = feature.geodesic ? feature.geodesic.getGeometry() : feature.getGeometry();
 		// if (feature.getGeometry() instanceof Polygon) {
 		// 	const lineCoordinates = isDrawing ? geometry.getCoordinates()[0].slice(0, -1) : geometry.getCoordinates(false)[0];
 		// 	if (!this._sketchHandler.isFinishOnFirstPoint) {

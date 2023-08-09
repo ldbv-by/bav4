@@ -8,18 +8,17 @@ import {
 } from 'ol/extent';
 import RBush from 'ol/structs/RBush'; /* Warning: private class of openlayers; Wrapper for rbush-lib */
 import proj4 from 'proj4';
-import { Stroke, Style } from 'ol/style';
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
 const WGS84 = 'EPSG:4326';
 const DEG360_IN_WEBMERCATOR = 2 * Math.PI * 6378137; // FIXME: move to coordinateSystem-utils or something like that
+
 /**
  * A geodesic-geometry
  *
  * based on the GeodesicManager in https://github.com/geoadmin/web-mapviewer
- * - initially cloned
- *
+ * and reduced (style-depending methods and properties removed)
  */
 export class GeodesicGeometry {
 	constructor(feature, isDrawingCallback = () => false) {
@@ -33,54 +32,53 @@ export class GeodesicGeometry {
 	}
 
 	_initialize() {
-		const geometry = this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84);
-		const isPolygon = geometry instanceof Polygon && !this._isDrawing();
-		const coordinates = this._getCoordinates(geometry);
+		const coordinates = this._getCoordinates(this.feature.getGeometry().clone().transform(WEBMERCATOR, WGS84));
 
-		const hasAzimuthCircle =
-			!isPolygon &&
-			(coordinates.length === 2 || (coordinates.length === 3 && coordinates[1][0] === coordinates[2][0] && coordinates[1][1] === coordinates[2][1]));
-		this.stylesReady = !(
-			coordinates.length < 2 ||
-			(coordinates.length === 2 && coordinates[0][0] === coordinates[1][0] && coordinates[0][1] === coordinates[1][1])
-		);
-
-		const geodesicProperties = this._calculateGlobalProperties(coordinates, isPolygon, hasAzimuthCircle);
+		const hasAzimuthCircle = !this.isPolygon && this._isEffectiveSegment(coordinates);
+		const geodesicProperties = this._calculateGlobalProperties(coordinates, this.isPolygon, hasAzimuthCircle);
 		const resolution = this._calculateResolution(geodesicProperties.length);
 		const geodesicCoords = this._calculateGeodesicCoords(coordinates, resolution);
-		this.geodesicGeom = geodesicCoords.generateGeom();
-		this.geodesicPolygonGeom = geodesicCoords.generatePolygonGeom(this);
-		this.totalLength = geodesicProperties.length;
-		this.totalArea = geodesicProperties.area;
 
+		this.azimuthCircle = hasAzimuthCircle ? this._calculateAzimuthCircle(geodesicProperties.rotation, coordinates, geodesicProperties.length) : null;
+		this.geometry = geodesicCoords.generateGeom();
+		this.polygon = geodesicCoords.generatePolygonGeom(this);
 		this.subsegmentRTrees = this._calculateSubsegmentRTree(geodesicCoords);
-		if (hasAzimuthCircle) {
-			this.azimuthCircle = this._calculateAzimuthCircle(geodesicProperties.rotation, coordinates, geodesicProperties.lengths);
-
-			this.azimuthCircleStyle = new Style({
-				stroke: new Stroke({
-					width: 3,
-					color: [255, 0, 0]
-				}),
-				geometry: this.azimuthCircle,
-				zIndex: 0
-			});
-		}
+		this.extent = this._getExtent(this.geometry);
 
 		// Overwrites public method getExtent of the feature to include the whole geodesic geometry.
-		// FIXME: resolve private ol-method
-		this.extent = createOrUpdateFromFlatCoordinates(
-			this.geodesicGeom.flatCoordinates,
-			0,
-			this.geodesicGeom.flatCoordinates.length,
-			this.geodesicGeom.stride,
-			this.extent
-		);
-		this.extent = bufferExtent(this.extent, 0.0001, this.extent); //account for imprecisions in the calculation
 		this.feature.getGeometry().getExtent = (extent) => {
 			this._update();
 			return returnOrUpdate(this.extent, extent); // FIXME: resolve private ol-method
 		};
+
+		this.totalLength = geodesicProperties.length;
+		this.totalArea = geodesicProperties.area;
+	}
+
+	_update() {
+		if (this.feature.getRevision() !== this.featureRevision) {
+			this.featureRevision = this.feature.getRevision();
+			this._initialize();
+		}
+	}
+
+	/**
+	 * Whether or not the coordinates can effectively define a line segment.
+	 * This is true if the coordinates array consists of two (start, end) or three (start, end, start) coordinates
+	 * @param {Array<Array<Number>>} coordinates
+	 * @returns {boolean}
+	 */
+	_isEffectiveSegment(coordinates) {
+		return (
+			coordinates.length === 2 || (coordinates.length === 3 && coordinates[1][0] === coordinates[2][0] && coordinates[1][1] === coordinates[2][1])
+		);
+	}
+
+	_getExtent(geodesicGeometry) {
+		const extent = [null, null, null, null];
+		// FIXME: resolve private ol-method
+		createOrUpdateFromFlatCoordinates(geodesicGeometry.flatCoordinates, 0, geodesicGeometry.flatCoordinates.length, geodesicGeometry.stride, extent);
+		return bufferExtent(extent, 0.0001, extent); //account for imprecisions in the calculation
 	}
 
 	_getCoordinates(geometry) {
@@ -134,16 +132,18 @@ export class GeodesicGeometry {
 		return Math.max(1000, resolution);
 	}
 
-	_calculateGeodesicCoords(coords, resolution) {
+	_calculateGeodesicCoords(coordinates, resolution) {
 		let currentDistance = 0;
-		const geodesicCoords = new CoordinateBag();
+		const geodesicCoordinates = new CoordinateBag();
 
 		let segmentIndex = 0;
-		for (let i = 0; i < coords.length - 1; i++) {
-			const from = coordNormalize(coords[i]);
-			const to = coordNormalize(coords[i + 1]);
-			geodesicCoords.add(from, true);
+		for (let i = 0; i < coordinates.length - 1; i++) {
+			const from = coordNormalize(coordinates[i]);
+			const to = coordNormalize(coordinates[i + 1]);
+
+			geodesicCoordinates.add(from, true);
 			const geodesicLine = GEODESIC_WGS84.InverseLine(from[1], from[0], to[1], to[0]);
+
 			let length = geodesicLine.s13;
 			let distToPoint = 0;
 			while ((currentDistance % resolution) + length >= resolution) {
@@ -154,15 +154,15 @@ export class GeodesicGeometry {
 				const pos = [positionCalcRes.lon2, positionCalcRes.lat2];
 				currentDistance += partialLength;
 				length -= partialLength;
-				if (geodesicLine.s13 >= 1000) geodesicCoords.add(pos);
+				if (geodesicLine.s13 >= 1000) geodesicCoordinates.add(pos);
 			}
 			currentDistance += length;
 		}
-		if (coords.length) {
-			geodesicCoords.add(coordNormalize(coords[coords.length - 1]));
+		if (coordinates.length) {
+			geodesicCoordinates.add(coordNormalize(coordinates[coordinates.length - 1]));
 		}
 
-		return geodesicCoords;
+		return geodesicCoordinates;
 	}
 
 	_calculateSubsegmentRTree(geodesicCoords) {
@@ -192,23 +192,16 @@ export class GeodesicGeometry {
 		return circleCoords.generateGeom();
 	}
 
-	_update() {
-		if (this.feature.getRevision() !== this.featureRevision) {
-			this.featureRevision = this.feature.getRevision();
-			this._initialize();
-		}
-	}
-
 	/** @returns {MultiLineString} Represents the drawn LineString or the border of the drawn Polygon */
-	getGeodesicGeom() {
+	getGeometry() {
 		this._update();
-		return this.geodesicGeom;
+		return this.geometry;
 	}
 
 	/** @returns {MultiLineString} Represents the filling of the feature */
-	getGeodesicPolygonGeom() {
+	getPolygon() {
 		this._update();
-		return this.geodesicPolygonGeom;
+		return this.polygon;
 	}
 
 	/**
@@ -234,8 +227,14 @@ export class GeodesicGeometry {
 		this._update();
 		return this.subsegmentRTrees[segmentIndex].getInExtent(extent);
 	}
+
 	get isDrawing() {
 		return this._isDrawing();
+	}
+
+	get isPolygon() {
+		const geometry = this.feature?.getGeometry();
+		return geometry instanceof Polygon && !this._isDrawing();
 	}
 }
 

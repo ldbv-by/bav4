@@ -219,7 +219,7 @@ export class MeasurementOverlayStyle extends OverlayStyle {
 		};
 		const partitions = getPartitions();
 		if (!simplifiedGeometry) {
-			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeodesicGeom() : olFeature.getGeometry();
+			simplifiedGeometry = olFeature.geodesic ? olFeature.geodesic.getGeometry() : olFeature.getGeometry();
 		}
 
 		const resolution = olMap.getView().getResolution();
