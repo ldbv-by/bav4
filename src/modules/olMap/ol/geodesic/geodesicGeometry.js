@@ -19,7 +19,7 @@ const WGS84 = 'EPSG:4326';
  * A geodesic-geometry
  *
  * based on the GeodesicManager in https://github.com/geoadmin/web-mapviewer
- * and reduced (style-depending methods and properties removed)
+ * and reduced (style-depending methods and properties removed) to our needs
  */
 export class GeodesicGeometry {
 	constructor(feature, isDrawingCallback = () => false) {

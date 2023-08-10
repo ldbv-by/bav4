@@ -134,6 +134,13 @@ describe('OlMap', () => {
 			return 'olElevationProfileHandlerMockId';
 		}
 	};
+
+	const olOverlayMapHandlerMock = {
+		register() {},
+		get id() {
+			return 'olOverlayMapHandlerMockId';
+		}
+	};
 	const mfpHandlerMock = {
 		activate() {},
 		deactivate() {},
@@ -190,6 +197,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
+			.registerSingleton('OlOverlayMapHandler', olElevationProfileHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);

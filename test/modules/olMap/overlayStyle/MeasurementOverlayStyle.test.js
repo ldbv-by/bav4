@@ -27,7 +27,11 @@ describe('MeasurementOverlayStyle', () => {
 		TestUtils.setupStoreAndDi(measurementState, { measurement: measurementReducer });
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832 })
+			.registerSingleton('MapService', {
+				getSrid: () => 3857,
+				getLocalProjectedSrid: () => 25832,
+				getLocalProjectedSridExtent: () => [995772.9694449581, 5982715.763684852, 1548341.2904285304, 6544564.28740462]
+			})
 			.registerSingleton('EnvironmentService', environmentServiceMock)
 			.registerSingleton('UnitsService', {
 				// eslint-disable-next-line no-unused-vars

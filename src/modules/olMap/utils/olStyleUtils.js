@@ -525,10 +525,10 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
-
+	const geometry = feature?.geodesic ? feature?.geodesic.getGeometry() : feature.getGeometry();
 	const getFallbackStyle = () => {
 		return new Style({
-			geometry: () => feature?.geodesic?.getGeometry(),
+			geometry: geometry,
 			stroke: new Stroke({
 				color: Red_Color.concat([1]),
 				lineDash: [8],

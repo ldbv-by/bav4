@@ -17,7 +17,8 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
-	multiLineStringToLineString
+	multiLineStringToLineString,
+	NO_CALCULATION_HINTS
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
@@ -600,45 +601,27 @@ describe('isVertexOfGeometry', () => {
 
 describe('getPartitionDelta', () => {
 	it('calculates a sub delta', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[15, 0]
-		]);
-
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(15);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta with standard resolution', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[200, 0]
-		]);
-
-		const delta = getPartitionDelta(lineString);
+		const delta = getPartitionDelta(200, 1);
 
 		expect(delta).toBe(0.5);
 	});
 
 	it('calculates a delta with defined resolution', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[5000, 0]
-		]);
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
+		const delta = getPartitionDelta(5000, resolution);
 
 		expect(delta).toBe(1);
 	});
 
 	it('calculates a delta for longest lines', () => {
-		const lineString = new LineString([
-			[0, 0],
-			[50000000, 0]
-		]);
 		const resolution = 50;
-		const delta = getPartitionDelta(lineString, resolution);
+		const delta = getPartitionDelta(50000000, resolution);
 
 		expect(delta).toBe(0.2);
 	});

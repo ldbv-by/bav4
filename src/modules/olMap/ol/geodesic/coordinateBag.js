@@ -6,11 +6,13 @@ import { MultiLineString, MultiPolygon } from 'ol/geom';
 import { boundingExtent } from 'ol/extent';
 import proj4 from 'proj4';
 
-const WEBMERCATOR = 'EPSG:3857';
-const WGS84 = 'EPSG:4326';
-const DEG360_IN_WEBMERCATOR = 2 * Math.PI * 6378137; // FIXME: move to coordinateSystem-utils or something like that
+const Epsg_WebMercartor = 'EPSG:3857';
+const Epsg_Wgs84 = 'EPSG:4326';
+const Deg360_In_WebMercartor = 2 * Math.PI * 6378137; // FIXME: move to coordinateSystem-utils or something like that
+
 const Left_World = -1;
 const Right_World = 1;
+const Dateline_Buffer = 40;
 
 /**
  * Class to organize spherical coordinates and create geometries as
@@ -38,13 +40,13 @@ export class CoordinateBag {
 	 * adds a new coordinate to the bag
 	 *
 	 * @param {Coordinate } coordinate The coordinate to add
-	 * @param {Boolean} newSegment the startCoordinate of a whether this vertex is the binding vertex of two segments or not
+	 * @param {Boolean} newSegment whether this vertex is the binding vertex of two segments or not
 	 */
 	add(coordinate, newSegment = false) {
 		if (newSegment) {
 			this.segmentIndex++;
 		}
-		if (this.lastCoordinate && 180 - Math.abs(this.lastCoordinate[0]) < 40) {
+		if (this.lastCoordinate && 180 - Math.abs(this.lastCoordinate[0]) < Dateline_Buffer) {
 			if (coordinate[0] < 0 && this.lastCoordinate[0] > 0) {
 				this._push(coordinate, Right_World);
 				this.lineStrings[++this.lineStringIndex] = [];
@@ -72,8 +74,8 @@ export class CoordinateBag {
         calculate the extent of each segment and subsegment) */
 		if (this.segmentIndex >= 0 && this.lineStrings[this.lineStringIndex].length > 1) {
 			const lastCoord = [...this.lastCoordinate];
-			const subsegment = [proj4(WGS84, WEBMERCATOR, lastCoord), proj4(WGS84, WEBMERCATOR, coord)];
-			subsegment[1][0] += offset * DEG360_IN_WEBMERCATOR;
+			const subsegment = [proj4(Epsg_Wgs84, Epsg_WebMercartor, lastCoord), proj4(Epsg_Wgs84, Epsg_WebMercartor, coord)];
+			subsegment[1][0] += offset * Deg360_In_WebMercartor;
 			const subsegmentExtent = boundingExtent(subsegment);
 			if (!this.subsegments[this.segmentIndex]) {
 				if (this.segmentIndex > 0) {
@@ -93,7 +95,7 @@ export class CoordinateBag {
 		if (this.lineStrings[this.lineStringIndex].length <= 1) {
 			this.lineStrings.pop();
 		}
-		return new MultiLineString(this.lineStrings).transform(WGS84, WEBMERCATOR);
+		return new MultiLineString(this.lineStrings).transform(Epsg_Wgs84, Epsg_WebMercartor);
 	}
 	/**
 	 * @param {import('./geodesicGeometry').GeodesicGeometry} geodesicGeometry
@@ -125,6 +127,6 @@ export class CoordinateBag {
 				coordinates.push(first);
 				return [coordinates];
 			})
-		).transform(WGS84, WEBMERCATOR);
+		).transform(Epsg_Wgs84, Epsg_WebMercartor);
 	}
 }

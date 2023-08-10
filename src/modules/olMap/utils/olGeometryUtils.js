@@ -390,7 +390,7 @@ export const moveParallel = (fromPoint, toPoint, distance) => {
 export const calculatePartitionResidualOfSegments = (geometry, partition) => {
 	const residuals = [];
 	const lineString = getLineString(geometry);
-	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : [lineString];
+	const lineStrings = lineString instanceof MultiLineString ? lineString.getLineStrings() : lineString ? [lineString] : [];
 
 	const partitionLength = getGeometryLength(lineString, NO_CALCULATION_HINTS, true) * partition;
 	let currentLength = 0;
