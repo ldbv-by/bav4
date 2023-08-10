@@ -285,7 +285,7 @@ export class StyleService {
 			return regex.test(candidate);
 		};
 		const isDrawingStyleType = (type, candidate) => {
-			const regex = new RegExp('^drawing_' + type + '_');
+			const regex = new RegExp('^draw_' + type + '_');
 			return regex.test(candidate);
 		};
 
@@ -298,7 +298,7 @@ export class StyleService {
 
 		const getStyleTypeFromId = (olFeature) => {
 			const id = olFeature.getId();
-			if (id.startsWith('measuring_')) {
+			if (id?.startsWith('measure_')) {
 				return StyleTypes.MEASURE;
 			}
 			const drawingType = Object.keys(StyleTypes).find((key) => isDrawingStyleType(StyleTypes[key], id));
