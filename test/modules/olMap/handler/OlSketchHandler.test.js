@@ -24,7 +24,17 @@ describe('OlSketchHandler', () => {
 
 	describe('when set a activeSketch', () => {
 		it('registers a listener for feature change', () => {
-			const featureMock = { on: () => {}, getGeometry: () => new Point([0, 0]), setId: () => {}, setProperties: () => {} };
+			const featureMock = {
+				on: () => {},
+				getGeometry: () =>
+					new LineString([
+						[0, 0],
+						[0, 1]
+					]),
+				setId: () => {},
+				setProperties: () => {},
+				getRevision: () => 1
+			};
 			const listenerSpy = spyOn(featureMock, 'on');
 
 			const classUnderTest = new OlSketchHandler();
@@ -35,7 +45,12 @@ describe('OlSketchHandler', () => {
 		});
 
 		it('monitors feature changes', () => {
-			const feature = new Feature(new Point([0, 0]));
+			const feature = new Feature(
+				new LineString([
+					[0, 0],
+					[0, 1]
+				])
+			);
 
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
@@ -138,7 +153,12 @@ describe('OlSketchHandler', () => {
 		});
 
 		it('deregisters listener on release', () => {
-			const feature = new Feature(new Point([0, 0]));
+			const feature = new Feature(
+				new LineString([
+					[0, 0],
+					[0, 1]
+				])
+			);
 			const classUnderTest = new OlSketchHandler();
 			classUnderTest.activate(feature);
 			const empty = {};

@@ -1524,7 +1524,7 @@ describe('OlDrawHandler', () => {
 				pointCount: 0,
 				dragging: jasmine.any(Boolean)
 			});
-			classUnderTest._sketchHandler.activate(new Feature({ geometry: new Point([1, 0]) }));
+			classUnderTest._sketchHandler.activate(new Feature({ geometry: new LineString([1, 0], [1, 1]) }));
 			simulateMapBrowserEvent(map, MapBrowserEventType.POINTERMOVE, 20, 0);
 			expect(drawStateSpy).toHaveBeenCalledWith({
 				type: InteractionStateType.DRAW,
