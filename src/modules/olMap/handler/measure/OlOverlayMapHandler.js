@@ -6,11 +6,13 @@ import { fromLonLat, toLonLat, transformExtent } from '../../../../../node_modul
 import { MeasurementOverlay } from '../../components/MeasurementOverlay';
 import { OlMapHandler } from '../OlMapHandler';
 
+const Epsg_WebMercartor = 'EPSG:3857';
+const Epsg_Wgs84 = 'EPSG:4326';
+
 export class OlOverlayMapHandler extends OlMapHandler {
 	constructor() {
 		super('Overlay_Handler');
 
-		this._viewListener = null;
 		this._map = null;
 	}
 
@@ -21,7 +23,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 
 	_updateOverlays() {
 		const viewExtent = this._map.getView().calculateExtent(this._map.getSize());
-		const wgs84Extent = transformExtent(viewExtent, 'EPSG:3857', 'EPSG:4326');
+		const wgs84Extent = transformExtent(viewExtent, Epsg_WebMercartor, Epsg_Wgs84);
 
 		const getOffset = (latitude) => {
 			return -180 > latitude ? (latitude - (latitude % 360)) / 360 : -180 < latitude && latitude < 180 ? 0 : (latitude - (latitude % 360)) / 360;
@@ -38,41 +40,38 @@ export class OlOverlayMapHandler extends OlMapHandler {
 			.getOverlays()
 			.getArray()
 			.filter((o) => o.getElement() instanceof MeasurementOverlay)
-			.forEach((o) => {
-				const overlayPosition = o.getPosition();
+			.forEach((o) => this._updatePosition(o, viewExtent, offsetMinMax));
+	}
 
-				if (!containsCoordinate(viewExtent, overlayPosition)) {
-					const wgs84Position = toLonLat(overlayPosition, 'EPSG:3857');
+	_updatePosition(overlay, viewExtent, offsetMinMax) {
+		const overlayPosition = overlay.getPosition();
 
-					const withOffset = (offset, wgs84Position) => {
-						const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
-						return fromLonLat(wgs84Coordinate, 'EPSG:3857');
-					};
-					const findBestOffset = (minMax, position, extent) => {
-						// const bestOffset = minMax.find((offset) => {
-						// 	const candidate = withOffset(offset, position);
-						// 	return containsCoordinate(extent, candidate);
-						// });
-						// return bestOffset ?? null;
+		if (!containsCoordinate(viewExtent, overlayPosition)) {
+			const wgs84Position = toLonLat(overlayPosition, Epsg_WebMercartor);
 
-						const [min, max] = minMax;
-						let bestOffset = null;
-						for (let offset = min - 1; offset <= max + 1; offset++) {
-							const candidate = withOffset(offset, position);
-							if (containsCoordinate(extent, candidate)) {
-								bestOffset = offset;
-								break;
-							}
-						}
-						return bestOffset;
-					};
+			const withOffset = (offset, wgs84Position) => {
+				const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
+				return fromLonLat(wgs84Coordinate, Epsg_WebMercartor);
+			};
 
-					const bestOffset = findBestOffset(offsetMinMax, wgs84Position, viewExtent);
-					if (bestOffset) {
-						const newPos = withOffset(bestOffset, wgs84Position);
-						o.setPosition(newPos);
+			const findBestOffset = (minMax, position, extent) => {
+				const [min, max] = minMax;
+
+				for (let offset = min - 1; offset <= max + 1; offset++) {
+					const candidate = withOffset(offset, position);
+					if (containsCoordinate(extent, candidate)) {
+						return offset;
 					}
 				}
-			});
+
+				return null;
+			};
+
+			const bestOffset = findBestOffset(offsetMinMax, wgs84Position, viewExtent);
+			if (bestOffset) {
+				const newPos = withOffset(bestOffset, wgs84Position);
+				overlay.setPosition(newPos);
+			}
+		}
 	}
 }
