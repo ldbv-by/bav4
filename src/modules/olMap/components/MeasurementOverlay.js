@@ -104,7 +104,7 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
-		const length = this.geodesic ? this.geodesic.totalLength : getGeometryLength(this._geometry, this._projectionHints);
+		const length = this.geodesic ? this.geodesic.length : getGeometryLength(this._geometry, this._projectionHints);
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 				if (this.geometry instanceof Polygon) {

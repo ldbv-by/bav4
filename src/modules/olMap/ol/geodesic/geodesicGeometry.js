@@ -52,8 +52,8 @@ export class GeodesicGeometry {
 			return returnOrUpdate(this.extent, extent); // FIXME: resolve private ol-method
 		};
 
-		this.totalLength = geodesicProperties.length;
-		this.totalArea = geodesicProperties.area;
+		this._length = geodesicProperties.length;
+		this._area = geodesicProperties.area;
 	}
 
 	_update() {
@@ -236,6 +236,16 @@ export class GeodesicGeometry {
 	get isPolygon() {
 		const geometry = this.feature?.getGeometry();
 		return geometry instanceof Polygon && !this._isDrawing();
+	}
+
+	get length() {
+		this._update();
+		return this._length;
+	}
+
+	get area() {
+		this._update();
+		return this._area;
 	}
 }
 
