@@ -46,6 +46,10 @@ describe('OlOverlayMapHandler', () => {
 		});
 	};
 
+	const createOverlay = (position = fromLonLat([0, 0], 'EPSG:3857')) => {
+		return new Overlay({ element: new MeasurementOverlay(), position: position });
+	};
+
 	describe('constructor', () => {
 		it('initializes members', async () => {
 			setup();
@@ -66,9 +70,6 @@ describe('OlOverlayMapHandler', () => {
 	});
 
 	describe('when view changes', () => {
-		const createOverlay = () => {
-			return new Overlay({ element: new MeasurementOverlay() });
-		};
 		it('listens to view center events', async () => {
 			setup();
 			const map = setupMap();
@@ -83,6 +84,37 @@ describe('OlOverlayMapHandler', () => {
 			view.dispatchEvent(new ObjectEvent('change:center'));
 
 			expect(updateSpy).toHaveBeenCalledTimes(3);
+		});
+	});
+
+	describe('_updatePosition', () => {
+		it('updates the overlay position', () => {
+			setup();
+			const map = setupMap();
+			map.getView().setCenter(initCoordinate);
+			const viewExtent = map.getView().calculateExtent(map.getSize());
+			const offsetMinMax = [0, 0];
+
+			const overlayRight = createOverlay(fromLonLat([11 + 360, 48], 'EPSG:3857'));
+			const overlayCenter = createOverlay(fromLonLat([11, 48], 'EPSG:3857'));
+			const overlayLeft = createOverlay(fromLonLat([11 - 360, 48], 'EPSG:3857'));
+			const overlayOut = createOverlay(fromLonLat([-60, 60], 'EPSG:3857'));
+			const positionRightSpy = spyOn(overlayRight, 'setPosition').and.callThrough();
+			const positionCenterSpy = spyOn(overlayCenter, 'setPosition').and.callThrough();
+			const positionLeftSpy = spyOn(overlayLeft, 'setPosition').and.callThrough();
+			const positionOutSpy = spyOn(overlayOut, 'setPosition').and.callThrough();
+
+			const instanceUnderTest = new OlOverlayMapHandler();
+			instanceUnderTest.register(map);
+			instanceUnderTest._updatePosition(overlayRight, viewExtent, offsetMinMax);
+			instanceUnderTest._updatePosition(overlayCenter, viewExtent, offsetMinMax);
+			instanceUnderTest._updatePosition(overlayLeft, viewExtent, offsetMinMax);
+			instanceUnderTest._updatePosition(overlayOut, viewExtent, offsetMinMax);
+
+			expect(positionRightSpy).toHaveBeenCalled();
+			expect(positionCenterSpy).not.toHaveBeenCalled();
+			expect(positionLeftSpy).toHaveBeenCalled();
+			expect(positionOutSpy).not.toHaveBeenCalled();
 		});
 	});
 });

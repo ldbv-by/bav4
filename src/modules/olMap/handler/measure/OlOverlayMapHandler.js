@@ -48,7 +48,6 @@ export class OlOverlayMapHandler extends OlMapHandler {
 
 		if (!containsCoordinate(viewExtent, overlayPosition)) {
 			const wgs84Position = toLonLat(overlayPosition, Epsg_WebMercartor);
-
 			const withOffset = (offset, wgs84Position) => {
 				const wgs84Coordinate = [offset * 360 + wgs84Position[0], wgs84Position[1]];
 				return fromLonLat(wgs84Coordinate, Epsg_WebMercartor);
@@ -68,7 +67,7 @@ export class OlOverlayMapHandler extends OlMapHandler {
 			};
 
 			const bestOffset = findBestOffset(offsetMinMax, wgs84Position, viewExtent);
-			if (bestOffset) {
+			if (bestOffset !== null) {
 				const newPos = withOffset(bestOffset, wgs84Position);
 				overlay.setPosition(newPos);
 			}
