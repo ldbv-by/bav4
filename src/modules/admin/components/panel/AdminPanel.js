@@ -8,6 +8,7 @@ import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
 import { GeoResource } from '../../../../domain/geoResources';
+import { logOnce } from '../layerTree/LayerTree';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
@@ -21,6 +22,8 @@ const Update_GeoResources = 'update_geoResources';
  * @class
  */
 export class AdminPanel extends MvuElement {
+	#uniqueIdCounter = 0;
+
 	constructor() {
 		super({
 			currentTopicId: null,
@@ -59,25 +62,34 @@ export class AdminPanel extends MvuElement {
 		// this._onSubmit = () => {};
 	}
 
+	_generateUniqueId() {
+		const timestamp = new Date().getTime();
+		this.#uniqueIdCounter++;
+		return `${timestamp}-${this.#uniqueIdCounter}`;
+	}
+
 	_checkAndAugmentPositioningInfo(catalog) {
-		// todo
-		// First ensure that the sort order stays OK
-		// Then fill all the gaps
-		// for now, I take the sorting as is, but provide my own IDs
+		// todo ??
+		// ?? First ensure that the sort order stays OK
+		// ?? Then fill all the gaps
+		// !! for now, I take the sorting as is, but provide my own UIDs and order
+		// todo !! make recursive
 		let topLevelCounter = 0;
 		const catalogWithPositioningInfo = catalog.map((category) => {
 			topLevelCounter += 100000;
+			const topLevelUid = this._generateUniqueId();
 			if (category.children) {
 				let childrenCounter = 0;
 				const updatedChildren = category.children.map((child) => {
 					childrenCounter += 100000;
+					const childUid = this._generateUniqueId();
 					// console.log("🚀 ~ AdminPanel ~ updatedChildren ~ { ...child, id: childrenCounter }:", { ...child, id: childrenCounter })
-					return { ...child, id: childrenCounter };
+					return { ...child, uid: childUid, id: childrenCounter };
 				});
 
-				return { ...category, id: topLevelCounter, children: updatedChildren };
+				return { ...category, uid: topLevelUid, id: topLevelCounter, children: updatedChildren };
 			} else {
-				return { ...category, id: topLevelCounter };
+				return { ...category, uid: topLevelUid, id: topLevelCounter };
 			}
 		});
 		return catalogWithPositioningInfo;
@@ -222,6 +234,31 @@ export class AdminPanel extends MvuElement {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 		// console.log('🚀 ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
+		const findUIdIndex = (uid, catalogWithResourceData) => {
+			for (let i = 0; i < catalogWithResourceData.length; i++) {
+				const catalogEntry = catalogWithResourceData[i];
+
+				if (catalogEntry.uid === uid) {
+					// Found the uid in the top-level entries
+					// console.log('🚀 ~ findGeoResourceIdIndex ~ Found the geoResourceId in the top-level entries at i ', i);
+					return [i];
+				}
+
+				if (catalogEntry.children) {
+					// Check the children for the geoResourceId
+					for (let j = 0; j < catalogEntry.children.length; j++) {
+						if (catalogEntry.children[j].uid === uid) {
+							// Found the uid in one of the children
+							return [i, j];
+						}
+					}
+				}
+			}
+
+			// uid not found in the array
+			return null;
+		};
+
 		const addGeoResource = (geoResourceId, position, childOf = null) => {
 			console.log('🚀 ~ addGeoResource ~ geoResourceId:', geoResourceId);
 			console.log('🚀 ~ addGeoResource ~ position:', position);
@@ -255,17 +292,17 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const afterDrop = () => {
-			catalogWithResourceData;
+			// catalogWithResourceData;
 
 			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
 				if (category.children) {
 					const updatedChildren = category.children.map((child) => {
-						return { geoResourceId: child.geoResourceId, id: child.id };
+						return { uid: child.uid, geoResourceId: child.geoResourceId, id: child.id };
 					});
 
-					return { id: category.id, label: category.label, children: updatedChildren };
+					return { uid: category.uid, id: category.id, label: category.label, children: updatedChildren };
 				} else {
-					return { geoResourceId: category.geoResourceId, id: category.id };
+					return { uid: category.uid, geoResourceId: category.geoResourceId, id: category.id };
 				}
 			});
 			console.log('🚀 ~ catalogWithPositioningInfo ~ catalogWithPositioningInfo:', catalogWithPositioningInfo);

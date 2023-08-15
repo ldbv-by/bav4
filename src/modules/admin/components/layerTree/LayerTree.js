@@ -48,7 +48,8 @@ export class LayerTree extends MvuElement {
 			catalogWithResourceData: [],
 			layers: [],
 			selectedTopicId: '',
-			currentGeoResourceId: null
+			currentGeoResourceId: null,
+			currentUid: null
 		});
 
 		const {
@@ -92,7 +93,7 @@ export class LayerTree extends MvuElement {
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId } = model; // todo , selectedTopicId
+		const { topics, catalogWithResourceData, currentGeoResourceId, currentUid } = model; // todo ?? , selectedTopicId
 
 		if (
 			catalogWithResourceData === null ||
@@ -105,8 +106,7 @@ export class LayerTree extends MvuElement {
 
 		const handleCategoryClick = (event) => {
 			const li = event.currentTarget;
-
-			const ul = li.querySelector('ul'); // Get the child <ul> element
+			const ul = li.querySelector('ul');
 
 			if (ul) {
 				li.classList.toggle(showChildrenClass);
@@ -137,58 +137,99 @@ export class LayerTree extends MvuElement {
 			return null;
 		};
 
-		const insertDraggedGeoResource = (layerTreeCatalogEntry, newGeoresourceId) => {
-			if (currentGeoResourceId === newGeoresourceId) {
-				logOnce('🚀 ~ nothing new - return (' + layerTreeCatalogEntry.label + ')');
-				return;
-			}
-			logOnce('🚀 ~ new - GeoResourceId ' + layerTreeCatalogEntry.label);
-
-			if (layerTreeCatalogEntry.geoResourceId) {
-				logOnce('current ' + layerTreeCatalogEntry.geoResourceId, layerTreeCatalogEntry);
-				const currentLocationIndexArray = findGeoResourceIdIndex(layerTreeCatalogEntry.geoResourceId);
-				logOnce('currentLocationIndexArray ' + layerTreeCatalogEntry.geoResourceId, currentLocationIndexArray);
-
-				if (currentLocationIndexArray) {
-					if (currentLocationIndexArray.length === 1) {
-						logOnce('currentLocationIndexArray.length === 1 ' + layerTreeCatalogEntry.geoResourceId, '');
-						const currentIndex = currentLocationIndexArray[0];
-						let inBetween = 0;
-						if (currentIndex > 0) {
-							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-							inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
-						} else {
-							inBetween = Math.round(layerTreeCatalogEntry.id / 2);
-						}
-						this._addGeoResource(newGeoresourceId, inBetween);
-					}
-					if (currentLocationIndexArray.length === 2) {
-						logOnce('currentLocationIndexArray.length === 2 ' + layerTreeCatalogEntry.geoResourceId, '');
-						const currentIndex = currentLocationIndexArray[1];
-						let inBetween = 0;
-						if (currentIndex > 0) {
-							const priorCatalogEntry = catalogWithResourceData[(currentLocationIndexArray[0], currentIndex - 1)];
-							inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
-						} else {
-							inBetween = Math.round(layerTreeCatalogEntry.id / 2);
-						}
-						this._addGeoResource(newGeoresourceId, inBetween, currentLocationIndexArray[0]);
-					}
-				} else {
-					logOnce(layerTreeCatalogEntry.label, layerTreeCatalogEntry);
+		const insertDraggedGeoResource = (layerTreeCatalogEntry, georesourceIdFromList) => {
+			if (georesourceIdFromList) {
+				logOnce(georesourceIdFromList + ' georesourceIdFromList', '🚀 ~ LayerTree ~ onDragOver ~ georesourceIdFromList: ' + georesourceIdFromList);
+				logOnce(
+					layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
+					'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
+						layerTreeCatalogEntry.label +
+						'  layerTreeCatalogEntry.uid: ' +
+						layerTreeCatalogEntry.uid
+				);
+				// if (currentGeoResourceId === georesourceIdFromList && currentUid === layerTreeCatalogEntry.uid) {
+				if (currentGeoResourceId === georesourceIdFromList) {
+					logOnce(
+						layerTreeCatalogEntry.uid + ' ' + georesourceIdFromList,
+						' 🚀 ~ nothing new - return (local label: ' + layerTreeCatalogEntry.label + ' georesourceIdFromList: ' + georesourceIdFromList + ')'
+					);
+					return;
 				}
+
+				// const newElementUid = this._addGeoResource(layerTreeCatalogEntry, georesourceIdFromList, [...catalogWithResourceData]);
+
+				// this.signal(Update_CurrentGeoResourceId, georesourceIdFromList);
+				// this.signal(Update_CurrentUid, newElementUid);
+				//
+				//
+				// if (currentGeoResourceId === newGeoresourceId) {
+				// 	logOnce('🚀 ~ nothing new - return (' + layerTreeCatalogEntry.label + ')');
+				// 	return;
+				// }
+				// logOnce('🚀 ~ new - GeoResourceId ' + layerTreeCatalogEntry.label);
+
+				if (layerTreeCatalogEntry.geoResourceId) {
+					logOnce('current ' + layerTreeCatalogEntry.geoResourceId, layerTreeCatalogEntry);
+					const currentLocationIndexArray = findGeoResourceIdIndex(layerTreeCatalogEntry.geoResourceId);
+					logOnce('currentLocationIndexArray ' + layerTreeCatalogEntry.geoResourceId, currentLocationIndexArray);
+
+					if (currentLocationIndexArray) {
+						if (currentLocationIndexArray.length === 1) {
+							logOnce('currentLocationIndexArray.length === 1 ' + layerTreeCatalogEntry.geoResourceId, '');
+							const currentIndex = currentLocationIndexArray[0];
+							let inBetween = 0;
+							if (currentIndex > 0) {
+								const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+								inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+							} else {
+								inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+							}
+							this._addGeoResource(georesourceIdFromList, inBetween);
+						}
+						if (currentLocationIndexArray.length === 2) {
+							logOnce('currentLocationIndexArray.length === 2 ' + layerTreeCatalogEntry.geoResourceId, '');
+							const currentIndex = currentLocationIndexArray[1];
+							let inBetween = 0;
+							if (currentIndex > 0) {
+								const priorCatalogEntry = catalogWithResourceData[(currentLocationIndexArray[0], currentIndex - 1)];
+								inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+							} else {
+								inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+							}
+							this._addGeoResource(georesourceIdFromList, inBetween, currentLocationIndexArray[0]);
+						}
+					} else {
+						logOnce(layerTreeCatalogEntry.label, layerTreeCatalogEntry);
+					}
+				}
+				this.signal(Update_CurrentGeoResourceId, georesourceIdFromList);
 			}
-			this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
 		};
 
 		const onDragOver = (e, layerTreeCatalogEntry) => {
+			logOnce(
+				layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
+				'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
+					layerTreeCatalogEntry.label +
+					'  ~ layerTreeCatalogEntry.children: ' +
+					layerTreeCatalogEntry.children
+			);
+
+			// todo ????
+			// // expand children if any
+			// const spanElement = e.target;
+			// const liElement = spanElement.parentNode;
+			// if (liElement.classList.contains(hasChildrenClass)) {
+			// 	liElement.classList.add(showChildrenClass);
+			// }
+
 			const types = e.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+			const georesourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 
-			logOnce('newGeoresourceId', newGeoresourceId);
+			logOnce('newGeoresourceId', georesourceIdFromList);
 
-			insertDraggedGeoResource(layerTreeCatalogEntry, newGeoresourceId);
+			insertDraggedGeoResource(layerTreeCatalogEntry, georesourceIdFromList);
 
 			const spanElement = e.target;
 
