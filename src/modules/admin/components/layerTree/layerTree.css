@@ -7,11 +7,15 @@ div {
 	margin: 0;
 	padding: 0;
 }
-
+/* 
 .tree {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+} */
+
+ul {
+	width: 100%;
 }
 
 li {
@@ -19,21 +23,10 @@ li {
 	text-align: start;
 	margin: 5px;
 	cursor: pointer;
+	display: flex;
 	align-items: center;
 	justify-content: space-between;
 }
-/* 
-ul {
-	width: 100%;
-}
-
-li {
-	width: 100%;
-	display: flex;
-}
-
-
- */
 
 li > ul {
 	display: none;

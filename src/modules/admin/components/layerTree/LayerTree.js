@@ -17,20 +17,26 @@ const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
 const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
+const Update_CurrentUid = 'update_currentUId';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
 const logOnceDictionary = {};
-const logOnce = (key, objectToShow = 'nix') => {
+export const logOnce = (key, objectToShow = 'nix') => {
 	if (!logOnceDictionary[key]) {
 		if (objectToShow === 'nix') {
 			// eslint-disable-next-line no-console
 			console.log(key);
 		} else {
-			// eslint-disable-next-line no-console
-			console.log(key + ' : ', JSON.stringify(objectToShow));
+			if (typeof objectToShow === 'string') {
+				// eslint-disable-next-line no-console
+				console.log(objectToShow);
+			} else {
+				// eslint-disable-next-line no-console
+				console.log(JSON.stringify(objectToShow));
+			}
 		}
 		logOnceDictionary[key] = objectToShow;
 	}
@@ -62,12 +68,13 @@ export class LayerTree extends MvuElement {
 		this._translationService = translationService;
 		this._securityService = securityService;
 
-		this._afterDrop = () => {};
+		this._addGeoResourcePermanently = () => {};
+		this._copyBranchRoot = () => {};
 	}
 
 	onInitialize() {
 		this._addGeoResource = () => {};
-		this._removeGeoResource = () => {};
+		this._removeEntry = () => {};
 		// 	this.observeModel('catalogWithResourceData', () => {
 		// 		this._initDragAndDrop();
 		// 	});
@@ -89,6 +96,8 @@ export class LayerTree extends MvuElement {
 				return { ...model, layers: data };
 			case Update_CurrentGeoResourceId:
 				return { ...model, currentGeoResourceId: data };
+			case Update_CurrentUid:
+				return { ...model, currentUid: data };
 		}
 	}
 
@@ -244,14 +253,14 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDrop = () => {
-			this.afterDrop();
+			this.addGeoResourcePermanently();
 		};
 
 		const onDragLeave = (e) => {
 			const lastGeoResourceId = currentGeoResourceId;
 			this.signal(Update_CurrentGeoResourceId, '');
 
-			this._removeGeoResource(lastGeoResourceId);
+			this._removeEntry(lastGeoResourceId);
 
 			e.target.classList.add('isdragged');
 			e.target.classList.remove('drag-over');
@@ -385,25 +394,25 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} removeGeoResource - Callback function
+	 * @property {function} removeEntry - Callback function
 	 */
-	set removeGeoResource(callback) {
-		this._removeGeoResource = callback;
+	set removeEntry(callback) {
+		this._removeEntry = callback;
 	}
 
-	get removeGeoResource() {
-		return this._removeGeoResource;
+	get removeEntry() {
+		return this._removeEntry;
 	}
 
 	/**
-	 * @property {function} afterDrop - Callback function
+	 * @property {function} addGeoResourcePermanently - Callback function
 	 */
-	set afterDrop(callback) {
-		this._afterDrop = callback;
+	set addGeoResourcePermanently(callback) {
+		this._addGeoResourcePermanently = callback;
 	}
 
-	get afterDrop() {
-		return this._afterDrop;
+	get addGeoResourcePermanently() {
+		return this._addGeoResourcePermanently;
 	}
 
 	static get tag() {

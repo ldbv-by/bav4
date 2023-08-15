@@ -1,58 +1,122 @@
 @startuml startup LayerList to LayerTree
+!pragma teoz true
 
 hide footbox
 
-mainframe **DragDrop "LayerList to LayerTree"**
+' mainframe **DragDrop "LayerList to LayerTree"**
 
 box "AdminPanel" #SkyBlue
 
-participant AdminPanel as ap
+    participant onInitialize
 
+    participant update_ap
+    participant _checkAndAugPI as caapi
+    participant _mergeCatWithRes
 
-
+    box "createView_ap" #CadetBlue
+        participant html 
+        participant addGeoResource 
+        participant removeEntry
+        participant addGeoResourcePermanently
+    end box
 end box
 
-
-
-
-box "Services" #Pink
-
-
-participant cService as cs
-' participant mdc [
-'     =MassnahmeDetails
-'     ----
-'     nextVerkehrshalt 
-'     verkehrshalte 
-'     zlmFahrplan
-' ] 
-
+box "DragDrop" #PaleGreen
+    participant DragDrop as dd
 end box
-
 
 box "LayerTree" #Azure
 
-participant LayerTree as lt
+    box "createView_lt" #CadetBlue
+        participant onDragLeave as lt_onDragLeave
+        participant onDragOver as lt_onDragOver
+        participant onDrop as lt_onDrop
+    end box
 
+    participant update_lt
 end box
-
 
 box "LayerList" #Azure
-
-participant LayerList as ll
-
+    participant onDragStart as ll_onDragStart
+    participant update_ll
 end box
 
+box "Services" #Pink
+    participant CatalogService 
+    participant GeoResourceService 
+end box
 
-ap --> cs: get C
-activate ap #LightGoldenRodYellow
-cs --> ap
+== Initialization ==
+
+onInitialize  --> CatalogService: byId('ba')
+CatalogService  --> onInitialize: catalog
+
+onInitialize  -->  caapi: catalog
+caapi  -->  onInitialize: catalogWithIds
+onInitialize  ->o  update_ap:  catalogWithIds
+
+
+onInitialize  --> GeoResourceService: all()
+GeoResourceService  --> onInitialize: geoResources
+
+onInitialize  ->o  update_ap:  geoResources
+
+
+onInitialize  --> _mergeCatWithRes
+_mergeCatWithRes  --> onInitialize: catalogWithResourceData
+
+onInitialize  ->o  update_ap: catalogWithResourceData
+
+
+html  ->o  update_ll: geoResources
+html  ->o  update_lt: catalogWithResourceData
+
+
+== DragDrop List to Tree ==
+== onDragOver ==
+' alt#Gold #LightBlue first dragOver  
+ll_onDragStart --> dd: georesourceid
+dd --> lt_onDragOver: georesourceid
+
+
+lt_onDragOver --> addGeoResource: layerTreeCatalogEntry, newGeoresourceId, [...catalogWithResourceData]);
+
+addGeoResource  ->o  update_ap: catalogWithResourceData (inc new element)
+addGeoResource  -->  lt_onDragOver: newElementUid
+
+html  ->o  update_lt: catalogWithResourceData
+
+lt_onDragOver ->o update_lt: currentGeoResourceId
+lt_onDragOver ->o update_lt: currentUid
+
+== onDragLeave ==
+
+lt_onDragLeave --> removeEntry: currentUid
+lt_onDragLeave ->o update_lt: currentUid = ''
+
+update_ap x->o removeEntry: ...catalogWithResourceData
+removeEntry -->o removeEntry: (removeEntry(uid))
+
+removeEntry  ->o  update_ap: catalogWithResourceData - (uid)
+
+== onDrop ==
+
+
+
+' else #Pink followingDragOver
+' end
+
+
+
+
+
 ' abc -> adc: DispatchAction
-deactivate ap
+' activate ap #LightGoldenRodYellow
+' deactivate ap
 
-note left: this is a first note
+' note left: this is a first note
 
-note right: this is another note
+' note right: this is another note
 
 ' activate mfc #LightGoldenRodYellow
 ' activate zis #LightGoldenRodYellow

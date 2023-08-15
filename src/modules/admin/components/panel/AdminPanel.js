@@ -278,7 +278,7 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
-		const removeGeoResource = (geoResourceId) => {
+		const removeEntry = (geoResourceId) => {
 			if (!geoResourceId) {
 				return;
 			}
@@ -291,7 +291,7 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
-		const afterDrop = () => {
+		const addGeoResourcePermanently = () => {
 			// catalogWithResourceData;
 
 			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
@@ -310,6 +310,42 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_Catalog, catalogWithPositioningInfo);
 		};
 
+		const incrementString = (str) => {
+			// Find the position of the last digit in the string
+			const lastDigitIndex = str.search(/\d(?!.*\d)/);
+
+			if (lastDigitIndex === -1) {
+				// If no digits found at the end, simply append '1'
+				return str + '1';
+			}
+
+			// Extract the non-digit part and the digit part of the string
+			const nonDigitPart = str.slice(0, lastDigitIndex);
+			const digitPart = str.slice(lastDigitIndex);
+
+			// Increment the digit part and pad with zeros if necessary
+			const incrementedDigitPart = (parseInt(digitPart) + 1).toString().padStart(digitPart.length, '0');
+
+			// Concatenate the non-digit part and the incremented digit part
+			return nonDigitPart + incrementedDigitPart;
+		};
+
+		// todo parent
+		const copyBranchRoot = (positionInCatalog, catalogEntry, parent = null) => {
+			let inBetween = 0;
+			if (positionInCatalog > 0) {
+				const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
+				inBetween = Math.round((catalogEntry.sOrderX + priorCatalogEntry.sOrderX) / 2);
+			} else {
+				inBetween = Math.round(catalogEntry.sOrderX / 2);
+			}
+
+			this.signal(Update_CatalogWithResourceData, [
+				...catalogWithResourceData,
+				{ uid: this._generateUniqueId(), sOrderX: inBetween, label: incrementString(catalogEntry.label), children: [] }
+			]);
+		};
+
 		if (currentTopicId) {
 			return html`
 				<style>
@@ -325,8 +361,9 @@ export class AdminPanel extends MvuElement {
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
-							.removeGeoResource="${removeGeoResource}"
-							.afterDrop="${afterDrop}"
+							.removeEntry="${removeEntry}"
+							.addGeoResourcePermanently="${addGeoResourcePermanently}"
+							.copyBranchRoot="${copyBranchRoot}"
 						></ba-layer-tree>
 					</div>
 
@@ -343,18 +380,3 @@ export class AdminPanel extends MvuElement {
 		return 'ba-adminpanel';
 	}
 }
-/*
-todo
-
-
-
-
-notes
-
-dragenter
-dragover
-dragleave or drop
-
-
-
-*/
