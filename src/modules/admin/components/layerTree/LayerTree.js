@@ -150,7 +150,6 @@ export class LayerTree extends MvuElement {
 			if (georesourceIdFromList) {
 				logOnce(georesourceIdFromList + ' georesourceIdFromList', '🚀 ~ LayerTree ~ onDragOver ~ georesourceIdFromList: ' + georesourceIdFromList);
 				logOnce(
-					layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
 					'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
 						layerTreeCatalogEntry.label +
 						'  layerTreeCatalogEntry.uid: ' +
@@ -252,7 +251,8 @@ export class LayerTree extends MvuElement {
 			e.preventDefault();
 		};
 
-		const onDrop = () => {
+		const onDrop = (e) => {
+			console.log('🚀 ~ onDrop ~ e:', e);
 			this.addGeoResourcePermanently();
 		};
 
