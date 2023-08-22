@@ -1,5 +1,5 @@
 import { html } from 'lit-html';
-import { isCoordinate, isHttpUrl, isNumber, isObject, isPromise, isString, isTemplateResult } from '../../src/utils/checks';
+import { isCoordinate, isExternalGeoResourceId, isHttpUrl, isNumber, isObject, isPromise, isString, isTemplateResult } from '../../src/utils/checks';
 
 describe('provides checks for commons types', () => {
 	it('checks for an object', () => {
@@ -93,5 +93,21 @@ describe('provides checks for commons types', () => {
 		expect(isHttpUrl('https://some.thing')).toBeTrue();
 		expect(isHttpUrl('http://some.thing.else')).toBeTrue();
 		expect(isHttpUrl('https://some.thing/else')).toBeTrue();
+	});
+
+	it('checks for an external GeoResource id', () => {
+		expect(isExternalGeoResourceId()).toBeFalse();
+		expect(isExternalGeoResourceId(null)).toBeFalse();
+		expect(isExternalGeoResourceId([21])).toBeFalse();
+		expect(isExternalGeoResourceId({})).toBeFalse();
+		expect(isExternalGeoResourceId('some')).toBeFalse();
+		expect(isExternalGeoResourceId(5)).toBeFalse();
+		expect(isExternalGeoResourceId('haha://some.thing')).toBeFalse();
+
+		expect(isExternalGeoResourceId('http://some.thing')).toBeTrue();
+		expect(isExternalGeoResourceId('https://some.thing')).toBeTrue();
+		expect(isExternalGeoResourceId('http://some.thing.else')).toBeTrue();
+		expect(isExternalGeoResourceId('https://some.thing/else')).toBeTrue();
+		expect(isExternalGeoResourceId('https://some.thing/else||layer||name)')).toBeTrue();
 	});
 });

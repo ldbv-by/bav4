@@ -20,6 +20,11 @@
 
 .notification_content a {
 	color: var(--text3);
+	font-weight: bold;
+}
+
+.notification_content a:hover {
+	text-decoration: underline;
 }
 
 .notification_level {

@@ -9,7 +9,7 @@ describe('mapReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().map.moveStart).toBeNull();
 		expect(store.getState().map.moveEnd).toBeNull();

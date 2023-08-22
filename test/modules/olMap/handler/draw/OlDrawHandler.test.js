@@ -1707,7 +1707,8 @@ describe('OlDrawHandler', () => {
 					snap: null,
 					coordinate: [10, 0],
 					pointCount: 0,
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
@@ -1731,10 +1732,11 @@ describe('OlDrawHandler', () => {
 				expect(map.forEachFeatureAtPixel).toHaveBeenCalledWith([50, 0], jasmine.any(Function), jasmine.any(Object));
 				expect(drawStateSpy).toHaveBeenCalledWith({
 					type: InteractionStateType.MODIFY,
-					snap: InteractionSnapType.EGDE,
+					snap: InteractionSnapType.EDGE,
 					coordinate: [50, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
@@ -1761,7 +1763,8 @@ describe('OlDrawHandler', () => {
 					snap: InteractionSnapType.VERTEX,
 					coordinate: [0, 0],
 					pointCount: jasmine.anything(),
-					dragging: jasmine.any(Boolean)
+					dragging: jasmine.any(Boolean),
+					geometryType: 'LineString'
 				});
 			});
 
@@ -1857,6 +1860,40 @@ describe('OlDrawHandler', () => {
 			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
 
 			expect(classUnderTest._select.getFeatures().getLength()).toBe(1);
+		});
+
+		it('select marker feature, updates store with empty text property', async () => {
+			const drawStyle = { symbolSrc: null, color: '#ff0000', scale: 0.5, text: 'foo' };
+			const state = { ...initialState, style: drawStyle };
+
+			const store = await setup(state);
+			const geometry = new Point([550, 550]);
+			const feature = new Feature({ geometry: geometry });
+			feature.setId('draw_1');
+			feature.setStyle(style);
+			const map = setupMap();
+
+			const classUnderTest = new OlDrawHandler();
+			classUnderTest.activate(map);
+			classUnderTest._vectorLayer.getSource().addFeature(feature);
+
+			expect(classUnderTest._select).toBeDefined();
+
+			setType('marker');
+
+			// force deselect
+			classUnderTest._select.getFeatures().clear();
+			expect(classUnderTest._select.getFeatures().getLength()).toBe(0);
+
+			map.forEachFeatureAtPixel = jasmine.createSpy().and.callFake((pixel, callback) => {
+				callback(feature, classUnderTest._vectorLayer);
+			});
+
+			// re-select
+			classUnderTest._drawState.type = InteractionStateType.SELECT;
+			simulateMapBrowserEvent(map, MapBrowserEventType.CLICK, 550, 550);
+
+			expect(store.getState().draw.selectedStyle.style.text).toBe('');
 		});
 
 		it('switch to measure-tool, if clickposition is in anyinteract to selected measure-feature', () => {

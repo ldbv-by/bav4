@@ -9,7 +9,7 @@ describe('pointerReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().pointer.click).toBeNull();
 		expect(store.getState().pointer.contextClick).toBeNull();
