@@ -41,7 +41,7 @@ describe('positionReducer', () => {
 		return store;
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().position.zoom).toBe(initialZoomLevel);
 		expect(store.getState().position.center).toEqual([1288239.2412306187, 6130212.561641981]);

@@ -15,7 +15,7 @@ export const isObject = (val) => {
  * Checks if a value is a string (primitive or object).
  * @function
  * @param {*} val
- * @returns {boolean} true if it is a string
+ * @returns {boolean} `true` if it is a string
  */
 export const isString = (val) => {
 	return typeof val === 'string' || val instanceof String;
@@ -26,7 +26,7 @@ export const isString = (val) => {
  * @function
  * @param {*} val
  * @param {boolean} [strict=true] false if strings representing a number should be allowed
- * @returns {boolean} true if it is a number
+ * @returns {boolean} `true` if it is a number
  */
 export const isNumber = (val, strict = true) => {
 	if (strict) {
@@ -47,8 +47,9 @@ export const isCoordinate = (val) => {
 
 /**
  * Checks if a value is a Promise.
+ * @function
  * @param {*} val
- * @returns {boolean} true if it is a Promise
+ * @returns {boolean} `true` if it is a Promise
  */
 export const isPromise = (val) => {
 	// eslint-disable-next-line promise/prefer-await-to-then
@@ -57,8 +58,9 @@ export const isPromise = (val) => {
 
 /**
  * Checks if a value is a lit-html TemplateResult.
+ * @function
  * @param {*} val
- * @returns `true` if it is a TemplateResult
+ * @returns {boolean} `true` if it is a TemplateResult
  */
 export const isTemplateResult = (val) => {
 	return isObject(val) ? '_$litType$' in val : false;
@@ -67,8 +69,9 @@ export const isTemplateResult = (val) => {
 /**
  * Checks if a value is a string and represents an HTTP URL.
  * based on https://stackoverflow.com/a/43467144
- * @param {string} val
- * @returns {boolean} true if the value is a string and represents an HTTP URL
+ * @function
+ * @param {*} val
+ * @returns {boolean} `true` if the value is a string and represents an HTTP URL
  */
 export const isHttpUrl = (val) => {
 	const getUrl = (string) => {
@@ -81,4 +84,21 @@ export const isHttpUrl = (val) => {
 
 	const url = isString(val) ? getUrl(val) : null;
 	return url ? url.protocol === 'http:' || url.protocol === 'https:' : false;
+};
+
+/**
+ * Checks if an object is a string and denotes an external GeoResource (URL-based ID).
+ * An URL-based ID basically matches the following pattern:
+ * `{url}||{extraParam1}||{extraParam2}`
+ * @function
+ * @param {*} id ID of a GeoResource
+ * @returns  `true` if the id denotes an external GeoResource
+ */
+export const isExternalGeoResourceId = (id) => {
+	if (isString(id)) {
+		const parts = id.split('||');
+
+		return parts.length && isHttpUrl(parts[0]);
+	}
+	return false;
 };

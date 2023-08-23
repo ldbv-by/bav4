@@ -10,7 +10,7 @@ describe('mfpReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().mfp.active).toBeFalse();
 		expect(store.getState().mfp.current.id).toBeNull();

@@ -11,7 +11,13 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_measure_snap_first_point).toBe('Klicke, um die Fläche zu schliessen');
 		expect(map.olMap_handler_measure_snap_last_point).toBe('Klicke, um die Messung abzuschliessen');
 		expect(map.olMap_handler_measure_modify_click_new_point).toBe('Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen');
-		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Punkt verschieben: klicken und ziehen');
+		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe(
+			'Klicke, um den Punkt zu löschen (mind. 3 Punkte).<br/> Punkt verschieben: klicken und ziehen'
+		);
+		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe(
+			'Klicke, um den Punkt zu löschen (mind. 2 Punkte).<br/> Punkt verschieben: klicken und ziehen'
+		);
 		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Klicke und ziehen um die Beschriftung zu verschieben');
 		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Messung löschen: ENTF Taste');
 		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Zeichnung löschen: ENTF Taste');
@@ -52,7 +58,13 @@ describe('i18n for map module', () => {
 		expect(map.olMap_handler_measure_snap_first_point).toBe('Click to close the surface');
 		expect(map.olMap_handler_measure_snap_last_point).toBe('Click to finish the line');
 		expect(map.olMap_handler_measure_modify_click_new_point).toBe('Click, to add point<br/> Click then drag to move the point');
-		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Click to delete the point.<br/> Click then drag to move the point');
+		expect(map.olMap_handler_measure_modify_click_or_drag).toBe('Click then drag to move the point');
+		expect(map.olMap_handler_measure_modify_polygon_click_or_drag).toBe(
+			'Click to delete the point (3 points min.).<br/> Click then drag to move the point'
+		);
+		expect(map.olMap_handler_measure_modify_linestring_click_or_drag).toBe(
+			'Click to delete the point (2 points min.).<br/> Click then drag to move the point'
+		);
 		expect(map.olMap_handler_measure_modify_click_drag_overlay).toBe('Click then drag to move the label');
 		expect(map.olMap_handler_measure_modify_key_for_delete).toBe('Press DEL to delete the measurement');
 		expect(map.olMap_handler_draw_modify_key_for_delete).toBe('Press DEL to delete the drawing');
@@ -80,7 +92,7 @@ describe('i18n for map module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 30;
+		const expectedSize = 32;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

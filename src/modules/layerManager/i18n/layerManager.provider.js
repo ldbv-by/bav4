@@ -25,7 +25,7 @@ export const provide = (lang) => {
 				//the first part of the snake_case key should be the name of the related module
 				layerManager_title: 'Ebenen',
 				layerManager_change_visibility: 'Sichtbarkeit umschalten',
-				layerManager_opacity: 'Opazität',
+				layerManager_opacity: 'Deckkraft',
 				layerManager_collapse: 'Eigenschaften einklappen',
 				layerManager_expand: 'Eigenschaften ausklappen',
 				layerManager_move_up: 'Ebene anheben',

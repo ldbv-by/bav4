@@ -26,7 +26,7 @@ export const InteractionSnapType = Object.freeze({
 	FIRSTPOINT: 'firstPoint',
 	LASTPOINT: 'lastPoint',
 	VERTEX: 'vertex',
-	EGDE: 'edge',
+	EDGE: 'edge',
 	FACE: 'face'
 });
 
@@ -116,7 +116,7 @@ export const getSnapState = (map, interactionLayer, pixel) => {
 		if (isVertexOfGeometry(snappedGeometry, vertexGeometry)) {
 			return InteractionSnapType.VERTEX;
 		}
-		return InteractionSnapType.EGDE;
+		return InteractionSnapType.EDGE;
 	}
 	if (!vertexFeature && featuresFromInteractionLayer.length > 0) {
 		return InteractionSnapType.FACE;

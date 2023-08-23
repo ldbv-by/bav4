@@ -4,7 +4,7 @@
 import { $injector } from '../injection';
 import { getDefaultAttribution } from '../services/provider/attribution.provider';
 import { defaultVectorGeoResourceLoaderForUrl } from '../services/provider/geoResource.provider';
-import { isHttpUrl } from '../utils/checks';
+import { isExternalGeoResourceId } from '../utils/checks';
 
 /**
  * Attribution data of a GeoResource.
@@ -239,7 +239,7 @@ export class GeoResource {
 	 * which means it denotes an (imported) external resource.
 	 */
 	isExternal() {
-		return isHttpUrl(this.id.split('||')[0]);
+		return isExternalGeoResourceId(this.id);
 	}
 
 	/**
