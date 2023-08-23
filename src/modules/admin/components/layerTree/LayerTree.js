@@ -17,15 +17,27 @@ const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
 const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
+const Update_CurrentUid = 'update_currentUId';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
 const logOnceDictionary = {};
-const logOnce = (key, objectToShow) => {
+export const logOnce = (key, objectToShow = 'nix') => {
 	if (!logOnceDictionary[key]) {
-		console.log(key + ' : ', JSON.stringify(objectToShow));
+		if (objectToShow === 'nix') {
+			// eslint-disable-next-line no-console
+			console.log(key);
+		} else {
+			if (typeof objectToShow === 'string') {
+				// eslint-disable-next-line no-console
+				console.log(objectToShow);
+			} else {
+				// eslint-disable-next-line no-console
+				console.log(JSON.stringify(objectToShow));
+			}
+		}
 		logOnceDictionary[key] = objectToShow;
 	}
 };
@@ -42,7 +54,8 @@ export class LayerTree extends MvuElement {
 			catalogWithResourceData: [],
 			layers: [],
 			selectedTopicId: '',
-			currentGeoResourceId: null
+			currentGeoResourceId: null,
+			currentUid: null
 		});
 
 		const {
@@ -55,12 +68,13 @@ export class LayerTree extends MvuElement {
 		this._translationService = translationService;
 		this._securityService = securityService;
 
-		this._afterDrop = () => {};
+		this._addGeoResourcePermanently = () => {};
+		this._copyBranchRoot = () => {};
 	}
 
 	onInitialize() {
 		this._addGeoResource = () => {};
-		this._removeGeoResource = () => {};
+		this._removeEntry = () => {};
 		// 	this.observeModel('catalogWithResourceData', () => {
 		// 		this._initDragAndDrop();
 		// 	});
@@ -82,11 +96,13 @@ export class LayerTree extends MvuElement {
 				return { ...model, layers: data };
 			case Update_CurrentGeoResourceId:
 				return { ...model, currentGeoResourceId: data };
+			case Update_CurrentUid:
+				return { ...model, currentUid: data };
 		}
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId } = model; // todo , selectedTopicId
+		const { topics, catalogWithResourceData, currentGeoResourceId, currentUid } = model; // todo ?? , selectedTopicId
 
 		if (
 			catalogWithResourceData === null ||
@@ -99,8 +115,7 @@ export class LayerTree extends MvuElement {
 
 		const handleCategoryClick = (event) => {
 			const li = event.currentTarget;
-
-			const ul = li.querySelector('ul'); // Get the child <ul> element
+			const ul = li.querySelector('ul');
 
 			if (ul) {
 				li.classList.toggle(showChildrenClass);
@@ -131,102 +146,121 @@ export class LayerTree extends MvuElement {
 			return null;
 		};
 
-		const onDragOver = (e, catalogEntry) => {
-			const types = e.dataTransfer.types;
-			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+		const insertDraggedGeoResource = (layerTreeCatalogEntry, georesourceIdFromList) => {
+			if (georesourceIdFromList) {
+				logOnce(georesourceIdFromList + ' georesourceIdFromList', '🚀 ~ LayerTree ~ onDragOver ~ georesourceIdFromList: ' + georesourceIdFromList);
+				logOnce(
+					'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
+						layerTreeCatalogEntry.label +
+						'  layerTreeCatalogEntry.uid: ' +
+						layerTreeCatalogEntry.uid
+				);
+				// if (currentGeoResourceId === georesourceIdFromList && currentUid === layerTreeCatalogEntry.uid) {
+				if (currentGeoResourceId === georesourceIdFromList) {
+					logOnce(
+						layerTreeCatalogEntry.uid + ' ' + georesourceIdFromList,
+						' 🚀 ~ nothing new - return (local label: ' + layerTreeCatalogEntry.label + ' georesourceIdFromList: ' + georesourceIdFromList + ')'
+					);
+					return;
+				}
 
-			// logOnce('newGeoresourceId', newGeoresourceId);
+				// const newElementUid = this._addGeoResource(layerTreeCatalogEntry, georesourceIdFromList, [...catalogWithResourceData]);
 
-			if (catalogEntry.geoResourceId) {
-				// logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
+				// this.signal(Update_CurrentGeoResourceId, georesourceIdFromList);
+				// this.signal(Update_CurrentUid, newElementUid);
+				//
+				//
+				// if (currentGeoResourceId === newGeoresourceId) {
+				// 	logOnce('🚀 ~ nothing new - return (' + layerTreeCatalogEntry.label + ')');
+				// 	return;
+				// }
+				// logOnce('🚀 ~ new - GeoResourceId ' + layerTreeCatalogEntry.label);
 
-				if (currentGeoResourceId !== newGeoresourceId) {
-					this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
+				if (layerTreeCatalogEntry.geoResourceId) {
+					logOnce('current ' + layerTreeCatalogEntry.geoResourceId, layerTreeCatalogEntry);
+					const currentLocationIndexArray = findGeoResourceIdIndex(layerTreeCatalogEntry.geoResourceId);
+					logOnce('currentLocationIndexArray ' + layerTreeCatalogEntry.geoResourceId, currentLocationIndexArray);
 
-					const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-					//
-					if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-						const currentIndex = currentLocationIndexArray[0];
-						// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-						if (currentIndex > 0) {
-							const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-							// logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-
-							const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-							this._addGeoResource(newGeoresourceId, inBetween);
-						} else {
-							const inBetween = Math.round(catalogEntry.id / 2);
-							this._addGeoResource(newGeoresourceId, inBetween);
+					if (currentLocationIndexArray) {
+						if (currentLocationIndexArray.length === 1) {
+							logOnce('currentLocationIndexArray.length === 1 ' + layerTreeCatalogEntry.geoResourceId, '');
+							const currentIndex = currentLocationIndexArray[0];
+							let inBetween = 0;
+							if (currentIndex > 0) {
+								const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
+								inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+							} else {
+								inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+							}
+							this._addGeoResource(georesourceIdFromList, inBetween);
 						}
+						if (currentLocationIndexArray.length === 2) {
+							logOnce('currentLocationIndexArray.length === 2 ' + layerTreeCatalogEntry.geoResourceId, '');
+							const currentIndex = currentLocationIndexArray[1];
+							let inBetween = 0;
+							if (currentIndex > 0) {
+								const priorCatalogEntry = catalogWithResourceData[(currentLocationIndexArray[0], currentIndex - 1)];
+								inBetween = Math.round((layerTreeCatalogEntry.id + priorCatalogEntry.id) / 2);
+							} else {
+								inBetween = Math.round(layerTreeCatalogEntry.id / 2);
+							}
+							this._addGeoResource(georesourceIdFromList, inBetween, currentLocationIndexArray[0]);
+						}
+					} else {
+						logOnce(layerTreeCatalogEntry.label, layerTreeCatalogEntry);
 					}
 				}
-				// } else {
-				// 	logOnce(catalogEntry.label, catalogEntry);
+				this.signal(Update_CurrentGeoResourceId, georesourceIdFromList);
 			}
+		};
+
+		const onDragOver = (e, layerTreeCatalogEntry) => {
+			logOnce(
+				layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
+				'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
+					layerTreeCatalogEntry.label +
+					'  ~ layerTreeCatalogEntry.children: ' +
+					layerTreeCatalogEntry.children
+			);
+
+			// todo ????
+			// // expand children if any
+			// const spanElement = e.target;
+			// const liElement = spanElement.parentNode;
+			// if (liElement.classList.contains(hasChildrenClass)) {
+			// 	liElement.classList.add(showChildrenClass);
+			// }
+
+			const types = e.dataTransfer.types;
+			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
+			const georesourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
+
+			logOnce('newGeoresourceId', georesourceIdFromList);
+
+			insertDraggedGeoResource(layerTreeCatalogEntry, georesourceIdFromList);
 
 			const spanElement = e.target;
 
 			const liElement = spanElement.parentNode;
 
-			if (liElement.classList.contains('has-children')) {
-				liElement.classList.add('show-children');
+			if (liElement.classList.contains(hasChildrenClass)) {
+				liElement.classList.add(showChildrenClass);
 			}
 			spanElement.classList.add('drag-over');
 
 			e.preventDefault();
 		};
 
-		const onDrop = (e, catalogEntry) => {
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ e:', e);
-			// console.log('🚀 ~ LayerTree ~ onDrop ~ catalogEntry:', catalogEntry);
-			/**
-			 * I do not care where the drop takes place
-			 * Everything should be fixed already so i just can update catalog
-			 * from catalogWithResourceData
-			 */
-			this.afterDrop();
-
-			// // const draggedData = e.dataTransfer.getData('georesourceid');
-			// // console.log('Dragged data:', draggedData);
-			// const types = e.dataTransfer.types;
-			// const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
-			// const newGeoresourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// logOnce('newGeoresourceId', newGeoresourceId);
-			// if (catalogEntry.geoResourceId) {
-			// 	logOnce('current ' + catalogEntry.geoResourceId, catalogEntry);
-			// 	if (currentGeoResourceId !== newGeoresourceId) {
-			// 		this.signal(Update_CurrentGeoResourceId, newGeoresourceId);
-			// 		const currentLocationIndexArray = findGeoResourceIdIndex(catalogEntry.geoResourceId);
-			// 		//
-			// 		if (currentLocationIndexArray && currentLocationIndexArray.length === 1) {
-			// 			const currentIndex = currentLocationIndexArray[0];
-			// 			// const currentCatalogEntry = catalogWithResourceData[currentIndex];
-			// 			if (currentIndex > 0) {
-			// 				const priorCatalogEntry = catalogWithResourceData[currentIndex - 1];
-			// 				logOnce('prior ' + catalogEntry.geoResourceId, priorCatalogEntry);
-			// 				const inBetween = Math.round((catalogEntry.id + priorCatalogEntry.id) / 2);
-			// 				this._addGeoResource(newGeoresourceId, inBetween);
-			// 			}
-			// 		}
-			// 	}
-			// } else {
-			// 	logOnce(catalogEntry.label, catalogEntry);
-			// }
-			// const spanElement = e.target;
-			// const liElement = spanElement.parentNode;
-			// if (liElement.classList.contains('has-children')) {
-			// 	liElement.classList.add('show-children');
-			// }
-			// spanElement.classList.add('drag-over');
-			// e.preventDefault();
+		const onDrop = (e) => {
+			console.log('🚀 ~ onDrop ~ e:', e);
+			this.addGeoResourcePermanently();
 		};
 
 		const onDragLeave = (e) => {
 			const lastGeoResourceId = currentGeoResourceId;
 			this.signal(Update_CurrentGeoResourceId, '');
 
-			this._removeGeoResource(lastGeoResourceId);
+			this._removeEntry(lastGeoResourceId);
 
 			e.target.classList.add('isdragged');
 			e.target.classList.remove('drag-over');
@@ -238,6 +272,10 @@ export class LayerTree extends MvuElement {
 		};
 		const handleDeleteClick = (catalogEntry) => {
 			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
+		};
+
+		const handleCopyClick = (catalogEntry) => {
+			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleCopyClick ~ catalogEntry:', catalogEntry);
 		};
 
 		if (topics) {
@@ -252,40 +290,43 @@ export class LayerTree extends MvuElement {
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 
-					<ul>
-						${catalogWithResourceData.map(
-							(catalogEntry) => html`
-								<li @click="${handleCategoryClick}" class="${catalogEntry.children ? 'has-children' : ''}">
-									<span
-										draggable="true"
-										class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
-										@dragover=${(e) => onDragOver(e, catalogEntry)}
-										@drop=${(e) => onDrop(e, catalogEntry)}
-										@dragleave=${onDragLeave}
-										>${catalogEntry.label}</span
-									>
-									${catalogEntry.children
-										? html`
-												<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
-												<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>
-												<ul>
-													${catalogEntry.children.map(
-														(child) =>
-															html`<li>
-																<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, catalogEntry)} @dragleave=${onDragLeave}
-																	>${child.label}</span
-																>
-															</li>`
-													)}
-												</ul>
-										  `
-										: html`<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>`}
+					<div class="tree">
+						<ul>
+							${catalogWithResourceData.map(
+								(catalogEntry) => html`
+									<li @click="${handleCategoryClick}" class="${catalogEntry.children ? hasChildrenClass : ''}">
+										<span
+											draggable="true"
+											class="${catalogEntry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
+											@dragover=${(e) => onDragOver(e, catalogEntry)}
+											@drop=${onDrop}
+											@dragleave=${onDragLeave}
+											>${catalogEntry.label}</span
+										>
+										${catalogEntry.children
+											? html`
+													<button @click="${() => handleEditClick(catalogEntry)}">Edit</button>
+													<button @click="${() => handleDeleteClick(catalogEntry)}">Copy</button>
+													<button @click="${() => handleCopyClick(catalogEntry)}">X</button>
+													<ul>
+														${catalogEntry.children.map(
+															(child) =>
+																html`<li>
+																	<span class="${droppableClass}" @dragover=${(e) => onDragOver(e, child)} @drop=${onDrop} @dragleave=${onDragLeave}
+																		>${child.label}</span
+																	>
+																</li>`
+														)}
+													</ul>
+											  `
+											: html`<button @click="${() => handleDeleteClick(catalogEntry)}">X</button>`}
 
-									<i class="uil uil-draggabledots"></i>
-								</li>
-							`
-						)}
-					</ul>
+										<i class="uil uil-draggabledots"></i>
+									</li>
+								`
+							)}
+						</ul>
+					</div>
 				</div>
 			`;
 		}
@@ -353,25 +394,25 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} removeGeoResource - Callback function
+	 * @property {function} removeEntry - Callback function
 	 */
-	set removeGeoResource(callback) {
-		this._removeGeoResource = callback;
+	set removeEntry(callback) {
+		this._removeEntry = callback;
 	}
 
-	get removeGeoResource() {
-		return this._removeGeoResource;
+	get removeEntry() {
+		return this._removeEntry;
 	}
 
 	/**
-	 * @property {function} afterDrop - Callback function
+	 * @property {function} addGeoResourcePermanently - Callback function
 	 */
-	set afterDrop(callback) {
-		this._afterDrop = callback;
+	set addGeoResourcePermanently(callback) {
+		this._addGeoResourcePermanently = callback;
 	}
 
-	get afterDrop() {
-		return this._afterDrop;
+	get addGeoResourcePermanently() {
+		return this._addGeoResourcePermanently;
 	}
 
 	static get tag() {

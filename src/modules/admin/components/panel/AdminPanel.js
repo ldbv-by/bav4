@@ -8,6 +8,7 @@ import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
 import { GeoResource } from '../../../../domain/geoResources';
+import { logOnce } from '../layerTree/LayerTree';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
@@ -21,6 +22,8 @@ const Update_GeoResources = 'update_geoResources';
  * @class
  */
 export class AdminPanel extends MvuElement {
+	#uniqueIdCounter = 0;
+
 	constructor() {
 		super({
 			currentTopicId: null,
@@ -59,25 +62,34 @@ export class AdminPanel extends MvuElement {
 		// this._onSubmit = () => {};
 	}
 
+	_generateUniqueId() {
+		const timestamp = new Date().getTime();
+		this.#uniqueIdCounter++;
+		return `${timestamp}-${this.#uniqueIdCounter}`;
+	}
+
 	_checkAndAugmentPositioningInfo(catalog) {
-		// todo
-		// First ensure that the sort order stays OK
-		// Then fill all the gaps
-		// for now, I take the sorting as is, but provide my own IDs
+		// todo ??
+		// ?? First ensure that the sort order stays OK
+		// ?? Then fill all the gaps
+		// !! for now, I take the sorting as is, but provide my own UIDs and order
+		// todo !! make recursive
 		let topLevelCounter = 0;
 		const catalogWithPositioningInfo = catalog.map((category) => {
 			topLevelCounter += 100000;
+			const topLevelUid = this._generateUniqueId();
 			if (category.children) {
 				let childrenCounter = 0;
 				const updatedChildren = category.children.map((child) => {
 					childrenCounter += 100000;
+					const childUid = this._generateUniqueId();
 					// console.log("🚀 ~ AdminPanel ~ updatedChildren ~ { ...child, id: childrenCounter }:", { ...child, id: childrenCounter })
-					return { ...child, id: childrenCounter };
+					return { ...child, uid: childUid, id: childrenCounter };
 				});
 
-				return { ...category, id: topLevelCounter, children: updatedChildren };
+				return { ...category, uid: topLevelUid, id: topLevelCounter, children: updatedChildren };
 			} else {
-				return { ...category, id: topLevelCounter };
+				return { ...category, uid: topLevelUid, id: topLevelCounter };
 			}
 		});
 		return catalogWithPositioningInfo;
@@ -222,13 +234,51 @@ export class AdminPanel extends MvuElement {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 		// console.log('🚀 ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
-		const addGeoResource = (geoResourceId, topLevelPosition) => {
-			const newCatalogWithResourceData = this._mergeCatalogWithResources();
-			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
-			this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: topLevelPosition }]);
+		const findUIdIndex = (uid, catalogWithResourceData) => {
+			for (let i = 0; i < catalogWithResourceData.length; i++) {
+				const catalogEntry = catalogWithResourceData[i];
+
+				if (catalogEntry.uid === uid) {
+					// Found the uid in the top-level entries
+					// console.log('🚀 ~ findGeoResourceIdIndex ~ Found the geoResourceId in the top-level entries at i ', i);
+					return [i];
+				}
+
+				if (catalogEntry.children) {
+					// Check the children for the geoResourceId
+					for (let j = 0; j < catalogEntry.children.length; j++) {
+						if (catalogEntry.children[j].uid === uid) {
+							// Found the uid in one of the children
+							return [i, j];
+						}
+					}
+				}
+			}
+
+			// uid not found in the array
+			return null;
 		};
 
-		const removeGeoResource = (geoResourceId) => {
+		const addGeoResource = (geoResourceId, position, childOf = null) => {
+			console.log('🚀 ~ addGeoResource ~ geoResourceId:', geoResourceId);
+			console.log('🚀 ~ addGeoResource ~ position:', position);
+			console.log('🚀 ~ addGeoResource ~ childOf:', childOf);
+			// reset
+			const newCatalogWithResourceData = this._mergeCatalogWithResources();
+
+			const georesource = geoResources.find((geoResource) => geoResource.id === geoResourceId);
+
+			if (childOf) {
+				const child = newCatalogWithResourceData[childOf];
+				newCatalogWithResourceData.splice(childOf);
+				child.children.push({ geoResourceId, label: georesource.label, id: position });
+				this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, child]);
+			} else {
+				this.signal(Update_CatalogWithResourceData, [...newCatalogWithResourceData, { geoResourceId, label: georesource.label, id: position }]);
+			}
+		};
+
+		const removeEntry = (geoResourceId) => {
 			if (!geoResourceId) {
 				return;
 			}
@@ -241,23 +291,59 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
-		const afterDrop = () => {
-			catalogWithResourceData;
+		const addGeoResourcePermanently = () => {
+			// catalogWithResourceData;
 
 			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
 				if (category.children) {
 					const updatedChildren = category.children.map((child) => {
-						return { geoResourceId: child.geoResourceId, id: child.id };
+						return { uid: child.uid, geoResourceId: child.geoResourceId, id: child.id };
 					});
 
-					return { id: category.id, label: category.label, children: updatedChildren };
+					return { uid: category.uid, id: category.id, label: category.label, children: updatedChildren };
 				} else {
-					return { geoResourceId: category.geoResourceId, id: category.id };
+					return { uid: category.uid, geoResourceId: category.geoResourceId, id: category.id };
 				}
 			});
 			console.log('🚀 ~ catalogWithPositioningInfo ~ catalogWithPositioningInfo:', catalogWithPositioningInfo);
 
 			this.signal(Update_Catalog, catalogWithPositioningInfo);
+		};
+
+		const incrementString = (str) => {
+			// Find the position of the last digit in the string
+			const lastDigitIndex = str.search(/\d(?!.*\d)/);
+
+			if (lastDigitIndex === -1) {
+				// If no digits found at the end, simply append '1'
+				return str + '1';
+			}
+
+			// Extract the non-digit part and the digit part of the string
+			const nonDigitPart = str.slice(0, lastDigitIndex);
+			const digitPart = str.slice(lastDigitIndex);
+
+			// Increment the digit part and pad with zeros if necessary
+			const incrementedDigitPart = (parseInt(digitPart) + 1).toString().padStart(digitPart.length, '0');
+
+			// Concatenate the non-digit part and the incremented digit part
+			return nonDigitPart + incrementedDigitPart;
+		};
+
+		// todo parent
+		const copyBranchRoot = (positionInCatalog, catalogEntry, parent = null) => {
+			let inBetween = 0;
+			if (positionInCatalog > 0) {
+				const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
+				inBetween = Math.round((catalogEntry.sOrderX + priorCatalogEntry.sOrderX) / 2);
+			} else {
+				inBetween = Math.round(catalogEntry.sOrderX / 2);
+			}
+
+			this.signal(Update_CatalogWithResourceData, [
+				...catalogWithResourceData,
+				{ uid: this._generateUniqueId(), sOrderX: inBetween, label: incrementString(catalogEntry.label), children: [] }
+			]);
 		};
 
 		if (currentTopicId) {
@@ -275,8 +361,9 @@ export class AdminPanel extends MvuElement {
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
-							.removeGeoResource="${removeGeoResource}"
-							.afterDrop="${afterDrop}"
+							.removeEntry="${removeEntry}"
+							.addGeoResourcePermanently="${addGeoResourcePermanently}"
+							.copyBranchRoot="${copyBranchRoot}"
 						></ba-layer-tree>
 					</div>
 
@@ -293,18 +380,3 @@ export class AdminPanel extends MvuElement {
 		return 'ba-adminpanel';
 	}
 }
-/*
-todo
-
-
-
-
-notes
-
-dragenter
-dragover
-dragleave or drop
-
-
-
-*/

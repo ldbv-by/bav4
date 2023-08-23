@@ -7,6 +7,12 @@ div {
 	margin: 0;
 	padding: 0;
 }
+/* 
+.tree {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+} */
 
 ul {
 	width: 100%;
@@ -14,6 +20,9 @@ ul {
 
 li {
 	width: 100%;
+	text-align: start;
+	margin: 5px;
+	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
