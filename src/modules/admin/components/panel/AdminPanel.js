@@ -317,6 +317,19 @@ export class AdminPanel extends MvuElement {
 			return newUid;
 		};
 
+		// const removeEntry = (geoResourceId) => {
+		// 	if (!geoResourceId) {
+		// 		return;
+		// 	}
+		// 	const newCatalogWithResourceData = [...catalogWithResourceData];
+		// 	const indexToRemove = newCatalogWithResourceData.findIndex((geoResource) => geoResource.geoResourceId === geoResourceId);
+
+		// 	if (indexToRemove !== -1) {
+		// 		newCatalogWithResourceData.splice(indexToRemove, 1);
+		// 		this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+		// 	}
+		// };
+
 		const removeEntry = (uid) => {
 			const updatedCatalogWithResourceData = removeEntryRecursive(uid, [...catalogWithResourceData]);
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
@@ -424,9 +437,6 @@ export class AdminPanel extends MvuElement {
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
-							.removeEntry="${removeEntry}"
-							.addGeoResourcePermanently="${addGeoResourcePermanently}"
-							.copyBranchRoot="${copyBranchRoot}"
 							.removeEntry="${removeEntry}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.copyBranchRoot="${copyBranchRoot}"
