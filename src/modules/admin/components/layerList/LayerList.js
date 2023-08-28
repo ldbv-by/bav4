@@ -1,10 +1,14 @@
 /**
  * @module modules/admin/components/layerList/LayerList
  */
+// @ts-ignore
 import { html } from 'lit-html';
+// @ts-ignore
 import { $injector } from '../../../../injection';
 import { MvuElement } from '../../../MvuElement';
+// @ts-ignore
 import css from './layerList.css';
+// @ts-ignore
 import { nothing } from 'lit-html';
 
 const Update_GeoResources = 'lpdate_geoResources';
@@ -58,6 +62,7 @@ export class LayerList extends MvuElement {
 		};
 
 		const onDragStart = (e) => {
+			console.log('🚀 ~ LayerList ~ onDragStart ~ e:', e);
 			const target = e.target;
 			const id = e.target.id;
 
@@ -72,7 +77,13 @@ export class LayerList extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			console.log('🚀 ~ LayerList ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
+		};
+
+		const onDrop = (e) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: LayerTree.js:348 ~ onDrop ~ e:', e);
 		};
 
 		return html`
@@ -87,7 +98,7 @@ export class LayerList extends MvuElement {
 				<ul>
 					${filteredGeoResources.map(
 						(geoResource) =>
-							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @dragend=${onDragEnd}>
+							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @drop=${onDrop} @dragend=${onDragEnd}>
 								${geoResource.label}
 							</li>`
 					)}

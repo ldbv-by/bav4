@@ -370,6 +370,8 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addGeoResourcePermanently = () => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: AdminPanel.js:384 ~ AdminPanel ~ catalogWithPositioningInfo ~ catalogWithResourceData:', catalogWithResourceData);
 			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
 				if (category.children) {
 					const updatedChildren = category.children.map((child) => {

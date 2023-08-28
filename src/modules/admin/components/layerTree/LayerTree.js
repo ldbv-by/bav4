@@ -80,11 +80,14 @@ export class LayerTree extends MvuElement {
 		this._translationService = translationService;
 		this._securityService = securityService;
 
+		// eslint-disable-next-line no-unused-vars
 		this._addGeoResource = (a, b, c) => {
 			return '';
 		};
+		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (a) => {};
 		this._addGeoResourcePermanently = () => {};
+		// eslint-disable-next-line no-unused-vars
 		this._copyBranchRoot = (a, b) => {};
 	}
 
@@ -128,6 +131,8 @@ export class LayerTree extends MvuElement {
 			if (ul) {
 				li.classList.toggle(showChildrenClass);
 			}
+			event.stopPropagation();
+			event.preventDefault();
 		};
 
 		// const findGeoResourceIdIndex = (resourceId) => {
@@ -251,26 +256,28 @@ export class LayerTree extends MvuElement {
 		// // todo const insertDraggedUid = (layerTreeCatalogEntry, newUid) => {
 		// // };
 
-		// // todo in the works
-		// const onDragStart = (e) => {
-		// 	const target = e.target;
-		// 	const uid = e.target.uid;
+		// todo in the workss
+		const onDragStart = (e) => {
+			console.log('🚀 ~ file: LayerTree.js:259 ~ onDragStart ~ e:', e);
+			const target = e.target;
+			const uid = e.target.uid;
 
-		// 	e.dataTransfer.clearData();
-		// 	e.dataTransfer.setData('UID' + uid, uid);
+			e.dataTransfer.clearData();
+			e.dataTransfer.setData('UID' + uid, uid);
 
-		// 	this._removeEntry(uid);
+			this._removeEntry(uid);
 
-		// 	const addIsDragged = () => {
-		// 		target.classList.add('isdragged');
-		// 	};
+			const addIsDragged = () => {
+				target.classList.add('isdragged');
+			};
 
-		// 	setTimeout(addIsDragged, 0);
-		// };
+			setTimeout(addIsDragged, 0);
+		};
 
-		// const onDragEnd = (event) => {
-		// 	event.target.classList.remove('isdragged');
-		// };
+		const onDragEnd = (event) => {
+			console.log('🚀 ~ file: LayerTree.js:276 ~ onDragEnd ~ event:', event);
+			event.target.classList.remove('isdragged');
+		};
 
 		// todo ????
 		// // expand children if any
@@ -337,12 +344,16 @@ export class LayerTree extends MvuElement {
 			e.preventDefault();
 		};
 
-		const onDrop = () => {
-			this.addGeoResourcePermanently();
+		const onDrop = (e) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: LayerTree.js:348 ~ onDrop ~ e:', e);
+			this._addGeoResourcePermanently();
 		};
 
 		const onDragLeave = (e) => {
 			const lastUid = currentUid;
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: LayerTree.js:353 ~ onDragLeave ~ lastUid:', lastUid);
 			this.signal(Update_CurrentUid, '');
 
 			this._removeEntry(lastUid);
@@ -394,6 +405,8 @@ export class LayerTree extends MvuElement {
 						@dragover=${(e) => onDragOver(e, entry)}
 						@dragleave=${onDragLeave}
 						@drop=${onDrop}
+						@dragstart=${onDragStart}
+						@dragend=${onDragEnd}
 					>
 						${entry.label}
 					</span>
@@ -410,10 +423,6 @@ export class LayerTree extends MvuElement {
 					<i class="uil uil-draggabledots"></i>
 				</li>
 			`;
-		};
-
-		const handleCopyClick = (catalogEntry) => {
-			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleCopyClick ~ catalogEntry:', catalogEntry);
 		};
 
 		if (topics) {
