@@ -259,6 +259,7 @@
 	background-position: -2.2em 0.5em;
 	background-size: 1.7em;
 	background-image: url('assets/search.svg');
+	padding: 0.5em 0.5em 0.5em 0;
 }
 
 .header_search_icon {
@@ -411,6 +412,7 @@ input[type='search']::-webkit-search-results-decoration {
 .is-portrait .header__search:focus {
 	width: 100%;
 	z-index: 0;
+	padding: 0.5em 3em 0.5em 0;
 }
 .is-portrait .header_search_icon,
 .is-tablet .header_search_icon {
