@@ -106,6 +106,11 @@ export class DndImportPanel extends MvuElement {
 			return;
 		}
 
+		const exceptionTypeUid = types.find((t) => /(uid)/i.test(t));
+		if (exceptionTypeUid) {
+			return;
+		}
+
 		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
 		const signalImport = (importType) => {
 			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
