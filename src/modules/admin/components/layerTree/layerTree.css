@@ -95,3 +95,8 @@ input[type='text'] {
 	outline: none;
 	background-color: transparent;
 }
+
+.has-children.show-children {
+	flex-direction: column;
+	display: block;
+}
