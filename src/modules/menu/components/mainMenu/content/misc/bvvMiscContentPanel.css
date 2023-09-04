@@ -42,6 +42,11 @@
 	-webkit-mask-image: url('assets/imprint.svg');
 	transform: scale(0.7);
 }
+.accessibility {
+	mask-image: url('assets/accessibility.svg');
+	-webkit-mask-image: url('assets/accessibility.svg');
+	transform: scale(0.7);
+}
 .geoportal {
 	background-color: transparent;
 	background-size: contain;
