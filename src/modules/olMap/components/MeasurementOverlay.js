@@ -9,6 +9,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { getAzimuth, getCoordinateAt, canShowAzimuthCircle, getGeometryLength, getArea } from '../utils/olGeometryUtils';
 import { Polygon } from 'ol/geom';
 import { BaOverlay } from './BaOverlay';
+import { round } from '../../../utils/numberUtils';
 
 export const MeasurementOverlayTypes = {
 	TEXT: 'text',
@@ -104,11 +105,6 @@ export class MeasurementOverlay extends BaOverlay {
 	}
 
 	_getContent(type) {
-		const roundUp = (value, precision) => {
-			const remainder = value % precision;
-			return remainder > 0 ? value + (precision - remainder) : value;
-		};
-
 		switch (type) {
 			case MeasurementOverlayTypes.AREA:
 				if (this.geometry instanceof Polygon) {
@@ -124,7 +120,7 @@ export class MeasurementOverlay extends BaOverlay {
 				}
 				return this._unitsService.formatDistance(getGeometryLength(this._geometry, this._projectionHints), 2);
 			case MeasurementOverlayTypes.DISTANCE_PARTITION:
-				return this._unitsService.formatDistance(roundUp(Math.round(getGeometryLength(this._geometry, this.projectionHints) * this._value), 10), 0);
+				return this._unitsService.formatDistance(round(Math.round(getGeometryLength(this._geometry, this.projectionHints) * this._value), -1), 0);
 			case MeasurementOverlayTypes.HELP:
 			case MeasurementOverlayTypes.TEXT:
 				return this._value;
