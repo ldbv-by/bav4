@@ -19,6 +19,9 @@ describe('Unit test functions from numberUtils.js', () => {
 			expect(round(numberToRound, 5)).toBe(123.45679);
 			expect(round(numberToRound, 6)).toBe(123.456789);
 			expect(round(numberToRound, 7)).toBe(123.456789);
+
+			expect(round(numberToRound, -1)).toBe(120);
+			expect(round(numberToRound, -2)).toBe(100);
 		});
 
 		it('returns undefined for a string containg text', () => {
