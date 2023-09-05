@@ -3,7 +3,6 @@
  */
 import { Geodesic, PolygonArea, Math as geographicMath } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
-import { returnOrUpdate /* Warning: private method of openlayers */ } from 'ol/extent';
 import { CoordinateBag } from './coordinateBag';
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
@@ -43,7 +42,14 @@ export class GeodesicGeometry {
 		// Overwrites public method getExtent of the feature to include the whole geodesic geometry.
 		this.feature.getGeometry().getExtent = (extent) => {
 			this._update();
-			return returnOrUpdate(this.extent, extent); // FIXME: resolve private ol-method
+			// mimic method returnOrUpdate from ol/extend
+			if (extent) {
+				extent[0] = this.extent[0];
+				extent[1] = this.extent[1];
+				extent[2] = this.extent[2];
+				extent[3] = this.extent[3];
+			}
+			return extent;
 		};
 
 		this._length = geodesicProperties.length;
