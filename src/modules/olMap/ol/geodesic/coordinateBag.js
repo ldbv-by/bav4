@@ -16,9 +16,8 @@ const Dateline_Buffer = 40;
 
 /**
  * Class to organize spherical coordinates and create geometries as
- * - a MultiLineString (geodesicGeom)
- * - a MultiPolygon (geodesicPolygonGeom)
- * - a list of subsegments
+ * - a MultiLineString (createGeometry())
+ * - a MultiPolygon (createPolygon())
  */
 export class CoordinateBag {
 	constructor() {
@@ -91,12 +90,17 @@ export class CoordinateBag {
 		}
 	}
 
+	/**
+	 * Creates a geodetic Geometry from all added coordinates
+	 * @returns  {MultiLineString | null}
+	 */
 	createGeometry() {
 		if (this.lineStrings[this.lineStringIndex].length <= 1) {
 			this.lineStrings.pop();
 		}
 		return new MultiLineString(this.lineStrings).transform(Epsg_Wgs84, Epsg_WebMercartor);
 	}
+
 	/**
 	 * @param {import('./geodesicGeometry').GeodesicGeometry} geodesicGeometry
 	 * @returns {MultiPolygon | null}
