@@ -479,9 +479,21 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		return segment[1] ? draw() : cancel();
 	};
 
-	// baseLine
 	geometry.setCoordinates(pixelCoordinates);
-	contextRenderFunction(geometry, fill, baseStroke);
+
+	const isPolygon = (coordinates) => {
+		if (coordinates[0].length > 2) {
+			const first = coordinates[0][0];
+			const last = coordinates[0][coordinates[0].length - 1];
+			const isClosed = first[0] === last[0] && first[1] === last[1];
+			return isClosed;
+		}
+		return false;
+	};
+	const pixelGeometry = isPolygon(pixelCoordinates) ? new Polygon(pixelCoordinates) : geometry;
+
+	// baseLine
+	contextRenderFunction(pixelGeometry, fill, baseStroke);
 
 	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
 
@@ -499,17 +511,12 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		return segments;
 	};
 
-	const segmentsArray = geometry instanceof Polygon || geometry instanceof MultiLineString ? pixelCoordinates : [pixelCoordinates];
-
+	const segmentsArray =
+		pixelGeometry instanceof Polygon || pixelGeometry instanceof MultiLineString ? pixelGeometry.getCoordinates() : [pixelCoordinates];
 	const segments = createSegments(segmentsArray);
 	segments.forEach((segment, index) => {
 		return drawTicks(contextRenderFunction, segment, residuals[index], partitionTickDistance);
 	});
-};
-
-// eslint-disable-next-line no-unused-vars
-export const getRulerTextStyles = (feature) => {
-	return [new Style({})];
 };
 
 /**
@@ -530,6 +537,9 @@ export const measureStyleFunction = (feature, resolution) => {
 		width: 1,
 		lineDash: [8]
 	});
+	const fill = new Fill({
+		color: Red_Color.concat([0.4])
+	});
 	const geometry = feature?.geodesic ? feature?.geodesic.getGeometry() : feature.getGeometry();
 	const getFallbackStyle = () => {
 		return new Style({
@@ -539,9 +549,7 @@ export const measureStyleFunction = (feature, resolution) => {
 				lineDash: [8],
 				width: 2
 			}),
-			fill: new Fill({
-				color: Red_Color.concat([0.4])
-			})
+			fill: fill
 		});
 	};
 	const styles = [
@@ -567,8 +575,7 @@ export const measureStyleFunction = (feature, resolution) => {
 					geometry: (feature) => feature.getGeometry(),
 					zIndex: 0
 			  })
-			: null,
-		...getRulerTextStyles(feature)
+			: null
 	];
 	return styles;
 };
