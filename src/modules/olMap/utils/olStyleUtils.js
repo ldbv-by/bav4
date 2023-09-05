@@ -525,7 +525,7 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
-	const connstructionStroke = new Stroke({
+	const constructionStroke = new Stroke({
 		color: Black_Color.concat([1]),
 		width: 1,
 		lineDash: [8]
@@ -563,7 +563,7 @@ export const measureStyleFunction = (feature, resolution) => {
 		resolution ? getRulerStyle(feature) : getFallbackStyle(),
 		feature.geodesic
 			? new Style({
-					stroke: connstructionStroke,
+					stroke: constructionStroke,
 					geometry: (feature) => feature.getGeometry(),
 					zIndex: 0
 			  })
