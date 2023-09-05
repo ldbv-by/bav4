@@ -3,12 +3,7 @@
  */
 import { Geodesic, PolygonArea, Math as geographicMath } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
-import {
-	createOrUpdateFromFlatCoordinates /* Warning: private method of openlayers */,
-	buffer as bufferExtent,
-	returnOrUpdate /* Warning: private method of openlayers */
-} from 'ol/extent';
-import RBush from 'ol/structs/RBush'; /* Warning: private class of openlayers; Wrapper for rbush-lib */
+import { returnOrUpdate /* Warning: private method of openlayers */ } from 'ol/extent';
 import { CoordinateBag } from './coordinateBag';
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
@@ -43,8 +38,7 @@ export class GeodesicGeometry {
 		this.azimuthCircle = hasAzimuthCircle ? this._calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
 		this.geometry = geodesicCoords.createGeometry();
 		this.polygon = geodesicCoords.createPolygon(this);
-		this.subsegmentRTrees = this._calculateSubsegmentRTree(geodesicCoords);
-		this.extent = this._getExtent(this.geometry);
+		this.extent = this.geometry.getExtent();
 
 		// Overwrites public method getExtent of the feature to include the whole geodesic geometry.
 		this.feature.getGeometry().getExtent = (extent) => {
@@ -74,13 +68,6 @@ export class GeodesicGeometry {
 		return (
 			coordinates.length === 2 || (coordinates.length === 3 && coordinates[1][0] === coordinates[2][0] && coordinates[1][1] === coordinates[2][1])
 		);
-	}
-
-	_getExtent(geodesicGeometry) {
-		const extent = [null, null, null, null];
-		// FIXME: resolve private ol-method
-		createOrUpdateFromFlatCoordinates(geodesicGeometry.flatCoordinates, 0, geodesicGeometry.flatCoordinates.length, geodesicGeometry.stride, extent);
-		return bufferExtent(extent, 0.0001, extent); //account for imprecisions in the calculation
 	}
 
 	_getCoordinates(geometry) {
@@ -165,16 +152,6 @@ export class GeodesicGeometry {
 		return geodesicCoordinates;
 	}
 
-	_calculateSubsegmentRTree(geodesicCoords) {
-		const subsegmentRTrees = [];
-		for (let i = 0; i < geodesicCoords.subsegments.length; i++) {
-			subsegmentRTrees[i] = new RBush();
-			subsegmentRTrees[i].load(geodesicCoords.subsegmentExtents[i], geodesicCoords.subsegments[i]);
-		}
-
-		return subsegmentRTrees;
-	}
-
 	_calculateAzimuthCircle(coords, rotation, length) {
 		const center = coords[0];
 		const pointsOnArc = 1000;
@@ -205,30 +182,6 @@ export class GeodesicGeometry {
 		return this.polygon;
 	}
 
-	/**
-	 * Get the extent of the specified segment. The segmentIndex must be valid!
-	 *
-	 * @param {number} segmentIndex
-	 * @returns {Extent}
-	 */
-	getSegmentExtent(segmentIndex) {
-		this._update();
-		const extent = this.subsegmentRTrees[segmentIndex].getExtent();
-		return bufferExtent(extent, 0.0001, extent);
-	}
-
-	/**
-	 * Get all subsegments that are inside the specified extent. The segmentIndex must be valid!
-	 *
-	 * @param {number} segmentIndex
-	 * @param {Extent} extent
-	 * @returns {Array<Array<Number>>}
-	 */
-	getSubsegments(segmentIndex, extent) {
-		this._update();
-		return this.subsegmentRTrees[segmentIndex].getInExtent(extent);
-	}
-
 	get isDrawing() {
 		return this._isDrawing();
 	}
@@ -252,15 +205,3 @@ export class GeodesicGeometry {
 const coordNormalize = (coord) => {
 	return [geographicMath.AngNormalize(coord[0]), coord[1]];
 };
-
-export function segmentExtent(feature, segmentIndex) {
-	if (feature.geodesic) {
-		return feature.geodesic.getSegmentExtent(segmentIndex);
-	}
-}
-
-export function subsegments(feature, segmentIndex, viewExtent) {
-	if (feature.geodesic) {
-		return feature.geodesic.getSubsegments(segmentIndex, viewExtent);
-	}
-}

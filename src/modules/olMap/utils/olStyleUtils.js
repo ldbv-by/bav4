@@ -525,6 +525,11 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
+	const connstructionStroke = new Stroke({
+		color: Black_Color.concat([1]),
+		width: 1,
+		lineDash: [8]
+	});
 	const geometry = feature?.geodesic ? feature?.geodesic.getGeometry() : feature.getGeometry();
 	const getFallbackStyle = () => {
 		return new Style({
@@ -556,6 +561,13 @@ export const measureStyleFunction = (feature, resolution) => {
 			zIndex: 0
 		}),
 		resolution ? getRulerStyle(feature) : getFallbackStyle(),
+		feature.geodesic
+			? new Style({
+					stroke: connstructionStroke,
+					geometry: (feature) => feature.getGeometry(),
+					zIndex: 0
+			  })
+			: null,
 		...getRulerTextStyles(feature)
 	];
 	return styles;

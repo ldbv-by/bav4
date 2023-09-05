@@ -34,7 +34,6 @@ import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../.
 import { Layer } from 'ol/layer';
 import { Tools } from '../../../../../src/domain/tools';
 import { EventLike } from '../../../../../src/utils/storeUtils';
-import { ModifyInteraction } from '../../../../../src/modules/olMap/handler/measure/ModifyInteraction';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
@@ -387,7 +386,7 @@ describe('OlMeasurementHandler', () => {
 
 				classUnderTest.activate(map);
 
-				expect(classUnderTest._modify).toBeInstanceOf(ModifyInteraction);
+				expect(classUnderTest._modify).toBeInstanceOf(Modify);
 				expect(map.addInteraction).toHaveBeenCalledWith(classUnderTest._modify);
 			});
 

@@ -2,7 +2,7 @@
  * @module modules/olMap/handler/measure/OlMeasurementHandler
  */
 import { DragPan, Draw, Select, Snap } from 'ol/interaction';
-import { ModifyInteraction } from './ModifyInteraction';
+import { Modify } from 'ol/interaction';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { unByKey } from 'ol/Observable';
@@ -45,7 +45,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
-import { GeodesicGeometry, segmentExtent, subsegments } from '../../ol/geodesic/geodesicGeometry';
+import { GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 
 const Debounce_Delay = 1000;
 
@@ -503,12 +503,7 @@ export class OlMeasurementHandler extends OlLayerHandler {
 	}
 
 	_createModify() {
-		const modify = new ModifyInteraction({
-			...getModifyOptions(this._select.getFeatures()),
-			segmentExtentFunction: segmentExtent,
-			subsegmentsFunction: subsegments
-		});
-		//const modify = new Modify(getModifyOptions(this._select.getFeatures()));
+		const modify = new Modify(getModifyOptions(this._select.getFeatures()));
 		modify.on('modifystart', (event) => {
 			if (event.mapBrowserEvent.type !== MapBrowserEventType.SINGLECLICK) {
 				this._mapContainer.classList.add('grabbing');
