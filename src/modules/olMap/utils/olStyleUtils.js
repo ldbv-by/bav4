@@ -495,7 +495,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	// baseLine
 	contextRenderFunction(pixelGeometry, fill, baseStroke);
 
-	const residuals = calculatePartitionResidualOfSegments(geometry, partition);
+	const residuals = calculatePartitionResidualOfSegments(pixelGeometry, partition);
 
 	// per segment
 	const createSegments = (coordinatesArray) => {
