@@ -43,6 +43,8 @@ export class Header extends MvuElement {
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
+
+		this._isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -224,13 +226,22 @@ export class Header extends MvuElement {
 			input.dispatchEvent(new Event('input'));
 		};
 
+		const onClick = () => {
+			this._isOpen = !this._isOpen;
+			this.render();
+		};
+
+		const getOverlayTestClass = () => {
+			return this._isOpen ? 'is-open-mobile' : '';
+		};
+
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}">
+				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}  ${getOverlayTestClass()}">
 					<div class='header__logo'>				
-						<div class="action-button">
+						<div class="action-button"  @click="${onClick}">
 							<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}">
 							</div>
 							<div class="action-button__icon">
@@ -238,7 +249,7 @@ export class Header extends MvuElement {
 								</div>
 							</div>
 						</div>
-						<div id='header__text' class='${getOverlayClass()} header__text'>
+						<div id='header__text' class='${getOverlayClass()} header__text ${getOverlayTestClass()}'>
 						</div>
 						<div class='header__logo-badge'>										
 						${getBadgeText()}

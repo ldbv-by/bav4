@@ -7,6 +7,9 @@ import { $injector } from '../../../../injection';
 import { setCurrentTool } from '../../../../store/tools/tools.action';
 import { MvuElement } from '../../../MvuElement';
 import { Tools } from '../../../../domain/tools';
+import { increaseZoom, decreaseZoom } from '../../../../store/position/position.action';
+import { fit } from '../../../../store/position/position.action';
+import { toggleSchema } from '../../../../store/media/media.action';
 
 const Update_IsOpen = 'update_isOpen';
 const Update_Fetching = 'update_fetching';
@@ -30,13 +33,17 @@ export class ToolBar extends MvuElement {
 			toolId: null
 		});
 
-		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
-			'EnvironmentService',
-			'TranslationService'
-		);
+		const {
+			EnvironmentService: environmentService,
+			TranslationService: translationService,
+			MapService: mapService
+		} = $injector.inject('EnvironmentService', 'TranslationService', 'MapService');
 
 		this._environmentService = environmentService;
 		this._translationService = translationService;
+		this._mapService = mapService;
+
+		this._isOpen = false;
 	}
 
 	update(type, data, model) {
@@ -117,6 +124,21 @@ export class ToolBar extends MvuElement {
 
 		const translate = (key) => this._translationService.translate(key);
 
+		const getDefaultMapExtent = () => this._mapService.getDefaultMapExtent();
+
+		const onClick = () => {
+			this._isOpen = !this._isOpen;
+			this.render();
+		};
+
+		const getOverlayTestClass = () => {
+			return this._isOpen ? 'is-open-mobile' : '';
+		};
+
+		const zoomToExtent = () => {
+			fit(getDefaultMapExtent(), { useVisibleViewport: false });
+		};
+
 		return html`
 			<style>
 				${css}
@@ -130,7 +152,7 @@ export class ToolBar extends MvuElement {
 				>
 					<div class="wrench"></div>
 				</button>
-				<button id="action-button" data-test-id class="action-button">
+				<button id="action-button" data-test-id class="action-button" @click="${onClick}">
 					<div class="action-button__border animated-action-button__border ${getAnimatedBorderClass()}"></div>
 					<div class="action-button__icon">
 						<div class="ba"></div>
@@ -166,6 +188,26 @@ export class ToolBar extends MvuElement {
 					<button id="close-button" class="tool-bar__button tool-bar__button-close" @click="${() => this.signal(Update_IsOpen, !isOpen)}">
 						<div class="tool-bar__button_icon close arrowright"></div>
 					</button>
+				</div>
+				<div class="tool-bar tool-bar-mobile  ${getOverlayTestClass()}">
+					<div class="tool-bar-mobile-buttons">
+						<div class="zoom-buttons">
+							<button class="luftbild"></button>
+							<button @click=${toggleSchema} class="moon"></button>
+						</div>
+						<div class="zoom-buttons">
+							<button class="fullscreen-icon "></button>
+							<button class="search-icon"></button>
+						</div>
+						<div class="zoom-buttons">
+							<button @click="${increaseZoom}" class="zoom-in"></button>
+							<button @click="${decreaseZoom}" class="zoom-out"></button>
+						</div>
+						<div class="zoom-buttons">
+							<button @click="${zoomToExtent}" class="zoom-to-extent-icon"></button>
+							<button @click="${onClick}" class="close-icon "></button>
+						</div>
+					</div>
 				</div>
 			</div>
 		`;
