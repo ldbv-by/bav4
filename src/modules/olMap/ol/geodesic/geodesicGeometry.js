@@ -48,8 +48,9 @@ export class GeodesicGeometry {
 				extent[1] = this.extent[1];
 				extent[2] = this.extent[2];
 				extent[3] = this.extent[3];
+				return extent;
 			}
-			return extent;
+			return this.extent;
 		};
 
 		this._length = geodesicProperties.length;
