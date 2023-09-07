@@ -60,6 +60,10 @@ export class CategoryBar extends MvuElement {
 		`;
 	}
 
+	set categories(value) {
+		this.signal(Update_Categories, value);
+	}
+
 	static get tag() {
 		return 'ba-routing-category-bar';
 	}

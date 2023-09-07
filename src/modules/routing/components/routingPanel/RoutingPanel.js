@@ -12,8 +12,7 @@ export class RoutingPanel extends MvuElement {
 	constructor() {
 		super({ categories: [] });
 
-		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
-		this._translationService = TranslationService;
+		const { RoutingService } = $injector.inject('RoutingService');
 		this._routingService = RoutingService;
 	}
 
