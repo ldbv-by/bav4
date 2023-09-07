@@ -28,3 +28,4 @@ import './modules/elevationProfile';
 import './modules/share';
 import './modules/feedback';
 import './modules/export';
+import './modules/routing';
