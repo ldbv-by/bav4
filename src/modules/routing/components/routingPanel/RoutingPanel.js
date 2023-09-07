@@ -1,3 +1,6 @@
+/**
+ * @module modules/routing/components/routingPanel/RoutingPanel
+ */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
@@ -40,7 +43,7 @@ export class RoutingPanel extends MvuElement {
 		return html` <style>
 				${css}
 			</style>
-			<div>
+			<div class="container">
 				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
 			</div>`;
 	}

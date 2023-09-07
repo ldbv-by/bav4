@@ -1,3 +1,6 @@
+/**
+ * @module modules/routing/components/categoryBar/CategoryBar
+ */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { setCategory } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
