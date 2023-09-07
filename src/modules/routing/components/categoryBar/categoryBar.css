@@ -19,6 +19,10 @@
 	border-right: none;
 }
 
+.category-button:focus-visible {
+	box-shadow: none;
+}
+
 .category-button__background {
 	height: 0em;
 	width: 0em;
