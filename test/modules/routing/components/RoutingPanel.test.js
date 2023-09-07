@@ -25,7 +25,7 @@ describe('RoutingPanel', () => {
 	};
 
 	describe('class', () => {
-		it('inherits from AbstractContentPanel', async () => {
+		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
 			expect(element instanceof MvuElement).toBeTrue();

@@ -40,9 +40,7 @@ export class CategoryBar extends MvuElement {
 	createView(model) {
 		const { categories, selectedCategory } = model;
 		const selectCategory = (categoryCandidate) => {
-			if (selectedCategory !== categoryCandidate) {
-				setCategory(categoryCandidate);
-			}
+			setCategory(categoryCandidate);
 		};
 
 		return html`
