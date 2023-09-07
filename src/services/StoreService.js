@@ -30,6 +30,7 @@ import { elevationProfileReducer } from '../store/elevationProfile/elevationProf
 import { chipsReducer } from '../store/chips/chips.reducer';
 import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
+import { routingReducer } from '../store/routing/routing.reducer';
 
 /**
  * Service which configures, initializes and holds the redux store.
@@ -69,7 +70,8 @@ export class StoreService {
 			elevationProfile: elevationProfileReducer,
 			chips: chipsReducer,
 			stateForEncoding: stateForEncodingReducer,
-			iframeContainer: iframeContainerReducer
+			iframeContainer: iframeContainerReducer,
+			routing: routingReducer
 		});
 
 		this._store = createStore(rootReducer);
