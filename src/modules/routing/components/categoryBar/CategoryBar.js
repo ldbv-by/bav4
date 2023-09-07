@@ -48,12 +48,12 @@ export class CategoryBar extends MvuElement {
 						html`<button
 							id=${category.id + '-button'}
 							data-test-id"
-							title=${category.title}
+							title=${category.label}
 							@click=${selectCategory(category.id)}
 						>
 							<div class="category-button__background"></div>
 							<div class="category-button__icon ${category.icon}"></div>
-							<div class="category-button__text">${category.title}</div>
+							<div class="category-button__text">${category.label}</div>
 						</button>`
 				)}
 			</div>
