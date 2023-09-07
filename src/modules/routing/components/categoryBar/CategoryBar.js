@@ -4,6 +4,7 @@
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { setCategory } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
+import { classMap } from 'lit-html/directives/class-map.js';
 import css from './categoryBar.css';
 
 const Update_Categories = 'update_categories';
@@ -26,12 +27,18 @@ export class CategoryBar extends MvuElement {
 		}
 	}
 
+	onInitialize() {
+		this.observe(
+			(state) => state.routing.categoryId,
+			(categoryId) => this.signal(Update_Selected_Category, categoryId)
+		);
+	}
+
 	/**
 	 *@override
 	 */
 	createView(model) {
 		const { categories, selectedCategory } = model;
-
 		const selectCategory = (categoryCandidate) => {
 			if (selectedCategory !== categoryCandidate) {
 				setCategory(categoryCandidate);
@@ -43,19 +50,19 @@ export class CategoryBar extends MvuElement {
 				${css}
 			</style>
 			<div class="categories-container">
-				${categories.map(
-					(category) =>
-						html`<button
-							id=${category.id + '-button'}
-							data-test-id"
-							title=${category.label}
-							@click=${selectCategory(category.id)}
-						>
-							<div class="category-button__background"></div>
-							<div class="category-button__icon ${category.icon}"></div>
-							<div class="category-button__text">${category.label}</div>
-						</button>`
-				)}
+				${categories.map((category) => {
+					const classes = { 'is-active': selectedCategory === category.id };
+					return html`<button
+						id=${category.id + '-button'}
+						data-test-id"
+						title=${category.label}
+						@click=${() => selectCategory(category.id)} class='category-button ${classMap(classes)}'
+					>
+						<div class="category-button__background"></div>
+						<div class="category-button__icon ${category.icon}"></div>
+						<div class="category-button__text">${category.label}</div>
+					</button>`;
+				})}
 			</div>
 		`;
 	}
