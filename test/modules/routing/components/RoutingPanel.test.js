@@ -8,8 +8,6 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
 describe('RoutingPanel', () => {
-	let store;
-
 	const routingService = new BvvRoutingService(mockCategoriesProvider);
 	const setup = (state) => {
 		const initialState = {
@@ -19,7 +17,7 @@ describe('RoutingPanel', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector.registerSingleton('RoutingService', routingService);
