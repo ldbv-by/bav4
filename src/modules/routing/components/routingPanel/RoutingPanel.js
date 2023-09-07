@@ -29,7 +29,8 @@ export class RoutingPanel extends MvuElement {
 	/**
 	 * @override
 	 */
-	onInitialize() {
+	async onInitialize() {
+		await this._routingService.init();
 		this.signal(Update_Categories, this._routingService.getCategories());
 	}
 
