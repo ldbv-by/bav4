@@ -45,6 +45,7 @@ export class RoutingPanel extends MvuElement {
 			</style>
 			<div class="container">
 				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<ba-routing-feedback></ba-routing-feedback>
 			</div>`;
 	}
 
