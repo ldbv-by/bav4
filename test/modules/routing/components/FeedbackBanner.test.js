@@ -9,7 +9,6 @@ import { $injector } from '../../../../src/injection';
 window.customElements.define(FeedbackBanner.tag, FeedbackBanner);
 
 describe('FeedbackBanner', () => {
-	let store;
 	const setup = (state = {}) => {
 		const initialState = {
 			media: {
@@ -17,7 +16,7 @@ describe('FeedbackBanner', () => {
 			},
 			...state
 		};
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
