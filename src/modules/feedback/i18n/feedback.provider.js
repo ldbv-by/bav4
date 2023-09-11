@@ -55,7 +55,7 @@ export const provide = (lang) => {
 				feedback_generalFeedback_rating_scale_5: 'Sehr unwahrscheinlich',
 				feedback_generalFeedback: 'Allgemeines Feedback',
 				feedback_mapFeedback_could_not_save: 'Ihr Feedback konnte nicht gespeichert werden',
-				feedback_mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.',
+				feedback_mapFeedback_geometry_missing: 'Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für Ihre Meldung.',
 				feedback_mapFeedback_text_after: ' und füllen das Formular aus. Ihre Meldung wird zeitnah öffentlich im Feedback-Fenster angezeigt.',
 				feedback_mapFeedback_text_before: 'Markieren Sie bitte die Stelle, an der Sie einen Korrekturvorschlag machen möchten, in der',
 				feedback_mapFeedback_text_map: 'Karte',
