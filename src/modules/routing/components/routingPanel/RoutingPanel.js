@@ -46,6 +46,11 @@ export class RoutingPanel extends MvuElement {
 			<div class="container">
 				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
 				<ba-routing-feedback></ba-routing-feedback>
+				<div class='chips-container>
+					<hr />
+					<!-- todo:: placing chips 'export' and 'share' here-->
+				</div>
+				<ba-routing-info></ba-routing-info>
 			</div>`;
 	}
 

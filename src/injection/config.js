@@ -56,6 +56,7 @@ import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
+import { ETACalculatorService } from '../services/ETACalculatorService';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -90,6 +91,7 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
+	.registerSingleton('ETACalculatorService', new ETACalculatorService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())

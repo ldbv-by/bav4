@@ -38,7 +38,7 @@ export class FeedbackBanner extends MvuElement {
 		const className = isVisible ? `status-${status}` : '';
 
 		return isVisible
-			? html` <style>
+			? html`<style>
 						${css}
 					</style>
 					<div class="container">

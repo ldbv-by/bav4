@@ -1,0 +1,33 @@
+.container {
+	display: flex;
+}
+
+.routing-info {
+	height: 2.5em;
+	width: 2.5em;
+	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
+	padding: 0;
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+
+.duration {
+	mask-image: url('../assets/time.svg');
+	-webkit-mask-image: url('../assets/time.svg');
+}
+
+.distance {
+	mask-image: url('../assets/distance.svg');
+	-webkit-mask-image: url('../assets/distance.svg');
+}
+
+.uphill {
+	mask-image: url('../assets/uphill.svg');
+	-webkit-mask-image: url('../assets/uphill.svg');
+}
+
+.downhill {
+	mask-image: url('../assets/downhill.svg');
+	-webkit-mask-image: url('../assets/downhill.svg');
+}
