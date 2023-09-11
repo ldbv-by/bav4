@@ -87,6 +87,8 @@ export class LayerTree extends MvuElement {
 		};
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (a) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._showChildren = (a) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
 		this._copyBranchRoot = (a, b) => {};
@@ -119,6 +121,7 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, currentUid } = model; // todo ?? , selectedTopicId
+		console.log('🚀 ~ file: LayerTree.js:124 ~ catalogWithResourceData:', catalogWithResourceData);
 
 		if (
 			catalogWithResourceData === null ||
@@ -223,14 +226,11 @@ export class LayerTree extends MvuElement {
 
 		const insertDraggedGeoResource = (currentUid, newGeoResourceId) => {
 			if (newGeoResourceId) {
-				// logOnce(georesourceIdFromList + ' georesourceIdFromList', '🚀 ~ LayerTree ~ onDragOver ~ georesourceIdFromList: ' + georesourceIdFromList);
-				// logOnce(
-				// 	layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
-				// 	'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
-				// 		layerTreeCatalogEntry.label +
-				// 		'  layerTreeCatalogEntry.uid: ' +
-				// 		layerTreeCatalogEntry.uid
-				// );
+				logOnce(currentUid + ' currentUid', '🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentUid: ' + currentUid);
+				logOnce(
+					currentGeoResourceId + ' currentGeoResourceId',
+					'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentGeoResourceId: ' + currentGeoResourceId
+				);
 				if (newGeoResourceId === currentGeoResourceId && currentUid === currentUid.uid) {
 					// logOnce(
 					// 	layerTreeCatalogEntry.uid + ' ' + georesourceIdFromList,
@@ -251,6 +251,7 @@ export class LayerTree extends MvuElement {
 
 		// todo in the workss
 		const onDragStart = (event) => {
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ file: LayerTree.js:259 ~ onDragStart ~ e:', event);
 			const target = event.target;
 			const uid = event.target.uid;
@@ -268,6 +269,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ file: LayerTree.js:276 ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 		};
@@ -308,26 +310,19 @@ export class LayerTree extends MvuElement {
 		// 	e.preventDefault();
 		// };
 		const onDragOver = (event, currentCatalogEntry) => {
-			logOnce('🚀 ~ onDragOver ~ layerTreeCatalogEntry.uid:' + currentCatalogEntry.uid);
-			logOnce('🚀 ~ onDragOver ~ layerTreeCatalogEntry.label:' + currentCatalogEntry.label);
-			logOnce('🚀 ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId:' + currentCatalogEntry.geoResourceId);
-			// logOnce(
-			// 	layerTreeCatalogEntry.uid + ' layerTreeCatalogEntry',
-			// 	'🚀 ~ LayerTree ~ onDragOver ~ layerTreeCatalogEntry.label: ' +
-			// 		layerTreeCatalogEntry.label +
-			// 		'  ~ layerTreeCatalogEntry.children: ' +
-			// 		layerTreeCatalogEntry.children
-			// );
+			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid:' + currentCatalogEntry.uid);
+			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.label:' + currentCatalogEntry.label);
+			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId:' + currentCatalogEntry.geoResourceId);
 
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			logOnce('🚀 ~ onDragOver ~ newGeoResourceId: ' + newGeoResourceId);
+			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId: ' + newGeoResourceId);
 
 			// todo look for uid and insert uid element (sort tree)
 
 			if (newGeoResourceId === currentCatalogEntry.geoResourceId) {
-				logOnce('🚀 ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
+				logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
 				event.preventDefault();
 				return;
 			}
@@ -339,7 +334,7 @@ export class LayerTree extends MvuElement {
 
 		const onDrop = (event) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:348 ~ onDrop ~ event:', event);
+			console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
 			this._addGeoResourcePermanently();
 		};
 
@@ -350,16 +345,18 @@ export class LayerTree extends MvuElement {
 
 			this._removeEntry(currentUid);
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ onDragLeave ~ this._removeEntry(lastUid): ', currentUid);
+			console.log('🚀 ~ LayerTree ~ createView ~ onDragLeave ~ this._removeEntry(lastUid): ', currentUid);
 
 			this.signal(Update_CurrentUid, '');
 		};
 
-		const handleCategoryClick = (event) => {
+		const handleCategoryClick = (event, entry) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ file: LayerTree.js:349 ~ handleCategoryClick ~ entry:', entry);
 			const li = event.currentTarget;
-			const ul = li.querySelector('ul');
 			const button = li.querySelector('button');
-			console.log('🚀 ~ file: LayerTree.js:362 ~ handleCategoryClick ~ button:', button);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree ~ createView ~ handleCategoryClick ~ button:', button);
 
 			event.stopPropagation();
 			event.preventDefault();
@@ -368,6 +365,9 @@ export class LayerTree extends MvuElement {
 				return;
 			}
 
+			this._showChildren(entry.uid);
+
+			const ul = li.querySelector('ul');
 			if (ul) {
 				li.classList.toggle(showChildrenClass);
 			}
@@ -375,17 +375,19 @@ export class LayerTree extends MvuElement {
 
 		const handleEditClick = (event, catalogEntry) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:370 ~ handleEditClick ~ event:', event);
+			console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ event:', event);
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ catalogEntry:', catalogEntry);
 
 			const button = event.target;
 			const li = button.parentNode;
 
-			if (button.textContent == 'Edit') {
-				console.log('🚀 ~ file: LayerTree.js:376 ~ handleEditClick ~ li:', li);
+			if (button.textContent === 'Edit') {
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ li:', li);
 				const span = li.firstElementChild;
-				console.log('🚀 ~ file: LayerTree.js:378 ~ handleEditClick ~ span:', span);
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ span:', span);
 
 				const input = document.createElement('input');
 				input.type = 'text';
@@ -408,7 +410,7 @@ export class LayerTree extends MvuElement {
 
 		const handleDeleteClick = (catalogEntry) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ handleDeleteClick ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
+			console.log('🚀 ~ LayerTree ~ createView ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 			this._removeEntry(catalogEntry.uid);
 		};
 
@@ -433,11 +435,15 @@ export class LayerTree extends MvuElement {
 		};
 
 		const renderEntry = (entry) => {
+			console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
 			return html`
-				<li @click="${handleCategoryClick}" class="${entry.children ? hasChildrenClass : ''}">
+				<li
+					@click="${(event) => handleCategoryClick(event, entry)}"
+					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass + ' ' : '')}"
+				>
 					<span
 						id="${entry.geoResourceId}"
-						class="${entry.children ? hasChildrenClass + ' ' + droppableClass : droppableClass}"
+						class="${(entry.children ? hasChildrenClass + ' ' : '') + droppableClass}"
 						draggable="true"
 						@dragover=${(event) => onDragOver(event, entry)}
 						@dragleave=${onDragLeave}
@@ -540,6 +546,17 @@ export class LayerTree extends MvuElement {
 
 	get addGeoResource() {
 		return this._addGeoResource;
+	}
+
+	/**
+	 * @property {function} showChildren - Callback function
+	 */
+	set showChildren(callback) {
+		this._showChildren = callback;
+	}
+
+	get showChildren() {
+		return this._showChildren;
 	}
 
 	/**

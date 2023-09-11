@@ -108,6 +108,8 @@ export class AdminPanel extends MvuElement {
 					uid,
 					position,
 					children
+					// ,
+					// showChildren: true
 				};
 			} else {
 				return { ...category, uid: uid, position: position };
@@ -227,42 +229,49 @@ export class AdminPanel extends MvuElement {
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
 
-		const findUIdIndex = (uid, catalogWithResourceData) => {
-			for (let i = 0; i < catalogWithResourceData.length; i++) {
-				const catalogEntry = catalogWithResourceData[i];
+		// const findUIdIndex = (uid, catalogWithResourceData) => {
+		// 	for (let i = 0; i < catalogWithResourceData.length; i++) {
+		// 		const catalogEntry = catalogWithResourceData[i];
 
-				if (catalogEntry.uid === uid) {
-					// Found the uid in the top-level entries
-					return [i];
-				}
+		// 		if (catalogEntry.uid === uid) {
+		// 			// Found the uid in the top-level entries
+		// 			return [i];
+		// 		}
 
-				if (catalogEntry.children) {
-					// todo make recursive
-					// Check the children for the geoResourceId
-					for (let j = 0; j < catalogEntry.children.length; j++) {
-						if (catalogEntry.children[j].uid === uid) {
-							// Found the uid in one of the children
-							return [i, j];
-						}
-					}
-				}
-			}
+		// 		if (catalogEntry.children) {
+		// 			// todo make recursive
+		// 			// Check the children for the geoResourceId
+		// 			for (let j = 0; j < catalogEntry.children.length; j++) {
+		// 				if (catalogEntry.children[j].uid === uid) {
+		// 					// Found the uid in one of the children
+		// 					return [i, j];
+		// 				}
+		// 			}
+		// 		}
+		// 	}
 
-			// uid not found in the array
-			return null;
-		};
+		// 	// uid not found in the array
+		// 	return null;
+		// };
 
 		const addGeoResource = (currentUid, newGeoresourceId, catalogWithResourceData) => {
-			const georesource = geoResources.find((geoResource) => geoResource.id === newGeoresourceId);
-			logOnce(
-				newGeoresourceId + ' newGeoresourceId',
-				'🚀 ~ AdminPanel ~ addGeoResource ~ newGeoresourceId: ' + newGeoresourceId + ' ' + georesource.label
-			);
+			const calcPosition = (catalogEntryNumberIn__catalogWithResourceData, catalogEntry) => {
+				if (catalogEntryNumberIn__catalogWithResourceData > 0) {
+					const priorCatalogEntry = catalogWithResourceData[catalogEntryNumberIn__catalogWithResourceData - 1];
+					return Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
+				} else {
+					return Math.round(catalogEntry.position / 2);
+				}
+			};
 
-			let inBetween = 0;
+			// find georesource to add
+			const georesource = geoResources.find((geoResource) => geoResource.id === newGeoresourceId);
+			logOnce('🚀 ~ AdminPanel ~ addGeoResource ~ newGeoresourceId: ' + newGeoresourceId + ' ' + georesource.label);
+			// let inBetween = 0;
 			const newUid = this._generateUniqueId();
 			logOnce('🚀 ~ AdminPanel ~ addGeoResource ~ newUid: ' + newUid);
 
+			// itterate over catalogWithResourceData
 			for (
 				let catalogEntryNumberIn__catalogWithResourceData = 0;
 				catalogEntryNumberIn__catalogWithResourceData < catalogWithResourceData.length;
@@ -270,14 +279,10 @@ export class AdminPanel extends MvuElement {
 			) {
 				const catalogEntry = catalogWithResourceData[catalogEntryNumberIn__catalogWithResourceData];
 
+				// and look for currentUid
 				if (catalogEntry.uid === currentUid) {
 					// Found the uid in the top-level entries
-					if (catalogEntryNumberIn__catalogWithResourceData > 0) {
-						const priorCatalogEntry = catalogWithResourceData[catalogEntryNumberIn__catalogWithResourceData - 1];
-						inBetween = Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
-					} else {
-						inBetween = Math.round(catalogEntry.position / 2);
-					}
+					const inBetween = calcPosition(catalogEntryNumberIn__catalogWithResourceData, catalogEntry);
 
 					this.signal(Update_CatalogWithResourceData, [
 						...catalogWithResourceData,
@@ -287,24 +292,28 @@ export class AdminPanel extends MvuElement {
 					return newUid;
 				}
 
+				// Check the children if any
 				if (catalogEntry.children) {
-					// Check the children
 					// todo make recursive
+					// addGeoResource (currentUid, newGeoresourceId, catalogEntry.children)
 					for (
+						// itterate over catalogEntry.children
 						let catalogEntryNumberIn__catalogEntryChildren = 0;
 						catalogEntryNumberIn__catalogEntryChildren < catalogEntry.children.length;
 						catalogEntryNumberIn__catalogEntryChildren++
 					) {
+						// and look for currentUid
 						const childCatalogEntry = catalogEntry.children[catalogEntryNumberIn__catalogEntryChildren];
 						if (childCatalogEntry.uid === currentUid) {
 							// Found the uid in one of the children
 
-							if (catalogEntryNumberIn__catalogEntryChildren > 0) {
-								const priorCatalogEntry = catalogEntry.children[catalogEntryNumberIn__catalogEntryChildren - 1];
-								inBetween = Math.round((childCatalogEntry.position + priorCatalogEntry.position) / 2);
-							} else {
-								inBetween = Math.round(childCatalogEntry.position / 2);
-							}
+							const inBetween = calcPosition(catalogEntryNumberIn__catalogEntryChildren, childCatalogEntry);
+							// if (catalogEntryNumberIn__catalogEntryChildren > 0) {
+							// 	const priorCatalogEntry = catalogEntry.children[catalogEntryNumberIn__catalogEntryChildren - 1];
+							// 	inBetween = Math.round((childCatalogEntry.position + priorCatalogEntry.position) / 2);
+							// } else {
+							// 	inBetween = Math.round(childCatalogEntry.position / 2);
+							// }
 
 							catalogWithResourceData.splice(catalogEntryNumberIn__catalogWithResourceData, 1);
 							catalogEntry.children.push({ uid: newUid, geoResourceId: newGeoresourceId, label: georesource.label, position: inBetween });
@@ -360,6 +369,47 @@ export class AdminPanel extends MvuElement {
 					}
 
 					const updatedChildren = removeEntryRecursive(uid, element.children);
+					return { ...element, children: updatedChildren };
+				}
+
+				return element;
+			});
+
+			return updatedCatalog;
+		};
+
+		const showChildren = (uid) => {
+			const updatedCatalogWithResourceData = showChildrenRecursive(uid, [...catalogWithResourceData]);
+			console.log('🚀 ~ file: AdminPanel.js:381 ~ AdminPanel ~ showChildren ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
+			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
+		};
+
+		const showChildrenRecursive = (uid, catalog) => {
+			console.log('🚀 ~ file: AdminPanel.js:385 ~ AdminPanel ~ showChildrenRecursive ~ uid:', uid);
+			if (!uid) {
+				return catalog;
+			}
+
+			const newCatalogWithResourceData = [...catalog];
+			const indexWhereToShowChildren = newCatalogWithResourceData.findIndex((geoResource) => geoResource.uid === uid);
+
+			if (indexWhereToShowChildren !== -1) {
+				newCatalogWithResourceData[indexWhereToShowChildren].showChildren = true;
+				return newCatalogWithResourceData;
+			}
+
+			// Handle sublevels recursively
+			const updatedCatalog = newCatalogWithResourceData.map((element) => {
+				if (element.children) {
+					const indexWhereToShowChildren = element.children.findIndex((child) => child.uid === uid);
+
+					if (indexWhereToShowChildren !== -1) {
+						const updatedChildren = [...element.children];
+						element.children[indexWhereToShowChildren].showChildren = true;
+						return { ...element, children: updatedChildren };
+					}
+
+					const updatedChildren = showChildrenRecursive(uid, element.children);
 					return { ...element, children: updatedChildren };
 				}
 
@@ -440,6 +490,7 @@ export class AdminPanel extends MvuElement {
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.removeEntry="${removeEntry}"
+							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.copyBranchRoot="${copyBranchRoot}"
 						></ba-layer-tree>
