@@ -56,6 +56,7 @@ button,
 select,
 ba-checkbox {
 	cursor: pointer;
+	overflow-wrap: anywhere;
 }
 a {
 	text-decoration: none;
