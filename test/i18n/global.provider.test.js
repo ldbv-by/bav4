@@ -29,7 +29,7 @@ describe('global i18n', () => {
 		expect(map.global_mfpService_createJob_exception).toBe('PDF konnte nicht erstellt werden.');
 		expect(map.global_featureInfoService_exception).toBe('FeatureInfo Abfrage schlug fehl');
 		expect(map.global_geolocation_denied).toBe(
-			'Es ist keine Positionsbestimmung möglich, da ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.'
+			'Es ist keine Positionsbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.'
 		);
 		expect(map.global_geolocation_not_available).toBe('Es ist keine Positionsbestimmung möglich.');
 		expect(map.global_import_url_failed).toBe('URL-Import schlug fehl');
