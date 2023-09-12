@@ -10,11 +10,10 @@ export const provide = (lang) => {
 				routing_info_distance: 'Distance',
 				routing_info_uphill: 'Uphill',
 				routing_info_downhill: 'Downhill',
-				routing_category_label_hike: 'Hiking',
-				routing_category_label_bayernnetz_bike: 'Mountainbike (Bayernnetz)',
-				routing_category_label_bike: 'Bike',
-				routing_category_label_mtb: 'Mountainbike',
-				routing_category_label_racebike: 'Racebike'
+				routing_category_label_bvv_hike: 'Hiking',
+				routing_category_label_bvv_bike: 'Bike',
+				routing_category_label_bvv_mtb: 'Mountainbike',
+				routing_category_label_racingbike: 'Racingbike'
 			};
 
 		case 'de':
@@ -27,11 +26,10 @@ export const provide = (lang) => {
 				routing_info_distance: 'Distanz',
 				routing_info_uphill: 'Bergauf',
 				routing_info_downhill: 'Bergab',
-				routing_category_label_hike: 'Wandern',
-				routing_category_label_bayernnetz_bike: 'Mountainbike (Bayernnetz)',
-				routing_category_label_bike: 'Fahrrad',
-				routing_category_label_mtb: 'Mountainbike',
-				routing_category_label_racebike: 'Rennrad'
+				routing_category_label_bvv_hike: 'Wandern',
+				routing_category_label_bvv_bike: 'Fahrrad',
+				routing_category_label_bvv_mtb: 'Mountainbike',
+				routing_category_label_racingbike: 'Rennrad'
 			};
 
 		default:
