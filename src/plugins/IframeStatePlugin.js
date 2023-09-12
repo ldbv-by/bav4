@@ -24,7 +24,7 @@ export class IframeStatePlugin extends BaPlugin {
 	 * @override
 	 */
 	async register(store) {
-		if (this._environmentService.isEmbedded()) {
+		if (this._environmentService.isEmbedded() && this._hasParentSameOrigin()) {
 			const update = () => {
 				this._updateAttribute();
 			};
@@ -47,5 +47,15 @@ export class IframeStatePlugin extends BaPlugin {
 
 	_getDocument() {
 		return this._environmentService.getWindow().parent.document;
+	}
+
+	_hasParentSameOrigin() {
+		try {
+			// will throw a permission denied error when iframe has not same origin as the parent document
+			this._getDocument();
+		} catch {
+			return false;
+		}
+		return true;
 	}
 }
