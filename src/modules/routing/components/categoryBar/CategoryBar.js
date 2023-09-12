@@ -47,7 +47,7 @@ export class CategoryBar extends MvuElement {
 			setCategory(categoryCandidate);
 		};
 
-		const getCategoryIconClass = (category) => `icon-${category.id}`;
+		const getCategoryIconClass = (category) => `icon-${category.id.replace('-', '_')}`;
 		const getLabel = (category) => translate(`routing-info-label-${category.id}`);
 		return html`
 			<style>
@@ -56,15 +56,14 @@ export class CategoryBar extends MvuElement {
 			<div class="categories-container">
 				${categories.map((category) => {
 					const classes = { 'is-active': selectedCategory === category.id };
+					classes[getCategoryIconClass(category)] = true;
 					return html`<button
 						id=${category.id + '-button'}
 						data-test-id"
-						title=${category.label}
+						title=${getLabel(category)}
 						@click=${() => selectCategory(category.id)} class='category-button ${classMap(classes)}'
-					>
-						<div class="category-button__background"></div>
-						<div class="category-button__icon ${category.icon}"></div>
-						<div class="category-button__text">${category.label}</div>
+					>												
+						<div class="category-button__text">${getLabel(category)}</div>
 					</button>`;
 				})}
 			</div>
