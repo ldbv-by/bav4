@@ -50,7 +50,7 @@ export class RoutingInfo extends MvuElement {
 		const getDuration = () => {
 			if (stats) {
 				const vehicleType = this._getVehicleType(categoryId);
-				let estimate = this._estimateTimeFor(vehicleType);
+				let estimate = this._estimateTimeFor(vehicleType, stats);
 				if (estimate === 0) {
 					estimate = stats.time;
 				}
@@ -71,7 +71,6 @@ export class RoutingInfo extends MvuElement {
 				while (minutesFormatted.length < size) minutesFormatted = '0' + minutesFormatted;
 				return hoursFormatted + ':' + minutesFormatted;
 			}
-
 			return '-:-';
 		};
 
@@ -99,7 +98,7 @@ export class RoutingInfo extends MvuElement {
 						<hr />
 						<div class="row">
 							<div class="routing-info duration col" title=${translate('routing_info_duration')}>
-								<div class="ga-truncate-text">${getDuration()}</div>
+								<span>${getDuration()}</span>
 							</div>
 							<div class="routing-info distance col" title=${translate('routing_info_distance')}>
 								<span>
@@ -125,14 +124,14 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	_hasValidStats(stats) {
-		if ('twoDiff' in stats === false) {
+		if (Object.hasOwn(stats, 'twoDiff')) {
 			return false;
 		}
 
 		if (stats.twoDiff.length !== 2) {
 			return false;
 		}
-		if ('dist' in stats === false) {
+		if (Object.hasOwn(stats, 'dist')) {
 			return false;
 		}
 
@@ -143,7 +142,7 @@ export class RoutingInfo extends MvuElement {
 		// walking duration estimate based on DAV-Normative:
 		// - https://discuss.graphhopper.com/t/walking-duration-estimate-elevation-ignored/4621/4
 		// - https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf
-		if (this._hasValidStats(stats)) {
+		if (!this._hasValidStats(stats)) {
 			return 0;
 		}
 		const calculator = this._etaCalculatorService.getETACalculatorFor(vehicleType);

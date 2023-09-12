@@ -1,3 +1,4 @@
+import { RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { RoutingInfo } from '../../../../src/modules/routing/components/routingInfo/RoutingInfo';
@@ -50,6 +51,37 @@ describe('RoutingInfo', () => {
 				stats: null,
 				categoryId: null
 			});
+		});
+	});
+
+	describe('when initialized', () => {
+		it('renders nothing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.childElementCount).toHaveSize(0);
+		});
+
+		it('renders RouteInfo', async () => {
+			const state = {
+				routing: {
+					status: RoutingStatusCodes.Ok,
+					stats: {
+						twoDiff: [111, 222],
+						dist: 333,
+						time: 3600000
+					},
+					categoryId: 'bike'
+				}
+			};
+			const element = await setup(state);
+
+			const routingElements = element.shadowRoot.querySelectorAll('.routing-info');
+
+			expect(routingElements).toHaveSize(4);
+			expect(routingElements[0].innerText).toBe('01:00');
+			expect(routingElements[1].innerText).toBe('0.33 km');
+			expect(routingElements[2].innerText).toBe('111 m');
+			expect(routingElements[3].innerText).toBe('222 m');
 		});
 	});
 });
