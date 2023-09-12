@@ -48,7 +48,7 @@ export class CategoryBar extends MvuElement {
 		};
 
 		const getCategoryIconClass = (category) => `icon-${category.id.replace('-', '_')}`;
-		const getLabel = (category) => translate(`routing-info-label-${category.id}`);
+		const getLabel = (category) => translate(`routing-category-label-${category.id}`);
 		return html`
 			<style>
 				${css}
