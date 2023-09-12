@@ -54,22 +54,13 @@ export class RoutingInfo extends MvuElement {
 				if (estimate === 0) {
 					estimate = stats.time;
 				}
+				const seconds = estimate / 1000;
 
-				// 1- Convert to seconds:
-				let seconds = estimate / 1000;
-				// 2- Extract hours:
-				const hours = seconds / 3600; // 3,600 seconds in 1 hour
-				seconds = seconds % 3600; // seconds remaining after extracting hours
-				// 3- Extract minutes:
-				const minutes = seconds / 60; // 60 seconds in 1 minute
-				// 4- Keep only seconds not extracted to minutes:
-				// seconds = seconds % 60;
-				const size = 2;
-				let hoursFormatted = hours + '';
-				while (hoursFormatted.length < size) hoursFormatted = '0' + hoursFormatted;
-				let minutesFormatted = minutes + '';
-				while (minutesFormatted.length < size) minutesFormatted = '0' + minutesFormatted;
-				return hoursFormatted + ':' + minutesFormatted;
+				if (seconds < 60) {
+					return '< 1 min.';
+				}
+
+				return this._formatDuration(seconds);
 			}
 			return '-:-';
 		};
@@ -124,18 +115,34 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	_hasValidStats(stats) {
-		if (Object.hasOwn(stats, 'twoDiff')) {
+		if (!Object.hasOwn(stats, 'twoDiff')) {
 			return false;
 		}
 
 		if (stats.twoDiff.length !== 2) {
 			return false;
 		}
-		if (Object.hasOwn(stats, 'dist')) {
+		if (!Object.hasOwn(stats, 'dist')) {
 			return false;
 		}
 
 		return true;
+	}
+
+	/**
+	 *
+	 * @param {number} duration the duration in seconds
+	 * @returns {string} the formatted duration in the style of HH:mm
+	 */
+	_formatDuration(duration) {
+		const hours = Math.floor(duration / 3600);
+		const minutes = Math.floor((duration % 3600) / 60);
+
+		const toTwoDigits = (timePart) => {
+			return timePart < 10 ? '0' + timePart : timePart + '';
+		};
+
+		return `${toTwoDigits(hours)}:${toTwoDigits(minutes)}`;
 	}
 
 	_estimateTimeFor(vehicleType, stats) {

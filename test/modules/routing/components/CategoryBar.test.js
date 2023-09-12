@@ -1,3 +1,4 @@
+import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
 
@@ -42,7 +43,7 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(CategoryBar.tag, properties);
 	};
 

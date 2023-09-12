@@ -78,7 +78,7 @@ describe('RoutingInfo', () => {
 			const routingElements = element.shadowRoot.querySelectorAll('.routing-info');
 
 			expect(routingElements).toHaveSize(4);
-			expect(routingElements[0].innerText).toBe('01:00');
+			expect(routingElements[0].innerText).toBe('< 1 min.');
 			expect(routingElements[1].innerText).toBe('0.33 km');
 			expect(routingElements[2].innerText).toBe('111 m');
 			expect(routingElements[3].innerText).toBe('222 m');

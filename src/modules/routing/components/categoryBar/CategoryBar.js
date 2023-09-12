@@ -6,6 +6,7 @@ import { setCategory } from '../../../../store/routing/routing.action';
 import { MvuElement } from '../../../MvuElement';
 import { classMap } from 'lit-html/directives/class-map.js';
 import css from './categoryBar.css';
+import { $injector } from '../../../../injection/index';
 
 const Update_Categories = 'update_categories';
 const Update_Selected_Category = 'update_selected_category';
@@ -13,6 +14,8 @@ const Update_Selected_Category = 'update_selected_category';
 export class CategoryBar extends MvuElement {
 	constructor() {
 		super({ categories: [], selectedCategory: null });
+		const { TranslationService } = $injector.inject('TranslationService');
+		this._translationService = TranslationService;
 	}
 
 	/**
@@ -39,10 +42,13 @@ export class CategoryBar extends MvuElement {
 	 */
 	createView(model) {
 		const { categories, selectedCategory } = model;
+		const translate = (key) => this._translationService.translate(key);
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};
 
+		const getCategoryIconClass = (category) => `icon-${category.id}`;
+		const getLabel = (category) => translate(`routing-info-label-${category.id}`);
 		return html`
 			<style>
 				${css}
