@@ -70,7 +70,7 @@ export class MapContextMenu extends MvuElement {
 
 	_calculateSector(coordinate) {
 		const widthBorder = window.innerWidth * 0.66;
-		const heightBorder = window.innerHeight * 0.66;
+		const heightBorder = window.innerHeight * 0.6;
 
 		//window sector the click event occurred:
 		//0-1
