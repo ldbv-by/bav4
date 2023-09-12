@@ -1,3 +1,6 @@
+/**
+ * @module modules/routing/components/routingInfo/RoutingInfo
+ */
 import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
