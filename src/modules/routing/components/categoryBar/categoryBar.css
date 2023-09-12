@@ -4,8 +4,6 @@
 	justify-content: center;
 }
 
-.categories-container > button {
-}
 .categories-container > button:last-child {
 	border-right: none;
 }
