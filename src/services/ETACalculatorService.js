@@ -1,5 +1,5 @@
 /**
- * @module services/ETACalculationService
+ * @module services/ETACalculatorService
  */
 /**
  * A Calculator for ETAs (Estimated Time Arrived)
