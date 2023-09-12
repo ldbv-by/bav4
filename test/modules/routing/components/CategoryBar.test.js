@@ -75,6 +75,20 @@ describe('CategoryBar', () => {
 
 			expect(buttons).toHaveSize(3);
 		});
+
+		it('renders button defined by category id', async () => {
+			const element = await setup({}, properties);
+
+			const buttons = element.shadowRoot.querySelectorAll('button');
+
+			expect(buttons).toHaveSize(3);
+			expect(buttons[0].classList.contains('category-button')).toBeTrue();
+			expect(buttons[0].classList.contains('icon-category_1')).toBeTrue();
+			expect(buttons[1].classList.contains('category-button')).toBeTrue();
+			expect(buttons[1].classList.contains('icon-category_2')).toBeTrue();
+			expect(buttons[2].classList.contains('category-button')).toBeTrue();
+			expect(buttons[2].classList.contains('icon-category_3')).toBeTrue();
+		});
 	});
 
 	describe('when category button is clicked', () => {
