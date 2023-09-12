@@ -31,6 +31,7 @@ export class AdminPanel extends MvuElement {
 			topics: [],
 			catalog: [],
 			geoResources: [],
+			dummy: true,
 			catalogWithResourceData: null
 		});
 
@@ -75,6 +76,7 @@ export class AdminPanel extends MvuElement {
 	// !! for now, I take the sorting as is, but provide my own UIDs and order
 	// todo !! make recursive
 	_insertFirstNodeWithChildrenIntoSecond(catalog) {
+		// todo remove - only here to have themes in themes during testing
 		let first = null;
 		let second = false;
 		const catalogWithSecondLevelChildren = catalog.map((category) => {
@@ -218,7 +220,8 @@ export class AdminPanel extends MvuElement {
 					data.sort((a, b) => a.position - b.position);
 					data.forEach((item) => sortChildrenByIdRecursive(item));
 				}
-				return { ...model, catalogWithResourceData: [...data] };
+				console.log('🚀 ~ file: AdminPanel.js:223 ~ AdminPanel ~ update ~ data:', data);
+				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 
 			case Update_SelectedTopic:
 				updateStore(data);
@@ -227,7 +230,8 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { currentTopicId, topics, catalogWithResourceData, geoResources } = model;
+		const { currentTopicId, topics, catalogWithResourceData, geoResources, dummy } = model;
+		console.log('🚀 ~ file: AdminPanel.js:233 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		// const findUIdIndex = (uid, catalogWithResourceData) => {
 		// 	for (let i = 0; i < catalogWithResourceData.length; i++) {
@@ -255,9 +259,11 @@ export class AdminPanel extends MvuElement {
 		// };
 
 		const addGeoResource = (currentUid, newGeoresourceId, catalogWithResourceData) => {
-			const calcPosition = (catalogEntryNumberIn__catalogWithResourceData, catalogEntry) => {
-				if (catalogEntryNumberIn__catalogWithResourceData > 0) {
-					const priorCatalogEntry = catalogWithResourceData[catalogEntryNumberIn__catalogWithResourceData - 1];
+			logOnce(currentUid, '🚀 ~ AdminPanel ~ addGeoResource ~ catalogWithResourceData:' + catalogWithResourceData);
+			const calcPosition = (index, catalogEntry) => {
+				logOnce('🚀 ~ AdminPanel ~ addGeoResource ~ calcPosition ~ catalogEntry: ' + catalogEntry.label + '[' + index + ']');
+				if (index > 0) {
+					const priorCatalogEntry = catalogWithResourceData[index - 1];
 					return Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
 				} else {
 					return Math.round(catalogEntry.position / 2);
@@ -303,7 +309,9 @@ export class AdminPanel extends MvuElement {
 						catalogEntryNumberIn__catalogEntryChildren++
 					) {
 						// and look for currentUid
+						logOnce('🚀 ~ AdminPanel ~ addGeoResource ~ Check the children if any and look for currentUid - ' + catalogEntry.label + ' ');
 						const childCatalogEntry = catalogEntry.children[catalogEntryNumberIn__catalogEntryChildren];
+						logOnce('🚀 ~ AdminPanel ~ addGeoResource ~ childCatalogEntry : ' + childCatalogEntry);
 						if (childCatalogEntry.uid === currentUid) {
 							// Found the uid in one of the children
 
@@ -318,6 +326,7 @@ export class AdminPanel extends MvuElement {
 							catalogWithResourceData.splice(catalogEntryNumberIn__catalogWithResourceData, 1);
 							catalogEntry.children.push({ uid: newUid, geoResourceId: newGeoresourceId, label: georesource.label, position: inBetween });
 							this.signal(Update_CatalogWithResourceData, [...catalogWithResourceData, catalogEntry]);
+							return;
 						}
 					}
 				}
@@ -380,12 +389,12 @@ export class AdminPanel extends MvuElement {
 
 		const showChildren = (uid) => {
 			const updatedCatalogWithResourceData = showChildrenRecursive(uid, [...catalogWithResourceData]);
-			console.log('🚀 ~ file: AdminPanel.js:381 ~ AdminPanel ~ showChildren ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
+			// console.log('🚀 ~ AdminPanel ~ showChildren ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
 		const showChildrenRecursive = (uid, catalog) => {
-			console.log('🚀 ~ file: AdminPanel.js:385 ~ AdminPanel ~ showChildrenRecursive ~ uid:', uid);
+			// console.log('🚀 ~ AdminPanel ~ showChildrenRecursive ~ uid:', uid);
 			if (!uid) {
 				return catalog;
 			}
@@ -394,7 +403,7 @@ export class AdminPanel extends MvuElement {
 			const indexWhereToShowChildren = newCatalogWithResourceData.findIndex((geoResource) => geoResource.uid === uid);
 
 			if (indexWhereToShowChildren !== -1) {
-				newCatalogWithResourceData[indexWhereToShowChildren].showChildren = true;
+				newCatalogWithResourceData[indexWhereToShowChildren].showChildren = !newCatalogWithResourceData[indexWhereToShowChildren].showChildren;
 				return newCatalogWithResourceData;
 			}
 
@@ -405,7 +414,7 @@ export class AdminPanel extends MvuElement {
 
 					if (indexWhereToShowChildren !== -1) {
 						const updatedChildren = [...element.children];
-						element.children[indexWhereToShowChildren].showChildren = true;
+						element.children[indexWhereToShowChildren].showChildren = !element.children[indexWhereToShowChildren].showChildren;
 						return { ...element, children: updatedChildren };
 					}
 
@@ -493,6 +502,7 @@ export class AdminPanel extends MvuElement {
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.copyBranchRoot="${copyBranchRoot}"
+							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>
 

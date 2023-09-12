@@ -19,6 +19,7 @@ const Update_Layers = 'update_layers';
 const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
 const Update_CurrentUid = 'update_currentUId';
 const Update_Currents = 'update_currents';
+const Update_Dummy = 'update_dummy';
 
 const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
@@ -68,7 +69,8 @@ export class LayerTree extends MvuElement {
 			layers: [],
 			selectedTopicId: '',
 			currentGeoResourceId: null,
-			currentUid: null
+			currentUid: null,
+			dummy: false
 		});
 
 		const {
@@ -116,12 +118,15 @@ export class LayerTree extends MvuElement {
 				// eslint-disable-next-line no-console
 				console.log('🚀 ~ update ~ Update_Currents:', data);
 				return { ...model, currentUid: data.currentUid, currentGeoResourceId: data.currentGeoResourceId };
+			case Update_Dummy:
+				return { ...model, dummy: data };
 		}
 	}
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, currentUid } = model; // todo ?? , selectedTopicId
-		console.log('🚀 ~ file: LayerTree.js:124 ~ catalogWithResourceData:', catalogWithResourceData);
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ LayerTree ~ catalogWithResourceData:', catalogWithResourceData);
 
 		if (
 			catalogWithResourceData === null ||
@@ -226,9 +231,12 @@ export class LayerTree extends MvuElement {
 
 		const insertDraggedGeoResource = (currentUid, newGeoResourceId) => {
 			if (newGeoResourceId) {
-				logOnce(currentUid + ' currentUid', '🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentUid: ' + currentUid);
 				logOnce(
-					currentGeoResourceId + ' currentGeoResourceId',
+					currentUid + currentGeoResourceId + ' currentUid',
+					'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentUid: ' + currentUid
+				);
+				logOnce(
+					currentUid + currentGeoResourceId + ' currentGeoResourceId',
 					'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentGeoResourceId: ' + currentGeoResourceId
 				);
 				if (newGeoResourceId === currentGeoResourceId && currentUid === currentUid.uid) {
@@ -240,7 +248,7 @@ export class LayerTree extends MvuElement {
 				}
 
 				const newElementUid = this._addGeoResource(currentUid, newGeoResourceId, [...catalogWithResourceData]);
-				logOnce('🚀 ~ insertDraggedGeoResource ~ newElementUid:', newElementUid);
+				logOnce('logOnce 🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ newElementUid: ' + newElementUid);
 
 				this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceId, currentUid: newElementUid });
 			}
@@ -310,19 +318,21 @@ export class LayerTree extends MvuElement {
 		// 	e.preventDefault();
 		// };
 		const onDragOver = (event, currentCatalogEntry) => {
-			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid:' + currentCatalogEntry.uid);
-			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.label:' + currentCatalogEntry.label);
-			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId:' + currentCatalogEntry.geoResourceId);
+			logOnce(
+				'🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid: ' + currentCatalogEntry.uid + ' (' + currentCatalogEntry.label + ')'
+			);
+			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.label: ' + currentCatalogEntry.label);
+			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId);
 
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceId = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId: ' + newGeoResourceId);
+			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId: ' + newGeoResourceId);
 
 			// todo look for uid and insert uid element (sort tree)
 
 			if (newGeoResourceId === currentCatalogEntry.geoResourceId) {
-				logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
+				// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
 				event.preventDefault();
 				return;
 			}
@@ -352,11 +362,9 @@ export class LayerTree extends MvuElement {
 
 		const handleCategoryClick = (event, entry) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:349 ~ handleCategoryClick ~ entry:', entry);
+			console.log('🚀 ~ LayerTree ~ createView ~ handleCategoryClick ~ entry:', entry);
 			const li = event.currentTarget;
 			const button = li.querySelector('button');
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ handleCategoryClick ~ button:', button);
 
 			event.stopPropagation();
 			event.preventDefault();
@@ -367,10 +375,10 @@ export class LayerTree extends MvuElement {
 
 			this._showChildren(entry.uid);
 
-			const ul = li.querySelector('ul');
-			if (ul) {
-				li.classList.toggle(showChildrenClass);
-			}
+			// const ul = li.querySelector('ul');
+			// if (ul) {
+			// 	li.classList.toggle(showChildrenClass);
+			// }
 		};
 
 		const handleEditClick = (event, catalogEntry) => {
@@ -435,11 +443,11 @@ export class LayerTree extends MvuElement {
 		};
 
 		const renderEntry = (entry) => {
-			console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
+			// console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
 			return html`
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"
-					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass + ' ' : '')}"
+					class="${(entry.children ? hasChildrenClass + ' ' : '') + (entry.showChildren ? showChildrenClass : '')}"
 				>
 					<span
 						id="${entry.geoResourceId}"
@@ -535,6 +543,17 @@ export class LayerTree extends MvuElement {
 
 	get selectedTopic() {
 		return this.getModel().selectedTheme;
+	}
+
+	/**
+	 * @property {bool} dummy
+	 */
+	set dummy(value) {
+		this.signal(Update_Dummy, value);
+	}
+
+	get dummy() {
+		return this.getModel().dummy;
 	}
 
 	/**
