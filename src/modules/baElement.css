@@ -56,6 +56,7 @@ button,
 select,
 ba-checkbox {
 	cursor: pointer;
+	overflow-wrap: anywhere;
 }
 a {
 	text-decoration: none;
@@ -337,6 +338,13 @@ input[type='range']:focus {
 .ba-form-element .hint {
 	padding: 1em 0;
 	width: 100%;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--text1);
+	-webkit-box-shadow: 0 0 0px 40rem var(--header-background-color) inset;
 }
 
 /* 

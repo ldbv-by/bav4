@@ -56,7 +56,7 @@ describe('ImportVectorDataService', () => {
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-			expect(geoResourceFuture.id).toBe(options.id);
+			expect(geoResourceFuture.id).toBe(url);
 			expect(geoResourceFuture.label).toBeNull();
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
@@ -74,20 +74,7 @@ describe('ImportVectorDataService', () => {
 
 			const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
-			expect(geoResourceFuture.id).toBe(options.id);
-			expect(geoResourceFuture.label).toBeNull();
-			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
-			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
-		});
-
-		it('returns a GeoResourceFuture automatically setting id', () => {
-			const instanceUnderTest = setup();
-			const url = 'http://my.url';
-			const geoResourceServiceSpy = spyOn(geoResourceService, 'addOrReplace').and.callFake(addOrReplaceMethodMock);
-
-			const geoResourceFuture = instanceUnderTest.forUrl(url);
-
-			expect(geoResourceFuture.id).toEqual(jasmine.any(String));
+			expect(geoResourceFuture.id).toBe(url);
 			expect(geoResourceFuture.label).toBeNull();
 			expect(geoResourceServiceSpy).toHaveBeenCalledWith(geoResourceFuture);
 			expect(geoResourceFuture.marker).toBe(handledByGeoResourceServiceMarker);
@@ -244,7 +231,7 @@ describe('ImportVectorDataService', () => {
 				const geoResourceFuture = instanceUnderTest.forUrl(url, options);
 
 				expect(geoResourceFuture).toBeNull();
-				expect(warnSpy).toHaveBeenCalledWith(`SourceType '${options.sourceType}' for '${options.id}' is not supported`);
+				expect(warnSpy).toHaveBeenCalledWith(`SourceType '${options.sourceType}' for '${url}' is not supported`);
 			});
 		});
 	});

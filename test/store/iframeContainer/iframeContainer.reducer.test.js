@@ -9,7 +9,7 @@ describe('iframeContainerReducer', () => {
 		});
 	};
 
-	it('initiales the store with default values', () => {
+	it('initializes the store with default values', () => {
 		const store = setup();
 		expect(store.getState().iframeContainer.active).toBeFalse();
 		expect(store.getState().iframeContainer.content).toBeNull();
