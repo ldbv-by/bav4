@@ -28,7 +28,7 @@ describe('i18n for feedback module', () => {
 		expect(map.feedback_generalFeedback_rating_scale_5).toBe('Sehr unwahrscheinlich');
 		expect(map.feedback_generalFeedback).toBe('Allgemeines Feedback');
 		expect(map.feedback_mapFeedback_could_not_save).toBe('Ihr Feedback konnte nicht gespeichert werden');
-		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für ihre Meldung.');
+		expect(map.feedback_mapFeedback_geometry_missing).toBe('Bitte digitalisieren Sie mindestens einen Punkt als Ortsangabe für Ihre Meldung.');
 		expect(map.feedback_privacyPolicy).toBe('Hinweis zum Datenschutz');
 		expect(map.feedback_mapFeedback_text_after).toBe(
 			' und füllen das Formular aus. Ihre Meldung wird zeitnah öffentlich im Feedback-Fenster angezeigt.'
