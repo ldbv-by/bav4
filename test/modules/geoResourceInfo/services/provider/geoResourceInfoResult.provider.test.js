@@ -141,7 +141,7 @@ describe('GeoResourceInfo provider', () => {
 		const expectedArgs0 = backendUrl + 'georesource/info/' + geoResourceId;
 		const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 		const httpServiceSpy = spyOn(httpService, 'get')
-			.withArgs(expectedArgs0,{ timeout: 5000 })
+			.withArgs(expectedArgs0, { timeout: 5000 })
 			.and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
 
 		const errorMessage = "GeoResourceInfoResult for '914c9263-5312-453e-b3eb-5104db1bf788' could not be loaded";
