@@ -197,7 +197,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlHighlightLayerHandler', highlightLayerHandlerMock)
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
-			.registerSingleton('OlOverlayMapHandler', olElevationProfileHandlerMock)
+			.registerSingleton('OlOverlayMapHandler', olOverlayMapHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);

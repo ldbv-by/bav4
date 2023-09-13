@@ -17,8 +17,7 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
-	multiLineStringToLineString,
-	NO_CALCULATION_HINTS
+	multiLineStringToLineString
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
