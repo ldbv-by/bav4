@@ -69,18 +69,18 @@ export class MapContextMenu extends MvuElement {
 	}
 
 	_calculateSector(coordinate) {
-		const widthBorder = window.innerWidth * 0.66;
-		const heightBorder = window.innerHeight * 0.66;
+		const widthThreshold = window.innerWidth * 0.5;
+		const heightThreshold = window.innerHeight * 0.5;
 
 		//window sector the click event occurred:
 		//0-1
 		//3-2
 
-		if (coordinate[0] <= widthBorder && coordinate[1] <= heightBorder) {
+		if (coordinate[0] <= widthThreshold && coordinate[1] <= heightThreshold) {
 			return 0;
-		} else if (coordinate[0] > widthBorder && coordinate[1] <= heightBorder) {
+		} else if (coordinate[0] > widthThreshold && coordinate[1] <= heightThreshold) {
 			return 1;
-		} else if (coordinate[0] > widthBorder && coordinate[1] > heightBorder) {
+		} else if (coordinate[0] > widthThreshold && coordinate[1] > heightThreshold) {
 			return 2;
 		}
 		return 3;

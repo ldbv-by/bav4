@@ -10,8 +10,8 @@ describe('i18n for iframe module', () => {
 		expect(map.iframe_generator_clipboard_success).toBe('Der HTML Code wurde in die Zwischenablage kopiert');
 		expect(map.iframe_generator_clipboard_error).toBe('"In die Zwischenablage kopieren" steht nicht zur Verfügung');
 		expect(map.iframe_generator_toggle_label).toBe('Responsive Breite');
-		expect(map.iframe_generator_toggle_text).toBe('Die Karte passt sich der Breite ihres Containers an.');
-		expect(map.iframe_generator_toggle_title).toBe('Eingebettete Karte wird sich erweitern, um sich der Breite ihres Containers anzupassen.');
+		expect(map.iframe_generator_toggle_text).toBe('Die Karte passt sich der Breite Ihres Containers an.');
+		expect(map.iframe_generator_toggle_title).toBe('Eingebettete Karte wird sich erweitern, um sich der Breite Ihres Containers anzupassen.');
 		expect(map.iframe_generator_copy_icon).toBe('In die Zwischenablage kopieren');
 		expect(map.iframe_activate_map_button).toBe('Karte aktivieren');
 		expect(map.iframe_view_larger_map_chip).toBe('Im BayernAtlas ansehen');
