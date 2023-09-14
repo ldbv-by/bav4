@@ -178,9 +178,9 @@ export class LayerManager extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="layermanager overflow-container">
+			<div class="layermanager overflow-container draggable">
 				<div class="title">${translate('layerManager_title')}</div>
-				<ul class="layers">
+				<ul class="layers draggable">
 					${repeat(
 						draggableItems,
 						(layerItem) => layerItem.listIndex + '_' + layerItem.id,
@@ -194,6 +194,7 @@ export class LayerManager extends MvuElement {
 								@dragenter=${(e) => onDragEnter(e, layerItem)}
 								@dragleave=${onDragLeave}
 								index=${index}
+								class="draggable"
 							>
 								${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
 							</li>`

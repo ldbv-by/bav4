@@ -87,6 +87,7 @@ export class AttributionInfo extends MvuElement {
 
 		const classes = {
 			isopen: open,
+			selectable: open,
 			isembedded: this._environmentService.isEmbedded()
 		};
 
