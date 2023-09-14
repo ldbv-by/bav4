@@ -124,8 +124,6 @@ export class LayerTree extends MvuElement {
 
 	createView(model) {
 		const { topics, catalogWithResourceData, currentGeoResourceId, currentUid } = model; // todo ?? , selectedTopicId
-		// // eslint-disable-next-line no-console
-		// console.log('🚀 ~ LayerTree ~ createView ~ catalogWithResourceData ( from model ): ', catalogWithResourceData);
 
 		if (
 			catalogWithResourceData === null ||
@@ -137,46 +135,19 @@ export class LayerTree extends MvuElement {
 		}
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
-			console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ insertDraggedGeoResource()');
-			logOnce(
-				currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' currentUid',
-				'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentUid: ' + currentUid
-			);
-			logOnce(
-				currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' currentCatalogEntryUid',
-				'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentCatalogEntryUid: ' + currentCatalogEntryUid
-			);
-			logOnce(
-				currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' currentGeoResourceId',
-				'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentGeoResourceId: ' + currentGeoResourceId
-			);
-			logOnce(
-				currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' newGeoResourceIdFromList',
-				'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ newGeoResourceIdFromList: ' + newGeoResourceIdFromList
-			);
 			if (newGeoResourceIdFromList === currentGeoResourceId && currentUid === currentCatalogEntryUid) {
-				logOnce(currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' return', '🚀 ~ nothing new - return ');
 				return;
 			}
 
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ this._addGeoResource()');
 			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
-			// logOnce('logOnce 🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ newElementUid: ' + newElementUid);
 
 			this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
 		};
 
-		// // todo const insertDraggedUid = (layerTreeCatalogEntry, newUid) => {
-		// // };
-
 		// todo in the workss
 		const onDragStart = (event, entry) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:259 ~ onDragStart ~ e:', event);
 			const target = event.target;
 			const uid = entry.uid;
-			logOnce('logOnce 🚀 ~ LayerTree ~ createView ~ onDragStart ~ uid: ' + uid);
 
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + uid, uid);
@@ -191,43 +162,19 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:276 ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 		};
 
 		const onDragOver = (event, currentCatalogEntry) => {
-			logOnce(
-				'🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid: ' +
-					currentCatalogEntry.uid +
-					' (' +
-					currentCatalogEntry.label +
-					')'
-			);
-			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.label: ' + currentCatalogEntry.label);
-			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId);
-
 			const types = event.dataTransfer.types;
-			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ types: ' + types);
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId: ' + newGeoResourceId);
 
 			const matchedElementUid = types.find((element) => /uid(.+)/i.test(element));
-			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ matchedElementUid: ' + matchedElementUid);
 			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
-			// todo look for uid and insert uid element (sort tree manually)
 
 			if (newGeoResourceIdFromList) {
-				// eslint-disable-next-line no-console
-				console.log(
-					'🚀🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ if (newGeoResourceIdFromList) newGeoResourceIdFromList: ' +
-						newGeoResourceIdFromList +
-						' - currentCatalogEntry.geoResourceId: ' +
-						currentCatalogEntry.geoResourceId
-				);
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
-					logOnce('🚀🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
 					event.preventDefault();
 					return;
 				}
