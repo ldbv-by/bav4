@@ -4,7 +4,6 @@
 import DOMPurify from 'dompurify';
 
 const Black_List = [
-	'style',
 	'form',
 	'fieldset',
 	'input',
@@ -28,5 +27,5 @@ const Black_List = [
  * @returns {string} the cleaned content
  */
 export const domPurifySanitizeHtml = (dirty) => {
-	return DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true }, FORBID_TAGS: Black_List, FORBID_ATTR: ['style'] });
+	return DOMPurify.sanitize(dirty, { USE_PROFILES: { html: true, svg: true }, FORBID_TAGS: Black_List, FORBID_ATTR: ['style'] });
 };
