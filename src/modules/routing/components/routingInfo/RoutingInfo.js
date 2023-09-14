@@ -91,26 +91,29 @@ export class RoutingInfo extends MvuElement {
 					<div class="container">
 						<hr />
 						<div class="row">
-							<div class="routing-info duration col" title=${translate('routing_info_duration')}>
-								<span>${getDuration()}</span>
+							<div class="col" title=${translate('routing_info_duration')}>
+								<div class="routing-info-icon duration"></div>
+								<div class="routing-info-text">
+									<span>${getDuration()}</span>
+								</div>
 							</div>
-							<div class="routing-info distance col" title=${translate('routing_info_distance')}>
-								<span>
-									${getDistance()}
-									<b>km</b>
-								</span>
+							<div class="col" title=${translate('routing_info_distance')}>
+								<div class="routing-info-icon distance"></div>
+								<div class="routing-info-text">
+									<span>${getDistance()} <b>km</b></span>
+								</div>
 							</div>
-							<div class="routing-info uphill col" title=${translate('routing_info_uphill')}>
-								<span>
-									${getUphill()}
-									<b>m</b>
-								</span>
+							<div class="col" title=${translate('routing_info_uphill')}>
+								<div class="routing-info-icon uphill"></div>
+								<div class="routing-info-text">
+									<span>${getUphill()} <b>m</b></span>
+								</div>
 							</div>
-							<div class="routing-info downhill col" title=${translate('routing_info_downhill')}>
-								<span>
-									${getDownhill()}
-									<b>m</b>
-								</span>
+							<div class="col" title=${translate('routing_info_downhill')}>
+								<div class="routing-info-icon downhill"></div>
+								<div class="routing-info-text">
+									<span>${getDownhill()} <b>m</b></span>
+								</div>
 							</div>
 						</div>
 					</div>`

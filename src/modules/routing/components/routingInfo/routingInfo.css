@@ -1,8 +1,18 @@
 .container {
 	display: flex;
+	flex-flow: row;
 }
 
-.routing-info {
+.col {
+	display: flex;
+	flex-flow: column;
+}
+
+.row {
+	display: flex;
+}
+
+.routing-info-icon {
 	height: 2.5em;
 	width: 2.5em;
 	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
@@ -10,6 +20,12 @@
 	background: var(--primary-color);
 	mask-size: cover;
 	-webkit-mask-size: cover;
+}
+
+.routing-info-text {
+	padding: 0;
+	text-align: center;
+	color: var(--primary-color);
 }
 
 .duration {
