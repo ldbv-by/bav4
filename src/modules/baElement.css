@@ -8,7 +8,6 @@
 	margin: 0;
 	padding: 0;
 	-webkit-user-drag: none;
-	user-drag: none;
 }
 
 *,
@@ -114,8 +113,6 @@ input[type='range'] {
 	margin: 1em 0;
 	background: transparent;
 	outline-offset: 5px;
-	-webkit-user-drag: element;
-	user-drag: element;
 }
 input[type='range']::-webkit-slider-runnable-track {
 	appearance: none;
@@ -363,5 +360,4 @@ input:-webkit-autofill:focus {
 }
 .draggable {
 	-webkit-user-drag: element;
-	user-drag: element;
 }
