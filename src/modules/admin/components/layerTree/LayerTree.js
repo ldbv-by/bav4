@@ -137,6 +137,7 @@ export class LayerTree extends MvuElement {
 		}
 
 		const insertDraggedGeoResource = (currentCatalogEntryUid, newGeoResourceIdFromList) => {
+			console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ insertDraggedGeoResource()');
 			logOnce(
 				currentUid + currentCatalogEntryUid + currentGeoResourceId + newGeoResourceIdFromList + ' currentUid',
 				'🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ currentUid: ' + currentUid
@@ -160,7 +161,7 @@ export class LayerTree extends MvuElement {
 
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ this._addGeoResource()');
-			const newElementUid = this._addGeoResource(currentUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
+			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
 			// logOnce('logOnce 🚀 ~ LayerTree ~ createView ~ insertDraggedGeoResource ~ newElementUid: ' + newElementUid);
 
 			this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
@@ -197,7 +198,11 @@ export class LayerTree extends MvuElement {
 
 		const onDragOver = (event, currentCatalogEntry) => {
 			logOnce(
-				'🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid: ' + currentCatalogEntry.uid + ' (' + currentCatalogEntry.label + ')'
+				'🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.uid: ' +
+					currentCatalogEntry.uid +
+					' (' +
+					currentCatalogEntry.label +
+					')'
 			);
 			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.label: ' + currentCatalogEntry.label);
 			// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ layerTreeCatalogEntry.geoResourceId: ' + currentCatalogEntry.geoResourceId);
@@ -215,9 +220,14 @@ export class LayerTree extends MvuElement {
 
 			if (newGeoResourceIdFromList) {
 				// eslint-disable-next-line no-console
-				console.log('🚀 ~ LayerTree ~ createView ~ onDragOver ~ if (newGeoResourceIdFromList)');
+				console.log(
+					'🚀🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ if (newGeoResourceIdFromList) newGeoResourceIdFromList: ' +
+						newGeoResourceIdFromList +
+						' - currentCatalogEntry.geoResourceId: ' +
+						currentCatalogEntry.geoResourceId
+				);
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
-					logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
+					logOnce('🚀🚀🚀🚀🚀🚀🚀🚀🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
 					event.preventDefault();
 					return;
 				}
