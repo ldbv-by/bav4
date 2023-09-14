@@ -75,7 +75,7 @@ describe('RoutingInfo', () => {
 			};
 			const element = await setup(state);
 
-			const routingElements = element.shadowRoot.querySelectorAll('.routing-info');
+			const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 
 			expect(routingElements).toHaveSize(4);
 			expect(routingElements[0].innerText).toBe('< 1 min.');
