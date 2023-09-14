@@ -16,6 +16,8 @@ import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
+import { setCategory, setRouteStats, setStatus } from '../../../../store/routing/routing.action';
+import { RoutingStatusCodes } from '../../../../domain/routing';
 
 /**
  * Displays a showcase of common and reusable components or
@@ -177,6 +179,12 @@ export class ShowCase extends BaElement {
 			}
 		};
 
+		const onClickLoadRoutingData = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Ok);
+			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
+		};
+
 		let version = 1;
 		const onClickOpenBottomSheet = () => {
 			const onCloseAfterWait = () => setTimeout(() => closeBottomSheet(), 2000);
@@ -257,6 +265,7 @@ export class ShowCase extends BaElement {
 					<h3>Routing</h3>
 					<div class="example row">
 						<ba-routing-panel></ba-routing-panel>
+						<ba-button id="button1" .label=${'Load routing data'} .type=${'primary'} @click=${onClickLoadRoutingData}></ba-button>
 					</div>
 
 					<h3>Profile</h3>
