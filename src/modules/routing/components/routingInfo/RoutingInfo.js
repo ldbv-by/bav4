@@ -58,7 +58,6 @@ export class RoutingInfo extends MvuElement {
 					estimate = stats.time;
 				}
 				const seconds = estimate / 1000;
-
 				if (seconds < 60) {
 					return '< 1 min.';
 				}
