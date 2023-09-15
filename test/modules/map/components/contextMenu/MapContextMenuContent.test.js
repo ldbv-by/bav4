@@ -105,6 +105,22 @@ describe('OlMapContextMenuContent', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-map-feedback-chip')[0].center).toBe(coordinateMock);
 		});
 
+		it('renders selectable content', async () => {
+			const coordinateMock = [1000, 2000];
+			const stringifiedCoord = 'stringified coordinate';
+			spyOn(mapServiceMock, 'getCoordinateRepresentations').and.returnValue([GlobalCoordinateRepresentations.WGS84]);
+			spyOn(coordinateServiceMock, 'stringify').and.returnValue(stringifiedCoord);
+			spyOn(elevationServiceMock, 'getElevation').withArgs(coordinateMock).and.returnValue(42);
+			spyOn(administrationServiceMock, 'getAdministration').withArgs(coordinateMock).and.returnValue({ community: 'LDBV', district: 'Ref42' });
+			spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+			const element = await setup();
+
+			element.coordinate = coordinateMock;
+
+			expect(element.shadowRoot.querySelector('.container')).toBeTruthy();
+			expect(element.shadowRoot.querySelector('.content').classList.contains('selectable')).toBeTrue();
+		});
+
 		it('copies a coordinate to the clipboard', async () => {
 			const coordinateMock = [1000, 2000];
 			const stringifiedCoord = 'stringified coordinate';
