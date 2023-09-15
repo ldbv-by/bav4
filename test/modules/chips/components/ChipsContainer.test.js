@@ -353,6 +353,13 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[0]).display).toBe('block');
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('block');
 		});
+
+		it('contains only non-draggable chips', async () => {
+			const element = await setup({ chips: { current: chipsConfiguration1 } });
+			const chips = element.shadowRoot.querySelectorAll('.chips__button');
+
+			expect([...chips].every((e) => e.draggable === false)).toBeTrue();
+		});
 	});
 
 	describe('when disconnected', () => {

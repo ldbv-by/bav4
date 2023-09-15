@@ -54,3 +54,6 @@ ba-icon:focus {
 	padding-right: 1em;
 	border-right: 0;
 }
+.opacity-slider {
+	-webkit-user-drag: element;
+}

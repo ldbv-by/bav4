@@ -66,7 +66,7 @@ describe('FeatureInfoPanel', () => {
 		});
 
 		describe('and featureInfo items are available', () => {
-			it('renders a close icon-button, a container and no items', async () => {
+			it('renders a close icon-button, a container and two items', async () => {
 				const element = await setup({
 					featureInfo: {
 						//content may be a String or a TemplateResult
@@ -88,7 +88,31 @@ describe('FeatureInfoPanel', () => {
 				expect(items.item(0).querySelector('.collapse-content').innerText).toBe('content0');
 				expect(items.item(1).querySelector('.ba-list-item__text').innerText).toBe('title1');
 				expect(items.item(1).querySelector('.collapse-content').innerText).toBe('content1');
+
+				// content of every item should be selectable
+				expect([...items].every((item) => item.classList.contains('selectable'))).toBeTrue();
+
 				expect(header.innerText).toBe('featureInfo_header');
+			});
+
+			it('have only item with selectable content', async () => {
+				// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+				// All elements are not selectable by default, but can be activated with the 'selectable' class.
+				const cssClass = 'selectable';
+				const element = await setup({
+					featureInfo: {
+						//content may be a String or a TemplateResult
+						current: [
+							{ title: 'title0', content: 'content0' },
+							{ title: 'title1', content: html`content1` },
+							{ title: 'title2', content: 'content2' }
+						]
+					}
+				});
+				const items = element.shadowRoot.querySelectorAll('.ba-section');
+
+				expect(items).toHaveSize(3);
+				expect([...items].every((item) => item.classList.contains(cssClass))).toBeTrue();
 			});
 		});
 	});
