@@ -1,5 +1,5 @@
 import { RoutingStatusCodes } from '../../../src/domain/routing';
-import { setActive, setCategory, setRoute, setRouteStats, setStatus, setWaypoints } from '../../../src/store/routing/routing.action';
+import { activate, deactivate, setCategory, setRoute, setRouteStats, setStatus, setWaypoints } from '../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../test-utils.js';
 
@@ -71,11 +71,11 @@ describe('routingReducer', () => {
 	it("changes the 'active' property", () => {
 		const store = setup();
 
-		setActive(true);
+		activate();
 
 		expect(store.getState().routing.active).toBeTrue();
 
-		setActive(false);
+		deactivate();
 
 		expect(store.getState().routing.active).toBeFalse();
 	});
