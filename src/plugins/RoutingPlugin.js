@@ -1,3 +1,6 @@
+/**
+ * @module plugins/RoutingPlugin
+ */
 import { observe } from '../utils/storeUtils';
 import { addLayer, removeLayer } from '../store/layers/layers.action';
 import { BaPlugin } from './BaPlugin';
