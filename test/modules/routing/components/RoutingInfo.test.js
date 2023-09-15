@@ -85,31 +85,6 @@ describe('RoutingInfo', () => {
 				expect(routingElements[3].innerText).toBe('222 m');
 			});
 
-			it('renders standard estimate', async () => {
-				const state = {
-					routing: {
-						status: RoutingStatusCodes.Ok,
-						stats: {
-							twoDiff: [111, 222],
-							dist: 333,
-							time: 3600000
-						},
-						categoryId: 'hike'
-					}
-				};
-				const calculator = { getETAfor: () => 42000000 };
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
-				const element = await setup(state);
-
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
-
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('11:40');
-				expect(routingElements[1].innerText).toBe('0.33 km');
-				expect(routingElements[2].innerText).toBe('111 m');
-				expect(routingElements[3].innerText).toBe('222 m');
-			});
-
 			it('renders unknown category', async () => {
 				const state = {
 					routing: {
@@ -137,7 +112,7 @@ describe('RoutingInfo', () => {
 				expect(warnSpy).toHaveBeenCalledOnceWith('Unknown vehicle, no estimate available for unknown (some)');
 			});
 
-			it('renders invalid stats', async () => {
+			it('renders invalid stats (missing twoDiff)', async () => {
 				const state = {
 					routing: {
 						status: RoutingStatusCodes.Ok,
@@ -161,6 +136,55 @@ describe('RoutingInfo', () => {
 				expect(routingElements[3].innerText).toBe('0 m');
 			});
 
+			it('renders invalid stats (invalid twoDiff)', async () => {
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						stats: {
+							dist: '333',
+							twoDiff: [111],
+							time: 3600000
+						},
+						categoryId: 'some'
+					}
+				};
+				const calculator = { getETAfor: () => 42000000 };
+				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				const element = await setup(state);
+
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+				expect(routingElements).toHaveSize(4);
+				expect(routingElements[0].innerText).toBe('01:00');
+				expect(routingElements[1].innerText).toBe('0.33 km');
+				expect(routingElements[2].innerText).toBe('0 m');
+				expect(routingElements[3].innerText).toBe('0 m');
+			});
+
+			it('renders invalid stats (missing dist)', async () => {
+				const state = {
+					routing: {
+						status: RoutingStatusCodes.Ok,
+						stats: {
+							twoDiff: [111, 222],
+							time: 3600000
+						},
+						categoryId: 'some'
+					}
+				};
+				const calculator = { getETAfor: () => 42000000 };
+				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				const element = await setup(state);
+
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+				expect(routingElements).toHaveSize(4);
+				expect(routingElements[0].innerText).toBe('01:00');
+				expect(routingElements[1].innerText).toBe('0 km');
+				expect(routingElements[2].innerText).toBe('111 m');
+				expect(routingElements[3].innerText).toBe('222 m');
+			});
+
 			it('renders missing stats', async () => {
 				const state = {
 					routing: {
@@ -180,6 +204,224 @@ describe('RoutingInfo', () => {
 				expect(routingElements[1].innerText).toBe('0 km');
 				expect(routingElements[2].innerText).toBe('0 m');
 				expect(routingElements[3].innerText).toBe('0 m');
+			});
+
+			describe('when rendering estimate for specific vehicle', () => {
+				it('calculates the estimate for hike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'hike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for bvv-hike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'bvv-hike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for bike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'bike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for bvv-bike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'bvv-bike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for bayernnetz-bike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'bayernnetz-bike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for mtb', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'mtb'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for bvv-mtb', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'bvv-mtb'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
+
+				it('calculates the estimate for racingbike', async () => {
+					const state = {
+						routing: {
+							status: RoutingStatusCodes.Ok,
+							stats: {
+								twoDiff: [111, 222],
+								dist: 333,
+								time: 3600000
+							},
+							categoryId: 'racingbike'
+						}
+					};
+					const calculator = { getETAfor: () => 42000000 };
+					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('racingbike').and.returnValue(calculator);
+					const element = await setup(state);
+
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+
+					expect(routingElements).toHaveSize(4);
+					expect(routingElements[0].innerText).toBe('11:40');
+					expect(routingElements[1].innerText).toBe('0.33 km');
+					expect(routingElements[2].innerText).toBe('111 m');
+					expect(routingElements[3].innerText).toBe('222 m');
+
+					expect(calculatorSpy).toHaveBeenCalled();
+				});
 			});
 		});
 	});
