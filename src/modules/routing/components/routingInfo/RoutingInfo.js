@@ -51,20 +51,18 @@ export class RoutingInfo extends MvuElement {
 		const isVisible = status === RoutingStatusCodes.Ok;
 
 		const getDuration = () => {
-			if (stats) {
-				const vehicleType = this._getVehicleType(categoryId);
-				let estimate = this._estimateTimeFor(vehicleType, stats);
-				if (estimate === 0) {
-					estimate = stats.time;
-				}
-				const seconds = estimate / 1000;
-				if (seconds < 60) {
-					return '< 1 min.';
-				}
+			const valueOrDefault = (value, defaultValue) => {
+				return value !== 0 ? value : defaultValue;
+			};
 
-				return this._formatDuration(seconds);
+			const vehicleType = this._getVehicleType(categoryId);
+			const estimate = valueOrDefault(this._estimateTimeFor(vehicleType, stats), stats.time);
+			const seconds = estimate / 1000;
+			if (seconds < 60) {
+				return '< 1 min.';
 			}
-			return '-:-';
+
+			return this._formatDuration(seconds);
 		};
 
 		const getDistance = () => {
@@ -93,7 +91,7 @@ export class RoutingInfo extends MvuElement {
 							<div class="col" title=${translate('routing_info_duration')}>
 								<div class="routing-info-icon duration"></div>
 								<div class="routing-info-text">
-									<span>${getDuration()}</span>
+									<span>${stats ? getDuration() : '-:-'}</span>
 								</div>
 							</div>
 							<div class="col" title=${translate('routing_info_distance')}>
@@ -144,7 +142,7 @@ export class RoutingInfo extends MvuElement {
 		const minutes = Math.floor((duration % 3600) / 60);
 
 		const toTwoDigits = (timePart) => {
-			return timePart < 10 ? '0' + timePart : timePart + '';
+			return timePart < 10 ? `0${timePart}` : timePart;
 		};
 
 		return `${toTwoDigits(hours)}:${toTwoDigits(minutes)}`;
@@ -157,13 +155,13 @@ export class RoutingInfo extends MvuElement {
 		if (!this._hasValidStats(stats)) {
 			return 0;
 		}
-		const calculator = this._etaCalculatorService.getETACalculatorFor(vehicleType);
-		if (calculator) {
-			return calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]);
-		} else {
+		const calculatorMissingAction = (vehicleType) => {
 			console.warn('Unknown vehicle, no estimate available for ' + vehicleType);
 			return 0;
-		}
+		};
+
+		const calculator = this._etaCalculatorService.getETACalculatorFor(vehicleType);
+		return calculator ? calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]) : calculatorMissingAction(vehicleType);
 	}
 
 	/**
