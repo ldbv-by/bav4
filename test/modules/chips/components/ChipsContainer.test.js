@@ -354,7 +354,7 @@ describe('ChipsContainer', () => {
 			expect(window.getComputedStyle(scrollButton[1]).display).toBe('block');
 		});
 
-		it('contains not draggable chips', async () => {
+		it('contains only non-draggable chips', async () => {
 			const element = await setup({ chips: { current: chipsConfiguration1 } });
 			const chips = element.shadowRoot.querySelectorAll('.chips__button');
 
