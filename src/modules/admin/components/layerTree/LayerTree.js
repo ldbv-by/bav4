@@ -92,6 +92,7 @@ export class LayerTree extends MvuElement {
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
 		this._copyBranchRoot = (a, b) => {};
+		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (a, b) => {};
 	}
 
@@ -111,7 +112,7 @@ export class LayerTree extends MvuElement {
 				return { ...model, currentGeoResourceId: data };
 			case Update_CurrentUid:
 				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ update ~ Update_CurrentUid:', data);
+				console.log('🚀 ~ update ~ Update_CurrentUid:', data);
 				return { ...model, currentUid: data };
 			case Update_Currents:
 				// eslint-disable-next-line no-console
@@ -144,16 +145,21 @@ export class LayerTree extends MvuElement {
 			this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
 		};
 
-		// todo in the workss
-		const onDragStart = (event, entry) => {
-			const target = event.target;
-			const uid = entry.uid;
+		const onDragStart = (event, draggedEntry) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ event:', event);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntry:', draggedEntry);
 
+			const draggedEntryUid = draggedEntry.uid;
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntryUid:', draggedEntryUid);
 			event.dataTransfer.clearData();
-			event.dataTransfer.setData('UID' + uid, uid);
+			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
 
-			this._removeEntry(uid);
+			// this._removeEntry(draggedEntryUid);
 
+			const target = event.target;
 			const addIsDragged = () => {
 				target.classList.add('isdragged');
 			};
@@ -166,13 +172,20 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry) => {
+			// if (
+			// 	logOnce(
+			// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid,
+			// 		'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry)'
+			// 	)
+			// ) {
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('      event: ', event);
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('      currentCatalogEntry: ', currentCatalogEntry);
+			// }
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
-
-			const matchedElementUid = types.find((element) => /uid(.+)/i.test(element));
-			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
-
 			if (newGeoResourceIdFromList) {
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
@@ -181,15 +194,21 @@ export class LayerTree extends MvuElement {
 				insertDraggedGeoResource(currentCatalogEntry.uid, newGeoResourceIdFromList);
 			}
 
+			const matchedElementUid = types.find((element) => /uid(.+)/i.test(element));
+			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
 			if (uidFromDrag) {
 				// eslint-disable-next-line no-console
-				logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag: ' + uidFromDrag);
+				console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag: ', uidFromDrag);
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ', currentCatalogEntry.uid);
+				if (currentUid === currentCatalogEntry.uid) {
+					// eslint-disable-next-line no-console
+					console.log('🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag === currentCatalogEntry.uid -> return');
+					event.preventDefault();
+					return;
+				}
 
-				// if (newGeoResourceId === currentCatalogEntry.geoResourceId) {
-				// 	// logOnce('🚀 ~ LayerTree ~ createView ~ onDragOver ~ newGeoResourceId === currentCatalogEntry.geoResourceId -> return');
-				// 	event.preventDefault();
-				// 	return;
-				// }
+				this.signal(Update_CurrentUid, currentCatalogEntry.uid);
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
 			}
 
@@ -210,7 +229,7 @@ export class LayerTree extends MvuElement {
 
 			this._removeEntry(currentUid);
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDragLeave ~ this._removeEntry(lastUid): ', currentUid);
+			console.log('🚀 ~ LayerTree ~ createView ~ onDragLeave ~ this._removeEntry(currentUid) (with currentUid: ', currentUid, ')');
 
 			this.signal(Update_CurrentUid, '');
 		};
@@ -236,7 +255,8 @@ export class LayerTree extends MvuElement {
 			// }
 		};
 
-		const handleEditClick = (event, catalogEntry) => {
+		const handleEditClick = (event) => {
+			//, catalogEntry
 			// eslint-disable-next-line no-console
 			// console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ event:', event);
 			// eslint-disable-next-line no-console
@@ -296,7 +316,7 @@ export class LayerTree extends MvuElement {
 			this.copyBranchRoot(positionInCatalog, catalogEntry);
 		};
 
-		const handleNewClick = (e) => {
+		const handleNewClick = () => {
 			// eslint-disable-next-line no-console
 			// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
 		};
@@ -322,7 +342,7 @@ export class LayerTree extends MvuElement {
 					</span>
 					${entry.children
 						? html`
-								<button @click="${(event) => handleEditClick(event, entry)}">Edit</button>
+								<button @click="${(event) => handleEditClick(event)}">Edit</button>
 								<button @click="${() => handleCopyClick(entry)}">Copy</button>
 								<button @click="${() => handleDeleteClick(entry)}">X</button>
 								<ul>
@@ -343,7 +363,7 @@ export class LayerTree extends MvuElement {
 
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema</h2>
-					<button @click="${(event) => handleNewClick(event)}">New</button>
+					<button @click="${handleNewClick}">New</button>
 
 					<select @change="${this.handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}

@@ -63,11 +63,11 @@ export class LayerList extends MvuElement {
 
 		const onDragStart = (e) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerList ~ onDragStart ~ e:', e);
+			console.log('🚀 ~ LayerList ~ createView ~ onDragStart ~ e:', e);
 			const target = e.target;
 			const id = target.id;
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerList ~ createView ~ LayerList ~ onDragStart ~ id:', id);
+			console.log('🚀 ~ LayerList ~ createView ~ onDragStart ~ id:', id);
 
 			e.dataTransfer.clearData();
 			e.dataTransfer.setData('geoResourceId' + id, id);

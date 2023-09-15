@@ -230,7 +230,6 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources, dummy } = model;
-		// console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const calcPosition = (index, catalogEntry, arrayWithEntry) => {
 			if (index > 0) {
@@ -243,11 +242,40 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
-		const moveElement = (currentUid, movedUid) => {
+		const findElement = (uid, inArray) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ createView ~ currentUid:', currentUid);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ createView ~ movedUid:', movedUid);
+			console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ inArray:', inArray);
+
+			for (let index = 0; index < inArray.length; index++) {
+				const element = inArray[index];
+
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~  AdminPanel ~ createView ~ inArray.forEach ~ element:', element);
+				if (element.uid === uid) {
+					// eslint-disable-next-line no-console
+					console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ element.uid === uid');
+					return element;
+				}
+				// if (element.children) {
+				// 	// eslint-disable-next-line no-console
+				// 	console.log(' 🚀 ~ AdminPanel ~ createView ~ findElement ~ 🚀 🚀 🚀 🚀 🚀 🚀 🚀 🚀 element.children found');
+				// 	return findElement(uid, element.children);
+				// }
+			}
+			console.log('🚀 nach for 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ');
+		};
+
+		const moveElement = (currentUid, uidFromDrag) => {
+			logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ uidFromDrag: ' + uidFromDrag);
+			if (logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentUid: ' + currentUid)) {
+				// eslint-disable-next-line no-console
+				console.log('      (for dragged element ~ uidFromDrag: ', uidFromDrag, ')');
+			}
+
+			findElement(uidFromDrag, catalogWithResourceData);
+			// const draggedElement = findElement(uidFromDrag, catalogWithResourceData);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ createView ~ moveElement ~ draggedElement:', draggedElement);
 		};
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
@@ -370,12 +398,10 @@ export class AdminPanel extends MvuElement {
 
 		const showChildren = (uid) => {
 			const updatedCatalogWithResourceData = showChildrenRecursive(uid, [...catalogWithResourceData]);
-			// console.log('🚀 ~ AdminPanel ~ showChildren ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
 		const showChildrenRecursive = (uid, catalog) => {
-			// console.log('🚀 ~ AdminPanel ~ showChildrenRecursive ~ uid:', uid);
 			if (!uid) {
 				return catalog;
 			}
