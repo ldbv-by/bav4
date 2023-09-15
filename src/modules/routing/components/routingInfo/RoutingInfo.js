@@ -51,12 +51,8 @@ export class RoutingInfo extends MvuElement {
 		const isVisible = status === RoutingStatusCodes.Ok;
 
 		const getDuration = () => {
-			const valueOrDefault = (value, defaultValue) => {
-				return value !== 0 ? value : defaultValue;
-			};
-
 			const vehicleType = this._getVehicleType(categoryId);
-			const estimate = valueOrDefault(this._estimateTimeFor(vehicleType, stats), stats.time);
+			const estimate = this._estimateTimeFor(vehicleType, stats) ?? stats.time;
 			const seconds = estimate / 1000;
 			if (seconds < 60) {
 				return '< 1 min.';
@@ -153,11 +149,11 @@ export class RoutingInfo extends MvuElement {
 		// - https://discuss.graphhopper.com/t/walking-duration-estimate-elevation-ignored/4621/4
 		// - https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf
 		if (!this._hasValidStats(stats)) {
-			return 0;
+			return null;
 		}
 		const calculatorMissingAction = (vehicleType) => {
 			console.warn('Unknown vehicle, no estimate available for ' + vehicleType);
-			return 0;
+			return null;
 		};
 
 		const calculator = this._etaCalculatorService.getETACalculatorFor(vehicleType);
