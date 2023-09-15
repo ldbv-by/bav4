@@ -1,5 +1,5 @@
 import { $injector } from '../../../../src/injection';
-import { MvuElement } from '../../../../src/modules/MvuElement';
+import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '../../../../src/modules/routing/components/routingPanel/RoutingPanel';
 import { BvvRoutingService, mockCategoriesProvider } from '../../../../src/services/RoutingService';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
@@ -28,7 +28,7 @@ describe('RoutingPanel', () => {
 		it('inherits from MvuElement', async () => {
 			const element = await setup();
 
-			expect(element instanceof MvuElement).toBeTrue();
+			expect(element instanceof AbstractMvuContentPanel).toBeTrue();
 		});
 	});
 

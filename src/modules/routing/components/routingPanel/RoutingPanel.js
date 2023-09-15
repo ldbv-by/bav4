@@ -3,12 +3,12 @@
  */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { $injector } from '../../../../injection/index';
-import { MvuElement } from '../../../MvuElement';
+import { AbstractMvuContentPanel } from '../../../menu/components/mainMenu/content/AbstractMvuContentPanel';
 import css from './routingPanel.css';
 
 const Update_Categories = 'update_categories';
 
-export class RoutingPanel extends MvuElement {
+export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({ categories: [] });
 
