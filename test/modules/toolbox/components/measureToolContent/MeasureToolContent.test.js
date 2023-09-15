@@ -217,6 +217,23 @@ describe('MeasureToolContent', () => {
 			expect(unitSpans[1].textContent).toBe('m²');
 		});
 
+		it('shows selectable measurement values', async () => {
+			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+			// All elements are not selectable by default, but can be activated with the 'selectable' class.
+			const cssClass = 'selectable';
+			const state = {
+				measurement: {
+					statistic: { length: 42, area: 0 },
+					reset: null,
+					remove: null
+				}
+			};
+			const element = await setup(state);
+			const valueSpans = element.shadowRoot.querySelectorAll('.prime-text-value');
+
+			expect([...valueSpans].every((span) => span.classList.contains(cssClass))).toBeTrue();
+		});
+
 		it('contains test-id attributes', async () => {
 			const state = {
 				measurement: {
