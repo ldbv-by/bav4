@@ -28,7 +28,7 @@ describe('Elevation provider', () => {
 			expect(httpServiceSpy).toHaveBeenCalled();
 		});
 
-		it('throws an error when backend connot fulfill', async () => {
+		it('throws an error when backend cannot fulfill', async () => {
 			const backendUrl = 'https://backend.url';
 			const configServiceSpy = spyOn(configService, 'getValueAsPath').withArgs('BACKEND_URL').and.returnValue(backendUrl);
 			const httpServiceSpy = spyOn(httpService, 'get').and.returnValue(Promise.resolve(new Response(null, { status: 500 })));
