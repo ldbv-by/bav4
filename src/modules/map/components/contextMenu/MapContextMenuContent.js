@@ -140,7 +140,7 @@ export class MapContextMenuContent extends MvuElement {
 				</style>
 
 				<div class="container">
-					<ul class="content">
+					<ul class="content selectable">
 						<li>
 							<span class="label">${translate('map_contextMenuContent_community_label')}</span><span class="coordinate">${community || '-'}</span>
 						</li>

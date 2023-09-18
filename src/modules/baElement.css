@@ -7,6 +7,7 @@
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+	-webkit-user-drag: none;
 }
 
 *,
@@ -352,4 +353,11 @@ input:-webkit-autofill:focus {
 */
 .hide {
 	display: none !important;
+}
+.selectable {
+	-webkit-user-select: text;
+	user-select: text;
+}
+.draggable {
+	-webkit-user-drag: element;
 }

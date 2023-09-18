@@ -255,14 +255,17 @@ describe('AttributionInfo', () => {
 				const toggleButton = element.shadowRoot.querySelector('.collapse-button');
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(0);
 
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(1);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(1);
 
 				toggleButton.click();
 
 				expect(element.shadowRoot.querySelectorAll('.attribution-container.isopen')).toHaveSize(0);
+				expect(element.shadowRoot.querySelectorAll('.attribution-container.selectable')).toHaveSize(0);
 			});
 		});
 
