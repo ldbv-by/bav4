@@ -2,7 +2,6 @@
 .ba-list-item {
 	display: flex;
 	text-decoration: none;
-	overflow-wrap: break-word;
 	background: transparent;
 	border: 0;
 	width: 100%;
@@ -15,7 +14,7 @@
 	background: var(--header-background-color);
 }
 .ba-list-item span {
-	overflow-wrap: break-word;
+	overflow-wrap: anywhere;
 }
 .ba-list-item > * {
 	padding-top: 0.8em;

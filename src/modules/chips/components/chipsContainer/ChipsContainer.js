@@ -156,7 +156,7 @@ export class ChipsContainer extends MvuElement {
 		const getLink = (chip) => {
 			return html`
 				${renderStyle(chip)}
-				<a class="chips__${chip.id} chips__button" href="${chip.href}" target="_blank">
+				<a class="chips__${chip.id} chips__button" draggable="false" href="${chip.href}" target="_blank">
 					${renderIcon(chip)}
 					<span class="chips__button-text">${chip.title}</span>
 				</a>
@@ -166,7 +166,7 @@ export class ChipsContainer extends MvuElement {
 		const getButton = (chip) => {
 			return html`
 				${renderStyle(chip)}
-				<button class="chips__${chip.id} chips__button" @click=${() => openButtonModal(chip)}>
+				<button class="chips__${chip.id} chips__button" draggable="false" @click=${() => openButtonModal(chip)}>
 					${renderIcon(chip)}
 					<span class="chips__button-text">${chip.title}</span>
 				</button>
