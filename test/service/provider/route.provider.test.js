@@ -24,7 +24,7 @@ describe('Route provider', () => {
 
 		it('loads a route', async () => {
 			const backendUrl = 'https://backend.url/';
-			const vehicles = ['foo'];
+			const categories = ['foo'];
 			const coordinates3857 = [
 				[1, 2],
 				[3, 4]
@@ -36,7 +36,7 @@ describe('Route provider', () => {
 				.withArgs(
 					backendUrl + 'routing/route',
 					JSON.stringify({
-						vehicle: vehicles,
+						vehicle: categories,
 						points: [
 							[11, 12],
 							[13, 14]
@@ -47,7 +47,7 @@ describe('Route provider', () => {
 				)
 				.and.resolveTo(new Response(JSON.stringify(mockResponse)));
 
-			await expectAsync(bvvRouteProvider(vehicles, coordinates3857)).toBeResolvedTo(mockResponse);
+			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeResolvedTo(mockResponse);
 
 			expect(configServiceSpy).toHaveBeenCalled();
 			expect(httpServiceSpy).toHaveBeenCalled();
@@ -56,7 +56,7 @@ describe('Route provider', () => {
 
 		it('throws an Error when status code != 200', async () => {
 			const backendUrl = 'https://backend.url/';
-			const vehicles = ['foo'];
+			const categories = ['foo'];
 			const coordinates3857 = [
 				[1, 2],
 				[3, 4]
@@ -68,7 +68,7 @@ describe('Route provider', () => {
 				.withArgs(
 					backendUrl + 'routing/route',
 					JSON.stringify({
-						vehicle: vehicles,
+						vehicle: categories,
 						points: [
 							[11, 12],
 							[13, 14]
@@ -79,7 +79,7 @@ describe('Route provider', () => {
 				)
 				.and.resolveTo(new Response(null, { status: statusCode }));
 
-			await expectAsync(bvvRouteProvider(vehicles, coordinates3857)).toBeRejectedWithError(
+			await expectAsync(bvvRouteProvider(categories, coordinates3857)).toBeRejectedWithError(
 				`A route could not be retrieved: Http-Status ${statusCode}`
 			);
 		});

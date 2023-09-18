@@ -9,7 +9,7 @@ import { $injector } from '../../injection';
  * @function
  * @type {module:services/RoutingService~routeProvider}
  */
-export const bvvRouteProvider = async (vehicles, coordinates3857) => {
+export const bvvRouteProvider = async (categories, coordinates3857) => {
 	const {
 		HttpService: httpService,
 		ConfigService: configService,
@@ -19,7 +19,7 @@ export const bvvRouteProvider = async (vehicles, coordinates3857) => {
 	const coordinates4326 = coordinates3857.map((coord3857) => coordinateService.toLonLat(coord3857));
 
 	const payload = {
-		vehicle: vehicles,
+		vehicle: categories,
 		points: coordinates4326
 	};
 
