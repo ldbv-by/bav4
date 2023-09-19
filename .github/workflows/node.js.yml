@@ -27,6 +27,7 @@ jobs:
           npm run es-check
           npm run doc:check
           npm run doc
+          npm run build:prod && npm run bundlesize
 
       - name: Run tests
         run: |
