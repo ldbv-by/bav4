@@ -49,4 +49,12 @@ describe('Waypoints', () => {
 			});
 		});
 	});
+
+	describe('when initialized', () => {
+		it('renders nothing', async () => {
+			const element = await setup();
+
+			expect(element.shadowRoot.childElementCount).toHaveSize(0);
+		});
+	});
 });
