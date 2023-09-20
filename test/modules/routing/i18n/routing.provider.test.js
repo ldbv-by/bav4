@@ -15,6 +15,17 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_category_label_bvv_bike).toBe('Fahrrad');
 		expect(map.routing_category_label_bvv_mtb).toBe('Mountainbike');
 		expect(map.routing_category_label_racingbike).toBe('Rennrad');
+		expect(map.routing_waypoints_start).toBe('Start');
+		expect(map.routing_waypoints_waypoint).toBe('Wegpunkt');
+		expect(map.routing_waypoints_destination).toBe('Ziel');
+		expect(map.routing_waypoints_as_start).toBe('als Start verwenden...');
+		expect(map.routing_waypoints_as_destination).toBe('als Ziel verwenden...');
+		expect(map.routing_waypoints_title).toBe('Wegpunkte');
+		expect(map.routing_waypoints_remove_all).toBe('Alle entfernen');
+		expect(map.routing_waypoints_reverse).toBe('Reihenfolge umkehren');
+		expect(map.routing_waypoint_move_down).toBe('nach hinten');
+		expect(map.routing_waypoint_move_up).toBe('nach vorne');
+		expect(map.routing_waypoint_move_remove).toBe('entfernen');
 	});
 
 	it('provides translation for en', () => {
@@ -31,10 +42,21 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_category_label_bvv_bike).toBe('Bike');
 		expect(map.routing_category_label_bvv_mtb).toBe('Mountainbike');
 		expect(map.routing_category_label_racingbike).toBe('Racingbike');
+		expect(map.routing_waypoints_start).toBe('Start');
+		expect(map.routing_waypoints_waypoint).toBe('Waypoint');
+		expect(map.routing_waypoints_destination).toBe('Destination');
+		expect(map.routing_waypoints_as_start).toBe('use as start...');
+		expect(map.routing_waypoints_as_destination).toBe('use as destination...');
+		expect(map.routing_waypoints_title).toBe('Waypoints');
+		expect(map.routing_waypoints_remove_all).toBe('Remove all');
+		expect(map.routing_waypoints_reverse).toBe('Reverse');
+		expect(map.routing_waypoint_move_down).toBe('move forward');
+		expect(map.routing_waypoint_move_up).toBe('move backward');
+		expect(map.routing_waypoint_move_remove).toBe('remove');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 11;
+		const expectedSize = 22;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

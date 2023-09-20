@@ -22,9 +22,9 @@ export const provide = (lang) => {
 				routing_waypoints_title: 'Waypoints',
 				routing_waypoints_remove_all: 'Remove all',
 				routing_waypoints_reverse: 'Reverse',
-				routing_waypoint_move_down: 'move Waypoint forward',
-				routing_waypoint_move_up: 'move Waypoint backward',
-				routing_waypoint_move_remove: 'remove Waypoint'
+				routing_waypoint_move_down: 'move forward',
+				routing_waypoint_move_up: 'move backward',
+				routing_waypoint_move_remove: 'remove'
 			};
 
 		case 'de':
@@ -49,9 +49,9 @@ export const provide = (lang) => {
 				routing_waypoints_title: 'Wegpunkte',
 				routing_waypoints_remove_all: 'Alle entfernen',
 				routing_waypoints_reverse: 'Reihenfolge umkehren',
-				routing_waypoint_move_down: 'Wegpunkt nach hinten',
-				routing_waypoint_move_up: 'Wegpunkt nach vorne',
-				routing_waypoint_move_remove: 'Wegpunkt entfernen'
+				routing_waypoint_move_down: 'nach hinten',
+				routing_waypoint_move_up: 'nach vorne',
+				routing_waypoint_move_remove: 'entfernen'
 			};
 
 		default:
