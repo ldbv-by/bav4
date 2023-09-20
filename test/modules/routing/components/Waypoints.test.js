@@ -35,4 +35,18 @@ describe('Waypoints', () => {
 			expect(element instanceof MvuElement).toBeTrue();
 		});
 	});
+
+	describe('when instantiated', () => {
+		it('has a model containing default values', async () => {
+			await setup();
+			const model = new Waypoints().getModel();
+
+			expect(model).toEqual({
+				status: 900,
+				waypoints: [],
+				draggedItem: false,
+				collapsedWaypoints: false
+			});
+		});
+	});
 });
