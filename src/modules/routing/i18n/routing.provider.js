@@ -13,7 +13,18 @@ export const provide = (lang) => {
 				routing_category_label_bvv_hike: 'Hiking',
 				routing_category_label_bvv_bike: 'Bike',
 				routing_category_label_bvv_mtb: 'Mountainbike',
-				routing_category_label_racingbike: 'Racingbike'
+				routing_category_label_racingbike: 'Racingbike',
+				routing_waypoints_start: 'Start',
+				routing_waypoints_waypoint: 'Waypoint',
+				routing_waypoints_destination: 'Destination',
+				routing_waypoints_as_start: 'use as start...',
+				routing_waypoints_as_destination: 'use as destination...',
+				routing_waypoints_title: 'Waypoints',
+				routing_waypoints_remove_all: 'Remove all',
+				routing_waypoints_reverse: 'Reverse',
+				routing_waypoint_move_down: 'move Waypoint forward',
+				routing_waypoint_move_up: 'move Waypoint backward',
+				routing_waypoint_move_remove: 'remove Waypoint'
 			};
 
 		case 'de':
@@ -29,7 +40,18 @@ export const provide = (lang) => {
 				routing_category_label_bvv_hike: 'Wandern',
 				routing_category_label_bvv_bike: 'Fahrrad',
 				routing_category_label_bvv_mtb: 'Mountainbike',
-				routing_category_label_racingbike: 'Rennrad'
+				routing_category_label_racingbike: 'Rennrad',
+				routing_waypoints_start: 'Start',
+				routing_waypoints_waypoint: 'Wegpunkt',
+				routing_waypoints_destination: 'Ziel',
+				routing_waypoints_as_start: 'als Start verwenden...',
+				routing_waypoints_as_destination: 'als Ziel verwenden...',
+				routing_waypoints_title: 'Wegpunkte',
+				routing_waypoints_remove_all: 'Alle entfernen',
+				routing_waypoints_reverse: 'Reihenfolge umkehren',
+				routing_waypoint_move_down: 'Wegpunkt nach hinten',
+				routing_waypoint_move_up: 'Wegpunkt nach vorne',
+				routing_waypoint_move_remove: 'Wegpunkt entfernen'
 			};
 
 		default:

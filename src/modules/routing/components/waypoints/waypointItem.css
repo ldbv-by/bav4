@@ -1,0 +1,27 @@
+.container {
+	display: flex;
+	align-items: center;
+}
+.icon {
+	height: 1.6em;
+	width: 1.6em;
+	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
+	padding: 0;
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+
+	mask-image: url('../assets/intermediate.svg');
+	-webkit-mask-image: url('../assets/intermediate.svg');
+}
+.start {
+	background: green;
+	mask-image: url('../assets/marker.svg');
+	-webkit-mask-image: url('../assets/marker.svg');
+}
+
+.destination {
+	background: rgb(214, 12, 12);
+	mask-image: url('../assets/marker.svg');
+	-webkit-mask-image: url('../assets/marker.svg');
+}

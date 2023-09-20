@@ -51,6 +51,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 					<!-- todo:: placing chips 'export' and 'share' here-->
 				</div>
 				<ba-routing-info></ba-routing-info>
+				<ba-routing-waypoints></ba-routing-waypoints>
 			</div>`;
 	}
 

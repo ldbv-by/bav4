@@ -16,7 +16,7 @@ import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
-import { setCategory, setRouteStats, setStatus } from '../../../../store/routing/routing.action';
+import { setCategory, setRouteStats, setStatus, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 
 /**
@@ -183,6 +183,11 @@ export class ShowCase extends BaElement {
 			setCategory('bike');
 			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
+			setWaypoints([
+				[1328315.0062647895, 6089975.78297438],
+				[1310581.6157026286, 6045336.558455837],
+				[1310381.715706286, 6045436.855837]
+			]);
 		};
 
 		let version = 1;
