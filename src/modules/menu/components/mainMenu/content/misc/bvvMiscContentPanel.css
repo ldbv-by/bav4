@@ -17,6 +17,10 @@
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
 }
+.legend {
+	mask-image: url('assets/legend.svg');
+	-webkit-mask-image: url('assets/legend.svg');
+}
 .feedback {
 	mask-image: url('assets/feedback.svg');
 	-webkit-mask-image: url('assets/feedback.svg');

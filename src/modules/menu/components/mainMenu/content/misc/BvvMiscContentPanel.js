@@ -34,12 +34,30 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div class="ba-list">
-				<div class="ba-list-item  ba-list-item__header">
+
+
+			<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon icon feedback"> </span>
+			</span>
+			<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+		</button>
+		<a class="ba-list-item" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+			<span class="ba-list-item__pre">
+				<span class="ba-list-item__icon icon legend"> </span>
+			</span>
+			<span class="ba-list-item__text vertical-center">Legende</span>
+		</a>
+
+
+
+
+				<div class="ba-list-item  ba-list-item__header hide">
 					<span class="ba-list-item__text ">
 						<span class="ba-list-item__primary-text">${translate('menu_misc_content_panel_settings')}</span>
 					</span>
 				</div>
-				<div class="ba-list-item divider">
+				<div class="ba-list-item divider hide">
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_dark_mode')}</span>
 					<span class="ba-list-item__after">
 						<ba-theme-toggle></ba-theme-toggle>
@@ -56,12 +74,7 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 					</span>
 					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_help')}</span>
 				</a>
-				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
-					<span class="ba-list-item__pre">
-						<span class="ba-list-item__icon icon feedback"> </span>
-					</span>
-					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
-				</button>
+
 				<a class="ba-list-item" href="https://www.ldbv.bayern.de/service/kontakt.html" target="_blank">
 					<span class="ba-list-item__pre">
 						<span class="ba-list-item__icon icon contact"> </span>
