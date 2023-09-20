@@ -389,6 +389,7 @@
 	bottom: 0em;
 	right: 0em;
 	overview: scroll;
+	background: var(--header-background-color);
 }
 
 .zoom-buttons {
@@ -399,6 +400,7 @@
 
 .zoom-buttons button:hover {
 	background: var(--primary-color);
+	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
 	color: var(--text3);
 }
 .tool-bar-mobile-buttons {
@@ -465,6 +467,7 @@
 	height: 5em;
 	width: 5em;
 	background-color: var(--primary-color);
+	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
 	margin: 2em 0.5em;
 	border: none;
 }

@@ -191,12 +191,8 @@ export class ToolBar extends MvuElement {
 				</div>
 				<div class="tool-bar tool-bar-mobile  ${getOverlayTestClass()}">
 					<div class="tool-bar-mobile-buttons">
+
 						<div class="zoom-buttons">
-							<button class="luftbild"></button>
-							<button @click=${toggleSchema} class="moon"></button>
-						</div>
-						<div class="zoom-buttons">
-							<button class="fullscreen-icon "></button>
 							<button class="search-icon"></button>
 						</div>
 						<div class="zoom-buttons">
@@ -206,7 +202,7 @@ export class ToolBar extends MvuElement {
 						<div class="zoom-buttons">
 							<button @click="${zoomToExtent}" class="zoom-to-extent-icon"></button>
 							<button @click="${onClick}" class="close-icon "></button>
-						</div>
+							</div>
 					</div>
 				</div>
 			</div>

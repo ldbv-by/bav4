@@ -460,9 +460,116 @@ input[type='search']::-webkit-search-results-decoration {
 }
 
 .is-open-mobile .header {
-	transform: translate(35em, 0);
+	transform: translate(33.5em, 0);
 }
 
 .is-open-mobile .header__logo {
-	transform: translate(7.5em, 0);
+	transform: translate(6em, 0);
+}
+.test {
+	position: absolute;
+	height: 100%;
+	width: 5.5em;
+	background: var(--tertiary-bg-color);
+	background: var(--header-background-color);
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+}
+
+.test button {
+	height: 6em;
+	width: 100%;
+	background: transparent;
+	border: none;
+	display: flex;
+	flex-direction: column;
+}
+.test button:first-child {
+	border-bottom: 1px dotted var(--secondary-color);
+}
+
+.seperator{
+	border-bottom: 1px dotted var(--secondary-color) !important;
+}
+
+
+.test button .icon {
+	height: 2.1em;
+	width: 2.1em;
+	background: var(--text4);
+	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
+	margin: auto;
+	margin-bottom: 0;
+}
+.test button .text {
+	text-align: center;
+	margin: auto;
+	font-size: 0.8em;
+	margin-top: 0.5em;
+	color: var(--text1);
+}
+.test button:hover {
+	background: var(--primary-bg-color);
+}
+
+.home {
+	mask: url('assets/home.svg');
+	-webkit-mask: url('assets/home.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.routing {
+	mask: url('assets/routing.svg');
+	-webkit-mask: url('assets/routing.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.objektinfo {
+	mask: url('assets/objektinfo.svg');
+	-webkit-mask: url('assets/objektinfo.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.time {
+	mask: url('assets/time.svg');
+	-webkit-mask: url('assets/time.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.br {
+	mask: url('assets/br.svg');
+	-webkit-mask: url('assets/br.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.mapconf {
+	mask: url('assets/mapconf.svg');
+	-webkit-mask: url('assets/mapconf.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.gespeichert {
+	mask: url('assets/gespeichert.svg');
+	-webkit-mask: url('assets/gespeichert.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.legende {
+	mask: url('assets/legende.svg');
+	-webkit-mask: url('assets/legende.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.opendata {
+	mask: url('assets/opendata.svg');
+	-webkit-mask: url('assets/opendata.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.stars {
+	mask: url('assets/stars.svg');
+	-webkit-mask: url('assets/stars.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
 }

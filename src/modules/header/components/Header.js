@@ -2,7 +2,7 @@
  * @module modules/header/components/Header
  */
 import { html } from 'lit-html';
-import { open as openMainMenu, setTab, toggle } from '../../../store/mainMenu/mainMenu.action';
+import { open as openMainMenu, setTab, toggle, toggleNav } from '../../../store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../domain/mainMenu';
 import { $injector } from '../../../injection';
 import css from './header.css';
@@ -28,6 +28,7 @@ export class Header extends MvuElement {
 	constructor() {
 		super({
 			isOpen: false,
+			isOpenNav: false,
 			tabIndex: null,
 			isFetching: false,
 			layers: [],
@@ -65,7 +66,7 @@ export class Header extends MvuElement {
 	onInitialize() {
 		this.observe(
 			(state) => state.mainMenu,
-			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, tabIndex: mainMenu.tab })
+			(mainMenu) => this.signal(Update_IsOpen_TabIndex, { isOpen: mainMenu.open, isOpenNav: mainMenu.openNav, tabIndex: mainMenu.tab })
 		);
 		this.observe(
 			(state) => state.network.fetching,
@@ -120,7 +121,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
 
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
@@ -218,6 +219,10 @@ export class Header extends MvuElement {
 			setTab(TabIds.MISC);
 			openMainMenu();
 		};
+		const openFeatureInfo = () => {
+			setTab(TabIds.FEATUREINFO);
+			openMainMenu();
+		};
 
 		const clearSearchInput = () => {
 			const input = this.shadowRoot.getElementById('input');
@@ -227,18 +232,103 @@ export class Header extends MvuElement {
 		};
 
 		const onClick = () => {
-			this._isOpen = !this._isOpen;
-			this.render();
+			toggleNav();
 		};
 
 		const getOverlayTestClass = () => {
-			return this._isOpen ? 'is-open-mobile' : '';
+			return isOpenNav ? 'is-open-mobile' : '';
+		};
+
+		const getHideClass = () => {
+			return isOpen ? '' : 'hide';
 		};
 
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
+				<div class="test ${getHideClass()}">
+					<button @click="${openMapLayerTab}"  >
+						<span class="icon home">
+						</span>
+						<span class="text">
+							Home
+						</span>					
+					</button>
+
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon opendata">
+						</span>
+						<span class="text">
+							Open Data
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon mapconf">
+						</span>
+						<span class="text">
+							Basiskarten Konfigurator
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon gespeichert">
+						</span>
+						<span class="text">
+							gespeichert
+						</span>					
+					</button>
+
+
+
+
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon routing">
+						</span>
+						<span class="text">
+							Routing
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon objektinfo">
+						</span>
+						<span class="text">
+							Objekt-Info
+						</span>					
+					</button>
+
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon legende">
+						</span>
+						<span class="text">
+							Legende
+						</span>					
+					</button>
+
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon time">
+						</span>
+						<span class="text">
+							Zeitreise
+						</span>					
+					</button>
+					<button @click="${openFeatureInfo}"  >
+						<span class="icon br">
+						</span>
+						<span class="text">
+							BR-Radltour
+						</span>					
+					</button>
+
+
+
+					<button @click="${openFeatureInfo}"  class="hide">
+						<span class="icon stars">
+						</span>
+						<span class="text">
+						Entdecken
+						</span>					
+					</button>
+				</div>
 				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}  ${getOverlayTestClass()}">
 					<div class='header__logo'>				
 						<div class="action-button"  @click="${onClick}">

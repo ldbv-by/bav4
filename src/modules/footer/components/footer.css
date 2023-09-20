@@ -21,6 +21,10 @@
 .is-open {
 	transform: translate(28em, 0);
 }
+.is-open-nav {
+	transform: translate(33.5em, 0);
+}
+
 .is-portrait .footer,
 .is-tablet .footer,
 .is-embedded .footer {

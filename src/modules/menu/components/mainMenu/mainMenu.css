@@ -70,6 +70,11 @@
 .is-open {
 	transform: translate(28em, 0);
 }
+
+.is-open-nav {
+	transform: translate(33.5em, 0);
+}
+
 .is-open .arrow {
 	left: 0;
 	transform: rotate(180deg);
@@ -288,7 +293,7 @@ input[type='range']:focus {
 }
 @keyframes slideInUp {
 	0% {
-		transform: translateY(5em);
+		transform: translateY(0em);
 	}
 	100% {
 		transform: translateY(0);

@@ -31,6 +31,7 @@ export class MainMenu extends MvuElement {
 		super({
 			tab: null,
 			open: false,
+			openNav: false,
 			portrait: false,
 			minWidth: false,
 			observeResponsiveParameter: false
@@ -62,6 +63,7 @@ export class MainMenu extends MvuElement {
 				return {
 					...model,
 					open: data.open,
+					openNav: data.openNav,
 					tab: data.tab
 				};
 			case Update_Media:
@@ -111,7 +113,7 @@ export class MainMenu extends MvuElement {
 	 * @override
 	 */
 	createView(model) {
-		const { open, tab, portrait, minWidth, observeResponsiveParameter } = model;
+		const { open, openNav, tab, portrait, minWidth, observeResponsiveParameter } = model;
 
 		const getOrientationClass = () => (portrait ? 'is-portrait' : 'is-landscape');
 
@@ -120,6 +122,8 @@ export class MainMenu extends MvuElement {
 		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO ? 'is-full-size' : '');
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
+
+		const getOverlayNavClass = () => (openNav ? 'is-open-nav' : '');
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 
@@ -162,7 +166,7 @@ export class MainMenu extends MvuElement {
 				${css}
 			</style>
 			<div class="${getOrientationClass()} ${getPreloadClass()}">
-				<div id="mainmenu" class="main-menu ${getOverlayClass()} ${getMinWidthClass()} ${getFullSizeClass()}">
+				<div id="mainmenu" class="main-menu ${getOverlayClass()} ${getOverlayNavClass()} ${getMinWidthClass()} ${getFullSizeClass()}">
 					<button id="toggle" @click="${toggle}" title=${translate('menu_main_open_button')} class="main-menu__close-button">
 						<span class="main-menu__close-button-text">${translate('menu_main_open_button')}</span>
 						<i class="resize-icon"></i>

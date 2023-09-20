@@ -17,6 +17,7 @@ export class MainMenuPlugin extends BaPlugin {
 		super();
 		this._previousTab = null;
 		this._open = null;
+		this._openNav = true;
 	}
 
 	_init() {
@@ -39,8 +40,8 @@ export class MainMenuPlugin extends BaPlugin {
 	 */
 	async register(store) {
 		this._init();
-
 		this._open = store.getState().mainMenu.open;
+		this._openNav = store.getState().mainMenu.openNav;
 		this._previousTab = store.getState().mainMenu.tab;
 
 		const onFeatureInfoQueryingChanged = (querying, state) => {

@@ -48,6 +48,9 @@
 	padding-bottom: 0.5em;
 	white-space: nowrap;
 }
+.is-desktop.is-open.is-open-nav.chips__container {
+	transform: translate(33.5em, 0);
+}
 .is-tablet.is-open.chips__container {
 	right: 29em;
 	margin-left: 1em;
