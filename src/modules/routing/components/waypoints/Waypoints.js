@@ -80,7 +80,7 @@ export class Waypoints extends MvuElement {
 					<div class="container">
 						<hr />
 						<div class="details-selector" title=${title} @click="${toggleCollapseWayPoints}">
-							<span class="sub-header-text">${translate('routing_waypoints_title')}</span>
+							<span class="title">${translate('routing_waypoints_title')}</span>
 							<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
 						</div>
 						<div class="${classMap(bodyCollapseClassInfo)}">
@@ -110,7 +110,7 @@ export class Waypoints extends MvuElement {
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
 					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
-					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
+					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
 					<div></div>
 			  </div>`
 			: nothing;

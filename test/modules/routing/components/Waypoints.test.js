@@ -11,7 +11,7 @@ describe('Waypoints', () => {
 	const environmentService = {
 		isTouch: () => false
 	};
-
+	let store;
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -20,7 +20,7 @@ describe('Waypoints', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
@@ -57,22 +57,75 @@ describe('Waypoints', () => {
 
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
-
+		const defaultRoutingState = {
+			routing: {
+				status: RoutingStatusCodes.Ok,
+				waypoints: [
+					[0, 0],
+					[1, 1],
+					[2, 2]
+				]
+			}
+		};
 		it('renders three waypoints', async () => {
-			const routingState = {
-				routing: {
-					status: RoutingStatusCodes.Ok,
-					waypoints: [
-						[0, 0],
-						[1, 1],
-						[2, 2]
-					]
-				}
-			};
-			const element = await setup(routingState);
+			const element = await setup(defaultRoutingState);
 
 			const waypointElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 			expect(waypointElements).toHaveSize(3);
+		});
+
+		it('renders three plus one surrounding placeholders', async () => {
+			const element = await setup(defaultRoutingState);
+
+			const placeholderElements = element.shadowRoot.querySelectorAll('.placeholder');
+			expect(placeholderElements).toHaveSize(4); // Surrounding placeholders should be n +1
+		});
+
+		it('renders a title', async () => {
+			const element = await setup(defaultRoutingState);
+
+			expect(element.shadowRoot.querySelector('.title').innerText).toBe('routing_waypoints_title');
+		});
+
+		it('renders action-buttons', async () => {
+			const element = await setup(defaultRoutingState);
+
+			const buttonElements = element.shadowRoot.querySelectorAll('ba-button');
+
+			expect(buttonElements).toHaveSize(2);
+			expect(buttonElements[0].label).toBe('routing_waypoints_remove_all');
+			expect(buttonElements[1].label).toBe('routing_waypoints_reverse');
+		});
+
+		describe('when action-button is pressed', () => {
+			it('removes all waypoints', async () => {
+				const element = await setup(defaultRoutingState);
+
+				const actionButtonElement = element.shadowRoot.querySelector('#button_remove_all');
+
+				actionButtonElement.click();
+
+				expect(store.getState().routing.waypoints).toEqual([]);
+			});
+
+			it('reverse to order of all waypoints', async () => {
+				const element = await setup(defaultRoutingState);
+
+				const actionButtonElement = element.shadowRoot.querySelector('#button_reverse');
+				expect(store.getState().routing.waypoints).toEqual([
+					[0, 0],
+					[1, 1],
+					[2, 2]
+				]);
+
+				actionButtonElement.click();
+
+				expect(store.getState().routing.waypoints).toEqual([
+					[2, 2],
+					[1, 1],
+					[0, 0]
+				]);
+			});
 		});
 	});
 });
