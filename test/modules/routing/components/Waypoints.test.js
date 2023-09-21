@@ -67,11 +67,15 @@ describe('Waypoints', () => {
 				]
 			}
 		};
-		it('renders three waypoints', async () => {
+		it('renders three waypoints whit action buttons', async () => {
 			const element = await setup(defaultRoutingState);
+			element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
 
-			const waypointElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
-			expect(waypointElements).toHaveSize(3);
+			// waypoint action buttons
+			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(3);
+			expect(element.shadowRoot.querySelectorAll('#remove')).toHaveSize(3);
 		});
 
 		it('renders three plus one surrounding placeholders', async () => {
@@ -125,6 +129,67 @@ describe('Waypoints', () => {
 					[1, 1],
 					[0, 0]
 				]);
+			});
+		});
+
+		describe('when single waypoint action-button is pressed', () => {
+			describe('and a waypoint should be removed', () => {
+				it('removes the first waypoint', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[0].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[1, 1],
+						[2, 2]
+					]);
+				});
+
+				it('removes the waypoint in the middle', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[1].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[2, 2]
+					]);
+				});
+
+				it('removes the last waypoint', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[2].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1]
+					]);
+				});
 			});
 		});
 	});

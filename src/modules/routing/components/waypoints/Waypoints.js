@@ -234,7 +234,7 @@ export class Waypoints extends MvuElement {
 
 	_removeWaypoint(index) {
 		const { waypoints } = this.getModel();
-		setWaypoints(waypoints.toSpliced(index));
+		setWaypoints(waypoints.toSpliced(index, 1));
 	}
 
 	_createDraggableItems(waypoints) {
