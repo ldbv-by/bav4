@@ -6,7 +6,7 @@ import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
-describe('Waypoints', () => {
+describe('WaypointItem', () => {
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {

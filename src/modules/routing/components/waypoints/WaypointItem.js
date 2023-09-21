@@ -8,6 +8,7 @@ import css from './waypointItem.css';
 import { $injector } from '../../../../injection/index';
 import { toLonLat } from '../../../../../node_modules/ol/proj';
 import { round } from '../../../../utils/numberUtils';
+import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Update_Waypoint = 'update_waypoint';
 
@@ -71,22 +72,24 @@ export class WaypointItem extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 
 		const classes = {
-			start: waypoint.isStart,
-			destination: waypoint.isDestination
+			start: waypoint?.isStart,
+			destination: waypoint?.isDestination
 		};
 
 		const getLabel = (waypoint) => {
-			return waypoint.isDestination ? translate('routing_waypoints_destination') : waypoint.isStart ? translate('routing_waypoints_start') : null;
+			return waypoint?.isDestination ? translate('routing_waypoints_destination') : waypoint?.isStart ? translate('routing_waypoints_start') : null;
 		};
-		const label = getLabel(waypoint) ?? `${translate('routing_waypoints_waypoint')} ${waypoint.index}`;
-		const coordinate = toLonLat(waypoint.point);
-		return html`<style>
-				${css}
-			</style>
-			<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
-				<div class="icon ${classMap(classes)}"></div>
-				<span><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
-			</div>`;
+		const label = getLabel(waypoint) ?? `${translate('routing_waypoints_waypoint')} ${waypoint?.index}`;
+		const coordinate = waypoint ? toLonLat(waypoint.point) : [0, 0];
+		return waypoint
+			? html`<style>
+						${css}
+					</style>
+					<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
+						<div class="icon ${classMap(classes)}"></div>
+						<span><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
+					</div>`
+			: nothing;
 	}
 
 	set waypoint(value) {
