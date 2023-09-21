@@ -58,7 +58,7 @@ describe('RoutingInfo', () => {
 		it('renders nothing', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.childElementCount).toHaveSize(0);
+			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 
 		describe('when display RouteInfo', () => {

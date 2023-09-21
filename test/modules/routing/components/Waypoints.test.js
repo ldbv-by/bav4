@@ -1,3 +1,4 @@
+import { RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { Waypoints } from '../../../../src/modules/routing/components/waypoints/Waypoints';
@@ -54,7 +55,22 @@ describe('Waypoints', () => {
 		it('renders nothing', async () => {
 			const element = await setup();
 
-			expect(element.shadowRoot.childElementCount).toHaveSize(0);
+			expect(element.shadowRoot.childElementCount).toBe(0);
+		});
+
+		it('renders waypoints', async () => {
+			const routingState = {
+				routing: {
+					status: RoutingStatusCodes.Ok,
+					waypoints: [
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]
+				}
+			};
+			const element = await setup(routingState);
+			expect(element.shadowRoot.childElementCount).toBe(3);
 		});
 	});
 });

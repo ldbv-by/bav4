@@ -50,7 +50,7 @@ describe('FeedbackBanner', () => {
 
 			setStatus(200);
 
-			expect(element.shadowRoot.childElementCount).toHaveSize(0);
+			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 
 		it('renders status', async () => {
