@@ -94,7 +94,7 @@ describe('mfp provider', () => {
 				headers: {
 					'Content-Type': MediaType.JSON
 				},
-				timeout: 20000
+				timeout: 40000
 			};
 			const httpServiceSpy = spyOn(httpService, 'fetch')
 				.withArgs(`${backendUrl}/print/create/${urlId}`, options, abortController)

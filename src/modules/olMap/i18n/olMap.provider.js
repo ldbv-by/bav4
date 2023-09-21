@@ -10,7 +10,9 @@ export const provide = (lang) => {
 				olMap_handler_measure_snap_first_point: 'Click to close the surface',
 				olMap_handler_measure_snap_last_point: 'Click to finish the line',
 				olMap_handler_measure_modify_click_new_point: 'Click, to add point<br/> Click then drag to move the point',
-				olMap_handler_measure_modify_click_or_drag: 'Click to delete the point.<br/> Click then drag to move the point',
+				olMap_handler_measure_modify_click_or_drag: 'Click then drag to move the point',
+				olMap_handler_measure_modify_polygon_click_or_drag: 'Click to delete the point (3 points min.).<br/> Click then drag to move the point',
+				olMap_handler_measure_modify_linestring_click_or_drag: 'Click to delete the point (2 points min.).<br/> Click then drag to move the point',
 				olMap_handler_measure_modify_click_drag_overlay: 'Click then drag to move the label',
 				olMap_handler_measure_modify_key_for_delete: 'Press DEL to delete the measurement',
 				olMap_handler_draw_modify_key_for_delete: 'Press DEL to delete the drawing',
@@ -46,7 +48,11 @@ export const provide = (lang) => {
 				olMap_handler_measure_snap_first_point: 'Klicke, um die Fläche zu schliessen',
 				olMap_handler_measure_snap_last_point: 'Klicke, um die Messung abzuschliessen',
 				olMap_handler_measure_modify_click_new_point: 'Klicke, um einen Punkt hinzuzufügen.<br/> Punkt verschieben: klicken und ziehen',
-				olMap_handler_measure_modify_click_or_drag: 'Klicke, um den Punkt zu löschen.<br/> Punkt verschieben: klicken und ziehen',
+				olMap_handler_measure_modify_click_or_drag: 'Punkt verschieben: klicken und ziehen',
+				olMap_handler_measure_modify_polygon_click_or_drag:
+					'Klicke, um den Punkt zu löschen (mind. 3 Punkte).<br/> Punkt verschieben: klicken und ziehen',
+				olMap_handler_measure_modify_linestring_click_or_drag:
+					'Klicke, um den Punkt zu löschen (mind. 2 Punkte).<br/> Punkt verschieben: klicken und ziehen',
 				olMap_handler_measure_modify_click_drag_overlay: 'Klicke und ziehen um die Beschriftung zu verschieben',
 				olMap_handler_measure_modify_key_for_delete: 'Messung löschen: ENTF Taste',
 				olMap_handler_draw_modify_key_for_delete: 'Zeichnung löschen: ENTF Taste',

@@ -694,6 +694,7 @@ export class OlDrawHandler extends OlLayerHandler {
 
 		if (this._modify.getActive()) {
 			drawState.type = this._select.getFeatures().getLength() === 0 ? InteractionStateType.SELECT : InteractionStateType.MODIFY;
+			drawState.geometryType = this._select.getFeatures().getLength() === 0 ? null : this._select.getFeatures().item(0)?.getGeometry().getType();
 		}
 
 		drawState.dragging = dragging;
@@ -776,7 +777,7 @@ export class OlDrawHandler extends OlLayerHandler {
 		const featureScale = getSizeFrom(feature);
 		const color = featureColor ? featureColor : currentStyleOption.color;
 		const symbolSrc = featureSymbol ? featureSymbol : currentStyleOption.symbolSrc;
-		const text = featureText ? featureText : currentStyleOption.text;
+		const text = featureText ? featureText : '';
 		const scale = featureScale ? featureScale : currentStyleOption.scale;
 		const style = { ...currentStyleOption, color: color, symbolSrc: symbolSrc, text: text, scale: scale };
 		const selectedStyle = { type: getDrawingTypeFrom(feature), style: style };

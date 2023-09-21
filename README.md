@@ -61,7 +61,7 @@ The app can be run without any configuration and uses default values and fallbac
 That is also the case when the `BACKEND_URL` property is missing.  
 To enable the showcase component, the `SOFTWARE_INFO` property must be set.
 
-Configuration properties are read at build time from an `.env` file located in the projects root directory.
+Configuration properties are read at build time from a `.env` file located in the project's root directory.
 Currently used properties are:
 
 | key                      | default value                            | description                                          |
@@ -87,7 +87,7 @@ Currently used properties are:
 | Test | Tests can be run against multiple browsers. Available browsers are `ChromeHeadless`, `FirefoxHeadless`, `WebkitHeadless`. |
 |----|----|
 | `npm run test` | Runs unit and component tests against all available browsers. A (combined) code coverage report can be found under  `./coverage/lcov-report`. Target browsers can be individually specified by the `--browsers` option (comma-seperated).  |
-| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. Default is `FirefoxHeadless` |
+| `npm run test:single` | Runs a single test. Usage `npm run test:single --spec=MyTest.test.js `. The target browser can be individually specified by the `--browser` option. The default is `FirefoxHeadless` |
 | `npm run test:debug` | Runs unit and component tests against headless Chrome (Chromium) with remote debugging enabled |
 
 <!-- prettier-ignore -->
@@ -96,15 +96,16 @@ Currently used properties are:
 | `npm run e2e` | Runs E2E tests against all available browsers. A single browser can be individually specified by the `--browser` option |
 | `npx playwright test --help` | Shows information about all options |
 
-| Other                    |                                                                                 |
-| ------------------------ | ------------------------------------------------------------------------------- |
-| `npm run lint`           | Lints and fixes js and css files                                                |
-| `npm run prettier`       | Formats all code files                                                          |
-| `npm run es-check`       | Checks if js files use only allowed es-version language features                |
-| `npm run doc`            | Generates jsdoc files (see: `./docs`)                                           |
-| `npm run doc:check`      | Checks if all required JSDoc module names exists                                |
-| `npm run doc:apply`      | Adds or updates the JSDoc module names                                          |
-| `npm run analyze-bundle` | Visualize the size of webpack output files with an interactive zoomable treemap |
+| Other                    |                                                                            |
+| ------------------------ | -------------------------------------------------------------------------- |
+| `npm run lint`           | Lints and fixes js and css files                                           |
+| `npm run prettier`       | Formats all code files                                                     |
+| `npm run es-check`       | Checks if js files use only allowed es-version language features           |
+| `npm run doc`            | Generates jsdoc files (see: `./docs`)                                      |
+| `npm run doc:check`      | Checks if all required JSDoc module names exists                           |
+| `npm run doc:apply`      | Adds or updates the JSDoc module names                                     |
+| `npm run bundlesize`     | Checks the bundle size of the webpack compiled chunks                      |
+| `npm run analyze-bundle` | Visualize the size of webpack chunks with an interactive zoomable tree map |
 
 ### Available Pages
 
@@ -116,7 +117,7 @@ Currently used properties are:
 
 ## Structure
 
-The project's source code is located under `src`, unit, component and e2e tests under `test`.
+The project's source code is under `src`, unit, component and e2e tests under `test`.
 
 The source code is distributed among the following directories:
 
@@ -149,10 +150,10 @@ Modules meet the following conventions:
 3. Each module may contain further directories:
 
    - `/components` : Components and all of their dependencies like CSS, assets (see [Components](#components))
-   - `/services` : service, provider and domain classes of the module
+   - `/services` : service, provider, and domain classes of the module
    - `/i18n` : i18n provider and loader for this module
 
-4. Outside their package, modules are only allowed to use global services, actions and components from other modules for composition.
+4. Outside their package, modules are only allowed to use global services, actions, and components from other modules for composition.
 
 ### `src/plugins`
 
@@ -164,7 +165,7 @@ All global services like the `HttpService` and their providers are located here.
 
 ### `src/store`
 
-All redux related files like reducers and actions.
+All redux-related files like reducers and actions.
 
 ### `src/utils`
 
@@ -176,7 +177,7 @@ Contains chunk definitions for dynamically loading js resources (code splitting)
 
 ### Overview
 
-Here's an overview of what project folder structure looks like:
+Here's an overview of what the project folder structure looks like:
 
 ```
     .
@@ -199,18 +200,18 @@ Here's an overview of what project folder structure looks like:
 
 ### Global State
 
-Global state and its management is realized by Redux (reducers and actions).
+Global state and its management are realized by Redux (reducers and actions).
 
 ### Components
 
 Components are based on `MvuElement`. This class inherits from HTMLElement and provides the Model-View-Update pattern and a well-defined component lifecycle as the programming model. For more information have a look at the `MvuElement` docs.
-Components hold local state within their model.
+Components hold the local state within their model.
 
 ### Plugins
 
 `BaPlugins` implementations are a second important place for structuring code and logic.  
 In contrast to components, they often act as a Controller on a higher abstraction level
-managing global state being consumed by components afterward.  
+managing the global state being consumed by components afterward.  
 For example, they could be responsible for setting an initial state or reacting to global state changes during the runtime of the app.
 
 ### Best practices
@@ -218,7 +219,7 @@ For example, they could be responsible for setting an initial state or reacting 
 - Mutation of the same parts of the global state should be done in just one place at the same moment (single source of truth) <br>
   ("At the same moment" means the phase when parts of the application react to an event, e.g. user interaction, initial setup)
 
-- Common places for updating global state are:
+- Common places for updating the global state are:
 
   - `MvuElement` based components
   - `BaPlugin` implementations
@@ -227,7 +228,7 @@ For example, they could be responsible for setting an initial state or reacting 
 
 ## Links
 
-### Various topics relating web components
+### Various topics relating to Web Components
 
 - Introduction to custom elements and web components: https://javascript.info/web-components
 - https://www.thinktecture.com/de/articles/web-components/
@@ -235,7 +236,7 @@ For example, they could be responsible for setting an initial state or reacting 
 
 ### CSS
 
-- A Complete Guide to Flexbox : https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+- A Complete Guide to Flexbox: https://css-tricks.com/snippets/css/a-guide-to-flexbox/
 
 ### lit-html
 

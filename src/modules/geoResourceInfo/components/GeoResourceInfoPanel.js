@@ -58,7 +58,7 @@ export class GeoResourceInfoPanel extends MvuElement {
 					${css}
 				</style>
 				<div>${geoResourceInfo.title}</div>
-				<div class="${getOrientationClass()}">${unsafeHTML(`${geoResourceInfo.content}`)}</div>
+				<div class="${getOrientationClass()} selectable">${unsafeHTML(`${geoResourceInfo.content}`)}</div>
 			`;
 		}
 		return html`<ba-spinner></ba-spinner>`;

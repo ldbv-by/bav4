@@ -7,10 +7,10 @@ import { Image as ImageLayer, Group as LayerGroup, Layer } from 'ol/layer';
 import TileLayer from 'ol/layer/Tile';
 import { XYZ as XYZSource } from 'ol/source';
 import { getBvvBaaImageLoadFunction } from '../utils/baaImageLoadFunction.provider';
-import { LimitedImageWMS } from '../ol/source/LimitedImageWMS';
 import MapLibreLayer from '@geoblocks/ol-maplibre-layer';
 import { AdvWmtsTileGrid } from '../ol/tileGrid/AdvWmtsTileGrid';
 import { Projection } from 'ol/proj';
+import ImageWMS from 'ol/source/ImageWMS.js';
 
 /**
  * Converts a GeoResource to a ol layer instance.
@@ -48,7 +48,7 @@ export class LayerService {
 			}
 
 			case GeoResourceTypes.WMS: {
-				const imageWmsSource = new LimitedImageWMS({
+				const imageWmsSource = new ImageWMS({
 					url: geoResource.url,
 					crossOrigin: 'anonymous',
 					ratio: 1,
@@ -67,6 +67,10 @@ export class LayerService {
 							throw new Error(`No credential available for GeoResource with id '${geoResource.id}' and url '${geoResource.url}'`);
 						}
 						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider(credential));
+						break;
+					}
+					default: {
+						imageWmsSource.setImageLoadFunction(this._baaImageLoadFunctionProvider());
 					}
 				}
 

@@ -37,9 +37,18 @@ describe('Measure tooltipMessageProvider', () => {
 			'olMap_handler_measure_snap_last_point<br/>olMap_handler_delete_last_point'
 		);
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY })).toBe('olMap_handler_measure_modify_key_for_delete');
-		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX })).toBe(
+		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: null })).toBe(
 			'olMap_handler_measure_modify_click_or_drag'
 		);
+
+		expect(
+			measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: 'Polygon' })
+		).toBe('olMap_handler_measure_modify_polygon_click_or_drag');
+
+		expect(
+			measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.VERTEX, geometryType: 'LineString' })
+		).toBe('olMap_handler_measure_modify_linestring_click_or_drag');
+
 		expect(measureProvide({ ...measureStateTemplate, type: InteractionStateType.MODIFY, snap: InteractionSnapType.EDGE })).toBe(
 			'olMap_handler_measure_modify_click_new_point'
 		);

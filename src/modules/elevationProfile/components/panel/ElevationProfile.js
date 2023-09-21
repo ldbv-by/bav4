@@ -557,7 +557,7 @@ export class ElevationProfile extends MvuElement {
 						type: 'linear',
 						title: {
 							display: true,
-							text: translate('elevationProfile_distance') + ' [' + distUnit + ']',
+							text: `${translate('elevationProfile_distance')} ${distUnit ? `[${distUnit}]` : ''}`,
 							color: ElevationProfile.DEFAULT_TEXT_COLOR
 						},
 						ticks: {

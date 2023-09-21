@@ -286,10 +286,10 @@ export class DrawToolContent extends AbstractToolContent {
 			};
 
 			const onChangeSymbol = (e) => {
-				const hexColor = this.getModel().style.color;
+				const hexColor = style.color;
 				const url = e.detail.selected.getUrl(hexToRgb(hexColor));
 				const symbolSrc = url ? url : e.detail.selected.base64;
-				const changedStyle = { ...this.getModel().style, symbolSrc: symbolSrc };
+				const changedStyle = { ...style, symbolSrc: symbolSrc };
 				setStyle(changedStyle);
 			};
 

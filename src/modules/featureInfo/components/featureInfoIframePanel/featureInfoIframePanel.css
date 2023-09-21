@@ -114,6 +114,7 @@
 }
 .collapse-content {
 	padding: 0 1.2em 1em;
+	overflow-x: scroll;
 }
 .featureinfo-header {
 	position: sticky;
@@ -137,9 +138,10 @@ a {
 	word-break: break-word;
 }
 table {
-	margin-bottom: 3em;
+	margin-bottom: 1em;
 	position: relative;
 	border-collapse: collapse;
+	border: 1px solid var(--header-background-color);
 }
 table:not(:only-of-type):not(:last-child):after {
 	content: ' ';
@@ -151,6 +153,7 @@ table:not(:only-of-type):not(:last-child):after {
 }
 tr {
 	padding: 0 0 0.8em 0;
+	border: 1px solid var(--header-background-color);
 }
 th,
 td {
@@ -183,4 +186,13 @@ img {
 	width: 100%;
 	max-width: 25em;
 	height: auto;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
+	margin: 1em 0;
 }

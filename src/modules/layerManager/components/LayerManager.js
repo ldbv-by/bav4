@@ -194,6 +194,7 @@ export class LayerManager extends MvuElement {
 								@dragenter=${(e) => onDragEnter(e, layerItem)}
 								@dragleave=${onDragLeave}
 								index=${index}
+								class="draggable"
 							>
 								${layerItem.isPlaceholder ? createPlaceholderElement(layerItem) : createLayerElement(layerItem)}
 							</li>`
