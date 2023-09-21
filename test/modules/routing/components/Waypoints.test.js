@@ -191,6 +191,88 @@ describe('Waypoints', () => {
 					]);
 				});
 			});
+
+			describe('and a waypoint should be moved', () => {
+				it('moves the first waypoint forward', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#increase');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[0].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[1, 1],
+						[0, 0],
+						[2, 2]
+					]);
+				});
+
+				it('does NOT moves the first waypoint backward', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#decrease');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[0].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+				});
+
+				it('does NOT moves the last waypoint forward', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#increase');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[2].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+				});
+
+				it('moves the last waypoint backward', async () => {
+					const element = await setup(defaultRoutingState);
+
+					const actionButtonElements = element.shadowRoot.querySelectorAll('#decrease');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1],
+						[2, 2]
+					]);
+
+					actionButtonElements[2].click();
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[2, 2],
+						[1, 1]
+					]);
+				});
+			});
 		});
 	});
 });
