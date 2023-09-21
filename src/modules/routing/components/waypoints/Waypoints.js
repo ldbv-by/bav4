@@ -21,7 +21,7 @@ const Update_Collapsed_Waypoints = 'update_show_waypoints';
 
 export class Waypoints extends MvuElement {
 	constructor() {
-		super({ status: null, waypoints: [], draggedItem: false, collapsedWaypoints: false });
+		super({ status: null, waypoints: [], draggedItem: null, collapsedWaypoints: false });
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
@@ -147,10 +147,11 @@ export class Waypoints extends MvuElement {
 		};
 
 		const onDragStart = (e, waypoint) => {
+			console.log('ff');
 			if (this._environmentService.isTouch()) {
 				return;
 			}
-
+			console.log('fff', waypoint);
 			this.signal(Update_Dragged_Item, waypoint);
 
 			e.target.classList.add('isdragged');
@@ -218,7 +219,7 @@ export class Waypoints extends MvuElement {
 					@dragenter=${(e) => onDragEnter(e, draggableItem)}
 					@dragleave=${onDragLeave}
 					index=${index}
-					class="draggable"
+					class="draggable waypoint"
 				>
 					${isPlaceholder(draggableItem) ? createPlaceholderElement(draggableItem) : this._createWaypointElement(draggableItem, waypoints)}
 				</li>`
@@ -240,7 +241,7 @@ export class Waypoints extends MvuElement {
 	_createDraggableItems(waypoints) {
 		const draggableItems = [getPlaceholder(0, 0)];
 		this._waypointCount = waypoints.length;
-		this.signal(Update_Dragged_Item, false);
+		//this.signal(Update_Dragged_Item, false);
 
 		for (let waypointIndex = 0, listIndex = 0; waypointIndex < waypoints.length; waypointIndex++) {
 			const waypointOption = {
