@@ -63,7 +63,7 @@ export class Waypoints extends MvuElement {
 		};
 
 		const bodyCollapseClassInfo = {
-			iscollapse: !collapsedWaypoints
+			iscollapsed: !collapsedWaypoints
 		};
 		const iconCollapseInfoClass = {
 			iconexpand: collapsedWaypoints
@@ -79,7 +79,7 @@ export class Waypoints extends MvuElement {
 					</style>
 					<div class="container">
 						<hr />
-						<div class="details-selector" title=${title} @click="${toggleCollapseWayPoints}">
+						<div class="waypoint-selector" title=${title} @click="${toggleCollapseWayPoints}">
 							<span class="title">${translate('routing_waypoints_title')}</span>
 							<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
 						</div>

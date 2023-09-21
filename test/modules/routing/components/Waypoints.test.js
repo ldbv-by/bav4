@@ -67,7 +67,8 @@ describe('Waypoints', () => {
 				]
 			}
 		};
-		it('renders three waypoints whit action buttons', async () => {
+
+		it('renders three waypoints with action buttons', async () => {
 			const element = await setup(defaultRoutingState);
 			element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
@@ -83,6 +84,13 @@ describe('Waypoints', () => {
 
 			const placeholderElements = element.shadowRoot.querySelectorAll('.placeholder');
 			expect(placeholderElements).toHaveSize(4); // Surrounding placeholders should be n +1
+		});
+
+		it('renders the waypoints collapsed', async () => {
+			const element = await setup(defaultRoutingState);
+
+			const collapsedElements = element.shadowRoot.querySelectorAll('.container > .iscollapsed');
+			expect(collapsedElements).toHaveSize(1);
 		});
 
 		it('renders a title', async () => {
@@ -121,6 +129,17 @@ describe('Waypoints', () => {
 
 			expect(placeholderElements.length).toBe(4);
 			expect(nonDraggablePlaceholderElements.length).toBe(4);
+		});
+
+		it('toggles collapsed waypoints', async () => {
+			const element = await setup(defaultRoutingState);
+
+			expect(element.shadowRoot.querySelectorAll('.container > .iscollapsed')).toHaveSize(1);
+
+			const selectorElement = element.shadowRoot.querySelector('.waypoint-selector');
+			selectorElement.click();
+
+			expect(element.shadowRoot.querySelectorAll('.container > .iscollapsed')).toHaveSize(0);
 		});
 
 		describe('when action-button is pressed', () => {
