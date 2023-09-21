@@ -147,11 +147,10 @@ export class Waypoints extends MvuElement {
 		};
 
 		const onDragStart = (e, waypoint) => {
-			console.log('ff');
 			if (this._environmentService.isTouch()) {
 				return;
 			}
-			console.log('fff', waypoint);
+
 			this.signal(Update_Dragged_Item, waypoint);
 
 			e.target.classList.add('isdragged');
