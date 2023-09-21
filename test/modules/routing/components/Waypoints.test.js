@@ -463,11 +463,11 @@ describe('Waypoints', () => {
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 
-			xit("on dragover of not neighboring placeholder dropEffect to 'all'", () => {
+			it("on dragover of not neighboring placeholder dropEffect to 'all'", () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-				element.signal('update_dragged_item', waypointElement);
+				element.signal('update_dragged_item', waypointElement.waypoint);
 				const dragoverEvt = document.createEvent('MouseEvents');
 				dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -477,11 +477,11 @@ describe('Waypoints', () => {
 				expect(dragoverEvt.dataTransfer.dropEffect).toBe('all');
 			});
 
-			xit("on dragover of not neighboring placeholder dropEffect to 'none'", () => {
+			it("on dragover of not neighboring placeholder dropEffect to 'none'", () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-				element.signal('update_dragged_item', waypointElement);
+				element.signal('update_dragged_item', waypointElement.waypoint);
 				const dragoverEvt = document.createEvent('MouseEvents');
 				dragoverEvt.initMouseEvent('dragover', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dragoverEvt.dataTransfer = createNewDataTransfer();
@@ -503,10 +503,12 @@ describe('Waypoints', () => {
 				expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
 			});
 
-			xit('drops first layer on placeholder to be penultimate layer', () => {
+			it('drops first layer on placeholder to be penultimate layer', () => {
+				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-				element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 1)[0]);
-				expect(element.getModel().draggedItem.id).toBe('id0');
+				element.signal('update_dragged_item', waypointElement.waypoint);
+				expect(element.getModel().draggedItem.index).toBe(0);
 				const dropEvt = document.createEvent('MouseEvents');
 				dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dropEvt.dataTransfer = createNewDataTransfer();
@@ -520,16 +522,18 @@ describe('Waypoints', () => {
 				neighborPlaceholder.classList.add('over');
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
-				expect(store.getState().layers.active[0].point).toBe([1, 1]);
-				expect(store.getState().layers.active[1].point).toBe([0, 0]);
-				expect(store.getState().layers.active[2].point).toBe([2, 2]);
+				expect(store.getState().routing.waypoints[0]).toEqual([1, 1]);
+				expect(store.getState().routing.waypoints[1]).toEqual([0, 0]);
+				expect(store.getState().routing.waypoints[2]).toEqual([2, 2]);
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 
-			xit('drops last on placeholder to be penultimate layer', () => {
+			it('drops last on placeholder to be penultimate layer', () => {
+				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+				const waypointElement = waypoints[2];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
-				element.signal('update_dragged_item', element.getModel().draggableItems.filter((element) => element.listIndex === 5)[0]);
-				expect(element.getModel().draggedItem.id).toBe('id2');
+				element.signal('update_dragged_item', waypointElement.waypoint);
+				expect(element.getModel().draggedItem.index).toBe(2);
 				const dropEvt = document.createEvent('MouseEvents');
 				dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dropEvt.dataTransfer = createNewDataTransfer();
@@ -543,9 +547,9 @@ describe('Waypoints', () => {
 				neighborPlaceholder.classList.add('over');
 				neighborPlaceholder.dispatchEvent(dropEvt);
 
-				expect(store.getState().layers.active[0].point).toBe([0, 0]);
-				expect(store.getState().layers.active[1].point).toBe([2, 2]);
-				expect(store.getState().layers.active[2].point).toBe([1, 1]);
+				expect(store.getState().routing.waypoints[0]).toEqual([0, 0]);
+				expect(store.getState().routing.waypoints[1]).toEqual([2, 2]);
+				expect(store.getState().routing.waypoints[2]).toEqual([1, 1]);
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 		});
