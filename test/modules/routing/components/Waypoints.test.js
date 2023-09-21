@@ -58,7 +58,7 @@ describe('Waypoints', () => {
 			expect(element.shadowRoot.childElementCount).toBe(0);
 		});
 
-		it('renders waypoints', async () => {
+		it('renders three waypoints', async () => {
 			const routingState = {
 				routing: {
 					status: RoutingStatusCodes.Ok,
@@ -70,7 +70,9 @@ describe('Waypoints', () => {
 				}
 			};
 			const element = await setup(routingState);
-			expect(element.shadowRoot.childElementCount).toBe(3);
+
+			const waypointElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+			expect(waypointElements).toHaveSize(3);
 		});
 	});
 });

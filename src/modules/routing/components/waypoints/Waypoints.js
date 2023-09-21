@@ -54,7 +54,7 @@ export class Waypoints extends MvuElement {
 	}
 
 	createView(model) {
-		const { status, waypoints, draggedItem, collapsedWaypoints } = model;
+		const { status, collapsedWaypoints } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
 
@@ -71,6 +71,54 @@ export class Waypoints extends MvuElement {
 
 		const title = translate(collapsedWaypoints ? 'routing_waypoints_show' : 'routing_waypoints_hide');
 
+		const buttons = this._getButtons(model);
+		const waypointItems = this._getWaypoints(model);
+		return isVisible
+			? html`<style>
+						${css}
+					</style>
+					<div class="container">
+						<hr />
+						<div class="details-selector" title=${title} @click="${toggleCollapseWayPoints}">
+							<span class="sub-header-text">${translate('routing_waypoints_title')}</span>
+							<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
+						</div>
+						<div class="${classMap(bodyCollapseClassInfo)}">
+							<div class="overflow-container">
+								<ul class="waypoints">
+									${waypointItems}
+								</ul>
+								${buttons}
+							</div>
+						</div>
+					</div>`
+			: nothing;
+	}
+
+	_getButtons(model) {
+		const translate = (key) => this._translationService.translate(key);
+		const { waypoints } = model;
+
+		const removeAll = () => {
+			setWaypoints([]);
+		};
+
+		const reverse = () => {
+			setWaypoints([...waypoints].reverse());
+		};
+
+		return waypoints.length > 0
+			? html`<div class="waypoints__actions">
+					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
+					<div></div>
+			  </div>`
+			: nothing;
+	}
+
+	_getWaypoints(model) {
+		const { waypoints, draggedItem } = model;
+		const translate = (key) => this._translationService.translate(key);
 		const draggableItems = this._createDraggableItems(waypoints);
 
 		const isNeighbor = (index, otherIndex) => {
@@ -157,69 +205,24 @@ export class Waypoints extends MvuElement {
 				e.target.classList.remove('over');
 			}
 		};
-
-		const buttons = this._getButtons(model);
-
-		return isVisible
-			? html`<style>
-						${css}
-					</style>
-					<div class="container">
-						<hr />
-						<div class="details-selector" title=${title} @click="${toggleCollapseWayPoints}">
-							<span class="sub-header-text">${translate('routing_waypoints_title')}</span>
-							<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
-						</div>
-						<div class="${classMap(bodyCollapseClassInfo)}">
-							<div class="overflow-container">
-								<ul class="waypoints">
-									${repeat(
-										draggableItems,
-										(draggableItem) => draggableItem.listIndex,
-										(draggableItem, index) =>
-											html` <li
-												draggable=${isDraggable(draggableItem)}
-												@dragstart=${(e) => onDragStart(e, draggableItem)}
-												@dragend=${onDragEnd}
-												@drop=${(e) => onDrop(e, draggableItem)}
-												@dragover=${(e) => onDragOver(e, draggableItem)}
-												@dragenter=${(e) => onDragEnter(e, draggableItem)}
-												@dragleave=${onDragLeave}
-												index=${index}
-												class="draggable"
-											>
-												${isPlaceholder(draggableItem)
-													? createPlaceholderElement(draggableItem)
-													: this._createWaypointElement(draggableItem, waypoints)}
-											</li>`
-									)}
-								</ul>
-								${buttons}
-							</div>
-						</div>
-					</div>`
-			: nothing;
-	}
-
-	_getButtons(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { waypoints } = model;
-
-		const removeAll = () => {
-			setWaypoints([]);
-		};
-
-		const reverse = () => {
-			setWaypoints([...waypoints].reverse());
-		};
-
-		return waypoints.length > 0
-			? html`<div class="waypoints__actions">
-					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
-					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
-					<div></div>
-			  </div>`
-			: nothing;
+		return html`${repeat(
+			draggableItems,
+			(draggableItem) => draggableItem.listIndex,
+			(draggableItem, index) =>
+				html` <li
+					draggable=${isDraggable(draggableItem)}
+					@dragstart=${(e) => onDragStart(e, draggableItem)}
+					@dragend=${onDragEnd}
+					@drop=${(e) => onDrop(e, draggableItem)}
+					@dragover=${(e) => onDragOver(e, draggableItem)}
+					@dragenter=${(e) => onDragEnter(e, draggableItem)}
+					@dragleave=${onDragLeave}
+					index=${index}
+					class="draggable"
+				>
+					${isPlaceholder(draggableItem) ? createPlaceholderElement(draggableItem) : this._createWaypointElement(draggableItem, waypoints)}
+				</li>`
+		)}`;
 	}
 
 	_moveWaypoint(from, to) {
