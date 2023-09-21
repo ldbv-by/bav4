@@ -345,7 +345,6 @@ describe('Waypoints', () => {
 				dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, waypointElement);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				waypointElement.dispatchEvent(dragstartEvt);
-				console.log(element.getModel().draggedItem);
 				expect(element.getModel().draggedItem).not.toBeFalse();
 			});
 
