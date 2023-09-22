@@ -17,15 +17,7 @@
 	mask-image: url('assets/help.svg');
 	-webkit-mask-image: url('assets/help.svg');
 }
-.legend {
-	mask-image: url('assets/legend.svg');
-	-webkit-mask-image: url('assets/legend.svg');
-}
-.feedback {
-	mask-image: url('assets/feedback.svg');
-	-webkit-mask-image: url('assets/feedback.svg');
-	transform: scale(0.7);
-}
+
 .contact {
 	mask-image: url('assets/contact.svg');
 	-webkit-mask-image: url('assets/contact.svg');
@@ -67,4 +59,27 @@
 	mask-image: url('assets/gdo.svg');
 	-webkit-mask-image: url('assets/gdo.svg');
 	background: linear-gradient(90deg, rgba(8, 131, 181, 1) 0%, rgba(43, 91, 148, 1) 100%);
+}
+.settings {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/settings.svg');
+	-webkit-mask-image: url('assets/settings.svg');
+	transform: scale(0.9);
+}
+
+.legend {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/legend.svg');
+	-webkit-mask-image: url('assets/legend.svg');
+	transform: scale(0.9);
+}
+
+.feedback {
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('assets/feedback.svg');
+	-webkit-mask-image: url('assets/feedback.svg');
+	transform: scale(0.9);
 }

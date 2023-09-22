@@ -247,7 +247,7 @@ export class Header extends MvuElement {
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="test ${getHideClass()}">
+				<div class="test ${getHideClass()} ${getOrientationClass()}">
 					<button @click="${openMapLayerTab}"  >
 						<span class="icon home">
 						</span>

@@ -189,21 +189,37 @@ export class ToolBar extends MvuElement {
 						<div class="tool-bar__button_icon close arrowright"></div>
 					</button>
 				</div>
-				<div class="tool-bar tool-bar-mobile  ${getOverlayTestClass()}">
-					<div class="tool-bar-mobile-buttons">
 
-						<div class="zoom-buttons">
-							<button class="search-icon"></button>
-						</div>
-						<div class="zoom-buttons">
-							<button @click="${increaseZoom}" class="zoom-in"></button>
-							<button @click="${decreaseZoom}" class="zoom-out"></button>
-						</div>
-						<div class="zoom-buttons">
-							<button @click="${zoomToExtent}" class="zoom-to-extent-icon"></button>
-							<button @click="${onClick}" class="close-icon "></button>
-							</div>
-					</div>
+				<div class="test ${getOverlayTestClass()}  ${getOrientationClass()}">
+					<button @click="${zoomToExtent}" class="hide">
+						<span class="icon luftbild "> </span>
+						<span class="text"> luftbild </span>
+					</button>
+					<button @click="${zoomToExtent}">
+						<span class="icon search-icon "> </span>
+						<span class="text"> Suchen </span>
+					</button>
+					<button @click="${zoomToExtent}">
+						<span class="icon fullscreen-icon "> </span>
+						<span class="text"> fullscreen- </span>
+					</button>
+					<button @click="${increaseZoom}">
+						<span class="icon zoom-in "> </span>
+						<span class="text"> zoom out </span>
+					</button>
+
+					<button @click="${decreaseZoom}">
+						<span class="icon zoom-out  "> </span>
+						<span class="text">zoom in </span>
+					</button>
+					<button @click="${zoomToExtent}">
+						<span class="icon zoom-to-extent-icon "> </span>
+						<span class="text"> auf Bayern zoomen </span>
+					</button>
+					<button @click="${onClick}">
+						<span class="icon close-icon "> </span>
+						<span class="text"> schließen </span>
+					</button>
 				</div>
 			</div>
 		`;

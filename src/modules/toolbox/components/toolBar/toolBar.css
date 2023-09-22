@@ -202,13 +202,9 @@
 	transform: translate(0, -20em);
 }
 
-.is-desktop .is-open-mobile {
-	transform: translate(-47em, 0);
-}
-
 .is-portrait .is-open-mobile,
 .is-tablet .is-open-mobile {
-	transform: translate(0, -29.5em);
+	transform: translate(0, 10em);
 }
 
 .is-portrait .tool-bar__item {
@@ -382,29 +378,58 @@
 	background-image: url('assets/rocket.svg');
 }
 
-.tool-bar-mobile {
-	height: 22em;
-	height: 11em;
-	padding: 0;
-	bottom: 0em;
-	right: 0em;
-	overview: scroll;
+.test {
+	display: none;
+}
+
+.is-portrait.test {
+	position: fixed;
+	height: 5em;
+	width: 100%;
+	background: var(--tertiary-bg-color);
 	background: var(--header-background-color);
-}
-
-.zoom-buttons {
 	display: flex;
-
-	/* flex-direction: column; */
+	flex-direction: initial;
+	bottom: 0em;
+	z-index: 99999;
+	font-size: 2rem;
+	overflow: hidden;
+	transition: transform var(--animation-duration-large-open) var(--animation-easing-open);
 }
 
-.zoom-buttons button:hover {
-	background: var(--primary-color);
+.test button {
+	height: 100%;
+	width: 100%;
+	background: transparent;
+	border: none;
+	display: flex;
+	flex-direction: column;
+}
+.test button:first-child {
+	border-bottom: 1px dotted var(--secondary-color);
+}
+
+.seperator {
+	border-bottom: 1px dotted var(--secondary-color) !important;
+}
+
+.test button .icon {
+	height: 4.1em;
+	width: 4.1em;
+	background: var(--text4);
 	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
-	color: var(--text3);
+	margin: auto;
+	margin-bottom: 0;
 }
-.tool-bar-mobile-buttons {
-	display: flex;
+.test button .text {
+	text-align: center;
+	margin: auto;
+	font-size: 0.8em;
+	margin-top: 0.5em;
+	color: var(--text1);
+}
+.test button:hover {
+	background: var(--primary-bg-color);
 }
 
 .zoom-in {
@@ -461,13 +486,4 @@
 .luftbild {
 	background-image: url('./assets/2.webp');
 	border: 0.2em solid var(--primary-color);
-}
-
-.zoom-buttons button {
-	height: 5em;
-	width: 5em;
-	background-color: var(--primary-color);
-	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
-	margin: 2em 0.5em;
-	border: none;
 }

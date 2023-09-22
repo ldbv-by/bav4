@@ -320,28 +320,28 @@ input[type='search']::-webkit-search-results-decoration {
 	transform: rotate(315deg);
 }
 .header__modal-button {
-    flex-shrink: 1;
-    height: inherit;
-    margin: 0;
-    /* padding: 0 .5em; */
-    width: 3em;
-    border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
-    padding: 0.5em 0.9em;
-    background: var(--primary-color);
-    color: var(--text2);
-    border-color: var(--primary-color);
-    border-width: 1px;
-    border-style: solid;
-    cursor: pointer;
-    transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
-    /* color: rgba(255,255,255,.8); */
-    font-weight: bold;
-    background-repeat: no-repeat;
-    background-position: 0.1em;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
-    background-size: contain;
-    padding: 0 1em;
-    border: 0.5em solid var(--primary-color);
+	flex-shrink: 1;
+	height: inherit;
+	margin: 0;
+	/* padding: 0 .5em; */
+	width: 3em;
+	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
+	padding: 0.5em 0.9em;
+	background: var(--primary-color);
+	color: var(--text2);
+	border-color: var(--primary-color);
+	border-width: 1px;
+	border-style: solid;
+	cursor: pointer;
+	transition: all var(--animation-duration-medium-open) var(--animation-easing-linear);
+	/* color: rgba(255,255,255,.8); */
+	font-weight: bold;
+	background-repeat: no-repeat;
+	background-position: 0.1em;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+	background-size: contain;
+	padding: 0 1em;
+	border: 0.5em solid var(--primary-color);
 	background-image: url('assets/direction.svg');
 }
 
@@ -479,6 +479,9 @@ input[type='search']::-webkit-search-results-decoration {
 	display: flex;
 	flex-direction: column;
 }
+.is-portrait.test {
+	display: none;
+}
 
 .test button {
 	height: 6em;
@@ -492,10 +495,9 @@ input[type='search']::-webkit-search-results-decoration {
 	border-bottom: 1px dotted var(--secondary-color);
 }
 
-.seperator{
+.seperator {
 	border-bottom: 1px dotted var(--secondary-color) !important;
 }
-
 
 .test button .icon {
 	height: 2.1em;

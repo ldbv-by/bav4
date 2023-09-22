@@ -241,6 +241,7 @@ export class LayerManager extends MvuElement {
 						style="border-right: 1px dotted var(--header-background-color);"
 					></ba-button>
 					<ba-button id="button_remove_all" .label=${translate('layerManager_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
+					<ba-button .label="${translate('compare')}" .type=${'secondary'}></ba-button>
 					<div></div>
 			  </div>`
 			: nothing;

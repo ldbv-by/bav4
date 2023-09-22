@@ -34,23 +34,24 @@ export class BvvMiscContentPanel extends AbstractMvuContentPanel {
 				${css}
 			</style>
 			<div class="ba-list">
-
-
-			<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon icon feedback"> </span>
-			</span>
-			<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
-		</button>
-		<a class="ba-list-item" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
-			<span class="ba-list-item__pre">
-				<span class="ba-list-item__icon icon legend"> </span>
-			</span>
-			<span class="ba-list-item__text vertical-center">Legende</span>
-		</a>
-
-
-
+				<button id="feedback" class="ba-list-item" @click=${openFeedbackDialog}>
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon feedback"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">${translate('menu_misc_content_panel_feedback_title')}</span>
+				</button>
+				<a class="ba-list-item" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon legend"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Legende</span>
+				</a>
+				<a class="ba-list-item divider" href="https://www.ldbv.bayern.de/hilfe-v4.html" target="_blank">
+					<span class="ba-list-item__pre">
+						<span class="ba-list-item__icon icon settings"> </span>
+					</span>
+					<span class="ba-list-item__text vertical-center">Einstellungen</span>
+				</a>
 
 				<div class="ba-list-item  ba-list-item__header hide">
 					<span class="ba-list-item__text ">
