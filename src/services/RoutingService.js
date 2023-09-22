@@ -62,9 +62,16 @@ import { bvvRouteProvider } from './provider/route.provider';
  * Returns the corresponding category or `null`.
  * @function
  * @name module:services/RoutingService~RoutingService#getCategoryById
- * @param {String} id
+ * @param {String} id category id
  * @returns {module:domain/routing~RoutingCategory|null} the category of `null`
  */
+
+/**
+ * Returns an array of alternative category ids. May be empty when no alternative id exists.
+ * @function
+ * @name module:services/RoutingService~RoutingService#getAlternativeCategoryIds
+ * @param {String} id category id
+ * @returns {string[]} alternative ids
 
 /**
  * Calculates routes for given categories and at least two coordinates.
@@ -169,7 +176,7 @@ export class BvvRoutingService {
 
 	/**
 	 *
-	 * @param {string} id
+	 * @param {string} id category id
 	 * @returns {module:domain/routing~RoutingCategory|null}
 	 */
 	getCategoryById(id) {
@@ -179,6 +186,28 @@ export class BvvRoutingService {
 				.flat(2)
 				.find((c) => c.id === id) ?? null
 		);
+	}
+
+	/**
+	 * Returns an array of alternative category ids. May be empty when no alternative id exists.
+	 * @param {String} id category id
+	 * @returns {string[]}
+	 */
+	getAlternativeCategoryIds(id) {
+		const parentCat =
+			this.getCategories().filter((cat) => cat.id === id)[0] ??
+			// check if it is a subCategory and detect parent category
+			this.getCategories().filter((cat) => cat.subcategories.filter((subcat) => subcat.id === id).length > 0)[0];
+
+		if (parentCat) {
+			const subCatIds = parentCat.subcategories.map((altCat) => altCat.id);
+			const allIds = [parentCat.id].concat(subCatIds);
+
+			// return all but input id
+			allIds.splice(allIds.indexOf(id), 1);
+			return allIds;
+		}
+		return [];
 	}
 
 	/**

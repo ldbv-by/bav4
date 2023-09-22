@@ -62,22 +62,22 @@ describe('BvvRoutingService', () => {
 		it('finds a a category by its id', async () => {
 			const hike = {
 				id: 'hike',
-				label: 'Wandern',
+				label: 'hike',
 				subcategories: []
 			};
-			const bvv_hike = {
-				id: 'bvv-hike',
-				label: 'Wandern (Freizeitwege)',
+			const hike2 = {
+				id: 'hike2',
+				label: 'hike2',
 				subcategories: [hike]
 			};
 
-			const mockCategories = [bvv_hike];
+			const mockCategories = [hike2];
 			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
 			const instanceUnderTest = setup(categoriesProvider);
 			await instanceUnderTest.init();
 
 			expect(instanceUnderTest.getCategoryById('hike')).toEqual(hike);
-			expect(instanceUnderTest.getCategoryById('bvv-hike')).toEqual(bvv_hike);
+			expect(instanceUnderTest.getCategoryById('hike2')).toEqual(hike2);
 			expect(instanceUnderTest.getCategoryById('foo')).toBeNull();
 		});
 	});
@@ -158,6 +158,41 @@ describe('BvvRoutingService', () => {
 					]
 				)
 			).toBeRejectedWithError(TypeError, "Parameter 'categories' must be an array containing at least one category");
+		});
+	});
+
+	describe('getAlternativeCategoryIds', () => {
+		it('alternative category ids', async () => {
+			const hike = {
+				id: 'hike',
+				label: 'hike',
+				subcategories: []
+			};
+			const hike2 = {
+				id: 'hike2',
+				label: 'hike2',
+				subcategories: []
+			};
+			const hike3 = {
+				id: 'hike3',
+				label: 'hike3',
+				subcategories: [hike, hike2]
+			};
+			const bike = {
+				id: 'bike',
+				label: 'bike',
+				subcategories: []
+			};
+
+			const mockCategories = [hike3, bike];
+			const instanceUnderTest = setup();
+			spyOn(instanceUnderTest, 'getCategories').and.returnValue(mockCategories);
+
+			expect(instanceUnderTest.getAlternativeCategoryIds('hike')).toEqual(['hike3', 'hike2']);
+			expect(instanceUnderTest.getAlternativeCategoryIds('hike2')).toEqual(['hike3', 'hike']);
+			expect(instanceUnderTest.getAlternativeCategoryIds('hike3')).toEqual(['hike', 'hike2']);
+			expect(instanceUnderTest.getAlternativeCategoryIds('bike')).toEqual([]);
+			expect(instanceUnderTest.getAlternativeCategoryIds('unknown')).toEqual([]);
 		});
 	});
 });
