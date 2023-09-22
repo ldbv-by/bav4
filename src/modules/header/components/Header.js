@@ -11,6 +11,7 @@ import { disableResponsiveParameterObservation, enableResponsiveParameterObserva
 import { MvuElement } from '../../MvuElement';
 import { openModal } from '../../../store/modal/modal.action';
 import VanillaSwipe from 'vanilla-swipe';
+import { toggleSchema } from '../../../store/media/media.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -320,13 +321,9 @@ export class Header extends MvuElement {
 					</button>
 
 
-
-					<button @click="${openFeatureInfo}"  class="hide">
-						<span class="icon stars">
-						</span>
-						<span class="text">
-						Entdecken
-						</span>					
+					<button @click="${toggleSchema}" class="theme-toggle">
+						<span class="icon moon">
+						</span>				
 					</button>
 				</div>
 				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}  ${getOverlayTestClass()}">

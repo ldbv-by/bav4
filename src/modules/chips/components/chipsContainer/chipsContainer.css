@@ -115,7 +115,7 @@
 	-webkit-mask-size: cover;
 }
 iframe {
-	min-height: 50em;
+	min-height: calc(100vh - 15em);
 	border: 0;
 	width: 100%;
 	min-width: 60em;

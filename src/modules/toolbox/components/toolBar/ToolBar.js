@@ -16,6 +16,8 @@ const Update_Fetching = 'update_fetching';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_ToolId = 'update_toolid';
 
+const FULLSCREEN_CSS_ID = 'fullscreen-css-id';
+
 /**
  *
  * @class
@@ -139,6 +141,18 @@ export class ToolBar extends MvuElement {
 			fit(getDefaultMapExtent(), { useVisibleViewport: false });
 		};
 
+		const toggleFullScreen = () => {
+			if (!document.getElementById(FULLSCREEN_CSS_ID)) {
+				const styleElement = document.createElement('style');
+				styleElement.id = FULLSCREEN_CSS_ID;
+				document.head.appendChild(styleElement);
+			}
+			const style = document.getElementById(FULLSCREEN_CSS_ID);
+
+			this._zindex = this._zindex === 601 ? 1 : 601;
+			style.innerHTML = `*{--z-map: ${this._zindex};}`;
+		};
+
 		return html`
 			<style>
 				${css}
@@ -199,7 +213,7 @@ export class ToolBar extends MvuElement {
 						<span class="icon search-icon "> </span>
 						<span class="text"> Suchen </span>
 					</button>
-					<button @click="${zoomToExtent}">
+					<button @click="${toggleFullScreen}">
 						<span class="icon fullscreen-icon "> </span>
 						<span class="text"> fullscreen- </span>
 					</button>
