@@ -56,6 +56,24 @@ describe('GeoResourceInfoPanel', () => {
 			expect(divs[1].innerText).toBe('content');
 		});
 
+		it('should show a geoResourceInfo with selectable content', async () => {
+			// HINT: the existence of the behavior (user select text) is driven by css-classes specified in main.css and baElement.css.
+			// All elements are not selectable by default, but can be activated with the 'selectable' class.
+			const cssClass = 'selectable';
+			const geoResourceInfo = new GeoResourceInfoResult('<b>content</b>');
+			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(geoResourceInfo);
+
+			const element = await setup();
+
+			element.geoResourceId = '914c9263-5312-453e-b3eb-5104db1bf788';
+
+			await TestUtils.timeout();
+			const divs = element.shadowRoot.querySelectorAll('div');
+
+			expect(divs.length).toBe(2);
+			expect(divs[1].classList.contains(cssClass)).toBeTrue();
+		});
+
 		it('should return an info text when response is null ', async () => {
 			spyOn(geoResourceInfoServiceMock, 'byId').withArgs('914c9263-5312-453e-b3eb-5104db1bf788').and.returnValue(null);
 

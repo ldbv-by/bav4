@@ -14,7 +14,8 @@
 	},
 	"devDependencies": {
 		"@jsdevtools/coverage-istanbul-loader": "3.0.5",
-		"@playwright/test": "1.36.0",
+		"@playwright/test": "1.38.1",
+		"bundlesize": "^0.18.1",
 		"copy-webpack-plugin": "11.0.0",
 		"css-loader": "6.8.1",
 		"docdash": "2.0.2",
@@ -40,7 +41,7 @@
 		"karma-webkit-launcher": "2.1.0",
 		"karma-webpack": "5.0.0",
 		"mapbox-gl-supported": "1.2.0",
-		"playwright": "1.36.0",
+		"playwright": "1.38.1",
 		"portfinder-sync": "0.0.2",
 		"prettier": "3.0.3",
 		"redux-test-utils": "1.0.2",
@@ -57,7 +58,7 @@
 		"start": "webpack serve --open --mode=development --devtool=inline-source-map",
 		"start:nohostcheck": "webpack serve --open --mode=development --allowed-hosts all --host 0.0.0.0",
 		"build:dev": "webpack --mode=development --devtool=inline-source-map",
-		"build:prod": "webpack --mode=production",
+		"build:prod": "webpack --mode=production --performance-hints=false",
 		"doc": "jsdoc -c jsdoc.conf.json",
 		"doc:apply": "node checkOrApplyDoc.js",
 		"doc:check": "env DOC_CHECK=true node checkOrApplyDoc.js",
@@ -70,6 +71,7 @@
 		"test:gha": "karma start karma.conf.gha.js --single-run",
 		"e2e": "npx playwright install; env URL=$npm_config_url npx playwright test --browser=${npm_config_browser:-all} --retries=3",
 		"es-check": "es-check es2022 \"./src/**/*.js\" --module",
+		"bundlesize": "npm run build:prod && npx bundlesize",
 		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
 		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
