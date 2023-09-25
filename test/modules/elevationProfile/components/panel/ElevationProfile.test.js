@@ -798,6 +798,28 @@ describe('ElevationProfile', () => {
 		});
 	});
 
+	describe('when _getFooterText(x) is called', () => {
+		it('should return "x m" for "x" any number', async () => {
+			// arrange
+			const element = await setup();
+
+			// assert
+			expect(element._getFooterText(0)).toBe('0 m');
+			expect(element._getFooterText(1)).toBe('1 m');
+			expect(element._getFooterText(-1)).toBe('-1 m');
+		});
+
+		it('should return "-" for "x" undefined or null', async () => {
+			// arrange
+			const element = await setup();
+
+			// assert
+			expect(element._getFooterText()).toBe('-');
+			expect(element._getFooterText(undefined)).toBe('-');
+			expect(element._getFooterText(null)).toBe('-');
+		});
+	});
+
 	describe('when attribute changes', () => {
 		const coordinates = [
 			[0, 1],
@@ -1022,11 +1044,7 @@ describe('ElevationProfile', () => {
 				attrs: [],
 				distUnit: 'm',
 				stats: {
-					sumUp: 0,
-					sumDown: 0,
 					verticalHeight: 0,
-					highestPoint: 0,
-					lowestPoint: 0,
 					linearDistance: 0
 				}
 			});
