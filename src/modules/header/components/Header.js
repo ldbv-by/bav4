@@ -18,6 +18,7 @@ const Update_Fetching = 'update_fetching';
 const Update_Layers = 'update_layers';
 const Update_IsPortrait_HasMinWidth = 'update_isPortrait_hasMinWidth';
 const Update_SearchTerm = 'update_searchTerm';
+const Update_Schema = 'update_schema';
 
 /**
  * Container element for header stuff.
@@ -35,7 +36,8 @@ export class Header extends MvuElement {
 			layers: [],
 			isPortrait: false,
 			hasMinWidth: false,
-			searchTerm: null
+			searchTerm: null,
+			darkSchema: false
 		});
 
 		const { EnvironmentService: environmentService, TranslationService: translationService } = $injector.inject(
@@ -61,6 +63,8 @@ export class Header extends MvuElement {
 				return { ...model, ...data };
 			case Update_SearchTerm:
 				return { ...model, searchTerm: data };
+			case Update_Schema:
+				return { ...model, darkSchema: data };
 		}
 	}
 
@@ -88,6 +92,10 @@ export class Header extends MvuElement {
 		this.observe(
 			(state) => state.search.query,
 			(query) => this.signal(Update_SearchTerm, query.payload)
+		);
+		this.observe(
+			(state) => state.media.darkSchema,
+			(darkSchema) => this.signal(Update_Schema, darkSchema)
 		);
 	}
 
@@ -122,7 +130,7 @@ export class Header extends MvuElement {
 	}
 
 	createView(model) {
-		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm } = model;
+		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, darkSchema } = model;
 
 		const showModalInfo = () => {
 			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
@@ -150,6 +158,9 @@ export class Header extends MvuElement {
 
 		const getIsClearClass = () => {
 			return searchTerm ? 'is-clear-visible' : '';
+		};
+		const getSchemaClass = () => {
+			return darkSchema ? 'sun' : 'moon';
 		};
 
 		const getDemoClass = () => {
@@ -322,7 +333,7 @@ export class Header extends MvuElement {
 
 
 					<button @click="${toggleSchema}" class="theme-toggle">
-						<span class="icon moon">
+						<span class="icon ${getSchemaClass()}  ">
 						</span>				
 					</button>
 				</div>

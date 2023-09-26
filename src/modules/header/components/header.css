@@ -503,7 +503,8 @@ input[type='search']::-webkit-search-results-decoration {
 	height: 2.1em;
 	width: 2.1em;
 	background: var(--text4);
-	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
+	/* background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%); */
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 	margin: auto;
 	margin-bottom: 0;
 }
@@ -579,9 +580,19 @@ input[type='search']::-webkit-search-results-decoration {
 	-webkit-mask-size: cover;
 }
 .moon {
-	background: var(--secondary-color) !important;
+	background: var(--text4) !important;
 	mask: url('assets/moon.svg');
 	-webkit-mask-image: url('assets/moon.svg');
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	transform: scale(0.8);
+	height: 2.5em;
+	width: 2.5em;
+}
+.sun {
+	background: var(--text4) !important;
+	mask: url('assets/sun.svg');
+	-webkit-mask-image: url('assets/sun.svg');
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	transform: scale(0.8);
