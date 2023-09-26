@@ -56,11 +56,7 @@ export const Empty_Profile_Data = Object.freeze({
 	attrs: [],
 	distUnit: 'm',
 	stats: {
-		sumUp: 0,
-		sumDown: 0,
 		verticalHeight: 0,
-		highestPoint: 0,
-		lowestPoint: 0,
 		linearDistance: 0
 	}
 });
@@ -228,19 +224,19 @@ export class ElevationProfile extends MvuElement {
 				<div class="profile__data" id="route-elevation-chart-footer">
 					<div class="profile__box" title="${translate('elevationProfile_sumUp')}">
 						<div class="profile__icon up"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${toLocaleString(sumUp)} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumUp">${this._getFooterText(sumUp)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_sumDown')}">
 						<div class="profile__icon down"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${toLocaleString(sumDown)} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-sumDown">${this._getFooterText(sumDown)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_highestPoint')}">
 						<div class="profile__icon highest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${toLocaleString(highestPoint)} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-highestPoint">${this._getFooterText(highestPoint)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_lowestPoint')}">
 						<div class="profile__icon lowest"></div>
-						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${toLocaleString(lowestPoint)} m</div>
+						<div class="profile__text" id="route-elevation-chart-footer-lowestPoint">${this._getFooterText(lowestPoint)}</div>
 					</div>
 					<div class="profile__box" title="${translate('elevationProfile_verticalHeight')}">
 						<div class="profile__icon height"></div>
@@ -253,6 +249,10 @@ export class ElevationProfile extends MvuElement {
 				</div>
 			</div>
 		`;
+	}
+
+	_getFooterText(measurement) {
+		return measurement === null || measurement === undefined ? `-` : `${toLocaleString(measurement)} m`;
 	}
 
 	get _noAnimation() {
