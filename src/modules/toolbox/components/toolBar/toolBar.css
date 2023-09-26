@@ -417,7 +417,7 @@
 	height: 4.1em;
 	width: 4.1em;
 	background: var(--text4);
-	background: linear-gradient(to top, var(--secondary-color) 0%, var(--primary-color) 50%);
+	background: linear-gradient(to top, var(--text4) 0%, var(--primary-color) 50%);
 	margin: auto;
 	margin-bottom: 0;
 }
