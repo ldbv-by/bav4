@@ -252,14 +252,14 @@ export class Header extends MvuElement {
 		};
 
 		const getHideClass = () => {
-			return isOpen ? '' : 'hide';
+			return isOpenNav ? '' : 'open-sub-nav';
 		};
 
 		const translate = (key) => this._translationService.translate(key);
 		return html`
 			<style>${css}</style>
 			<div class="preload">
-				<div class="test ${getHideClass()} ${getOrientationClass()}">
+				<div class="test ${getHideClass()} ${getOrientationClass()} ">
 					<button @click="${openMapLayerTab}"  >
 						<span class="icon home">
 						</span>
@@ -289,10 +289,6 @@ export class Header extends MvuElement {
 							gespeichert
 						</span>					
 					</button>
-
-
-
-
 					<button @click="${openFeatureInfo}"  >
 						<span class="icon routing">
 						</span>
@@ -315,7 +311,6 @@ export class Header extends MvuElement {
 							Legende
 						</span>					
 					</button>
-
 					<button @click="${openFeatureInfo}"  >
 						<span class="icon time">
 						</span>
@@ -330,8 +325,6 @@ export class Header extends MvuElement {
 							BR-Radltour
 						</span>					
 					</button>
-
-
 					<button @click="${toggleSchema}" class="theme-toggle">
 						<span class="icon ${getSchemaClass()}  ">
 						</span>				

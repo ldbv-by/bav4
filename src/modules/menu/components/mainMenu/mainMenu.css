@@ -71,7 +71,7 @@
 	transform: translate(28em, 0);
 }
 
-.is-open-nav {
+.is-open.is-open-nav {
 	transform: translate(33.5em, 0);
 }
 
