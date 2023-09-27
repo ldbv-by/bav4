@@ -2,7 +2,7 @@
 	margin-left: 7em;
 	display: flex;
 	transition: all var(--animation-duration-large-open) var(--animation-easing-linear);
-	position: absolute;
+	position: fixed;
 	scroll-behavior: smooth;
 	overflow: hidden;
 }
