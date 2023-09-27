@@ -15,7 +15,7 @@ register(proj4);
 
 describe('StyleTypes', () => {
 	it('provides an enum of all valid StyleTypes', () => {
-		expect(Object.keys(StyleTypes).length).toBe(12);
+		expect(Object.keys(StyleTypes).length).toBe(11);
 
 		expect(StyleTypes.NULL).toBe('null');
 		expect(StyleTypes.DEFAULT).toBe('default');
@@ -28,7 +28,6 @@ describe('StyleTypes', () => {
 		expect(StyleTypes.LINE).toBe('line');
 		expect(StyleTypes.POLYGON).toBe('polygon');
 		expect(StyleTypes.GEOJSON).toBe('geojson');
-		expect(StyleTypes.ROUTING).toBe('routing');
 	});
 });
 
@@ -793,7 +792,6 @@ describe('StyleService', () => {
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DRAW)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.DEFAULT)).toEqual(jasmine.any(Function));
 			expect(instanceUnderTest.getStyleFunction(StyleTypes.GEOJSON)).toEqual(jasmine.any(Function));
-			expect(instanceUnderTest.getStyleFunction(StyleTypes.ROUTING)).toEqual(jasmine.any(Function));
 		});
 
 		it('fails for a invalid StyleType', () => {

@@ -15,8 +15,7 @@ import {
 	geojsonStyleFunction,
 	defaultStyleFunction,
 	defaultClusterStyleFunction,
-	markerStyleFunction,
-	routingStyleFunction
+	markerStyleFunction
 } from '../utils/olStyleUtils';
 import { isFunction } from '../../../utils/checks';
 
@@ -36,8 +35,7 @@ export const StyleTypes = Object.freeze({
 	TEXT: 'text',
 	LINE: 'line',
 	POLYGON: 'polygon',
-	GEOJSON: 'geojson',
-	ROUTING: 'routing'
+	GEOJSON: 'geojson'
 });
 
 const Default_Colors = [
@@ -182,8 +180,6 @@ export class StyleService {
 				return geojsonStyleFunction;
 			case StyleTypes.DEFAULT:
 				return defaultStyleFunction;
-			case StyleTypes.ROUTING:
-				return routingStyleFunction;
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
