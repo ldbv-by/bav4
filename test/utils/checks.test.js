@@ -50,6 +50,7 @@ describe('provides checks for commons types', () => {
 		expect(isNumber(null)).toBeFalse();
 		expect(isNumber('123')).toBeFalse();
 		expect(isNumber({})).toBeFalse();
+		expect(isNumber([])).toBeFalse();
 
 		expect(isNumber(123)).toBeTrue();
 		expect(isNumber(123.123)).toBeTrue();
@@ -60,6 +61,7 @@ describe('provides checks for commons types', () => {
 		expect(isNumber(undefined, false)).toBeFalse();
 		expect(isNumber(null, false)).toBeFalse();
 		expect(isNumber({}, false)).toBeFalse();
+		expect(isNumber([], false)).toBeFalse();
 		expect(isNumber('', false)).toBeFalse();
 
 		expect(isNumber('123', false)).toBeTrue();

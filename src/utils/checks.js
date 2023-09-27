@@ -40,7 +40,7 @@ export const isFunction = (val) => {
  */
 export const isNumber = (val, strict = true) => {
 	if (strict) {
-		return val != null && !isString(val) && !isNaN(val);
+		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val);
 	}
 	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0;
 };
