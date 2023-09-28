@@ -10,16 +10,6 @@ import { Icon, Stroke, Style, Text } from 'ol/style';
 import baRoutingStartIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-start.svg';
 import baRoutingDestinationIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-destination.svg';
 import baRoutingIntermediateIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-intermediate.svg';
-// import { Fill, Icon, Stroke, Style } from 'ol/style';
-// import CircleStyle from 'ol/style/Circle';
-// import tempLocationIcon from '../../../../../src/modules/olMap/handler/highlight/assets/temporaryLocation.svg';
-// import { fromLonLat, get as getProjection } from 'ol/proj';
-// import { Feature, View, Map } from 'ol';
-// import VectorSource from 'ol/source/Vector';
-// import VectorLayer from 'ol/layer/Vector';
-// import RenderEvent from 'ol/render/Event';
-// import Point from 'ol/geom/Point';
-// import { sleep } from '../../../../../src/utils/timer';
 
 describe('styleUtils', () => {
 	describe('routingStyleFunction', () => {
