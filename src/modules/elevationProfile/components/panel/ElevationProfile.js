@@ -371,7 +371,7 @@ export class ElevationProfile extends MvuElement {
 					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
 				default:
-					return this._getFixedColorGradient(chart, elevationData, ElevationProfile.BORDER_COLOR);
+					return this._getFixedColorGradient(chart, ElevationProfile.BORDER_COLOR);
 			}
 		}
 		return ElevationProfile.BORDER_COLOR;
@@ -446,17 +446,13 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-	_getFixedColorGradient(chart, elevationData, color) {
+	_getFixedColorGradient(chart, color) {
 		// hint: workaround for Safari Problem displaying horizontal lines with fixed color
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		gradientBg.addColorStop(0, color);
+		gradientBg.addColorStop(1, color);
 
-		elevationData?.elevations.forEach((element, index) => {
-			const xPoint = (xPointWidth / chartArea.width) * index;
-			gradientBg.addColorStop(xPoint, color);
-		});
 		return gradientBg;
 	}
 

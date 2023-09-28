@@ -738,7 +738,7 @@ describe('ElevationProfile', () => {
 			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), jasmine.any(Object), '#2c5a93');
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), '#2c5a93');
 			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
 		});
 	});
