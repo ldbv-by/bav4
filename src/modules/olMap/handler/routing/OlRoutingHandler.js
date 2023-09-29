@@ -72,7 +72,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._modifyInteraction = null;
 		this._translateInteraction = null;
 		// other
-		this._defaultCategoryId = null;
+		this._catId = null;
 		this._promiseQueue = new PromiseQueue();
 		this._registeredObservers = [];
 	}
@@ -426,8 +426,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 			});
 
 			// request route
-			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._defaultCategoryId);
-			return this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
+			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
+			return this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
@@ -441,9 +441,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 				return feature.getGeometry().getCoordinates();
 			});
 
-			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._defaultCategoryId);
+			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
 
-			return this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
+			return this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
@@ -479,7 +479,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const updateCategoryAndRequestRoute = (coordinates3857, catId) => {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
-				this._defaultCategoryId = catId;
+				this._catId = catId;
 				await this._requestRouteFromCoordinates(coordinates3857);
 			});
 		};
@@ -512,7 +512,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._activeInteraction = false;
 		this._modifyInteraction = null;
 		this._translateInteraction = null;
-		this._defaultCategoryId = null;
+		this._catId = null;
 		this._unsubscribe(this._registeredObservers);
 	}
 	_unsubscribe(observers) {
