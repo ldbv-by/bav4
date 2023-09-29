@@ -118,8 +118,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const translate = new Translate({
 			layers: [interactionLayer],
 			pixelTolerance: 50,
-			// filter function in currently used ol version not yet available
-			// see: https://github.com/openlayers/openlayers/pull/9638
 			filter: (feature, layer) => {
 				return layer === interactionLayer;
 			}
@@ -201,10 +199,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return this._interactionLayer
 			.getSource()
 			.getFeatures()
-			.sort(function (f0, f1) {
+			.sort((f0, f1) => {
 				return f0.get(ROUTING_FEATURE_INDEX) - f1.get(ROUTING_FEATURE_INDEX);
 			})
-			.filter(function (f) {
+			.filter((f) => {
 				if (optionalRoutingFeatureType) {
 					return f.get(ROUTING_FEATURE_TYPE) === optionalRoutingFeatureType;
 				}
@@ -213,7 +211,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_getIntermediateFeatures() {
-		return this._getInteractionFeatures().filter(function (f) {
+		return this._getInteractionFeatures().filter((f) => {
 			return f.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.INTERMEDIATE;
 		});
 	}
