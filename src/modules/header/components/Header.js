@@ -217,6 +217,11 @@ export class Header extends MvuElement {
 			openMainMenu();
 		};
 
+		const openRoutingTab = () => {
+			setTab(TabIds.ROUTING);
+			openMainMenu();
+		};
+
 		const clearSearchInput = () => {
 			const input = this.shadowRoot.getElementById('input');
 			input.value = '';
@@ -261,7 +266,7 @@ export class Header extends MvuElement {
 								</div>
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${showModalInfo}" class="header__modal-button hide" title="modal">
+							<button @click="${openRoutingTab}" class="header__modal-button" title="modal">
 							&nbsp;
 							</button>
 						</div>
