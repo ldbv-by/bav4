@@ -16,6 +16,7 @@ import { distance } from 'ol/coordinate';
 import LineString from 'ol/geom/LineString.js';
 import { getRoutingStyleFunction } from './styleUtils';
 import { observe } from '../../../../utils/storeUtils';
+import { PromiseQueue } from '../../../../utils/PromiseQueue';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -33,7 +34,6 @@ export const ROUTING_FEATURE_TYPE = 'Routing_Feature_Type';
 export const ROUTING_FEATURE_INDEX = 'Routing_Feature_Index';
 
 /**
- * Handler for displaying geolocation information on the map
  * @class
  * @author taulinger
  */
@@ -55,6 +55,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._registeredObservers = [];
 		this._activeInteraction = false;
 		this._defaultCategoryId = null;
+		this._promiseQueue = new PromiseQueue();
 	}
 
 	/**
@@ -69,9 +70,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routeLayerCopy = this._createLayer('rt_routeCopyLayer');
 		this._highlightLayer = this._createLayer('rt_highlightLayer');
 		this._interactionLayer = this._createLayer('rt_interactionLayer');
-
-		// this._interactionLayer.getSource().addFeature(new Feature(new Point([1333206.976075, 6300024.736702])));
-		// this._interactionLayer.getSource().addFeature(new Feature(new Point([1295293.986535, 6273729.713278])));
 
 		this._routingLayerGroup = new LayerGroup({
 			layers: [this._alternativeRouteLayer, this._routeLayer, this._routeLayerCopy, this._highlightLayer, this._interactionLayer]
@@ -164,7 +162,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_incrementIndex(startIndex) {
 		const features = this._getInteractionFeatures();
 		for (let i = startIndex; i < features.length; i++) {
-			features[i].set('Routing_Feature_Index', features[i].get('Routing_Feature_Index') + 1);
+			features[i].set(ROUTING_FEATURE_INDEX, features[i].get(ROUTING_FEATURE_INDEX) + 1);
 		}
 	}
 
@@ -172,9 +170,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate)
 		});
-		iconFeature.set('Routing_Feature_Type', 'intermediate');
+		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
 
-		iconFeature.set('Routing_Feature_Index', index);
+		iconFeature.set(ROUTING_FEATURE_INDEX, index);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
@@ -185,11 +183,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 			.getSource()
 			.getFeatures()
 			.sort(function (f0, f1) {
-				return f0.get('Routing_Feature_Index') - f1.get('Routing_Feature_Index');
+				return f0.get(ROUTING_FEATURE_INDEX) - f1.get(ROUTING_FEATURE_INDEX);
 			})
 			.filter(function (f) {
 				if (optionalRoutingFeatureType) {
-					return f.get('Routing_Feature_Type') === optionalRoutingFeatureType;
+					return f.get(ROUTING_FEATURE_TYPE) === optionalRoutingFeatureType;
 				}
 				return true;
 			});
@@ -197,7 +195,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_getIntermediateFeatures() {
 		return this._getInteractionFeatures().filter(function (f) {
-			return f.get('Routing_Feature_Type') === 'intermediate';
+			return f.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.INTERMEDIATE;
 		});
 	}
 
@@ -266,8 +264,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
-		routeFeature.set('Routing_Feature_Type', 'route');
-		routeFeature.set('Routing_Cat', this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._routeLayer.getSource().addFeature(routeFeature);
 
@@ -279,8 +277,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 				geometry: segments[i]
 			});
 
-			segmentFeature.set('Routing_Feature_Type', 'route_segment');
-			segmentFeature.set('Routing_Cat', this._routingService.getCategoryById(categoryResponse.vehicle));
+			segmentFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
+			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
 			segmentFeature.set('Routing_Segment_Index', i);
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
@@ -330,8 +328,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const routeFeature = new Feature({
 			geometry: geometry
 		});
-		routeFeature.set('Routing_Feature_Type', 'route_alternative');
-		routeFeature.set('Routing_Cat', this._routingService.getCategoryById(categoryResponse.vehicle));
+		routeFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
+		routeFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
 		routeFeature.setStyle(getRoutingStyleFunction());
 		this._alternativeRouteLayer.getSource().addFeature(routeFeature);
 	}
@@ -357,13 +355,30 @@ export class OlRoutingHandler extends OlLayerHandler {
 		// window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: {gpx: 'undefined'} }, '*');
 	}
 
+	/**
+	 * NEW!
+	 */
+	_clearAllFeature() {
+		this._routeLayer.getSource().clear();
+		this._routeLayerCopy.getSource().clear();
+		this._alternativeRouteLayer.getSource().clear();
+		this._highlightLayer.getSource().clear();
+		this._interactionLayer.getSource().clear();
+	}
+
+	_clearIntermediateInteractionFeatures() {
+		this._getIntermediateFeatures().forEach((f) => {
+			this._interactionLayer.getSource().removeFeature(f);
+		});
+	}
+
 	_addStartInteractionFeature(coordinate3857) {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
 		iconFeature.setStyle(getRoutingStyleFunction());
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
-		iconFeature.set('Routing_Feature_Index', 0);
+		iconFeature.set(ROUTING_FEATURE_INDEX, 0);
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
@@ -374,60 +389,28 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
-		iconFeature.set('Routing_Feature_Index', index || 1);
+		iconFeature.set(ROUTING_FEATURE_INDEX, index || 1);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
 
-	_requestRouteFromCoordinates(coordinates3857) {
+	async _requestRouteFromCoordinates(coordinates3857) {
 		if (coordinates3857.length > 1) {
-			// const routeCoordinates = angular.isArray(routePointsParamValue) ? routePointsParamValue : routePointsParamValue.split(',');
-
-			// const interactionPoints = coordinates3857.map((c) => new Point(c));
-
-			// for (let index = 0; index < routeCoordinates.length - 1; index = index + 2) {
-			// 	const coordinate = [parseFloat(routeCoordinates[index]), parseFloat(routeCoordinates[index + 1])];
-			// 	interactionPoints.push(new ol.geom.Point(coordinate));
-			// }
-
-			// const callRequestRoute = (coordinates) => {
-			// activate();
-			// interactionPoints = baRouting.transform(interactionPoints, map.getView().getProjection());
+			this._setInteractionsActive(false);
+			this._clearAllFeature();
 
 			// add interaction features
-			// const coords = [...coordinates];
-			// interactionPoints.forEach(function (point) {
-			// 	coordinates.push(point.getCoordinates());
-			// });
-			const coordinates = [...coordinates3857];
-			this._addStartInteractionFeature(coordinates.shift());
-			this._addDestinationInteractionFeature(coordinates.pop(), coordinates3857.length - 1);
-			coordinates.forEach((c, index) => {
+			const coords = [...coordinates3857];
+			this._addStartInteractionFeature(coords.shift());
+			this._addDestinationInteractionFeature(coords.pop(), coordinates3857.length - 1);
+			coords.forEach((c, index) => {
 				this._addIntermediateInteractionFeature(c, index + 1);
 			});
 
 			// request route
-			// const catIds = angular.isArray(gaPermalink.getParams().routeCatIds) ? gaPermalink.getParams().routeCatIds : [scope.categoryId];
 			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._defaultCategoryId);
-			this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
-			// this._requestRoute('bike', ['bvv_bike'], coordinates3857);
-			// };
-
-			// const onRoutingUiReady = function (event) {
-			// 	if (event.data.type === 'ROUTING_UI_READY') {
-			// 		callRequestRoute();
-			// 		// update ba-routing-ui category
-			// 		const parentCatId = baRouting.getParentCategoryId(scope.categoryId);
-			// 		window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: { categoryId: parentCatId } }, '*');
-			// 	}
-			// };
-			// if (waitForRoutingUi === false) {
-			// callRequestRoute(coordinates3857);
-			// } else {
-			// 	// we wait until routing-ui is ready
-			// 	registerEventListener(onRoutingUiReady);
-			// }
+			return this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
@@ -443,7 +426,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._defaultCategoryId);
 
-			this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
+			return this._requestRoute(this._defaultCategoryId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
@@ -476,31 +459,25 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_register(store) {
+		const updateCategoryAndRequestRoute = (coordinates3857, catId) => {
+			// let's ensure each request is executed one after each other
+			this._promiseQueue.add(async () => {
+				this._defaultCategoryId = catId;
+				await this._requestRouteFromCoordinates(coordinates3857);
+			});
+		};
 		return [
 			observe(
 				store,
 				(state) => state.routing.waypoints,
-				(waypoints, state) => {
-					this._defaultCategoryId = state.routing.categoryId;
-					this._requestRouteFromCoordinates(waypoints);
-				},
+				(waypoints, state) => updateCategoryAndRequestRoute(waypoints, state.routing.categoryId),
 				false
+			),
+			observe(
+				store,
+				(state) => state.routing.categoryId,
+				(categoryId, state) => updateCategoryAndRequestRoute(state.routing.waypoints, categoryId)
 			)
-			// observe(
-			// 	store,
-			// 	(state) => state.measurement.reset,
-			// 	() => this._startNew()
-			// ),
-			// observe(
-			// 	store,
-			// 	(state) => state.measurement.remove,
-			// 	() => this._remove()
-			// ),
-			// observe(
-			// 	store,
-			// 	(state) => state.measurement.selection,
-			// 	(ids) => this._setSelection(ids)
-			// )
 		];
 	}
 
