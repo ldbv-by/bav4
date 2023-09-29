@@ -318,7 +318,7 @@ input[type='search']::-webkit-search-results-decoration {
 	background: var(--text2);
 	transform: rotate(315deg);
 }
-.header__modal-button {
+.header__routing-button {
 	flex-shrink: 1;
 	height: inherit;
 	margin: 0;
@@ -344,7 +344,7 @@ input[type='search']::-webkit-search-results-decoration {
 	background-image: url('assets/direction.svg');
 }
 
-.header__modal-button:focus {
+.header__routing-button:focus {
 	box-shadow:
 		0 1px 2px rgba(0, 0, 0, 0.5),
 		0 0 0 0.2em var(--primary-color-lighter);

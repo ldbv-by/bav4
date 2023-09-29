@@ -266,7 +266,7 @@ export class Header extends MvuElement {
 								</div>
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${openRoutingTab}" class="header__modal-button" title="modal">
+							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
 							&nbsp;
 							</button>
 						</div>
