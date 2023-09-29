@@ -1,5 +1,5 @@
 /**
- * @module modules/menu/components/mainMenu/content/misc/BvvMiscContentPanel
+ * @module modules/menu/components/mainMenu/content/routing/RoutingPanel
  */
 import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
