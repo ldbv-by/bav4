@@ -325,7 +325,6 @@ input[type='search']::-webkit-search-results-decoration {
 	/* padding: 0 .5em; */
 	width: 3em;
 	border-radius: 0 var(--border-radius-button) var(--border-radius-button) 0;
-	padding: 0.5em 0.9em;
 	background: var(--primary-color);
 	color: var(--text2);
 	border-color: var(--primary-color);
