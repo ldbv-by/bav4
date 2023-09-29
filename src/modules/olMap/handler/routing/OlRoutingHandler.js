@@ -28,12 +28,20 @@ export const RoutingFeatureTypes = Object.freeze({
 	ROUTE_HIGHLIGHT: 'route_highlight',
 	ROUTE_COPY: 'route_copy'
 });
-
+export const RoutingLayerIds = Object.freeze({
+	ROUTE_ALTERNATIVE: 'rt_alternativeRouteLayer',
+	ROUTE: 'rt_routeLayer',
+	ROUTE_COPY: 'rt_routeCopyLayer',
+	INTERACTION: 'rt_interactionLayer',
+	HIGHLIGHT: 'rt_highlightLayer'
+});
 export const ROUTING_CATEGORY = 'Routing_Cat';
 export const ROUTING_FEATURE_TYPE = 'Routing_Feature_Type';
 export const ROUTING_FEATURE_INDEX = 'Routing_Feature_Index';
+export const ROUTING_LAYER_ID_ = 'Routing_Feature_Index';
 
 /**
+ * LayerHandler for routing specific tasks.
  * @class
  * @author taulinger
  */
@@ -50,12 +58,23 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routingService = RoutingService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
-		this._routingLayerGroup = null;
+		// map
 		this._map = null;
-		this._registeredObservers = [];
+		//layer
+		this._routingLayerGroup = null;
+		this._alternativeRouteLayer = null;
+		this._routeLayer = null;
+		this._routeLayerCopy = null;
+		this._highlightLayer = null;
+		this._interactionLayer = null;
 		this._activeInteraction = false;
+		// interactions
+		this._modifyInteraction = null;
+		this._translateInteraction = null;
+		// other
 		this._defaultCategoryId = null;
 		this._promiseQueue = new PromiseQueue();
+		this._registeredObservers = [];
 	}
 
 	/**
@@ -65,11 +84,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 	onActivate(olMap) {
 		this._map = olMap;
 
-		this._alternativeRouteLayer = this._createLayer('rt_alternativeRouteLayer');
-		this._routeLayer = this._createLayer('rt_routeLayer');
-		this._routeLayerCopy = this._createLayer('rt_routeCopyLayer');
-		this._highlightLayer = this._createLayer('rt_highlightLayer');
-		this._interactionLayer = this._createLayer('rt_interactionLayer');
+		this._alternativeRouteLayer = this._createLayer(RoutingLayerIds.ROUTE_ALTERNATIVE);
+		this._routeLayer = this._createLayer(RoutingLayerIds.ROUTE);
+		this._routeLayerCopy = this._createLayer(RoutingLayerIds.ROUTE_COPY);
+		this._highlightLayer = this._createLayer(RoutingLayerIds.HIGHLIGHT);
+		this._interactionLayer = this._createLayer(RoutingLayerIds.INTERACTION);
 
 		this._routingLayerGroup = new LayerGroup({
 			layers: [this._alternativeRouteLayer, this._routeLayer, this._routeLayerCopy, this._highlightLayer, this._interactionLayer]
@@ -90,7 +109,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	_createLayer(id) {
 		return new VectorLayer({
 			source: new VectorSource(),
-			properties: { id }
+			properties: { id: id }
 		});
 	}
 
@@ -483,14 +502,23 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	/**
 	 *  @override
-	 *  @param {Map} olMap
 	 */
-	onDeactivate(/*eslint-disable no-unused-vars */ olMap) {
-		this._routingLayerGroup = null;
+	onDeactivate() {
 		this._map = null;
+		this._routingLayerGroup = null;
+		this._alternativeRouteLayer = null;
+		this._routeLayer = null;
+		this._routeLayerCopy = null;
+		this._highlightLayer = null;
+		this._interactionLayer = null;
+		this._activeInteraction = false;
+		this._modifyInteraction = null;
+		this._translateInteraction = null;
+		this._defaultCategoryId = null;
 		this._unsubscribe(this._registeredObservers);
 	}
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
+		observers.splice(0, observe.length);
 	}
 }
