@@ -422,7 +422,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			// request route
 			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-			return this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
@@ -438,13 +438,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
 
-			return this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
 	async _requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
-		// window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: { status: StatusCodes.Ok, loading: true } }, '*');
-
 		const categories = this._getIntermediateFeatures().length === 0 ? [defaultCategoryId].concat(alternativeCategoryIds) : [defaultCategoryId];
 
 		try {
@@ -461,12 +459,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 			this._setInteractionsActive(true);
 			return routingResult;
 		} catch (error) {
-			// enable interaction also if request failed
 			console.error(error);
+			// enable interaction also if request failed
 			this._setInteractionsActive(true);
-
-			// and inform the user about the error
-			// window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: { status: status, loading: false } }, '*');
+			throw error;
 		}
 	}
 
