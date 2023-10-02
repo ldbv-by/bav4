@@ -5,13 +5,13 @@ import { html } from 'lit-html';
 import { AbstractMvuContentPanel } from '../AbstractMvuContentPanel';
 import css from './routingPanel.css';
 import { $injector } from '../../../../../../injection';
-import arrowLeftShortIcon from './assets/arrowLeftShort.svg';
-import { abortOrReset } from '../../../../../../store/featureInfo/featureInfo.action';
+import { setTab } from '../../../../../../store/mainMenu/mainMenu.action';
+import { TabIds } from '../../../../../../domain/mainMenu';
+import svg from './assets/arrowLeftShort.svg';
 
 /**
  * Container for more contents.
  * @class
- * @author costa_gi
  * @author alsturm
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
@@ -24,6 +24,11 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
 
+		//temp close
+		const close = () => {
+			setTab(TabIds.MAPS);
+		};
+
 		return html`
 			<style>
 				${css}
@@ -32,13 +37,14 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ul class="ba-list">
 					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon .icon="${arrowLeftShortIcon}" .size=${4} .title=${translate('featureInfo_close_button')} @click=${abortOrReset}></ba-icon>
+							<ba-icon .icon="${svg}" .size=${4} .title=${'Routing'} @click=${close}></ba-icon>
 						</span>
 						<span class="ba-list-item__text vertical-center">
-							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${translate('Routing')} </span>
+							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> Routing </span>
 						</span>
 					</li>
-				<ul >
+				</ul>
+				<div>content</div>
 			</div>
 		`;
 	}
