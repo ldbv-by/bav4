@@ -18,9 +18,9 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Marker',
 				global_featureInfo_not_available: 'FeatureInfo is not available',
-				global_routingService_exception: "A route could not be created"
+				global_routingService_exception: 'A route could not be created'
 			};
-			
+
 		case 'de':
 			return {
 				//the first part of the snake_case key should be the name of the related module
@@ -29,8 +29,8 @@ export const provide = (lang) => {
 				global_featureInfoService_exception: 'FeatureInfo Abfrage schlug fehl',
 				global_geolocation_denied:
 					'Es ist keine Positionsbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.',
-					global_geolocation_not_available: 'Es ist keine Positionsbestimmung möglich',
-					global_import_url_failed: 'URL-Import schlug fehl',
+				global_geolocation_not_available: 'Es ist keine Positionsbestimmung möglich',
+				global_import_url_failed: 'URL-Import schlug fehl',
 				global_import_data_failed: 'Import der Daten schlug fehl',
 				global_import_unsupported_sourceType: 'Daten-Typ konnte nicht erkannt werden oder wird nicht unterstützt',
 				global_import_authenticationModal_title: 'Anmeldung erforderlich',
@@ -39,7 +39,7 @@ export const provide = (lang) => {
 				global_privacy_policy_url: 'https://geoportal.bayern.de/geoportalbayern/seiten/datenschutz.html',
 				global_marker_symbol_label: 'Markierung',
 				global_featureInfo_not_available: 'FeatureInfo ist nicht verfügbar',
-				global_routingService_exception: "Eine Route konnte nicht erstellt werden"
+				global_routingService_exception: 'Eine Route konnte nicht erstellt werden'
 			};
 
 		default:
