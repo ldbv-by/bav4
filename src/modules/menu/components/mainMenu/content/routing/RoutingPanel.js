@@ -59,22 +59,23 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ul class="ba-list">
 					<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 						<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-							<ba-icon .icon="${svg}" .size=${4} .title=${translate('Routing')} @click=${close}></ba-icon>
+							<ba-icon .icon="${svg}" .size=${4} .title=${translate('menu_misc_content_panel_routing_title')} @click=${close}></ba-icon>
 						</span>
 						<span class="ba-list-item__text vertical-center">
 							<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> Routing </span>
 						</span>
 					</li>
 				</ul>
-				<div>	
-				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<div>				
 				<ba-routing-feedback></ba-routing-feedback>
 				<div class='chips-container>
 					<hr />
 					<!-- todo:: placing chips 'export' and 'share' here-->
 				</div>
-				<ba-routing-info></ba-routing-info>
+				
 				<ba-routing-waypoints></ba-routing-waypoints>
+				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<ba-routing-info></ba-routing-info>
 				<ba-routing-details></ba-routing-details></div>
 				${this._getDemoContent()} 
 			</div>

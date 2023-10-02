@@ -23,6 +23,7 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_waypoints_title).toBe('Wegpunkte');
 		expect(map.routing_waypoints_remove_all).toBe('Alle entfernen');
 		expect(map.routing_waypoints_reverse).toBe('Reihenfolge umkehren');
+		expect(map.routing_waypoints_hide).toBe('Wegpunkte verbergen');
 		expect(map.routing_waypoint_move_down).toBe('nach hinten');
 		expect(map.routing_waypoint_move_up).toBe('nach vorne');
 		expect(map.routing_waypoint_move_remove).toBe('entfernen');
@@ -34,7 +35,6 @@ describe('i18n for feedback module', () => {
 
 	it('provides translation for en', () => {
 		const map = provide('en');
-
 		expect(map.routing_feedback_400).toBe('No route could be created based on the given points');
 		expect(map.routing_feedback_500).toBe('Due to a technical error no route could be created');
 		expect(map.routing_feedback_900).toBe('Specify <b>start</b> or <b>destination</b> by clicking in the map');
@@ -54,6 +54,7 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_waypoints_title).toBe('Waypoints');
 		expect(map.routing_waypoints_remove_all).toBe('Remove all');
 		expect(map.routing_waypoints_reverse).toBe('Reverse');
+		expect(map.routing_waypoints_hide).toBe('Hide waypoints');
 		expect(map.routing_waypoint_move_down).toBe('move forward');
 		expect(map.routing_waypoint_move_up).toBe('move backward');
 		expect(map.routing_waypoint_move_remove).toBe('remove');
@@ -64,7 +65,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 26;
+		const expectedSize = 27;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
