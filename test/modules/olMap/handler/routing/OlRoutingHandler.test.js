@@ -23,6 +23,8 @@ import { LineString, Point } from 'ol/geom';
 import { ModifyEvent } from 'ol/interaction/Modify';
 import Collection from 'ol/Collection.js';
 import { TranslateEvent } from 'ol/interaction/Translate';
+import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
+import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -74,12 +76,13 @@ describe('OlRoutingHandler', () => {
 				...state
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(initialState, { routing: routingReducer });
+		const store = TestUtils.setupStoreAndDi(initialState, { routing: routingReducer, notifications: notificationReducer });
 
 		$injector
 			.registerSingleton('RoutingService', routingServiceMock)
 			.registerSingleton('MapService', mapServiceMock)
-			.registerSingleton('EnvironmentService', environmentServiceMock);
+			.registerSingleton('EnvironmentService', environmentServiceMock)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 
 		return store;
 	};
@@ -440,7 +443,7 @@ describe('OlRoutingHandler', () => {
 
 			describe('and the routing service throws', () => {
 				it('informs the user and logs the error', async () => {
-					setup();
+					const store = setup();
 					const map = setupMap();
 					const message = 'something got wrong';
 					const defaultCategoryId = 'defaultCategoryId';
@@ -457,6 +460,8 @@ describe('OlRoutingHandler', () => {
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeRejected();
 					expect(errorSpy).toHaveBeenCalledWith(message);
 					expect(instanceUnderTest._activeInteraction).toBeTrue();
+					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
+					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				});
 			});
 		});

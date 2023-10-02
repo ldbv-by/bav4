@@ -17,6 +17,7 @@ import LineString from 'ol/geom/LineString.js';
 import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
 import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
+import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -48,16 +49,18 @@ export const ROUTING_SEGMENT_INDEX = 'Routing_Segment_Index';
 export class OlRoutingHandler extends OlLayerHandler {
 	constructor() {
 		super(ROUTING_LAYER_ID);
-		const { StoreService, RoutingService, MapService, EnvironmentService } = $injector.inject(
+		const { StoreService, RoutingService, MapService, EnvironmentService, TranslationService } = $injector.inject(
 			'StoreService',
 			'RoutingService',
 			'MapService',
-			'EnvironmentService'
+			'EnvironmentService',
+			'TranslationService'
 		);
 		this._storeService = StoreService;
 		this._routingService = RoutingService;
 		this._mapService = MapService;
 		this._environmentService = EnvironmentService;
+		this._translationService = TranslationService;
 		// map
 		this._map = null;
 		//layer
@@ -462,6 +465,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			console.error(error);
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
+			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
 			throw error;
 		}
 	}
