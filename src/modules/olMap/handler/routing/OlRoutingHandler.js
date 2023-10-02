@@ -241,7 +241,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	/**
 	 *
 	 * @param {object} routeGeometry
-	 * @returns
+	 * @returns features
 	 */
 	_splitRouteByIntermediatePoints(routeGeometry) {
 		const segments = [];
