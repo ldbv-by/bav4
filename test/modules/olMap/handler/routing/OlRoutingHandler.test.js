@@ -59,7 +59,9 @@ describe('constants and enums', () => {
 });
 
 describe('OlRoutingHandler', () => {
-	const routingServiceMock = {};
+	const routingServiceMock = {
+		async calculate() {}
+	};
 	const mapServiceMock = {};
 	const environmentServiceMock = {
 		isTouch() {}
@@ -376,6 +378,86 @@ describe('OlRoutingHandler', () => {
 				expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
 				expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
+	describe('methods', () => {
+		describe('_requestRoute', () => {
+			describe('an no intermediate features are available', () => {
+				it('calls the Routing Service with correct arguments', async () => {
+					setup();
+					const map = setupMap();
+					const defaultCategoryId = 'defaultCategoryId';
+					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
+					const coordinates3857 = [
+						[11, 22],
+						[33, 44]
+					];
+					const mockRouteResult = { defaultCategoryId: {} };
+					spyOn(routingServiceMock, 'calculate')
+						.withArgs([defaultCategoryId, ...alternativeCategoryIds], coordinates3857)
+						.and.resolveTo(mockRouteResult);
+					const instanceUnderTest = new OlRoutingHandler();
+					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
+					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
+					instanceUnderTest.activate(map);
+
+					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved(
+						mockRouteResult
+					);
+					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
+					// expect(displayAlternativeRoutingGeometrySpy.calls.allArgs()).toEqual(alternativeCategoryIds);
+					expect(displayAlternativeRoutingGeometrySpy).toHaveBeenCalledTimes(2);
+					expect(instanceUnderTest._activeInteraction).toBeTrue();
+				});
+			});
+
+			describe('and one ore more intermediate features are available', () => {
+				it('calls the Routing Service with correct arguments', async () => {
+					setup();
+					const map = setupMap();
+					const defaultCategoryId = 'defaultCategoryId';
+					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
+					const coordinates3857 = [
+						[11, 22],
+						[33, 44]
+					];
+					const mockRouteResult = { defaultCategoryId: {} };
+					spyOn(routingServiceMock, 'calculate').withArgs([defaultCategoryId], coordinates3857).and.resolveTo(mockRouteResult);
+					const instanceUnderTest = new OlRoutingHandler();
+					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
+					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
+					instanceUnderTest.activate(map);
+					instanceUnderTest._addIntermediateInteractionFeature(15, 15, 1);
+
+					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved();
+					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
+					expect(displayAlternativeRoutingGeometrySpy).not.toHaveBeenCalled();
+					expect(instanceUnderTest._activeInteraction).toBeTrue();
+				});
+			});
+
+			describe('and the routing service throws', () => {
+				it('informs the user and logs the error', async () => {
+					setup();
+					const map = setupMap();
+					const message = 'something got wrong';
+					const defaultCategoryId = 'defaultCategoryId';
+					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
+					const coordinates3857 = [
+						[11, 22],
+						[33, 44]
+					];
+					const instanceUnderTest = new OlRoutingHandler();
+					spyOn(routingServiceMock, 'calculate').and.rejectWith(message);
+					const errorSpy = spyOn(console, 'error');
+					instanceUnderTest.activate(map);
+
+					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeRejected();
+					expect(errorSpy).toHaveBeenCalledWith(message);
+					expect(instanceUnderTest._activeInteraction).toBeTrue();
+				});
 			});
 		});
 	});
