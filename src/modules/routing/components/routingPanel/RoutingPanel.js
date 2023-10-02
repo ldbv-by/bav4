@@ -52,6 +52,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				</div>
 				<ba-routing-info></ba-routing-info>
 				<ba-routing-waypoints></ba-routing-waypoints>
+				<ba-routing-details></ba-routing-details>
 			</div>`;
 	}
 

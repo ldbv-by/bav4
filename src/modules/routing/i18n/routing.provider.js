@@ -24,7 +24,11 @@ export const provide = (lang) => {
 				routing_waypoints_reverse: 'Reverse',
 				routing_waypoint_move_down: 'move forward',
 				routing_waypoint_move_up: 'move backward',
-				routing_waypoint_move_remove: 'remove'
+				routing_waypoint_move_remove: 'remove',
+				routing_warnings_title: 'Route notes',
+				routing_warnings_zoom: 'Zoom to segments',
+				routing_details_surface: 'Surface',
+				routing_details_road_type: 'Road type'
 			};
 
 		case 'de':
@@ -51,7 +55,11 @@ export const provide = (lang) => {
 				routing_waypoints_reverse: 'Reihenfolge umkehren',
 				routing_waypoint_move_down: 'nach hinten',
 				routing_waypoint_move_up: 'nach vorne',
-				routing_waypoint_move_remove: 'entfernen'
+				routing_waypoint_move_remove: 'entfernen',
+				routing_warnings_title: 'Hinweise zur Route',
+				routing_warnings_zoom: 'Zu den Segmenten zoomen',
+				routing_details_surface: 'Oberfläche',
+				routing_details_road_type: 'Weg-Typ'
 			};
 
 		default:

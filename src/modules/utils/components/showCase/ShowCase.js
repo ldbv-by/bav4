@@ -179,10 +179,65 @@ export class ShowCase extends BaElement {
 			}
 		};
 
-		const onClickLoadRoutingData = () => {
+		const onClickLoadRoutingData1 = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Start_Destination_Missing);
+			setRouteStats(null);
+			setWaypoints([]);
+		};
+
+		const onClickLoadRoutingData2 = () => {
 			setCategory('bike');
 			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
+			setWaypoints([
+				[1328315.0062647895, 6089975.78297438],
+				[1310581.6157026286, 6045336.558455837],
+				[1310381.715706286, 6045436.855837]
+			]);
+		};
+
+		const onClickLoadRoutingData3 = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Ok);
+			setRouteStats({
+				time: 3600000,
+				dist: 333,
+				twoDiff: [111, 222],
+				details: {
+					surface: {
+						asphalt: {
+							distance: 18,
+							segments: [
+								[0, 1],
+								[3, 4]
+							]
+						},
+						other: {
+							distance: 57,
+							segments: [
+								[0, 1],
+								[3, 4]
+							]
+						}
+					},
+					road_class: {
+						residential: 10
+					},
+					warnings: {
+						hike_path_grade4_ground: {
+							message: 'Alpine Erfahrung, Trittsicherheit erforderlich.',
+							criticality: 'Warning',
+							segments: [[0, 1]]
+						},
+						hike_path_grade5_ground: {
+							message: 'Spezielle Ausrüstung erforderlich.',
+							criticality: 'Warning',
+							segments: [[0, 1]]
+						}
+					}
+				}
+			});
 			setWaypoints([
 				[1328315.0062647895, 6089975.78297438],
 				[1310581.6157026286, 6045336.558455837],
@@ -270,7 +325,9 @@ export class ShowCase extends BaElement {
 					<h3>Routing</h3>
 					<div class="example row">
 						<ba-routing-panel></ba-routing-panel>
-						<ba-button id="button1" .label=${'Load routing data'} .type=${'primary'} @click=${onClickLoadRoutingData}></ba-button>
+						<ba-button id="button1" .label=${'Load routing data (Empty)'} .type=${'primary'} @click=${onClickLoadRoutingData1}></ba-button>
+						<ba-button id="button2" .label=${'Load routing data (Version 2)'} .type=${'primary'} @click=${onClickLoadRoutingData2}></ba-button>
+						<ba-button id="button3" .label=${'Load routing data (Version 3)'} .type=${'primary'} @click=${onClickLoadRoutingData3}></ba-button>
 					</div>
 
 					<h3>Profile</h3>

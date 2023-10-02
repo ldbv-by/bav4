@@ -1,5 +1,6 @@
 .container {
 	display: grid;
+	padding-bottom: 0.3em;
 }
 
 .iscollapsed {

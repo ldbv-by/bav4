@@ -6,6 +6,9 @@
  * @interface RoutingService
  */
 
+import { bvvOsmRoadTypeMappingProvider } from './provider/osmRoadTypeMapper.provider';
+import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider';
+
 /**
  * Initializes this service, which means all RoutingCategory objects are loaded and can be served in the future from an internal cache.
  * @function
@@ -34,6 +37,56 @@
  * @async
  * @typedef {Function} routingCategoriesProvider
  * @returns {Promise<Array<String>>} available categories
+ */
+
+/**
+ * @typedef {Object} ChartItemStyle
+ * @property {number} id The id of this chart item
+ * @property {string} label The label of this chart item
+ * @property {string} [image] the stringified image, visualizing the chart item
+ * @property {string} color the stringified color as rgba-value
+ */
+
+/**
+ * Returns all available surface type styles
+ * @function
+ * @name module:services/RoutingService~RoutingService#getSurfaceTypeStyles
+ * @returns {ChartItemStyle[]} surfaceTypeStyles
+ */
+
+/**
+ * Returns all available road type styles
+ * @function
+ * @name module:services/RoutingService~RoutingService#getRoadTypeStyles
+ * @returns {ChartItemStyle[]} roadTypeStyles
+ */
+
+/**
+ * A function that returns a list of available ChartItems to display statistical
+ * data (road type, surface type) for routing
+ * @function
+ * @typedef {Function} chartItemStylesProvider
+ * @returns {Map<string,module:domain/routing~ChartItemStyle>} available chartItems
+ */
+
+/**
+ * @typedef {Object} OSMRoadClass
+ * @property {number} distance
+ * @property {Array<number>} segments
+ */
+
+/**
+ * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}.
+ * @function
+ * @name module:services/RoutingService~RoutingService#mapOsmRoadTypes
+ * @returns {Map<string, module:services/RoutingService~RoutingService#OSMRoadClass>} mapping
+ */
+
+/**
+ * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}
+ * @async
+ * @typedef {Function} osmRoadTypeMappingProvider
+ * @returns {Map<string, module:services/RoutingService~RoutingService#OSMRoadClass>} mapping
  */
 
 /**
@@ -92,9 +145,17 @@ export class BvvRoutingService {
 	/**
 	 *
 	 * @param {module:services/RoutingService~routingCategoriesProvider} [categoriesProvider]
+	 * @param {module:services/RoutingService~chartItemStylesProvider} [chartItemStylesProvider]
+	 * @param {module:services/RoutingService~osmRoadTypeMappingProvider} [osmRoadTypeMappingProvider]
 	 */
-	constructor(categoriesProvider = mockCategoriesProvider) {
+	constructor(
+		categoriesProvider = mockCategoriesProvider,
+		chartItemStylesProvider = bvvChartItemStylesProvider,
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
+	) {
 		this._categoriesProvider = categoriesProvider;
+		this._chartItemsStyles = chartItemStylesProvider();
+		this._mapper = osmRoadTypeMappingProvider;
 		this._categories = null;
 	}
 
@@ -124,5 +185,13 @@ export class BvvRoutingService {
 				.flat(2)
 				.find((c) => c.id === id) ?? null
 		);
+	}
+
+	getRoadTypeStyles() {
+		return this._chartItemsStyles['road'] ?? {};
+	}
+
+	getSurfaceTypeStyles() {
+		return this._chartItemsStyles['surface'] ?? {};
 	}
 }

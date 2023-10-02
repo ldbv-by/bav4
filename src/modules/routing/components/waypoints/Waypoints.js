@@ -240,7 +240,6 @@ export class Waypoints extends MvuElement {
 	_createDraggableItems(waypoints) {
 		const draggableItems = [getPlaceholder(0, 0)];
 		this._waypointCount = waypoints.length;
-		//this.signal(Update_Dragged_Item, false);
 
 		for (let waypointIndex = 0, listIndex = 0; waypointIndex < waypoints.length; waypointIndex++) {
 			const waypointOption = {
