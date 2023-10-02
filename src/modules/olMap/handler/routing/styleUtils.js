@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/handler/highlight/styleUtils
+ * @module modules/olMap/handler/routing/styleUtils
  */
 import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
 import baRoutingStartIcon from './assets/ba-routing-start.svg';
