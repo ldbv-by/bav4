@@ -1,13 +1,13 @@
 import { TestUtils } from '../../../../test-utils';
 import { routingReducer, initialState as initialRoutingSoS } from '../../../../../src/store/routing/routing.reducer';
 import Map from 'ol/Map';
-import { fromLonLat } from 'ol/proj';
 import View from 'ol/View';
 import {
 	OlRoutingHandler,
 	ROUTING_CATEGORY,
 	ROUTING_FEATURE_INDEX,
 	ROUTING_FEATURE_TYPE,
+	ROUTING_SEGMENT_INDEX,
 	RoutingFeatureTypes,
 	RoutingLayerIds
 } from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
@@ -15,6 +15,14 @@ import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
 import { Modify, Translate } from 'ol/interaction';
+import { setCategory, setWaypoints } from '../../../../../src/store/routing/routing.action';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { Feature, MapBrowserEvent } from 'ol';
+import Event from 'ol/events/Event';
+import { LineString, Point } from 'ol/geom';
+import { ModifyEvent } from 'ol/interaction/Modify';
+import Collection from 'ol/Collection.js';
+import { TranslateEvent } from 'ol/interaction/Translate';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -46,12 +54,11 @@ describe('constants and enums', () => {
 		expect(ROUTING_CATEGORY).toBe('Routing_Cat');
 		expect(ROUTING_FEATURE_TYPE).toBe('Routing_Feature_Type');
 		expect(ROUTING_FEATURE_INDEX).toBe('Routing_Feature_Index');
+		expect(ROUTING_SEGMENT_INDEX).toBe('Routing_Segment_Index');
 	});
 });
 
 describe('OlRoutingHandler', () => {
-	const initialCenter = fromLonLat([11.57245, 48.14021]);
-
 	const routingServiceMock = {};
 	const mapServiceMock = {};
 	const environmentServiceMock = {
@@ -75,16 +82,30 @@ describe('OlRoutingHandler', () => {
 		return store;
 	};
 
-	const setupMap = () => {
+	const mapWidth = 100;
+	const mapHeight = 100;
+
+	const setupMap = (center = [0, 0], zoom = 0) => {
+		const containerId = 'mapContainer';
+		document.getElementById(containerId)?.remove(); //remove existing map container
+		document.body.style.margin = '0';
+		document.body.style.padding = '0';
+
 		const container = document.createElement('div');
-		return new Map({
+		container.id = containerId;
+		container.style.height = mapHeight + 'px';
+		container.style.width = mapWidth + 'px';
+		document.body.appendChild(container);
+
+		const map = new Map({
 			layers: [],
 			target: container,
 			view: new View({
-				center: initialCenter,
-				zoom: 1
+				center: center,
+				zoom: zoom
 			})
 		});
+		return map;
 	};
 
 	it('instantiates the handler', () => {
@@ -110,203 +131,305 @@ describe('OlRoutingHandler', () => {
 
 		expect(handler._registeredObservers).toEqual([]);
 		expect(handler._activeInteraction).toBeFalse();
-		expect(handler._defaultCategoryId).toBeNull();
+		expect(handler._catId).toBeNull();
 		expect(handler._promiseQueue).toBeInstanceOf(PromiseQueue);
 	});
 
-	describe('when handler is activated', () => {
-		describe('in a non-touch environment', () => {
-			it('fully initializes the handler', () => {
+	describe('lifecycle', () => {
+		describe('when handler is activated', () => {
+			describe('in a non-touch environment', () => {
+				it('fully initializes the handler', () => {
+					const map = setupMap();
+					setup();
+					const handler = new OlRoutingHandler();
+
+					const olLayer = handler.activate(map);
+
+					expect(handler._map).toEqual(map);
+					// layer
+					expect(handler._routingLayerGroup).toEqual(olLayer);
+					expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
+					expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
+					expect(handler._routeLayer).toBeInstanceOf(Vector);
+					expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
+					expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
+					expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
+					expect(handler._highlightLayer).toBeInstanceOf(Vector);
+					expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
+					expect(handler._interactionLayer).toBeInstanceOf(Vector);
+					expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
+					expect(olLayer.getLayers().getArray()).toEqual([
+						handler._alternativeRouteLayer,
+						handler._routeLayer,
+						handler._routeLayerCopy,
+						handler._highlightLayer,
+						handler._interactionLayer
+					]);
+					// interactions
+					expect(handler._translateInteraction).toBeInstanceOf(Translate);
+					expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
+					expect(handler._modifyInteraction).toBeInstanceOf(Modify);
+					expect(handler._map.getInteractions().getArray()).toContain(handler._modifyInteraction);
+
+					expect(handler._registeredObservers).toHaveSize(2);
+				});
+			});
+
+			describe('in a touch environment', () => {
+				it('fully initializes the handler (without modify interaction)', () => {
+					const map = setupMap();
+					setup();
+					const handler = new OlRoutingHandler();
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+
+					const olLayer = handler.activate(map);
+
+					expect(handler._map).toEqual(map);
+					// layer
+					expect(handler._routingLayerGroup).toEqual(olLayer);
+					expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
+					expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
+					expect(handler._routeLayer).toBeInstanceOf(Vector);
+					expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
+					expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
+					expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
+					expect(handler._highlightLayer).toBeInstanceOf(Vector);
+					expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
+					expect(handler._interactionLayer).toBeInstanceOf(Vector);
+					expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
+					expect(olLayer.getLayers().getArray()).toEqual([
+						handler._alternativeRouteLayer,
+						handler._routeLayer,
+						handler._routeLayerCopy,
+						handler._highlightLayer,
+						handler._interactionLayer
+					]);
+					// interactions
+					expect(handler._translateInteraction).toBeInstanceOf(Translate);
+					expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
+					expect(handler._modifyInteraction).toBeNull();
+					expect(handler._map.getInteractions().getArray()).not.toContain(handler._modifyInteraction);
+
+					expect(handler._registeredObservers).toHaveSize(2);
+				});
+			});
+
+			it('initially observes the waypoint property of the routing s-o-s and calculates a route', async () => {
 				const map = setupMap();
-				setup();
+				const coordinates = [
+					[22, 33],
+					[44, 55]
+				];
+				const catId = 'catId';
+				setup({
+					categoryId: catId,
+					waypoints: coordinates
+				});
 				const handler = new OlRoutingHandler();
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+				const requestRouteFromCoordinatesSpy = spyOn(handler, '_requestRouteFromCoordinates');
 
-				const olLayer = handler.activate(map);
+				handler.activate(map);
 
-				expect(handler._map).toEqual(map);
-				// layer
-				expect(handler._routingLayerGroup).toEqual(olLayer);
-				expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
-				expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
-				expect(handler._routeLayer).toBeInstanceOf(Vector);
-				expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
-				expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
-				expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
-				expect(handler._highlightLayer).toBeInstanceOf(Vector);
-				expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
-				expect(handler._interactionLayer).toBeInstanceOf(Vector);
-				expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
-				expect(olLayer.getLayers().getArray()).toEqual([
-					handler._alternativeRouteLayer,
-					handler._routeLayer,
-					handler._routeLayerCopy,
-					handler._highlightLayer,
-					handler._interactionLayer
-				]);
-				// interactions
-				expect(handler._translateInteraction).toBeInstanceOf(Translate);
-				expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
-				expect(handler._modifyInteraction).toBeInstanceOf(Modify);
-				expect(handler._map.getInteractions().getArray()).toContain(handler._modifyInteraction);
-
-				expect(handler._registeredObservers).toHaveSize(2);
+				await TestUtils.timeout();
+				expect(handler._catId).toBe(catId);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
 			});
 		});
 
-		describe('in a touch environment', () => {
-			it('fully initializes the handler', () => {
+		describe('when handler is deactivated', () => {
+			it('updates olLayer and olMap fields', () => {
 				const map = setupMap();
 				setup();
 				const handler = new OlRoutingHandler();
-				spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+				handler.activate(map);
 
-				const olLayer = handler.activate(map);
+				handler.deactivate(map);
 
-				expect(handler._map).toEqual(map);
-				// layer
-				expect(handler._routingLayerGroup).toEqual(olLayer);
-				expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
-				expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
-				expect(handler._routeLayer).toBeInstanceOf(Vector);
-				expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
-				expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
-				expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
-				expect(handler._highlightLayer).toBeInstanceOf(Vector);
-				expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
-				expect(handler._interactionLayer).toBeInstanceOf(Vector);
-				expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
-				expect(olLayer.getLayers().getArray()).toEqual([
-					handler._alternativeRouteLayer,
-					handler._routeLayer,
-					handler._routeLayerCopy,
-					handler._highlightLayer,
-					handler._interactionLayer
-				]);
-				// interactions
-				expect(handler._translateInteraction).toBeInstanceOf(Translate);
-				expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
+				expect(handler._map).toBeNull();
+
+				expect(handler._routingLayerGroup).toBeNull();
+				expect(handler._alternativeRouteLayer).toBeNull();
+				expect(handler._routeLayer).toBeNull();
+				expect(handler._routeLayerCopy).toBeNull();
+				expect(handler._highlightLayer).toBeNull();
+				expect(handler._interactionLayer).toBeNull();
+				expect(handler._activeInteraction).toBeFalse();
+
 				expect(handler._modifyInteraction).toBeNull();
-				expect(handler._map.getInteractions().getArray()).not.toContain(handler._modifyInteraction);
+				expect(handler._translateInteraction).toBeNull();
 
-				expect(handler._registeredObservers).toHaveSize(2);
+				expect(handler._catId).toBeNull();
+				expect(handler._promiseQueue).toBeInstanceOf(PromiseQueue);
+				expect(handler._registeredObservers).toEqual([]);
+			});
+		});
+	});
+
+	describe('events', () => {
+		describe('when observed slices-of-state change', () => {
+			it('updates updates the category and calculates a route', async () => {
+				const map = setupMap();
+				const coordinates = [
+					[22, 33],
+					[44, 55]
+				];
+				const catId = 'catId';
+				setup();
+				const handler = new OlRoutingHandler();
+				const requestRouteFromCoordinatesSpy = spyOn(handler, '_requestRouteFromCoordinates');
+
+				handler.activate(map);
+
+				setCategory(catId);
+				await TestUtils.timeout();
+				expect(handler._catId).toBe(catId);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([]);
+
+				requestRouteFromCoordinatesSpy.calls.reset();
+
+				setWaypoints(coordinates);
+				await TestUtils.timeout();
+				expect(handler._catId).toBe(catId);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
+			});
+		});
+	});
+
+	describe('interactions', () => {
+		const newMapBrowserEventForCoordinate = (eventType, map, coordinate) => {
+			const event = new Event(eventType);
+			const mapEvent = new MapBrowserEvent(eventType, map, event);
+			mapEvent.coordinate = [...coordinate];
+			return mapEvent;
+		};
+
+		describe('translate', () => {
+			it('calculates a route', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+
+				const layer = instanceUnderTest.activate(map);
+				map.addLayer(layer);
+				instanceUnderTest._setInteractionsActive(true);
+
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+				);
+				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translating', new Collection([feature]), [10, 20], [0, 0], new Event(MapBrowserEventType.POINTERDRAG))
+				);
+				expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translateend', new Collection([feature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
+				);
+				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 
-		// describe('and NO highlight features are available', () => {
-		// 	it('adds NO ol features', () => {
-		// 		const map = setupMap();
-		// 		setup();
-		// 		const handler = new OlHighlightLayerHandler();
+		describe('modify', () => {
+			it('handles the CSS class and calls the correct methods and ', () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+				const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
+				const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+				const layer = instanceUnderTest.activate(map);
+				map.addLayer(layer);
+				instanceUnderTest._setInteractionsActive(true);
+				const mockSegmentFeature = new Feature({
+					geometry: new LineString([
+						[0, -6757423],
+						[0, 6757423]
+					])
+				});
+				const mockCoordinate = [21, 42];
+				mockSegmentFeature.set(ROUTING_SEGMENT_INDEX, 42);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(mockSegmentFeature);
 
-		// 		const olLayer = handler.activate(map);
+				instanceUnderTest._modifyInteraction.dispatchEvent(
+					new ModifyEvent('modifystart', null, new MapBrowserEvent(MapBrowserEventType.SINGLECLICK))
+				);
+				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 
-		// 		const olFeatures = olLayer.getSource().getFeatures();
-		// 		expect(olFeatures).toHaveSize(0);
-		// 	});
-		// });
+				instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+				expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 
-		// describe('and highlight features are available', () => {
-		// 	it('adds ol features', () => {
-		// 		const highlightFeatures = [
-		// 			{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [1, 0] } },
-		// 			{ type: HighlightFeatureType.DEFAULT, data: { coordinate: [2, 1] } }
-		// 		];
-		// 		const temporaryFeatures = [{ type: HighlightFeatureType.TEMPORARY, data: { coordinate: [3, 4] } }];
-		// 		const animatedFeatures = [{ type: HighlightFeatureType.QUERY_RUNNING, data: { coordinate: [5, 55] } }];
-		// 		const state = { ...initialState, active: true, features: [...highlightFeatures, ...temporaryFeatures, ...animatedFeatures] };
-		// 		const map = setupMap();
-		// 		setup(state);
-		// 		const handler = new OlHighlightLayerHandler();
-
-		// 		const olLayer = handler.activate(map);
-
-		// 		const olFeatures = olLayer.getSource().getFeatures();
-		// 		expect(olFeatures).toHaveSize(4);
-		// 		expect(handler._animationListenerKeys).toHaveSize(1);
-		// 	});
-		// });
-	});
-
-	describe('when handler is deactivated', () => {
-		it('updates olLayer and olMap fields', () => {
-			const map = setupMap();
-			setup();
-			const handler = new OlRoutingHandler();
-			spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
-			handler.activate(map);
-
-			handler.deactivate(map);
-
-			expect(handler._map).toBeNull();
-
-			expect(handler._routingLayerGroup).toBeNull();
-			expect(handler._alternativeRouteLayer).toBeNull();
-			expect(handler._routeLayer).toBeNull();
-			expect(handler._routeLayerCopy).toBeNull();
-			expect(handler._highlightLayer).toBeNull();
-			expect(handler._interactionLayer).toBeNull();
-			expect(handler._activeInteraction).toBeFalse();
-
-			expect(handler._modifyInteraction).toBeNull();
-			expect(handler._translateInteraction).toBeNull();
-
-			expect(handler._defaultCategoryId).toBeNull();
-			expect(handler._promiseQueue).toBeInstanceOf(PromiseQueue);
-			expect(handler._registeredObservers).toEqual([]);
+				instanceUnderTest._modifyInteraction.dispatchEvent(
+					new ModifyEvent(
+						'modifyend',
+						new Collection([mockSegmentFeature]),
+						newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERUP, map, mockCoordinate)
+					)
+				);
+				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+				expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
+				expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
+				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
-
-	// describe('_appendStyle', () => {
-	// 	it('sets the correct style features containing a HighlightCoordinate', () => {
-	// 		setup();
-	// 		const animatedFeature = new Feature(new Point([22, 44]));
-	// 		const handler = new OlHighlightLayerHandler();
-	// 		const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
-	// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
-	// 		const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.TEMPORARY };
-	// 		const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
-	// 		const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
-
-	// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
-	// 		const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
-	// 		handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
-	// 		const styledFeature3 = handler._appendStyle(highlightCoordinateFeature3, new Feature(new Point([5, 10])));
-
-	// 		expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
-	// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
-	// 		expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
-	// 		expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
-	// 	});
-
-	// 	it('sets the correct style features containing a HighlightGeometry', () => {
-	// 		const olPoint = new Point([5, 10]);
-	// 		setup();
-	// 		const handler = new OlHighlightLayerHandler();
-	// 		const highlightGeometryGeoJsonFeature0 = {
-	// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
-	// 			type: HighlightFeatureType.DEFAULT
-	// 		};
-	// 		const highlightGeometryGeoJsonFeature1 = {
-	// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
-	// 			type: HighlightFeatureType.TEMPORARY
-	// 		};
-
-	// 		const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
-	// 		const styledFeature1 = handler._appendStyle(highlightGeometryGeoJsonFeature1, new Feature(olPoint));
-
-	// 		expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
-	// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
-	// 	});
-
-	// 	it('sets NO style when feature type is missing', () => {
-	// 		setup();
-	// 		const handler = new OlHighlightLayerHandler();
-	// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] } };
-
-	// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
-
-	// 		expect(styledFeature0.getStyle()).toBeNull();
-	// 	});
-	// });
 });
+
+// describe('_appendStyle', () => {
+// 	it('sets the correct style features containing a HighlightCoordinate', () => {
+// 		setup();
+// 		const animatedFeature = new Feature(new Point([22, 44]));
+// 		const handler = new OlHighlightLayerHandler();
+// 		const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
+// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
+// 		const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.TEMPORARY };
+// 		const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
+// 		const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
+
+// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
+// 		const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
+// 		handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
+// 		const styledFeature3 = handler._appendStyle(highlightCoordinateFeature3, new Feature(new Point([5, 10])));
+
+// 		expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
+// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
+// 		expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
+// 		expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
+// 	});
+
+// 	it('sets the correct style features containing a HighlightGeometry', () => {
+// 		const olPoint = new Point([5, 10]);
+// 		setup();
+// 		const handler = new OlHighlightLayerHandler();
+// 		const highlightGeometryGeoJsonFeature0 = {
+// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+// 			type: HighlightFeatureType.DEFAULT
+// 		};
+// 		const highlightGeometryGeoJsonFeature1 = {
+// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
+// 			type: HighlightFeatureType.TEMPORARY
+// 		};
+
+// 		const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
+// 		const styledFeature1 = handler._appendStyle(highlightGeometryGeoJsonFeature1, new Feature(olPoint));
+
+// 		expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
+// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
+// 	});
+
+// 	it('sets NO style when feature type is missing', () => {
+// 		setup();
+// 		const handler = new OlHighlightLayerHandler();
+// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] } };
+
+// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
+
+// 		expect(styledFeature0.getStyle()).toBeNull();
+// 	});
+// });
