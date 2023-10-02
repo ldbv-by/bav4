@@ -8,6 +8,8 @@ import { $injector } from '../../../../../../injection';
 import { setTab } from '../../../../../../store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../../../../domain/mainMenu';
 import svg from './assets/arrowLeftShort.svg';
+import { setCategory, setRouteStats, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
+import { RoutingStatusCodes } from '../../../../../../domain/routing';
 
 const Update_Categories = 'update_categories';
 
@@ -64,7 +66,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 						</span>
 					</li>
 				</ul>
-				<div>	<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<div>	
+				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
 				<ba-routing-feedback></ba-routing-feedback>
 				<div class='chips-container>
 					<hr />
@@ -73,8 +76,90 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ba-routing-info></ba-routing-info>
 				<ba-routing-waypoints></ba-routing-waypoints>
 				<ba-routing-details></ba-routing-details></div>
+				${this._getDemoContent()} 
 			</div>
 		`;
+	}
+
+	/**
+	 * for development use only
+	 * @returns {import('../../../../../../../node_modules/lit-html/lit-html').TemplateResult}
+	 */
+	_getDemoContent() {
+		const onClickLoadRoutingData1 = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Start_Destination_Missing);
+			setRouteStats(null);
+			setWaypoints([]);
+		};
+
+		const onClickLoadRoutingData2 = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Ok);
+			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
+			setWaypoints([
+				[1328315.0062647895, 6089975.78297438],
+				[1310581.6157026286, 6045336.558455837],
+				[1310381.715706286, 6045436.855837]
+			]);
+		};
+
+		const onClickLoadRoutingData3 = () => {
+			setCategory('bike');
+			setStatus(RoutingStatusCodes.Ok);
+			setRouteStats({
+				time: 3600000,
+				dist: 333,
+				twoDiff: [111, 222],
+				details: {
+					surface: {
+						asphalt: {
+							distance: 18,
+							segments: [
+								[0, 1],
+								[3, 4]
+							]
+						},
+						other: {
+							distance: 57,
+							segments: [
+								[0, 1],
+								[3, 4]
+							]
+						}
+					},
+					road_class: {
+						residential: 10
+					},
+					warnings: {
+						hike_path_grade4_ground: {
+							message: 'Alpine Erfahrung, Trittsicherheit erforderlich.',
+							criticality: 'Warning',
+							segments: [[0, 1]]
+						},
+						hike_path_grade5_ground: {
+							message: 'Spezielle Ausrüstung erforderlich.',
+							criticality: 'Warning',
+							segments: [[0, 1]]
+						}
+					}
+				}
+			});
+			setWaypoints([
+				[1328315.0062647895, 6089975.78297438],
+				[1310581.6157026286, 6045336.558455837],
+				[1310381.715706286, 6045436.855837]
+			]);
+		};
+
+		return html`<div class="demo">
+			<div class="demo_title">Demo</div>
+			<div class="demo_buttons">
+				<ba-button id="button1" .label=${'Load routing data (Empty)'} .type=${'primary'} @click=${onClickLoadRoutingData1}></ba-button>
+				<ba-button id="button2" .label=${'Load routing data (Version 2)'} .type=${'primary'} @click=${onClickLoadRoutingData2}></ba-button>
+				<ba-button id="button3" .label=${'Load routing data (Version 3)'} .type=${'primary'} @click=${onClickLoadRoutingData3}></ba-button>
+			</div>
+		</div>`;
 	}
 
 	static get tag() {

@@ -1,3 +1,7 @@
+.container {
+	display: flex;
+	flex-direction: column;
+}
 .ba-list {
 	background-color: var(--tertiary-bg-color);
 	box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
@@ -11,4 +15,21 @@
 	left: -3em;
 	right: -3em;
 	margin: 0.5em 1px 0;
+}
+
+.demo {
+	position: fixed;
+	bottom: 4em;
+	width: 100%;
+}
+
+.demo_title {
+	border-top: 2px solid var(--header-background-color);
+	font-style: italic;
+	font-weight: 900;
+}
+.demo_buttons {
+	display: flex;
+	flex-grow: 1;
+	justify-content: space-around;
 }
