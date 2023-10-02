@@ -1,4 +1,4 @@
-import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import {
 	ROUTING_CATEGORY,
 	ROUTING_FEATURE_INDEX,
@@ -6,7 +6,7 @@ import {
 	RoutingFeatureTypes
 } from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
 import { Feature } from 'ol';
-import { Icon, Stroke, Style, Text } from 'ol/style';
+import { Circle, Fill, Icon, Stroke, Style, Text } from 'ol/style';
 import baRoutingStartIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-start.svg';
 import baRoutingDestinationIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-destination.svg';
 import baRoutingIntermediateIcon from '../../../../../src/modules/olMap/handler/routing/assets/ba-routing-intermediate.svg';
@@ -247,6 +247,35 @@ describe('styleUtils', () => {
 			const result = getRoutingStyleFunction()(feature);
 
 			expect(result).toBeNull();
+		});
+	});
+
+	describe('getModifyInteractionStyle', () => {
+		it('returns a style', () => {
+			const feature = new Feature();
+			feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+			const expected = [
+				new Style({
+					image: new Circle({
+						radius: 8,
+						fill: new Fill({
+							color: '#099dda'
+						})
+					})
+				}),
+				new Style({
+					image: new Circle({
+						radius: 6,
+						fill: new Fill({
+							color: 'white'
+						})
+					})
+				})
+			];
+
+			const result = getModifyInteractionStyle();
+
+			expect(result).toEqual(expected);
 		});
 	});
 });

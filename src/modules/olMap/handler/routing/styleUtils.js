@@ -1,7 +1,7 @@
 /**
  * @module modules/olMap/handler/highlight/styleUtils
  */
-import { Style, Icon, Stroke, Text as TextStyle } from 'ol/style';
+import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
 import baRoutingStartIcon from './assets/ba-routing-start.svg';
 import baRoutingIntermediateIcon from './assets/ba-routing-intermediate.svg';
 import baRoutingDestinationIcon from './assets/ba-routing-destination.svg';
@@ -108,4 +108,24 @@ export const getRoutingStyleFunction = () => {
 				return null;
 		}
 	};
+};
+export const getModifyInteractionStyle = () => {
+	return [
+		new Style({
+			image: new Circle({
+				radius: 8,
+				fill: new Fill({
+					color: '#099dda'
+				})
+			})
+		}),
+		new Style({
+			image: new Circle({
+				radius: 6,
+				fill: new Fill({
+					color: 'white'
+				})
+			})
+		})
+	];
 };
