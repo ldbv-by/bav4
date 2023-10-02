@@ -1,6 +1,6 @@
 import { $injector } from '../../../../src/injection';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { RoutingPanel } from '../../../../src/modules/routing/components/routingPanel/RoutingPanel';
+import { RoutingPanel } from '../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { BvvRoutingService, mockCategoriesProvider } from '../../../../src/services/RoutingService';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TestUtils } from '../../../test-utils';
@@ -20,12 +20,12 @@ describe('RoutingPanel', () => {
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('RoutingService', routingService);
+		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(RoutingPanel.tag);
 	};
 
 	describe('class', () => {
-		it('inherits from MvuElement', async () => {
+		it('inherits from AbstractMvuContentPanel', async () => {
 			const element = await setup();
 
 			expect(element instanceof AbstractMvuContentPanel).toBeTrue();

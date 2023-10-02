@@ -9,19 +9,39 @@ import { setTab } from '../../../../../../store/mainMenu/mainMenu.action';
 import { TabIds } from '../../../../../../domain/mainMenu';
 import svg from './assets/arrowLeftShort.svg';
 
+const Update_Categories = 'update_categories';
+
 /**
- * Container for more contents.
+ * Container for routing contents.
  * @class
  * @author alsturm
+ * @author thiloSchlemmer
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({});
-		const { TranslationService } = $injector.inject('TranslationService');
+		super({ categories: [] });
+		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
 		this._translationService = TranslationService;
+		this._routingService = RoutingService;
 	}
 
-	createView() {
+	update(type, data, model) {
+		switch (type) {
+			case Update_Categories:
+				return { ...model, categories: [...data] };
+		}
+	}
+
+	/**
+	 * @override
+	 */
+	async onInitialize() {
+		await this._routingService.init();
+		this.signal(Update_Categories, this._routingService.getCategories());
+	}
+
+	createView(model) {
+		const { categories } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		//temp close
@@ -44,7 +64,15 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 						</span>
 					</li>
 				</ul>
-				<div>content</div>
+				<div>	<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<ba-routing-feedback></ba-routing-feedback>
+				<div class='chips-container>
+					<hr />
+					<!-- todo:: placing chips 'export' and 'share' here-->
+				</div>
+				<ba-routing-info></ba-routing-info>
+				<ba-routing-waypoints></ba-routing-waypoints>
+				<ba-routing-details></ba-routing-details></div>
 			</div>
 		`;
 	}
