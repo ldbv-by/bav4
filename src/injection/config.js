@@ -56,6 +56,7 @@ import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
+import { RoutingPlugin } from '../plugins/RoutingPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -92,6 +93,7 @@ $injector
 	.registerSingleton('RoutingService', new BvvRoutingService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
+	.registerSingleton('RoutingPlugin', new RoutingPlugin())
 	.registerSingleton('TopicsPlugin', new TopicsPlugin())
 	.registerSingleton('ChipsPlugin', new ChipsPlugin())
 	.registerSingleton('LayersPlugin', new LayersPlugin())
