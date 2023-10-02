@@ -14,7 +14,7 @@ import Modify from 'ol/interaction/Modify.js';
 import Polyline from 'ol/format/Polyline.js';
 import { distance } from 'ol/coordinate';
 import LineString from 'ol/geom/LineString.js';
-import { getRoutingStyleFunction } from './styleUtils';
+import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
 import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 
@@ -38,7 +38,7 @@ export const RoutingLayerIds = Object.freeze({
 export const ROUTING_CATEGORY = 'Routing_Cat';
 export const ROUTING_FEATURE_TYPE = 'Routing_Feature_Type';
 export const ROUTING_FEATURE_INDEX = 'Routing_Feature_Index';
-export const ROUTING_LAYER_ID_ = 'Routing_Feature_Index';
+export const ROUTING_SEGMENT_INDEX = 'Routing_Segment_Index';
 
 /**
  * LayerHandler for routing specific tasks.
@@ -125,12 +125,12 @@ export class OlRoutingHandler extends OlLayerHandler {
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
 		});
-		translate.on('translating', (evt) => {
-			// mapDiv.addClass(cssGrabbing);
+		translate.on('translating', () => {
+			this._map.getTarget().classList.add('grabbing');
 			// managePopup();
 		});
 		translate.on('translateend', (evt) => {
-			// mapDiv.removeClass(cssGrabbing);
+			this._map.getTarget().classList.remove('grabbing');
 			if (evt.coordinate[0] !== startCoordinate[0] || evt.coordinate[1] !== startCoordinate[1]) {
 				this._requestRouteFromInteractionLayer();
 			}
@@ -140,25 +140,20 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_createModify() {
 		const modify = new Modify({
-			// style: modifyStyleFunction,
+			style: getModifyInteractionStyle(),
 			source: this._routeLayerCopy.getSource(),
 			pixelTolerance: 5,
 			deleteCondition: () => false
-			// filter: (feature, layer) => {
-			// 	return feature.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE_COPY;
-			// }
 		});
 		modify.on('modifystart', (evt) => {
-			if (evt.mapBrowserEvent.type !== 'pointerdrag') {
-				// insert intermediate point
-			} else if (evt.mapBrowserEvent.type !== 'singleclick') {
-				// mapDiv.addClass(cssGrabbing);
+			if (evt.mapBrowserEvent.type !== 'singleclick') {
+				this._map.getTarget().classList.add('grabbing');
 				// managePopup();
 			}
 		});
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {
-				// mapDiv.removeClass(cssGrabbing);
+				this._map.getTarget().classList.remove('grabbing');
 
 				// find the feature which was modified
 				// be careful with the revision number -> setting the style or properties on a feature also increments it
@@ -166,7 +161,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const modifiedSegmentFeature = evt.features.getArray().reduce((acc, curr) => {
 					return acc.getRevision() >= curr.getRevision() ? acc : curr;
 				});
-				const segmentIndex = modifiedSegmentFeature.get('Routing_Segment_Index');
+				const segmentIndex = modifiedSegmentFeature.get(ROUTING_SEGMENT_INDEX);
 				this._incrementIndex(segmentIndex + 1);
 				this._addIntermediateInteractionFeature(evt.mapBrowserEvent.coordinate, segmentIndex + 1);
 
@@ -296,7 +291,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			segmentFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
 			segmentFeature.set(ROUTING_CATEGORY, this._routingService.getCategoryById(categoryResponse.vehicle));
-			segmentFeature.set('Routing_Segment_Index', i);
+			segmentFeature.set(ROUTING_SEGMENT_INDEX, i);
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
