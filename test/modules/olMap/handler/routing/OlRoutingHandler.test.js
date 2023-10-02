@@ -110,29 +110,29 @@ describe('OlRoutingHandler', () => {
 
 	it('instantiates the handler', () => {
 		setup();
-		const handler = new OlRoutingHandler();
+		const instanceUnderTest = new OlRoutingHandler();
 
-		expect(handler.id).toBe('routing_layer');
-		expect(handler._storeService.getStore()).toBeDefined();
-		expect(handler._routingService).toBeDefined();
-		expect(handler._mapService).toBeDefined();
-		expect(handler._environmentService).toBeDefined();
+		expect(instanceUnderTest.id).toBe('routing_layer');
+		expect(instanceUnderTest._storeService.getStore()).toBeDefined();
+		expect(instanceUnderTest._routingService).toBeDefined();
+		expect(instanceUnderTest._mapService).toBeDefined();
+		expect(instanceUnderTest._environmentService).toBeDefined();
 
-		expect(handler._map).toBeNull();
-		expect(handler._routingLayerGroup).toBeNull();
-		expect(handler._alternativeRouteLayer).toBeNull();
-		expect(handler._routeLayer).toBeNull();
-		expect(handler._routeLayerCopy).toBeNull();
-		expect(handler._highlightLayer).toBeNull();
-		expect(handler._interactionLayer).toBeNull();
+		expect(instanceUnderTest._map).toBeNull();
+		expect(instanceUnderTest._routingLayerGroup).toBeNull();
+		expect(instanceUnderTest._alternativeRouteLayer).toBeNull();
+		expect(instanceUnderTest._routeLayer).toBeNull();
+		expect(instanceUnderTest._routeLayerCopy).toBeNull();
+		expect(instanceUnderTest._highlightLayer).toBeNull();
+		expect(instanceUnderTest._interactionLayer).toBeNull();
 
-		expect(handler._modifyInteraction).toBeNull();
-		expect(handler._translateInteraction).toBeNull();
+		expect(instanceUnderTest._modifyInteraction).toBeNull();
+		expect(instanceUnderTest._translateInteraction).toBeNull();
 
-		expect(handler._registeredObservers).toEqual([]);
-		expect(handler._activeInteraction).toBeFalse();
-		expect(handler._catId).toBeNull();
-		expect(handler._promiseQueue).toBeInstanceOf(PromiseQueue);
+		expect(instanceUnderTest._registeredObservers).toEqual([]);
+		expect(instanceUnderTest._activeInteraction).toBeFalse();
+		expect(instanceUnderTest._catId).toBeNull();
+		expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
 	});
 
 	describe('lifecycle', () => {
@@ -141,37 +141,37 @@ describe('OlRoutingHandler', () => {
 				it('fully initializes the handler', () => {
 					const map = setupMap();
 					setup();
-					const handler = new OlRoutingHandler();
+					const instanceUnderTest = new OlRoutingHandler();
 
-					const olLayer = handler.activate(map);
+					const olLayer = instanceUnderTest.activate(map);
 
-					expect(handler._map).toEqual(map);
+					expect(instanceUnderTest._map).toEqual(map);
 					// layer
-					expect(handler._routingLayerGroup).toEqual(olLayer);
-					expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
-					expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
-					expect(handler._routeLayer).toBeInstanceOf(Vector);
-					expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
-					expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
-					expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
-					expect(handler._highlightLayer).toBeInstanceOf(Vector);
-					expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
-					expect(handler._interactionLayer).toBeInstanceOf(Vector);
-					expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
+					expect(instanceUnderTest._routingLayerGroup).toEqual(olLayer);
+					expect(instanceUnderTest._alternativeRouteLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
+					expect(instanceUnderTest._routeLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
+					expect(instanceUnderTest._routeLayerCopy).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
+					expect(instanceUnderTest._highlightLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
+					expect(instanceUnderTest._interactionLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
 					expect(olLayer.getLayers().getArray()).toEqual([
-						handler._alternativeRouteLayer,
-						handler._routeLayer,
-						handler._routeLayerCopy,
-						handler._highlightLayer,
-						handler._interactionLayer
+						instanceUnderTest._alternativeRouteLayer,
+						instanceUnderTest._routeLayer,
+						instanceUnderTest._routeLayerCopy,
+						instanceUnderTest._highlightLayer,
+						instanceUnderTest._interactionLayer
 					]);
 					// interactions
-					expect(handler._translateInteraction).toBeInstanceOf(Translate);
-					expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
-					expect(handler._modifyInteraction).toBeInstanceOf(Modify);
-					expect(handler._map.getInteractions().getArray()).toContain(handler._modifyInteraction);
+					expect(instanceUnderTest._translateInteraction).toBeInstanceOf(Translate);
+					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._translateInteraction);
+					expect(instanceUnderTest._modifyInteraction).toBeInstanceOf(Modify);
+					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._modifyInteraction);
 
-					expect(handler._registeredObservers).toHaveSize(2);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(2);
 				});
 			});
 
@@ -179,38 +179,38 @@ describe('OlRoutingHandler', () => {
 				it('fully initializes the handler (without modify interaction)', () => {
 					const map = setupMap();
 					setup();
-					const handler = new OlRoutingHandler();
+					const instanceUnderTest = new OlRoutingHandler();
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
 
-					const olLayer = handler.activate(map);
+					const olLayer = instanceUnderTest.activate(map);
 
-					expect(handler._map).toEqual(map);
+					expect(instanceUnderTest._map).toEqual(map);
 					// layer
-					expect(handler._routingLayerGroup).toEqual(olLayer);
-					expect(handler._alternativeRouteLayer).toBeInstanceOf(Vector);
-					expect(handler._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
-					expect(handler._routeLayer).toBeInstanceOf(Vector);
-					expect(handler._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
-					expect(handler._routeLayerCopy).toBeInstanceOf(Vector);
-					expect(handler._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
-					expect(handler._highlightLayer).toBeInstanceOf(Vector);
-					expect(handler._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
-					expect(handler._interactionLayer).toBeInstanceOf(Vector);
-					expect(handler._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
+					expect(instanceUnderTest._routingLayerGroup).toEqual(olLayer);
+					expect(instanceUnderTest._alternativeRouteLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
+					expect(instanceUnderTest._routeLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._routeLayer.get('id')).toBe(RoutingLayerIds.ROUTE);
+					expect(instanceUnderTest._routeLayerCopy).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._routeLayerCopy.get('id')).toBe(RoutingLayerIds.ROUTE_COPY);
+					expect(instanceUnderTest._highlightLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
+					expect(instanceUnderTest._interactionLayer).toBeInstanceOf(Vector);
+					expect(instanceUnderTest._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
 					expect(olLayer.getLayers().getArray()).toEqual([
-						handler._alternativeRouteLayer,
-						handler._routeLayer,
-						handler._routeLayerCopy,
-						handler._highlightLayer,
-						handler._interactionLayer
+						instanceUnderTest._alternativeRouteLayer,
+						instanceUnderTest._routeLayer,
+						instanceUnderTest._routeLayerCopy,
+						instanceUnderTest._highlightLayer,
+						instanceUnderTest._interactionLayer
 					]);
 					// interactions
-					expect(handler._translateInteraction).toBeInstanceOf(Translate);
-					expect(handler._map.getInteractions().getArray()).toContain(handler._translateInteraction);
-					expect(handler._modifyInteraction).toBeNull();
-					expect(handler._map.getInteractions().getArray()).not.toContain(handler._modifyInteraction);
+					expect(instanceUnderTest._translateInteraction).toBeInstanceOf(Translate);
+					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._translateInteraction);
+					expect(instanceUnderTest._modifyInteraction).toBeNull();
+					expect(instanceUnderTest._map.getInteractions().getArray()).not.toContain(instanceUnderTest._modifyInteraction);
 
-					expect(handler._registeredObservers).toHaveSize(2);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(2);
 				});
 			});
 
@@ -225,13 +225,13 @@ describe('OlRoutingHandler', () => {
 					categoryId: catId,
 					waypoints: coordinates
 				});
-				const handler = new OlRoutingHandler();
-				const requestRouteFromCoordinatesSpy = spyOn(handler, '_requestRouteFromCoordinates');
+				const instanceUnderTest = new OlRoutingHandler();
+				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
 
-				handler.activate(map);
+				instanceUnderTest.activate(map);
 
 				await TestUtils.timeout();
-				expect(handler._catId).toBe(catId);
+				expect(instanceUnderTest._catId).toBe(catId);
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
 			});
 		});
@@ -240,27 +240,27 @@ describe('OlRoutingHandler', () => {
 			it('updates olLayer and olMap fields', () => {
 				const map = setupMap();
 				setup();
-				const handler = new OlRoutingHandler();
-				handler.activate(map);
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
 
-				handler.deactivate(map);
+				instanceUnderTest.deactivate(map);
 
-				expect(handler._map).toBeNull();
+				expect(instanceUnderTest._map).toBeNull();
 
-				expect(handler._routingLayerGroup).toBeNull();
-				expect(handler._alternativeRouteLayer).toBeNull();
-				expect(handler._routeLayer).toBeNull();
-				expect(handler._routeLayerCopy).toBeNull();
-				expect(handler._highlightLayer).toBeNull();
-				expect(handler._interactionLayer).toBeNull();
-				expect(handler._activeInteraction).toBeFalse();
+				expect(instanceUnderTest._routingLayerGroup).toBeNull();
+				expect(instanceUnderTest._alternativeRouteLayer).toBeNull();
+				expect(instanceUnderTest._routeLayer).toBeNull();
+				expect(instanceUnderTest._routeLayerCopy).toBeNull();
+				expect(instanceUnderTest._highlightLayer).toBeNull();
+				expect(instanceUnderTest._interactionLayer).toBeNull();
+				expect(instanceUnderTest._activeInteraction).toBeFalse();
 
-				expect(handler._modifyInteraction).toBeNull();
-				expect(handler._translateInteraction).toBeNull();
+				expect(instanceUnderTest._modifyInteraction).toBeNull();
+				expect(instanceUnderTest._translateInteraction).toBeNull();
 
-				expect(handler._catId).toBeNull();
-				expect(handler._promiseQueue).toBeInstanceOf(PromiseQueue);
-				expect(handler._registeredObservers).toEqual([]);
+				expect(instanceUnderTest._catId).toBeNull();
+				expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
+				expect(instanceUnderTest._registeredObservers).toEqual([]);
 			});
 		});
 	});
@@ -275,21 +275,21 @@ describe('OlRoutingHandler', () => {
 				];
 				const catId = 'catId';
 				setup();
-				const handler = new OlRoutingHandler();
-				const requestRouteFromCoordinatesSpy = spyOn(handler, '_requestRouteFromCoordinates');
+				const instanceUnderTest = new OlRoutingHandler();
+				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
 
-				handler.activate(map);
+				instanceUnderTest.activate(map);
 
 				setCategory(catId);
 				await TestUtils.timeout();
-				expect(handler._catId).toBe(catId);
+				expect(instanceUnderTest._catId).toBe(catId);
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([]);
 
 				requestRouteFromCoordinatesSpy.calls.reset();
 
 				setWaypoints(coordinates);
 				await TestUtils.timeout();
-				expect(handler._catId).toBe(catId);
+				expect(instanceUnderTest._catId).toBe(catId);
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
 			});
 		});
@@ -304,7 +304,7 @@ describe('OlRoutingHandler', () => {
 		};
 
 		describe('translate', () => {
-			it('calculates a route', async () => {
+			it('handles the CSS class and calls the correct methods', async () => {
 				setup();
 				const map = setupMap();
 				const instanceUnderTest = new OlRoutingHandler();
@@ -337,7 +337,7 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('modify', () => {
-			it('handles the CSS class and calls the correct methods and ', () => {
+			it('handles the CSS class and calls the correct methods', () => {
 				setup();
 				const map = setupMap();
 				const instanceUnderTest = new OlRoutingHandler();
