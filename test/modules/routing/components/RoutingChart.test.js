@@ -10,7 +10,6 @@ describe('RoutingChart', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
 	};
-	let store;
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -19,7 +18,7 @@ describe('RoutingChart', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, {
+		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
