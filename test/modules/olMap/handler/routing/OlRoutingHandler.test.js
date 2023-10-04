@@ -62,7 +62,8 @@ describe('constants and enums', () => {
 
 describe('OlRoutingHandler', () => {
 	const routingServiceMock = {
-		async calculate() {}
+		async calculate() {},
+		getAlternativeCategoryIds() {}
 	};
 	const mapServiceMock = {};
 	const environmentServiceMock = {
@@ -388,7 +389,7 @@ describe('OlRoutingHandler', () => {
 	describe('methods', () => {
 		describe('_requestRoute', () => {
 			describe('an no intermediate features are available', () => {
-				it('calls the Routing Service with correct arguments', async () => {
+				it('calls the routing service with correct arguments', async () => {
 					setup();
 					const map = setupMap();
 					const defaultCategoryId = 'defaultCategoryId';
@@ -417,7 +418,7 @@ describe('OlRoutingHandler', () => {
 			});
 
 			describe('and one ore more intermediate features are available', () => {
-				it('calls the Routing Service with correct arguments', async () => {
+				it('calls the routing service with correct arguments', async () => {
 					setup();
 					const map = setupMap();
 					const defaultCategoryId = 'defaultCategoryId';
@@ -462,6 +463,68 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._activeInteraction).toBeTrue();
 					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
+				});
+			});
+		});
+		describe('_requestRouteFromInteractionLayer', () => {
+			describe('more than one interaction feature is available', () => {
+				it('call _requestRoute with with correct arguments', async () => {
+					const catId = 'catId';
+					setup({
+						categoryId: catId
+					});
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const feature0 = new Feature({
+						geometry: new Point([0, 0])
+					});
+					const feature1 = new Feature({
+						geometry: new Point([5, 5])
+					});
+					const alternativeCategoryId0 = 'alternativeCategoryId0';
+					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeature');
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
+					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
+
+					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
+
+					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
+					expect(clearRouteFeatureSpy).toHaveBeenCalled();
+					expect(requestRouteSpy).toHaveBeenCalledWith(
+						catId,
+						[alternativeCategoryId0],
+						[
+							[0, 0],
+							[5, 5]
+						]
+					);
+				});
+			});
+
+			describe('less then two interaction features are available', () => {
+				it('does nothing', async () => {
+					const catId = 'catId';
+					setup({
+						categoryId: catId
+					});
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const feature0 = new Feature({
+						geometry: new Point([0, 0])
+					});
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0]);
+
+					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
+
+					expect(requestRouteSpy).not.toHaveBeenCalled();
 				});
 			});
 		});
