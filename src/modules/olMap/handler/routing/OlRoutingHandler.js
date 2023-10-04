@@ -361,7 +361,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._modifyInteraction.setActive(active);
 	}
 
-	_clearRouteFeature() {
+	_clearRouteFeatures() {
 		this._routeLayer.getSource().clear();
 		this._routeLayerCopy.getSource().clear();
 		this._alternativeRouteLayer.getSource().clear();
@@ -370,10 +370,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		// window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: {gpx: 'undefined'} }, '*');
 	}
 
-	/**
-	 * NEW!
-	 */
-	_clearAllFeature() {
+	_clearAllFeatures() {
 		this._routeLayer.getSource().clear();
 		this._routeLayerCopy.getSource().clear();
 		this._alternativeRouteLayer.getSource().clear();
@@ -413,7 +410,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	async _requestRouteFromCoordinates(coordinates3857) {
 		if (coordinates3857.length > 1) {
 			this._setInteractionsActive(false);
-			this._clearAllFeature();
+			this._clearAllFeatures();
 
 			// add interaction features
 			const coords = [...coordinates3857];
@@ -433,7 +430,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const features = this._interactionLayer.getSource().getFeatures();
 		if (features.length > 1) {
 			this._setInteractionsActive(false);
-			this._clearRouteFeature();
+			this._clearRouteFeatures();
 
 			const coordinates3857 = this._getInteractionFeatures().map((feature) => {
 				return feature.getGeometry().getCoordinates();
