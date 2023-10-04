@@ -17,11 +17,10 @@ import removeSvg from '../assets/trash.svg';
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';
 const Update_Dragged_Item = 'update_dragged_item';
-const Update_Collapsed_Waypoints = 'update_show_waypoints';
 
 export class Waypoints extends MvuElement {
 	constructor() {
-		super({ status: null, waypoints: [], draggedItem: null, collapsedWaypoints: false });
+		super({ status: null, waypoints: [], draggedItem: null });
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
@@ -48,28 +47,12 @@ export class Waypoints extends MvuElement {
 				};
 			case Update_Dragged_Item:
 				return { ...model, draggedItem: data };
-			case Update_Collapsed_Waypoints:
-				return { ...model, collapsedWaypoints: data };
 		}
 	}
 
 	createView(model) {
-		const { status, collapsedWaypoints } = model;
-		const translate = (key) => this._translationService.translate(key);
+		const { status } = model;
 		const isVisible = status === RoutingStatusCodes.Ok;
-
-		const toggleCollapseWayPoints = () => {
-			this.signal(Update_Collapsed_Waypoints, !collapsedWaypoints);
-		};
-
-		const bodyCollapseClassInfo = {
-			iscollapsed: !collapsedWaypoints
-		};
-		const iconCollapseInfoClass = {
-			iconexpand: collapsedWaypoints
-		};
-
-		const title = translate(collapsedWaypoints ? 'routing_waypoints_show' : 'routing_waypoints_hide');
 
 		const buttons = this._getButtons(model);
 		const waypointItems = this._getWaypoints(model);
@@ -79,17 +62,11 @@ export class Waypoints extends MvuElement {
 					</style>
 					<div class="container">
 						<hr />
-						<div class="waypoint-selector" title=${title} @click="${toggleCollapseWayPoints}">
-							<span class="title">${translate('routing_waypoints_title')}</span>
-							<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
-						</div>
-						<div class="${classMap(bodyCollapseClassInfo)}">
-							<div class="overflow-container">
-								<ul class="waypoints">
-									${waypointItems}
-								</ul>
-								${buttons}
-							</div>
+						<div class="overflow-container">
+							<ul class="waypoints">
+								${waypointItems}
+							</ul>
+							${buttons}
 						</div>
 					</div>`
 			: nothing;

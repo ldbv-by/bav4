@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" xmlns:v="https://vecta.io/nano"><path d="M21 2C11 2 3 10 3 20s8 18 18 18 18-8 18-18S31 2 21 2zm0 4c8 0 14 6 14 14s-6 14-14 14S7 28 7 20 13 6 21 6z"/><path d="M21 7c-1 .02-2 .9-2 2v14c-.009.7.4 1 1 2 .6.4 1 .3 2-.05l7-4c.6-.4 1-1 1-2-.01-.7-.4-1-1-2-.6-.3-1-.3-2 .1l-4 3v-10c.008-.5-.2-1-.6-1s-.9-.6-1-.6z" fill-rule="evenodd"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16"><!-- MIT License -->
+  <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+  <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+</svg>

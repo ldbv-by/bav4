@@ -53,7 +53,7 @@ export class RoutingWarnings extends MvuElement {
 		const iconCollapseInfoClass = {
 			iconexpand: collapsedWarnings
 		};
-		const title = translate(collapsedWarnings ? 'routing_waypoints_show' : 'routing_waypoints_hide');
+		const title = translate(collapsedWarnings ? 'routing_warnings_hide' : 'routing_warnings_show');
 		return html`<style>
 				${css}
 			</style>

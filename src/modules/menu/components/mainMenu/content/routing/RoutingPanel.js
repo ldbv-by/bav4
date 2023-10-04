@@ -22,9 +22,8 @@ const Update_Categories = 'update_categories';
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
 		super({ categories: [] });
-		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
+		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-		this._routingService = RoutingService;
 	}
 
 	update(type, data, model) {
@@ -34,18 +33,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		}
 	}
 
-	/**
-	 * @override
-	 */
-	async onInitialize() {
-		await this._routingService.init();
-		this.signal(Update_Categories, this._routingService.getCategories());
-	}
-
-	createView(model) {
-		const { categories } = model;
+	createView() {
 		const translate = (key) => this._translationService.translate(key);
-
 		//temp close
 		const close = () => {
 			setTab(TabIds.MAPS);
@@ -74,7 +63,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				</div>
 				
 				<ba-routing-waypoints></ba-routing-waypoints>
-				<ba-routing-category-bar .categories=${categories}></ba-routing-category-bar>
+				<ba-routing-category-bar ></ba-routing-category-bar>
 				<ba-routing-info></ba-routing-info>
 				<ba-routing-details></ba-routing-details></div>
 				${this._getDemoContent()} 

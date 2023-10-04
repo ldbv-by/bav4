@@ -35,16 +35,16 @@
 }
 
 .distance {
-	mask-image: url('../assets/distance.svg');
-	-webkit-mask-image: url('../assets/distance.svg');
+	mask-image: url('../assets/arrow-left-right.svg');
+	-webkit-mask-image: url('../assets/arrow-left-right.svg');
 }
 
 .uphill {
-	mask-image: url('../assets/uphill.svg');
-	-webkit-mask-image: url('../assets/uphill.svg');
+	mask-image: url('../assets/arrow-up-right.svg');
+	-webkit-mask-image: url('../assets/arrow-up-right.svg');
 }
 
 .downhill {
-	mask-image: url('../assets/downhill.svg');
-	-webkit-mask-image: url('../assets/downhill.svg');
+	mask-image: url('../assets/arrow-down-right.svg');
+	-webkit-mask-image: url('../assets/arrow-down-right.svg');
 }

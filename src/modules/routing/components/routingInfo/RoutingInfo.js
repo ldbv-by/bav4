@@ -81,8 +81,8 @@ export class RoutingInfo extends MvuElement {
 			? html`<style>
 						${css}
 					</style>
+					<hr />
 					<div class="container">
-						<!--<hr />-->
 						<div class="row">
 							<div class="col" title=${translate('routing_info_duration')}>
 								<div class="routing-info-icon duration"></div>

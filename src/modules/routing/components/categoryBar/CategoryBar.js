@@ -14,8 +14,9 @@ const Update_Selected_Category = 'update_selected_category';
 export class CategoryBar extends MvuElement {
 	constructor() {
 		super({ categories: [], selectedCategory: null });
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
 		this._translationService = TranslationService;
+		this._routingService = RoutingService;
 	}
 
 	/**
@@ -30,11 +31,14 @@ export class CategoryBar extends MvuElement {
 		}
 	}
 
-	onInitialize() {
+	async onInitialize() {
 		this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Selected_Category, categoryId)
 		);
+
+		await this._routingService.init();
+		this.signal(Update_Categories, this._routingService.getCategories());
 	}
 
 	/**
@@ -53,6 +57,7 @@ export class CategoryBar extends MvuElement {
 			<style>
 				${css}
 			</style>
+			<hr />
 			<div class="categories-container">
 				${categories.map((category) => {
 					const classes = { 'is-active': selectedCategory === category.id };
@@ -68,10 +73,6 @@ export class CategoryBar extends MvuElement {
 				})}
 			</div>
 		`;
-	}
-
-	set categories(value) {
-		this.signal(Update_Categories, value);
 	}
 
 	static get tag() {

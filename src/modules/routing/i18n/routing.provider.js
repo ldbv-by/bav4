@@ -23,13 +23,18 @@ export const provide = (lang) => {
 				routing_waypoints_remove_all: 'Remove all',
 				routing_waypoints_reverse: 'Reverse',
 				routing_waypoints_hide: 'Hide waypoints',
+				routing_waypoints_show: 'Show waypoints',
 				routing_waypoint_move_down: 'move forward',
 				routing_waypoint_move_up: 'move backward',
 				routing_waypoint_move_remove: 'remove',
+				routing_warnings_hide: 'Hide warnings',
+				routing_warnings_show: 'Show warnings',
 				routing_warnings_title: 'Route notes',
 				routing_warnings_zoom: 'Zoom to segments',
 				routing_details_surface: 'Surface',
-				routing_details_road_type: 'Road type'
+				routing_details_road_type: 'Road type',
+				routing_chart_hide: 'Hide chart',
+				routing_chart_show: 'Show chart'
 			};
 
 		case 'de':
@@ -55,13 +60,18 @@ export const provide = (lang) => {
 				routing_waypoints_remove_all: 'Alle entfernen',
 				routing_waypoints_reverse: 'Reihenfolge umkehren',
 				routing_waypoints_hide: 'Wegpunkte verbergen',
+				routing_waypoints_show: 'Wegpunkte anzeigen',
 				routing_waypoint_move_down: 'nach hinten',
 				routing_waypoint_move_up: 'nach vorne',
 				routing_waypoint_move_remove: 'entfernen',
+				routing_warnings_hide: 'Hinweise zur Route verbergen',
+				routing_warnings_show: 'Hinweise zur Route anzeigen',
 				routing_warnings_title: 'Hinweise zur Route',
 				routing_warnings_zoom: 'Zu den Segmenten zoomen',
 				routing_details_surface: 'Oberfläche',
-				routing_details_road_type: 'Weg-Typ'
+				routing_details_road_type: 'Weg-Typ',
+				routing_chart_hide: 'Diagramm verbergen',
+				routing_chart_show: 'Diagramm anzeigen'
 			};
 
 		default:

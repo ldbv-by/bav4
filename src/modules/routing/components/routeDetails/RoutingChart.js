@@ -66,7 +66,7 @@ export class RoutingChart extends MvuElement {
 			iconexpand: collapsedChart
 		};
 
-		const title = translate(collapsedChart ? 'routing_waypoints_show' : 'routing_waypoints_hide');
+		const title = translate(collapsedChart ? 'routing_chart_hide' : 'routing_chart_show');
 
 		const getChartStyle = (item) => {
 			const { relative } = item.data;
@@ -122,7 +122,7 @@ export class RoutingChart extends MvuElement {
 			</style>
 			<div class="container">
 				<hr />
-				<div class="chart-selector" title=${label} @click="${toggleCollapseChart}">
+				<div class="chart-selector" title=${title} @click="${toggleCollapseChart}">
 					<span class="title">${label}</span>
 					<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>
 				</div>
