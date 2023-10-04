@@ -395,13 +395,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
 
-	_addDestinationInteractionFeature(coordinate3857, index) {
+	_addDestinationInteractionFeature(coordinate3857, index = 1) {
 		const iconFeature = new Feature({
 			geometry: new Point(coordinate3857)
 		});
 
 		iconFeature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
-		iconFeature.set(ROUTING_FEATURE_INDEX, index || 1);
+		iconFeature.set(ROUTING_FEATURE_INDEX, index);
 		iconFeature.setStyle(getRoutingStyleFunction());
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
