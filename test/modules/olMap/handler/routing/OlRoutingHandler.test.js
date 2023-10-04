@@ -483,7 +483,7 @@ describe('OlRoutingHandler', () => {
 					});
 					const alternativeCategoryId0 = 'alternativeCategoryId0';
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
-					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeature');
+					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
@@ -518,12 +518,74 @@ describe('OlRoutingHandler', () => {
 						geometry: new Point([0, 0])
 					});
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					instanceUnderTest.activate(map);
 					await TestUtils.timeout();
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0]);
 
 					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
 
+					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
+					expect(clearRouteFeatureSpy).not.toHaveBeenCalled();
+					expect(requestRouteSpy).not.toHaveBeenCalled();
+				});
+			});
+		});
+
+		describe('_requestRouteFromCoordinates', () => {
+			describe('more than one coordinate is available', () => {
+				it('call _requestRoute with with correct arguments', async () => {
+					const catId = 'catId';
+					setup({
+						categoryId: catId
+					});
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const coordinate0 = [0, 0];
+					const coordinate1 = [5, 5];
+					const coordinate2 = [10, 10];
+					const alternativeCategoryId0 = 'alternativeCategoryId0';
+					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
+					const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
+					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+
+					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2]));
+
+					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
+					expect(clearAllFeaturesSpy).toHaveBeenCalled();
+					expect(requestRouteSpy).toHaveBeenCalledWith(catId, [alternativeCategoryId0], [coordinate0, coordinate1, coordinate2]);
+					expect(addStartInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0);
+					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(coordinate1, 1);
+					expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate2, 2);
+				});
+			});
+
+			describe('less then two coordinates features are available', () => {
+				it('does nothing', async () => {
+					const catId = 'catId';
+					setup({
+						categoryId: catId
+					});
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const coordinate0 = [0, 0];
+					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+
+					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0]));
+
+					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
+					expect(clearAllFeaturesSpy).not.toHaveBeenCalled();
 					expect(requestRouteSpy).not.toHaveBeenCalled();
 				});
 			});
