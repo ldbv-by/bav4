@@ -25,6 +25,7 @@ import Collection from 'ol/Collection.js';
 import { TranslateEvent } from 'ol/interaction/Translate';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
+import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -667,6 +668,70 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
 				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
 				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
+			});
+		});
+
+		describe('_addStartInteractionFeature', () => {
+			it('adds a correctly configured feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const coordinate = [21, 42];
+
+				instanceUnderTest._addStartInteractionFeature(coordinate);
+
+				const feature = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
+				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.START);
+				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(0);
+				expect(feature.getGeometry()).toBeInstanceOf(Point);
+				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+			});
+		});
+
+		describe('_addDestinationInteractionFeature', () => {
+			it('adds a correctly configured feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const coordinate = [21, 42];
+
+				instanceUnderTest._addDestinationInteractionFeature(coordinate, 42);
+
+				const feature0 = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
+				expect(feature0.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.DESTINATION);
+				expect(feature0.get(ROUTING_FEATURE_INDEX)).toBe(42);
+				expect(feature0.getGeometry()).toBeInstanceOf(Point);
+				expect(feature0.getGeometry().getFirstCoordinate()).toEqual(coordinate);
+				expect(feature0.getStyle()(feature0)).toEqual(getRoutingStyleFunction()(feature0));
+
+				instanceUnderTest._addDestinationInteractionFeature(coordinate);
+				const feature1 = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
+				expect(feature1.get(ROUTING_FEATURE_INDEX)).toBe(42);
+			});
+		});
+
+		describe('_addIntermediateInteractionFeature', () => {
+			it('adds a correctly configured feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const coordinate = [21, 42];
+
+				instanceUnderTest._addIntermediateInteractionFeature(coordinate, 42);
+
+				const feature = instanceUnderTest._interactionLayer.getSource().getFeatures()[0];
+				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.INTERMEDIATE);
+				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(42);
+				expect(feature.getGeometry()).toBeInstanceOf(Point);
+				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 			});
 		});
 	});
