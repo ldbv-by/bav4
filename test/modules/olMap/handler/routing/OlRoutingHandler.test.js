@@ -590,6 +590,85 @@ describe('OlRoutingHandler', () => {
 				});
 			});
 		});
+
+		describe('_clearRouteFeatures', () => {
+			it('removes the correct features', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const feature0 = new Feature({
+					geometry: new Point([0, 0])
+				});
+				instanceUnderTest._routeLayer.getSource().addFeature(feature0);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
+				instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
+				instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
+				instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
+
+				instanceUnderTest._clearRouteFeatures();
+
+				expect(instanceUnderTest._routeLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).not.toHaveSize(0);
+			});
+		});
+
+		describe('_clearAllFeatures', () => {
+			it('removes the correct features', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const feature0 = new Feature({
+					geometry: new Point([0, 0])
+				});
+				instanceUnderTest._routeLayer.getSource().addFeature(feature0);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
+				instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
+				instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
+				instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
+
+				instanceUnderTest._clearAllFeatures();
+
+				expect(instanceUnderTest._routeLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
+			});
+		});
+
+		describe('_clearIntermediateInteractionFeatures', () => {
+			it('removes the correct features', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const feature0 = new Feature({
+					geometry: new Point([0, 0])
+				});
+				feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
+				instanceUnderTest._routeLayer.getSource().addFeature(feature0);
+				instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
+				instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
+				instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
+				instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
+
+				instanceUnderTest._clearIntermediateInteractionFeatures();
+
+				expect(instanceUnderTest._routeLayer.getSource().getFeatures()).not.toHaveSize(0);
+				expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).not.toHaveSize(0);
+				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
+				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
+			});
+		});
 	});
 });
 
