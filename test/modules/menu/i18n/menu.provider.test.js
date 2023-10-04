@@ -55,7 +55,7 @@ describe('i18n for menu module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

@@ -1,14 +1,12 @@
 import { $injector } from '../../../../src/injection';
 import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { BvvRoutingService, mockCategoriesProvider } from '../../../../src/services/RoutingService';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { TestUtils } from '../../../test-utils';
 
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
 describe('RoutingPanel', () => {
-	const routingService = new BvvRoutingService(mockCategoriesProvider);
 	const setup = (state) => {
 		const initialState = {
 			media: {
@@ -20,7 +18,7 @@ describe('RoutingPanel', () => {
 		TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer()
 		});
-		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(RoutingPanel.tag);
 	};
 

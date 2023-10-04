@@ -65,7 +65,7 @@ describe('i18n for feedback module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 27;
+		const expectedSize = 32;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

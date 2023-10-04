@@ -1,6 +1,7 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
+import { BvvRoutingService, mockCategoriesProvider } from '../../../../src/services/RoutingService';
 
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
@@ -9,29 +10,27 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(CategoryBar.tag, CategoryBar);
 
 describe('CategoryBar', () => {
+	const routingService = new BvvRoutingService(mockCategoriesProvider);
 	let store;
+	const categories = [
+		{
+			id: 'category_1',
+			label: 'label_category_1',
+			subcategories: []
+		},
+		{
+			id: 'category_2',
+			label: 'label_category_2',
+			subcategories: []
+		},
+		{
+			id: 'category_3',
+			label: 'label_category_3',
+			subcategories: []
+		}
+	];
 
-	const properties = {
-		categories: [
-			{
-				id: 'category_1',
-				label: 'label_category_1',
-				subcategories: []
-			},
-			{
-				id: 'category_2',
-				label: 'label_category_2',
-				subcategories: []
-			},
-			{
-				id: 'category_3',
-				label: 'label_category_3',
-				subcategories: []
-			}
-		]
-	};
-
-	const setup = (state, properties) => {
+	const setup = (state) => {
 		const initialState = {
 			media: {
 				portrait: false
@@ -43,8 +42,8 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
-		return TestUtils.render(CategoryBar.tag, properties);
+		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', { translate: (key) => key });
+		return TestUtils.render(CategoryBar.tag);
 	};
 
 	describe('class', () => {
@@ -69,7 +68,8 @@ describe('CategoryBar', () => {
 
 	describe('when initialized', () => {
 		it('renders a category bar with buttons', async () => {
-			const element = await setup({}, properties);
+			spyOn(routingService, 'getCategories').and.returnValue(categories);
+			const element = await setup({});
 
 			const buttons = element.shadowRoot.querySelectorAll('button');
 
@@ -77,7 +77,8 @@ describe('CategoryBar', () => {
 		});
 
 		it('renders button defined by category id', async () => {
-			const element = await setup({}, properties);
+			spyOn(routingService, 'getCategories').and.returnValue(categories);
+			const element = await setup({});
 
 			const buttons = element.shadowRoot.querySelectorAll('button');
 
@@ -93,7 +94,8 @@ describe('CategoryBar', () => {
 
 	describe('when category button is clicked', () => {
 		it('updates the store', async () => {
-			const element = await setup({}, properties);
+			spyOn(routingService, 'getCategories').and.returnValue(categories);
+			const element = await setup({});
 
 			const category1Button = element.shadowRoot.querySelector('#category_1-button');
 
