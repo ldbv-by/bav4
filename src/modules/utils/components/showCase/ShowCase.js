@@ -16,8 +16,6 @@ import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu
 import { closeBottomSheet, openBottomSheet } from '../../../../store/bottomSheet/bottomSheet.action';
 import { closeProfile, openProfile } from '../../../../store/elevationProfile/elevationProfile.action';
 import { sleep } from '../../../../utils/timer';
-import { setCategory, setRouteStats, setStatus, setWaypoints } from '../../../../store/routing/routing.action';
-import { RoutingStatusCodes } from '../../../../domain/routing';
 
 /**
  * Displays a showcase of common and reusable components or

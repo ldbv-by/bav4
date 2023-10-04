@@ -2,7 +2,6 @@
  * @module modules/routing/components/waypoints/Waypoints
  */
 import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
-import { classMap } from 'lit-html/directives/class-map.js';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
@@ -11,6 +10,7 @@ import css from './waypoints.css';
 import { setWaypoints } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
+import arrowDownSvg from '../assets/arrow-down-short.svg';
 import removeSvg from '../assets/trash.svg';
 
 const Update_Status = 'update_status';

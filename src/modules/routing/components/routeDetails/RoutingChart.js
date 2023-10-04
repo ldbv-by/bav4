@@ -132,14 +132,14 @@ export class RoutingChart extends MvuElement {
 							${repeat(
 								items,
 								(chartItem) => chartItem.id,
-								(chartItem, index) => html`<div class="progress-bar" style=${getChartStyle(chartItem)} title=${getChartTitle(chartItem)}></div>`
+								(chartItem) => html`<div class="progress-bar" style=${getChartStyle(chartItem)} title=${getChartTitle(chartItem)}></div>`
 							)}
 						</div>
 						<div class="legend_section">
 							${repeat(
 								items,
 								(legendItem) => legendItem.id,
-								(legendItem, index) => html`
+								(legendItem) => html`
 									<div
 										class="highlight"
 										title=${getChartTitle(legendItem)}

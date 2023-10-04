@@ -71,7 +71,7 @@ export class RoutingWarnings extends MvuElement {
 						${repeat(
 							items,
 							(warningItem) => warningItem.id,
-							(warningItem, index) => this._getWarningElement(warningItem)
+							(warningItem) => this._getWarningElement(warningItem)
 						)}
 					</div>
 				</div>
