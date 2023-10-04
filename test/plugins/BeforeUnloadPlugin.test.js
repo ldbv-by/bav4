@@ -4,7 +4,7 @@ import { toolsReducer } from '../../src/store/tools/tools.reducer.js';
 import { BeforeUnloadPlugin } from '../../src/plugins/BeforeUnloadPlugin.js';
 import { setCurrentTool } from '../../src/store/tools/tools.action.js';
 
-describe('ToolsPlugin', () => {
+describe('BeforeUnloadPlugin', () => {
 	const environmentServiceMock = {
 		isEmbedded: () => false
 	};
