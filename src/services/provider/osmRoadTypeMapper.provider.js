@@ -50,7 +50,6 @@ export const bvvOsmRoadTypeMappingProvider = (osmRoadClasses) => {
 
 	const mappedRoadType = {};
 	Object.keys(osmRoadClasses).forEach((osmRoadClass) => {
-		console.log('osmRoadClass', osmRoadClass);
 		const roadType = getRoadTypeFor(osmRoadClass);
 		if (roadType) {
 			mappedRoadType[roadType] = mappedRoadType[roadType]
