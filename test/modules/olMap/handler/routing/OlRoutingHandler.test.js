@@ -882,7 +882,7 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_polylineToGeometry', () => {
-			it('returns a geometry)', async () => {
+			it('returns a geometry', async () => {
 				setup();
 				const map = setupMap();
 				const instanceUnderTest = new OlRoutingHandler();
@@ -898,58 +898,31 @@ describe('OlRoutingHandler', () => {
 				expect(result.getCoordinates()).toHaveSize(57);
 			});
 		});
+
+		describe('_getInteractionFeatures', () => {
+			it('returns an sorted (and filtered) array of features', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const feature0 = new Feature({
+					geometry: new Point([0, 0])
+				});
+				feature0.set(ROUTING_FEATURE_INDEX, 0);
+				feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				const feature1 = new Feature({
+					geometry: new Point([21, 42])
+				});
+				feature1.set(ROUTING_FEATURE_INDEX, 1);
+				feature1.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				const features = [feature1, feature0];
+				instanceUnderTest._interactionLayer.getSource().addFeatures(features);
+
+				expect(instanceUnderTest._getInteractionFeatures()).toEqual([feature0, feature1]);
+				expect(instanceUnderTest._getInteractionFeatures(RoutingFeatureTypes.START)).toEqual([feature0]);
+				expect(instanceUnderTest._getInteractionFeatures(RoutingFeatureTypes.DESTINATION)).toEqual([feature1]);
+			});
+		});
 	});
 });
-
-// describe('_appendStyle', () => {
-// 	it('sets the correct style features containing a HighlightCoordinate', () => {
-// 		setup();
-// 		const animatedFeature = new Feature(new Point([22, 44]));
-// 		const handler = new OlHighlightLayerHandler();
-// 		const animatePointFeatureSyp = spyOn(handler, '_animatePointFeature');
-// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.DEFAULT };
-// 		const highlightCoordinateFeature1 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.TEMPORARY };
-// 		const highlightCoordinateFeature2 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_RUNNING };
-// 		const highlightCoordinateFeature3 = { data: { coordinate: [1, 0] }, type: HighlightFeatureType.QUERY_SUCCESS };
-
-// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
-// 		const styledFeature1 = handler._appendStyle(highlightCoordinateFeature1, new Feature(new Point([5, 10])));
-// 		handler._appendStyle(highlightCoordinateFeature2, animatedFeature);
-// 		const styledFeature3 = handler._appendStyle(highlightCoordinateFeature3, new Feature(new Point([5, 10])));
-
-// 		expect(styledFeature0.getStyle()()).toEqual(highlightCoordinateFeatureStyleFunction());
-// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryCoordinateFeatureStyleFunction());
-// 		expect(animatePointFeatureSyp).toHaveBeenCalledWith(animatedFeature);
-// 		expect(styledFeature3.getStyle()()).toEqual(highlightAnimatedCoordinateFeatureStyleFunction());
-// 	});
-
-// 	it('sets the correct style features containing a HighlightGeometry', () => {
-// 		const olPoint = new Point([5, 10]);
-// 		setup();
-// 		const handler = new OlHighlightLayerHandler();
-// 		const highlightGeometryGeoJsonFeature0 = {
-// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
-// 			type: HighlightFeatureType.DEFAULT
-// 		};
-// 		const highlightGeometryGeoJsonFeature1 = {
-// 			data: { geometry: new GeoJSON().writeGeometry(olPoint), geometryType: HighlightGeometryType.GEOJSON },
-// 			type: HighlightFeatureType.TEMPORARY
-// 		};
-
-// 		const styledFeature0 = handler._appendStyle(highlightGeometryGeoJsonFeature0, new Feature(olPoint));
-// 		const styledFeature1 = handler._appendStyle(highlightGeometryGeoJsonFeature1, new Feature(olPoint));
-
-// 		expect(styledFeature0.getStyle()()).toEqual(highlightGeometryFeatureStyleFunction());
-// 		expect(styledFeature1.getStyle()()).toEqual(highlightTemporaryGeometryFeatureStyleFunction());
-// 	});
-
-// 	it('sets NO style when feature type is missing', () => {
-// 		setup();
-// 		const handler = new OlHighlightLayerHandler();
-// 		const highlightCoordinateFeature0 = { data: { coordinate: [1, 0] } };
-
-// 		const styledFeature0 = handler._appendStyle(highlightCoordinateFeature0, new Feature(new Point([5, 10])));
-
-// 		expect(styledFeature0.getStyle()).toBeNull();
-// 	});
-// });
