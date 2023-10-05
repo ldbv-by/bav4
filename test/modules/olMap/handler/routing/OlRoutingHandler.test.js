@@ -149,6 +149,7 @@ describe('OlRoutingHandler', () => {
 		expect(instanceUnderTest._translateInteraction).toBeNull();
 
 		expect(instanceUnderTest._registeredObservers).toEqual([]);
+		expect(instanceUnderTest._mapListeners).toEqual([]);
 		expect(instanceUnderTest._activeInteraction).toBeFalse();
 		expect(instanceUnderTest._catId).toBeNull();
 		expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
@@ -185,6 +186,8 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._translateInteraction);
 					expect(instanceUnderTest._modifyInteraction).toBeInstanceOf(Modify);
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._modifyInteraction);
+					//map listeners
+					expect(instanceUnderTest._mapListeners).toHaveSize(1);
 
 					expect(instanceUnderTest._registeredObservers).toHaveSize(2);
 				});
@@ -269,6 +272,7 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._catId).toBeNull();
 				expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
 				expect(instanceUnderTest._registeredObservers).toEqual([]);
+				expect(instanceUnderTest._mapListeners).toEqual([]);
 			});
 		});
 	});
@@ -308,7 +312,7 @@ describe('OlRoutingHandler', () => {
 		};
 
 		describe('translate', () => {
-			it('handles the CSS class and calls the correct methods', async () => {
+			it('calls the correct methods', async () => {
 				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 				map.addLayer(layer);
@@ -320,39 +324,31 @@ describe('OlRoutingHandler', () => {
 				instanceUnderTest._translateInteraction.dispatchEvent(
 					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
 				);
-				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 
 				instanceUnderTest._translateInteraction.dispatchEvent(
 					new TranslateEvent('translating', new Collection([feature]), [10, 20], [0, 0], new Event(MapBrowserEventType.POINTERDRAG))
 				);
-				expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 
 				instanceUnderTest._translateInteraction.dispatchEvent(
 					new TranslateEvent('translateend', new Collection([feature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
 				);
-				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
 			});
 		});
 
 		describe('modify', () => {
-			describe('"modifystart" event', () => {
-				it('handles the CSS class and calls the correct methods', async () => {
-					const { instanceUnderTest, map } = await newTestInstance();
-
-					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
-					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
-				});
-
-				it('does nothing on "singleclick" event', async () => {
-					const { instanceUnderTest, map } = await newTestInstance();
-
-					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
-					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
-				});
-			});
+			// describe('"modifystart" event', () => {
+			// it('calls the correct methods', async () => {
+			// 	const { instanceUnderTest} = await newTestInstance();
+			// 	instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+			// });
+			// it('does nothing on "singleclick" event', async () => {
+			// 	const { instanceUnderTest } = await newTestInstance();
+			// 	instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
+			// });
+			// });
 			describe('"modifyend" event', () => {
-				it('handles the CSS class and calls the correct methods', async () => {
+				it('calls the correct methods', async () => {
 					const { instanceUnderTest, map, layer } = await newTestInstance();
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 					const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
@@ -375,7 +371,6 @@ describe('OlRoutingHandler', () => {
 					});
 					mockSegmentFeature1.set(ROUTING_SEGMENT_INDEX, 20);
 					const mockCoordinate = [21, 42];
-					map.getTarget().classList.add('grabbing');
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(
 						new ModifyEvent(
@@ -384,7 +379,6 @@ describe('OlRoutingHandler', () => {
 							newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERUP, map, mockCoordinate)
 						)
 					);
-					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 					expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
 					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
 					expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
@@ -395,12 +389,10 @@ describe('OlRoutingHandler', () => {
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 					map.addLayer(layer);
 					const mockCoordinate = [21, 42];
-					map.getTarget().classList.add('grabbing');
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(
 						new ModifyEvent('modifyend', new Collection([]), newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERMOVE, map, mockCoordinate))
 					);
-					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 					expect(requestRouteFromInteractionLayerSpy).not.toHaveBeenCalled();
 				});
 			});
@@ -891,6 +883,114 @@ describe('OlRoutingHandler', () => {
 
 				expect(feature0.get(ROUTING_FEATURE_INDEX)).toBe(1);
 				expect(feature1.get(ROUTING_FEATURE_INDEX)).toBe(22);
+			});
+		});
+
+		describe('_newPointerMoveHandler', () => {
+			const coordinate = [11, 22];
+			const feature = new Feature({
+				geometry: new Point([0, 0])
+			});
+			const callPointerMoveHandler = async (feature, draggingEvent = false) => {
+				const { instanceUnderTest, map } = await newTestInstance();
+
+				const updateHelpTooltipSpy = spyOn(instanceUnderTest, '_updateHelpTooltip');
+				const hideHelpTooltipSpy = spyOn(instanceUnderTest, '_hideHelpTooltip');
+				const setModifyActiveSpy = spyOn(instanceUnderTest, '_setModifyActive');
+				const handler = instanceUnderTest._newPointerMoveHandler(
+					map,
+					instanceUnderTest._interactionLayer,
+					instanceUnderTest._alternativeRouteLayer,
+					instanceUnderTest._routeLayerCopy
+				);
+				const event = { originalEvent: {}, coordinate, dragging: draggingEvent };
+				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue(42);
+				spyOn(map, 'getFeaturesAtPixel')
+					.withArgs(42, { layerFilter: jasmine.any(Function), hitTolerance: 5 })
+					.and.returnValue(feature ? [feature] : []);
+
+				handler(event);
+				return { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map };
+			};
+
+			it('handles a detected feature of type START', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Startpunktes ziehen', coordinate);
+				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('handles a detected feature of type DESTINATION', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Zielpunktes ziehen', coordinate);
+				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('handles a detected feature of type INTERMEDIATE', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Zwischenpunktes ziehen', coordinate);
+				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('handles a detected feature of type ROUTE_SEGMENT', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern der Route ziehen', coordinate);
+				expect(setModifyActiveSpy).toHaveBeenCalledWith(true);
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('handles a detected feature of type ROUTE_ALTERNATIVE', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
+				feature.set(ROUTING_CATEGORY, { description: 'myCat' });
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).toHaveBeenCalledWith("Klicken, um alternative Route 'myCat' zu wählen", coordinate);
+				expect(setModifyActiveSpy).not.toHaveBeenCalled();
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('handles a detected feature of other type', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_COPY);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+
+				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
+				expect(hideHelpTooltipSpy).toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('pointer');
+			});
+
+			it('does nothing when no feature was detected', async () => {
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler();
+
+				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(setModifyActiveSpy).not.toHaveBeenCalled();
+				expect(hideHelpTooltipSpy).toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('');
+			});
+
+			it('does nothing when event is a dragging event', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
+				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature, true);
+
+				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(setModifyActiveSpy).not.toHaveBeenCalled();
+				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(map.getTarget().style.cursor).toBe('');
 			});
 		});
 	});

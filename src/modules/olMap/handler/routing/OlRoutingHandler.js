@@ -18,6 +18,8 @@ import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils
 import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
+import MapBrowserEventType from 'ol/MapBrowserEventType';
+import { unByKey } from 'ol/Observable';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -78,6 +80,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._catId = null;
 		this._promiseQueue = new PromiseQueue();
 		this._registeredObservers = [];
+		this._mapListeners = [];
 	}
 
 	/**
@@ -106,8 +109,72 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 
 		this._registeredObservers = this._register(this._storeService.getStore());
+		this._mapListeners.push(
+			olMap.on(
+				MapBrowserEventType.POINTERMOVE,
+				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
+			)
+		);
 		return this._routingLayerGroup;
 	}
+
+	_newPointerMoveHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+		return (event) => {
+			if (!event?.dragging) {
+				// $(element).popover('destroy');
+
+				const pixel = map.getEventPixel(event.originalEvent);
+				const hit = map.getFeaturesAtPixel(pixel, {
+					layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
+					hitTolerance: 5
+				});
+
+				const handleFeature = (feature) => {
+					switch (feature.get(ROUTING_FEATURE_TYPE)) {
+						case RoutingFeatureTypes.ROUTE_ALTERNATIVE: {
+							const cat = hit[0].get(ROUTING_CATEGORY);
+							return "Klicken, um alternative Route '" + cat.description + "' zu wählen";
+						}
+						case RoutingFeatureTypes.ROUTE_SEGMENT: {
+							this._setModifyActive(true);
+							return 'Zum Ändern der Route ziehen';
+						}
+						case RoutingFeatureTypes.START: {
+							this._setModifyActive(false);
+							return 'Zum Ändern des Startpunktes ziehen';
+						}
+						case RoutingFeatureTypes.DESTINATION: {
+							this._setModifyActive(false);
+							return 'Zum Ändern des Zielpunktes ziehen';
+						}
+						case RoutingFeatureTypes.INTERMEDIATE: {
+							this._setModifyActive(false);
+							return 'Zum Ändern des Zwischenpunktes ziehen';
+						}
+						default:
+							this._setModifyActive(false);
+					}
+				};
+
+				if (hit.length > 0) {
+					map.getTarget().style.cursor = 'pointer';
+					const text = handleFeature(hit[0]);
+					if (text) {
+						this._updateHelpTooltip(text, event.coordinate);
+						return;
+					}
+				}
+
+				this._hideHelpTooltip();
+			}
+		};
+	}
+
+	_updateHelpTooltip(text) {
+		// eslint-disable-next-line no-console
+		console.debug(text);
+	}
+	_hideHelpTooltip() {}
 
 	_createLayer(id) {
 		return new VectorLayer({
@@ -126,11 +193,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 			startCoordinate = evt.coordinate;
 		});
 		translate.on('translating', () => {
-			this._map.getTarget().classList.add('grabbing');
+			// this._map.getTarget().classList.add('grabbing');
 			// managePopup();
 		});
 		translate.on('translateend', (evt) => {
-			this._map.getTarget().classList.remove('grabbing');
+			// this._map.getTarget().classList.remove('grabbing');
 			if (evt.coordinate[0] !== startCoordinate[0] || evt.coordinate[1] !== startCoordinate[1]) {
 				this._requestRouteFromInteractionLayer();
 			}
@@ -147,13 +214,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 		modify.on('modifystart', (evt) => {
 			if (evt.mapBrowserEvent.type !== 'singleclick') {
-				this._map.getTarget().classList.add('grabbing');
+				// this._map.getTarget().classList.add('grabbing');
 				// managePopup();
 			}
 		});
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {
-				this._map.getTarget().classList.remove('grabbing');
+				// this._map.getTarget().classList.remove('grabbing');
 
 				// find the feature which was modified
 				// be careful with the revision number -> setting the style or properties on a feature also increments it
@@ -495,9 +562,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._translateInteraction = null;
 		this._catId = null;
 		this._unsubscribe(this._registeredObservers);
+		this._unregisterMapListener(this._mapListeners);
 	}
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
 		observers.splice(0, observe.length);
+	}
+
+	_unregisterMapListener(listeners) {
+		listeners.forEach((listener) => unByKey(listener));
+		listeners.splice(0, observe.length);
 	}
 }
