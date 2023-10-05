@@ -120,10 +120,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		let startCoordinate;
 		const translate = new Translate({
 			layers: [interactionLayer],
-			pixelTolerance: 50,
-			filter: (feature, layer) => {
-				return layer === interactionLayer;
-			}
+			hitTolerance: 50
 		});
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
