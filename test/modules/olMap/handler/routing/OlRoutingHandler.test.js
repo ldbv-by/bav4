@@ -825,6 +825,59 @@ describe('OlRoutingHandler', () => {
 				expect(segmentFeature1.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 			});
 		});
+
+		describe('_splitRouteByIntermediatePoints', () => {
+			describe('having one or more intermediate points', () => {
+				it('returns an array of segments (geometries)', async () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+					const intermediateFeatures = [new Feature(new Point([7.5, 7.5]))];
+					spyOn(instanceUnderTest, '_getIntermediateFeatures').and.returnValue(intermediateFeatures);
+					const coordinates = [
+						[0, 0],
+						[10, 10],
+						[20, 20]
+					];
+					const routeGeometry = new LineString(coordinates);
+
+					const result = instanceUnderTest._splitRouteByIntermediatePoints(routeGeometry);
+
+					expect(result).toHaveSize(2);
+					expect(result[0].getCoordinates()).toEqual([
+						[0, 0],
+						[10, 10]
+					]);
+					expect(result[1].getCoordinates()).toEqual([
+						[10, 10],
+						[20, 20]
+					]);
+				});
+			});
+			describe('having NO intermediate points', () => {
+				it('returns an array of segments (geometries)', async () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					instanceUnderTest.activate(map);
+					await TestUtils.timeout();
+					spyOn(instanceUnderTest, '_getIntermediateFeatures').and.returnValue([]);
+					const coordinates = [
+						[0, 0],
+						[10, 10],
+						[20, 20]
+					];
+					const routeGeometry = new LineString(coordinates);
+
+					const result = instanceUnderTest._splitRouteByIntermediatePoints(routeGeometry);
+
+					expect(result).toHaveSize(1);
+					expect(result[0].getCoordinates()).toEqual(coordinates);
+				});
+			});
+		});
 	});
 });
 
