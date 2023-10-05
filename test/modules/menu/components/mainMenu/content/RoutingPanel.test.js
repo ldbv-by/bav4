@@ -1,11 +1,9 @@
 import { TabIds } from '../../../../../../src/domain/mainMenu';
-import { TabIds } from '../../../../../../src/domain/mainMenu';
 import { $injector } from '../../../../../../src/injection';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../src/store/media/media.reducer';
-import { isTemplateResult } from '../../../../../../src/utils/checks';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
 import { TestUtils } from '../../../../../test-utils';
 
@@ -13,13 +11,8 @@ window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
 describe('RoutingPanel', () => {
 	let store;
-	let store;
 	const setup = (state) => {
 		const initialState = {
-			mainMenu: {
-				open: true,
-				tab: null
-			},
 			mainMenu: {
 				open: true,
 				tab: null
