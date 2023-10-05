@@ -924,5 +924,36 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._getInteractionFeatures(RoutingFeatureTypes.DESTINATION)).toEqual([feature1]);
 			});
 		});
+
+		describe('_incrementIndex', () => {
+			it('updates the ROUTING_FEATURE_INDEX property of an interaction feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+
+				const feature0 = new Feature({
+					geometry: new Point([0, 0])
+				});
+				feature0.set(ROUTING_FEATURE_INDEX, 0);
+				const feature1 = new Feature({
+					geometry: new Point([21, 42])
+				});
+				feature1.set(ROUTING_FEATURE_INDEX, 20);
+				const features = [feature0, feature1];
+				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue(features);
+
+				instanceUnderTest._incrementIndex(0);
+
+				expect(feature0.get(ROUTING_FEATURE_INDEX)).toBe(1);
+				expect(feature1.get(ROUTING_FEATURE_INDEX)).toBe(21);
+
+				instanceUnderTest._incrementIndex(1);
+
+				expect(feature0.get(ROUTING_FEATURE_INDEX)).toBe(1);
+				expect(feature1.get(ROUTING_FEATURE_INDEX)).toBe(22);
+			});
+		});
 	});
 });
