@@ -11,8 +11,6 @@ import svg from './assets/arrowLeftShort.svg';
 import { setCategory, setRouteStats, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../../../domain/routing';
 
-const Update_Categories = 'update_categories';
-
 /**
  * Container for routing contents.
  * @class
