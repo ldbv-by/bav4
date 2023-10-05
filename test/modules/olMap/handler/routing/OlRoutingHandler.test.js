@@ -357,6 +357,16 @@ describe('OlRoutingHandler', () => {
 					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
 					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 				});
+
+				it('does nothing on singleclick event', () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					instanceUnderTest.activate(map);
+
+					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
+					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+				});
 			});
 			describe('modifyend event', () => {
 				it('handles the CSS class and calls the correct methods', () => {
