@@ -1,8 +1,8 @@
-import { $injector } from '../../../../src/injection';
-import { AbstractMvuContentPanel } from '../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
-import { RoutingPanel } from '../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
-import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
-import { TestUtils } from '../../../test-utils';
+import { $injector } from '../../../../../../src/injection';
+import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
+import { RoutingPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
+import { createNoInitialStateMediaReducer } from '../../../../../../src/store/media/media.reducer';
+import { TestUtils } from '../../../../../test-utils';
 
 window.customElements.define(RoutingPanel.tag, RoutingPanel);
 
@@ -35,9 +35,7 @@ describe('RoutingPanel', () => {
 			await setup();
 			const model = new RoutingPanel().getModel();
 
-			expect(model).toEqual({
-				categories: []
-			});
+			expect(model).toEqual({});
 		});
 	});
 

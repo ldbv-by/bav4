@@ -21,16 +21,9 @@ const Update_Categories = 'update_categories';
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({ categories: [] });
+		super({});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-	}
-
-	update(type, data, model) {
-		switch (type) {
-			case Update_Categories:
-				return { ...model, categories: [...data] };
-		}
 	}
 
 	createView() {
