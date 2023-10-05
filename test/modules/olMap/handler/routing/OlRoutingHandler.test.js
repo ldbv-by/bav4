@@ -347,45 +347,75 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('modify', () => {
-			it('handles the CSS class and calls the correct methods', () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
-				const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
-				const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
-				const layer = instanceUnderTest.activate(map);
-				map.addLayer(layer);
-				instanceUnderTest._setInteractionsActive(true);
-				const mockSegmentFeature = new Feature({
-					geometry: new LineString([
-						[0, -6757423],
-						[0, 6757423]
-					])
+			describe('modifystart event', () => {
+				it('handles the CSS class and calls the correct methods', () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					instanceUnderTest.activate(map);
+
+					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
+					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 				});
-				const mockCoordinate = [21, 42];
-				mockSegmentFeature.set(ROUTING_SEGMENT_INDEX, 42);
-				instanceUnderTest._routeLayerCopy.getSource().addFeature(mockSegmentFeature);
+			});
+			describe('modifyend event', () => {
+				it('handles the CSS class and calls the correct methods', () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+					const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
+					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+					const layer = instanceUnderTest.activate(map);
+					map.addLayer(layer);
+					const mockSegmentFeature0 = new Feature({
+						geometry: new LineString([
+							[0, -6757423],
+							[0, 6757423]
+						]),
+						getRevision: () => 100
+					});
+					mockSegmentFeature0.set(ROUTING_SEGMENT_INDEX, 42);
+					const mockSegmentFeature1 = new Feature({
+						geometry: new LineString([
+							[0, -6757423],
+							[0, 6757423]
+						]),
+						getRevision: () => 1
+					});
+					mockSegmentFeature1.set(ROUTING_SEGMENT_INDEX, 20);
+					const mockCoordinate = [21, 42];
+					map.getTarget().classList.add('grabbing');
 
-				instanceUnderTest._modifyInteraction.dispatchEvent(
-					new ModifyEvent('modifystart', null, new MapBrowserEvent(MapBrowserEventType.SINGLECLICK))
-				);
-				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+					instanceUnderTest._modifyInteraction.dispatchEvent(
+						new ModifyEvent(
+							'modifyend',
+							new Collection([mockSegmentFeature0, mockSegmentFeature1]),
+							newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERUP, map, mockCoordinate)
+						)
+					);
+					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
+					expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
+					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
+					expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+				});
 
-				instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
-				expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
+				it("does nothing when it's not the correct pointer event", () => {
+					setup();
+					const map = setupMap();
+					const instanceUnderTest = new OlRoutingHandler();
+					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+					const layer = instanceUnderTest.activate(map);
+					map.addLayer(layer);
+					const mockCoordinate = [21, 42];
+					map.getTarget().classList.add('grabbing');
 
-				instanceUnderTest._modifyInteraction.dispatchEvent(
-					new ModifyEvent(
-						'modifyend',
-						new Collection([mockSegmentFeature]),
-						newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERUP, map, mockCoordinate)
-					)
-				);
-				expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
-				expect(incrementIndexSpy).toHaveBeenCalledOnceWith(43);
-				expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(mockCoordinate, 43);
-				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+					instanceUnderTest._modifyInteraction.dispatchEvent(
+						new ModifyEvent('modifyend', new Collection([]), newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERMOVE, map, mockCoordinate))
+					);
+					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
+					expect(requestRouteFromInteractionLayerSpy).not.toHaveBeenCalled();
+				});
 			});
 		});
 	});
