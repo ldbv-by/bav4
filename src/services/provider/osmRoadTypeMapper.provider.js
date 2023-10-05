@@ -35,8 +35,8 @@ export const bvvOsmRoadTypeMappingProvider = (osmRoadClasses) => {
 	const merge = (roadType, data) => {
 		return {
 			...roadType,
-			absolute: roadType.absolute + isNumber(data) ? data : data.absolute,
-			relative: roadType.relative + isNumber(data) ? 0 : data.relative,
+			absolute: roadType.absolute + (isNumber(data) ? data : data.absolute),
+			relative: roadType.relative + (isNumber(data) ? 0 : data.relative),
 			segments: roadType.segments.concat(getSegmentsOrEmpty(data))
 		};
 	};
