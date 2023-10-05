@@ -737,7 +737,7 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_displayAlternativeRoutingGeometry', () => {
-			fit('adds a correctly configured feature', async () => {
+			it('adds a correctly configured feature', async () => {
 				setup();
 				const map = setupMap();
 				const instanceUnderTest = new OlRoutingHandler();
@@ -769,6 +769,60 @@ describe('OlRoutingHandler', () => {
 				expect(feature.getGeometry()).toBeInstanceOf(LineString);
 				expect(feature.getGeometry().getCoordinates()).toEqual(coordinates);
 				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+			});
+		});
+
+		describe('_displayCurrentRoutingGeometry', () => {
+			it('adds a correctly configured feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const category = { id: 'hike' };
+				const categoryResponse = {
+					vehicle: 'foo',
+					paths: [
+						{
+							points:
+								'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+						}
+					]
+				};
+				const coordinates = [
+					[21, 42],
+					[5, 55]
+				];
+				const geometry = new LineString(coordinates);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
+				const segmentGeometries = [new LineString(coordinates), new LineString(coordinates)];
+				spyOn(instanceUnderTest, '_splitRouteByIntermediatePoints').withArgs(geometry).and.returnValue(segmentGeometries);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+
+				instanceUnderTest._displayCurrentRoutingGeometry(categoryResponse);
+
+				const feature = instanceUnderTest._routeLayer.getSource().getFeatures()[0];
+				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE);
+				expect(feature.get(ROUTING_CATEGORY)).toBe(category);
+				expect(feature.getGeometry()).toBeInstanceOf(LineString);
+				expect(feature.getGeometry().getCoordinates()).toEqual(coordinates);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+
+				const segmentFeature0 = instanceUnderTest._routeLayerCopy.getSource().getFeatures()[0];
+				expect(segmentFeature0.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE_SEGMENT);
+				expect(segmentFeature0.get(ROUTING_CATEGORY)).toBe(category);
+				expect(segmentFeature0.get(ROUTING_SEGMENT_INDEX)).toBe(0);
+				expect(segmentFeature0.getGeometry()).toBeInstanceOf(LineString);
+				expect(segmentFeature0.getGeometry().getCoordinates()).toEqual(coordinates);
+				expect(segmentFeature0.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+
+				const segmentFeature1 = instanceUnderTest._routeLayerCopy.getSource().getFeatures()[1];
+				expect(segmentFeature1.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE_SEGMENT);
+				expect(segmentFeature1.get(ROUTING_CATEGORY)).toBe(category);
+				expect(segmentFeature1.get(ROUTING_SEGMENT_INDEX)).toBe(1);
+				expect(segmentFeature1.getGeometry()).toBeInstanceOf(LineString);
+				expect(segmentFeature1.getGeometry().getCoordinates()).toEqual(coordinates);
+				expect(segmentFeature1.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 			});
 		});
 	});
