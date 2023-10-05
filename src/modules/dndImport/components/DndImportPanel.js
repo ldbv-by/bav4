@@ -112,13 +112,16 @@ export class DndImportPanel extends MvuElement {
 		}
 
 		const importType = types.find((t) => /(files|text\/plain)/i.test(t));
+
 		const signalImport = (importType) => {
 			const content = importType === MediaType.TEXT_PLAIN ? translate('dndImport_import_textcontent') : translate('dndImport_import_filecontent');
 			this.signal(Update_DropZone_Content, content);
 		};
 		const signalNoImport = () => {
-			this.signal(Update_DropZone_Content, translate('dndImport_import_unknown'));
+			const content = types?.length !== 0 ? translate('dndImport_import_unknown') : null;
+			this.signal(Update_DropZone_Content, content);
 		};
+
 		const importAction = importType ? signalImport : signalNoImport;
 		importAction(importType);
 	}
