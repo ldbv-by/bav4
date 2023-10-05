@@ -64,7 +64,8 @@ describe('constants and enums', () => {
 describe('OlRoutingHandler', () => {
 	const routingServiceMock = {
 		async calculate() {},
-		getAlternativeCategoryIds() {}
+		getAlternativeCategoryIds() {},
+		getCategoryById() {}
 	};
 	const mapServiceMock = {};
 	const environmentServiceMock = {
@@ -731,6 +732,42 @@ describe('OlRoutingHandler', () => {
 				expect(feature.get(ROUTING_FEATURE_INDEX)).toBe(42);
 				expect(feature.getGeometry()).toBeInstanceOf(Point);
 				expect(feature.getGeometry().getFirstCoordinate()).toEqual(coordinate);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+			});
+		});
+
+		describe('_displayAlternativeRoutingGeometry', () => {
+			fit('adds a correctly configured feature', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const category = { id: 'hike' };
+				const categoryResponse = {
+					vehicle: 'foo',
+					paths: [
+						{
+							points:
+								'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+						}
+					]
+				};
+				const coordinates = [
+					[21, 42],
+					[5, 55]
+				];
+				const geometry = new LineString(coordinates);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+
+				instanceUnderTest._displayAlternativeRoutingGeometry(categoryResponse);
+
+				const feature = instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()[0];
+				expect(feature.get(ROUTING_FEATURE_TYPE)).toBe(RoutingFeatureTypes.ROUTE_ALTERNATIVE);
+				expect(feature.get(ROUTING_CATEGORY)).toBe(category);
+				expect(feature.getGeometry()).toBeInstanceOf(LineString);
+				expect(feature.getGeometry().getCoordinates()).toEqual(coordinates);
 				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 			});
 		});
