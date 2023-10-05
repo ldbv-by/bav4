@@ -67,7 +67,9 @@ describe('OlRoutingHandler', () => {
 		getAlternativeCategoryIds() {},
 		getCategoryById() {}
 	};
-	const mapServiceMock = {};
+	const mapServiceMock = {
+		getSrid() {}
+	};
 	const environmentServiceMock = {
 		isTouch() {}
 	};
@@ -876,6 +878,24 @@ describe('OlRoutingHandler', () => {
 					expect(result).toHaveSize(1);
 					expect(result[0].getCoordinates()).toEqual(coordinates);
 				});
+			});
+		});
+
+		describe('_polylineToGeometry', () => {
+			it('returns a geometry)', async () => {
+				setup();
+				const map = setupMap();
+				const instanceUnderTest = new OlRoutingHandler();
+				instanceUnderTest.activate(map);
+				await TestUtils.timeout();
+				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
+
+				const result = instanceUnderTest._polylineToGeometry(
+					'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+				);
+
+				expect(mapServiceSpy).toHaveBeenCalled();
+				expect(result.getCoordinates()).toHaveSize(57);
 			});
 		});
 	});
