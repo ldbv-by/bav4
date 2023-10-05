@@ -227,26 +227,26 @@ export class OlRoutingHandler extends OlLayerHandler {
 		});
 	}
 
-	_determineClosestCoordinate(coords, closest) {
-		let dist = Number.MAX_VALUE;
-		let index = -1;
-		for (let i = 0; i < coords.length; i++) {
-			// Todo: planar distance! -> must be adapted when changed to 3857
-			const d = distance(coords[i], closest);
-			if (d < dist) {
-				dist = d;
-				index = i;
-			}
-		}
-		return index;
-	}
-
 	/**
 	 *
 	 * @param {object} routeGeometry
 	 * @returns features
 	 */
 	_splitRouteByIntermediatePoints(routeGeometry) {
+		const determineClosestCoordinate = (coords, closest) => {
+			let dist = Number.MAX_VALUE;
+			let index = -1;
+			for (let i = 0; i < coords.length; i++) {
+				// Note: we're calculating the planar distance although we are having coordinates, but it should be precisely enough in this case
+				const d = distance(coords[i], closest);
+				if (d < dist) {
+					dist = d;
+					index = i;
+				}
+			}
+			return index;
+		};
+
 		const segments = [];
 		const intermediatePoints = this._getIntermediateFeatures();
 
@@ -257,7 +257,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			for (let i = 0; i <= intermediatePoints.length; i++) {
 				let endIndex;
 				if (i < intermediatePoints.length) {
-					endIndex = this._determineClosestCoordinate(routeGeometry.getCoordinates(), intermediatePoints[i].getGeometry().getFirstCoordinate());
+					endIndex = determineClosestCoordinate(routeGeometry.getCoordinates(), intermediatePoints[i].getGeometry().getFirstCoordinate());
 				} else {
 					endIndex = routeCoordinates.length - 1;
 				}
