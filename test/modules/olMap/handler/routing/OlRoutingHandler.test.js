@@ -74,7 +74,7 @@ describe('OlRoutingHandler', () => {
 		isTouch() {}
 	};
 
-	const setup = (state) => {
+	const setup = (state = {}) => {
 		const initialState = {
 			routing: {
 				...initialRoutingSoS,
@@ -118,6 +118,15 @@ describe('OlRoutingHandler', () => {
 		return map;
 	};
 
+	const newTestInstance = async (state) => {
+		const store = setup(state);
+		const map = setupMap();
+		const instanceUnderTest = new OlRoutingHandler();
+		const layer = instanceUnderTest.activate(map);
+		await TestUtils.timeout();
+		return { map, instanceUnderTest, store, layer };
+	};
+
 	it('instantiates the handler', () => {
 		setup();
 		const instanceUnderTest = new OlRoutingHandler();
@@ -148,16 +157,12 @@ describe('OlRoutingHandler', () => {
 	describe('lifecycle', () => {
 		describe('when handler is activated', () => {
 			describe('in a non-touch environment', () => {
-				it('fully initializes the handler', () => {
-					const map = setupMap();
-					setup();
-					const instanceUnderTest = new OlRoutingHandler();
-
-					const olLayer = instanceUnderTest.activate(map);
+				it('fully initializes the handler', async () => {
+					const { instanceUnderTest, map, layer } = await newTestInstance();
 
 					expect(instanceUnderTest._map).toEqual(map);
 					// layer
-					expect(instanceUnderTest._routingLayerGroup).toEqual(olLayer);
+					expect(instanceUnderTest._routingLayerGroup).toEqual(layer);
 					expect(instanceUnderTest._alternativeRouteLayer).toBeInstanceOf(Vector);
 					expect(instanceUnderTest._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
 					expect(instanceUnderTest._routeLayer).toBeInstanceOf(Vector);
@@ -168,7 +173,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
 					expect(instanceUnderTest._interactionLayer).toBeInstanceOf(Vector);
 					expect(instanceUnderTest._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
-					expect(olLayer.getLayers().getArray()).toEqual([
+					expect(layer.getLayers().getArray()).toEqual([
 						instanceUnderTest._alternativeRouteLayer,
 						instanceUnderTest._routeLayer,
 						instanceUnderTest._routeLayerCopy,
@@ -186,17 +191,13 @@ describe('OlRoutingHandler', () => {
 			});
 
 			describe('in a touch environment', () => {
-				it('fully initializes the handler (without modify interaction)', () => {
-					const map = setupMap();
-					setup();
-					const instanceUnderTest = new OlRoutingHandler();
+				it('fully initializes the handler (without modify interaction)', async () => {
 					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
-
-					const olLayer = instanceUnderTest.activate(map);
+					const { instanceUnderTest, map, layer } = await newTestInstance();
 
 					expect(instanceUnderTest._map).toEqual(map);
 					// layer
-					expect(instanceUnderTest._routingLayerGroup).toEqual(olLayer);
+					expect(instanceUnderTest._routingLayerGroup).toEqual(layer);
 					expect(instanceUnderTest._alternativeRouteLayer).toBeInstanceOf(Vector);
 					expect(instanceUnderTest._alternativeRouteLayer.get('id')).toBe(RoutingLayerIds.ROUTE_ALTERNATIVE);
 					expect(instanceUnderTest._routeLayer).toBeInstanceOf(Vector);
@@ -207,7 +208,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._highlightLayer.get('id')).toBe(RoutingLayerIds.HIGHLIGHT);
 					expect(instanceUnderTest._interactionLayer).toBeInstanceOf(Vector);
 					expect(instanceUnderTest._interactionLayer.get('id')).toBe(RoutingLayerIds.INTERACTION);
-					expect(olLayer.getLayers().getArray()).toEqual([
+					expect(layer.getLayers().getArray()).toEqual([
 						instanceUnderTest._alternativeRouteLayer,
 						instanceUnderTest._routeLayer,
 						instanceUnderTest._routeLayerCopy,
@@ -247,11 +248,8 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('when handler is deactivated', () => {
-			it('updates olLayer and olMap fields', () => {
-				const map = setupMap();
-				setup();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
+			it('updates olLayer and olMap fields', async () => {
+				const { instanceUnderTest, map } = await newTestInstance();
 
 				instanceUnderTest.deactivate(map);
 
@@ -278,17 +276,13 @@ describe('OlRoutingHandler', () => {
 	describe('events', () => {
 		describe('when observed slices-of-state change', () => {
 			it('updates updates the category and calculates a route', async () => {
-				const map = setupMap();
 				const coordinates = [
 					[22, 33],
 					[44, 55]
 				];
 				const catId = 'catId';
-				setup();
-				const instanceUnderTest = new OlRoutingHandler();
+				const { instanceUnderTest } = await newTestInstance();
 				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
-
-				instanceUnderTest.activate(map);
 
 				setCategory(catId);
 				await TestUtils.timeout();
@@ -315,12 +309,8 @@ describe('OlRoutingHandler', () => {
 
 		describe('translate', () => {
 			it('handles the CSS class and calls the correct methods', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
+				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
-
-				const layer = instanceUnderTest.activate(map);
 				map.addLayer(layer);
 				instanceUnderTest._setInteractionsActive(true);
 
@@ -348,35 +338,26 @@ describe('OlRoutingHandler', () => {
 
 		describe('modify', () => {
 			describe('modifystart event', () => {
-				it('handles the CSS class and calls the correct methods', () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
-					instanceUnderTest.activate(map);
+				it('handles the CSS class and calls the correct methods', async () => {
+					const { instanceUnderTest, map } = await newTestInstance();
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
 					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 				});
 
-				it('does nothing on singleclick event', () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
-					instanceUnderTest.activate(map);
+				it('does nothing on singleclick event', async () => {
+					const { instanceUnderTest, map } = await newTestInstance();
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
 					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 				});
 			});
 			describe('modifyend event', () => {
-				it('handles the CSS class and calls the correct methods', () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
+				it('handles the CSS class and calls the correct methods', async () => {
+					const { instanceUnderTest, map, layer } = await newTestInstance();
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 					const incrementIndexSpy = spyOn(instanceUnderTest, '_incrementIndex');
 					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
-					const layer = instanceUnderTest.activate(map);
 					map.addLayer(layer);
 					const mockSegmentFeature0 = new Feature({
 						geometry: new LineString([
@@ -410,12 +391,9 @@ describe('OlRoutingHandler', () => {
 					expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
 				});
 
-				it("does nothing when it's not the correct pointer event", () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
+				it("does nothing when it's not the correct pointer event", async () => {
+					const { instanceUnderTest, map, layer } = await newTestInstance();
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
-					const layer = instanceUnderTest.activate(map);
 					map.addLayer(layer);
 					const mockCoordinate = [21, 42];
 					map.getTarget().classList.add('grabbing');
@@ -434,8 +412,7 @@ describe('OlRoutingHandler', () => {
 		describe('_requestRoute', () => {
 			describe('an no intermediate features are available', () => {
 				it('calls the routing service with correct arguments', async () => {
-					setup();
-					const map = setupMap();
+					const { instanceUnderTest } = await newTestInstance();
 					const defaultCategoryId = 'defaultCategoryId';
 					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
 					const coordinates3857 = [
@@ -446,10 +423,8 @@ describe('OlRoutingHandler', () => {
 					spyOn(routingServiceMock, 'calculate')
 						.withArgs([defaultCategoryId, ...alternativeCategoryIds], coordinates3857)
 						.and.resolveTo(mockRouteResult);
-					const instanceUnderTest = new OlRoutingHandler();
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
-					instanceUnderTest.activate(map);
 
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved(
 						mockRouteResult
@@ -464,7 +439,7 @@ describe('OlRoutingHandler', () => {
 			describe('and one ore more intermediate features are available', () => {
 				it('calls the routing service with correct arguments', async () => {
 					setup();
-					const map = setupMap();
+					const { instanceUnderTest } = await newTestInstance();
 					const defaultCategoryId = 'defaultCategoryId';
 					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
 					const coordinates3857 = [
@@ -473,10 +448,8 @@ describe('OlRoutingHandler', () => {
 					];
 					const mockRouteResult = { defaultCategoryId: {} };
 					spyOn(routingServiceMock, 'calculate').withArgs([defaultCategoryId], coordinates3857).and.resolveTo(mockRouteResult);
-					const instanceUnderTest = new OlRoutingHandler();
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
-					instanceUnderTest.activate(map);
 					instanceUnderTest._addIntermediateInteractionFeature(15, 15, 1);
 
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved();
@@ -488,8 +461,7 @@ describe('OlRoutingHandler', () => {
 
 			describe('and the routing service throws', () => {
 				it('informs the user and logs the error', async () => {
-					const store = setup();
-					const map = setupMap();
+					const { instanceUnderTest, store } = await newTestInstance();
 					const message = 'something got wrong';
 					const defaultCategoryId = 'defaultCategoryId';
 					const alternativeCategoryIds = ['alternativeCategoryId0', 'alternativeCategoryId1'];
@@ -497,10 +469,8 @@ describe('OlRoutingHandler', () => {
 						[11, 22],
 						[33, 44]
 					];
-					const instanceUnderTest = new OlRoutingHandler();
 					spyOn(routingServiceMock, 'calculate').and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
-					instanceUnderTest.activate(map);
 
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeRejected();
 					expect(errorSpy).toHaveBeenCalledWith(message);
@@ -514,11 +484,9 @@ describe('OlRoutingHandler', () => {
 			describe('more than one interaction feature is available', () => {
 				it('call _requestRoute with with correct arguments', async () => {
 					const catId = 'catId';
-					setup({
+					const { instanceUnderTest } = await newTestInstance({
 						categoryId: catId
 					});
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
 					const feature0 = new Feature({
 						geometry: new Point([0, 0])
 					});
@@ -531,8 +499,6 @@ describe('OlRoutingHandler', () => {
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
-					instanceUnderTest.activate(map);
-					await TestUtils.timeout();
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
 
 					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
@@ -553,19 +519,15 @@ describe('OlRoutingHandler', () => {
 			describe('less then two interaction features are available', () => {
 				it('does nothing', async () => {
 					const catId = 'catId';
-					setup({
+					const { instanceUnderTest } = await newTestInstance({
 						categoryId: catId
 					});
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
 					const feature0 = new Feature({
 						geometry: new Point([0, 0])
 					});
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
-					instanceUnderTest.activate(map);
-					await TestUtils.timeout();
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0]);
 
 					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
@@ -581,11 +543,9 @@ describe('OlRoutingHandler', () => {
 			describe('more than one coordinate is available', () => {
 				it('call _requestRoute with with correct arguments', async () => {
 					const catId = 'catId';
-					setup({
+					const { instanceUnderTest } = await newTestInstance({
 						categoryId: catId
 					});
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
 					const coordinate0 = [0, 0];
 					const coordinate1 = [5, 5];
 					const coordinate2 = [10, 10];
@@ -597,8 +557,6 @@ describe('OlRoutingHandler', () => {
 					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
-					instanceUnderTest.activate(map);
-					await TestUtils.timeout();
 
 					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2]));
 
@@ -613,17 +571,11 @@ describe('OlRoutingHandler', () => {
 
 			describe('less then two coordinates features are available', () => {
 				it('does nothing', async () => {
-					const catId = 'catId';
-					setup({
-						categoryId: catId
-					});
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
+					const { instanceUnderTest } = await newTestInstance();
 					const coordinate0 = [0, 0];
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
-					instanceUnderTest.activate(map);
 					await TestUtils.timeout();
 
 					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0]));
@@ -637,11 +589,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_clearRouteFeatures', () => {
 			it('removes the correct features', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const feature0 = new Feature({
 					geometry: new Point([0, 0])
 				});
@@ -663,11 +611,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_clearAllFeatures', () => {
 			it('removes the correct features', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const feature0 = new Feature({
 					geometry: new Point([0, 0])
 				});
@@ -689,11 +633,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_clearIntermediateInteractionFeatures', () => {
 			it('removes the correct features', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const feature0 = new Feature({
 					geometry: new Point([0, 0])
 				});
@@ -716,11 +656,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_addStartInteractionFeature', () => {
 			it('adds a correctly configured feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const coordinate = [21, 42];
 
 				instanceUnderTest._addStartInteractionFeature(coordinate);
@@ -736,11 +672,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_addDestinationInteractionFeature', () => {
 			it('adds a correctly configured feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const coordinate = [21, 42];
 
 				instanceUnderTest._addDestinationInteractionFeature(coordinate, 42);
@@ -760,11 +692,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_addIntermediateInteractionFeature', () => {
 			it('adds a correctly configured feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const coordinate = [21, 42];
 
 				instanceUnderTest._addIntermediateInteractionFeature(coordinate, 42);
@@ -780,11 +708,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_displayAlternativeRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike' };
 				const categoryResponse = {
 					vehicle: 'foo',
@@ -816,11 +740,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_displayCurrentRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const category = { id: 'hike' };
 				const categoryResponse = {
 					vehicle: 'foo',
@@ -871,11 +791,7 @@ describe('OlRoutingHandler', () => {
 		describe('_splitRouteByIntermediatePoints', () => {
 			describe('having one or more intermediate points', () => {
 				it('returns an array of segments (geometries)', async () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
-					instanceUnderTest.activate(map);
-					await TestUtils.timeout();
+					const { instanceUnderTest } = await newTestInstance();
 					const intermediateFeatures = [new Feature(new Point([7.5, 7.5]))];
 					spyOn(instanceUnderTest, '_getIntermediateFeatures').and.returnValue(intermediateFeatures);
 					const coordinates = [
@@ -900,11 +816,7 @@ describe('OlRoutingHandler', () => {
 			});
 			describe('having NO intermediate points', () => {
 				it('returns an array of segments (geometries)', async () => {
-					setup();
-					const map = setupMap();
-					const instanceUnderTest = new OlRoutingHandler();
-					instanceUnderTest.activate(map);
-					await TestUtils.timeout();
+					const { instanceUnderTest } = await newTestInstance();
 					spyOn(instanceUnderTest, '_getIntermediateFeatures').and.returnValue([]);
 					const coordinates = [
 						[0, 0],
@@ -923,11 +835,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_polylineToGeometry', () => {
 			it('returns a geometry', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const mapServiceSpy = spyOn(mapServiceMock, 'getSrid').and.returnValue(3857);
 
 				const result = instanceUnderTest._polylineToGeometry(
@@ -941,11 +849,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_getInteractionFeatures', () => {
 			it('returns an sorted (and filtered) array of features', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
+				const { instanceUnderTest } = await newTestInstance();
 				const feature0 = new Feature({
 					geometry: new Point([0, 0])
 				});
@@ -967,12 +871,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('_incrementIndex', () => {
 			it('updates the ROUTING_FEATURE_INDEX property of an interaction feature', async () => {
-				setup();
-				const map = setupMap();
-				const instanceUnderTest = new OlRoutingHandler();
-				instanceUnderTest.activate(map);
-				await TestUtils.timeout();
-
+				const { instanceUnderTest } = await newTestInstance();
 				const feature0 = new Feature({
 					geometry: new Point([0, 0])
 				});
