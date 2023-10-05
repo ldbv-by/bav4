@@ -219,14 +219,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return polylineFormat.readGeometry(polyline, { featureProjection: 'EPSG:' + this._mapService.getSrid() });
 	}
 
-	_polylineTo4326Feature(polyline) {
-		const polylineFormat = new Polyline();
-		const geometry = polylineFormat.readGeometry(polyline);
-		return new Feature({
-			geometry: geometry
-		});
-	}
-
 	/**
 	 *
 	 * @param {object} routeGeometry
