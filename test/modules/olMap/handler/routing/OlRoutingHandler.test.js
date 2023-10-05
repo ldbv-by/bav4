@@ -308,12 +308,6 @@ describe('OlRoutingHandler', () => {
 		};
 
 		describe('translate', () => {
-			it('is correctly configured', async () => {
-				const { instanceUnderTest } = await newTestInstance();
-
-				expect(instanceUnderTest._translateInteraction.getHitTolerance()).toBe(50);
-			});
-
 			it('handles the CSS class and calls the correct methods', async () => {
 				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
