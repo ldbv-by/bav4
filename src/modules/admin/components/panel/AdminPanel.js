@@ -9,7 +9,7 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
-import { logOnce, onlyOnce } from '../layerTree/LayerTree';
+import { logOnce } from '../layerTree/LayerTree';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
@@ -262,7 +262,6 @@ export class AdminPanel extends MvuElement {
 				// 	return findElement(uid, element.children);
 				// }
 			}
-			console.log('🚀 nach for 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ');
 		};
 
 		const moveElement = (currentUid, uidFromDrag) => {
