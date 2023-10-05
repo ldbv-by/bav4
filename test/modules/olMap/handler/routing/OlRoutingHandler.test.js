@@ -308,11 +308,16 @@ describe('OlRoutingHandler', () => {
 		};
 
 		describe('translate', () => {
+			it('is correctly configured', async () => {
+				const { instanceUnderTest } = await newTestInstance();
+
+				expect(instanceUnderTest._translateInteraction.getHitTolerance()).toBe(50);
+			});
+
 			it('handles the CSS class and calls the correct methods', async () => {
 				const { instanceUnderTest, map, layer } = await newTestInstance();
 				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
 				map.addLayer(layer);
-				instanceUnderTest._setInteractionsActive(true);
 
 				const feature = new Feature({
 					geometry: new Point([0, 0])
@@ -337,7 +342,7 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('modify', () => {
-			describe('modifystart event', () => {
+			describe('"modifystart" event', () => {
 				it('handles the CSS class and calls the correct methods', async () => {
 					const { instanceUnderTest, map } = await newTestInstance();
 
@@ -345,14 +350,14 @@ describe('OlRoutingHandler', () => {
 					expect(map.getTarget().classList.contains('grabbing')).toBeTrue();
 				});
 
-				it('does nothing on singleclick event', async () => {
+				it('does nothing on "singleclick" event', async () => {
 					const { instanceUnderTest, map } = await newTestInstance();
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
 					expect(map.getTarget().classList.contains('grabbing')).toBeFalse();
 				});
 			});
-			describe('modifyend event', () => {
+			describe('"modifyend" event', () => {
 				it('handles the CSS class and calls the correct methods', async () => {
 					const { instanceUnderTest, map, layer } = await newTestInstance();
 					const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
