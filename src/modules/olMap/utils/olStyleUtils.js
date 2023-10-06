@@ -7,7 +7,9 @@ import {
 	calculatePartitionResidualOfSegments,
 	moveParallel,
 	getPartitionDeltaFrom,
-	NO_CALCULATION_HINTS
+	NO_CALCULATION_HINTS,
+	isPolygon,
+	IsClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -481,16 +483,11 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 
 	geometry.setCoordinates(pixelCoordinates);
 
-	const isPolygon = (coordinates) => {
-		if (coordinates[0].length > 2) {
-			const first = coordinates[0][0];
-			const last = coordinates[0][coordinates[0].length - 1];
-			const isClosed = first[0] === last[0] && first[1] === last[1];
-			return isClosed;
-		}
-		return false;
+	const asCounterClockWise = (coordinates) => {
+		return IsClockwise(coordinates) ? [...coordinates].reverse() : coordinates;
 	};
-	const pixelGeometry = isPolygon(pixelCoordinates) ? new Polygon(pixelCoordinates) : geometry;
+
+	const pixelGeometry = isPolygon(pixelCoordinates) ? new Polygon([asCounterClockWise(pixelCoordinates[0])]) : geometry;
 
 	// baseLine
 	contextRenderFunction(pixelGeometry, fill, baseStroke);

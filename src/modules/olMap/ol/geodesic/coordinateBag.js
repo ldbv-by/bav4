@@ -107,7 +107,7 @@ export class CoordinateBag {
 	 */
 	createPolygon(geodesicGeometry) {
 		if (
-			(!geodesicGeometry.isDrawing && !geodesicGeometry.isPolygon) ||
+			!geodesicGeometry.isPolygon ||
 			(geodesicGeometry.isDrawing && this.lineStringIndex === 1) ||
 			(this.lineStringIndex > 1 && this.worldIndex !== 0) ||
 			this.lineStringIndex > 2

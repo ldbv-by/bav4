@@ -104,13 +104,18 @@ describe('measureStyleFunction', () => {
 		[0, 0],
 		[1, 0]
 	]);
+
 	const feature = new Feature({ geometry: geometry });
 	const resolution = 1;
 	it('should create styles', () => {
-		const styles = measureStyleFunction(feature, resolution);
+		const geodesicFeature = new Feature({ geometry: geometry });
+		geodesicFeature.geodesic = { getGeometry: () => {} };
+		const styles = measureStyleFunction(geodesicFeature, resolution);
 
 		expect(styles).toBeTruthy();
 		expect(styles.length).toBe(2);
+
+		expect(styles[1].getGeometry()).toEqual(jasmine.any(Function));
 	});
 
 	it('should have a style which creates circle for Lines', () => {
@@ -281,6 +286,80 @@ describe('renderRulerSegments', () => {
 		renderRulerSegments(pixelCoordinates, stateMock, contextRendererStub);
 
 		expect(actualStrokes).toBeTruthy();
+	});
+
+	it('should reverse clock-wise coordinates of Polygon to counter-clock-wise order', () => {
+		const actualGeometry = [];
+		// eslint-disable-next-line no-unused-vars
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualGeometry.push(geometry.getCoordinates());
+		};
+		const stateMock = {
+			geometry: new Polygon([
+				[
+					[1, 0],
+					[0, 1],
+					[0, 0]
+				]
+			]),
+			resolution: resolution,
+			pixelRatio: 1
+		};
+		const clockWisePixelCoordinates = [
+			[
+				[1, 0],
+				[0, 0],
+				[0, 1],
+				[1, 0]
+			]
+		];
+		renderRulerSegments(clockWisePixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualGeometry[0]).toEqual([
+			[
+				[1, 0],
+				[0, 1],
+				[0, 0],
+				[1, 0]
+			]
+		]);
+	});
+
+	it('should NOT reverse counter-clock-wise coordinates of Polygon to clock-wise order', () => {
+		const actualGeometry = [];
+		// eslint-disable-next-line no-unused-vars
+		const contextRendererStub = (geometry, fill, stroke) => {
+			actualGeometry.push(geometry.getCoordinates());
+		};
+		const stateMock = {
+			geometry: new Polygon([
+				[
+					[1, 0],
+					[0, 1],
+					[0, 0]
+				]
+			]),
+			resolution: resolution,
+			pixelRatio: 1
+		};
+		const counterClockWisePixelCoordinates = [
+			[
+				[1, 0],
+				[0, 1],
+				[0, 0],
+				[1, 0]
+			]
+		];
+		renderRulerSegments(counterClockWisePixelCoordinates, stateMock, contextRendererStub);
+
+		expect(actualGeometry[0]).toEqual([
+			[
+				[1, 0],
+				[0, 1],
+				[0, 0],
+				[1, 0]
+			]
+		]);
 	});
 });
 

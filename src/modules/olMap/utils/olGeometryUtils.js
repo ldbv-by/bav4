@@ -485,3 +485,40 @@ export const simplify = (geometry, maxCount, tolerance) => {
 	}
 	return geometry;
 };
+
+/**
+ * Checks whether or not a polygonal geometry is clockwise or not
+ * @param {Array<Coordinate>} coordinates
+ * @returns {boolean| null} is clockwise or not
+ */
+export const IsClockwise = (coordinates) => {
+	const calculateAreaFrom = (cs) =>
+		cs.reduce((area, coordinate, index, array) => {
+			const oppositeIndex = (index + 1) % array.length;
+			const oppositeCoordinate = array[oppositeIndex];
+
+			area += coordinate[0] * oppositeCoordinate[1];
+			area -= oppositeCoordinate[0] * coordinate[1];
+			return area;
+		}, 0);
+
+	const area = calculateAreaFrom(coordinates);
+
+	return area < 0;
+};
+
+/**
+ *
+ * @param {Array<Coordinate>} coordinates
+ * @returns
+ */
+export const isPolygon = (coordinates) => {
+	if (coordinates[0].length > 2) {
+		const first = coordinates[0][0];
+		const last = coordinates[0][coordinates[0].length - 1];
+
+		const isClosed = first[0] === last[0] && first[1] === last[1];
+		return isClosed;
+	}
+	return false;
+};
