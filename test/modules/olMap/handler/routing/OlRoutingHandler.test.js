@@ -11,6 +11,7 @@ import {
 	RoutingFeatureTypes,
 	RoutingLayerIds
 } from '../../../../../src/modules/olMap/handler/routing/OlRoutingHandler';
+import { provide as messageProvideFn } from '../../../../../src/modules/olMap/handler/routing/tooltipMessage.provider';
 import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
@@ -26,6 +27,7 @@ import { TranslateEvent } from 'ol/interaction/Translate';
 import { notificationReducer } from '../../../../../src/store/notifications/notifications.reducer';
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
+import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -153,6 +155,8 @@ describe('OlRoutingHandler', () => {
 		expect(instanceUnderTest._activeInteraction).toBeFalse();
 		expect(instanceUnderTest._catId).toBeNull();
 		expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
+		expect(instanceUnderTest._helpTooltip).toBeInstanceOf(HelpTooltip);
+		expect(instanceUnderTest._helpTooltip.messageProvideFunction).toEqual(messageProvideFn);
 	});
 
 	describe('lifecycle', () => {
@@ -253,6 +257,7 @@ describe('OlRoutingHandler', () => {
 		describe('when handler is deactivated', () => {
 			it('updates olLayer and olMap fields', async () => {
 				const { instanceUnderTest, map } = await newTestInstance();
+				const helpTooltipSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
 
 				instanceUnderTest.deactivate(map);
 
@@ -273,6 +278,7 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
 				expect(instanceUnderTest._registeredObservers).toEqual([]);
 				expect(instanceUnderTest._mapListeners).toEqual([]);
+				expect(helpTooltipSpy).toHaveBeenCalled();
 			});
 		});
 	});
@@ -887,109 +893,87 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_newPointerMoveHandler', () => {
-			const coordinate = [11, 22];
+			const eventCoordinate = [11, 22];
+			const featureCoordinate = [10, 20];
 			const feature = new Feature({
-				geometry: new Point([0, 0])
+				geometry: new Point(featureCoordinate)
 			});
 			const callPointerMoveHandler = async (feature, draggingEvent = false) => {
 				const { instanceUnderTest, map } = await newTestInstance();
 
-				const updateHelpTooltipSpy = spyOn(instanceUnderTest, '_updateHelpTooltip');
-				const hideHelpTooltipSpy = spyOn(instanceUnderTest, '_hideHelpTooltip');
 				const setModifyActiveSpy = spyOn(instanceUnderTest, '_setModifyActive');
+				const helpTooltipActivateSpy = spyOn(instanceUnderTest._helpTooltip, 'activate');
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
+				const helpTooltipNotifySpy = spyOn(instanceUnderTest._helpTooltip, 'notify');
 				const handler = instanceUnderTest._newPointerMoveHandler(
 					map,
 					instanceUnderTest._interactionLayer,
 					instanceUnderTest._alternativeRouteLayer,
 					instanceUnderTest._routeLayerCopy
 				);
-				const event = { originalEvent: {}, coordinate, dragging: draggingEvent };
-				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue(42);
+				const event = { originalEvent: {}, coordinate: eventCoordinate, dragging: draggingEvent };
+				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue([21, 42]);
 				spyOn(map, 'getFeaturesAtPixel')
-					.withArgs(42, { layerFilter: jasmine.any(Function), hitTolerance: 5 })
+					.withArgs([21, 42], { layerFilter: jasmine.any(Function), hitTolerance: 5 })
 					.and.returnValue(feature ? [feature] : []);
 
 				handler(event);
-				return { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map };
+				return { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map };
 			};
-
-			it('handles a detected feature of type START', async () => {
-				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
-
-				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Startpunktes ziehen', coordinate);
-				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('pointer');
-			});
-
-			it('handles a detected feature of type DESTINATION', async () => {
-				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
-
-				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Zielpunktes ziehen', coordinate);
-				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('pointer');
-			});
-
-			it('handles a detected feature of type INTERMEDIATE', async () => {
-				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
-
-				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern des Zwischenpunktes ziehen', coordinate);
-				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('pointer');
-			});
 
 			it('handles a detected feature of type ROUTE_SEGMENT', async () => {
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+				const { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map } =
+					await callPointerMoveHandler(feature);
 
-				expect(updateHelpTooltipSpy).toHaveBeenCalledWith('Zum Ändern der Route ziehen', coordinate);
 				expect(setModifyActiveSpy).toHaveBeenCalledWith(true);
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('pointer');
-			});
-
-			it('handles a detected feature of type ROUTE_ALTERNATIVE', async () => {
-				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
-				feature.set(ROUTING_CATEGORY, { description: 'myCat' });
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
-
-				expect(updateHelpTooltipSpy).toHaveBeenCalledWith("Klicken, um alternative Route 'myCat' zu wählen", coordinate);
-				expect(setModifyActiveSpy).not.toHaveBeenCalled();
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(helpTooltipActivateSpy).toHaveBeenCalled();
+				expect(helpTooltipNotifySpy).toHaveBeenCalledWith({
+					coordinate: featureCoordinate,
+					dragging: false,
+					feature: feature
+				});
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 				expect(map.getTarget().style.cursor).toBe('pointer');
 			});
 
 			it('handles a detected feature of other type', async () => {
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_COPY);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature);
+				const { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map } =
+					await callPointerMoveHandler(feature);
 
-				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
 				expect(setModifyActiveSpy).toHaveBeenCalledWith(false);
-				expect(hideHelpTooltipSpy).toHaveBeenCalled();
+				expect(helpTooltipActivateSpy).toHaveBeenCalled();
+				expect(helpTooltipNotifySpy).toHaveBeenCalledWith({
+					coordinate: featureCoordinate,
+					dragging: false,
+					feature: feature
+				});
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 				expect(map.getTarget().style.cursor).toBe('pointer');
 			});
 
 			it('does nothing when no feature was detected', async () => {
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler();
+				const { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map } = await callPointerMoveHandler();
 
-				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
 				expect(setModifyActiveSpy).not.toHaveBeenCalled();
-				expect(hideHelpTooltipSpy).toHaveBeenCalled();
+				expect(helpTooltipNotifySpy).not.toHaveBeenCalled();
+				expect(helpTooltipActivateSpy).not.toHaveBeenCalled();
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 				expect(map.getTarget().style.cursor).toBe('');
 			});
 
 			it('does nothing when event is a dragging event', async () => {
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
-				const { updateHelpTooltipSpy, setModifyActiveSpy, hideHelpTooltipSpy, map } = await callPointerMoveHandler(feature, true);
+				const { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map } = await callPointerMoveHandler(
+					feature,
+					true
+				);
 
-				expect(updateHelpTooltipSpy).not.toHaveBeenCalled();
 				expect(setModifyActiveSpy).not.toHaveBeenCalled();
-				expect(hideHelpTooltipSpy).not.toHaveBeenCalled();
+				expect(helpTooltipNotifySpy).not.toHaveBeenCalled();
+				expect(helpTooltipActivateSpy).not.toHaveBeenCalled();
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 				expect(map.getTarget().style.cursor).toBe('');
 			});
 		});

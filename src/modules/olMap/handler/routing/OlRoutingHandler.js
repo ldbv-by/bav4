@@ -20,6 +20,8 @@ import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
+import { HelpTooltip } from '../../tooltip/HelpTooltip';
+import { provide as messageProvide } from './tooltipMessage.provider';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -81,6 +83,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._promiseQueue = new PromiseQueue();
 		this._registeredObservers = [];
 		this._mapListeners = [];
+		this._helpTooltip = new HelpTooltip();
+		this._helpTooltip.messageProvideFunction = messageProvide;
 	}
 
 	/**
@@ -119,7 +123,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_newPointerMoveHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+		const updateModifyActivity = (feature) => {
+			if (feature.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE_SEGMENT) {
+				this._setModifyActive(true);
+			} else {
+				this._setModifyActive(false);
+			}
+		};
 		return (event) => {
+			map.getTarget().style.cursor = '';
+			this._helpTooltip.deactivate();
+
 			if (!event?.dragging) {
 				// $(element).popover('destroy');
 
@@ -129,52 +143,23 @@ export class OlRoutingHandler extends OlLayerHandler {
 					hitTolerance: 5
 				});
 
-				const handleFeature = (feature) => {
-					switch (feature.get(ROUTING_FEATURE_TYPE)) {
-						case RoutingFeatureTypes.ROUTE_ALTERNATIVE: {
-							const cat = hit[0].get(ROUTING_CATEGORY);
-							return "Klicken, um alternative Route '" + cat.description + "' zu wählen";
-						}
-						case RoutingFeatureTypes.ROUTE_SEGMENT: {
-							this._setModifyActive(true);
-							return 'Zum Ändern der Route ziehen';
-						}
-						case RoutingFeatureTypes.START: {
-							this._setModifyActive(false);
-							return 'Zum Ändern des Startpunktes ziehen';
-						}
-						case RoutingFeatureTypes.DESTINATION: {
-							this._setModifyActive(false);
-							return 'Zum Ändern des Zielpunktes ziehen';
-						}
-						case RoutingFeatureTypes.INTERMEDIATE: {
-							this._setModifyActive(false);
-							return 'Zum Ändern des Zwischenpunktes ziehen';
-						}
-						default:
-							this._setModifyActive(false);
-					}
-				};
-
 				if (hit.length > 0) {
 					map.getTarget().style.cursor = 'pointer';
-					const text = handleFeature(hit[0]);
-					if (text) {
-						this._updateHelpTooltip(text, event.coordinate);
-						return;
-					}
-				}
 
-				this._hideHelpTooltip();
+					this._helpTooltip.activate(this._map);
+					const feature = hit[0];
+					const interactionState = {
+						coordinate: feature.getGeometry().getClosestPoint(event.coordinate),
+						dragging: false,
+						feature
+					};
+					this._helpTooltip.notify(interactionState);
+
+					updateModifyActivity(feature);
+				}
 			}
 		};
 	}
-
-	_updateHelpTooltip(text) {
-		// eslint-disable-next-line no-console
-		console.debug(text);
-	}
-	_hideHelpTooltip() {}
 
 	_createLayer(id) {
 		return new VectorLayer({
@@ -563,6 +548,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._catId = null;
 		this._unsubscribe(this._registeredObservers);
 		this._unregisterMapListener(this._mapListeners);
+		this._helpTooltip.deactivate();
 	}
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
