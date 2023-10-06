@@ -15,8 +15,8 @@ describe('Routing tooltipMessageProvider', () => {
 
 	it('provides tooltip-messages', () => {
 		feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_ALTERNATIVE);
-		feature.set(ROUTING_CATEGORY, { label: 'label' });
-		expect(routingProvideFn({ feature })).toBe('olMap_handler_routing_choose_alternative_route [label]');
+		feature.set(ROUTING_CATEGORY, { description: 'description' });
+		expect(routingProvideFn({ feature })).toBe('olMap_handler_routing_choose_alternative_route [description]');
 
 		feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
 		expect(routingProvideFn({ feature })).toBe('olMap_handler_routing_modify_segment');
