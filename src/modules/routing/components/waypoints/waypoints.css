@@ -84,5 +84,9 @@ ba-routing-waypoint-item {
 	flex-grow: 1;
 }
 .waypoint[draggable='true'] {
-	border-bottom: 1px dotted var(--text2);
+	border-bottom: 1px dotted var(--secondary-bg-color);
+}
+
+.waypoints .waypoint:nth-last-child(-n + 2) {
+	border-bottom: 0;
 }

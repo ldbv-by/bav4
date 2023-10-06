@@ -40,7 +40,7 @@
 .geolocation-icon {
 	mask: url('../assets/geolocation.svg');
 	-webkit-mask-image: url('../assets/geolocation.svg');
-	background: var(--text3);
+	background: var(--primary-color);
 	mask-size: cover;
 	-webkit-mask-size: cover;
 	cursor: pointer;
