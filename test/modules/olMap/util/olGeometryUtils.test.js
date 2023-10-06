@@ -854,6 +854,59 @@ describe('getPolygonFrom', () => {
 	});
 });
 
+describe('simplify', () => {
+	it('creates a simplified version of a geometry', () => {
+		const simplifiedGeom = simplify(
+			new LineString([
+				[0, 0],
+				[420, 420],
+				[421, 421],
+				[3, 5]
+			]),
+			3,
+			1
+		);
+
+		expect(simplifiedGeom.getCoordinates()).toEqual([
+			[0, 0],
+			[421, 421],
+			[3, 5]
+		]);
+	});
+
+	it('does nothing when coordinates length <= maxCount ', () => {
+		const coordinates = [
+			[0, 0],
+			[420, 420],
+			[421, 421],
+			[3, 5]
+		];
+
+		const simplifiedGeom = simplify(new LineString(coordinates), coordinates.length, 1);
+
+		expect(simplifiedGeom.getCoordinates()).toEqual(coordinates);
+	});
+
+	it('does nothing when argument are not present', () => {
+		const geom = new LineString([
+			[0, 0],
+			[420, 420],
+			[421, 421],
+			[3, 5]
+		]);
+
+		expect(simplify(geom)).toEqual(geom);
+		expect(simplify(geom, 5)).toEqual(geom);
+		expect(simplify(null, 5, 5)).toBeNull();
+	});
+
+	it('does nothing when a geometry is not an ol geometry', () => {
+		const geom = {};
+
+		expect(simplify(geom, 3, 1)).toEqual(geom);
+	});
+});
+
 describe('getBoundingBoxFrom', () => {
 	it('creates a boundingbox', () => {
 		expect(getBoundingBoxFrom([10, 0], { width: 4, height: 4 })).toEqual([8, -2, 12, 2]);
@@ -870,244 +923,191 @@ describe('getBoundingBoxFrom', () => {
 		expect(getBoundingBoxFrom([10, 10], { width: null, height: 4 })).toBeUndefined();
 		expect(getBoundingBoxFrom([10, 10], { width: 4, height: 'bar' })).toBeUndefined();
 	});
+});
 
-	describe('simplify', () => {
-		it('creates a simplified version of a geometry', () => {
-			const simplifiedGeom = simplify(
-				new LineString([
-					[0, 0],
-					[420, 420],
-					[421, 421],
-					[3, 5]
-				]),
-				3,
-				1
-			);
-
-			expect(simplifiedGeom.getCoordinates()).toEqual([
-				[0, 0],
-				[421, 421],
-				[3, 5]
-			]);
-		});
-
-		it('does nothing when coordinates length <= maxCount ', () => {
-			const coordinates = [
-				[0, 0],
-				[420, 420],
-				[421, 421],
-				[3, 5]
-			];
-
-			const simplifiedGeom = simplify(new LineString(coordinates), coordinates.length, 1);
-
-			expect(simplifiedGeom.getCoordinates()).toEqual(coordinates);
-		});
-
-		it('does nothing when argument are not present', () => {
-			const geom = new LineString([
-				[0, 0],
-				[420, 420],
-				[421, 421],
-				[3, 5]
-			]);
-
-			expect(simplify(geom)).toEqual(geom);
-			expect(simplify(geom, 5)).toEqual(geom);
-			expect(simplify(null, 5, 5)).toBeNull();
-		});
-
-		it('does nothing when a geometry is not an ol geometry', () => {
-			const geom = {};
-
-			expect(simplify(geom, 3, 1)).toEqual(geom);
-		});
+describe('constants', () => {
+	it('defines constant values', () => {
+		expect(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857).toBe(17.5);
+		expect(PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES).toBe(1000);
 	});
+});
 
-	describe('constants', () => {
-		it('defines constant values', () => {
-			expect(PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857).toBe(17.5);
-			expect(PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES).toBe(1000);
-		});
-	});
+describe('getLineString', () => {
+	const point = new Point([0, 0]);
+	const lineString = new LineString([
+		[0, 0],
+		[15, 0]
+	]);
 
-	describe('getLineString', () => {
-		const point = new Point([0, 0]);
-		const lineString = new LineString([
+	const linearRing = new LinearRing([
+		[0, 0],
+		[15, 0],
+		[15, 15]
+	]);
+	const polygon = new Polygon([
+		[
+			[16, 16],
+			[16, 0],
+			[0, 0]
+		]
+	]);
+
+	const pseudoMultLineString = new MultiLineString([
+		new LineString([
 			[0, 0],
-			[15, 0]
-		]);
+			[42, 42],
+			[3, 5]
+		])
+	]);
 
-		const linearRing = new LinearRing([
+	const multLineString = new MultiLineString([
+		new LineString([
+			[0, 0],
+			[42, 42],
+			[3, 5]
+		]),
+		new LineString([
+			[3, 5],
+			[21, 21],
+			[1, 1]
+		])
+	]);
+
+	it('creates a LineString', () => {
+		expect(getLineString(lineString)).toBe(lineString);
+
+		const fromLinearRing = getLineString(linearRing);
+		expect(fromLinearRing).toBeInstanceOf(LineString);
+		expect(fromLinearRing.getCoordinates()).toEqual([
 			[0, 0],
 			[15, 0],
 			[15, 15]
 		]);
-		const polygon = new Polygon([
-			[
-				[16, 16],
-				[16, 0],
-				[0, 0]
-			]
+
+		const fromPolygon = getLineString(polygon);
+		expect(fromPolygon).toBeInstanceOf(LineString);
+		expect(fromPolygon.getCoordinates()).toEqual([
+			[16, 16],
+			[16, 0],
+			[0, 0]
 		]);
 
-		const pseudoMultLineString = new MultiLineString([
-			new LineString([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			])
+		const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
+		expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
+		expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
+			[0, 0],
+			[42, 42],
+			[3, 5]
 		]);
 
-		const multLineString = new MultiLineString([
-			new LineString([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			]),
-			new LineString([
-				[3, 5],
-				[21, 21],
-				[1, 1]
-			])
+		const fromMultiLineString = getLineString(multLineString);
+		expect(fromMultiLineString).toBeInstanceOf(LineString);
+		expect(fromMultiLineString.getCoordinates()).toEqual([
+			[0, 0],
+			[42, 42],
+			[3, 5],
+			[3, 5],
+			[21, 21],
+			[1, 1]
 		]);
-
-		it('creates a LineString', () => {
-			expect(getLineString(lineString)).toBe(lineString);
-
-			const fromLinearRing = getLineString(linearRing);
-			expect(fromLinearRing).toBeInstanceOf(LineString);
-			expect(fromLinearRing.getCoordinates()).toEqual([
-				[0, 0],
-				[15, 0],
-				[15, 15]
-			]);
-
-			const fromPolygon = getLineString(polygon);
-			expect(fromPolygon).toBeInstanceOf(LineString);
-			expect(fromPolygon.getCoordinates()).toEqual([
-				[16, 16],
-				[16, 0],
-				[0, 0]
-			]);
-
-			const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
-			expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
-			expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			]);
-
-			const fromMultiLineString = getLineString(multLineString);
-			expect(fromMultiLineString).toBeInstanceOf(LineString);
-			expect(fromMultiLineString.getCoordinates()).toEqual([
-				[0, 0],
-				[42, 42],
-				[3, 5],
-				[3, 5],
-				[21, 21],
-				[1, 1]
-			]);
-		});
-
-		it('does NOT create a LineString', () => {
-			expect(getLineString(point)).toBeNull();
-		});
 	});
 
-	describe('multiLineStringToLineString', () => {
-		const point = new Point([0, 0]);
-		const lineString = new LineString([
+	it('does NOT create a LineString', () => {
+		expect(getLineString(point)).toBeNull();
+	});
+});
+
+describe('multiLineStringToLineString', () => {
+	const point = new Point([0, 0]);
+	const lineString = new LineString([
+		[0, 0],
+		[15, 0]
+	]);
+
+	const linearRing = new LinearRing([
+		[0, 0],
+		[15, 0],
+		[15, 15]
+	]);
+	const polygon = new Polygon([
+		[
+			[16, 16],
+			[16, 0],
+			[0, 0]
+		]
+	]);
+	const pseudoMultLineString = new MultiLineString([
+		new LineString([
 			[0, 0],
-			[15, 0]
-		]);
+			[42, 42],
+			[3, 5]
+		])
+	]);
 
-		const linearRing = new LinearRing([
+	const connectedMultLineString = new MultiLineString([
+		new LineString([
 			[0, 0],
-			[15, 0],
-			[15, 15]
-		]);
-		const polygon = new Polygon([
-			[
-				[16, 16],
-				[16, 0],
-				[0, 0]
-			]
-		]);
-		const pseudoMultLineString = new MultiLineString([
-			new LineString([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			])
+			[42, 42],
+			[3, 5]
+		]),
+		new LineString([
+			[3, 5],
+			[21, 21],
+			[1, 1]
+		]),
+		new LineString([
+			[1, 1],
+			[12, 12],
+			[7, 1]
+		])
+	]);
+
+	const disconnectedMultLineString = new MultiLineString([
+		new LineString([
+			[0, 0],
+			[42, 42],
+			[3, 5]
+		]),
+		new LineString([
+			[3, 5],
+			[21, 21],
+			[1, 1]
+		]),
+		new LineString([
+			[4, 1],
+			[12, 12],
+			[7, 1]
+		])
+	]);
+	it('does NOT create a LineString', () => {
+		expect(multiLineStringToLineString(point)).toBe(point);
+		expect(multiLineStringToLineString(lineString)).toBe(lineString);
+		expect(multiLineStringToLineString(linearRing)).toBe(linearRing);
+		expect(multiLineStringToLineString(polygon)).toBe(polygon);
+		expect(multiLineStringToLineString(disconnectedMultLineString)).toBe(disconnectedMultLineString);
+	});
+
+	it('creates a LineString', () => {
+		const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
+		expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
+		expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
+			[0, 0],
+			[42, 42],
+			[3, 5]
 		]);
 
-		const connectedMultLineString = new MultiLineString([
-			new LineString([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			]),
-			new LineString([
-				[3, 5],
-				[21, 21],
-				[1, 1]
-			]),
-			new LineString([
-				[1, 1],
-				[12, 12],
-				[7, 1]
-			])
+		const fromConnectedMultiLineString = getLineString(connectedMultLineString);
+		expect(fromConnectedMultiLineString).toBeInstanceOf(LineString);
+		expect(fromConnectedMultiLineString.getCoordinates()).toEqual([
+			[0, 0],
+			[42, 42],
+			[3, 5],
+			[3, 5],
+			[21, 21],
+			[1, 1],
+			[1, 1],
+			[12, 12],
+			[7, 1]
 		]);
-
-		const disconnectedMultLineString = new MultiLineString([
-			new LineString([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			]),
-			new LineString([
-				[3, 5],
-				[21, 21],
-				[1, 1]
-			]),
-			new LineString([
-				[4, 1],
-				[12, 12],
-				[7, 1]
-			])
-		]);
-		it('does NOT create a LineString', () => {
-			expect(multiLineStringToLineString(point)).toBe(point);
-			expect(multiLineStringToLineString(lineString)).toBe(lineString);
-			expect(multiLineStringToLineString(linearRing)).toBe(linearRing);
-			expect(multiLineStringToLineString(polygon)).toBe(polygon);
-			expect(multiLineStringToLineString(disconnectedMultLineString)).toBe(disconnectedMultLineString);
-		});
-
-		it('creates a LineString', () => {
-			const fromPseudoMultiLineString = getLineString(pseudoMultLineString);
-			expect(fromPseudoMultiLineString).toBeInstanceOf(LineString);
-			expect(fromPseudoMultiLineString.getCoordinates()).toEqual([
-				[0, 0],
-				[42, 42],
-				[3, 5]
-			]);
-
-			const fromConnectedMultiLineString = getLineString(connectedMultLineString);
-			expect(fromConnectedMultiLineString).toBeInstanceOf(LineString);
-			expect(fromConnectedMultiLineString.getCoordinates()).toEqual([
-				[0, 0],
-				[42, 42],
-				[3, 5],
-				[3, 5],
-				[21, 21],
-				[1, 1],
-				[1, 1],
-				[12, 12],
-				[7, 1]
-			]);
-		});
 	});
 });
