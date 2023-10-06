@@ -38,7 +38,6 @@
 	justify-content: space-between;
 	padding: 0.8em 1.2em;
 	font-weight: bold;
-	color: var(--text2);
 	border-top: 1px solid var(--header-background-color);
 	color: var(--text2);
 	font-size: 0.9rem;

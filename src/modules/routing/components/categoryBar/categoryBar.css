@@ -3,7 +3,6 @@
 	display: flex;
 	justify-content: center;
 	border-bottom: 1px solid var(--header-background-color);
-	background: var(--text4);
 	background: var(--header-background-color);
 }
 
