@@ -58,14 +58,14 @@ describe('WaypointItem', () => {
 		it('renders the start view', async () => {
 			const startElement = await setup(startWaypoint);
 
-			expect(startElement.shadowRoot.querySelector('.icon').classList.contains('start')).toBeTrue();
+			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
 			expect(startElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_start - [11.932 47.898]');
 		});
 
 		it('renders the destination view', async () => {
 			const destinationElement = await setup(destinationWaypoint);
 
-			expect(destinationElement.shadowRoot.querySelector('.icon').classList.contains('destination')).toBeTrue();
+			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
 			expect(destinationElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_destination - [11.932 47.898]');
 		});
 	});
