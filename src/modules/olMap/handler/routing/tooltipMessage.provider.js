@@ -15,19 +15,15 @@ export const provide = (interactionState) => {
 			return translate('olMap_handler_routing_choose_alternative_route', [label]);
 		}
 		case RoutingFeatureTypes.ROUTE_SEGMENT: {
-			// return 'Zum Ändern der Route ziehen';
 			return translate('olMap_handler_routing_modify_segment');
 		}
 		case RoutingFeatureTypes.START: {
-			// return 'Zum Ändern des Startpunktes ziehen';
 			return translate('olMap_handler_routing_modify_start');
 		}
 		case RoutingFeatureTypes.DESTINATION: {
-			// return 'Zum Ändern des Zielpunktes ziehen';
 			return translate('olMap_handler_routing_modify_destination');
 		}
 		case RoutingFeatureTypes.INTERMEDIATE: {
-			// return 'Zum Ändern des Zwischenpunktes ziehen';
 			return translate('olMap_handler_routing_modify_intermediate');
 		}
 	}
