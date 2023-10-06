@@ -519,6 +519,7 @@ export const isPolygon = (coordinates) => {
 		const last = coordinates[0][coordinates[0].length - 1];
 
 		const isClosed = first[0] === last[0] && first[1] === last[1];
+
 		return isClosed;
 	}
 	return false;

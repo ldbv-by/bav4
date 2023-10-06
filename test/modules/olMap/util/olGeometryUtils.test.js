@@ -17,7 +17,9 @@ import {
 	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
 	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
 	getLineString,
-	multiLineStringToLineString
+	multiLineStringToLineString,
+	isClockwise,
+	isPolygon
 } from '../../../../src/modules/olMap/utils/olGeometryUtils';
 import { Point, MultiPoint, LineString, Polygon, Circle, LinearRing, MultiLineString } from 'ol/geom';
 import proj4 from 'proj4';
@@ -1109,5 +1111,55 @@ describe('multiLineStringToLineString', () => {
 			[12, 12],
 			[7, 1]
 		]);
+	});
+});
+
+describe('isClockwise', () => {
+	const clockwiseCoordinates = [
+		[0, 0],
+		[0, 1],
+		[1, 1],
+		[0, 0]
+	];
+	const counterClockwiseCoordinates = [
+		[0, 0],
+		[1, 1],
+		[0, 1],
+		[0, 0]
+	];
+
+	it('checks orientation of polygonal geometries', () => {
+		expect(isClockwise(clockwiseCoordinates)).toBeTrue();
+		expect(isClockwise(counterClockwiseCoordinates)).toBeFalse();
+	});
+});
+
+describe('isPolygon', () => {
+	const point = new Point([0, 0]);
+	const lineString = new LineString([
+		[0, 0],
+		[15, 0]
+	]);
+
+	const linearRing = new LinearRing([
+		[0, 0],
+		[15, 0],
+		[15, 15],
+		[0, 0]
+	]);
+	const polygon = new Polygon([
+		[
+			[16, 16],
+			[16, 0],
+			[0, 0],
+			[16, 16]
+		]
+	]);
+
+	it('checks orientation of polygonal geometries', () => {
+		expect(isPolygon(point.getCoordinates())).toBeFalse();
+		expect(isPolygon(lineString.getCoordinates())).toBeFalse();
+		expect(isPolygon(linearRing.getCoordinates())).toBeFalse();
+		expect(isPolygon(polygon.getCoordinates())).toBeTrue();
 	});
 });
