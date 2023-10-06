@@ -76,13 +76,14 @@ describe('RoutingInfo', () => {
 				};
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('< 1 min.');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('< 1 min.');
-				expect(routingElements[1].innerText).toBe('0.33 km');
-				expect(routingElements[2].innerText).toBe('111 m');
-				expect(routingElements[3].innerText).toBe('222 m');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0.33 km');
+				expect(routingElements[1].innerText).toBe('111 m');
+				expect(routingElements[2].innerText).toBe('222 m');
 			});
 
 			it('renders unknown category', async () => {
@@ -102,13 +103,15 @@ describe('RoutingInfo', () => {
 				const warnSpy = spyOn(console, 'warn');
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('01:00');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('01:00');
-				expect(routingElements[1].innerText).toBe('0.33 km');
-				expect(routingElements[2].innerText).toBe('111 m');
-				expect(routingElements[3].innerText).toBe('222 m');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0.33 km');
+				expect(routingElements[1].innerText).toBe('111 m');
+				expect(routingElements[2].innerText).toBe('222 m');
+
 				expect(warnSpy).toHaveBeenCalledOnceWith('Unknown vehicle, no estimate available for unknown (some)');
 			});
 
@@ -127,13 +130,14 @@ describe('RoutingInfo', () => {
 				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('01:00');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('01:00');
-				expect(routingElements[1].innerText).toBe('0.33 km');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0.33 km');
+				expect(routingElements[1].innerText).toBe('0 m');
 				expect(routingElements[2].innerText).toBe('0 m');
-				expect(routingElements[3].innerText).toBe('0 m');
 			});
 
 			it('renders invalid stats (invalid twoDiff)', async () => {
@@ -152,13 +156,14 @@ describe('RoutingInfo', () => {
 				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('01:00');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('01:00');
-				expect(routingElements[1].innerText).toBe('0.33 km');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0.33 km');
+				expect(routingElements[1].innerText).toBe('0 m');
 				expect(routingElements[2].innerText).toBe('0 m');
-				expect(routingElements[3].innerText).toBe('0 m');
 			});
 
 			it('renders invalid stats (missing dist)', async () => {
@@ -176,13 +181,14 @@ describe('RoutingInfo', () => {
 				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('01:00');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('01:00');
-				expect(routingElements[1].innerText).toBe('0 km');
-				expect(routingElements[2].innerText).toBe('111 m');
-				expect(routingElements[3].innerText).toBe('222 m');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0 km');
+				expect(routingElements[1].innerText).toBe('111 m');
+				expect(routingElements[2].innerText).toBe('222 m');
 			});
 
 			it('renders missing stats', async () => {
@@ -197,13 +203,14 @@ describe('RoutingInfo', () => {
 				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				const element = await setup(state);
 
-				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+				expect(routingDuration[0].innerText).toBe('-:-');
 
-				expect(routingElements).toHaveSize(4);
-				expect(routingElements[0].innerText).toBe('-:-');
-				expect(routingElements[1].innerText).toBe('0 km');
+				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+				expect(routingElements).toHaveSize(3);
+				expect(routingElements[0].innerText).toBe('0 km');
+				expect(routingElements[1].innerText).toBe('0 m');
 				expect(routingElements[2].innerText).toBe('0 m');
-				expect(routingElements[3].innerText).toBe('0 m');
 			});
 
 			describe('when rendering estimate for specific vehicle', () => {
@@ -223,13 +230,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -250,13 +258,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -277,13 +286,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -304,13 +314,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -331,13 +342,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -358,13 +370,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -385,13 +398,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});
@@ -412,13 +426,14 @@ describe('RoutingInfo', () => {
 					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('racingbike').and.returnValue(calculator);
 					const element = await setup(state);
 
-					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
+					expect(routingDuration[0].innerText).toBe('11:40');
 
-					expect(routingElements).toHaveSize(4);
-					expect(routingElements[0].innerText).toBe('11:40');
-					expect(routingElements[1].innerText).toBe('0.33 km');
-					expect(routingElements[2].innerText).toBe('111 m');
-					expect(routingElements[3].innerText).toBe('222 m');
+					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
+					expect(routingElements).toHaveSize(3);
+					expect(routingElements[0].innerText).toBe('0.33 km');
+					expect(routingElements[1].innerText).toBe('111 m');
+					expect(routingElements[2].innerText).toBe('222 m');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});

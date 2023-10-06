@@ -82,8 +82,8 @@ export class RoutingInfo extends MvuElement {
 						${css}
 					</style>
 					<div class="header">
-						<span title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'} Min.</span>
-						<div class="badge">
+						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
+						<div class="badge routing-info-type">
 							<span class="icon icon-bvv_bike"></span>
 							<span class="text">
 								Fahrrad
