@@ -9,7 +9,7 @@ import {
 	getPartitionDeltaFrom,
 	NO_CALCULATION_HINTS,
 	isPolygon,
-	IsClockwise
+	isClockwise
 } from './olGeometryUtils';
 import { toContext as toCanvasContext } from 'ol/render';
 import { Fill, Stroke, Style, Circle as CircleStyle, Icon, Text as TextStyle } from 'ol/style';
@@ -484,7 +484,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 	geometry.setCoordinates(pixelCoordinates);
 
 	const asCounterClockWise = (coordinates) => {
-		return IsClockwise(coordinates) ? [...coordinates].reverse() : coordinates;
+		return isClockwise(coordinates) ? [...coordinates].reverse() : coordinates;
 	};
 
 	const pixelGeometry = isPolygon(pixelCoordinates) ? new Polygon([asCounterClockWise(pixelCoordinates[0])]) : geometry;

@@ -491,7 +491,7 @@ export const simplify = (geometry, maxCount, tolerance) => {
  * @param {Array<Coordinate>} coordinates
  * @returns {boolean| null} is clockwise or not
  */
-export const IsClockwise = (coordinates) => {
+export const isClockwise = (coordinates) => {
 	const calculateAreaFrom = (cs) =>
 		cs.reduce((area, coordinate, index, array) => {
 			const oppositeIndex = (index + 1) % array.length;
@@ -508,9 +508,10 @@ export const IsClockwise = (coordinates) => {
 };
 
 /**
- *
+ * Checks whether or not an array of coordinates is a closed
+ * polygon or not
  * @param {Array<Coordinate>} coordinates
- * @returns
+ * @returns {boolean}
  */
 export const isPolygon = (coordinates) => {
 	if (coordinates[0].length > 2) {
