@@ -11,8 +11,6 @@ import svg from './assets/arrowLeftShort.svg';
 import { setCategory, setRouteStats, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../../../domain/routing';
 
-const Update_Categories = 'update_categories';
-
 /**
  * Container for routing contents.
  * @class
@@ -21,16 +19,9 @@ const Update_Categories = 'update_categories';
  */
 export class RoutingPanel extends AbstractMvuContentPanel {
 	constructor() {
-		super({ categories: [] });
+		super({});
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
-	}
-
-	update(type, data, model) {
-		switch (type) {
-			case Update_Categories:
-				return { ...model, categories: [...data] };
-		}
 	}
 
 	createView() {

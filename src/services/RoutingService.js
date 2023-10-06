@@ -194,4 +194,8 @@ export class BvvRoutingService {
 	getSurfaceTypeStyles() {
 		return this._chartItemsStyles['surface'] ?? {};
 	}
+
+	mapOsmRoadTypes(osmRoadClasses) {
+		return this._mapper(osmRoadClasses);
+	}
 }
