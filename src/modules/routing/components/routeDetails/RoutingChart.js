@@ -121,7 +121,6 @@ export class RoutingChart extends MvuElement {
 				${css}
 			</style>
 			<div class="container">
-				<hr />
 				<div class="chart-selector" title=${title} @click="${toggleCollapseChart}">
 					<span class="title">${label}</span>
 					<i class="icon chevron ${classMap(iconCollapseInfoClass)}"></i>

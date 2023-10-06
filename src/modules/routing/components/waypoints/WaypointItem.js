@@ -87,6 +87,7 @@ export class WaypointItem extends MvuElement {
 					</style>
 					<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
 						<div class="icon ${classMap(classes)}"></div>
+						<div class="line"></div>
 						<span><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
 					</div>`
 			: nothing;

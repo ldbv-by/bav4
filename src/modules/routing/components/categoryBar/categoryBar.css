@@ -2,6 +2,9 @@
 	font-size: 1.2rem;
 	display: flex;
 	justify-content: center;
+	border-bottom: 1px solid var(--header-background-color);
+	background: var(--text4);
+	background: var(--header-background-color);
 }
 
 .categories-container > button:last-child {
@@ -9,13 +12,15 @@
 }
 
 .category-button {
-	height: 2.5em;
-	width: 2.5em;
+	height: 3em;
+	width: 3em;
 	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
 	padding: 0;
 	background: var(--primary-color);
+	/* background: var(--text3); */
 	mask-size: cover;
 	-webkit-mask-size: cover;
+	border-right: 1px dotted var(--header-background-color);
 }
 
 .category-button:focus-visible {

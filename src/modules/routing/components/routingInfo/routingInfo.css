@@ -1,7 +1,8 @@
 .container {
-	display: flex;
+	/* display: flex;
 	flex-flow: row;
-	justify-content: space-evenly;
+	justify-content: space-evenly; */
+	padding: 0.8em 1.5em;
 }
 
 .col {
@@ -14,19 +15,22 @@
 }
 
 .routing-info-icon {
-	height: 2.5em;
-	width: 2.5em;
-	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
+	height: 1.2em;
+	width: 1.2em;
+	margin: 0;
 	padding: 0;
-	background: var(--primary-color);
+	background: var(--text2);
 	mask-size: cover;
 	-webkit-mask-size: cover;
+	margin-right: 0.5em;
 }
 
 .routing-info-text {
 	padding: 0;
 	text-align: center;
-	color: var(--primary-color);
+	color: var(--text1);
+	font-weight: bold;
+	margin-right: 0.5em;
 }
 
 .duration {
@@ -47,4 +51,37 @@
 .downhill {
 	mask-image: url('../assets/arrow-down-right.svg');
 	-webkit-mask-image: url('../assets/arrow-down-right.svg');
+}
+
+.header {
+	padding: 0.8em 1em;
+	font-weight: bold;
+	font-size: 1.5rem;
+	display: flex;
+}
+
+.badge {
+	background: cadetblue;
+	font-weight: bold;
+	padding: 0.1em 0.8em 0.1em 0.3em;
+	border-radius: 1.5em;
+	color: #fff;
+	font-size: 0.8rem;
+	width: min-content;
+	margin: 0 0 0 0.5em;
+	display: flex;
+}
+.icon {
+	height: 2em;
+	width: 2em;
+	background: #fff;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.icon-bvv_bike {
+	mask-image: url('../assets/bvv-bike.svg');
+	-webkit-mask-image: url('../assets/bvv-bike.svg');
+}
+.text {
+	margin: auto;
 }

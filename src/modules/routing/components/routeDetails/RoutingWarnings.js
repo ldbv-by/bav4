@@ -58,7 +58,6 @@ export class RoutingWarnings extends MvuElement {
 				${css}
 			</style>
 			<div class="container">
-				<hr />
 				<div class="warnings-selector" title=${title} @click="${toggleCollapseWarnings}">
 					<div>
 						<span class="title">${translate('routing_warnings_title')}</span>

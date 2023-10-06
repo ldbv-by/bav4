@@ -60,13 +60,12 @@ export class Waypoints extends MvuElement {
 						${css}
 					</style>
 					<div class="container">
-						<hr />
 						<div class="overflow-container">
 							<ul class="waypoints">
 								${waypointItems}
 							</ul>
-							${buttons}
 						</div>
+						${buttons}
 					</div>`
 			: nothing;
 	}

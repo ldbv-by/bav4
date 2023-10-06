@@ -33,3 +33,10 @@
 	flex-grow: 1;
 	justify-content: space-around;
 }
+.chips__container {
+	display: flex;
+	justify-content: center;
+	flex-flow: wrap;
+	gap: 0.5em 0.8em;
+	padding: 0.8em 1.2em;
+}

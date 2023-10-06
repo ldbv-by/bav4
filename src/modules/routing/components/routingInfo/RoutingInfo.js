@@ -81,32 +81,34 @@ export class RoutingInfo extends MvuElement {
 			? html`<style>
 						${css}
 					</style>
-					<hr />
+					<div class="header">
+						<span title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'} Min.</span>
+						<div class="badge">
+							<span class="icon icon-bvv_bike"></span>
+							<span class="text">
+								Fahrrad
+							<span>
+						</div>
+					</div>
 					<div class="container">
 						<div class="row">
-							<div class="col" title=${translate('routing_info_duration')}>
-								<div class="routing-info-icon duration"></div>
-								<div class="routing-info-text">
-									<span>${stats ? getDuration() : '-:-'}</span>
-								</div>
-							</div>
 							<div class="col" title=${translate('routing_info_distance')}>
 								<div class="routing-info-icon distance"></div>
-								<div class="routing-info-text">
-									<span>${getDistance()} <b>km</b></span>
-								</div>
+							</div>
+							<div class="routing-info-text">
+								<span>${getDistance()} <b>km</b></span>
 							</div>
 							<div class="col" title=${translate('routing_info_uphill')}>
 								<div class="routing-info-icon uphill"></div>
-								<div class="routing-info-text">
-									<span>${getUphill()} <b>m</b></span>
-								</div>
+							</div>
+							<div class="routing-info-text">
+								<span>${getUphill()} <b>m</b></span>
 							</div>
 							<div class="col" title=${translate('routing_info_downhill')}>
 								<div class="routing-info-icon downhill"></div>
-								<div class="routing-info-text">
-									<span>${getDownhill()} <b>m</b></span>
-								</div>
+							</div>
+							<div class="routing-info-text">
+								<span>${getDownhill()} <b>m</b></span>
 							</div>
 						</div>
 					</div>`

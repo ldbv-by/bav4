@@ -1,11 +1,13 @@
 .container {
 	display: flex;
 	align-items: center;
+	padding: 1.5em 1em;
+	position: relative;
 }
 .icon {
 	height: 1.6em;
 	width: 1.6em;
-	margin: 0.8rem 0.8rem 0.3rem 0.8rem;
+	margin-right: 1.5em;
 	padding: 0;
 	background: var(--primary-color);
 	mask-size: cover;
@@ -24,4 +26,14 @@
 	background: rgb(214, 12, 12);
 	mask-image: url('../assets/marker.svg');
 	-webkit-mask-image: url('../assets/marker.svg');
+}
+
+.line {
+	position: absolute;
+	height: 100%;
+	width: 1px;
+	left: 1.8em;
+	background: var(--text2);
+	z-index: 0;
+	top: 50%;
 }

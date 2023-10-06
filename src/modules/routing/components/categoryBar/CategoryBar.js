@@ -57,7 +57,6 @@ export class CategoryBar extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<hr />
 			<div class="categories-container">
 				${categories.map((category) => {
 					const classes = { 'is-active': selectedCategory === category.id };
