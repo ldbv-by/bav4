@@ -4,6 +4,11 @@
 import { $injector } from '../../../../injection';
 import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
 
+/**
+ * Routing related implementation of {@link module:modules/olMap/tooltip/HelpTooltip~tooltipMessageProviderFunction}
+ * @function
+ * @type {module:modules/olMap/tooltip/HelpTooltip~tooltipMessageProviderFunction}
+ */
 export const provide = (interactionState) => {
 	const { TranslationService: translationService } = $injector.inject('TranslationService');
 	const translate = (key, params = []) => translationService.translate(key, params);

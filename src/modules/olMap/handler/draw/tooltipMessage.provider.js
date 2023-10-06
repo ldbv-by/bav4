@@ -4,6 +4,11 @@
 import { InteractionSnapType, InteractionStateType } from '../../utils/olInteractionUtils';
 import { $injector } from '../../../../injection';
 
+/**
+ * Drawing related implementation of {@link module:modules/olMap/tooltip/HelpTooltip~tooltipMessageProviderFunction}
+ * @function
+ * @type {module:modules/olMap/tooltip/HelpTooltip~tooltipMessageProviderFunction}
+ */
 export const provide = (interactionState) => {
 	const { TranslationService } = $injector.inject('TranslationService');
 	const translate = (key) => TranslationService.translate(key);
