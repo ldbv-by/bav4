@@ -5,10 +5,10 @@
  * @typedef {Object} RoutingCategory
  * @property {string} id The id of this category
  * @property {string} label The label of this category
+ * @property {string} description The description of this category
  * @property {string[]} subcategories Ids of possible subordinated categories
  * @property {string} color Style: the fill color
  * @property {string} borderColor Style: the border color
- * @property {number} [zIndex] Style: the zIndex
  */
 
 /**
