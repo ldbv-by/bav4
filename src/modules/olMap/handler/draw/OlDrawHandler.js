@@ -62,6 +62,7 @@ import { KeyActionMapper } from '../../../../utils/KeyActionMapper';
 import { getAttributionForLocallyImportedOrCreatedGeoResource } from '../../../../services/provider/attribution.provider';
 import { KML } from 'ol/format';
 import { Tools } from '../../../../domain/tools';
+import { GeodesicGeometry } from '../../ol/geodesic/geodesicGeometry';
 
 export const MAX_SELECTION_SIZE = 1;
 
@@ -196,6 +197,9 @@ export class OlDrawHandler extends OlLayerHandler {
 					oldFeatures.forEach((f) => {
 						f.getGeometry().transform('EPSG:' + vgr.srid, 'EPSG:' + this._mapService.getSrid());
 						f.set('srid', this._mapService.getSrid(), true);
+						if (f.getId().startsWith(Tools.MEASURE)) {
+							f.geodesic = new GeodesicGeometry(f, () => false);
+						}
 						this._styleService.removeStyle(f, olMap);
 						this._styleService.addStyle(f, olMap, layer);
 						layer.getSource().addFeature(f);

@@ -532,11 +532,6 @@ export const measureStyleFunction = (feature, resolution) => {
 		color: Red_Color.concat([1]),
 		width: 3
 	});
-	const constructionStroke = new Stroke({
-		color: Black_Color.concat([1]),
-		width: 1,
-		lineDash: [8]
-	});
 	const fill = new Fill({
 		color: Red_Color.concat([0.4])
 	});
@@ -568,14 +563,7 @@ export const measureStyleFunction = (feature, resolution) => {
 			},
 			zIndex: 0
 		}),
-		resolution ? getRulerStyle(feature) : getFallbackStyle(),
-		feature.geodesic
-			? new Style({
-					stroke: constructionStroke,
-					geometry: (feature) => feature.getGeometry(),
-					zIndex: 0
-			  })
-			: null
+		resolution ? getRulerStyle(feature) : getFallbackStyle()
 	];
 	return styles;
 };
@@ -605,8 +593,21 @@ export const modifyStyleFunction = (feature) => {
 };
 
 export const selectStyleFunction = () => {
-	const getAppendableVertexStyle = (color) =>
-		new Style({
+	const constructionStroke = new Stroke({
+		color: Black_Color.concat([1]),
+		width: 1,
+		lineDash: [8]
+	});
+	const getSelectionStyles = (feature) => {
+		const colorFromFeature = getColorFrom(feature);
+		const color = colorFromFeature ? colorFromFeature : Red_Color;
+
+		const geodesicConstructionLineStyle = new Style({
+			stroke: constructionStroke,
+			geometry: (feature) => feature.getGeometry(),
+			zIndex: 0
+		});
+		const vertexStyle = new Style({
 			image: new CircleStyle({
 				radius: 5,
 				stroke: new Stroke({
@@ -638,15 +639,16 @@ export const selectStyleFunction = () => {
 			zIndex: Z_Point - 1
 		});
 
+		return feature.geodesic ? [geodesicConstructionLineStyle, vertexStyle] : [vertexStyle];
+	};
+
 	return (feature, resolution) => {
-		const colorFromFeature = getColorFrom(feature);
-		const color = colorFromFeature ? colorFromFeature : Red_Color;
 		const styleFunction = feature.getStyleFunction();
 		if (!styleFunction || !styleFunction(feature, resolution)) {
-			return [getAppendableVertexStyle(color)];
+			return getSelectionStyles(feature);
 		}
 		const styles = styleFunction(feature, resolution);
-		return styles[0] ? styles.concat([getAppendableVertexStyle(color)]) : [styles, getAppendableVertexStyle(color)];
+		return styles[0] ? styles.concat(getSelectionStyles(feature)) : [styles, ...getSelectionStyles(feature)];
 	};
 };
 
