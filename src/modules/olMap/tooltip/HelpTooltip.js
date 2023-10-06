@@ -49,6 +49,10 @@ export class HelpTooltip {
 		this._tooltipMessageProvideFunction = value;
 	}
 
+	get messageProvideFunction() {
+		return this._tooltipMessageProvideFunction;
+	}
+
 	_createOverlay(overlayOptions = {}, type) {
 		const overlay = document.createElement(BaOverlay.tag);
 		overlay.type = type;
