@@ -5,14 +5,14 @@ describe('i18n for baseLayer info', () => {
 		const map = provide('en');
 
 		expect(map.map_baseLayerInfo_label).toBe('Basemap');
-		expect(map.map_baseLayerInfo_fallback).toBe('No information available');
+		expect(map.map_baseLayerInfo_fallback).toBe(' - ');
 	});
 
 	it('provides translation for de', () => {
 		const map = provide('de');
 
 		expect(map.map_baseLayerInfo_label).toBe('Basiskarte');
-		expect(map.map_baseLayerInfo_fallback).toBe('Keine Informationen verfügbar');
+		expect(map.map_baseLayerInfo_fallback).toBe(' - ');
 	});
 
 	it('have the expected amount of translations', () => {
