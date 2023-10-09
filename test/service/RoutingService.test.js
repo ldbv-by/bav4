@@ -1,4 +1,3 @@
-import { $injector } from '../../src/injection';
 import { BvvRoutingService, mockCategoriesProvider } from '../../src/services/RoutingService';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 
