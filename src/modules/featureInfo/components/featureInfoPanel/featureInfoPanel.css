@@ -60,9 +60,10 @@ a:hover {
 }
 
 table {
-	margin-bottom: 3em;
+	margin-bottom: 1em;
 	position: relative;
 	border-collapse: collapse;
+	border: 1px solid var(--header-background-color);
 }
 
 table:not(:only-of-type):not(:last-child):after {
@@ -76,6 +77,7 @@ table:not(:only-of-type):not(:last-child):after {
 
 tr {
 	padding: 0 0 0.8em 0;
+	border: 1px solid var(--header-background-color);
 }
 
 th,
@@ -147,6 +149,15 @@ img {
 	gap: 0.5em 0.8em;
 	padding: 1em 0;
 	border-bottom: 1px solid var(--header-background-color);
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
+	margin: 1em 0;
 }
 
 /* just for grundsteuer release, should be removed later */

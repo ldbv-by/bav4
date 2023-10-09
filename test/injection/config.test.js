@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(67);
+		expect($injector.count()).toBe(68);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -60,6 +60,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('IframeContainerPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SharePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ToolsPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('BeforeUnloadPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('IframeGeometryIdPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HistoryStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);

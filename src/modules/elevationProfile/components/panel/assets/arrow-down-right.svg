@@ -1,6 +1,1 @@
-
-<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024"><!-- MIT License -->
-<g id="icomoon-ignore">
-</g>
-<path fill="#000" d="M145.067 215.467l71.467-70.4 512 512v-286.933h100.267v458.667h-458.667v-100.267h288z"></path>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024"><!--MIT License--><path d="m145.067 215.467 71.467-70.4 512 512V370.134h100.267v458.667H370.134V728.534h288z"/></svg>
