@@ -39,20 +39,6 @@ export class GeodesicGeometry {
 		this.polygon = geodesicCoords.createPolygon(this);
 		this.extent = this.geometry.getExtent();
 
-		// Overwrites public method getExtent of the feature to include the whole geodesic geometry.
-		this.feature.getGeometry().getExtent = (extent) => {
-			this._update();
-			// mimic method returnOrUpdate from ol/extend
-			if (extent) {
-				extent[0] = this.extent[0];
-				extent[1] = this.extent[1];
-				extent[2] = this.extent[2];
-				extent[3] = this.extent[3];
-				return extent;
-			}
-			return this.extent;
-		};
-
 		this._length = geodesicProperties.length;
 		this._area = geodesicProperties.area;
 	}
