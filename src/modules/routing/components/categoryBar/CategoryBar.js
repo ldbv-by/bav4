@@ -50,9 +50,9 @@ export class CategoryBar extends MvuElement {
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};
-
+		console.log({ selectedCategory, categories });
 		const getCategoryIconClass = (category) => `icon-${category.id.replace('-', '_')}`;
-		const getLabel = (category) => translate(`routing-category-label-${category.id}`);
+		const getLabel = (category) => translate(`routing_category_label_${category.id.replace('-', '_')}`);
 		return html`
 			<style>
 				${css}

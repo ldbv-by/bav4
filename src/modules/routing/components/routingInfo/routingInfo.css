@@ -78,10 +78,26 @@
 	mask-size: cover;
 	-webkit-mask-size: cover;
 }
-.icon-bvv_bike {
+.icon-bvv-bike {
 	mask-image: url('../assets/bvv-bike.svg');
 	-webkit-mask-image: url('../assets/bvv-bike.svg');
 }
+
+.icon-bvv-hike {
+	mask-image: url('../assets/bvv-hike.svg');
+	-webkit-mask-image: url('../assets/bvv-hike.svg');
+}
+
+.icon-bvv-mtb {
+	mask-image: url('../assets/bvv-mtb.svg');
+	-webkit-mask-image: url('../assets/bvv-mtb.svg');
+}
+
+.icon-racingbike {
+	mask-image: url('../assets/racingbike.svg');
+	-webkit-mask-image: url('../assets/racingbike.svg');
+}
+
 .text {
 	margin: auto;
 }

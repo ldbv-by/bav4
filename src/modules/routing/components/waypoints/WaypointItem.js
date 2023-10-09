@@ -11,6 +11,8 @@ import { round } from '../../../../utils/numberUtils';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
 const Update_Waypoint = 'update_waypoint';
+const Update_Category = 'update_category';
+const Category_Color_Default = 'cadetblue';
 
 /**
  * Options to display a waypoint.
@@ -53,27 +55,41 @@ export const isPlaceholder = (waypoint) => {
 export class WaypointItem extends MvuElement {
 	constructor() {
 		super({
-			waypoint: null
+			waypoint: null,
+			categoryId: null
 		});
 
-		const { TranslationService } = $injector.inject('TranslationService');
+		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
 		this._translationService = TranslationService;
+		this._routingService = RoutingService;
+
+		this.observe(
+			(state) => state.routing.categoryId,
+			(categoryId) => this.signal(Update_Category, categoryId)
+		);
 	}
 
 	update(type, data, model) {
 		switch (type) {
 			case Update_Waypoint:
 				return { ...model, waypoint: data };
+			case Update_Category:
+				return { ...model, categoryId: data };
 		}
 	}
 
 	createView(model) {
-		const { waypoint } = model;
+		const { waypoint, categoryId } = model;
 		const translate = (key) => this._translationService.translate(key);
 
 		const classes = {
 			start: waypoint?.isStart,
 			destination: waypoint?.isDestination
+		};
+
+		const getCategoryColor = (categoryId) => {
+			const category = this._routingService.getCategoryById(categoryId);
+			return category?.color ?? Category_Color_Default;
 		};
 
 		const getLabel = (waypoint) => {
@@ -87,9 +103,9 @@ export class WaypointItem extends MvuElement {
 					</style>
 					<div class="container" title="${label} [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]">
 						<div class="icon-bg ${classMap(classes)}">
-							<div class="icon"></div>
+							<div class="icon" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						</div>
-						<div class="line"></div>
+						<div class="line" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						<span class="text"><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
 					</div>`
 			: nothing;

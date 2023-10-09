@@ -72,14 +72,14 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 	 */
 	_getDemoContent() {
 		const onClickLoadRoutingData1 = () => {
-			setCategory('bike');
+			setCategory('bvv-bike');
 			setStatus(RoutingStatusCodes.Start_Destination_Missing);
 			setRouteStats(null);
 			setWaypoints([]);
 		};
 
 		const onClickLoadRoutingData2 = () => {
-			setCategory('bike');
+			setCategory('bvv-bike');
 			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
 			setWaypoints([
@@ -90,7 +90,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		};
 
 		const onClickLoadRoutingData3 = () => {
-			setCategory('bike');
+			setCategory('bvv-bike');
 			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({
 				time: 3600000,

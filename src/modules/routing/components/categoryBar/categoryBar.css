@@ -35,6 +35,10 @@
 	min-width: 5em;
 }
 
+.is-active {
+	background: var(--text4);
+}
+
 .icon-bvv_hike {
 	mask-image: url('../assets/bvv-hike.svg');
 	-webkit-mask-image: url('../assets/bvv-hike.svg');

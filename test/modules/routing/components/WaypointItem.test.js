@@ -7,6 +7,9 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
+	const category = { color: 'gray' };
+	const routingServiceMock = { getCategoryById: () => category };
+
 	const setup = async (waypoint = null) => {
 		TestUtils.setupStoreAndDi(
 			{},
@@ -15,7 +18,7 @@ describe('WaypointItem', () => {
 				routing: routingReducer
 			}
 		);
-		$injector.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('RoutingService', routingServiceMock);
 		const element = await TestUtils.render(WaypointItem.tag);
 		if (element) {
 			element.waypoint = waypoint;
@@ -37,7 +40,8 @@ describe('WaypointItem', () => {
 			const model = new WaypointItem().getModel();
 
 			expect(model).toEqual({
-				waypoint: null
+				waypoint: null,
+				categoryId: null
 			});
 		});
 	});

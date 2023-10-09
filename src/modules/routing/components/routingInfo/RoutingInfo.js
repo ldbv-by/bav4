@@ -11,12 +11,19 @@ const Update_Status = 'update_status';
 const Update_Stats = 'update_stats';
 const Update_Category = 'update_category';
 
+const Category_Badge_Color_Default = 'cadetblue';
+
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
-		const { TranslationService, ETACalculatorService } = $injector.inject('TranslationService', 'ETACalculatorService');
+		const { TranslationService, ETACalculatorService, RoutingService } = $injector.inject(
+			'TranslationService',
+			'ETACalculatorService',
+			'RoutingService'
+		);
 		this._translationService = TranslationService;
 		this._etaCalculatorService = ETACalculatorService;
+		this._routingService = RoutingService;
 
 		this.observe(
 			(store) => store.routing.status,
@@ -60,6 +67,10 @@ export class RoutingInfo extends MvuElement {
 
 			return this._formatDuration(seconds);
 		};
+		const getCategoryColor = (categoryId) => {
+			const category = this._routingService.getCategoryById(categoryId);
+			return category?.color ?? Category_Badge_Color_Default;
+		};
 
 		const getDistance = () => {
 			const formattedInKilometer = (distanceInMeter) => {
@@ -83,10 +94,10 @@ export class RoutingInfo extends MvuElement {
 					</style>
 					<div class="header">
 						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type">
-							<span class="icon icon-bvv_bike"></span>
+						<div class="badge routing-info-type" style=${`background:${getCategoryColor(categoryId)};`}>
+							<span class=${`icon icon-${categoryId}`} ></span>
 							<span class="text">
-								Fahrrad
+								${translate(`routing_category_label_${categoryId.replace('-', '_')}`)}
 							<span>
 						</div>
 					</div>

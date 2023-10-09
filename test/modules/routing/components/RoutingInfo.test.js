@@ -14,6 +14,9 @@ describe('RoutingInfo', () => {
 		}
 	};
 
+	const category = { color: 'gray' };
+	const routingServiceMock = { getCategoryById: () => category };
+
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -28,7 +31,8 @@ describe('RoutingInfo', () => {
 		});
 		$injector
 			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('ETACalculatorService', etaCalculatorServiceMock);
+			.registerSingleton('ETACalculatorService', etaCalculatorServiceMock)
+			.registerSingleton('RoutingService', routingServiceMock);
 
 		return TestUtils.render(RoutingInfo.tag, properties);
 	};
