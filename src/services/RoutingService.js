@@ -75,6 +75,7 @@ import { bvvRouteProvider } from './provider/route.provider';
  * @name module:services/RoutingService~RoutingService#getAlternativeCategoryIds
  * @param {String} id category id
  * @returns {string[]} alternative ids
+ */
 
 /**
  * Calculates routes for given categories and at least two coordinates.
@@ -84,13 +85,6 @@ import { bvvRouteProvider } from './provider/route.provider';
  * @param {string[]} categories
  * @param {Coordinate[]} coordinates3857
  * @returns {Promise<module:services/RoutingService~RoutingResult|null>} the category of `null`
- */
-
-/**
- * A function that returns a list of categories/vehicles for routing
- * @async
- * @typedef {Function} routingCategoriesProvider
- * @returns {Promise<Array<String>>} available categories
  */
 
 /**
