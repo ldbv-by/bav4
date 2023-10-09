@@ -1,6 +1,6 @@
 .container {
-	display: grid;
-	padding-bottom: 1em;
+	display: flex;
+	flex-direction: column;
 	background: var(--header-background-color);
 }
 
@@ -27,6 +27,11 @@ li {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+}
+
+ba-overflow-menu {
+	margin: 1em;
+	padding-bottom: 0.5em;
 }
 
 .waypoint__buttons {
@@ -66,7 +71,8 @@ li {
 
 .waypoints__actions {
 	justify-content: center;
-	display: none;
+	display: flex;
+	width: 100%;
 }
 
 .waypoints__actions ba-buttons:first-child {

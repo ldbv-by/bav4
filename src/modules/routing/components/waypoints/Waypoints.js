@@ -11,7 +11,9 @@ import { setWaypoints } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
+import arrowDownUpSvg from '../assets/arrow-down-up.svg';
 import removeSvg from '../assets/trash.svg';
+import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';
@@ -53,6 +55,7 @@ export class Waypoints extends MvuElement {
 		const { status } = model;
 		const isVisible = status === RoutingStatusCodes.Ok;
 
+		const menuitems = this._getMenuItems(model);
 		const buttons = this._getButtons(model);
 		const waypointItems = this._getWaypoints(model);
 		return isVisible
@@ -65,9 +68,27 @@ export class Waypoints extends MvuElement {
 								${waypointItems}
 							</ul>
 						</div>
+						<!-- <ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems}></ba-overflow-menu> -->
 						${buttons}
 					</div>`
 			: nothing;
+	}
+
+	_getMenuItems(model) {
+		const translate = (key) => this._translationService.translate(key);
+		const { waypoints } = model;
+
+		const removeAll = () => {
+			setWaypoints([]);
+		};
+
+		const reverse = () => {
+			setWaypoints([...waypoints].reverse());
+		};
+		return [
+			{ label: translate('routing_waypoints_remove_all'), icon: removeSvg, action: () => removeAll() },
+			{ label: translate('routing_waypoints_reverse'), icon: arrowDownUpSvg, action: () => reverse() }
+		];
 	}
 
 	_getButtons(model) {
@@ -86,7 +107,6 @@ export class Waypoints extends MvuElement {
 			? html`<div class="waypoints__actions">
 					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
 					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
-					<div></div>
 			  </div>`
 			: nothing;
 	}
