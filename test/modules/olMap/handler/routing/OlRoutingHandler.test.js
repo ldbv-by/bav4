@@ -15,7 +15,7 @@ import { provide as messageProvideFn } from '../../../../../src/modules/olMap/ha
 import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
-import { Modify, Translate } from 'ol/interaction';
+import { Modify, Select, Translate } from 'ol/interaction';
 import { setCategory, setWaypoints } from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { Feature, MapBrowserEvent } from 'ol';
@@ -28,6 +28,7 @@ import { notificationReducer } from '../../../../../src/store/notifications/noti
 import { LevelTypes } from '../../../../../src/store/notifications/notifications.action';
 import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
+import { SelectEvent } from 'ol/interaction/Select';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -149,11 +150,13 @@ describe('OlRoutingHandler', () => {
 
 		expect(instanceUnderTest._modifyInteraction).toBeNull();
 		expect(instanceUnderTest._translateInteraction).toBeNull();
+		expect(instanceUnderTest._selectInteraction).toBeNull();
 
 		expect(instanceUnderTest._registeredObservers).toEqual([]);
 		expect(instanceUnderTest._mapListeners).toEqual([]);
 		expect(instanceUnderTest._activeInteraction).toBeFalse();
 		expect(instanceUnderTest._catId).toBeNull();
+		expect(instanceUnderTest._currentRoutingResponse).toBeNull();
 		expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
 		expect(instanceUnderTest._helpTooltip).toBeInstanceOf(HelpTooltip);
 		expect(instanceUnderTest._helpTooltip.messageProvideFunction).toEqual(messageProvideFn);
@@ -190,6 +193,8 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._translateInteraction);
 					expect(instanceUnderTest._modifyInteraction).toBeInstanceOf(Modify);
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._modifyInteraction);
+					expect(instanceUnderTest._selectInteraction).toBeInstanceOf(Select);
+					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._selectInteraction);
 					//map listeners
 					expect(instanceUnderTest._mapListeners).toHaveSize(1);
 
@@ -225,6 +230,8 @@ describe('OlRoutingHandler', () => {
 					// interactions
 					expect(instanceUnderTest._translateInteraction).toBeInstanceOf(Translate);
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._translateInteraction);
+					expect(instanceUnderTest._selectInteraction).toBeInstanceOf(Select);
+					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._selectInteraction);
 					expect(instanceUnderTest._modifyInteraction).toBeNull();
 					expect(instanceUnderTest._map.getInteractions().getArray()).not.toContain(instanceUnderTest._modifyInteraction);
 
@@ -273,8 +280,10 @@ describe('OlRoutingHandler', () => {
 
 				expect(instanceUnderTest._modifyInteraction).toBeNull();
 				expect(instanceUnderTest._translateInteraction).toBeNull();
+				expect(instanceUnderTest._selectInteraction).toBeNull();
 
 				expect(instanceUnderTest._catId).toBeNull();
+				expect(instanceUnderTest._currentRoutingResponse).toBeNull();
 				expect(instanceUnderTest._promiseQueue).toBeInstanceOf(PromiseQueue);
 				expect(instanceUnderTest._registeredObservers).toEqual([]);
 				expect(instanceUnderTest._mapListeners).toEqual([]);
@@ -339,6 +348,26 @@ describe('OlRoutingHandler', () => {
 					new TranslateEvent('translateend', new Collection([feature]), [21, 42], [0, 0], new Event(MapBrowserEventType.POINTERUP))
 				);
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('select', () => {
+			it('calls the correct methods', async () => {
+				const { instanceUnderTest, map, layer } = await newTestInstance();
+				const switchToAlternativeRouteSpy = spyOn(instanceUnderTest, '_switchToAlternativeRoute');
+				map.addLayer(layer);
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+				const category = { id: 'catId' };
+				feature.set(ROUTING_CATEGORY, category);
+				const mockRoutingResponse = { route: 'foo' };
+				instanceUnderTest._currentRoutingResponse = mockRoutingResponse;
+
+				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
+
+				expect(switchToAlternativeRouteSpy).toHaveBeenCalledWith(mockRoutingResponse);
+				expect(instanceUnderTest._catId).toBe(category.id);
 			});
 		});
 
@@ -493,7 +522,8 @@ describe('OlRoutingHandler', () => {
 					const alternativeCategoryId0 = 'alternativeCategoryId0';
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					const mockResponse = { foo: 'bar' };
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo(mockResponse);
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
@@ -510,6 +540,7 @@ describe('OlRoutingHandler', () => {
 							[5, 5]
 						]
 					);
+					expect(instanceUnderTest._currentRoutingResponse).toEqual(mockResponse);
 				});
 			});
 
@@ -522,7 +553,8 @@ describe('OlRoutingHandler', () => {
 					const feature0 = new Feature({
 						geometry: new Point([0, 0])
 					});
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					const mockResponse = { foo: 'bar' };
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo(mockResponse);
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
 					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0]);
@@ -532,6 +564,7 @@ describe('OlRoutingHandler', () => {
 					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
 					expect(clearRouteFeatureSpy).not.toHaveBeenCalled();
 					expect(requestRouteSpy).not.toHaveBeenCalled();
+					expect(instanceUnderTest._currentRoutingResponse).toBeNull();
 				});
 			});
 		});
@@ -552,7 +585,8 @@ describe('OlRoutingHandler', () => {
 					const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
 					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
 					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
+					const mockResponse = { foo: 'bar' };
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo(mockResponse);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
 
 					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2]));
@@ -563,6 +597,7 @@ describe('OlRoutingHandler', () => {
 					expect(addStartInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0);
 					expect(addIntermediateInteractionFeatureSpy).toHaveBeenCalledWith(coordinate1, 1);
 					expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate2, 2);
+					expect(instanceUnderTest._currentRoutingResponse).toEqual(mockResponse);
 				});
 			});
 
@@ -648,6 +683,26 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
 				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
 				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
+			});
+		});
+
+		describe('_switchToAlternativeRoute', () => {
+			it('displays an alternative route', async () => {
+				const { instanceUnderTest } = await newTestInstance();
+				const clearRouteFeaturesSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
+				const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
+				const displayAlternativeRoutingGeometry = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
+				const catId = 'catId';
+				const alternativeCatId = 'alternativeCatId';
+				instanceUnderTest._catId = catId;
+				const mockRouteResponse = { catId: { route: 'route0' }, alternativeCatId: { route: 'route1' } };
+				spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCatId]);
+
+				instanceUnderTest._switchToAlternativeRoute(mockRouteResponse);
+
+				expect(clearRouteFeaturesSpy).toHaveBeenCalled();
+				expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResponse.catId);
+				expect(displayAlternativeRoutingGeometry).toHaveBeenCalledOnceWith(mockRouteResponse.alternativeCatId);
 			});
 		});
 
