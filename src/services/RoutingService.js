@@ -211,9 +211,9 @@ export class BvvRoutingService {
 	 */
 	constructor(
 		categoriesProvider = mockCategoriesProvider,
+		routeProvider = bvvRouteProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		routeProvider = bvvRouteProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) {
 		this._categoriesProvider = categoriesProvider;
 		this._chartItemsStyles = chartItemStylesProvider();
