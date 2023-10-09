@@ -43,6 +43,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ETACalculatorService')).toBe(Injector.SCOPE_SINGLETON);
 
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ChipsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('LayersPlugin')).toBe(Injector.SCOPE_SINGLETON);

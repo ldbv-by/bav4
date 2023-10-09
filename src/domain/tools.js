@@ -11,5 +11,6 @@ export const Tools = Object.freeze({
 	DRAW: 'draw',
 	SHARE: 'share',
 	IMPORT: 'import',
-	EXPORT: 'export'
+	EXPORT: 'export',
+	ROUTING: 'routing'
 });

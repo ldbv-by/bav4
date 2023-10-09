@@ -77,13 +77,23 @@ export const setWaypoints = (coordinates) => {
 };
 
 /**
- * Updates the active flag.
- * @param {boolean}  active the new active flag
+ * Activates the geolocation functionality.
  * @function
  */
-export const setActive = (active) => {
+export const activate = () => {
 	getStore().dispatch({
 		type: ROUTING_ACTIVE_CHANGED,
-		payload: active
+		payload: true
+	});
+};
+
+/**
+ * Deactivates the geolocation functionality.
+ * @function
+ */
+export const deactivate = () => {
+	getStore().dispatch({
+		type: ROUTING_ACTIVE_CHANGED,
+		payload: false
 	});
 };
