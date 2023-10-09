@@ -28,7 +28,7 @@
 		"html-webpack-plugin": "5.5.3",
 		"jasmine": "5.1.0",
 		"jsdoc": "4.0.2",
-		"jsdoc-ts-utils": "4.0.0",
+		"jsdoc-ts-utils": "5.0.0",
 		"karma": "6.4.2",
 		"karma-chrome-launcher": "3.2.0",
 		"karma-coverage-istanbul-reporter": "3.0.3",
@@ -73,6 +73,7 @@
 		"es-check": "es-check es2022 \"./src/**/*.js\" --module",
 		"bundlesize": "npm run build:prod && npx bundlesize2",
 		"analyze-bundle": "webpack --stats=detailed --json > stats.json && webpack-bundle-analyzer ./stats.json",
+		"optimize-svg": "npx svgo -r -f src/ --config svgo.config.js --final-newline --multipass",
 		"gh-pages": "rm -rf node_modules/.cache/gh-pages && rm -rf dist && npm run build:prod && NODE_DEBUG=gh-pages gh-pages -d dist"
 	}
 }

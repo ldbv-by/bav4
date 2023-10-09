@@ -640,7 +640,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -667,7 +667,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -722,7 +722,7 @@ describe('ElevationProfile', () => {
 			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(textTypeGradientSpy).toHaveBeenCalled();

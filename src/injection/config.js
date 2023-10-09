@@ -58,6 +58,7 @@ import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { ETACalculatorService } from '../services/ETACalculatorService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
+import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())
@@ -115,6 +116,7 @@ $injector
 	.registerSingleton('IframeContainerPlugin', new IframeContainerPlugin())
 	.registerSingleton('SharePlugin', new SharePlugin())
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
+	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
