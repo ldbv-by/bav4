@@ -514,13 +514,15 @@ export const isClockwise = (coordinates) => {
  * @returns {boolean}
  */
 export const isPolygon = (coordinates) => {
-	if (coordinates[0].length > 2) {
-		const first = coordinates[0][0];
-		const last = coordinates[0][coordinates[0].length - 1];
+	const isClosed = (coordinates) => {
+		const first = coordinates[0];
+		const last = coordinates[coordinates.length - 1];
 
-		const isClosed = first[0] === last[0] && first[1] === last[1];
+		return first[0] === last[0] && first[1] === last[1];
+	};
 
-		return isClosed;
+	if (Array.isArray(coordinates) && coordinates.length > 2) {
+		return isClosed(coordinates);
 	}
 	return false;
 };

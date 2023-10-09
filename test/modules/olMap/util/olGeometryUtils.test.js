@@ -1159,7 +1159,7 @@ describe('isPolygon', () => {
 	it('checks orientation of polygonal geometries', () => {
 		expect(isPolygon(point.getCoordinates())).toBeFalse();
 		expect(isPolygon(lineString.getCoordinates())).toBeFalse();
-		expect(isPolygon(linearRing.getCoordinates())).toBeFalse();
-		expect(isPolygon(polygon.getCoordinates())).toBeTrue();
+		expect(isPolygon(linearRing.getCoordinates())).toBeTrue();
+		expect(isPolygon(polygon.getCoordinates()[0])).toBeTrue();
 	});
 });

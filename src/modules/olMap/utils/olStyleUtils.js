@@ -487,7 +487,7 @@ export const renderRulerSegments = (pixelCoordinates, state, contextRenderFuncti
 		return isClockwise(coordinates) ? [...coordinates].reverse() : coordinates;
 	};
 
-	const pixelGeometry = isPolygon(pixelCoordinates) ? new Polygon([asCounterClockWise(pixelCoordinates[0])]) : geometry;
+	const pixelGeometry = isPolygon(pixelCoordinates[0]) ? new Polygon([asCounterClockWise(pixelCoordinates[0])]) : geometry;
 
 	// baseLine
 	contextRenderFunction(pixelGeometry, fill, baseStroke);
