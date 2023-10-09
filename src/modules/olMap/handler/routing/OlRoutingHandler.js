@@ -23,6 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
+import { setWaypoints } from '../../../../store/routing/routing.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -214,6 +215,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 					// managePopup(evt.selected[0], evt.mapBrowserEvent.coordinate, function () {
 					// 	select.getFeatures().clear();
 					// });
+					// console.log(feature.getGeometry().getFirstCoordinate());
+					// this._removeFeature(feature);
 				}
 				select.getFeatures().clear();
 				// evt.stopPropagation();
@@ -460,11 +463,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().clear();
 	}
 
-	_clearIntermediateInteractionFeatures() {
-		this._getIntermediateFeatures().forEach((f) => {
-			this._interactionLayer.getSource().removeFeature(f);
-		});
-	}
+	// _clearIntermediateInteractionFeatures() {
+	// 	this._getIntermediateFeatures().forEach((f) => {
+	// 		this._interactionLayer.getSource().removeFeature(f);
+	// 	});
+	// }
 
 	_addStartInteractionFeature(coordinate3857) {
 		const iconFeature = new Feature({
@@ -489,6 +492,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
 
+	// _removeFeature(feature) {
+	// 	const coordinate = feature.getGeometry().getFirstCoordinate();
+
+	// 	const {
+	// 		routing: { waypoints }
+	// 	} = this._storeService.getStore().getState();
+
+	// 	// we just update the store
+	// 	setWaypoints([...waypoints.filter((c) => !equals(c, coordinate))]);
+	// }
+
 	async _requestRouteFromCoordinates(coordinates3857) {
 		if (coordinates3857.length > 1) {
 			this._setInteractionsActive(false);
@@ -508,7 +522,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
-	async _requestRouteFromInteractionLayer() {
+	_requestRouteFromInteractionLayer() {
 		const features = this._interactionLayer.getSource().getFeatures();
 		if (features.length > 1) {
 			this._setInteractionsActive(false);
@@ -518,9 +532,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 				return feature.getGeometry().getCoordinates();
 			});
 
-			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-
-			this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			// update waypoints
+			setWaypoints(coordinates3857);
 		}
 	}
 
@@ -554,7 +567,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
-				await this._requestRouteFromCoordinates(coordinates3857);
+				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])]);
 			});
 		};
 		return [

@@ -510,7 +510,7 @@ describe('OlRoutingHandler', () => {
 			describe('more than one interaction feature is available', () => {
 				it('call _requestRoute with with correct arguments', async () => {
 					const catId = 'catId';
-					const { instanceUnderTest } = await newTestInstance({
+					const { instanceUnderTest, store } = await newTestInstance({
 						categoryId: catId
 					});
 					const feature0 = new Feature({
@@ -519,28 +519,20 @@ describe('OlRoutingHandler', () => {
 					const feature1 = new Feature({
 						geometry: new Point([5, 5])
 					});
-					const alternativeCategoryId0 = 'alternativeCategoryId0';
+					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
 					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
 					const clearRouteFeatureSpy = spyOn(instanceUnderTest, '_clearRouteFeatures');
-					const mockResponse = { foo: 'bar' };
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo(mockResponse);
+					spyOn(instanceUnderTest, '_requestRoute');
 					spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([feature0, feature1]);
-					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
-					instanceUnderTest._interactionLayer.getSource().addFeatures([feature0, feature1]);
 
-					await expectAsync(instanceUnderTest._requestRouteFromInteractionLayer());
+					instanceUnderTest._requestRouteFromInteractionLayer();
 
 					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
 					expect(clearRouteFeatureSpy).toHaveBeenCalled();
-					expect(requestRouteSpy).toHaveBeenCalledWith(
-						catId,
-						[alternativeCategoryId0],
-						[
-							[0, 0],
-							[5, 5]
-						]
-					);
-					expect(instanceUnderTest._currentRoutingResponse).toEqual(mockResponse);
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[5, 5]
+					]);
 				});
 			});
 
@@ -663,28 +655,28 @@ describe('OlRoutingHandler', () => {
 			});
 		});
 
-		describe('_clearIntermediateInteractionFeatures', () => {
-			it('removes the correct features', async () => {
-				const { instanceUnderTest } = await newTestInstance();
-				const feature0 = new Feature({
-					geometry: new Point([0, 0])
-				});
-				feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
-				instanceUnderTest._routeLayer.getSource().addFeature(feature0);
-				instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
-				instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
-				instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
-				instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
+		// describe('_clearIntermediateInteractionFeatures', () => {
+		// 	it('removes the correct features', async () => {
+		// 		const { instanceUnderTest } = await newTestInstance();
+		// 		const feature0 = new Feature({
+		// 			geometry: new Point([0, 0])
+		// 		});
+		// 		feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
+		// 		instanceUnderTest._routeLayer.getSource().addFeature(feature0);
+		// 		instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
+		// 		instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
+		// 		instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
+		// 		instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
 
-				instanceUnderTest._clearIntermediateInteractionFeatures();
+		// 		instanceUnderTest._clearIntermediateInteractionFeatures();
 
-				expect(instanceUnderTest._routeLayer.getSource().getFeatures()).not.toHaveSize(0);
-				expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).not.toHaveSize(0);
-				expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
-				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
-				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
-			});
-		});
+		// 		expect(instanceUnderTest._routeLayer.getSource().getFeatures()).not.toHaveSize(0);
+		// 		expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).not.toHaveSize(0);
+		// 		expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
+		// 		expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
+		// 		expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
+		// 	});
+		// });
 
 		describe('_switchToAlternativeRoute', () => {
 			it('displays an alternative route', async () => {
