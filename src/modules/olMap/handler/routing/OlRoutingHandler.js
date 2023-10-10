@@ -16,7 +16,7 @@ import Polyline from 'ol/format/Polyline.js';
 import { distance } from 'ol/coordinate';
 import LineString from 'ol/geom/LineString.js';
 import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
-import { equals, observe } from '../../../../utils/storeUtils';
+import { observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
