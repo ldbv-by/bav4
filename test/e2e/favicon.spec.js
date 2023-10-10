@@ -24,6 +24,12 @@ test.describe('favicons', () => {
 					purpose: 'any'
 				},
 				{
+					src: 'icon_192x192.png',
+					sizes: '192x192',
+					type: 'image/png',
+					purpose: 'any'
+				},
+				{
 					src: 'icon_512x512_maskable.png',
 					sizes: '512x512',
 					type: 'image/png',
