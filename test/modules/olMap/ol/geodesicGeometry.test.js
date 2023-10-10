@@ -1,7 +1,7 @@
 import { Feature } from 'ol';
 import { Geometry, LineString, MultiPolygon, Point, Polygon } from 'ol/geom';
 import { fromLonLat } from 'ol/proj';
-import { GeodesicGeometry } from '../../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
+import { GeodesicGeometry } from '../../../../src/modules/olMap/ol/geodesic/geodesicGeometry';
 import proj4 from 'proj4';
 import { register } from 'ol/proj/proj4';
 
