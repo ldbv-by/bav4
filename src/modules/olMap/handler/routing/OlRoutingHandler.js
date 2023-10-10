@@ -11,6 +11,7 @@ import Feature from 'ol/Feature';
 import { Point } from 'ol/geom';
 import Translate from 'ol/interaction/Translate.js';
 import Modify from 'ol/interaction/Modify.js';
+import Select from 'ol/interaction/Select.js';
 import Polyline from 'ol/format/Polyline.js';
 import { distance } from 'ol/coordinate';
 import LineString from 'ol/geom/LineString.js';
@@ -22,6 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
+import { setWaypoints } from '../../../../store/routing/routing.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -78,8 +80,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 		// interactions
 		this._modifyInteraction = null;
 		this._translateInteraction = null;
+		this._selectInteraction = null;
 		// other
 		this._catId = null;
+		this._currentRoutingResponse = null;
 		this._promiseQueue = new PromiseQueue();
 		this._registeredObservers = [];
 		this._mapListeners = [];
@@ -106,6 +110,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 		this._translateInteraction = this._createTranslate(this._interactionLayer);
 		this._map.addInteraction(this._translateInteraction);
+		this._selectInteraction = this._createSelect(this._interactionLayer, this._alternativeRouteLayer);
+		this._map.addInteraction(this._selectInteraction);
 
 		if (!this._environmentService.isTouch()) {
 			this._modifyInteraction = this._createModify();
@@ -190,6 +196,36 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return translate;
 	}
 
+	_createSelect(interactionLayer, alternativeRouteLayer) {
+		const select = new Select({
+			layers: (layer) => layer === interactionLayer || layer === alternativeRouteLayer,
+			hitTolerance: 5
+		});
+		select.on('select', (evt) => {
+			if (evt.selected[0]) {
+				const feature = evt.selected[0];
+				const category = feature.get(ROUTING_CATEGORY);
+				if (category) {
+					// change to alternative route
+					this._catId = category.id;
+					this._switchToAlternativeRoute(this._currentRoutingResponse);
+					// hideHelpTooltip();
+				} else {
+					// Update the position of the popup according to the click event.
+					// managePopup(evt.selected[0], evt.mapBrowserEvent.coordinate, function () {
+					// 	select.getFeatures().clear();
+					// });
+					// console.log(feature.getGeometry().getFirstCoordinate());
+					// this._removeFeature(feature);
+				}
+				select.getFeatures().clear();
+				// evt.stopPropagation();
+				// evt.preventDefault();
+			}
+		});
+		return select;
+	}
+
 	_createModify() {
 		const modify = new Modify({
 			style: getModifyInteractionStyle(),
@@ -221,6 +257,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 			}
 		});
 		return modify;
+	}
+
+	_switchToAlternativeRoute(currentRoutingResponse) {
+		this._clearRouteFeatures();
+		this._displayCurrentRoutingGeometry(currentRoutingResponse[this._catId]);
+		this._routingService.getAlternativeCategoryIds(this._catId).forEach((catId) => {
+			this._displayAlternativeRoutingGeometry(currentRoutingResponse[catId]);
+		});
 	}
 
 	_incrementIndex(startIndex) {
@@ -392,7 +436,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 	_setInteractionsActive(active) {
 		// Select interaction must be excluded from disabling/enabling
-		// select.setActive(active);
+		this._selectInteraction.setActive(active);
 		this._translateInteraction.setActive(active);
 		this._setModifyActive(active);
 		this._activeInteraction = active;
@@ -419,11 +463,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().clear();
 	}
 
-	_clearIntermediateInteractionFeatures() {
-		this._getIntermediateFeatures().forEach((f) => {
-			this._interactionLayer.getSource().removeFeature(f);
-		});
-	}
+	// _clearIntermediateInteractionFeatures() {
+	// 	this._getIntermediateFeatures().forEach((f) => {
+	// 		this._interactionLayer.getSource().removeFeature(f);
+	// 	});
+	// }
 
 	_addStartInteractionFeature(coordinate3857) {
 		const iconFeature = new Feature({
@@ -448,6 +492,17 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
 
+	// _removeFeature(feature) {
+	// 	const coordinate = feature.getGeometry().getFirstCoordinate();
+
+	// 	const {
+	// 		routing: { waypoints }
+	// 	} = this._storeService.getStore().getState();
+
+	// 	// we just update the store
+	// 	setWaypoints([...waypoints.filter((c) => !equals(c, coordinate))]);
+	// }
+
 	async _requestRouteFromCoordinates(coordinates3857) {
 		if (coordinates3857.length > 1) {
 			this._setInteractionsActive(false);
@@ -463,11 +518,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 			// request route
 			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-			await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 		}
 	}
 
-	async _requestRouteFromInteractionLayer() {
+	_requestRouteFromInteractionLayer() {
 		const features = this._interactionLayer.getSource().getFeatures();
 		if (features.length > 1) {
 			this._setInteractionsActive(false);
@@ -477,9 +532,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 				return feature.getGeometry().getCoordinates();
 			});
 
-			const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-
-			await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			// update waypoints
+			setWaypoints(coordinates3857);
 		}
 	}
 
@@ -513,7 +567,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
-				await this._requestRouteFromCoordinates(coordinates3857);
+				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])]);
 			});
 		};
 		return [
@@ -545,7 +599,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._activeInteraction = false;
 		this._modifyInteraction = null;
 		this._translateInteraction = null;
+		this._selectInteraction = null;
 		this._catId = null;
+		this._currentRoutingResponse = null;
 		this._unsubscribe(this._registeredObservers);
 		this._unregisterMapListener(this._mapListeners);
 		this._helpTooltip.deactivate();

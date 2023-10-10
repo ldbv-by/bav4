@@ -78,12 +78,20 @@ import { bvvRouteProvider } from './provider/route.provider';
  */
 
 /**
+ * Finds the parent id for a category id. Returns the given categoryId when it is the parent itself.
+ * @function
+ * @name module:services/RoutingService~RoutingService#getParent
+ * @param {String} id category id
+ * @returns {string|null} alternative ids
+ */
+
+/**
  * Calculates routes for given categories and at least two coordinates.
  * @function
  * @async
  * @name module:services/RoutingService~RoutingService#calculate
  * @param {string[]} categories
- * @param {Coordinate[]} coordinates3857
+ * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
  * @returns {Promise<module:services/RoutingService~RoutingResult|null>} the category of `null`
  */
 
@@ -247,6 +255,7 @@ export class BvvRoutingService {
 		}
 		return this._categories;
 	}
+
 	/**
 	 *
 	 * @returns {module:domain/routing~RoutingCategory[]}
@@ -282,7 +291,22 @@ export class BvvRoutingService {
 	}
 
 	/**
-	 * Returns an array of alternative category ids. May be empty when no alternative id exists.
+	 * @param {String} categoryId
+	 * @returns {String|null}
+	 */
+	getParent(categoryId) {
+		const cat = this.getCategoryById(categoryId);
+		if (cat) {
+			return (
+				this.getAlternativeCategoryIds(categoryId)
+					.map((catid) => this.getCategoryById(catid))
+					.find((cat) => cat.subcategories.length > 0)?.id ?? categoryId
+			);
+		}
+		return null;
+	}
+
+	/**
 	 * @param {String} id category id
 	 * @returns {string[]}
 	 */
@@ -304,9 +328,8 @@ export class BvvRoutingService {
 	}
 
 	/**
-	 * Calculates routes for given categories and at least two coordinates.
 	 * @param {string[]} categories
-	 * @param {Coordinate[]} coordinates3857
+	 * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
 	 * @throws {Error} Error of the underlying provider
 	 * @returns {Promise<module:services/RoutingService~RoutingResult|null>}
 	 */
