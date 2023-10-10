@@ -59,7 +59,7 @@ describe('BvvRoutingService', () => {
 	});
 
 	describe('getCategoryById', () => {
-		it('finds a a category by its id', async () => {
+		it('finds a category by its id', async () => {
 			const hike = {
 				id: 'hike',
 				label: 'hike',
@@ -79,6 +79,36 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest.getCategoryById('hike')).toEqual(hike);
 			expect(instanceUnderTest.getCategoryById('hike2')).toEqual(hike2);
 			expect(instanceUnderTest.getCategoryById('foo')).toBeNull();
+		});
+	});
+
+	describe('getParent', () => {
+		it('finds a parent category by its id', async () => {
+			const hike = {
+				id: 'hike',
+				label: 'hike',
+				subcategories: []
+			};
+			const hike2 = {
+				id: 'hike2',
+				label: 'hike2',
+				subcategories: [hike]
+			};
+			const hike3 = {
+				id: 'hike3',
+				label: 'hike3',
+				subcategories: []
+			};
+
+			const mockCategories = [hike2, hike3];
+			const categoriesProvider = jasmine.createSpy().and.resolveTo(mockCategories);
+			const instanceUnderTest = setup(categoriesProvider);
+			await instanceUnderTest.init();
+
+			expect(instanceUnderTest.getParent('hike')).toBe('hike2');
+			expect(instanceUnderTest.getParent('hike2')).toBe('hike2');
+			expect(instanceUnderTest.getParent('hike3')).toBe('hike3');
+			expect(instanceUnderTest.getParent('unknown')).toBeNull();
 		});
 	});
 
