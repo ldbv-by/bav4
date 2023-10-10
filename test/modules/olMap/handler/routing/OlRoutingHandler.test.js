@@ -997,7 +997,7 @@ describe('OlRoutingHandler', () => {
 					feature: feature
 				});
 				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('grab');
+				expect(map.getTarget().style.cursor).toBe('pointer');
 			});
 
 			it('does nothing when no feature was detected', async () => {

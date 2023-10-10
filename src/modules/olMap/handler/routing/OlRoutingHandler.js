@@ -136,8 +136,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 				this._setModifyActive(false);
 			}
 		};
+		const updateCursor = (feature) => {
+			if (feature.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE_SEGMENT) {
+				map.getTarget().style.cursor = 'grab';
+			} else {
+				map.getTarget().style.cursor = 'pointer';
+			}
+		};
 		return (event) => {
-			map.getTarget().style.cursor = '';
 			this._helpTooltip.deactivate();
 
 			if (!event?.dragging) {
@@ -150,8 +156,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 				});
 
 				if (hit.length > 0) {
-					map.getTarget().style.cursor = 'grab';
-
 					this._helpTooltip.activate(this._map);
 					const feature = hit[0];
 					const interactionState = {
@@ -162,6 +166,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 					this._helpTooltip.notify(interactionState);
 
 					updateModifyActivity(feature);
+					updateCursor(feature);
+				} else {
+					map.getTarget().style.cursor = '';
 				}
 			}
 		};
