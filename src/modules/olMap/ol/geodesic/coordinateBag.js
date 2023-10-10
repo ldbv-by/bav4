@@ -95,7 +95,7 @@ export class CoordinateBag {
 
 	/**
 	 * Creates a geodetic Geometry from all added coordinates
-	 * @returns  {MultiLineString | null}
+	 * @returns  {MultiLineString}
 	 */
 	createGeometry() {
 		if (this.#lineStrings[this.#lineStringIndex].length <= 1) {

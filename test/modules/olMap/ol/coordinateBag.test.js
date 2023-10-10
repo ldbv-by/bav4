@@ -1,4 +1,3 @@
-import { fromLonLat } from 'ol/proj';
 import { CoordinateBag } from '../../../../src/modules/olMap/ol/geodesic/coordinateBag';
 
 import { MultiLineString } from 'ol/geom';
@@ -13,23 +12,36 @@ describe('CoordinateBag', () => {
 	});
 
 	describe('when points added', () => {
-		it('creates geometries', () => {
-			const coordinateMunich = fromLonLat([11.60221, 48.15629]);
-			const coordinateParis = fromLonLat([2.192, 48.86656]);
-
-			// const lineMunich_Paris = new LineString([fromLonLat([11.60221, 48.15629]), fromLonLat([2.192, 48.86656])]);
-			// const polygon = new Polygon([[fromLonLat([9, 48]), fromLonLat([11, 48]), fromLonLat([10, 47])]]);
-
+		const coordinateMunich = [11, 48];
+		const coordinateParis = [2, 48];
+		it('does NOT creates geometries for ZERO or ONE point', () => {
 			const instance = new CoordinateBag();
 
-			expect(instance.createGeometry()).toBeInstanceOf(MultiLineString);
+			const emptyGeometry = instance.createGeometry();
+			expect(emptyGeometry).toBeInstanceOf(MultiLineString);
+			expect(emptyGeometry.getCoordinates()).toEqual([]);
 			instance.add(coordinateMunich);
 
-			expect(instance.createGeometry()).toBeInstanceOf(MultiLineString);
+			const afterFirstPointGeometry = instance.createGeometry();
+			expect(afterFirstPointGeometry).toBeInstanceOf(MultiLineString);
+			expect(afterFirstPointGeometry.getCoordinates()).toEqual([]);
+		});
 
+		it('creates geometries', () => {
+			const instance = new CoordinateBag();
+
+			instance.add(coordinateMunich);
 			instance.add(coordinateParis);
 
-			expect(instance.createGeometry()).toBeInstanceOf(MultiLineString);
+			const afterSecondPointGeometry = instance.createGeometry();
+			const pointCount = afterSecondPointGeometry.getCoordinates()[0].length;
+			const firstPoint = afterSecondPointGeometry.getCoordinates()[0][0];
+			const secondPoint = afterSecondPointGeometry.getCoordinates()[0][1];
+
+			expect(afterSecondPointGeometry).toBeInstanceOf(MultiLineString);
+			expect(pointCount).toBe(2);
+			expect(firstPoint).toEqual([1224514.3987260093, 6106854.83488507]);
+			expect(secondPoint).toEqual([222638.98158654716, 6106854.83488507]);
 		});
 	});
 });
