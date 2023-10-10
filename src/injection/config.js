@@ -55,6 +55,7 @@ import { FeedbackService } from '../services/FeedbackService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
+import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
 
@@ -113,6 +114,7 @@ $injector
 	.registerSingleton('IframeContainerPlugin', new IframeContainerPlugin())
 	.registerSingleton('SharePlugin', new SharePlugin())
 	.registerSingleton('ToolsPlugin', new ToolsPlugin())
+	.registerSingleton('BeforeUnloadPlugin', new BeforeUnloadPlugin())
 	.registerSingleton('IframeGeometryIdPlugin', new IframeGeometryIdPlugin())
 	.registerSingleton('HistoryStatePlugin', new HistoryStatePlugin())
 	.registerSingleton('ObserveStateForEncodingPlugin', new ObserveStateForEncodingPlugin())
