@@ -88,7 +88,9 @@ export class WaypointItem extends MvuElement {
 		};
 
 		const getCategoryColor = (categoryId) => {
-			const category = this._routingService.getCategoryById(categoryId);
+			const parentId = this._routingService.getParent(categoryId);
+			const category = this._routingService.getCategoryById(parentId);
+
 			return category?.color ?? Category_Color_Default;
 		};
 

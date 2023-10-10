@@ -68,7 +68,9 @@ export class RoutingInfo extends MvuElement {
 			return this._formatDuration(seconds);
 		};
 		const getCategoryColor = (categoryId) => {
-			const category = this._routingService.getCategoryById(categoryId);
+			const parentId = this._routingService.getParent(categoryId);
+			const category = this._routingService.getCategoryById(parentId);
+
 			return category?.color ?? Category_Badge_Color_Default;
 		};
 
