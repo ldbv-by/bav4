@@ -60,6 +60,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('IframeContainerPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('SharePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ToolsPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('BeforeUnloadPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('IframeGeometryIdPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HistoryStatePlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ObserveStateForEncodingPlugin')).toBe(Injector.SCOPE_SINGLETON);
