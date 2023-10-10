@@ -42,7 +42,7 @@ export const setStatus = (statusCode) => {
 
 /**
  * Updates the current route stats.
- * @param {RouteStats}  routeStats the new RouteStats
+ * @param {module:domain/routing~RouteStats}  routeStats the new RouteStats
  * @function
  */
 export const setRouteStats = (routeStats) => {
@@ -54,7 +54,7 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the current route.
- * @param {Route}  route the new Route
+ * @param {module:services/RoutingService~Route}  route the new Route
  * @function
  */
 export const setRoute = (route) => {
@@ -66,7 +66,7 @@ export const setRoute = (route) => {
 
 /**
  * Updates the current waypoints.
- * @param {Coordinate[]}  coordinates the new waypoint coordinates
+ * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */
 export const setWaypoints = (coordinates) => {
