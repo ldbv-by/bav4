@@ -30,7 +30,6 @@ export class CoordinateBag {
 	#subsegments = [[]];
 	#subsegmentExtents = [[]];
 	#segmentIndex = -1;
-	#segmentIndices = [];
 
 	#polygons = {};
 	#worldIndex = 0;
@@ -65,7 +64,9 @@ export class CoordinateBag {
 		const polygonId = 'polygon_' + this.#worldIndex;
 		this.#worldIndex += offset;
 		//Push to lineString (border of the shape)
-		this.#lineStrings[this.#lineStringIndex].push(coord);
+		this.#lineStrings[this.#lineStringIndex]
+			? this.#lineStrings[this.#lineStringIndex].push(coord)
+			: (this.#lineStrings[this.#lineStringIndex] = [coord]);
 		//Push to polygons (To color the area of the shape)
 		if (this.#polygons[polygonId] == null) {
 			this.#polygons[polygonId] = [];
@@ -74,7 +75,7 @@ export class CoordinateBag {
 		/* Push to subsegments (Used to calculate distances form mouse cursor to shape and to
         calculate the extent of each segment and subsegment) */
 		if (this.#segmentIndex >= 0 && this.#lineStrings[this.#lineStringIndex].length > 1) {
-			const lastCoord = [...this.lastCoordinate];
+			const lastCoord = [...this.#lastCoordinate];
 			const subsegment = [proj4(Epsg_Wgs84, Epsg_WebMercartor, lastCoord), proj4(Epsg_Wgs84, Epsg_WebMercartor, coord)];
 			subsegment[1][0] += offset * Deg360_In_WebMercartor;
 			const subsegmentExtent = boundingExtent(subsegment);
