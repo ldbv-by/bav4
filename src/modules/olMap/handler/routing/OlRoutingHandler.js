@@ -16,7 +16,7 @@ import Polyline from 'ol/format/Polyline.js';
 import { distance } from 'ol/coordinate';
 import LineString from 'ol/geom/LineString.js';
 import { getModifyInteractionStyle, getRoutingStyleFunction } from './styleUtils';
-import { observe } from '../../../../utils/storeUtils';
+import { equals, observe } from '../../../../utils/storeUtils';
 import { PromiseQueue } from '../../../../utils/PromiseQueue';
 import { LevelTypes, emitNotification } from '../../../../store/notifications/notifications.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
@@ -150,7 +150,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				});
 
 				if (hit.length > 0) {
-					map.getTarget().style.cursor = 'pointer';
+					map.getTarget().style.cursor = 'grab';
 
 					this._helpTooltip.activate(this._map);
 					const feature = hit[0];
