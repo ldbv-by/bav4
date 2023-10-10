@@ -18,6 +18,9 @@ const Dateline_Buffer = 40;
  * Class to organize spherical coordinates and create geometries as
  * - a MultiLineString (createGeometry())
  * - a MultiPolygon (createPolygon())
+ *
+ * based on the AutoSplitArray in https://github.com/geoadmin/web-mapviewer
+ *
  */
 export class CoordinateBag {
 	constructor() {
