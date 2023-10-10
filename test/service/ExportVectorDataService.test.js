@@ -13,6 +13,12 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const EWKT_GeometryCollection = 'SRID=4326;GEOMETRYCOLLECTION(POLYGON((10 10,10 20,20 20,20 15,10 10)),POLYGON((10 10,10 20,20 20,20 15,10 10)))';
+	const EWKT_Point_3857 = 'SRID=3857;POINT(10 10)';
+	const EWKT_LineString_3857 = 'SRID=3857;LINESTRING(10 10,20 20,30 40)';
+	const EWKT_Polygon_3857 = 'SRID=3857;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const EWKT_GeometryCollection_3857 =
+		'SRID=3857;GEOMETRYCOLLECTION(POLYGON((10 10,10 20,20 20,20 15,10 10)),POLYGON((10 10,10 20,20 20,20 15,10 10)))';
 	const KML_Data =
 		'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document>	<name>Zeichnung</name>	<Placemark id="polygon_1645077612885">	<ExtendedData>		<Data name="type">			<value>polygon</value>		</Data>	</ExtendedData>	<description>	</description>	<Style>		<LineStyle>			<color>ff0000ff</color>			<width>3</width>		</LineStyle>		<PolyStyle>			<color>660000ff</color>		</PolyStyle>	</Style>	<Polygon>		<outerBoundaryIs>			<LinearRing>				<coordinates>					11.248395432833206,48.599861238104666 					11.414296346422136,48.66067918795375 					11.484919041751134,48.55051466922948 					11.30524992459611,48.503527784132004 					11.248395432833206,48.599861238104666				</coordinates>			</LinearRing>		</outerBoundaryIs>	</Polygon></Placemark></Document></kml>';
 	const GEOJSON_Data =
@@ -346,13 +352,20 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
-		it('writes ewkt data', () => {
+		it('writes EWKT data', () => {
 			const instance = setup();
-			const writer = instance._getEwktWriter();
+			const writerForDefaultSRID = instance._getEwktWriter();
+			const writerForSRID = instance._getEwktWriter(3857);
 
-			expect(writer([new Feature({ geometry: point })])).toBe(EWKT_Point);
-			expect(writer([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
-			expect(writer([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+			expect(writerForDefaultSRID([new Feature({ geometry: point })])).toBe(EWKT_Point);
+			expect(writerForDefaultSRID([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
+			expect(writerForDefaultSRID([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+			expect(writerForDefaultSRID([new Feature({ geometry: polygon }), new Feature({ geometry: polygon })])).toBe(EWKT_GeometryCollection);
+
+			expect(writerForSRID([new Feature({ geometry: point })])).toBe(EWKT_Point_3857);
+			expect(writerForSRID([new Feature({ geometry: lineString })])).toBe(EWKT_LineString_3857);
+			expect(writerForSRID([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon_3857);
+			expect(writerForSRID([new Feature({ geometry: polygon }), new Feature({ geometry: polygon })])).toBe(EWKT_GeometryCollection_3857);
 		});
 	});
 

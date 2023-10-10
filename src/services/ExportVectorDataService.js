@@ -167,10 +167,10 @@ export class OlExportVectorDataService {
 	}
 
 	// todo: refactor to ewkt.js or an ewkt-provider
-	_getEwktWriter(srid = 4326) {
+	_getEwktWriter(srid = null) {
 		return (features) => {
 			const wktFormat = new WKT();
-			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
+			return `SRID=${srid ?? 4326};${wktFormat.writeFeatures(features)}`;
 		};
 	}
 
