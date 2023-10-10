@@ -10,8 +10,8 @@ describe('CoordinateBag', () => {
 			expect(instance.lineStringIndex).toBe(0);
 			expect(instance.lineStrings).toEqual([[]]);
 
-			expect(instance.subSegments).toEqual([[]]);
-			expect(instance.subSegmentsExtents).toEqual([[]]);
+			expect(instance.subsegments).toEqual([[]]);
+			expect(instance.subsegments).toEqual([[]]);
 			expect(instance.segmentIndex).toBe(-1);
 			expect(instance.segmentIndices).toEqual([]);
 
