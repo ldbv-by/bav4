@@ -116,7 +116,7 @@ export class OlExportVectorDataService {
 
 		switch (sourceType.name) {
 			case SourceTypeName.EWKT:
-				return this._getEwktWriter(sourceType.srid);
+				return this._getEwktWriter(sourceType.srid ?? 4326);
 			case SourceTypeName.GPX:
 				return this._getGpxWriter();
 			default:
@@ -167,10 +167,10 @@ export class OlExportVectorDataService {
 	}
 
 	// todo: refactor to ewkt.js or an ewkt-provider
-	_getEwktWriter(srid = 4326) {
+	_getEwktWriter(srid) {
 		return (features) => {
 			const wktFormat = new WKT();
-			return features.map((feature) => `SRID=${srid};${wktFormat.writeFeature(feature)}`).join('\n');
+			return `SRID=${srid};${wktFormat.writeFeatures(features)}`;
 		};
 	}
 
