@@ -16,9 +16,9 @@ const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
-const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
+// const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
 const Update_CurrentUid = 'update_currentUId';
-const Update_Currents = 'update_currents';
+// const Update_Currents = 'update_currents';
 const Update_Dummy = 'update_dummy';
 
 const hasChildrenClass = 'has-children';
@@ -60,6 +60,8 @@ export const onlyOnce = (key) => {
  * @class
  */
 export class LayerTree extends MvuElement {
+	#currentGeoResourceId;
+
 	constructor() {
 		super({
 			topics: [],
@@ -94,6 +96,8 @@ export class LayerTree extends MvuElement {
 		this._copyBranchRoot = (a, b) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (a, b) => {};
+
+		this.#currentGeoResourceId = null;
 	}
 
 	update(type, data, model) {
@@ -106,18 +110,18 @@ export class LayerTree extends MvuElement {
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
-			case Update_CurrentGeoResourceId:
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ update ~ Update_CurrentGeoResourceId:', data);
-				return { ...model, currentGeoResourceId: data };
+			// case Update_CurrentGeoResourceId:
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 ~ update ~ Update_CurrentGeoResourceId:', data);
+			// 	return { ...model, currentGeoResourceId: data };
 			case Update_CurrentUid:
 				// eslint-disable-next-line no-console
 				// console.log('🚀 ~ update ~ Update_CurrentUid:', data);
 				return { ...model, currentUid: data };
-			case Update_Currents:
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ update ~ Update_Currents:', data);
-				return { ...model, currentUid: data.currentUid, currentGeoResourceId: data.currentGeoResourceId };
+			// case Update_Currents:
+			// 	// eslint-disable-next-line no-console
+			// 	// console.log('🚀 ~ update ~ Update_Currents:', data);
+			// 	return { ...model, currentUid: data.currentUid, currentGeoResourceId: data.currentGeoResourceId };
 			case Update_Dummy:
 				return { ...model, dummy: data };
 		}
@@ -142,7 +146,8 @@ export class LayerTree extends MvuElement {
 
 			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
 
-			this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
+			// this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
+			this.signal(Update_CurrentUid, newElementUid);
 		};
 
 		const onDragStart = (event, draggedEntry) => {
@@ -187,10 +192,16 @@ export class LayerTree extends MvuElement {
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 			if (newGeoResourceIdFromList) {
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
+
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
 					return;
 				}
+				this.#currentGeoResourceId = newGeoResourceIdFromList;
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ LayerTree ~ onDragOver ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
 				insertDraggedGeoResource(currentCatalogEntry.uid, newGeoResourceIdFromList);
 			}
 
@@ -214,6 +225,7 @@ export class LayerTree extends MvuElement {
 
 			const spanElement = event.target;
 			if (!spanElement) {
+				// eslint-disable-next-line no-console
 				console.log('🪢🪢🪢 ~ LayerTree ~ onDragOver ~ event:', event);
 			}
 			spanElement.classList.add('drag-over');
@@ -222,6 +234,11 @@ export class LayerTree extends MvuElement {
 		const onDrop = (event) => {
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
+
+			this.#currentGeoResourceId = null;
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
+
 			this._addGeoResourcePermanently();
 		};
 
@@ -230,9 +247,14 @@ export class LayerTree extends MvuElement {
 			event.target.classList.remove('drag-over');
 			event.preventDefault();
 
-			// eslint-disable-next-line no-console
-			console.log('🪢 ~ LayerTree ~ createView ~ ~ onDragLeave ~ ~ removeEntry(currentUid) (with currentUid: ', currentUid, ')');
-			this._removeEntry(currentUid);
+			if (this.#currentGeoResourceId !== null) {
+				// eslint-disable-next-line no-console
+				console.log('🪢 ~ LayerTree ~ createView ~ ~ onDragLeave ~ ~ removeEntry(currentUid) (with currentUid: ', currentUid, ')');
+				this._removeEntry(currentUid);
+				this.#currentGeoResourceId = null;
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
+			}
 
 			this.signal(Update_CurrentUid, '');
 		};
