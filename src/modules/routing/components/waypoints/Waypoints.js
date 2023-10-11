@@ -13,7 +13,6 @@ import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
 import arrowDownUpSvg from '../assets/arrow-down-up.svg';
 import removeSvg from '../assets/trash.svg';
-import { MenuTypes } from '../../../commons/components/overflowMenu/OverflowMenu';
 
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';
