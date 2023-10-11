@@ -105,6 +105,7 @@ export class RoutingChart extends MvuElement {
 			 *  type:'REMOVE_HIGHLIGHTED_SEGMENTS'
 			 *  payload: {}
 			 */
+			console.warn('EventLike for REMOVE_HIGHLIGHTED_SEGMENTS must be implemented.');
 		};
 
 		// eslint-disable-next-line no-unused-vars
@@ -115,6 +116,7 @@ export class RoutingChart extends MvuElement {
 			 *  type:'HIGHLIGHT_SEGMENTS'
 			 *  payload: { segments: item.segments, zoomToExtent: false }
 			 */
+			console.warn('EventLike for HIGHLIGHT_SEGMENTS must be implemented.');
 		};
 
 		return html`<style>

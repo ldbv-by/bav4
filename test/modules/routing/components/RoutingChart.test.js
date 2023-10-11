@@ -300,4 +300,88 @@ describe('RoutingChart', () => {
 			});
 		});
 	});
+
+	describe('when mouse moves over legend item', () => {
+		const properties = {
+			label: 'foo',
+			items: [
+				{
+					id: 300,
+					color: 'red',
+					label: 'bar',
+					data: {
+						absolute: 18,
+						relative: 0.4,
+						segments: [
+							[0, 1],
+							[3, 4]
+						]
+					},
+					name: 'bar_name'
+				},
+				{
+					id: 300,
+					color: 'red',
+					label: 'foo',
+					data: {
+						absolute: 1234,
+						relative: 34,
+						segments: [
+							[0, 1],
+							[3, 4]
+						]
+					},
+					name: 'foo_name'
+				},
+				{
+					id: 300,
+					color: 'blue',
+					label: 'baz',
+					data: {
+						absolute: 5678,
+						relative: 56,
+						segments: [
+							[0, 1],
+							[3, 4]
+						]
+					},
+					name: 'baz_name'
+				}
+			]
+		};
+		it('highlights the related segments in the map', async () => {
+			// todo: resolve this test to the implemented version (expect changes in store)
+			// of the mouseover-behavior
+			const element = await setup({}, properties);
+			const consoleSpy = spyOn(console, 'warn').and.callFake(() => {});
+
+			const containerElement = element.shadowRoot.querySelector('.container');
+			const selectorElement = containerElement.querySelector('.chart-selector');
+
+			selectorElement.click();
+
+			const progressBarElement = containerElement.querySelector('.highlight');
+
+			progressBarElement.dispatchEvent(new Event('mouseover'));
+
+			expect(consoleSpy).toHaveBeenCalledWith('EventLike for HIGHLIGHT_SEGMENTS must be implemented.');
+		});
+
+		it('removes the highlighted segments from the map', async () => {
+			// todo: resolve this test to the implemented version (expect changes in store)
+			// of the mouseout-behavior
+			const element = await setup({}, properties);
+			const consoleSpy = spyOn(console, 'warn').and.callFake(() => {});
+
+			const containerElement = element.shadowRoot.querySelector('.container');
+			const selectorElement = containerElement.querySelector('.chart-selector');
+
+			selectorElement.click();
+			const progressBarElements = containerElement.querySelectorAll('.highlight');
+
+			progressBarElements[0].dispatchEvent(new Event('mouseout'));
+
+			expect(consoleSpy).toHaveBeenCalledWith('EventLike for REMOVE_HIGHLIGHTED_SEGMENTS must be implemented.');
+		});
+	});
 });
