@@ -7,7 +7,7 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './waypoints.css';
-import { setWaypoints } from '../../../../store/routing/routing.action';
+import { setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
@@ -78,26 +78,15 @@ export class Waypoints extends MvuElement {
 		const translate = (key) => this._translationService.translate(key);
 		const { waypoints } = model;
 
-		const removeAll = () => {
-			setWaypoints([]);
-		};
-
 		const reverse = () => {
 			setWaypoints([...waypoints].reverse());
 		};
-		return [
-			{ label: translate('routing_waypoints_remove_all'), icon: removeSvg, action: () => removeAll() },
-			{ label: translate('routing_waypoints_reverse'), icon: arrowDownUpSvg, action: () => reverse() }
-		];
+		return [{ label: translate('routing_waypoints_reverse'), icon: arrowDownUpSvg, action: () => reverse() }];
 	}
 
 	_getButtons(model) {
 		const translate = (key) => this._translationService.translate(key);
 		const { waypoints } = model;
-
-		const removeAll = () => {
-			setWaypoints([]);
-		};
 
 		const reverse = () => {
 			setWaypoints([...waypoints].reverse());
@@ -105,7 +94,6 @@ export class Waypoints extends MvuElement {
 
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
-					<ba-button id="button_remove_all" .label=${translate('routing_waypoints_remove_all')} .type=${'secondary'} @click=${removeAll}></ba-button>
 					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
 			  </div>`
 			: nothing;

@@ -90,9 +90,8 @@ describe('Waypoints', () => {
 
 			const buttonElements = element.shadowRoot.querySelectorAll('ba-button');
 
-			expect(buttonElements).toHaveSize(2);
-			expect(buttonElements[0].label).toBe('routing_waypoints_remove_all');
-			expect(buttonElements[1].label).toBe('routing_waypoints_reverse');
+			expect(buttonElements).toHaveSize(1);
+			expect(buttonElements[0].label).toBe('routing_waypoints_reverse');
 		});
 
 		it('renders draggable elements', async () => {
@@ -118,16 +117,6 @@ describe('Waypoints', () => {
 		});
 
 		describe('when action-button is pressed', () => {
-			it('removes all waypoints', async () => {
-				const element = await setup(defaultRoutingState);
-
-				const actionButtonElement = element.shadowRoot.querySelector('#button_remove_all');
-
-				actionButtonElement.click();
-
-				expect(store.getState().routing.waypoints).toEqual([]);
-			});
-
 			it('reverse to order of all waypoints', async () => {
 				const element = await setup(defaultRoutingState);
 
