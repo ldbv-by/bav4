@@ -454,7 +454,7 @@ describe('OlRoutingHandler', () => {
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
 
-					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved(
+					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolvedTo(
 						mockRouteResult
 					);
 					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
@@ -497,7 +497,7 @@ describe('OlRoutingHandler', () => {
 					spyOn(routingServiceMock, 'calculate').and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
-					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeRejected();
+					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolvedTo(null);
 					expect(errorSpy).toHaveBeenCalledWith(message);
 					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
