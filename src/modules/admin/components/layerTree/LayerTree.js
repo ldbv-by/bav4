@@ -112,7 +112,7 @@ export class LayerTree extends MvuElement {
 				return { ...model, currentGeoResourceId: data };
 			case Update_CurrentUid:
 				// eslint-disable-next-line no-console
-				console.log('🚀 ~ update ~ Update_CurrentUid:', data);
+				// console.log('🚀 ~ update ~ Update_CurrentUid:', data);
 				return { ...model, currentUid: data };
 			case Update_Currents:
 				// eslint-disable-next-line no-console
@@ -147,22 +147,22 @@ export class LayerTree extends MvuElement {
 
 		const onDragStart = (event, draggedEntry) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ event:', event);
+			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ event:', event);
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntry:', draggedEntry);
+			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntry:', draggedEntry);
 
 			const draggedEntryUid = draggedEntry.uid;
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntryUid:', draggedEntryUid);
+			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntryUid:', draggedEntryUid);
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
-
-			// this._removeEntry(draggedEntryUid);
 
 			const target = event.target;
 			const addIsDragged = () => {
 				target.classList.add('isdragged');
 			};
+
+			// this._removeEntry(draggedEntryUid);
 
 			setTimeout(addIsDragged, 0);
 		};
@@ -198,12 +198,12 @@ export class LayerTree extends MvuElement {
 			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
 			if (uidFromDrag) {
 				// eslint-disable-next-line no-console
-				console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag: ', uidFromDrag);
+				// console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag: ', uidFromDrag);
 				// eslint-disable-next-line no-console
-				console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ', currentCatalogEntry.uid);
+				// console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ', currentCatalogEntry.uid);
 				if (currentUid === currentCatalogEntry.uid) {
 					// eslint-disable-next-line no-console
-					console.log('🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag === currentCatalogEntry.uid -> return');
+					// console.log('🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag === currentCatalogEntry.uid -> return');
 					event.preventDefault();
 					return;
 				}
@@ -213,6 +213,9 @@ export class LayerTree extends MvuElement {
 			}
 
 			const spanElement = event.target;
+			if (!spanElement) {
+				console.log('🪢🪢🪢 ~ LayerTree ~ onDragOver ~ event:', event);
+			}
 			spanElement.classList.add('drag-over');
 		};
 
@@ -227,9 +230,9 @@ export class LayerTree extends MvuElement {
 			event.target.classList.remove('drag-over');
 			event.preventDefault();
 
-			this._removeEntry(currentUid);
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDragLeave ~ this._removeEntry(currentUid) (with currentUid: ', currentUid, ')');
+			console.log('🪢 ~ LayerTree ~ createView ~ ~ onDragLeave ~ ~ removeEntry(currentUid) (with currentUid: ', currentUid, ')');
+			this._removeEntry(currentUid);
 
 			this.signal(Update_CurrentUid, '');
 		};
@@ -330,7 +333,7 @@ export class LayerTree extends MvuElement {
 				>
 					<span
 						id="${entry.geoResourceId}"
-						class="${(entry.children ? hasChildrenClass + ' ' : '') + droppableClass}"
+						class="draggable ${(entry.children ? hasChildrenClass + ' ' : '') + droppableClass}"
 						draggable="true"
 						@dragover=${(event) => onDragOver(event, entry)}
 						@dragleave=${onDragLeave}

@@ -9,13 +9,15 @@ import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
-import { logOnce } from '../layerTree/LayerTree';
+// eslint-disable-next-line no-unused-vars
+import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_Catalog = 'update_catalog';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_GeoResources = 'update_geoResources';
+const Update_ElementToMove = 'update_elementToMove';
 
 /**
  * Contains a form for submitting a general feedback.
@@ -26,13 +28,15 @@ export class AdminPanel extends MvuElement {
 	#uniqueIdCounter = 0;
 
 	constructor() {
+		// console.log('🚀 ~ AdminPanel ~ constructor ~ constructor()');
 		super({
-			currentTopicId: null,
+			currentTopicId: 'ba',
 			topics: [],
 			catalog: [],
 			geoResources: [],
 			dummy: true,
-			catalogWithResourceData: null
+			catalogWithResourceData: null,
+			elementToMove: null
 		});
 
 		const {
@@ -136,6 +140,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	_mergeCatalogWithResources() {
+		console.log('🚀 ~ AdminPanel ~ _mergeCatalogWithResources()');
 		const catalog = this.getModel().catalog;
 		const georesources = this.getModel().geoResources;
 
@@ -148,11 +153,15 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async onInitialize() {
+		console.log('🚀 ~ AdminPanel ~ onInitialize()');
 		const updateCatalog = async (currentTopicId) => {
+			console.log('🚀 ~ AdminPanel ~ onInitialize() ~ updateCatalog()');
 			try {
 				let catalogWithIds = [];
 				if (currentTopicId) {
+					console.log('🚀 ~ AdminPanel ~ onInitialize() ~ updateCatalog() ~ _catalogService.byId(currentTopicId)');
 					const catalog = await this._catalogService.byId(currentTopicId);
+
 					const catalogWithS = this._insertFirstNodeWithChildrenIntoSecond(catalog);
 					catalogWithIds = this._checkAndAugmentPositioningInfo(catalogWithS);
 				} else {
@@ -169,6 +178,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		try {
+			console.log('🚀 ~ AdminPanel ~ onInitialize() ~ _topicsService.all()');
 			const topics = await this._topicsService.all();
 			this.signal(Update_Topics, topics);
 		} catch (error) {
@@ -176,6 +186,7 @@ export class AdminPanel extends MvuElement {
 		}
 
 		try {
+			console.log('🚀 ~ AdminPanel ~ onInitialize() ~ _geoResourceService.all()');
 			const geoResources = await this._geoResourceService.all();
 			this.signal(Update_GeoResources, geoResources);
 
@@ -186,7 +197,9 @@ export class AdminPanel extends MvuElement {
 
 		this.observe(
 			(state) => state.admin.currentTopicId,
+
 			(currentTopicId) => {
+				console.log('🚀 ~ AdminPanel ~ onInitialize() ~ observe currentTopicId');
 				if (!currentTopicId) {
 					const defaultTopic = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
 					this.signal(Update_SelectedTopic, defaultTopic);
@@ -215,7 +228,13 @@ export class AdminPanel extends MvuElement {
 			case Update_Catalog:
 				return { ...model, catalog: data };
 
+			case Update_ElementToMove:
+				// eslint-disable-next-line no-console
+				console.log('🚀🚀🚀🚀🚀🚀🚀 ~ update ~ Update_ElementToMove:', data, '🚀🚀🚀🚀🚀🚀🚀');
+				return { ...model, elementToMove: data };
+
 			case Update_CatalogWithResourceData:
+				console.log(data);
 				if (data && data.length > 0) {
 					data.sort((a, b) => a.position - b.position);
 					data.forEach((item) => sortChildrenByIdRecursive(item));
@@ -229,6 +248,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
+		// console.log('🚀 ~ file: AdminPanel.js:240 ~ AdminPanel ~ createView ~ model:', model);
 		const { currentTopicId, topics, catalogWithResourceData, geoResources, dummy } = model;
 
 		const calcPosition = (index, catalogEntry, arrayWithEntry) => {
@@ -242,18 +262,21 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
+		// todo - in the making
 		const findElement = (uid, inArray) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ inArray:', inArray);
+			// console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ uid: ', uid);
+			// eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ inArray: ', inArray);
 
 			for (let index = 0; index < inArray.length; index++) {
 				const element = inArray[index];
 
 				// eslint-disable-next-line no-console
-				console.log('🚀 ~  AdminPanel ~ createView ~ inArray.forEach ~ element:', element);
+				// console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ itterate over inArray ~ element:', element);
 				if (element.uid === uid) {
 					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ element.uid === uid');
+					// console.log('🚀 ~ AdminPanel ~ createView ~ findElement ~ element.uid === uid');
 					return element;
 				}
 				// if (element.children) {
@@ -262,6 +285,7 @@ export class AdminPanel extends MvuElement {
 				// 	return findElement(uid, element.children);
 				// }
 			}
+			// console.log('🚀 nach for 🚀 🚀 🚀 🚀 🚀 🚀 🚀 ');
 		};
 
 		const moveElement = (currentUid, uidFromDrag) => {
@@ -271,10 +295,31 @@ export class AdminPanel extends MvuElement {
 				console.log('      (for dragged element ~ uidFromDrag: ', uidFromDrag, ')');
 			}
 
-			findElement(uidFromDrag, catalogWithResourceData);
+			const elementToMove = findElement(uidFromDrag, catalogWithResourceData);
+			if (!elementToMove) {
+				return;
+			}
+			// if (elementToMove) {
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 AdminPanel ~ createView ~ moveElement ~ elementToMove: ', elementToMove);
+
+			// 	this.signal(Update_ElementToMove, elementToMove);
+			// }
+			const elementToMoveTo = findElement(currentUid, catalogWithResourceData);
+			// eslint-disable-next-line no-console
+			console.log('🚀 AdminPanel ~ createView ~ moveElement ~ elementToMoveTo: ', elementToMoveTo);
 			// const draggedElement = findElement(uidFromDrag, catalogWithResourceData);
 			// // eslint-disable-next-line no-console
 			// console.log('🚀 ~ AdminPanel ~ createView ~ moveElement ~ draggedElement:', draggedElement);
+
+			// const updatedCatalogWithResourceData = removeEntryRecursive(uidFromDrag, [...catalogWithResourceData]);
+
+			const newCatalogWithResourceData = [...catalogWithResourceData];
+			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+
+			addGeoResourceRecursivly(newCatalogWithResourceData, currentUid, elementToMove);
+
+			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
@@ -367,7 +412,7 @@ export class AdminPanel extends MvuElement {
 			}
 
 			const newCatalogWithResourceData = [...catalog];
-			const indexToRemove = newCatalogWithResourceData.findIndex((geoResource) => geoResource.uid === uid);
+			const indexToRemove = newCatalogWithResourceData.findIndex((entry) => entry.uid === uid);
 
 			if (indexToRemove !== -1) {
 				newCatalogWithResourceData.splice(indexToRemove, 1);
@@ -391,6 +436,7 @@ export class AdminPanel extends MvuElement {
 
 				return element;
 			});
+			console.log('🚀 ~ file: AdminPanel.js:434 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			return updatedCatalog;
 		};
@@ -430,6 +476,7 @@ export class AdminPanel extends MvuElement {
 
 				return element;
 			});
+			console.log('🚀 ~ file: AdminPanel.js:479 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			return updatedCatalog;
 		};
@@ -450,7 +497,7 @@ export class AdminPanel extends MvuElement {
 			this.signal(Update_Catalog, catalogWithPositioningInfo);
 		};
 
-		const incrementString = (str) => {
+		const incrementStringDigit = (str) => {
 			// Find the position of the last digit in the string
 			const lastDigitIndex = str.search(/\d(?!.*\d)/);
 
@@ -489,11 +536,13 @@ export class AdminPanel extends MvuElement {
 
 			this.signal(Update_CatalogWithResourceData, [
 				...catalogWithResourceData,
-				{ uid: this._generateUniqueId(), label: incrementString(catalogEntry.label), children: [], position: inBetween }
+				{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [], position: inBetween }
 			]);
 		};
 
 		if (currentTopicId) {
+			console.log(currentTopicId);
+
 			return html`
 				<style>
 					${css}
@@ -506,6 +555,7 @@ export class AdminPanel extends MvuElement {
 						<ba-layer-tree
 							.topics="${topics}"
 							.selectedTheme="${currentTopicId}"
+							console.log(
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"
