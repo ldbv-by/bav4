@@ -7,7 +7,7 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './waypoints.css';
-import { setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
+import { setWaypoints } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
 import arrowUpSvg from '../assets/arrow-up-short.svg';
 import arrowDownSvg from '../assets/arrow-down-short.svg';
