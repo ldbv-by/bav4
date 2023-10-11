@@ -1,6 +1,15 @@
 import { MapBrowserEvent, MapEvent } from 'ol';
 import Event from 'ol/events/Event';
 
+/**
+ * Fires a `MapBrowserEvent` by calling `dispatchEvent()` on the ol map.
+ * @param {Map} the ol map
+ * @param {String} type type of BrowserEvent
+ * @param {number} x the x-coordinate (relative to the viewport)
+ * @param {number} y the y-coordinate (relative to the viewport)
+ * @param {boolean} [dragging]  Is the map currently being dragged
+ * @param {Function} [preventDefaultFunction] preventDefault function
+ */
 export const simulateMapBrowserEvent = (map, type, x, y, dragging = false, preventDefaultFunction = () => {}) => {
 	const eventType = type;
 
@@ -19,6 +28,11 @@ export const simulateMapBrowserEvent = (map, type, x, y, dragging = false, preve
 	map.dispatchEvent(mapEvent);
 };
 
+/**
+ * Fires a `MapEvent` by calling `dispatchEvent()` on the ol map.
+ * @param {Map} the ol map
+ * @param {String} type type of BrowserEvent
+ */
 export const simulateMapEvent = (map, type) => {
 	const mapEvent = new MapEvent(type, map, map.frameState);
 

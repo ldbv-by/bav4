@@ -55,10 +55,10 @@ import { FeedbackService } from '../services/FeedbackService';
 import { IframeContainerPlugin } from '../plugins/IframeContainerPlugin';
 import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
+import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
 import { ETACalculatorService } from '../services/ETACalculatorService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
-import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 
 $injector
 	.registerSingleton('ProjectionService', new Proj4JsService())

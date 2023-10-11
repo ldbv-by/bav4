@@ -8,7 +8,9 @@ import {
 	ROUTING_ROUTE_CHANGED,
 	ROUTING_STATS_CHANGED,
 	ROUTING_STATUS_CHANGED,
-	ROUTING_WAYPOINTS_CHANGED
+	ROUTING_WAYPOINTS_CHANGED,
+	ROUTING_START_SET,
+	ROUTING_DESTINATION_SET
 } from './routing.reducer';
 
 const getStore = () => {
@@ -42,7 +44,7 @@ export const setStatus = (statusCode) => {
 
 /**
  * Updates the current route stats.
- * @param {RouteStats}  routeStats the new RouteStats
+ * @param {module:domain/routing~RouteStats}  routeStats the new RouteStats
  * @function
  */
 export const setRouteStats = (routeStats) => {
@@ -54,7 +56,7 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the current route.
- * @param {Route}  route the new Route
+ * @param {module:services/RoutingService~Route}  route the new Route
  * @function
  */
 export const setRoute = (route) => {
@@ -65,19 +67,45 @@ export const setRoute = (route) => {
 };
 
 /**
- * Updates the current waypoints.
- * @param {Coordinate[]}  coordinates the new waypoint coordinates
+ * Updates the current waypoints updates the status to {@link RoutingStatusCodes.Ok}. A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
+ * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */
 export const setWaypoints = (coordinates) => {
+	if (coordinates.length > 1) {
+		getStore().dispatch({
+			type: ROUTING_WAYPOINTS_CHANGED,
+			payload: [...coordinates]
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the start waypoint (in the SRID of the map)
+ * @function
+ */
+export const setStart = (coordinate) => {
 	getStore().dispatch({
-		type: ROUTING_WAYPOINTS_CHANGED,
-		payload: [...coordinates]
+		type: ROUTING_START_SET,
+		payload: coordinate
 	});
 };
 
 /**
- * Activates the geolocation functionality.
+ * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Destination_Missing}
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
+ * @function
+ */
+export const setDestination = (coordinate) => {
+	getStore().dispatch({
+		type: ROUTING_DESTINATION_SET,
+		payload: coordinate
+	});
+};
+
+/**
+ * Activates the routing functionality.
  * @function
  */
 export const activate = () => {
@@ -88,7 +116,7 @@ export const activate = () => {
 };
 
 /**
- * Deactivates the geolocation functionality.
+ * Deactivates the routing functionality.
  * @function
  */
 export const deactivate = () => {

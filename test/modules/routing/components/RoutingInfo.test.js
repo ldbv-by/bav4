@@ -15,7 +15,7 @@ describe('RoutingInfo', () => {
 	};
 
 	const category = { color: 'gray' };
-	const routingServiceMock = { getCategoryById: () => category };
+	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo' };
 
 	const setup = (state, properties) => {
 		const initialState = {

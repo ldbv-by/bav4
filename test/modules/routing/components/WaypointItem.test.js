@@ -8,7 +8,7 @@ window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
 	const category = { color: 'gray' };
-	const routingServiceMock = { getCategoryById: () => category };
+	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo' };
 
 	const setup = async (waypoint = null) => {
 		TestUtils.setupStoreAndDi(

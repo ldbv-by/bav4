@@ -38,5 +38,7 @@ export const RoutingStatusCodes = Object.freeze({
 	Ok: 200,
 	Http_Backend_400: 400,
 	Http_Backend_500: 500,
-	Start_Destination_Missing: 900
+	Start_Destination_Missing: 900,
+	Destination_Missing: 901,
+	Start_Missing: 902
 });

@@ -1,5 +1,15 @@
 import { RoutingStatusCodes } from '../../../src/domain/routing';
-import { activate, deactivate, setCategory, setRoute, setRouteStats, setStatus, setWaypoints } from '../../../src/store/routing/routing.action';
+import {
+	activate,
+	deactivate,
+	setCategory,
+	setDestination,
+	setRoute,
+	setRouteStats,
+	setStart,
+	setStatus,
+	setWaypoints
+} from '../../../src/store/routing/routing.action';
 import { routingReducer } from '../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../test-utils.js';
 
@@ -63,9 +73,35 @@ describe('routingReducer', () => {
 			[33, 44]
 		];
 
+		setWaypoints([[11, 22]]);
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
 		setWaypoints(coordinates);
 
 		expect(store.getState().routing.waypoints).toEqual(coordinates);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+	});
+
+	it('sets the start waypoint', () => {
+		const store = setup();
+		const coordinate = [11, 22];
+
+		setStart([11, 22]);
+
+		expect(store.getState().routing.waypoints).toEqual([coordinate]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Destination_Missing);
+	});
+
+	it('sets the destination waypoint', () => {
+		const store = setup();
+		const coordinate = [11, 22];
+
+		setDestination([11, 22]);
+
+		expect(store.getState().routing.waypoints).toEqual([coordinate]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
 	});
 
 	it("changes the 'active' property", () => {

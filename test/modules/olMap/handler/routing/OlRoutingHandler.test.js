@@ -29,6 +29,7 @@ import { LevelTypes } from '../../../../../src/store/notifications/notifications
 import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handler/routing/styleUtils';
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
+import { RoutingStatusCodes } from '../../../../../src/domain/routing';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -248,7 +249,8 @@ describe('OlRoutingHandler', () => {
 				const catId = 'catId';
 				setup({
 					categoryId: catId,
-					waypoints: coordinates
+					waypoints: coordinates,
+					status: RoutingStatusCodes.Ok
 				});
 				const instanceUnderTest = new OlRoutingHandler();
 				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
@@ -257,7 +259,7 @@ describe('OlRoutingHandler', () => {
 
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
-				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
 
@@ -294,7 +296,7 @@ describe('OlRoutingHandler', () => {
 
 	describe('events', () => {
 		describe('when observed slices-of-state change', () => {
-			it('updates updates the category and calculates a route', async () => {
+			it('updates the category and calculates a route', async () => {
 				const coordinates = [
 					[22, 33],
 					[44, 55]
@@ -306,14 +308,14 @@ describe('OlRoutingHandler', () => {
 				setCategory(catId);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
-				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([]);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith([], RoutingStatusCodes.Start_Destination_Missing);
 
 				requestRouteFromCoordinatesSpy.calls.reset();
 
 				setWaypoints(coordinates);
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
-				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
 	});
@@ -456,9 +458,7 @@ describe('OlRoutingHandler', () => {
 						mockRouteResult
 					);
 					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
-					// expect(displayAlternativeRoutingGeometrySpy.calls.allArgs()).toEqual(alternativeCategoryIds);
 					expect(displayAlternativeRoutingGeometrySpy).toHaveBeenCalledTimes(2);
-					expect(instanceUnderTest._activeInteraction).toBeTrue();
 				});
 			});
 
@@ -481,7 +481,6 @@ describe('OlRoutingHandler', () => {
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolved();
 					expect(displayCurrentRoutingGeometrySpy).toHaveBeenCalledWith(mockRouteResult.defaultCategoryId);
 					expect(displayAlternativeRoutingGeometrySpy).not.toHaveBeenCalled();
-					expect(instanceUnderTest._activeInteraction).toBeTrue();
 				});
 			});
 
@@ -500,7 +499,6 @@ describe('OlRoutingHandler', () => {
 
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeRejected();
 					expect(errorSpy).toHaveBeenCalledWith(message);
-					expect(instanceUnderTest._activeInteraction).toBeTrue();
 					expect(store.getState().notifications.latest.payload.content).toBe('global_routingService_exception');
 					expect(store.getState().notifications.latest.payload.level).toBe(LevelTypes.ERROR);
 				});
@@ -562,6 +560,30 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_requestRouteFromCoordinates', () => {
+			describe('no coordinate is available', () => {
+				it('does nothing', async () => {
+					const catId = 'catId';
+					const { instanceUnderTest } = await newTestInstance({
+						categoryId: catId
+					});
+					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
+					const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
+					const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+					const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
+					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute');
+
+					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([], RoutingStatusCodes.Start_Destination_Missing));
+
+					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
+					expect(clearAllFeaturesSpy).not.toHaveBeenCalled();
+					expect(requestRouteSpy).not.toHaveBeenCalled();
+					expect(addStartInteractionFeatureSpy).not.toHaveBeenCalled();
+					expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
+					expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
+				});
+			});
+
 			describe('more than one coordinate is available', () => {
 				it('call _requestRoute with with correct arguments', async () => {
 					const catId = 'catId';
@@ -581,7 +603,7 @@ describe('OlRoutingHandler', () => {
 					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo(mockResponse);
 					spyOn(routingServiceMock, 'getAlternativeCategoryIds').withArgs(catId).and.returnValue([alternativeCategoryId0]);
 
-					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2]));
+					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0, coordinate1, coordinate2], RoutingStatusCodes.Ok));
 
 					expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
 					expect(clearAllFeaturesSpy).toHaveBeenCalled();
@@ -593,20 +615,57 @@ describe('OlRoutingHandler', () => {
 				});
 			});
 
-			describe('less then two coordinates features are available', () => {
-				it('does nothing', async () => {
-					const { instanceUnderTest } = await newTestInstance();
-					const coordinate0 = [0, 0];
-					const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
-					const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
-					const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute').and.resolveTo();
-					await TestUtils.timeout();
+			describe('one coordinate is available', () => {
+				describe('which is the start waypoint', () => {
+					it('call _requestRoute with with correct arguments', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
+						});
+						const coordinate0 = [0, 0];
+						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+						const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
+						const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
+						const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+						const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
+						const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute');
 
-					await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0]));
+						await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0], RoutingStatusCodes.Destination_Missing));
 
-					expect(setInteractionsActiveSpy).not.toHaveBeenCalled();
-					expect(clearAllFeaturesSpy).not.toHaveBeenCalled();
-					expect(requestRouteSpy).not.toHaveBeenCalled();
+						expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
+						expect(clearAllFeaturesSpy).toHaveBeenCalled();
+						expect(requestRouteSpy).not.toHaveBeenCalled();
+						expect(addStartInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0);
+						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
+						expect(addDestinationInteractionFeatureSpy).not.toHaveBeenCalled();
+						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
+					});
+				});
+
+				describe('which is the destination waypoint', () => {
+					it('call _requestRoute with with correct arguments', async () => {
+						const catId = 'catId';
+						const { instanceUnderTest } = await newTestInstance({
+							categoryId: catId
+						});
+						const coordinate0 = [0, 0];
+						const setInteractionsActiveSpy = spyOn(instanceUnderTest, '_setInteractionsActive');
+						const clearAllFeaturesSpy = spyOn(instanceUnderTest, '_clearAllFeatures');
+						const addStartInteractionFeatureSpy = spyOn(instanceUnderTest, '_addStartInteractionFeature');
+						const addIntermediateInteractionFeatureSpy = spyOn(instanceUnderTest, '_addIntermediateInteractionFeature');
+						const addDestinationInteractionFeatureSpy = spyOn(instanceUnderTest, '_addDestinationInteractionFeature');
+						const requestRouteSpy = spyOn(instanceUnderTest, '_requestRoute');
+
+						await expectAsync(instanceUnderTest._requestRouteFromCoordinates([coordinate0], RoutingStatusCodes.Start_Missing));
+
+						expect(setInteractionsActiveSpy).toHaveBeenCalledWith(false);
+						expect(clearAllFeaturesSpy).toHaveBeenCalled();
+						expect(requestRouteSpy).not.toHaveBeenCalled();
+						expect(addStartInteractionFeatureSpy).not.toHaveBeenCalled();
+						expect(addIntermediateInteractionFeatureSpy).not.toHaveBeenCalled();
+						expect(addDestinationInteractionFeatureSpy).toHaveBeenCalledWith(coordinate0, 0);
+						expect(instanceUnderTest._currentRoutingResponse).toBeNull();
+					});
 				});
 			});
 		});
@@ -654,29 +713,6 @@ describe('OlRoutingHandler', () => {
 				expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
 			});
 		});
-
-		// describe('_clearIntermediateInteractionFeatures', () => {
-		// 	it('removes the correct features', async () => {
-		// 		const { instanceUnderTest } = await newTestInstance();
-		// 		const feature0 = new Feature({
-		// 			geometry: new Point([0, 0])
-		// 		});
-		// 		feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
-		// 		instanceUnderTest._routeLayer.getSource().addFeature(feature0);
-		// 		instanceUnderTest._routeLayerCopy.getSource().addFeature(feature0);
-		// 		instanceUnderTest._alternativeRouteLayer.getSource().addFeature(feature0);
-		// 		instanceUnderTest._highlightLayer.getSource().addFeature(feature0);
-		// 		instanceUnderTest._interactionLayer.getSource().addFeature(feature0);
-
-		// 		instanceUnderTest._clearIntermediateInteractionFeatures();
-
-		// 		expect(instanceUnderTest._routeLayer.getSource().getFeatures()).not.toHaveSize(0);
-		// 		expect(instanceUnderTest._routeLayerCopy.getSource().getFeatures()).not.toHaveSize(0);
-		// 		expect(instanceUnderTest._alternativeRouteLayer.getSource().getFeatures()).not.toHaveSize(0);
-		// 		expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).not.toHaveSize(0);
-		// 		expect(instanceUnderTest._interactionLayer.getSource().getFeatures()).toHaveSize(0);
-		// 	});
-		// });
 
 		describe('_switchToAlternativeRoute', () => {
 			it('displays an alternative route', async () => {
@@ -981,7 +1017,7 @@ describe('OlRoutingHandler', () => {
 					feature: feature
 				});
 				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
-				expect(map.getTarget().style.cursor).toBe('pointer');
+				expect(map.getTarget().style.cursor).toBe('grab');
 			});
 
 			it('handles a detected feature of other type', async () => {
