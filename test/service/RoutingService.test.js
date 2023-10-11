@@ -1,22 +1,16 @@
-import { BvvRoutingService, mockCategoriesProvider } from '../../src/services/RoutingService';
+import { BvvRoutingService } from '../../src/services/RoutingService';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
-
-describe('mockProvider', () => {
-	it('returns the correct categories', async () => {
-		const categories = await mockCategoriesProvider();
-		expect(categories).toHaveSize(4);
-	});
-});
+import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
-	const setup = (routingCategoriesProvider = mockCategoriesProvider, routeProvider = bvvRouteProvider) => {
+	const setup = (routingCategoriesProvider = bvvRoutingCategoriesProvider, routeProvider = bvvRouteProvider) => {
 		return new BvvRoutingService(routingCategoriesProvider, routeProvider);
 	};
 
 	describe('constructor', () => {
 		it('initializes the service with default providers', async () => {
 			const instanceUnderTest = new BvvRoutingService();
-			expect(instanceUnderTest._categoriesProvider).toEqual(mockCategoriesProvider);
+			expect(instanceUnderTest._categoriesProvider).toEqual(bvvRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
 		});
 
