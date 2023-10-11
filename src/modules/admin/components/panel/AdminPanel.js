@@ -219,12 +219,12 @@ export class AdminPanel extends MvuElement {
 
 			case Update_ElementToMove:
 				// eslint-disable-next-line no-console
-				console.log('🚀🚀🚀🚀🚀🚀🚀 ~ update ~ Update_ElementToMove:', data, '🚀🚀🚀🚀🚀🚀🚀');
+				// console.log('🚀🚀🚀🚀🚀🚀🚀 ~ update ~ Update_ElementToMove:', data, '🚀🚀🚀🚀🚀🚀🚀');
 				return { ...model, elementToMove: data };
 
 			case Update_CatalogWithResourceData:
 				// eslint-disable-next-line no-console
-				console.log('🚀🚀🚀🚀🚀🚀🚀 ~ update ~ Update_CatalogWithResourceData:', data, '🚀🚀🚀🚀🚀🚀🚀');
+				// console.log('🚀🚀🚀🚀🚀🚀🚀 ~ update ~ Update_CatalogWithResourceData:', data, '🚀🚀🚀🚀🚀🚀🚀');
 
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
 
@@ -292,11 +292,11 @@ export class AdminPanel extends MvuElement {
 			if (uidHover_MoveBeforeElement_ === uidFromDrag_ElementToMove_) {
 				return;
 			}
-			logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ uidFromDrag_ElementToMove_: ' + uidFromDrag_ElementToMove_);
-			if (logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ uidHover_MoveBeforeElement_: ' + uidHover_MoveBeforeElement_)) {
-				// eslint-disable-next-line no-console
-				console.log('      (for dragged element ~ uidFromDrag_ElementToMove_: ', uidFromDrag_ElementToMove_, ')');
-			}
+			// logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ uidFromDrag_ElementToMove_: ' + uidFromDrag_ElementToMove_);
+			// if (logOnce('🚀 ~ AdminPanel ~ createView ~ moveElement ~ uidHover_MoveBeforeElement_: ' + uidHover_MoveBeforeElement_)) {
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('      (for dragged element ~ uidFromDrag_ElementToMove_: ', uidFromDrag_ElementToMove_, ')');
+			// }
 
 			const elementToMove = findElement(uidFromDrag_ElementToMove_, catalogWithResourceData);
 			if (!elementToMove) {
@@ -308,19 +308,19 @@ export class AdminPanel extends MvuElement {
 
 			// 	this.signal(Update_ElementToMove, elementToMove);
 			// }
-			const elementToMoveTo = findElement(uidHover_MoveBeforeElement_, catalogWithResourceData);
-			// eslint-disable-next-line no-console
-			console.log('🚀 AdminPanel ~ createView ~ moveElement ~ elementToMoveTo: ', elementToMoveTo);
+			// const elementToMoveTo = findElement(uidHover_MoveBeforeElement_, catalogWithResourceData);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 AdminPanel ~ createView ~ moveElement ~ elementToMoveTo: ', elementToMoveTo);
 			// const draggedElement = findElement(uidFromDrag_ElementToMove_, catalogWithResourceData);
 			// // eslint-disable-next-line no-console
 			// console.log('🚀 ~ AdminPanel ~ createView ~ moveElement ~ draggedElement:', draggedElement);
 
 			const updatedCatalogWithResourceData = removeEntryRecursive(uidFromDrag_ElementToMove_, [...catalogWithResourceData]);
-			console.log('🚀 ~ file: AdminPanel.js:319 ~ AdminPanel ~ moveElement ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
+			// console.log('🚀 ~ file: AdminPanel.js:319 ~ AdminPanel ~ moveElement ~ updatedCatalogWithResourceData:', updatedCatalogWithResourceData);
 
 			const newCatalogWithResourceData = addGeoResourceRecursivly(updatedCatalogWithResourceData, uidHover_MoveBeforeElement_, elementToMove);
 			// eslint-disable-next-line no-console
-			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+			// console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
@@ -340,15 +340,15 @@ export class AdminPanel extends MvuElement {
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
 					// eslint-disable-next-line no-console
-					console.log('Found the uid in the top-level entries');
+					// console.log('Found the uid in the top-level entries');
 					// Found the uid in the top-level entries
 					const inBetween = calcPosition(entryNumber, catalogEntry, catalogWithResourceData);
 
 					catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
-					console.log(
-						'🚀 ~ file: AdminPanel.js:346 ~ AdminPanel ~ addGeoResourceRecursivly ~ copyOfCatalogWithResourceData:',
-						catalogWithResourceData
-					);
+					// console.log(
+					// 	'🚀 ~ file: AdminPanel.js:346 ~ AdminPanel ~ addGeoResourceRecursivly ~ copyOfCatalogWithResourceData:',
+					// 	catalogWithResourceData
+					// );
 					this._sortCatalog(catalogWithResourceData);
 					return catalogWithResourceData;
 				}
@@ -442,7 +442,7 @@ export class AdminPanel extends MvuElement {
 				return element;
 			});
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: AdminPanel.js:434 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+			// console.log('🚀 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			return updatedCatalog;
 		};
@@ -483,7 +483,7 @@ export class AdminPanel extends MvuElement {
 				return element;
 			});
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+			// console.log('🚀 ~ AdminPanel ~ updatedCatalog ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			return updatedCatalog;
 		};
@@ -560,7 +560,6 @@ export class AdminPanel extends MvuElement {
 						<ba-layer-tree
 							.topics="${topics}"
 							.selectedTheme="${currentTopicId}"
-							console.log(
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"
