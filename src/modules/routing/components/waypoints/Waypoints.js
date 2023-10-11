@@ -55,7 +55,6 @@ export class Waypoints extends MvuElement {
 		const { status } = model;
 		const isVisible = status === RoutingStatusCodes.Ok;
 
-		const menuitems = this._getMenuItems(model);
 		const buttons = this._getButtons(model);
 		const waypointItems = this._getWaypoints(model);
 		return isVisible
@@ -68,20 +67,9 @@ export class Waypoints extends MvuElement {
 								${waypointItems}
 							</ul>
 						</div>
-						<!-- <ba-overflow-menu .type=${MenuTypes.MEATBALL} .items=${menuitems}></ba-overflow-menu> -->
 						${buttons}
 					</div>`
 			: nothing;
-	}
-
-	_getMenuItems(model) {
-		const translate = (key) => this._translationService.translate(key);
-		const { waypoints } = model;
-
-		const reverse = () => {
-			setWaypoints([...waypoints].reverse());
-		};
-		return [{ label: translate('routing_waypoints_reverse'), icon: arrowDownUpSvg, action: () => reverse() }];
 	}
 
 	_getButtons(model) {
