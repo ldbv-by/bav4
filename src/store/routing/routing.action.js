@@ -56,18 +56,18 @@ export const setRouteStats = (routeStats) => {
 
 /**
  * Updates the current route.
- * @param {module:services/RoutingService~Route}  route the new Route
+ * @param {module:services/RoutingService~Route|null}  route the new Route or `null`
  * @function
  */
 export const setRoute = (route) => {
 	getStore().dispatch({
 		type: ROUTING_ROUTE_CHANGED,
-		payload: { ...route }
+		payload: route ? { ...route } : null
 	});
 };
 
 /**
- * Updates the current waypoints updates the status to {@link RoutingStatusCodes.Ok}. A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
+ * Updates the current waypoints, updates the status to {@link RoutingStatusCodes.Ok} and sets route property to `null`.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
  * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */

@@ -62,7 +62,7 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_ROUTE_CHANGED: {
 			return {
 				...state,
-				route: { ...payload }
+				route: payload ? { ...payload } : null
 			};
 		}
 		case ROUTING_WAYPOINTS_CHANGED: {
