@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setWaypoints } from '../../../../store/routing/routing.action';
+import { setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 
 export const RoutingFeatureTypes = Object.freeze({
@@ -273,6 +273,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routingService.getAlternativeCategoryIds(this._catId).forEach((catId) => {
 			this._displayAlternativeRoutingGeometry(currentRoutingResponse[catId]);
 		});
+		// update store
+		setRoute(currentRoutingResponse[this._catId]);
 	}
 
 	_incrementIndex(startIndex) {
@@ -519,6 +521,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 						this._addDestinationInteractionFeature(coords[0], 0);
 						break;
 				}
+				// update store
+				setRoute(null);
 			} else {
 				// add interaction features
 				this._addStartInteractionFeature(coords.shift());
@@ -529,8 +533,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 				// request route
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-
 				this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+				// update store
+				setRoute(this._currentRoutingResponse[this._catId]);
 			}
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
