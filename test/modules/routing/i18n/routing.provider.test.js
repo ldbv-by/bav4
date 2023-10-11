@@ -26,7 +26,7 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_waypoints_hide).toBe('Wegpunkte verbergen');
 		expect(map.routing_waypoint_move_down).toBe('nach hinten');
 		expect(map.routing_waypoint_move_up).toBe('nach vorne');
-		expect(map.routing_waypoint_move_remove).toBe('entfernen');
+		expect(map.routing_waypoint_remove).toBe('entfernen');
 		expect(map.routing_warnings_title).toBe('Hinweise zur Route');
 		expect(map.routing_warnings_zoom).toBe('Zu den Segmenten zoomen');
 		expect(map.routing_details_surface).toBe('Oberfläche');
@@ -57,7 +57,7 @@ describe('i18n for feedback module', () => {
 		expect(map.routing_waypoints_hide).toBe('Hide waypoints');
 		expect(map.routing_waypoint_move_down).toBe('move forward');
 		expect(map.routing_waypoint_move_up).toBe('move backward');
-		expect(map.routing_waypoint_move_remove).toBe('remove');
+		expect(map.routing_waypoint_remove).toBe('remove');
 		expect(map.routing_warnings_title).toBe('Route notes');
 		expect(map.routing_warnings_zoom).toBe('Zoom to segments');
 		expect(map.routing_details_surface).toBe('Surface');
