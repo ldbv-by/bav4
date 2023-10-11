@@ -80,7 +80,6 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 
 		const onClickLoadRoutingData2 = () => {
 			setCategory('bvv-bike');
-			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({ time: 3600000, dist: 333, twoDiff: [111, 222] });
 			setWaypoints([
 				[1328315.0062647895, 6089975.78297438],
@@ -91,7 +90,6 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 
 		const onClickLoadRoutingData3 = () => {
 			setCategory('bvv-bike');
-			setStatus(RoutingStatusCodes.Ok);
 			setRouteStats({
 				time: 3600000,
 				dist: 333,

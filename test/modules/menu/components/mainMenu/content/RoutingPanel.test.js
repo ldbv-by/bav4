@@ -101,13 +101,16 @@ describe('RoutingPanel', () => {
 
 			button2.click();
 
-			expect(store.getState().routing.status).toBe(RoutingStatusCodes.OK);
+			expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
 			expect(store.getState().routing.waypoints).toHaveSize(3);
+			expect(store.getState().routing.stats).toEqual(jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222] }));
 
 			button3.click();
 
-			expect(store.getState().routing.status).toBe(RoutingStatusCodes.OK);
 			expect(store.getState().routing.waypoints).toHaveSize(3);
+			expect(store.getState().routing.stats).toEqual(
+				jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222], details: jasmine.any(Object) })
+			);
 		});
 	});
 });
