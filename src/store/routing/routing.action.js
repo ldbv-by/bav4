@@ -93,7 +93,7 @@ export const setStart = (coordinate) => {
 };
 
 /**
- * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Destination_Missing}
+ * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
  * @function
  */
