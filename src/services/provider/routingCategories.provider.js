@@ -1,3 +1,6 @@
+/**
+ * @module services/provider/routingCategories_provider
+ */
 import { $injector } from '../../injection/index';
 
 /**
