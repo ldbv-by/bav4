@@ -510,33 +510,30 @@ export class OlRoutingHandler extends OlLayerHandler {
 			this._setInteractionsActive(false);
 			this._clearAllFeatures();
 			const coords = [...coordinates3857];
-			try {
-				if (coordinates3857.length === 1) {
-					switch (status) {
-						case RoutingStatusCodes.Destination_Missing:
-							this._addStartInteractionFeature(coords[0]);
-							break;
-						case RoutingStatusCodes.Start_Missing:
-							this._addDestinationInteractionFeature(coords[0], 0);
-							break;
-					}
-				} else {
-					// add interaction features
-					this._addStartInteractionFeature(coords.shift());
-					this._addDestinationInteractionFeature(coords.pop(), coordinates3857.length - 1);
-					coords.forEach((c, index) => {
-						this._addIntermediateInteractionFeature(c, index + 1);
-					});
-
-					// request route
-					const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-
-					this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
+			if (coordinates3857.length === 1) {
+				switch (status) {
+					case RoutingStatusCodes.Destination_Missing:
+						this._addStartInteractionFeature(coords[0]);
+						break;
+					case RoutingStatusCodes.Start_Missing:
+						this._addDestinationInteractionFeature(coords[0], 0);
+						break;
 				}
-			} finally {
-				// enable interaction also if request failed
-				this._setInteractionsActive(true);
+			} else {
+				// add interaction features
+				this._addStartInteractionFeature(coords.shift());
+				this._addDestinationInteractionFeature(coords.pop(), coordinates3857.length - 1);
+				coords.forEach((c, index) => {
+					this._addIntermediateInteractionFeature(c, index + 1);
+				});
+
+				// request route
+				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
+
+				this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
 			}
+			// enable interaction also if request failed
+			this._setInteractionsActive(true);
 		}
 	}
 
@@ -573,8 +570,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 		} catch (error) {
 			console.error(error);
 			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
-			throw error;
 		}
+		return null;
 	}
 
 	_register(store) {
