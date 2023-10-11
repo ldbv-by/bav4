@@ -94,7 +94,13 @@ export class Waypoints extends MvuElement {
 
 		return waypoints.length > 0
 			? html`<div class="waypoints__actions">
-					<ba-button id="button_reverse" .label=${translate('routing_waypoints_reverse')} .type=${'secondary'} @click=${reverse}></ba-button>
+					<ba-icon
+						id="button_reverse"
+						.icon="${arrowDownUpSvg}"
+						.size=${1.5}
+						.title=${translate('routing_waypoints_reverse')}
+						@click=${reverse}
+					></ba-icon>
 			  </div>`
 			: nothing;
 	}

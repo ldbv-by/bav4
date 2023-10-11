@@ -85,13 +85,13 @@ describe('Waypoints', () => {
 			expect(placeholderElements).toHaveSize(4); // Surrounding placeholders should be n +1
 		});
 
-		it('renders action-buttons', async () => {
+		it('renders action-button', async () => {
 			const element = await setup(defaultRoutingState);
 
-			const buttonElements = element.shadowRoot.querySelectorAll('ba-button');
+			const reverseIcon = element.shadowRoot.querySelector('#button_reverse');
 
-			expect(buttonElements).toHaveSize(1);
-			expect(buttonElements[0].label).toBe('routing_waypoints_reverse');
+			expect(reverseIcon).toBeDefined();
+			expect(reverseIcon.title).toBe('routing_waypoints_reverse');
 		});
 
 		it('renders draggable elements', async () => {
