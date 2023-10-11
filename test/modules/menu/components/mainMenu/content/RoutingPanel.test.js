@@ -1,9 +1,11 @@
 import { TabIds } from '../../../../../../src/domain/mainMenu';
+import { RoutingStatusCodes } from '../../../../../../src/domain/routing';
 import { $injector } from '../../../../../../src/injection';
 import { AbstractMvuContentPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/AbstractMvuContentPanel';
 import { RoutingPanel } from '../../../../../../src/modules/menu/components/mainMenu/content/routing/RoutingPanel';
 import { createNoInitialStateMainMenuReducer } from '../../../../../../src/store/mainMenu/mainMenu.reducer';
 import { createNoInitialStateMediaReducer } from '../../../../../../src/store/media/media.reducer';
+import { routingReducer } from '../../../../../../src/store/routing/routing.reducer';
 import { isTemplateResult } from '../../../../../../src/utils/checks';
 import { TestUtils } from '../../../../../test-utils';
 
@@ -23,7 +25,11 @@ describe('RoutingPanel', () => {
 			...state
 		};
 
-		store = TestUtils.setupStoreAndDi(initialState, { mainMenu: createNoInitialStateMainMenuReducer(), media: createNoInitialStateMediaReducer() });
+		store = TestUtils.setupStoreAndDi(initialState, {
+			mainMenu: createNoInitialStateMainMenuReducer(),
+			media: createNoInitialStateMediaReducer(),
+			routing: routingReducer
+		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(RoutingPanel.tag);
 	};
@@ -77,6 +83,31 @@ describe('RoutingPanel', () => {
 		it('renders demo content', async () => {
 			const element = await setup();
 			expect(isTemplateResult(element._getDemoContent())).toBeTrue();
+		});
+	});
+
+	describe('when demo buttons pressed', () => {
+		it('loads demo content', async () => {
+			const element = await setup();
+
+			const button1 = element.shadowRoot.querySelector('#button1');
+			const button2 = element.shadowRoot.querySelector('#button2');
+			const button3 = element.shadowRoot.querySelector('#button3');
+
+			button1.click();
+
+			expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Destination_Missing);
+			expect(store.getState().routing.waypoints).toEqual([]);
+
+			button2.click();
+
+			expect(store.getState().routing.status).toBe(RoutingStatusCodes.OK);
+			expect(store.getState().routing.waypoints).toHaveSize(3);
+
+			button3.click();
+
+			expect(store.getState().routing.status).toBe(RoutingStatusCodes.OK);
+			expect(store.getState().routing.waypoints).toHaveSize(3);
 		});
 	});
 });
