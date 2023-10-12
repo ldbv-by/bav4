@@ -93,7 +93,7 @@ export class LayerTree extends MvuElement {
 		this._showChildren = (a) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
-		this._copyBranchRoot = (a, b) => {};
+		this._copyBranchRoot = (a, catalog, b) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (a, b) => {};
 
@@ -339,7 +339,7 @@ export class LayerTree extends MvuElement {
 				// 	}
 			}
 
-			this.copyBranchRoot(positionInCatalog, catalogEntry);
+			this.copyBranchRoot(positionInCatalog, catalogWithResourceData, catalogEntry);
 		};
 
 		const handleNewClick = () => {

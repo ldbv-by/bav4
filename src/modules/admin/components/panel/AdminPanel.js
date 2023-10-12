@@ -251,7 +251,7 @@ export class AdminPanel extends MvuElement {
 	createView(model) {
 		const { currentTopicId, topics, catalogWithResourceData, geoResources, dummy } = model;
 
-		const calcPosition = (index, catalogEntry, arrayWithEntry) => {
+		const calcPosition = (index, arrayWithEntry) => {
 			if (index > 0) {
 				const priorCatalogEntry = arrayWithEntry[index - 1];
 				const newPosition = Math.round((arrayWithEntry[index].position + priorCatalogEntry.position) / 2);
@@ -348,7 +348,7 @@ export class AdminPanel extends MvuElement {
 					// eslint-disable-next-line no-console
 					console.log('addGeoResourceToChildren -  Found the uid in one of the children');
 					// Found the uid in one of the children
-					const inBetween = calcPosition(n, catalogEntry, catalogEntry.children);
+					const inBetween = calcPosition(n, catalogEntry.children);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
 					// eslint-disable-next-line no-console
@@ -388,9 +388,10 @@ export class AdminPanel extends MvuElement {
 					// eslint-disable-next-line no-console
 					console.log('Found the uid in the top-level entries');
 					// Found the uid in the top-level entries
-					const inBetween = calcPosition(entryNumber, catalogEntry, catalogWithResourceData);
+					const inBetween = calcPosition(entryNumber, catalogWithResourceData);
 
 					catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
+					// eslint-disable-next-line no-console
 					console.log('🚀 ~ AdminPanel ~ addGeoResourceRecursivly ~ copyOfCatalogWithResourceData:', catalogWithResourceData);
 					this._sortCatalog(catalogWithResourceData);
 					return catalogWithResourceData;
@@ -539,8 +540,9 @@ export class AdminPanel extends MvuElement {
 
 		// todo parent
 		// @ts-ignore
-		const copyBranchRoot = (positionInCatalog, catalogEntry) => {
+		const copyBranchRoot = (positionInCatalog, catalog, catalogEntry) => {
 			// , parent = null
+			// todo remove old calculation
 			let inBetweenOld = 0;
 			if (positionInCatalog > 0) {
 				const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
@@ -548,7 +550,7 @@ export class AdminPanel extends MvuElement {
 			} else {
 				inBetweenOld = Math.round(catalogEntry.position / 2);
 			}
-			const inBetween = calcPosition(positionInCatalog, catalogEntry);
+			const inBetween = calcPosition(positionInCatalog, catalog);
 
 			if (inBetweenOld !== inBetween) {
 				throw new Error(`inBetween wrong`);
