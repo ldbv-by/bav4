@@ -561,7 +561,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		const categories = this._getIntermediateFeatures().length === 0 ? [defaultCategoryId].concat(alternativeCategoryIds) : [defaultCategoryId];
 
 		try {
-			const routingResult = await this._routingService.calculate(categories, coordinates3857);
+			const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);
 
 			this._displayCurrentRoutingGeometry(routingResult[defaultCategoryId]);
 

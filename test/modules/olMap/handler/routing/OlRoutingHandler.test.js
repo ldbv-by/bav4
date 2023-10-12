@@ -67,7 +67,7 @@ describe('constants and enums', () => {
 
 describe('OlRoutingHandler', () => {
 	const routingServiceMock = {
-		async calculate() {},
+		async calculateRoute() {},
 		getAlternativeCategoryIds() {},
 		getCategoryById() {}
 	};
@@ -448,7 +448,7 @@ describe('OlRoutingHandler', () => {
 						[33, 44]
 					];
 					const mockRouteResult = { defaultCategoryId: {} };
-					spyOn(routingServiceMock, 'calculate')
+					spyOn(routingServiceMock, 'calculateRoute')
 						.withArgs([defaultCategoryId, ...alternativeCategoryIds], coordinates3857)
 						.and.resolveTo(mockRouteResult);
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
@@ -473,7 +473,7 @@ describe('OlRoutingHandler', () => {
 						[33, 44]
 					];
 					const mockRouteResult = { defaultCategoryId: {} };
-					spyOn(routingServiceMock, 'calculate').withArgs([defaultCategoryId], coordinates3857).and.resolveTo(mockRouteResult);
+					spyOn(routingServiceMock, 'calculateRoute').withArgs([defaultCategoryId], coordinates3857).and.resolveTo(mockRouteResult);
 					const displayCurrentRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayCurrentRoutingGeometry');
 					const displayAlternativeRoutingGeometrySpy = spyOn(instanceUnderTest, '_displayAlternativeRoutingGeometry');
 					instanceUnderTest._addIntermediateInteractionFeature(15, 15, 1);
@@ -494,7 +494,7 @@ describe('OlRoutingHandler', () => {
 						[11, 22],
 						[33, 44]
 					];
-					spyOn(routingServiceMock, 'calculate').and.rejectWith(message);
+					spyOn(routingServiceMock, 'calculateRoute').and.rejectWith(message);
 					const errorSpy = spyOn(console, 'error');
 
 					await expectAsync(instanceUnderTest._requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857)).toBeResolvedTo(null);

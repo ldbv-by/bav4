@@ -87,7 +87,7 @@ import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provi
  * Calculates routes for given categories and at least two coordinates.
  * @function
  * @async
- * @name module:services/RoutingService~RoutingService#calculate
+ * @name module:services/RoutingService~RoutingService#calculateRoute
  * @param {string[]} categories ids of the requested categories/vehicles
  * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
  * @returns {Promise<module:services/RoutingService~RoutingResult|null>} the category of `null`
@@ -197,7 +197,7 @@ export class BvvRoutingService {
 	 * @throws {Error} Error of the underlying provider
 	 * @returns {Promise<module:services/RoutingService~RoutingResult|null>}
 	 */
-	async calculate(categories, coordinates3857) {
+	async calculateRoute(categories, coordinates3857) {
 		if (!Array.isArray(coordinates3857) || coordinates3857.length < 2) {
 			throw new TypeError("Parameter 'coordinates3857' must be an array containing at least two coordinates");
 		}
