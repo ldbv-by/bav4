@@ -186,7 +186,7 @@ describe('BvvRoutingService', () => {
 	});
 
 	describe('getAlternativeCategoryIds', () => {
-		it('alternative category ids', async () => {
+		it('alternative category ids', () => {
 			const hike = {
 				id: 'hike',
 				label: 'hike',
@@ -217,6 +217,17 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest.getAlternativeCategoryIds('hike3')).toEqual(['hike', 'hike2']);
 			expect(instanceUnderTest.getAlternativeCategoryIds('bike')).toEqual([]);
 			expect(instanceUnderTest.getAlternativeCategoryIds('unknown')).toEqual([]);
+		});
+	});
+
+	describe('calculateRouteStats', () => {
+		it('calculates the statistics of a route', () => {
+			const mockRoute = {};
+			const instanceUnderTest = setup();
+
+			const result = instanceUnderTest.calculateRouteStats(mockRoute);
+
+			expect(result).toBeDefined();
 		});
 	});
 });
