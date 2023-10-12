@@ -13,6 +13,7 @@ describe('ExportVectorDataService', () => {
 	const EWKT_Point = 'SRID=4326;POINT(10 10)';
 	const EWKT_LineString = 'SRID=4326;LINESTRING(10 10,20 20,30 40)';
 	const EWKT_Polygon = 'SRID=4326;POLYGON((10 10,10 20,20 20,20 15,10 10))';
+	const EWKT_GeometryCollection = 'SRID=4326;GEOMETRYCOLLECTION(POLYGON((10 10,10 20,20 20,20 15,10 10)),POLYGON((10 10,10 20,20 20,20 15,10 10)))';
 	const KML_Data =
 		'<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/kml/2.2 https://developers.google.com/kml/schema/kml22gx.xsd"><Document>	<name>Zeichnung</name>	<Placemark id="polygon_1645077612885">	<ExtendedData>		<Data name="type">			<value>polygon</value>		</Data>	</ExtendedData>	<description>	</description>	<Style>		<LineStyle>			<color>ff0000ff</color>			<width>3</width>		</LineStyle>		<PolyStyle>			<color>660000ff</color>		</PolyStyle>	</Style>	<Polygon>		<outerBoundaryIs>			<LinearRing>				<coordinates>					11.248395432833206,48.599861238104666 					11.414296346422136,48.66067918795375 					11.484919041751134,48.55051466922948 					11.30524992459611,48.503527784132004 					11.248395432833206,48.599861238104666				</coordinates>			</LinearRing>		</outerBoundaryIs>	</Polygon></Placemark></Document></kml>';
 	const GEOJSON_Data =
@@ -137,7 +138,7 @@ describe('ExportVectorDataService', () => {
 				expect(readerSpy).toHaveBeenCalled();
 			});
 
-			it('writes features as gpx ', () => {
+			it('writes features as GPX ', () => {
 				const instance = setup();
 
 				spyOn(sourceTypeServiceMock, 'forData')
@@ -157,7 +158,7 @@ describe('ExportVectorDataService', () => {
 		describe('KML', () => {
 			const FORMAT_KML_START = '<kml ';
 
-			it('requests the kml format reader', () => {
+			it('requests the KML format reader', () => {
 				const instance = setup();
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
 				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
@@ -171,7 +172,7 @@ describe('ExportVectorDataService', () => {
 				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
 			});
 
-			it('requests the kml format writer', () => {
+			it('requests the KML format writer', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
@@ -182,7 +183,7 @@ describe('ExportVectorDataService', () => {
 				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.KML);
 			});
 
-			it('writes features as kml ', () => {
+			it('writes features as KML ', () => {
 				const instance = setup();
 
 				spyOn(sourceTypeServiceMock, 'forData')
@@ -202,7 +203,7 @@ describe('ExportVectorDataService', () => {
 		describe('GeoJSON', () => {
 			const FORMAT_GEOJSON_START = '{"type":"FeatureCollection","features":[{"type":"Feature"';
 
-			it('requests the geojson format reader', () => {
+			it('requests the GeoJSON format reader', () => {
 				const instance = setup();
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
 				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
@@ -216,7 +217,7 @@ describe('ExportVectorDataService', () => {
 				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
 			});
 
-			it('requests the geojson format writer', () => {
+			it('requests the GeoJSON format writer', () => {
 				const instance = setup();
 				spyOn(instance, '_getReader').and.returnValue(() => []);
 				const formatSpy = spyOn(instance, '_getFormat').and.callThrough();
@@ -227,7 +228,7 @@ describe('ExportVectorDataService', () => {
 				expect(formatSpy).toHaveBeenCalledWith(SourceTypeName.GEOJSON);
 			});
 
-			it('writes features as geojson ', () => {
+			it('writes features as GeoJSON ', () => {
 				const instance = setup();
 				spyOn(sourceTypeServiceMock, 'forData')
 					.withArgs(GPX_Data)
@@ -246,7 +247,7 @@ describe('ExportVectorDataService', () => {
 		describe('EWKT', () => {
 			const FORMAT_EWKT_START = 'SRID=';
 
-			it('requests the ewkt format reader', () => {
+			it('requests the EWKT format reader', () => {
 				const instance = setup();
 				const readerSpy = spyOn(instance, '_getEwktReader').and.returnValue(() => []);
 				spyOn(instance, '_getWriter').and.returnValue(() => 'bar');
@@ -260,18 +261,37 @@ describe('ExportVectorDataService', () => {
 				expect(readerSpy).toHaveBeenCalled();
 			});
 
-			it('requests the ewkt format writer', () => {
+			it('requests the EWKT format writer with custom SRID', () => {
 				const instance = setup();
+				const srid = 25832;
 				spyOn(instance, '_getReader').and.returnValue(() => []);
-				const readerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
-				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({ status: SourceTypeResultStatus.OK, sourceType: new SourceType('something') });
+				const writerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
+				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+					status: SourceTypeResultStatus.OK,
+					sourceType: new SourceType('something', null, srid)
+				});
+
+				instance.forData('someData', new SourceType(SourceTypeName.EWKT, null, srid));
+
+				expect(writerSpy).toHaveBeenCalledWith(srid);
+			});
+
+			it('requests the EWKT format writer with default SRID', () => {
+				const instance = setup();
+				const defaultSrid = 4326;
+				spyOn(instance, '_getReader').and.returnValue(() => []);
+				const writerSpy = spyOn(instance, '_getEwktWriter').and.returnValue(() => 'bar');
+				spyOn(sourceTypeServiceMock, 'forData').and.returnValue({
+					status: SourceTypeResultStatus.OK,
+					sourceType: new SourceType('something')
+				});
 
 				instance.forData('someData', new SourceType(SourceTypeName.EWKT));
 
-				expect(readerSpy).toHaveBeenCalled();
+				expect(writerSpy).toHaveBeenCalledWith(defaultSrid);
 			});
 
-			it('writes features as ewkt ', () => {
+			it('writes features as EWKT ', () => {
 				const instance = setup();
 				spyOn(sourceTypeServiceMock, 'forData')
 					.withArgs(GPX_Data)
@@ -312,7 +332,7 @@ describe('ExportVectorDataService', () => {
 	});
 
 	describe('_getEwktReader', () => {
-		it('reads ewkt data', () => {
+		it('reads EWKT data', () => {
 			const instance = setup();
 			const reader = instance._getEwktReader();
 
@@ -346,13 +366,14 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
-		it('writes ewkt data', () => {
+		it('writes EWKT data', () => {
 			const instance = setup();
-			const writer = instance._getEwktWriter();
+			const writerForDefaultSRID = instance._getEwktWriter(4326);
 
-			expect(writer([new Feature({ geometry: point })])).toBe(EWKT_Point);
-			expect(writer([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
-			expect(writer([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+			expect(writerForDefaultSRID([new Feature({ geometry: point })])).toBe(EWKT_Point);
+			expect(writerForDefaultSRID([new Feature({ geometry: lineString })])).toBe(EWKT_LineString);
+			expect(writerForDefaultSRID([new Feature({ geometry: polygon })])).toBe(EWKT_Polygon);
+			expect(writerForDefaultSRID([new Feature({ geometry: polygon }), new Feature({ geometry: polygon })])).toBe(EWKT_GeometryCollection);
 		});
 	});
 
@@ -373,7 +394,7 @@ describe('ExportVectorDataService', () => {
 			]
 		]);
 
-		it('writes gpx tracks', () => {
+		it('writes GPX tracks', () => {
 			const instance = setup();
 			const writer = instance._getGpxWriter();
 

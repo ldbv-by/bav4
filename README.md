@@ -106,6 +106,7 @@ Currently used properties are:
 | `npm run doc:apply`      | Adds or updates the JSDoc module names                                     |
 | `npm run bundlesize`     | Checks the bundle size of the webpack compiled chunks                      |
 | `npm run analyze-bundle` | Visualize the size of webpack chunks with an interactive zoomable tree map |
+| `npm run optimize-svg`   | Optimize all SVG vector graphics files                                     |
 
 ### Available Pages
 

@@ -320,6 +320,7 @@ export class ElevationProfile extends MvuElement {
 	}
 
 	_getChartData(elevationData, newDataLabels, newDataData) {
+		const currentColors = [];
 		const translate = (key) => this._translationService.translate(key);
 
 		const _chartData = {
@@ -331,10 +332,32 @@ export class ElevationProfile extends MvuElement {
 					fill: true,
 					borderWidth: 4,
 					backgroundColor: (context) => {
-						return this._getBackground(context.chart, elevationData);
+						const selectedAttribute = this.getModel().selectedAttribute;
+						if (!currentColors[selectedAttribute]) {
+							currentColors[selectedAttribute] = {};
+						}
+						if (!currentColors[selectedAttribute].backgroundColor) {
+							if (context.chart.chartArea) {
+								currentColors[selectedAttribute].backgroundColor = this._getBackground(context.chart, elevationData, selectedAttribute);
+							} else {
+								return ElevationProfile.BACKGROUND_COLOR;
+							}
+						}
+						return currentColors[selectedAttribute].backgroundColor;
 					},
 					borderColor: (context) => {
-						return this._getBorder(context.chart, elevationData);
+						const selectedAttribute = this.getModel().selectedAttribute;
+						if (!currentColors[selectedAttribute]) {
+							currentColors[selectedAttribute] = {};
+						}
+						if (!currentColors[selectedAttribute].borderColor) {
+							if (context.chart.chartArea) {
+								currentColors[selectedAttribute].borderColor = this._getBorder(context.chart, elevationData, selectedAttribute);
+							} else {
+								return ElevationProfile.BORDER_COLOR;
+							}
+						}
+						return currentColors[selectedAttribute].borderColor;
 					},
 					tension: 0.1,
 					pointRadius: 0,
@@ -346,35 +369,27 @@ export class ElevationProfile extends MvuElement {
 		return _chartData;
 	}
 
-	_getBackground(chart, elevationData) {
-		if (chart.chartArea) {
-			const selectedAttribute = this.getModel().selectedAttribute;
-			switch (selectedAttribute) {
-				case 'surface':
-					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+	_getBackground(chart, elevationData, selectedAttribute) {
+		switch (selectedAttribute) {
+			case 'surface':
+				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
-				default:
-					return ElevationProfile.BACKGROUND_COLOR;
-			}
+			default:
+				return ElevationProfile.BACKGROUND_COLOR;
 		}
-		return ElevationProfile.BACKGROUND_COLOR;
 	}
 
-	_getBorder(chart, elevationData) {
-		if (chart.chartArea) {
-			const selectedAttribute = this.getModel().selectedAttribute;
-			switch (selectedAttribute) {
-				case 'slope':
-					return this._getSlopeGradient(chart, elevationData);
+	_getBorder(chart, elevationData, selectedAttribute) {
+		switch (selectedAttribute) {
+			case 'slope':
+				return this._getSlopeGradient(chart, elevationData);
 
-				case 'surface':
-					return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
+			case 'surface':
+				return this._getTextTypeGradient(chart, elevationData, selectedAttribute);
 
-				default:
-					return this._getFixedColorGradient(chart, elevationData, ElevationProfile.BORDER_COLOR);
-			}
+			default:
+				return this._getFixedColorGradient(chart, ElevationProfile.BORDER_COLOR);
 		}
-		return ElevationProfile.BORDER_COLOR;
 	}
 
 	_addAttributeType(attributeType) {
@@ -446,17 +461,13 @@ export class ElevationProfile extends MvuElement {
 		return gradientBg;
 	}
 
-	_getFixedColorGradient(chart, elevationData, color) {
+	_getFixedColorGradient(chart, color) {
 		// hint: workaround for Safari Problem displaying horizontal lines with fixed color
 		const { ctx, chartArea } = chart;
 		const gradientBg = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-		const numberOfPoints = elevationData.elevations.length;
-		const xPointWidth = chartArea.width / numberOfPoints;
+		gradientBg.addColorStop(0, color);
+		gradientBg.addColorStop(1, color);
 
-		elevationData?.elevations.forEach((element, index) => {
-			const xPoint = (xPointWidth / chartArea.width) * index;
-			gradientBg.addColorStop(xPoint, color);
-		});
 		return gradientBg;
 	}
 

@@ -640,7 +640,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -667,7 +667,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -722,7 +722,7 @@ describe('ElevationProfile', () => {
 			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(textTypeGradientSpy).toHaveBeenCalled();
@@ -738,7 +738,7 @@ describe('ElevationProfile', () => {
 			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), jasmine.any(Object), '#2c5a93');
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), '#2c5a93');
 			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
 		});
 	});
