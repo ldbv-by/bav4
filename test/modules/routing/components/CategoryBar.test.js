@@ -1,7 +1,7 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
 import { CategoryBar } from '../../../../src/modules/routing/components/categoryBar/CategoryBar';
-import { BvvRoutingService, mockCategoriesProvider } from '../../../../src/services/RoutingService';
+import { BvvRoutingService } from '../../../../src/services/RoutingService';
 
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
@@ -10,7 +10,11 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(CategoryBar.tag, CategoryBar);
 
 describe('CategoryBar', () => {
-	const routingService = new BvvRoutingService(mockCategoriesProvider);
+	const configService = {
+		getValue: () => {},
+		getValueAsPath: () => {}
+	};
+	const routingService = new BvvRoutingService();
 	let store;
 	const categories = [
 		{
@@ -42,7 +46,10 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('RoutingService', routingService).registerSingleton('TranslationService', { translate: (key) => key });
+		$injector
+			.registerSingleton('RoutingService', routingService)
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('TranslationService', { translate: (key) => key });
 		return TestUtils.render(CategoryBar.tag);
 	};
 
