@@ -33,7 +33,7 @@ describe('BeforeUnloadPlugin', () => {
 	});
 
 	describe('register', () => {
-		describe('a one of the relevant tool is activated', () => {
+		describe('one of the relevant tool is activated', () => {
 			it('registers an "beforeunload" event listener', async () => {
 				const spy = spyOn(window, 'addEventListener');
 				const mockEvent = {
