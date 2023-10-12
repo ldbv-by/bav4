@@ -11,8 +11,13 @@ describe('mockProvider', () => {
 });
 
 describe('BvvRoutingService', () => {
-	const setup = (routingCategoriesProvider = mockCategoriesProvider, routeProvider = bvvRouteProvider) => {
-		return new BvvRoutingService(routingCategoriesProvider, routeProvider);
+	const setup = (
+		routingCategoriesProvider = mockCategoriesProvider,
+		routeProvider = bvvRouteProvider,
+		chartItemStylesProvider = bvvChartItemStylesProvider,
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
+	) => {
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
 	};
 
 	describe('constructor', () => {
@@ -227,6 +232,72 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest.getAlternativeCategoryIds('hike3')).toEqual(['hike', 'hike2']);
 			expect(instanceUnderTest.getAlternativeCategoryIds('bike')).toEqual([]);
 			expect(instanceUnderTest.getAlternativeCategoryIds('unknown')).toEqual([]);
+		});
+	});
+
+	describe('getRoadTypeStyles', () => {
+		it('provides RoadTypeStyles from ChartItemStylesProvider', async () => {
+			const roadStylesMock = { foo: 'bar' };
+			const mockChartItemStylesProvider = () => {
+				return { road: roadStylesMock };
+			};
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getRoadTypeStyles();
+
+			expect(styles).toEqual(roadStylesMock);
+		});
+
+		it('provides empty styles object from ChartItemStylesProvider', async () => {
+			const mockChartItemStylesProvider = () => {
+				return { some: {} };
+			};
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getRoadTypeStyles();
+
+			expect(styles).toEqual({});
+		});
+	});
+
+	describe('getSurfaceTypeStyles', () => {
+		it('provides SurfaceType from ChartItemStylesProvider', async () => {
+			const surfaceStylesMock = { foo: 'bar' };
+			const mockChartItemStylesProvider = () => {
+				return { surface: surfaceStylesMock };
+			};
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getSurfaceTypeStyles();
+
+			expect(styles).toEqual(surfaceStylesMock);
+		});
+
+		it('provides empty styles object from ChartItemStylesProvider', async () => {
+			const mockChartItemStylesProvider = () => {
+				return { some: {} };
+			};
+			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getSurfaceTypeStyles();
+
+			expect(styles).toEqual({});
+		});
+	});
+
+	describe('mapOsmRoadTypes', () => {
+		it('provides OSM road type mapping', async () => {
+			const mappedTypes = { foo: 'baz' };
+			const mockOsmRoadTypeMappingProvider = jasmine.createSpy().withArgs({ foo: 'bar' }).and.returnValue(mappedTypes);
+			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
+
+			const parameter = { foo: 'bar' };
+			const mapped = instanceUnderTest.mapOsmRoadTypes(parameter);
+			expect(mapped).toBe(mappedTypes);
 		});
 	});
 });
