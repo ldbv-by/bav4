@@ -8,9 +8,10 @@ import {
 	ROUTING_ROUTE_CHANGED,
 	ROUTING_STATS_CHANGED,
 	ROUTING_STATUS_CHANGED,
-	ROUTING_WAYPOINTS_CHANGED,
+	ROUTING_RESET,
 	ROUTING_START_SET,
-	ROUTING_DESTINATION_SET
+	ROUTING_DESTINATION_SET,
+	ROUTING_WAYPOINTS_CHANGED
 } from './routing.reducer';
 
 const getStore = () => {
@@ -19,7 +20,7 @@ const getStore = () => {
 };
 
 /**
- * Updates the current routing category
+ * Updates the `categoryId` property.
  * @param {String} categoryId the new category id
  * @function
  */
@@ -31,7 +32,7 @@ export const setCategory = (categoryId) => {
 };
 
 /**
- * Updates the current routing status code.
+ * Updates the `status` property.
  * @param {RoutingStatusCodes}  statusCode the new status code
  * @function
  */
@@ -43,7 +44,7 @@ export const setStatus = (statusCode) => {
 };
 
 /**
- * Updates the current route stats.
+ * Updates the `stats` property.
  * @param {module:domain/routing~RouteStats}  routeStats the new RouteStats
  * @function
  */
@@ -55,7 +56,7 @@ export const setRouteStats = (routeStats) => {
 };
 
 /**
- * Updates the current route.
+ * Updates the `route` property.
  * @param {module:services/RoutingService~Route|null}  route the new Route or `null`
  * @function
  */
@@ -67,7 +68,7 @@ export const setRoute = (route) => {
 };
 
 /**
- * Updates the current waypoints, updates the status to {@link RoutingStatusCodes.Ok} and sets route property to `null`.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
+ * Updates the current `waypoints`, updates the `status` to {@link RoutingStatusCodes.Ok}.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
  * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */
@@ -78,6 +79,17 @@ export const setWaypoints = (coordinates) => {
 			payload: [...coordinates]
 		});
 	}
+};
+
+/**
+ * Clears all `waypoints`, resets the `route` property and updates the `status` to {@link RoutingStatusCodes.Start_Destination_Missing}, but does not change the `active` property.
+ *  @function
+ */
+export const reset = () => {
+	getStore().dispatch({
+		type: ROUTING_RESET,
+		payload: {}
+	});
 };
 
 /**

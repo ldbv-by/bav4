@@ -6,6 +6,7 @@ export const ROUTING_ROUTE_CHANGED = 'routing/routeChanged';
 export const ROUTING_STATS_CHANGED = 'routing/statsChanged';
 export const ROUTING_ACTIVE_CHANGED = 'routing/activeChanged';
 export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
+export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
 export const ROUTING_START_REMOVED = 'routing/startRemoved';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
@@ -69,24 +70,29 @@ export const routingReducer = (state = initialState, action) => {
 			return {
 				...state,
 				waypoints: [...payload.map((c) => [...c])], // deep clone coordinates
-				active: payload.length,
 				status: RoutingStatusCodes.Ok
+			};
+		}
+		case ROUTING_RESET: {
+			return {
+				...state,
+				waypoints: [],
+				route: null,
+				status: RoutingStatusCodes.Start_Destination_Missing
 			};
 		}
 		case ROUTING_START_SET: {
 			return {
 				...state,
 				waypoints: [[...payload]],
-				status: RoutingStatusCodes.Destination_Missing,
-				active: true
+				status: RoutingStatusCodes.Destination_Missing
 			};
 		}
 		case ROUTING_DESTINATION_SET: {
 			return {
 				...state,
 				waypoints: [[...payload]],
-				status: RoutingStatusCodes.Start_Missing,
-				active: true
+				status: RoutingStatusCodes.Start_Missing
 			};
 		}
 		case ROUTING_ACTIVE_CHANGED: {
