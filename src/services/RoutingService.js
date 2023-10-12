@@ -84,7 +84,7 @@ import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provi
  */
 
 /**
- * Calculates routes for given categories and at least two coordinates.
+ * Calculates a route for each given category. At least two coordinates are required.
  * @function
  * @async
  * @name module:services/RoutingService~RoutingService#calculateRoute
