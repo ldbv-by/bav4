@@ -332,33 +332,73 @@ export class AdminPanel extends MvuElement {
 			return { newEntry, newUid };
 		};
 
+		const addGeoResourceToChildren = (copyOfCatalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ copyOfCatalogWithResourceData:', copyOfCatalogWithResourceData);
+			console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ currentCatalogEntryUid:', currentCatalogEntryUid);
+			// console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ catalogEntry:', catalogEntry);
+			// console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ newEntry:', newEntry);
+			// itterate over catalogEntry.children
+			for (let n = 0; n < catalogEntry.children.length; n++) {
+				// and look for currentUid
+				const childCatalogEntry = catalogEntry.children[n];
+				// eslint-disable-next-line no-console
+				console.log('addGeoResourceToChildren - look at ', childCatalogEntry);
+
+				if (childCatalogEntry.uid === currentCatalogEntryUid) {
+					// eslint-disable-next-line no-console
+					console.log('addGeoResourceToChildren -  Found the uid in one of the children');
+					// Found the uid in one of the children
+					const inBetween = calcPosition(n, catalogEntry, catalogEntry.children);
+
+					const newEntryWithPosition = { ...newEntry, position: inBetween };
+					// eslint-disable-next-line no-console
+					console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ newEntryWithPosition:', newEntryWithPosition);
+					catalogEntry.children.push(newEntryWithPosition);
+					// this.signal(Update_CatalogWithResourceData, copyOfCatalogWithResourceData);
+					// eslint-disable-next-line no-console
+					this._sortCatalog(catalogWithResourceData);
+					console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ copyOfCatalogWithResourceData:', copyOfCatalogWithResourceData);
+					return copyOfCatalogWithResourceData;
+				}
+
+				// Check the children if any
+				if (childCatalogEntry.children) {
+					console.log('addGeoResourceToChildren   -   Looking in children   -   ');
+					const returnCatalog = addGeoResourceToChildren(copyOfCatalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
+					console.log('🚀 ~ AdminPanel ~ addGeoResourceToChildren ~ returnCatalog:', returnCatalog);
+					return returnCatalog;
+				}
+			}
+			return copyOfCatalogWithResourceData;
+		};
+
 		const addGeoResourceRecursivly = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addGeoResourceRecursivly ~ catalogWithResourceData:', catalogWithResourceData);
+			console.log('🚀 ~ AdminPanel ~ addGeoResourceRecursivly ~ currentCatalogEntryUid:', currentCatalogEntryUid);
+			console.log('🚀 ~ AdminPanel ~ addGeoResourceRecursivly ~ newEntry:', newEntry);
 			// itterate over catalogWithResourceData
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
 
+				// // eslint-disable-next-line no-console
+				// console.log('addGeoResourceRecursivly - looking at ', catalogEntry);
+
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
 					// eslint-disable-next-line no-console
-					// console.log('Found the uid in the top-level entries');
+					console.log('Found the uid in the top-level entries');
 					// Found the uid in the top-level entries
 					const inBetween = calcPosition(entryNumber, catalogEntry, catalogWithResourceData);
 
 					catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
-					// console.log(
-					// 	'🚀 ~ file: AdminPanel.js:346 ~ AdminPanel ~ addGeoResourceRecursivly ~ copyOfCatalogWithResourceData:',
-					// 	catalogWithResourceData
-					// );
+					console.log('🚀 ~ AdminPanel ~ addGeoResourceRecursivly ~ copyOfCatalogWithResourceData:', catalogWithResourceData);
 					this._sortCatalog(catalogWithResourceData);
 					return catalogWithResourceData;
 				}
 
 				// Check the children if any
 				if (catalogEntry.children) {
-					const found = addGeoResourceToChildren(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
-					if (found) {
-						return;
-					}
+					return addGeoResourceToChildren(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
 				}
 			}
 
@@ -366,44 +406,17 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addGeoResource = (currentCatalogEntryUid, newGeoresourceId, catalogWithResourceDataFromTree) => {
+			console.log('🚀 ~ here it begins ~ 🚀 ~ AdminPanel ~ addGeoResource ~ catalogWithResourceDataFromTree:', catalogWithResourceDataFromTree);
 			// find georesource to add
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
 
 			const copyOfCatalogWithResourceData = addGeoResourceRecursivly([...catalogWithResourceDataFromTree], currentCatalogEntryUid, newEntry);
+			console.log('🚀 ~ AdminPanel ~ addGeoResource ~ copyOfCatalogWithResourceData:', copyOfCatalogWithResourceData);
+			this._sortCatalog(copyOfCatalogWithResourceData);
+
 			this.signal(Update_CatalogWithResourceData, copyOfCatalogWithResourceData);
 
 			return newUid;
-		};
-
-		const addGeoResourceToChildren = (copyOfCatalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			// itterate over catalogEntry.children
-			for (
-				let catalogEntryNumberIn__catalogEntryChildren = 0;
-				catalogEntryNumberIn__catalogEntryChildren < catalogEntry.children.length;
-				catalogEntryNumberIn__catalogEntryChildren++
-			) {
-				// and look for currentUid
-				const childCatalogEntry = catalogEntry.children[catalogEntryNumberIn__catalogEntryChildren];
-
-				if (childCatalogEntry.uid === currentCatalogEntryUid) {
-					// Found the uid in one of the children
-					const inBetween = calcPosition(catalogEntryNumberIn__catalogEntryChildren, catalogEntry, catalogEntry.children);
-
-					const newEntryWithPosition = { ...newEntry, position: inBetween };
-					catalogEntry.children.push(newEntryWithPosition);
-					this.signal(Update_CatalogWithResourceData, copyOfCatalogWithResourceData);
-					return true;
-				}
-
-				// Check the children if any
-				if (childCatalogEntry.children) {
-					const found = addGeoResourceToChildren(copyOfCatalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
-					if (found) {
-						return true;
-					}
-				}
-			}
-			return false;
 		};
 
 		const removeEntry = (uid) => {

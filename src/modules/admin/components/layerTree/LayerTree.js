@@ -177,17 +177,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragOver = (event, currentCatalogEntry) => {
-			// if (
-			// 	logOnce(
-			// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid,
-			// 		'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry)'
-			// 	)
-			// ) {
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('      event: ', event);
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('      currentCatalogEntry: ', currentCatalogEntry);
-			// }
 			const types = event.dataTransfer.types;
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
@@ -208,15 +197,26 @@ export class LayerTree extends MvuElement {
 			const matchedElementUid = types.find((element) => /uid(.+)/i.test(element));
 			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
 			if (uidFromDrag) {
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag: ', uidFromDrag);
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ 🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ', currentCatalogEntry.uid);
 				if (currentUid === currentCatalogEntry.uid) {
 					// eslint-disable-next-line no-console
 					// console.log('🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag === currentCatalogEntry.uid -> return');
 					event.preventDefault();
 					return;
+				}
+				if (
+					logOnce(
+						'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid + uidFromDrag,
+						'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry)'
+					)
+				) {
+					// eslint-disable-next-line no-console
+					console.log('      event: ', event);
+					// eslint-disable-next-line no-console
+					console.log('      currentCatalogEntry: ', currentCatalogEntry);
+					// eslint-disable-next-line no-console
+					console.log(' ');
+					// eslint-disable-next-line no-console
+					console.log('      uidFromDrag: ', uidFromDrag);
 				}
 
 				this.signal(Update_CurrentUid, currentCatalogEntry.uid);
