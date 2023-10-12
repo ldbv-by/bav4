@@ -23,7 +23,7 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 
 	const loadInternal = async (geoResource) => {
 		const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
-		return httpService.get(url);
+		return httpService.get(url, { timeout: 5000 });
 	};
 
 	const loadExternal = async (geoResource) => {
@@ -46,11 +46,11 @@ export const loadBvvGeoResourceInfo = async (geoResourceId) => {
 			return JSON.stringify(payload);
 		};
 
-		return httpService.post(url, getPayload(geoResource), MediaType.JSON);
+		return httpService.post(url, getPayload(geoResource), MediaType.JSON, { timeout: 5000 });
 	};
 
 	const geoResource = geoResourceService.byId(geoResourceId);
-	// only WmsGeoResources are currenly supported as external GeoResources
+	// only WmsGeoResources are currently supported as external GeoResources
 	if (geoResource.isExternal() && !(geoResource instanceof WmsGeoResource)) {
 		return null;
 	}

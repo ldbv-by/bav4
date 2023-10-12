@@ -2,13 +2,14 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	min-height: 100vh;
+	height: calc(100vh - 15em);
 }
 .iframe__code_string {
 	margin-top: 0.5em;

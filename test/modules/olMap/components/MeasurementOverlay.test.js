@@ -8,19 +8,21 @@ import { register } from 'ol/proj/proj4';
 window.customElements.define(MeasurementOverlay.tag, MeasurementOverlay);
 
 describe('MeasurementOverlay', () => {
+	const unitServiceMock = {
+		// eslint-disable-next-line no-unused-vars
+		formatDistance(distance, decimals) {
+			return 'THE DISTANCE IN m';
+		},
+		// eslint-disable-next-line no-unused-vars
+		formatArea(area, decimals) {
+			return 'THE AREA IN m²';
+		}
+	};
+
 	beforeEach(async () => {
 		TestUtils.setupStoreAndDi({});
 		$injector
-			.registerSingleton('UnitsService', {
-				// eslint-disable-next-line no-unused-vars
-				formatDistance(distance, decimals) {
-					return 'THE DISTANCE IN m';
-				},
-				// eslint-disable-next-line no-unused-vars
-				formatArea(area, decimals) {
-					return 'THE AREA IN m²';
-				}
-			})
+			.registerSingleton('UnitsService', unitServiceMock)
 			.registerSingleton('MapService', { getSrid: () => 3857, getLocalProjectedSrid: () => 25832, getLocalProjectedSridExtent: () => null });
 		proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 		register(proj4);
@@ -127,6 +129,42 @@ describe('MeasurementOverlay', () => {
 			expect(element.type).toBe(MeasurementOverlayTypes.DISTANCE_PARTITION);
 			expect(element.static).toBeFalse();
 			expect(element.innerText).toBe('THE DISTANCE IN m');
+		});
+
+		it('renders the distance-partition view with rounded values (up)', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[1000, 0]
+			]);
+			const properties = {
+				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
+				geometry: geodeticGeometry,
+				value: 0.099,
+				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+			};
+			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
+			const element = await setup(properties);
+
+			expect(element.innerText).toBe('THE DISTANCE IN m');
+			expect(spy).toHaveBeenCalledWith(100, 0);
+		});
+
+		it('renders the distance-partition view with rounded values (down)', async () => {
+			const geodeticGeometry = new LineString([
+				[0, 0],
+				[1000, 0]
+			]);
+			const properties = {
+				type: MeasurementOverlayTypes.DISTANCE_PARTITION,
+				geometry: geodeticGeometry,
+				value: 0.1001,
+				projectionHints: { fromProjection: 'EPSG:3857', toProjection: 'EPSG:25832' }
+			};
+			const spy = spyOn(unitServiceMock, 'formatDistance').and.callThrough();
+			const element = await setup(properties);
+
+			expect(element.innerText).toBe('THE DISTANCE IN m');
+			expect(spy).toHaveBeenCalledWith(100, 0);
 		});
 
 		it('renders the static distance view', async () => {

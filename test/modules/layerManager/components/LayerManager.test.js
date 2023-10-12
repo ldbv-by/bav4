@@ -150,6 +150,16 @@ describe('LayerManager', () => {
 			expect(placeholderElements.length).toBe(4);
 		});
 
+		it('renders draggable elements', () => {
+			// HINT: the existence of the behavior (user can drag an element) is additionally driven by css-classes specified in main.css and baElement.css.
+			// All elements are not draggable by default, but can be activated with the 'draggable' class.
+			const draggableClass = 'draggable';
+
+			const listElements = element.shadowRoot.querySelectorAll('li');
+			expect(listElements.length).toBe(7);
+			expect([...listElements].every((element) => element.classList.contains(draggableClass))).toBeTrue();
+		});
+
 		it('have only non-draggable placeholder items', () => {
 			const placeholderElements = [...element.shadowRoot.querySelectorAll('.placeholder')];
 

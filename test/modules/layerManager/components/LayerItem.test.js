@@ -12,6 +12,9 @@ import { positionReducer } from '../../../../src/store/position/position.reducer
 import { GeoResourceFuture, VectorGeoResource, VectorSourceType, WmsGeoResource } from '../../../../src/domain/geoResources';
 import { Spinner } from '../../../../src/modules/commons/components/spinner/Spinner';
 import { GeoResourceInfoPanel } from '../../../../src/modules/geoResourceInfo/components/GeoResourceInfoPanel';
+import cloneSvg from '../../../../src/modules/layerManager/components/assets/clone.svg';
+import zoomToExtentSvg from '../../../../src/modules/layerManager/components/assets/zoomToExtent.svg';
+import infoSvg from '../../../../src/modules/layerManager/components/assets/info.svg';
 
 window.customElements.define(LayerItem.tag, LayerItem);
 window.customElements.define(Checkbox.tag, Checkbox);
@@ -241,7 +244,7 @@ describe('LayerItem', () => {
 			expect(infoMenuItem.label).toEqual('Info');
 			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
 			expect(infoMenuItem.disabled).toBeFalse();
-			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
+			expect(infoMenuItem.icon).toBe(infoSvg);
 		});
 
 		it('contains a disabled menu-item for info', async () => {
@@ -267,7 +270,7 @@ describe('LayerItem', () => {
 			expect(infoMenuItem.label).toEqual('Info');
 			expect(infoMenuItem.action).toEqual(jasmine.any(Function));
 			expect(infoMenuItem.disabled).toBeTrue();
-			expect(infoMenuItem.icon).toContain('data:image/svg+xml;base64,PHN2ZyB4bWxuc');
+			expect(infoMenuItem.icon).toEqual(infoSvg);
 		});
 
 		it('contains a menu-item for copy', async () => {
@@ -292,7 +295,7 @@ describe('LayerItem', () => {
 			expect(copyMenuItem.label).toEqual('layerManager_to_copy');
 			expect(copyMenuItem.action).toEqual(jasmine.any(Function));
 			expect(copyMenuItem.disabled).toBeFalse();
-			expect(copyMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+			expect(copyMenuItem.icon).toEqual(cloneSvg);
 		});
 
 		it('contains a menu-item for zoomToExtent', async () => {
@@ -317,7 +320,7 @@ describe('LayerItem', () => {
 			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
 			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
 			expect(zoomToExtentMenuItem.disabled).toBeFalse();
-			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
 		});
 
 		it('contains a disabled menu-item for zoomToExtent', async () => {
@@ -342,7 +345,7 @@ describe('LayerItem', () => {
 			expect(zoomToExtentMenuItem.label).toEqual('layerManager_zoom_to_extent');
 			expect(zoomToExtentMenuItem.action).toEqual(jasmine.any(Function));
 			expect(zoomToExtentMenuItem.disabled).toBeTrue();
-			expect(zoomToExtentMenuItem.icon).toContain('data:image/svg+xml;base64,PD94bWwgdmVyc2l');
+			expect(zoomToExtentMenuItem.icon).toBe(zoomToExtentSvg);
 		});
 
 		it('contains a menu-item for export', async () => {

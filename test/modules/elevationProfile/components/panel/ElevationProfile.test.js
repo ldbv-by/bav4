@@ -640,7 +640,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -667,7 +667,7 @@ describe('ElevationProfile', () => {
 			const slopeGradientSpy = spyOn(element, '_getSlopeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(slopeGradientSpy).toHaveBeenCalled();
@@ -722,7 +722,7 @@ describe('ElevationProfile', () => {
 			const textTypeGradientSpy = spyOn(element, '_getTextTypeGradient').and.callThrough();
 
 			// act
-			element._getBorder(chart, elevationData);
+			element._getBorder(chart, elevationData, attrs.value);
 
 			// assert
 			expect(textTypeGradientSpy).toHaveBeenCalled();
@@ -738,7 +738,7 @@ describe('ElevationProfile', () => {
 			const canvasGradient = element._getBorder(chart, elevationData);
 
 			// assert
-			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), jasmine.any(Object), '#2c5a93');
+			expect(getFixedColorGradientSpy).toHaveBeenCalledWith(jasmine.any(Chart), '#2c5a93');
 			expect(canvasGradient).toEqual(jasmine.any(CanvasGradient));
 		});
 	});
@@ -795,6 +795,28 @@ describe('ElevationProfile', () => {
 			expect(element.shadowRoot.querySelectorAll('.chart-container canvas')).toHaveSize(1);
 			const attrsCheck = element.shadowRoot.getElementById('attrs');
 			expect(attrsCheck.value).toBe('slope');
+		});
+	});
+
+	describe('when _getFooterText(x) is called', () => {
+		it('should return "x m" for "x" any number', async () => {
+			// arrange
+			const element = await setup();
+
+			// assert
+			expect(element._getFooterText(0)).toBe('0 m');
+			expect(element._getFooterText(1)).toBe('1 m');
+			expect(element._getFooterText(-1)).toBe('-1 m');
+		});
+
+		it('should return "-" for "x" undefined or null', async () => {
+			// arrange
+			const element = await setup();
+
+			// assert
+			expect(element._getFooterText()).toBe('-');
+			expect(element._getFooterText(undefined)).toBe('-');
+			expect(element._getFooterText(null)).toBe('-');
 		});
 	});
 
@@ -1022,11 +1044,7 @@ describe('ElevationProfile', () => {
 				attrs: [],
 				distUnit: 'm',
 				stats: {
-					sumUp: 0,
-					sumDown: 0,
 					verticalHeight: 0,
-					highestPoint: 0,
-					lowestPoint: 0,
 					linearDistance: 0
 				}
 			});

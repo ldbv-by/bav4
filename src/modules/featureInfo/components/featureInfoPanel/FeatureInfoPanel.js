@@ -119,7 +119,7 @@ export class FeatureInfoPanel extends AbstractMvuContentPanel {
 						</li>
 						${featureInfoData.map(
 							(item) => html`
-								<li class="ba-section">
+								<li class="ba-section selectable">
 									<button
 										class="ba-list-item ba-list-item__header ${getGeometryClass(item.geometry)}"
 										@mouseenter=${() => onMouseEnter(item.geometry)}
