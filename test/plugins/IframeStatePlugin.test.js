@@ -43,7 +43,7 @@ describe('IframeStatePlugin', () => {
 		return store;
 	};
 
-	it('registers stateForEncoding.changed listeners and updates the iframes data attribute', async () => {
+	it('registers the stateForEncoding.changed listeners and updates the iframe data attribute', async () => {
 		const expectedEncodedState = 'foo';
 		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
 		const shareServiceSpy = spyOn(shareService, 'encodeState').and.returnValue(expectedEncodedState);
@@ -51,6 +51,7 @@ describe('IframeStatePlugin', () => {
 		const instanceUnderTest = new IframeStatePlugin();
 		const iframeSpy = spyOn(mockIframeElement, 'setAttribute');
 		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
+		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(true);
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -64,6 +65,7 @@ describe('IframeStatePlugin', () => {
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		spyOn(instanceUnderTest, '_findIframe').and.returnValue(null);
+		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(true);
 		const shareServiceSpy = spyOn(shareService, 'encodeState');
 		await instanceUnderTest.register(store);
 
@@ -77,6 +79,20 @@ describe('IframeStatePlugin', () => {
 		const store = setup();
 		const instanceUnderTest = new IframeStatePlugin();
 		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
+		await instanceUnderTest.register(store);
+
+		indicateChange();
+
+		expect(updateAttributeSpy).not.toHaveBeenCalled();
+	});
+
+	it('does nothing when we are NOT same origin', async () => {
+		spyOn(environmentService, 'isEmbedded').and.returnValue(true);
+		const store = setup();
+		const instanceUnderTest = new IframeStatePlugin();
+		const updateAttributeSpy = spyOn(instanceUnderTest, '_updateAttribute');
+		spyOn(instanceUnderTest, '_findIframe').and.returnValue(mockIframeElement);
+		spyOn(instanceUnderTest, '_hasParentSameOrigin').and.returnValue(false);
 		await instanceUnderTest.register(store);
 
 		indicateChange();
@@ -108,6 +124,24 @@ describe('IframeStatePlugin', () => {
 			const instanceUnderTest = new IframeStatePlugin();
 
 			expect(instanceUnderTest._getDocument()).toEqual(mock);
+		});
+	});
+
+	describe('_hasParentSameOrigin', () => {
+		it('returns true if the iframe has the same origin as the parent', async () => {
+			setup();
+			const instanceUnderTest = new IframeStatePlugin();
+			spyOn(instanceUnderTest, '_getDocument').and.returnValue(document);
+
+			expect(instanceUnderTest._hasParentSameOrigin()).toBeTrue();
+		});
+
+		it('returns false if the iframe has NOT the same origin as the parent', async () => {
+			setup();
+			const instanceUnderTest = new IframeStatePlugin();
+			spyOn(instanceUnderTest, '_getDocument').and.throwError();
+
+			expect(instanceUnderTest._hasParentSameOrigin()).toBeFalse();
 		});
 	});
 });

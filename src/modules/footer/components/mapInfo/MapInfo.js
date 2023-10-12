@@ -16,7 +16,7 @@ export class MapInfo extends MvuElement {
 			<style>
 				${css}
 			</style>
-			<div class="content">
+			<div class="content selectable">
 				<div class="base-layer-info">
 					<ba-base-layer-info></ba-base-layer-info>
 				</div>

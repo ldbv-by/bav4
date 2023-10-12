@@ -27,7 +27,7 @@ export const provide = (lang) => {
 				global_mfpService_createJob_exception: 'PDF konnte nicht erstellt werden.',
 				global_featureInfoService_exception: 'FeatureInfo Abfrage schlug fehl',
 				global_geolocation_denied:
-					'Es ist keine Positionsbestimmung möglich, da ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.',
+					'Es ist keine Positionsbestimmung möglich, da Ihre Browsereinstellungen dies nicht zulassen. Erlauben Sie die Positionsbestimmung und deaktivieren Sie den "Privat" Modus des Browsers.',
 				global_geolocation_not_available: 'Es ist keine Positionsbestimmung möglich.',
 				global_import_url_failed: 'URL-Import schlug fehl',
 				global_import_data_failed: 'Import der Daten schlug fehl',

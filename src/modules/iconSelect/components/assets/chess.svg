@@ -1,6 +1,1 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' opacity='0.5' viewBox='0 0 100 100'><!-- MIT License -->
-     <rect fill='#fcfcfc' width='50' height='50' x='0' y='0' />
-    <rect fill='#fcfcfc' width='50' height='50' x='50' y='50' />
-    <rect fill='#eeeeee' width='50' height='50' x='50' y='0' />
-    <rect fill='#eeeeee' width='50' height='50' x='0' y='50' />
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" opacity=".5"><!--MIT License--><path fill="#fcfcfc" d="M0 0h50v50H0zm50 50h50v50H50z"/><path fill="#eee" d="M50 0h50v50H50zM0 50h50v50H0z"/></svg>
