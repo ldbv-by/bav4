@@ -11,37 +11,8 @@ import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
 
 /**
- * Route result containing a multiple routes (one for each requested category/vehicle)
- * @typedef {Object.<string, module:services/RoutingService~Route>} RoutingResult
- */
-
-/**
- * Route for a particular category (vehicle)
- * @typedef Route
- * @property {object} categoryId
- * @property {string} categoryId.vehicle
- * @property {object} categoryId.hints
- * @property {string} categoryId.hints.visited_nodes.average
- * @property {string} categoryId.hints.visited_nodes.sum
- * @property {object} categoryId.info
- * @property {string[]} categoryId.info.copyrights
- * @property {number} categoryId.info.took
- * @property {object[]} categoryId.paths
- * @property {number} categoryId.paths.distance
- * @property {number} categoryId.paths.weight
- * @property {number} categoryId.paths.time
- * @property {number} categoryId.paths.transfers
- * @property {boolean} categoryId.paths.points_encoded
- * @property {number[]} categoryId.paths.bbox
- * @property {string} categoryId.paths.points
- * @property {object} categoryId.paths.legs
- * @property {object} categoryId.paths.details
- * @property {array[]|number[]|string[]} categoryId.paths.details.surface
- * @property {array[]|number[]|string[]} categoryId.paths.details.road_class
- * @property {array[]|number[]|string[]} categoryId.paths.details.track_type
- * @property {number} categoryId.paths.ascend
- * @property {number} categoryId.paths.descend
- * @property {string} categoryId.paths.snapped_waypoints
+ * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
+ * @typedef {Object.<string, module:domain/routing~Route>} RoutingResult
  */
 
 /**
@@ -91,6 +62,15 @@ import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provi
  * @param {string[]} categories ids of the requested categories/vehicles
  * @param {module:domain/coordinateTypeDef~Coordinate[]} coordinates3857
  * @returns {Promise<module:services/RoutingService~RoutingResult|null>} the category of `null`
+ */
+
+/**
+ * Calculates the statistics for a given route.
+ * @function
+ * @async
+ * @name module:services/RoutingService~RoutingService#calculateRouteStats
+ * @param {module:domain/routing~Route} route the route
+ * @returns {module:domain/routing~RouteStats} the statistics of the route
  */
 
 /**
