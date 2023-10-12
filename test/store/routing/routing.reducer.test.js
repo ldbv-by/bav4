@@ -64,6 +64,10 @@ describe('routingReducer', () => {
 		setRoute(mockRoute);
 
 		expect(store.getState().routing.route).toEqual(mockRoute);
+
+		setRoute(null);
+
+		expect(store.getState().routing.route).toBeNull();
 	});
 
 	it("changes the 'waypoint' property", () => {
