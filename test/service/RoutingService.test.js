@@ -1,4 +1,6 @@
 import { BvvRoutingService, mockCategoriesProvider } from '../../src/services/RoutingService';
+import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
+import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 
 describe('mockProvider', () => {
@@ -18,6 +20,8 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = new BvvRoutingService();
 			expect(instanceUnderTest._categoriesProvider).toEqual(mockCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
+			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
+			expect(instanceUnderTest._mapper).toEqual(bvvOsmRoadTypeMappingProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {

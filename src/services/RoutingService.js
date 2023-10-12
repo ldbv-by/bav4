@@ -243,15 +243,20 @@ export class BvvRoutingService {
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) {
 		this._categoriesProvider = categoriesProvider;
-		this._chartItemsStyles = chartItemStylesProvider();
+		this._chartItemsStylesProvider = chartItemStylesProvider;
 		this._mapper = osmRoadTypeMappingProvider;
 		this._routeProvider = routeProvider;
+		this._chartItemsStyles = null;
 		this._categories = null;
 	}
 
 	async init() {
 		if (!this._categories) {
 			this._categories = await this._categoriesProvider();
+		}
+
+		if (!this._chartItemsStyles) {
+			this._chartItemsStyles = this._chartItemsStylesProvider();
 		}
 		return this._categories;
 	}
