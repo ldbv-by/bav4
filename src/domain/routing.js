@@ -2,7 +2,7 @@
  * @module domain/routing
  */
 /**
- * @typedef {Object} RoutingCategory
+ * @typedef  RoutingCategory
  * @property {string} id The id of this category
  * @property {string} label The label of this category
  * @property {string} description The description of this category
@@ -45,17 +45,32 @@
  * @property {number} time The estimated time in seconds
  * @property {number} dist The distance in meters
  * @property {number[]} twoDiff the cumulated amount of up and down in meter
- * @property {RouteDetail} details Contains detail information
+ * @property {module:domain/routing~RouteDetailTypes} details Contains detail information about different types
  * @property {object} warnings Contains warning hints
  */
 
 /**
- * @typedef {Object} RouteDetail
- * @property {number} time The estimated time in seconds
- * @property {number} dist The distance in meters
- * @property {number[]} twoDiff the cumulated amount of up and down in meter
- * @property {object} details Contains Graphhopper specific detail about single segments (see Graphhopper docs)
- * @property {object} warnings Contains Graphhopper specific warning hints (see Graphhopper docs)
+ *
+ * @typedef {Object} RouteDetailTypes
+ * @property {module:domain/routing~SurfaceDetails} surface Detail information concerning the surface of the route
+ * @property {module:domain/routing~TrackDetails} road_class Detail information concerning the tracks of the route.
+ */
+
+/**
+ * Contains detail information concerning the surface of the route.
+ * @typedef {Object.<string, module:domain/routing~RouteDetailTypeAttribute>} SurfaceDetails
+ */
+/**
+ * Contains detail information concerning the tracks of the route.
+ * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
+ * @typedef {Object.<string, module:domain/routing~RouteDetailTypeAttribute>} TrackDetails
+ */
+
+/**
+ * Specific attribute of a route type.
+ * @typedef {Object} RouteDetailTypeAttribute
+ * @property {number} distance The cumulated distance for this category in meters
+ * @property {Array<Array<number>>} segments Reference segments (from-to, both included)
  */
 
 /**
