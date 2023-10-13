@@ -8,11 +8,16 @@ import { MvuElement } from '../../../MvuElement';
 import css from './routingInfo.css';
 
 const Update_Status = 'update_status';
-const Update_Stats = 'update_stats';
+const Update_Route = 'update_route';
 const Update_Category = 'update_category';
 
 const Category_Badge_Color_Default = 'cadetblue';
 
+const Mocked_Route_Statistics = {
+	time: 3600000,
+	dist: 333,
+	twoDiff: [111, 222]
+};
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
@@ -31,8 +36,8 @@ export class RoutingInfo extends MvuElement {
 		);
 
 		this.observe(
-			(store) => store.routing.stats,
-			(stats) => this.signal(Update_Stats, stats)
+			(store) => store.routing.route,
+			(route) => this.signal(Update_Route, route)
 		);
 		this.observe(
 			(state) => state.routing.categoryId,
@@ -41,11 +46,12 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	update(type, data, model) {
+		const createStatistics = (route) => this._createStatistics(route);
 		switch (type) {
 			case Update_Status:
 				return { ...model, status: data };
-			case Update_Stats:
-				return { ...model, stats: data };
+			case Update_Route:
+				return { ...model, stats: createStatistics(data) };
 			case Update_Category:
 				return { ...model, categoryId: data };
 		}
@@ -126,6 +132,13 @@ export class RoutingInfo extends MvuElement {
 						</div>
 					</div>`
 			: nothing;
+	}
+
+	_createStatistics(route) {
+		if (route) {
+			console.warn('Creating of route statistics is not implemented. Returning mocked data instead');
+		}
+		return Mocked_Route_Statistics;
 	}
 
 	_hasValidStats(stats) {

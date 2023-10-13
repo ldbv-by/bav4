@@ -193,9 +193,6 @@ export class BvvRoutingService {
 			this._categories = await this._categoriesProvider();
 		}
 
-		if (!this._chartItemsStyles) {
-			this._chartItemsStyles = this._chartItemsStylesProvider();
-		}
 		return this._categories;
 	}
 
@@ -222,10 +219,16 @@ export class BvvRoutingService {
 	}
 
 	getRoadTypeStyles() {
+		if (!this._chartItemsStyles) {
+			this._chartItemsStyles = this._chartItemsStylesProvider();
+		}
 		return this._chartItemsStyles['road'] ?? {};
 	}
 
 	getSurfaceTypeStyles() {
+		if (!this._chartItemsStyles) {
+			this._chartItemsStyles = this._chartItemsStylesProvider();
+		}
 		return this._chartItemsStyles['surface'] ?? {};
 	}
 

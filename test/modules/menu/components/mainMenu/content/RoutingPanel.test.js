@@ -92,7 +92,6 @@ describe('RoutingPanel', () => {
 
 			const button1 = element.shadowRoot.querySelector('#button1');
 			const button2 = element.shadowRoot.querySelector('#button2');
-			const button3 = element.shadowRoot.querySelector('#button3');
 
 			button1.click();
 
@@ -103,14 +102,6 @@ describe('RoutingPanel', () => {
 
 			expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
 			expect(store.getState().routing.waypoints).toHaveSize(3);
-			expect(store.getState().routing.stats).toEqual(jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222] }));
-
-			button3.click();
-
-			expect(store.getState().routing.waypoints).toHaveSize(3);
-			expect(store.getState().routing.stats).toEqual(
-				jasmine.objectContaining({ time: 3600000, dist: 333, twoDiff: [111, 222], details: jasmine.any(Object) })
-			);
 		});
 	});
 });

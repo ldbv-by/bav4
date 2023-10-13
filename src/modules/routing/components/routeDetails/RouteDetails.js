@@ -11,9 +11,44 @@ import css from './routeDetails.css';
 const Update_Route = 'update_route';
 const Update_Status = 'update_status';
 
+const Mocked_Route_Statistics = {
+	surface: {
+		asphalt: {
+			distance: 18,
+			segments: [
+				[0, 1],
+				[3, 4]
+			]
+		},
+		other: {
+			distance: 57,
+			segments: [
+				[0, 1],
+				[3, 4]
+			]
+		}
+	},
+	road_class: {
+		residential: 10
+	}
+};
+
+const Mocked_Route_Warnings = {
+	hike_path_grade4_ground: {
+		message: 'Alpine Erfahrung, Trittsicherheit erforderlich.',
+		criticality: 'Warning',
+		segments: [[0, 1]]
+	},
+	hike_path_grade5_ground: {
+		message: 'Spezielle Ausrüstung erforderlich.',
+		criticality: 'Warning',
+		segments: [[0, 1]]
+	}
+};
+
 export class RouteDetails extends MvuElement {
 	constructor() {
-		super({ status: null, route: null, chartData: null });
+		super({ status: null, warnings: null, chartData: null });
 		const { RoutingService, TranslationService } = $injector.inject('RoutingService', 'TranslationService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
@@ -23,25 +58,25 @@ export class RouteDetails extends MvuElement {
 		);
 
 		this.observe(
-			(store) => store.routing.stats?.details,
-			(stats) => this.signal(Update_Route, stats)
+			(store) => store.routing.route,
+			(route) => this.signal(Update_Route, route)
 		);
 	}
 
 	update(type, data, model) {
-		const createChartData = (routeData) => this._createChartData(routeData);
+		const createChartData = (route) => this._createChartData(this._createStatistics(route));
+		const createWarnings = (route) => this._createWarnings(route);
 		switch (type) {
 			case Update_Route:
-				return { ...model, route: data, chartData: createChartData(data) };
+				return { ...model, warnings: createWarnings(data), chartData: createChartData(data) };
 			case Update_Status:
 				return { ...model, status: data };
 		}
 	}
 
 	createView(model) {
-		const { status, route, chartData } = model;
+		const { status, warnings, chartData } = model;
 		const translate = (key) => this._translationService.translate(key);
-		const warnings = route?.warnings ?? [];
 		const isVisible = status === RoutingStatusCodes.Ok;
 		const asArray = (objectData) =>
 			Object.entries(objectData).map(([k, v]) => {
@@ -65,7 +100,21 @@ export class RouteDetails extends MvuElement {
 			: nothing;
 	}
 
-	_createChartData(routeData) {
+	_createStatistics(route) {
+		if (route) {
+			console.warn('Creating of route statistics is not implemented. Returning mocked data instead');
+		}
+		return Mocked_Route_Statistics;
+	}
+
+	_createWarnings(route) {
+		if (route) {
+			console.warn('Creating of warnings is not implemented. Returning mocked data instead');
+		}
+		return Mocked_Route_Warnings;
+	}
+
+	_createChartData(routeStatistics) {
 		const appendChartStyle = (typeData, styles) => {
 			const appendStyle = (styleType, data) => {
 				return styleType in styles ? { ...styles[styleType], data: data } : { ...styles.unknown, data: data };
@@ -80,24 +129,24 @@ export class RouteDetails extends MvuElement {
 		const getRoadChartItems = (roadTypes) => appendChartStyle(roadTypes, this._routingService.getRoadTypeStyles());
 
 		const createChartDataFrom = (routeData) => {
-			const collectedRouteData = this._aggregateRouteData(routeData);
+			const collectedRouteData = this._aggregateRouteStatistics(routeData);
 			return {
 				surface: getSurfaceChartItems(collectedRouteData.surfaceTypes),
 				roadTypes: getRoadChartItems(this._routingService.mapOsmRoadTypes(collectedRouteData.roadTypes))
 			};
 		};
 
-		return routeData ? createChartDataFrom(routeData) : { surface: {}, roadTypes: {} };
+		return routeStatistics ? createChartDataFrom(routeStatistics) : { surface: {}, roadTypes: {} };
 	}
 
-	_aggregateRouteData(routeData) {
+	_aggregateRouteStatistics(statistics) {
 		const data = {
 			surfaceTypes: {},
 			roadTypes: {}
 		};
 
-		if (routeData) {
-			const { surface, road_class } = routeData;
+		if (statistics) {
+			const { surface, road_class } = statistics;
 			const surfaceTypes = surface ?? {};
 			const roadClasses = road_class ?? {};
 
