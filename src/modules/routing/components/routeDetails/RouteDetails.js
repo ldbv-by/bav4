@@ -41,6 +41,7 @@ export class RouteDetails extends MvuElement {
 
 	createView(model) {
 		const { status, warnings, chartData } = model;
+
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
 		const asArray = (objectData) =>
