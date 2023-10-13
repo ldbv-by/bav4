@@ -6,6 +6,7 @@ import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { bvvChartItemStylesProvider } from '../../../../src/services/provider/chartItemStyles.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../../../src/services/provider/osmRoadTypeMapper.provider';
 import { TestUtils } from '../../../test-utils';
+import { RoutingStatusCodes } from '../../../../src/domain/routing';
 
 window.customElements.define(RouteDetails.tag, RouteDetails);
 const mockedRouteStatistic = {
@@ -282,6 +283,22 @@ describe('RouteDetails', () => {
 				warnings: jasmine.objectContaining({ 500: jasmine.any(Object) }),
 				chartData: jasmine.objectContaining({ surface: jasmine.any(Object), roadTypes: jasmine.any(Object) })
 			});
+		});
+	});
+
+	describe('when initialized', () => {
+		const defaultRoutingState = {
+			routing: {
+				status: RoutingStatusCodes.Ok,
+				categoryId: 'bike'
+			}
+		};
+		it('renders RoutingCharts', async () => {
+			const element = await setup(defaultRoutingState);
+
+			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
+
+			expect(chartElements).toHaveSize(2);
 		});
 	});
 });
