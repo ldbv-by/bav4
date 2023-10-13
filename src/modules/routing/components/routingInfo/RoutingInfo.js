@@ -54,7 +54,6 @@ export class RoutingInfo extends MvuElement {
 
 	createView(model) {
 		const { status, stats, categoryId } = model;
-		console.log(stats);
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
 

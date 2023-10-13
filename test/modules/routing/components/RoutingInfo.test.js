@@ -297,11 +297,6 @@ describe('RoutingInfo', () => {
 					categoryId: 'bike'
 				}
 			};
-			const defaultRouteStatistics = {
-				twoDiff: [111, 222],
-				dist: 333,
-				time: 3600000
-			};
 
 			it('renders minimum estimate', async () => {
 				const element = await setup(defaultRoutingState);
