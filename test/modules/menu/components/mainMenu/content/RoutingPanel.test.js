@@ -63,6 +63,9 @@ describe('RoutingPanel', () => {
 			expect(element.shadowRoot.querySelectorAll('ba-routing-info')).toHaveSize(1);
 			expect(element.shadowRoot.querySelectorAll('ba-routing-details')).toHaveSize(1);
 
+			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
+			expect(element.shadowRoot.querySelectorAll('ba-share-data-chip')).toHaveSize(1);
+
 			expect(element.shadowRoot.querySelectorAll('.demo')).toHaveSize(1);
 		});
 	});

@@ -57,9 +57,8 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 				<ba-routing-info></ba-routing-info>
 				<ba-routing-details></ba-routing-details></div>
 				<div class="chips__container">
-					<div>
-						TODO chips
-					</div>
+					<ba-profile-chip></ba-profile-chip>
+					<ba-share-data-chip></ba-share-data-chip>
 				</div>
 				${this._getDemoContent()} 
 			</div>
