@@ -2,6 +2,7 @@ import { RoutingStatusCodes } from '../../../src/domain/routing';
 import {
 	activate,
 	deactivate,
+	reset,
 	setCategory,
 	setDestination,
 	setRoute,
@@ -86,6 +87,23 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual(coordinates);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+	});
+
+	it('resets the "waypoint", "route" and "status" property', () => {
+		const store = setup({
+			waypoints: [
+				[11, 22],
+				[33, 44]
+			],
+			status: RoutingStatusCodes.Ok,
+			route: {}
+		});
+
+		reset();
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+		expect(store.getState().routing.route).toBeNull();
 	});
 
 	it('sets the start waypoint', () => {

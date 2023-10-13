@@ -125,7 +125,7 @@ describe('BvvRoutingService', () => {
 			const mockRouteProvider = jasmine.createSpy().withArgs(['foo'], mockCoordinates).and.resolveTo(mockRoute);
 			const instanceUnderTest = setup(null, mockRouteProvider);
 
-			const result = await instanceUnderTest.calculate(['foo'], mockCoordinates);
+			const result = await instanceUnderTest.calculateRoute(['foo'], mockCoordinates);
 
 			expect(result).toEqual(mockRoute);
 		});
@@ -139,7 +139,7 @@ describe('BvvRoutingService', () => {
 			const mockRouteProvider = jasmine.createSpy().withArgs(['foo'], mockCoordinates).and.rejectWith(providerError);
 			const instanceUnderTest = setup(null, mockRouteProvider);
 
-			await expectAsync(instanceUnderTest.calculate(['foo'], mockCoordinates)).toBeRejectedWith(
+			await expectAsync(instanceUnderTest.calculateRoute(['foo'], mockCoordinates)).toBeRejectedWith(
 				jasmine.objectContaining({
 					message: 'Could not retrieve a routing result from the provider',
 					cause: providerError
@@ -150,20 +150,20 @@ describe('BvvRoutingService', () => {
 		it('rejects when argument "coordinates3857" is not an Array or does not contain at least two coordinates', async () => {
 			const instanceUnderTest = setup();
 
-			await expectAsync(instanceUnderTest.calculate(['foo'], 12345)).toBeRejectedWithError(
+			await expectAsync(instanceUnderTest.calculateRoute(['foo'], 12345)).toBeRejectedWithError(
 				TypeError,
 				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
 			);
-			await expectAsync(instanceUnderTest.calculate(['foo'], [12345])).toBeRejectedWithError(
+			await expectAsync(instanceUnderTest.calculateRoute(['foo'], [12345])).toBeRejectedWithError(
 				TypeError,
 				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
 			);
-			await expectAsync(instanceUnderTest.calculate(['foo'], [[11, 11]])).toBeRejectedWithError(
+			await expectAsync(instanceUnderTest.calculateRoute(['foo'], [[11, 11]])).toBeRejectedWithError(
 				TypeError,
 				"Parameter 'coordinates3857' must be an array containing at least two coordinates"
 			);
 			await expectAsync(
-				instanceUnderTest.calculate(
+				instanceUnderTest.calculateRoute(
 					['foo'],
 					[
 						[11, 11],
@@ -177,13 +177,13 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = setup();
 
 			await expectAsync(
-				instanceUnderTest.calculate('foo', [
+				instanceUnderTest.calculateRoute('foo', [
 					[1, 2],
 					[3, 4]
 				])
 			).toBeRejectedWithError(TypeError, "Parameter 'categories' must be an array containing at least one category");
 			await expectAsync(
-				instanceUnderTest.calculate(
+				instanceUnderTest.calculateRoute(
 					[],
 					[
 						[1, 2],
@@ -195,7 +195,7 @@ describe('BvvRoutingService', () => {
 	});
 
 	describe('getAlternativeCategoryIds', () => {
-		it('alternative category ids', async () => {
+		it('alternative category ids', () => {
 			const hike = {
 				id: 'hike',
 				label: 'hike',
@@ -292,6 +292,17 @@ describe('BvvRoutingService', () => {
 			const parameter = { foo: 'bar' };
 			const mapped = instanceUnderTest.mapOsmRoadTypes(parameter);
 			expect(mapped).toBe(mappedTypes);
+		});
+	});
+
+	describe('calculateRouteStats', () => {
+		it('calculates the statistics of a route', () => {
+			const mockRoute = {};
+			const instanceUnderTest = setup();
+
+			const result = instanceUnderTest.calculateRouteStats(mockRoute);
+
+			expect(result).toBeDefined();
 		});
 	});
 });

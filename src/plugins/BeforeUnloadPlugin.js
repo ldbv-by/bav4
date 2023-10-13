@@ -39,6 +39,6 @@ export class BeforeUnloadPlugin extends BaPlugin {
 	}
 
 	_getTools() {
-		return [Tools.DRAW, Tools.MEASURE];
+		return [Tools.DRAW, Tools.MEASURE, Tools.ROUTING];
 	}
 }
