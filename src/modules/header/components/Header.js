@@ -10,6 +10,8 @@ import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
+import { setCurrentTool } from '../../../store/tools/tools.action';
+import { Tools } from '../../../domain/tools';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
 const Update_Fetching = 'update_fetching';
@@ -214,6 +216,7 @@ export class Header extends MvuElement {
 
 		const openRoutingTab = () => {
 			setTab(TabIds.ROUTING);
+			setCurrentTool(Tools.ROUTING);
 			openMainMenu();
 		};
 

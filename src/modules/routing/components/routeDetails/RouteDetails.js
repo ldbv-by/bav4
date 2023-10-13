@@ -11,41 +11,6 @@ import css from './routeDetails.css';
 const Update_Route = 'update_route';
 const Update_Status = 'update_status';
 
-const Mocked_Route_Statistics = {
-	surface: {
-		asphalt: {
-			distance: 18,
-			segments: [
-				[0, 1],
-				[3, 4]
-			]
-		},
-		other: {
-			distance: 57,
-			segments: [
-				[0, 1],
-				[3, 4]
-			]
-		}
-	},
-	road_class: {
-		residential: 10
-	}
-};
-
-const Mocked_Route_Warnings = {
-	hike_path_grade4_ground: {
-		message: 'Alpine Erfahrung, Trittsicherheit erforderlich.',
-		criticality: 'Warning',
-		segments: [[0, 1]]
-	},
-	hike_path_grade5_ground: {
-		message: 'Spezielle Ausrüstung erforderlich.',
-		criticality: 'Warning',
-		segments: [[0, 1]]
-	}
-};
-
 export class RouteDetails extends MvuElement {
 	constructor() {
 		super({ status: null, warnings: null, chartData: null });
@@ -64,8 +29,8 @@ export class RouteDetails extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createChartData = (route) => this._createChartData(this._createStatistics(route));
-		const createWarnings = (route) => this._createWarnings(route);
+		const createChartData = (route) => this._createChartData(this._routingService.calculateRouteStats(route));
+		const createWarnings = (route) => this._createWarnings(this._routingService.calculateRouteStats(route));
 		switch (type) {
 			case Update_Route:
 				return { ...model, warnings: createWarnings(data), chartData: createChartData(data) };
@@ -100,18 +65,8 @@ export class RouteDetails extends MvuElement {
 			: nothing;
 	}
 
-	_createStatistics(route) {
-		if (route) {
-			console.warn('Creating of route statistics is not implemented. Returning mocked data instead');
-		}
-		return Mocked_Route_Statistics;
-	}
-
-	_createWarnings(route) {
-		if (route) {
-			console.warn('Creating of warnings is not implemented. Returning mocked data instead');
-		}
-		return Mocked_Route_Warnings;
+	_createWarnings(statistics) {
+		return statistics.warnings;
 	}
 
 	_createChartData(routeStatistics) {
@@ -128,8 +83,8 @@ export class RouteDetails extends MvuElement {
 		const getSurfaceChartItems = (surfaceTypes) => appendChartStyle(surfaceTypes, this._routingService.getSurfaceTypeStyles());
 		const getRoadChartItems = (roadTypes) => appendChartStyle(roadTypes, this._routingService.getRoadTypeStyles());
 
-		const createChartDataFrom = (routeData) => {
-			const collectedRouteData = this._aggregateRouteStatistics(routeData);
+		const createChartDataFrom = (statistics) => {
+			const collectedRouteData = this._aggregateRouteStatistics(statistics);
 			return {
 				surface: getSurfaceChartItems(collectedRouteData.surfaceTypes),
 				roadTypes: getRoadChartItems(this._routingService.mapOsmRoadTypes(collectedRouteData.roadTypes))
@@ -146,7 +101,7 @@ export class RouteDetails extends MvuElement {
 		};
 
 		if (statistics) {
-			const { surface, road_class } = statistics;
+			const { surface, road_class } = statistics.details;
 			const surfaceTypes = surface ?? {};
 			const roadClasses = road_class ?? {};
 

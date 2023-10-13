@@ -13,11 +13,6 @@ const Update_Category = 'update_category';
 
 const Category_Badge_Color_Default = 'cadetblue';
 
-const Mocked_Route_Statistics = {
-	time: 3600000,
-	dist: 333,
-	twoDiff: [111, 222]
-};
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
@@ -46,7 +41,7 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	update(type, data, model) {
-		const createStatistics = (route) => this._createStatistics(route);
+		const createStatistics = (route) => this._routingService.calculateRouteStats(route);
 		switch (type) {
 			case Update_Status:
 				return { ...model, status: data };
@@ -59,7 +54,7 @@ export class RoutingInfo extends MvuElement {
 
 	createView(model) {
 		const { status, stats, categoryId } = model;
-
+		console.log(stats);
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
 
@@ -132,13 +127,6 @@ export class RoutingInfo extends MvuElement {
 						</div>
 					</div>`
 			: nothing;
-	}
-
-	_createStatistics(route) {
-		if (route) {
-			console.warn('Creating of route statistics is not implemented. Returning mocked data instead');
-		}
-		return Mocked_Route_Statistics;
 	}
 
 	_hasValidStats(stats) {

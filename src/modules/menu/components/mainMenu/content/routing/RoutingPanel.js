@@ -10,6 +10,8 @@ import { TabIds } from '../../../../../../domain/mainMenu';
 import svg from './assets/arrowLeftShort.svg';
 import { setCategory, setRoute, setStatus, setWaypoints } from '../../../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../../../domain/routing';
+import { setCurrentTool } from '../../../../../../store/tools/tools.action';
+import { Tools } from '../../../../../../domain/tools';
 
 /**
  * Container for routing contents.
@@ -81,7 +83,6 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 		const onClickLoadRoutingData2 = () => {
 			setCategory('bvv-bike');
 			setStatus(RoutingStatusCodes.Ok);
-			setRoute({});
 			setWaypoints([
 				[1328315.0062647895, 6089975.78297438],
 				[1310581.6157026286, 6045336.558455837],
