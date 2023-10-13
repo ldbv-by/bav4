@@ -1,10 +1,15 @@
 import { BvvRoutingService } from '../../src/services/RoutingService';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
+import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
-	const setup = (routingCategoriesProvider = bvvRoutingCategoriesProvider, routeProvider = bvvRouteProvider) => {
-		return new BvvRoutingService(routingCategoriesProvider, routeProvider);
+	const setup = (
+		routingCategoriesProvider = bvvRoutingCategoriesProvider,
+		routeProvider = bvvRouteProvider,
+		routeStatsProvider = bvvRouteStatsProvider
+	) => {
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, routeStatsProvider);
 	};
 
 	describe('constructor', () => {
@@ -12,14 +17,17 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = new BvvRoutingService();
 			expect(instanceUnderTest._categoriesProvider).toEqual(bvvRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
+			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
 			const customRoutingCategoriesProvider = async () => {};
 			const customRouteProvider = async () => {};
-			const instanceUnderTest = setup(customRoutingCategoriesProvider, customRouteProvider);
+			const customRouteStatsProvider = () => {};
+			const instanceUnderTest = setup(customRoutingCategoriesProvider, customRouteProvider, customRouteStatsProvider);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
+			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 		});
 	});
 
@@ -222,12 +230,14 @@ describe('BvvRoutingService', () => {
 
 	describe('calculateRouteStats', () => {
 		it('calculates the statistics of a route', () => {
-			const mockRoute = {};
-			const instanceUnderTest = setup();
+			const mockRoute = { route: 'route' };
+			const mockStats = { stats: 'stats' };
+			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockRoute).and.returnValue(mockStats);
+			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
 
 			const result = instanceUnderTest.calculateRouteStats(mockRoute);
 
-			expect(result).toBeDefined();
+			expect(result).toEqual(mockStats);
 		});
 	});
 });
