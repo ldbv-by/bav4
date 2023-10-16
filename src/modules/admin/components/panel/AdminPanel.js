@@ -12,7 +12,6 @@ import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.
 // eslint-disable-next-line no-unused-vars
 import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
-const Update_SelectedTopic = 'update_selectedtopic';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 
 /**
@@ -25,11 +24,11 @@ export class AdminPanel extends MvuElement {
 	#catalog = [];
 	#geoResources = [];
 	#topics = [];
+	#currentTopicId = null;
 	// #elementToMove = null;
 
 	constructor() {
 		super({
-			currentTopicId: null,
 			dummy: true,
 			catalogWithResourceData: null
 		});
@@ -120,11 +119,15 @@ export class AdminPanel extends MvuElement {
 		}
 
 		const catalogWithResourceData = this._mergeCatalogWithResourcesRecursive(this.#catalog);
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ _mergeCatalogWithResources ~ catalogWithResourceData:', catalogWithResourceData);
 		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 	}
 
 	async onInitialize() {
 		const updateCatalog = async (currentTopicId) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ onInitialize() ~ AdminPanel ~ updateCatalog ~ currentTopicId:', currentTopicId);
 			try {
 				const catalogFromService = await this._catalogService.byId(currentTopicId);
 
@@ -155,9 +158,12 @@ export class AdminPanel extends MvuElement {
 		this.observe(
 			(state) => state.admin.currentTopicId,
 			(currentTopicId) => {
+				this.#currentTopicId = currentTopicId;
+				// eslint-disable-next-line no-console
+				console.log('🚀 ~ AdminPanel ~ onInitialize ~ currentTopicId:', currentTopicId);
 				if (!currentTopicId) {
 					const defaultTopic = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
-					this.signal(Update_SelectedTopic, defaultTopic);
+					updateStore(defaultTopic);
 					return;
 				}
 				updateCatalog(currentTopicId);
@@ -166,13 +172,11 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ update ~ data:', data);
 		switch (type) {
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
-
-			case Update_SelectedTopic:
-				updateStore(data);
-				return { ...model, currentTopicId: data };
 		}
 	}
 
@@ -191,7 +195,11 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { currentTopicId, catalogWithResourceData, dummy } = model;
+		const { catalogWithResourceData, dummy } = model;
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ createView ~ this.#currentTopicId:', this.#currentTopicId);
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const calcPosition = (index, arrayWithEntry) => {
 			if (index > 0) {
@@ -443,7 +451,7 @@ export class AdminPanel extends MvuElement {
 			]);
 		};
 
-		if (currentTopicId) {
+		if (this.#currentTopicId) {
 			return html`
 				<style>
 					${css}
@@ -455,7 +463,7 @@ export class AdminPanel extends MvuElement {
 					<div>
 						<ba-layer-tree
 							.topics="${this.#topics}"
-							.selectedTheme="${currentTopicId}"
+							.selectedTheme="${this.#currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"
