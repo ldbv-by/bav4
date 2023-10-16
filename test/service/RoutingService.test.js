@@ -2,16 +2,18 @@ import { BvvRoutingService } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
+import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';
 
 describe('BvvRoutingService', () => {
 	const setup = (
 		routingCategoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
+		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
 	) => {
-		return new BvvRoutingService(routingCategoriesProvider, routeProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
+		return new BvvRoutingService(routingCategoriesProvider, routeProvider, routeStatsProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
 	};
 
 	describe('constructor', () => {
@@ -19,6 +21,7 @@ describe('BvvRoutingService', () => {
 			const instanceUnderTest = new BvvRoutingService();
 			expect(instanceUnderTest._categoriesProvider).toEqual(bvvRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
+			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._mapper).toEqual(bvvOsmRoadTypeMappingProvider);
 		});
@@ -26,9 +29,11 @@ describe('BvvRoutingService', () => {
 		it('initializes the service with custom provider', async () => {
 			const customRoutingCategoriesProvider = async () => {};
 			const customRouteProvider = async () => {};
-			const instanceUnderTest = setup(customRoutingCategoriesProvider, customRouteProvider);
+			const customRouteStatsProvider = () => {};
+			const instanceUnderTest = setup(customRoutingCategoriesProvider, customRouteProvider, customRouteStatsProvider);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
+			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 		});
 	});
 
@@ -297,12 +302,14 @@ describe('BvvRoutingService', () => {
 
 	describe('calculateRouteStats', () => {
 		it('calculates the statistics of a route', () => {
-			const mockRoute = {};
-			const instanceUnderTest = setup();
+			const mockRoute = { route: 'route' };
+			const mockStats = { stats: 'stats' };
+			const mockRouteStatsProvider = jasmine.createSpy().withArgs(mockRoute).and.returnValue(mockStats);
+			const instanceUnderTest = setup(null, null, mockRouteStatsProvider);
 
 			const result = instanceUnderTest.calculateRouteStats(mockRoute);
 
-			expect(result).toBeDefined();
+			expect(result).toEqual(mockStats);
 		});
 	});
 });
