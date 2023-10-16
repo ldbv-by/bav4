@@ -13,6 +13,12 @@ const Update_Category = 'update_category';
 
 const Category_Badge_Color_Default = 'cadetblue';
 
+/**
+ * Renders basic statistical information of route like
+ * distance, ETA (Estimated Time Arrived),cumulated climbs and descents
+ *
+ * @author thiloSchlemmer
+ */
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });

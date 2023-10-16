@@ -11,6 +11,11 @@ import css from './routeDetails.css';
 const Update_Route = 'update_route';
 const Update_Status = 'update_status';
 
+/**
+ * Renders extended statistical routing data, such as road and surface types
+ * as charts
+ * @author thiloSchlemmer
+ */
 export class RouteDetails extends MvuElement {
 	constructor() {
 		super({ status: null, warnings: null, chartData: null });
@@ -130,16 +135,15 @@ export class RouteDetails extends MvuElement {
 	}
 
 	_percentageOfDistance(portion, total) {
-		const HUNDRED = 100;
-		return (portion / total) * HUNDRED;
+		const hundred = 100;
+		return (portion / total) * hundred;
 	}
 
 	_calcDistance(segments) {
-		let distance = 0;
-		for (const segment in segments) {
-			distance += this._sanitizeDistance(segments[segment]);
-		}
-		return distance;
+		return Object.entries(segments).reduce((previousDistance, current) => {
+			const value = current[1];
+			return previousDistance + this._sanitizeDistance(value.distance);
+		}, 0);
 	}
 
 	_sanitizeDistance = (candidate) => {

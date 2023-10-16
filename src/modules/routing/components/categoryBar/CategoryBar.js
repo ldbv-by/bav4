@@ -11,6 +11,10 @@ import { $injector } from '../../../../injection/index';
 const Update_Categories = 'update_categories';
 const Update_Selected_Category = 'update_selected_category';
 
+/**
+ * Renders available routing categories as selectable elements for the user
+ * @author thiloSchlemmer
+ */
 export class CategoryBar extends MvuElement {
 	constructor() {
 		super({ categories: [], selectedCategory: null });
