@@ -129,6 +129,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return this._routingLayerGroup;
 	}
 
+	_getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+		return {
+			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
+			hitTolerance: 5
+		};
+	}
+
 	_newPointerMoveHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		const updateModifyActivity = (feature) => {
 			if (feature.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE_SEGMENT) {
@@ -151,10 +158,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 				// $(element).popover('destroy');
 
 				const pixel = map.getEventPixel(event.originalEvent);
-				const hit = map.getFeaturesAtPixel(pixel, {
-					layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
-					hitTolerance: 5
-				});
+				const hit = map.getFeaturesAtPixel(
+					pixel,
+					this._getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy)
+				);
 
 				if (hit.length > 0) {
 					this._helpTooltip.activate(this._map);
@@ -205,11 +212,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return translate;
 	}
 
-	_createSelect(interactionLayer, alternativeRouteLayer) {
-		const select = new Select({
-			layers: (layer) => layer === interactionLayer || layer === alternativeRouteLayer,
+	_getSelectOptions(interactionLayer, alternativeRouteLayer) {
+		return {
+			layers: [interactionLayer, alternativeRouteLayer],
 			hitTolerance: 5
-		});
+		};
+	}
+
+	_createSelect(interactionLayer, alternativeRouteLayer) {
+		const select = new Select(this._getSelectOptions(interactionLayer, alternativeRouteLayer));
 		select.on('select', (evt) => {
 			if (evt.selected[0]) {
 				const feature = evt.selected[0];
