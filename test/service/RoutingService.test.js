@@ -240,7 +240,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { road: roadStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -252,7 +252,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
@@ -267,7 +267,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { surface: surfaceStylesMock };
 			};
-			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -279,7 +279,7 @@ describe('BvvRoutingService', () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
-			const instanceUnderTest = setup(async () => {}, null, mockChartItemStylesProvider);
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
 			await instanceUnderTest.init();
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
@@ -292,7 +292,7 @@ describe('BvvRoutingService', () => {
 		it('provides OSM road type mapping', async () => {
 			const mappedTypes = { foo: 'baz' };
 			const mockOsmRoadTypeMappingProvider = jasmine.createSpy().withArgs({ foo: 'bar' }).and.returnValue(mappedTypes);
-			const instanceUnderTest = setup(null, null, null, mockOsmRoadTypeMappingProvider);
+			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
 
 			const parameter = { foo: 'bar' };
 			const mapped = instanceUnderTest.mapOsmRoadTypes(parameter);
