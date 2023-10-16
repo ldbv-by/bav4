@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(72);
+		expect($injector.count()).toBe(71);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -40,7 +40,6 @@ describe('injector configuration', () => {
 		expect($injector.getScope('ChipsConfigurationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
-		expect($injector.getScope('ETACalculatorService')).toBe(Injector.SCOPE_SINGLETON);
 
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);

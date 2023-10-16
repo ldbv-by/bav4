@@ -57,7 +57,6 @@ import { ToolsPlugin } from '../plugins/ToolsPlugin';
 import { IframeGeometryIdPlugin } from '../plugins/IframeGeometryIdPlugin';
 import { BeforeUnloadPlugin } from '../plugins/BeforeUnloadPlugin';
 import { BvvRoutingService } from '../services/RoutingService';
-import { ETACalculatorService } from '../services/ETACalculatorService';
 import { RoutingPlugin } from '../plugins/RoutingPlugin';
 
 $injector
@@ -93,7 +92,6 @@ $injector
 	.registerSingleton('ChipsConfigurationService', new ChipsConfigurationService())
 	.registerSingleton('FeedbackService', new FeedbackService())
 	.registerSingleton('RoutingService', new BvvRoutingService())
-	.registerSingleton('ETACalculatorService', new ETACalculatorService())
 
 	.registerSingleton('DrawPlugin', new DrawPlugin())
 	.registerSingleton('RoutingPlugin', new RoutingPlugin())

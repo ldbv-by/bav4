@@ -1,5 +1,6 @@
 import { BvvRoutingService } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
+import { bvvEtaCalculatorProvider } from '../../src/services/provider/etaCalculator.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
@@ -11,9 +12,17 @@ describe('BvvRoutingService', () => {
 		routeProvider = bvvRouteProvider,
 		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
+		etaCalculatorProvider = bvvEtaCalculatorProvider
 	) => {
-		return new BvvRoutingService(routingCategoriesProvider, routeProvider, routeStatsProvider, chartItemStylesProvider, osmRoadTypeMappingProvider);
+		return new BvvRoutingService(
+			routingCategoriesProvider,
+			routeProvider,
+			routeStatsProvider,
+			chartItemStylesProvider,
+			osmRoadTypeMappingProvider,
+			etaCalculatorProvider
+		);
 	};
 
 	describe('constructor', () => {
@@ -24,6 +33,7 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._mapper).toEqual(bvvOsmRoadTypeMappingProvider);
+			expect(instanceUnderTest._etaCalculatorProvider).toEqual(bvvEtaCalculatorProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
@@ -310,6 +320,23 @@ describe('BvvRoutingService', () => {
 			const result = instanceUnderTest.calculateRouteStats(mockRoute);
 
 			expect(result).toEqual(mockStats);
+		});
+	});
+
+	describe('getETACalculatorFor', () => {
+		/**
+		 * @implements {module:services/RoutingService~ETACalculator}
+		 */
+		// eslint-disable-next-line no-unused-vars
+		const etaCalculator = { getETAfor: (distance, elevationUp, elevationDown) => 42 };
+
+		it('provides a ETACalculator', () => {
+			const mockEtaCalculatorProvider = jasmine.createSpy().withArgs('some').and.returnValue(etaCalculator);
+			const instanceUnderTest = setup(null, null, null, null, null, mockEtaCalculatorProvider);
+
+			const actualCalculator = instanceUnderTest.getETACalculatorFor('some');
+
+			expect(actualCalculator).toEqual(etaCalculator);
 		});
 	});
 });

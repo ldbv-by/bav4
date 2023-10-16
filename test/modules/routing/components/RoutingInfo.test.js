@@ -232,14 +232,13 @@ const mockedRouteStatistic = {
 	slopeDist: 102055.31270225867
 };
 describe('RoutingInfo', () => {
-	const etaCalculatorServiceMock = {
-		getETACalculatorFor: () => {
-			return { getETAfor: () => 42000 };
-		}
-	};
-
 	const category = { color: 'gray' };
-	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo', calculateRouteStats: () => mockedRouteStatistic };
+	const routingServiceMock = {
+		getCategoryById: () => category,
+		getParent: () => 'foo',
+		calculateRouteStats: () => mockedRouteStatistic,
+		getETACalculatorFor: () => {}
+	};
 
 	const setup = (state, properties) => {
 		const initialState = {
@@ -253,10 +252,7 @@ describe('RoutingInfo', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector
-			.registerSingleton('TranslationService', { translate: (key) => key })
-			.registerSingleton('ETACalculatorService', etaCalculatorServiceMock)
-			.registerSingleton('RoutingService', routingServiceMock);
+		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('RoutingService', routingServiceMock);
 
 		return TestUtils.render(RoutingInfo.tag, properties);
 	};
@@ -299,6 +295,12 @@ describe('RoutingInfo', () => {
 			};
 
 			it('renders minimum estimate', async () => {
+				const routeStatistics = {
+					dist: '333',
+					twoDiff: [111, 222],
+					time: 42
+				};
+				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(routeStatistics);
 				const element = await setup(defaultRoutingState);
 
 				setRoute(defaultRoute);
@@ -320,7 +322,7 @@ describe('RoutingInfo', () => {
 						categoryId: 'some'
 					}
 				};
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(null);
+				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(null);
 				const warnSpy = spyOn(console, 'warn');
 				const element = await setup(state);
 				setRoute(defaultRoute);
@@ -334,7 +336,7 @@ describe('RoutingInfo', () => {
 				expect(routingElements[1].innerText).toBe('111 m');
 				expect(routingElements[2].innerText).toBe('222 m');
 
-				expect(warnSpy).toHaveBeenCalledOnceWith('Unknown vehicle, no estimate available for unknown (some)');
+				expect(warnSpy).toHaveBeenCalledOnceWith("Unknown category, no estimate available for 'some'");
 			});
 
 			it('renders invalid stats (missing twoDiff)', async () => {
@@ -344,7 +346,7 @@ describe('RoutingInfo', () => {
 				};
 				const calculator = { getETAfor: () => 42000000 };
 				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(invalidRouteStatistics);
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				const element = await setup(defaultRoutingState);
 				setRoute(defaultRoute);
 
@@ -365,7 +367,7 @@ describe('RoutingInfo', () => {
 					time: 3600000
 				};
 				const calculator = { getETAfor: () => 42000000 };
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(invalidRouteStatistics);
 				const element = await setup(defaultRoutingState);
 				setRoute(defaultRoute);
@@ -387,7 +389,7 @@ describe('RoutingInfo', () => {
 				};
 
 				const calculator = { getETAfor: () => 42000000 };
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(invalidRouteStatistics);
 				const element = await setup(defaultRoutingState);
 				setRoute(defaultRoute);
@@ -410,7 +412,7 @@ describe('RoutingInfo', () => {
 					}
 				};
 				const calculator = { getETAfor: () => 42000000 };
-				spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
 				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(null);
 				const element = await setup(state);
 				setRoute(defaultRoute);
@@ -430,11 +432,11 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'hike'
+							categoryId: 'bvv-hike'
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-hike').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -457,7 +459,7 @@ describe('RoutingInfo', () => {
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('hike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-hike').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -470,11 +472,11 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'bike'
+							categoryId: 'bvv-bike'
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-bike').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -495,24 +497,7 @@ describe('RoutingInfo', () => {
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
-					const element = await setup(state);
-
-					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
-
-					expect(routingDuration[0].innerText).toBe('11:40');
-					expect(calculatorSpy).toHaveBeenCalled();
-				});
-
-				it('calculates the estimate for bayernnetz-bike', async () => {
-					const state = {
-						routing: {
-							status: RoutingStatusCodes.Ok,
-							categoryId: 'bayernnetz-bike'
-						}
-					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('bike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-bike').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -525,11 +510,11 @@ describe('RoutingInfo', () => {
 					const state = {
 						routing: {
 							status: RoutingStatusCodes.Ok,
-							categoryId: 'mtb'
+							categoryId: 'bvv-mtb'
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-mtb').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -546,7 +531,7 @@ describe('RoutingInfo', () => {
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('mtb').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-mtb').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -562,7 +547,7 @@ describe('RoutingInfo', () => {
 						}
 					};
 					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(etaCalculatorServiceMock, 'getETACalculatorFor').withArgs('racingbike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('racingbike').and.returnValue(calculator);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');

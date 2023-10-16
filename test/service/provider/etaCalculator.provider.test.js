@@ -29,24 +29,24 @@ describe('ETACalculator provider', () => {
 			return milliSecondsToHour(etaCalculator.getETAfor(stats.distance, stats.up, stats.down));
 		};
 		it('have defined ETACalculators ', () => {
-			expect(provider('hike').getETAfor).toBeDefined();
-			expect(provider('bike').getETAfor).toBeDefined();
-			expect(provider('mtb').getETAfor).toBeDefined();
-			expect(provider('roadbike').getETAfor).toBeDefined();
+			expect(provider('bvv-hike').getETAfor).toBeDefined();
+			expect(provider('bvv-bike').getETAfor).toBeDefined();
+			expect(provider('bvv-mtb').getETAfor).toBeDefined();
+			expect(provider('racingbike').getETAfor).toBeDefined();
 
 			expect(provider('foo')).toBeNull();
 		});
 
 		it('calculates correct ETA for defined vehicle', () => {
-			expect(calculateETA(provider('hike'), upDownEvenStats)).toBe('09:21');
-			expect(calculateETA(provider('bike'), upDownEvenStats)).toBe('02:46');
-			expect(calculateETA(provider('mtb'), upDownEvenStats)).toBe('02:05');
-			expect(calculateETA(provider('roadbike'), upDownEvenStats)).toBe('01:38');
+			expect(calculateETA(provider('bvv-hike'), upDownEvenStats)).toBe('09:21');
+			expect(calculateETA(provider('bvv-bike'), upDownEvenStats)).toBe('02:46');
+			expect(calculateETA(provider('bvv-mtb'), upDownEvenStats)).toBe('02:05');
+			expect(calculateETA(provider('racingbike'), upDownEvenStats)).toBe('01:38');
 
-			expect(calculateETA(provider('hike'), moreUpThanDownStats)).toBe('10:11');
-			expect(calculateETA(provider('bike'), moreUpThanDownStats)).toBe('03:48');
-			expect(calculateETA(provider('mtb'), moreUpThanDownStats)).toBe('02:51');
-			expect(calculateETA(provider('roadbike'), moreUpThanDownStats)).toBe('02:38');
+			expect(calculateETA(provider('bvv-hike'), moreUpThanDownStats)).toBe('10:11');
+			expect(calculateETA(provider('bvv-bike'), moreUpThanDownStats)).toBe('03:48');
+			expect(calculateETA(provider('bvv-mtb'), moreUpThanDownStats)).toBe('02:51');
+			expect(calculateETA(provider('racingbike'), moreUpThanDownStats)).toBe('02:38');
 		});
 	});
 });

@@ -12,6 +12,7 @@ const Update_Route = 'update_route';
 const Update_Category = 'update_category';
 
 const Category_Badge_Color_Default = 'cadetblue';
+const Minute_In_Seconds = 60;
 
 /**
  * Renders basic statistical information of route like
@@ -22,13 +23,8 @@ const Category_Badge_Color_Default = 'cadetblue';
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
-		const { TranslationService, ETACalculatorService, RoutingService } = $injector.inject(
-			'TranslationService',
-			'ETACalculatorService',
-			'RoutingService'
-		);
+		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
 		this._translationService = TranslationService;
-		this._etaCalculatorService = ETACalculatorService;
 		this._routingService = RoutingService;
 
 		this.observe(
@@ -64,10 +60,9 @@ export class RoutingInfo extends MvuElement {
 		const isVisible = status === RoutingStatusCodes.Ok;
 
 		const getDuration = () => {
-			const vehicleType = this._getVehicleType(categoryId);
-			const estimate = this._estimateTimeFor(vehicleType, stats) ?? stats.time;
+			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
 			const seconds = estimate / 1000;
-			if (seconds < 60) {
+			if (seconds < Minute_In_Seconds) {
 				return '< 1 min.';
 			}
 
@@ -86,6 +81,7 @@ export class RoutingInfo extends MvuElement {
 				return km.toFixed(2);
 			};
 			return stats?.dist ? formattedInKilometer(stats.dist) : '0';
+			// todo: using UnitsService
 		};
 
 		const getUphill = () => {
@@ -134,6 +130,7 @@ export class RoutingInfo extends MvuElement {
 			: nothing;
 	}
 
+	//  todo: obsolete, due to interface-specs
 	_hasValidStats(stats) {
 		if (!Object.hasOwn(stats, 'twoDiff')) {
 			return false;
@@ -150,7 +147,7 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	/**
-	 *
+	 * // todo using UnitsService optionally
 	 * @param {number} duration the duration in seconds
 	 * @returns {string} the formatted duration in the style of HH:mm
 	 */
@@ -165,43 +162,17 @@ export class RoutingInfo extends MvuElement {
 		return `${toTwoDigits(hours)}:${toTwoDigits(minutes)}`;
 	}
 
-	_estimateTimeFor(vehicleType, stats) {
-		// walking duration estimate based on DAV-Normative:
-		// - https://discuss.graphhopper.com/t/walking-duration-estimate-elevation-ignored/4621/4
-		// - https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf
+	_estimateTimeFor(categoryId, stats) {
 		if (!this._hasValidStats(stats)) {
 			return null;
 		}
-		const calculatorMissingAction = (vehicleType) => {
-			console.warn('Unknown vehicle, no estimate available for ' + vehicleType);
+		const calculatorMissingAction = (categoryId) => {
+			console.warn(`Unknown category, no estimate available for '${categoryId}'`);
 			return null;
 		};
 
-		const calculator = this._etaCalculatorService.getETACalculatorFor(vehicleType);
-		return calculator ? calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]) : calculatorMissingAction(vehicleType);
-	}
-
-	/**
-	 * todo: move to routingService
-	 * @param {string} categoryId
-	 */
-	_getVehicleType(categoryId) {
-		switch (categoryId) {
-			case 'racingbike':
-				return 'racingbike';
-			case 'bvv-mtb':
-			case 'mtb':
-				return 'mtb';
-			case 'bayernnetz-bike':
-			case 'bvv-bike':
-			case 'bike':
-				return 'bike';
-			case 'bvv-hike':
-			case 'hike':
-				return 'hike';
-			default:
-				return 'unknown (' + categoryId + ')';
-		}
+		const calculator = this._routingService.getETACalculatorFor(categoryId); // refactor to categoryId (parent)
+		return calculator ? calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]) : calculatorMissingAction(categoryId);
 	}
 
 	static get tag() {

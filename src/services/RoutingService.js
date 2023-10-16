@@ -12,6 +12,7 @@ import { isCoordinate } from '../utils/checks';
 import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
 import { bvvRouteStatsProvider } from './provider/routeStats.provider';
+import { bvvEtaCalculatorProvider } from './provider/etaCalculator.provider';
 
 /**
  * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
@@ -127,7 +128,6 @@ import { bvvRouteStatsProvider } from './provider/routeStats.provider';
 
 /**
  * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}
- * @async
  * @typedef {Function} osmRoadTypeMappingProvider
  * @returns {Map<string, module:services/RoutingService~RoutingService#OSMRoadClass>} mapping
  */
@@ -150,6 +150,30 @@ import { bvvRouteStatsProvider } from './provider/routeStats.provider';
  */
 
 /**
+ * A Calculator for ETAs (Estimated Time Arrived)
+ * @typedef {Object} ETACalculator
+ * @param {Number} distance distance in meter
+ * @param {Number} elevationUp elevation upwards in meter
+ * @param {Number} elevationDown  elevation downwards in meter
+ * @property {function(distance, elevationUp, elevationDown):(number)} getETAfor function that returns the ETA in milliseconds.
+ */
+
+/**
+ * A function that provides a ETACalculator for a defined category
+ * @function
+ * @name module:services/RoutingService~RoutingService#getETACalculatorFor
+ * @param {string} categoryId
+ * @returns {module:services/RoutingService~RoutingService#ETACalculator| null} etaCalculator
+ */
+
+/**
+ * A function that provides a ETACalculator for a defined vehicle type.
+ * @typedef {Function} etaCalculatorProvider
+ * @param {string} categoryId id of the requested category
+ * @returns {module:services/RoutingService~RoutingService#ETACalculator| null} etaCalculator
+ */
+
+/**
  * @class
  * @implements {module:services/RoutingService~RoutingService}
  */
@@ -161,13 +185,16 @@ export class BvvRoutingService {
 	 * @param {module:services/RoutingService~routeStatsProvider} [routeStatsProvider]
 	 * @param {module:services/RoutingService~chartItemStylesProvider} [chartItemStylesProvider]
 	 * @param {module:services/RoutingService~osmRoadTypeMappingProvider} [osmRoadTypeMappingProvider]
+	 * @param {module:services/RoutingService~etaCalculatorProvider} [etaCalculatorProvider]
+	 *
 	 */
 	constructor(
 		categoriesProvider = bvvRoutingCategoriesProvider,
 		routeProvider = bvvRouteProvider,
 		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
-		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider
+		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
+		etaCalculatorProvider = bvvEtaCalculatorProvider
 	) {
 		this._categoriesProvider = categoriesProvider;
 		this._chartItemsStylesProvider = chartItemStylesProvider;
@@ -175,6 +202,7 @@ export class BvvRoutingService {
 		this._routeProvider = routeProvider;
 		this._chartItemsStyles = null;
 		this._routeStatsProvider = routeStatsProvider;
+		this._etaCalculatorProvider = etaCalculatorProvider;
 		this._categories = null;
 	}
 
@@ -296,5 +324,13 @@ export class BvvRoutingService {
 	 */
 	calculateRouteStats(route) {
 		return this._routeStatsProvider(route);
+	}
+
+	/**
+	 * Returns a ETACalculator for a defined vehicle type
+	 * @param {string} categoryId
+	 */
+	getETACalculatorFor(categoryId) {
+		return this._etaCalculatorProvider(categoryId);
 	}
 }
