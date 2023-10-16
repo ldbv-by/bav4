@@ -13,7 +13,7 @@ import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.
 import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_SelectedTopic = 'update_selectedtopic';
-const Update_Topics = 'update_topics';
+// const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_ElementToMove = 'update_elementToMove';
 
@@ -26,11 +26,11 @@ export class AdminPanel extends MvuElement {
 	#uniqueIdCounter = 0;
 	#catalog = [];
 	#geoResources = [];
+	#topics = [];
 
 	constructor() {
 		super({
 			currentTopicId: null,
-			topics: [],
 			dummy: true,
 			catalogWithResourceData: null,
 			elementToMove: null
@@ -144,21 +144,13 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async onInitialize() {
-		await this._geoResourceService.init();
-		await this._topicsService.init();
-
 		const updateCatalog = async (currentTopicId) => {
+			console.log('🚀 ~ AdminPanel ~ onInitialize() ~ updateCatalog(currentTopicId) with currentTopicId: ', currentTopicId);
 			try {
-				if (currentTopicId) {
-					const catalogFromService = await this._catalogService.byId(currentTopicId);
+				const catalogFromService = await this._catalogService.byId(currentTopicId);
 
-					const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
-					this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
-				} else {
-					const defaultCatalog = await this._catalogService.byId('ba');
-					const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(defaultCatalog);
-					this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
-				}
+				const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
+				this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
 
 				this._mergeCatalogWithResources();
 			} catch (error) {
@@ -166,16 +158,18 @@ export class AdminPanel extends MvuElement {
 			}
 		};
 
+		await this._geoResourceService.init();
+		await this._topicsService.init();
+
 		try {
-			const topics = await this._topicsService.all();
-			this.signal(Update_Topics, topics);
+			this.#topics = await this._topicsService.all();
+			// this.signal(Update_Topics, topics);
 		} catch (error) {
 			console.warn(error.message);
 		}
 
 		try {
 			this.#geoResources = await this._geoResourceService.all();
-			this._mergeCatalogWithResources();
 		} catch (error) {
 			console.warn(error.message);
 		}
@@ -183,11 +177,14 @@ export class AdminPanel extends MvuElement {
 		this.observe(
 			(state) => state.admin.currentTopicId,
 			(currentTopicId) => {
+				console.log('🚀 ~ AdminPanel ~ onInitialize ~ currentTopicId:', currentTopicId);
 				if (!currentTopicId) {
 					const defaultTopic = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
+					console.log('🚀 ~ AdminPanel ~ onInitialize ~ this.signal(Update_SelectedTopic, defaultTopic);');
 					this.signal(Update_SelectedTopic, defaultTopic);
 					return;
 				}
+				console.log('🚀 ~ AdminPanel ~ onInitialize ~ updateCatalog(currentTopicId);');
 				updateCatalog(currentTopicId);
 			}
 		);
@@ -195,8 +192,8 @@ export class AdminPanel extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_Topics:
-				return { ...model, topics: [...data] };
+			// case Update_Topics:
+			// 	return { ...model, topics: [...data] };
 
 			case Update_ElementToMove:
 				// eslint-disable-next-line no-console
@@ -229,7 +226,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	createView(model) {
-		const { currentTopicId, topics, catalogWithResourceData, dummy } = model;
+		const { currentTopicId, catalogWithResourceData, dummy } = model;
 
 		const calcPosition = (index, arrayWithEntry) => {
 			if (index > 0) {
@@ -553,7 +550,7 @@ export class AdminPanel extends MvuElement {
 				<div class="container">
 					<div>
 						<ba-layer-tree
-							.topics="${topics}"
+							.topics="${this.#topics}"
 							.selectedTheme="${currentTopicId}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
