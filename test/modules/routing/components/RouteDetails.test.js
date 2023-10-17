@@ -248,6 +248,9 @@ describe('RouteDetails', () => {
 		},
 		mapOsmRoadTypes: bvvOsmRoadTypeMappingProvider
 	};
+	const configService = {
+		getValue: () => {}
+	};
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -260,7 +263,10 @@ describe('RouteDetails', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('RoutingService', routingServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('ConfigService', configService)
+			.registerSingleton('RoutingService', routingServiceMock);
 
 		return TestUtils.render(RouteDetails.tag, properties);
 	};
@@ -299,6 +305,80 @@ describe('RouteDetails', () => {
 			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
 
 			expect(chartElements).toHaveSize(2);
+		});
+	});
+
+	describe('when route changes', () => {
+		it('does NOT create chart data from missing statistics', async () => {
+			spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(null);
+			const element = await setup();
+			const model = element.getModel();
+			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
+
+			expect(chartElements).toHaveSize(0);
+			expect(model).toEqual({
+				status: 900,
+				warnings: {},
+				chartData: jasmine.objectContaining({ surface: {}, roadTypes: {} })
+			});
+		});
+
+		it('creates chart items for unknown surface or road types', async () => {
+			const unknownRouteStatistic = {
+				time: 3600000,
+				details: {
+					surface: {
+						some: {
+							distance: 42,
+							segments: [[0, 21]]
+						}
+					},
+					road_class: {
+						some: {
+							distance: 42,
+							segments: [[0, 1]]
+						}
+					}
+				},
+				warnings: {},
+				stats: {
+					sumUp: 42,
+					sumDown: 21
+				},
+				diff: 21,
+				twoDiff: [111, 222],
+				elPoi: [0, 0],
+				dist: 333,
+				slopeDist: 42
+			};
+			spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(unknownRouteStatistic);
+			const element = await setup();
+			const model = element.getModel();
+			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
+
+			expect(chartElements).toHaveSize(0);
+			expect(model).toEqual({
+				status: 900,
+				warnings: {},
+				chartData: jasmine.objectContaining({
+					surface: jasmine.objectContaining({
+						some: jasmine.objectContaining({
+							id: 0,
+							color: 'transparent',
+							image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
+							label: 'Unknown'
+						})
+					}),
+					roadTypes: jasmine.objectContaining({
+						some: jasmine.objectContaining({
+							id: 0,
+							color: 'transparent',
+							image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+							label: 'Unknown'
+						})
+					})
+				})
+			});
 		});
 	});
 });

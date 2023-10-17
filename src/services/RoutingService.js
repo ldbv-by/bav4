@@ -114,6 +114,30 @@ import { bvvEtaCalculatorProvider } from './provider/etaCalculator.provider';
  */
 
 /**
+ * A default style object for chart items of road-classes
+ * if the @see {@link module:services/RoutingService~RoutingService#chartItemStylesProvider} cannot
+ * provide a specific style
+ */
+export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
+	id: 0,
+	color: 'transparent',
+	image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+	label: 'Unknown'
+};
+
+/**
+ * A default style object for chart items of surface-classes
+ * if the @see {@link module:services/RoutingService~RoutingService#chartItemStylesProvider} cannot
+ * provide a specific style
+ */
+export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
+	id: 0,
+	color: 'transparent',
+	image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
+	label: 'Unknown'
+};
+
+/**
  * @typedef {Object} OSMRoadClass
  * @property {number} distance
  * @property {Array<number>} segments

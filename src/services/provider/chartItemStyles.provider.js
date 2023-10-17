@@ -1,63 +1,58 @@
 /**
  * @module services/provider/chartItemStyles_provider
  */
+
+import { $injector } from '../../injection/index';
+import { CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../RoutingService';
+
 /**
  * @implements chartItemStylesProvider
- * @returns {Map<string,module:domain/routing~ChartItemStyle>} available chartItems
+ * @returns {Map<string,ChartItemStyle>} available chartItems
  */
 export const bvvChartItemStylesProvider = () => {
+	const { ConfigService: configService } = $injector.inject('ConfigService');
+	const lang = configService.getValue('DEFAULT_LANG');
+
 	const bvvRoadStyles = {
-		unknown: {
-			// Default-/Fallback-Wert, wenn der vom Backend gelieferte Wert
-			// nicht in dieser Auflistung gefunden werden kann
-			id: 0,
-			color: 'transparent',
-			image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
-			label: 'Unbekannt'
-		},
+		unknown: { ...CHART_ITEM_ROAD_STYLE_UNKNOWN, label: lang === 'de' ? 'Unbekannt' : 'Unknown' },
 		path: {
 			id: 1,
 			color: 'rgb(139,71,38)',
-			label: 'Pfad'
+			label: lang === 'de' ? 'Pfad' : 'Path'
 		},
 		track: {
 			id: 2,
 			color: 'rgb(238,213,183)',
-			label: 'Wald-, Feldweg'
+			label: lang === 'de' ? 'Wald-, Feldweg' : 'Track'
 		},
 		footway: {
 			id: 3,
 			color: 'rgb(205,183,158)',
-			label: 'Rad-, Fußweg'
+			label: lang === 'de' ? 'Rad-, Fußweg' : 'Cycle, footway'
 		},
 		street: {
 			id: 4,
 			color: 'rgb(190,190,190)',
-			label: 'Nebenstraße'
+			label: lang === 'de' ? 'Nebenstraße' : 'Street'
 		},
 		mainstreet: {
 			id: 5,
 			color: 'rgb(255,193,7)',
-			label: 'Hauptstraße'
+			label: lang === 'de' ? 'Hauptstraße' : 'Mainstreet'
 		}
 	};
 
 	const bvvSurfaceStyles = {
-		unknown: {
-			id: 0,
-			color: 'transparent',
-			image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
-			label: 'Unbekannt'
-		},
+		unknown: { ...CHART_ITEM_SURFACE_STYLE_UNKNOWN, label: lang === 'de' ? 'Unbekannt' : 'Unknown' },
 		ground: {
 			id: 100,
 			color: 'rgb(139,71,38)',
-			label: 'gewachsen, naturbelassen'
+			label: lang === 'de' ? 'gewachsen, naturbelassen' : 'ground'
 		},
 		compacted: {
 			id: 200,
 			color: 'rgb(238,213,183)',
-			label: 'befestigt'
+			label: lang === 'de' ? 'befestigt' : 'compacted'
 		},
 		other: {
 			id: 201,
@@ -65,17 +60,17 @@ export const bvvChartItemStylesProvider = () => {
 			// FIXME: Workaround for graphhopper version 0.13 due to incomplete mapping for BasisDLM-Values for surface types
 			// this Workaround musst be reverted if graphhopper version >= 1.0
 			// label: "verschieden",
-			label: 'befestigt'
+			label: lang === 'de' ? 'befestigt' : 'compacted'
 		},
 		asphalt: {
 			id: 300,
 			color: 'rgb(190,190,190)',
-			label: 'asphaltiert'
+			label: lang === 'de' ? 'asphaltiert' : 'asphalt'
 		},
 		paved: {
 			id: 400,
 			color: 'rgb(195,195,195)',
-			label: 'Straßenbelag'
+			label: lang === 'de' ? 'Straßenbelag' : 'Paved'
 		}
 	};
 

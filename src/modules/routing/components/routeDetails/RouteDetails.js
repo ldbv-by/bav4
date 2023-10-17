@@ -72,7 +72,7 @@ export class RouteDetails extends MvuElement {
 	}
 
 	_createWarnings(statistics) {
-		return statistics.warnings;
+		return statistics ? statistics.warnings : {};
 	}
 
 	_createChartData(routeStatistics) {
@@ -106,29 +106,25 @@ export class RouteDetails extends MvuElement {
 			roadTypes: {}
 		};
 
-		if (statistics) {
-			const { surface, road_class } = statistics.details;
-			const surfaceTypes = surface ?? {};
-			const roadClasses = road_class ?? {};
+		const { surface: surfaceTypes, road_class: roadClasses } = statistics.details;
 
-			const surfaceTypeDist = this._calcDistance(surfaceTypes);
-			const roadClassDist = this._calcDistance(road_class ?? {});
+		const surfaceTypeDist = this._calcDistance(surfaceTypes);
+		const roadClassDist = this._calcDistance(roadClasses);
 
-			for (const surfaceType in surfaceTypes) {
-				data.surfaceTypes[surfaceType] = {
-					absolute: this._sanitizeDistance(surfaceTypes[surfaceType]),
-					relative: this._percentageOfDistance(this._sanitizeDistance(surfaceTypes[surfaceType]), surfaceTypeDist),
-					segments: this._sanitizeSegments(surfaceTypes[surfaceType])
-				};
-			}
+		for (const surfaceType in surfaceTypes) {
+			data.surfaceTypes[surfaceType] = {
+				absolute: this._sanitizeDistance(surfaceTypes[surfaceType]),
+				relative: this._percentageOfDistance(this._sanitizeDistance(surfaceTypes[surfaceType]), surfaceTypeDist),
+				segments: this._sanitizeSegments(surfaceTypes[surfaceType])
+			};
+		}
 
-			for (const roadClass in roadClasses) {
-				data.roadTypes[roadClass] = {
-					absolute: this._sanitizeDistance(roadClasses[roadClass]),
-					relative: this._percentageOfDistance(this._sanitizeDistance(roadClasses[roadClass]), roadClassDist),
-					segments: this._sanitizeSegments(roadClasses[roadClass])
-				};
-			}
+		for (const roadClass in roadClasses) {
+			data.roadTypes[roadClass] = {
+				absolute: this._sanitizeDistance(roadClasses[roadClass]),
+				relative: this._percentageOfDistance(this._sanitizeDistance(roadClasses[roadClass]), roadClassDist),
+				segments: this._sanitizeSegments(roadClasses[roadClass])
+			};
 		}
 
 		return data;
