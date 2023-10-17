@@ -46,20 +46,18 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 						</span>
 					</li>
 				</ul>
-				<div>				
-				<ba-routing-feedback></ba-routing-feedback>
-				<div class='chips-container>
-					<!-- todo:: placing chips 'export' and 'share' here-->
+				<div>
+					<ba-routing-feedback></ba-routing-feedback>
+
+					<ba-routing-category-bar></ba-routing-category-bar>
+					<ba-routing-waypoints></ba-routing-waypoints>
+					<ba-routing-info></ba-routing-info>
+					<ba-routing-details></ba-routing-details>
 				</div>
-				
-				<ba-routing-category-bar ></ba-routing-category-bar>
-				<ba-routing-waypoints></ba-routing-waypoints>
-				<ba-routing-info></ba-routing-info>
-				<ba-routing-details></ba-routing-details></div>
 				<div class="chips__container">
 					<ba-profile-chip></ba-profile-chip>
 				</div>
-				${this._getDemoContent()} 
+				${this._getDemoContent()}
 			</div>
 		`;
 	}
