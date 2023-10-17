@@ -83,6 +83,14 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.waypoints).toEqual([]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 
+		setWaypoints([
+			[11, 22],
+			[33, 44, 'foo']
+		]);
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
 		setWaypoints(coordinates);
 
 		expect(store.getState().routing.waypoints).toEqual(coordinates);
@@ -110,6 +118,11 @@ describe('routingReducer', () => {
 		const store = setup();
 		const coordinate = [11, 22];
 
+		setStart([11, 22, 'foo']);
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
 		setStart([11, 22]);
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
@@ -119,6 +132,11 @@ describe('routingReducer', () => {
 	it('sets the destination waypoint', () => {
 		const store = setup();
 		const coordinate = [11, 22];
+
+		setDestination([11, 22, 'foo']);
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 
 		setDestination([11, 22]);
 
