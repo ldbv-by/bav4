@@ -46,10 +46,7 @@ describe('CategoryBar', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector
-			.registerSingleton('RoutingService', routingService)
-			.registerSingleton('ConfigService', configService)
-			.registerSingleton('TranslationService', { translate: (key) => key });
+		$injector.registerSingleton('RoutingService', routingService).registerSingleton('ConfigService', configService);
 		return TestUtils.render(CategoryBar.tag);
 	};
 

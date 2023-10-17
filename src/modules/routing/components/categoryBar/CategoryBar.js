@@ -18,14 +18,10 @@ const Update_Selected_Category = 'update_selected_category';
 export class CategoryBar extends MvuElement {
 	constructor() {
 		super({ categories: [], selectedCategory: null });
-		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
-		this._translationService = TranslationService;
+		const { RoutingService } = $injector.inject('RoutingService');
 		this._routingService = RoutingService;
 	}
 
-	/**
-	 * @override
-	 */
 	update(type, data, model) {
 		switch (type) {
 			case Update_Categories:
@@ -45,18 +41,13 @@ export class CategoryBar extends MvuElement {
 		this.signal(Update_Categories, this._routingService.getCategories());
 	}
 
-	/**
-	 *@override
-	 */
 	createView(model) {
 		const { categories, selectedCategory } = model;
-		const translate = (key) => this._translationService.translate(key);
 		const selectCategory = (categoryCandidate) => {
 			setCategory(categoryCandidate);
 		};
 
 		const getCategoryIconClass = (category) => `icon-${category.id.replace('-', '_')}`;
-		const getLabel = (category) => translate(`routing_category_label_${category.id.replace('-', '_')}`);
 		return html`
 			<style>
 				${css}
@@ -68,10 +59,10 @@ export class CategoryBar extends MvuElement {
 					return html`<button
 						id=${category.id + '-button'}
 						data-test-id"
-						title=${getLabel(category)}
+						title=${category.label}
 						@click=${() => selectCategory(category.id)} class='category-button ${classMap(classes)}'
 					>												
-						<div class="category-button__text">${getLabel(category)}</div>
+						<div class="category-button__text">${category.label}</div>
 					</button>`;
 				})}
 			</div>
