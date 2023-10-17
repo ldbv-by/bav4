@@ -130,22 +130,6 @@ export class RoutingInfo extends MvuElement {
 			: nothing;
 	}
 
-	//  todo: obsolete, due to interface-specs
-	_hasValidStats(stats) {
-		if (!Object.hasOwn(stats, 'twoDiff')) {
-			return false;
-		}
-
-		if (stats.twoDiff.length !== 2) {
-			return false;
-		}
-		if (!Object.hasOwn(stats, 'dist')) {
-			return false;
-		}
-
-		return true;
-	}
-
 	/**
 	 * // todo using UnitsService optionally
 	 * @param {number} duration the duration in seconds
@@ -163,15 +147,12 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	_estimateTimeFor(categoryId, stats) {
-		if (!this._hasValidStats(stats)) {
-			return null;
-		}
 		const calculatorMissingAction = (categoryId) => {
 			console.warn(`Unknown category, no estimate available for '${categoryId}'`);
 			return null;
 		};
 
-		const calculator = this._routingService.getETACalculatorFor(categoryId); // refactor to categoryId (parent)
+		const calculator = this._routingService.getETACalculatorFor(categoryId);
 		return calculator ? calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]) : calculatorMissingAction(categoryId);
 	}
 

@@ -210,10 +210,10 @@ export class Waypoints extends MvuElement {
 		const cleanedWaypoints = waypoints.toSpliced(waypoint.index, 1);
 		const getRemoveAction = (waypoint) => {
 			if (waypoints.length === 2 && waypoint.isStart) {
-				return () => setDestination(cleanedWaypoints);
+				return () => setDestination(cleanedWaypoints[0]);
 			}
 			if (waypoints.length === 2 && waypoint.isDestination) {
-				return () => setStart(cleanedWaypoints);
+				return () => setStart(cleanedWaypoints[0]);
 			}
 			return () => setWaypoints(cleanedWaypoints);
 		};

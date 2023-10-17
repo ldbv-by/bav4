@@ -67,6 +67,16 @@ describe('Waypoints', () => {
 			}
 		};
 
+		const twoPointRoutingState = {
+			routing: {
+				status: RoutingStatusCodes.Ok,
+				waypoints: [
+					[0, 0],
+					[1, 1]
+				]
+			}
+		};
+
 		it('renders three waypoints', async () => {
 			const element = await setup(defaultRoutingState);
 			element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
@@ -155,6 +165,20 @@ describe('Waypoints', () => {
 					]);
 				});
 
+				it('removes the first waypoint (out of two)', async () => {
+					const element = await setup(twoPointRoutingState);
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1]
+					]);
+
+					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[0].waypoint));
+					expect(store.getState().routing.waypoints).toEqual([[1, 1]]);
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+				});
+
 				it('removes the waypoint in the middle', async () => {
 					const element = await setup(defaultRoutingState);
 					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
@@ -189,6 +213,21 @@ describe('Waypoints', () => {
 						[0, 0],
 						[1, 1]
 					]);
+				});
+
+				it('removes the last waypoint (out of two)', async () => {
+					const element = await setup(twoPointRoutingState);
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+
+					expect(store.getState().routing.waypoints).toEqual([
+						[0, 0],
+						[1, 1]
+					]);
+
+					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
+
+					expect(store.getState().routing.waypoints).toEqual([[0, 0]]);
+					expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
 				});
 			});
 
