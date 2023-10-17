@@ -94,6 +94,11 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.waypoints).toEqual([]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 
+		setWaypoints({});
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
 		setWaypoints(coordinates);
 
 		expect(store.getState().routing.waypoints).toEqual(coordinates);
