@@ -129,6 +129,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return this._routingLayerGroup;
 	}
 
+	_getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+		return {
+			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
+			hitTolerance: 5
+		};
+	}
+
 	_newPointerMoveHandler(map, interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		const updateModifyActivity = (feature) => {
 			if (feature.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE_SEGMENT) {
@@ -151,10 +158,10 @@ export class OlRoutingHandler extends OlLayerHandler {
 				// $(element).popover('destroy');
 
 				const pixel = map.getEventPixel(event.originalEvent);
-				const hit = map.getFeaturesAtPixel(pixel, {
-					layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
-					hitTolerance: 5
-				});
+				const hit = map.getFeaturesAtPixel(
+					pixel,
+					this._getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy)
+				);
 
 				if (hit.length > 0) {
 					this._helpTooltip.activate(this._map);
@@ -194,6 +201,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		translate.on('translating', () => {
 			// this._map.getTarget().classList.add('grabbing');
 			// managePopup();
+			// Todo: hide context menu
 		});
 		translate.on('translateend', (evt) => {
 			// this._map.getTarget().classList.remove('grabbing');
@@ -204,11 +212,15 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return translate;
 	}
 
-	_createSelect(interactionLayer, alternativeRouteLayer) {
-		const select = new Select({
-			layers: (layer) => layer === interactionLayer || layer === alternativeRouteLayer,
+	_getSelectOptions(interactionLayer, alternativeRouteLayer) {
+		return {
+			layers: [interactionLayer, alternativeRouteLayer],
 			hitTolerance: 5
-		});
+		};
+	}
+
+	_createSelect(interactionLayer, alternativeRouteLayer) {
+		const select = new Select(this._getSelectOptions(interactionLayer, alternativeRouteLayer));
 		select.on('select', (evt) => {
 			if (evt.selected[0]) {
 				const feature = evt.selected[0];
@@ -218,6 +230,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 					this._catId = category.id;
 					this._switchToAlternativeRoute(this._currentRoutingResponse);
 					// hideHelpTooltip();
+					// Todo: hide context menu
 				} else {
 					// Update the position of the popup according to the click event.
 					// managePopup(evt.selected[0], evt.mapBrowserEvent.coordinate, function () {
@@ -225,10 +238,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 					// });
 					// console.log(feature.getGeometry().getFirstCoordinate());
 					// this._removeFeature(feature);
+					// Todo: update context menu
 				}
 				select.getFeatures().clear();
-				// evt.stopPropagation();
-				// evt.preventDefault();
 			}
 		});
 		return select;
@@ -245,6 +257,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			if (evt.mapBrowserEvent.type !== 'singleclick') {
 				// this._map.getTarget().classList.add('grabbing');
 				// managePopup();
+				// Todo: show context menu
 			}
 		});
 		modify.on('modifyend', (evt) => {
@@ -393,43 +406,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
-
-		// TODO: Calculate and publish stats and route
-		// publish route object
-		// const gpx = new GPX().writeFeatures([this._polylineTo4326Feature(polyline)]);
-		// const index = this._getInteractionFeatures(interactionLayer).map(function (feature) {
-		// 	return feature.getGeometry().getCoordinates();
-		// });
-
-		// const route = {
-		// 	gpx: gpx,
-		// 	index: index
-		// };
-		// // window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: { route: route } }, '*');
-		// const graphopperStats = {};
-		// // update graphhopper stats
-		// graphopperStats.time = categoryResponse.paths[0].time;
-
-		// const surfaceDetails = baRouting.aggregateDetailData(categoryResponse.paths[0].details.surface, geometry.getCoordinates());
-		// // var roadClassDetails = baRouting.aggregateDetailData(categoryResponse.paths[0].details.road_class, geometry.getCoordinates());
-		// const mergedRoadClassTrackTypeRawData = baRouting.mergeRoadClassAndTrackTypeData(
-		// 	categoryResponse.paths[0].details.road_class,
-		// 	categoryResponse.paths[0].details.track_type
-		// );
-		// const roadClassTrackTypeDetails = baRouting.aggregateDetailData(mergedRoadClassTrackTypeRawData, geometry.getCoordinates());
-		// graphopperStats.details = {
-		// 	surface: surfaceDetails,
-		// 	road_class: roadClassTrackTypeDetails
-		// };
-
-		// graphopperStats.warnings = baRouting.createRouteWarnings(
-		// 	categoryResponse.vehicle,
-		// 	mergedRoadClassTrackTypeRawData,
-		// 	categoryResponse.paths[0].details.surface
-		// );
-
-		// // show/update profile
-		// $rootScope.$broadcast('gaProfileActive', routeFeature, undefined, undefined, false);
 	}
 
 	_displayAlternativeRoutingGeometry(categoryResponse) {
@@ -461,8 +437,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 		this._routeLayerCopy.getSource().clear();
 		this._alternativeRouteLayer.getSource().clear();
 		this._highlightLayer.getSource().clear();
-		// Reset gpx in vuex-store
-		// window.postMessage({ type: 'ROUTING_STATE_CHANGED', payload: {gpx: 'undefined'} }, '*');
 	}
 
 	_clearAllFeatures() {

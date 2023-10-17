@@ -2,6 +2,7 @@
  * @module store/routing/routing_action
  */
 import { $injector } from '../../injection/index';
+import { isCoordinate } from '../../utils/checks';
 import {
 	ROUTING_ACTIVE_CHANGED,
 	ROUTING_CATEGORY_CHANGED,
@@ -73,7 +74,7 @@ export const setRoute = (route) => {
  * @function
  */
 export const setWaypoints = (coordinates) => {
-	if (coordinates.length > 1) {
+	if (coordinates.length > 1 && !coordinates.some((c) => !isCoordinate(c))) {
 		getStore().dispatch({
 			type: ROUTING_WAYPOINTS_CHANGED,
 			payload: [...coordinates]
@@ -98,10 +99,12 @@ export const reset = () => {
  * @function
  */
 export const setStart = (coordinate) => {
-	getStore().dispatch({
-		type: ROUTING_START_SET,
-		payload: coordinate
-	});
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_START_SET,
+			payload: coordinate
+		});
+	}
 };
 
 /**
@@ -110,10 +113,12 @@ export const setStart = (coordinate) => {
  * @function
  */
 export const setDestination = (coordinate) => {
-	getStore().dispatch({
-		type: ROUTING_DESTINATION_SET,
-		payload: coordinate
-	});
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_DESTINATION_SET,
+			payload: coordinate
+		});
+	}
 };
 
 /**

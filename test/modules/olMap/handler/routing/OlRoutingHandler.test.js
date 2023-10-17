@@ -126,9 +126,10 @@ describe('OlRoutingHandler', () => {
 		const store = setup(state);
 		const map = setupMap();
 		const instanceUnderTest = new OlRoutingHandler();
+		const getSelectOptionsSpy = spyOn(instanceUnderTest, '_getSelectOptions');
 		const layer = instanceUnderTest.activate(map);
 		await TestUtils.timeout();
-		return { map, instanceUnderTest, store, layer };
+		return { map, instanceUnderTest, store, layer, getSelectOptionsSpy };
 	};
 
 	it('instantiates the handler', () => {
@@ -354,9 +355,21 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('select', () => {
+			it('is properly configured', async () => {
+				const instanceUnderTest = new OlRoutingHandler();
+				const interactionLayerMock = { id: '0' };
+				const alternativeRouteLayerMock = { id: '1' };
+
+				expect(instanceUnderTest._getSelectOptions(interactionLayerMock, alternativeRouteLayerMock)).toEqual({
+					layers: [interactionLayerMock, alternativeRouteLayerMock],
+					hitTolerance: 5
+				});
+			});
+
 			it('calls the correct methods', async () => {
-				const { instanceUnderTest, map, layer } = await newTestInstance();
+				const { instanceUnderTest, map, layer, getSelectOptionsSpy } = await newTestInstance();
 				const switchToAlternativeRouteSpy = spyOn(instanceUnderTest, '_switchToAlternativeRoute');
+
 				map.addLayer(layer);
 				const feature = new Feature({
 					geometry: new Point([0, 0])
@@ -370,6 +383,7 @@ describe('OlRoutingHandler', () => {
 
 				expect(switchToAlternativeRouteSpy).toHaveBeenCalledWith(mockRoutingResponse);
 				expect(instanceUnderTest._catId).toBe(category.id);
+				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
 			});
 		});
 
@@ -719,6 +733,26 @@ describe('OlRoutingHandler', () => {
 			});
 		});
 
+		describe('_setInteractionsActive', () => {
+			it('enables or disables all interactions', async () => {
+				const { instanceUnderTest } = await newTestInstance();
+
+				instanceUnderTest._setInteractionsActive(true);
+
+				expect(instanceUnderTest._selectInteraction.getActive()).toBeTrue();
+				expect(instanceUnderTest._translateInteraction.getActive()).toBeTrue();
+				expect(instanceUnderTest._modifyInteraction.getActive()).toBeTrue();
+				expect(instanceUnderTest._activeInteraction).toBeTrue();
+
+				instanceUnderTest._setInteractionsActive(false);
+
+				expect(instanceUnderTest._selectInteraction.getActive()).toBeFalse();
+				expect(instanceUnderTest._translateInteraction.getActive()).toBeFalse();
+				expect(instanceUnderTest._modifyInteraction.getActive()).toBeFalse();
+				expect(instanceUnderTest._activeInteraction).toBeFalse();
+			});
+		});
+
 		describe('_switchToAlternativeRoute', () => {
 			it('displays an alternative route', async () => {
 				const { instanceUnderTest } = await newTestInstance();
@@ -1000,14 +1034,42 @@ describe('OlRoutingHandler', () => {
 					instanceUnderTest._routeLayerCopy
 				);
 				const event = { originalEvent: {}, coordinate: eventCoordinate, dragging: draggingEvent };
+				const pointerMoveGetFeaturesAtPixelOptions = {
+					layerFilter: () => true,
+					hitTolerance: 42
+				};
+				spyOn(instanceUnderTest, '_getPointerMoveGetFeaturesAtPixelOptions')
+					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer, instanceUnderTest._routeLayerCopy)
+					.and.returnValue(pointerMoveGetFeaturesAtPixelOptions);
 				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue([21, 42]);
 				spyOn(map, 'getFeaturesAtPixel')
-					.withArgs([21, 42], { layerFilter: jasmine.any(Function), hitTolerance: 5 })
+					.withArgs([21, 42], pointerMoveGetFeaturesAtPixelOptions)
 					.and.returnValue(feature ? [feature] : []);
 
 				handler(event);
 				return { setModifyActiveSpy, helpTooltipActivateSpy, helpTooltipNotifySpy, helpTooltipDeactivateSpy, map };
 			};
+
+			it('is properly configured', async () => {
+				const instanceUnderTest = new OlRoutingHandler();
+				const interactionLayerMock = { id: '0' };
+				const alternativeRouteLayerMock = { id: '1' };
+				const routeLayerCopyMock = { id: '2' };
+
+				const options = instanceUnderTest._getPointerMoveGetFeaturesAtPixelOptions(
+					interactionLayerMock,
+					alternativeRouteLayerMock,
+					routeLayerCopyMock
+				);
+				expect(options).toEqual({
+					layerFilter: jasmine.any(Function),
+					hitTolerance: 5
+				});
+				expect(options.layerFilter(interactionLayerMock)).toBeTrue();
+				expect(options.layerFilter(alternativeRouteLayerMock)).toBeTrue();
+				expect(options.layerFilter(routeLayerCopyMock)).toBeTrue();
+				expect(options.layerFilter({})).toBeFalse();
+			});
 
 			it('handles a detected feature of type ROUTE_SEGMENT', async () => {
 				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_SEGMENT);
