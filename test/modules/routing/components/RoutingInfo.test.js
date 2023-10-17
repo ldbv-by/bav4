@@ -240,6 +240,12 @@ describe('RoutingInfo', () => {
 		getETACalculatorFor: () => {}
 	};
 
+	const unitsServiceMock = {
+		formatDistance: (distance) => {
+			return distance > 100 ? (distance / 1000).toFixed(2) + ' km' : distance + ' m';
+		}
+	};
+
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -252,7 +258,10 @@ describe('RoutingInfo', () => {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
-		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('RoutingService', routingServiceMock);
+		$injector
+			.registerSingleton('TranslationService', { translate: (key) => key })
+			.registerSingleton('UnitsService', unitsServiceMock)
+			.registerSingleton('RoutingService', routingServiceMock);
 
 		return TestUtils.render(RoutingInfo.tag, properties);
 	};
@@ -311,8 +320,8 @@ describe('RoutingInfo', () => {
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
 				expect(routingElements[0].innerText).toBe('0.33 km');
-				expect(routingElements[1].innerText).toBe('111 m');
-				expect(routingElements[2].innerText).toBe('222 m');
+				expect(routingElements[1].innerText).toBe('0.11 km');
+				expect(routingElements[2].innerText).toBe('0.22 km');
 			});
 
 			it('renders unknown category', async () => {
@@ -333,8 +342,8 @@ describe('RoutingInfo', () => {
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
 				expect(routingElements[0].innerText).toBe('0.33 km');
-				expect(routingElements[1].innerText).toBe('111 m');
-				expect(routingElements[2].innerText).toBe('222 m');
+				expect(routingElements[1].innerText).toBe('0.11 km');
+				expect(routingElements[2].innerText).toBe('0.22 km');
 
 				expect(warnSpy).toHaveBeenCalledOnceWith("Unknown category, no estimate available for 'some'");
 			});
@@ -357,9 +366,9 @@ describe('RoutingInfo', () => {
 
 				const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 				expect(routingElements).toHaveSize(3);
-				expect(routingElements[0].innerText).toBe('0 km');
-				expect(routingElements[1].innerText).toBe('0 m');
-				expect(routingElements[2].innerText).toBe('0 m');
+				expect(routingElements[0].innerText).toBe('0');
+				expect(routingElements[1].innerText).toBe('0');
+				expect(routingElements[2].innerText).toBe('0');
 			});
 
 			describe('when rendering estimate for specific vehicle', () => {
@@ -380,8 +389,8 @@ describe('RoutingInfo', () => {
 					const routingElements = element.shadowRoot.querySelectorAll('.routing-info-text');
 					expect(routingElements).toHaveSize(3);
 					expect(routingElements[0].innerText).toBe('0.33 km');
-					expect(routingElements[1].innerText).toBe('111 m');
-					expect(routingElements[2].innerText).toBe('222 m');
+					expect(routingElements[1].innerText).toBe('0.11 km');
+					expect(routingElements[2].innerText).toBe('0.22 km');
 
 					expect(calculatorSpy).toHaveBeenCalled();
 				});

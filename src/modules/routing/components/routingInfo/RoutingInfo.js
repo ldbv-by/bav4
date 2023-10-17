@@ -23,9 +23,10 @@ const Minute_In_Seconds = 60;
 export class RoutingInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
-		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
+		const { TranslationService, RoutingService, UnitsService } = $injector.inject('TranslationService', 'RoutingService', 'UnitsService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
+		this._unitsService = UnitsService;
 
 		this.observe(
 			(store) => store.routing.status,
@@ -76,20 +77,15 @@ export class RoutingInfo extends MvuElement {
 		};
 
 		const getDistance = () => {
-			const formattedInKilometer = (distanceInMeter) => {
-				const km = distanceInMeter / 1000;
-				return km.toFixed(2);
-			};
-			return stats?.dist ? formattedInKilometer(stats.dist) : '0';
-			// todo: using UnitsService
+			return stats?.dist ? this._unitsService.formatDistance(stats.dist) : '0';
 		};
 
 		const getUphill = () => {
-			return stats?.twoDiff && stats.twoDiff.length === 2 ? stats.twoDiff[0].toFixed(0) : '0';
+			return stats ? this._unitsService.formatDistance(stats.twoDiff[0]) : '0';
 		};
 
 		const getDownhill = () => {
-			return stats?.twoDiff && stats.twoDiff.length === 2 ? stats.twoDiff[1].toFixed(0) : '0';
+			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '0';
 		};
 
 		return isVisible
@@ -111,33 +107,28 @@ export class RoutingInfo extends MvuElement {
 								<div class="routing-info-icon distance"></div>
 							</div>
 							<div class="routing-info-text">
-								<span>${getDistance()} <b>km</b></span>
+								<span>${getDistance()}</span>
 							</div>
 							<div class="col" title=${translate('routing_info_uphill')}>
 								<div class="routing-info-icon uphill"></div>
 							</div>
 							<div class="routing-info-text">
-								<span>${getUphill()} <b>m</b></span>
+								<span>${getUphill()}</span>
 							</div>
 							<div class="col" title=${translate('routing_info_downhill')}>
 								<div class="routing-info-icon downhill"></div>
 							</div>
 							<div class="routing-info-text">
-								<span>${getDownhill()} <b>m</b></span>
+								<span>${getDownhill()}</span>
 							</div>
 						</div>
 					</div>`
 			: nothing;
 	}
 
-	/**
-	 * // todo using UnitsService optionally
-	 * @param {number} duration the duration in seconds
-	 * @returns {string} the formatted duration in the style of HH:mm
-	 */
-	_formatDuration(duration) {
-		const hours = Math.floor(duration / 3600);
-		const minutes = Math.floor((duration % 3600) / 60);
+	_formatDuration(seconds) {
+		const hours = Math.floor(seconds / 3600);
+		const minutes = Math.floor((seconds % 3600) / 60);
 
 		const toTwoDigits = (timePart) => {
 			return timePart < 10 ? `0${timePart}` : timePart;
