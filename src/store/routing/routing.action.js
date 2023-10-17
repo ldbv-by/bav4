@@ -17,6 +17,13 @@ import {
 	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
 } from './routing.reducer';
 
+/**
+ * Contains information for highlighting route segments.
+ * @typedef {Object} HighlightSegments
+ * @property {Array<Array<number>>} segments the segments
+ * @property {boolean} [zoomToExtent] `true` if the map should be zoomed to the extent of the segments. Default is `false`.
+ */
+
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
@@ -147,21 +154,23 @@ export const deactivate = () => {
 
 /**
  * Highlights the given segments of the current route geometry.
- * @param {Array<Array<number>>} segments
+ * @param {module:store/routing/routing_action~HighlightSegments} highlightSegments
+ * @function
  */
-export const setHighlightedSegments = (segments) => {
+export const setHighlightedSegments = (highlightSegments) => {
 	getStore().dispatch({
 		type: ROUTING_HIGHLIGHT_SEGMENTS_SET,
-		payload: [...segments]
+		payload: { zoomToExtent: false, ...highlightSegments }
 	});
 };
 
 /**
  * Removes the highlighted segments.
+ * @function
  */
 export const resetHighlightedSegments = () => {
 	getStore().dispatch({
 		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
-		payload: {}
+		payload: null
 	});
 };

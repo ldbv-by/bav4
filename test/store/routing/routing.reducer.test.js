@@ -31,7 +31,7 @@ describe('routingReducer', () => {
 			stats: null,
 			route: null,
 			waypoints: [],
-			highlightedSegments: [],
+			highlightedSegments: null,
 			active: false
 		});
 	});
@@ -154,13 +154,21 @@ describe('routingReducer', () => {
 			[30, 44]
 		];
 
-		setHighlightedSegments(segments);
+		setHighlightedSegments({
+			segments
+		});
 
-		expect(store.getState().routing.highlightedSegments).toEqual(segments);
+		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: false, segments });
+
+		setHighlightedSegments({
+			segments,
+			zoomToExtent: true
+		});
+		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: true, segments });
 
 		resetHighlightedSegments();
 
-		expect(store.getState().routing.highlightedSegments).toEqual([]);
+		expect(store.getState().routing.highlightedSegments).toBeNull();
 	});
 
 	it("changes the 'active' property", () => {

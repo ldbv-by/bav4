@@ -35,9 +35,9 @@ export const initialState = {
 	 */
 	waypoints: [],
 	/**
-	 * @property {Array<Array<number>>}
+	 * @property {module:store/routing/routing_action~HighlightSegments}
 	 */
-	highlightedSegments: [],
+	highlightedSegments: null,
 	/**
 	 * @property {boolean}
 	 */
@@ -104,13 +104,13 @@ export const routingReducer = (state = initialState, action) => {
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
 			return {
 				...state,
-				highlightedSegments: [...payload.map((c) => [...c])] // deep clone segments
+				highlightedSegments: { ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ }
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_REMOVED: {
 			return {
 				...state,
-				highlightedSegments: []
+				highlightedSegments: null
 			};
 		}
 		case ROUTING_ACTIVE_CHANGED: {
