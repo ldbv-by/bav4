@@ -31,12 +31,6 @@ li {
 	justify-content: space-between;
 }
 
-.waypoint__buttons {
-	display: flex;
-	justify-content: right;
-	margin: auto;
-}
-
 .placeholder {
 	height: 0;
 	overflow: hidden;

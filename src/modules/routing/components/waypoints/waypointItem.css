@@ -58,3 +58,9 @@
 .text {
 	margin-left: 2.5em;
 }
+
+.waypoint__buttons {
+	display: flex;
+	justify-content: right;
+	margin: auto;
+}
