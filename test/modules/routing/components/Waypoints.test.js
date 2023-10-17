@@ -67,15 +67,10 @@ describe('Waypoints', () => {
 			}
 		};
 
-		it('renders three waypoints with action buttons', async () => {
+		it('renders three waypoints', async () => {
 			const element = await setup(defaultRoutingState);
 			element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoint-item')).toHaveSize(3);
-
-			// waypoint action buttons
-			expect(element.shadowRoot.querySelectorAll('#increase')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('#decrease')).toHaveSize(3);
-			expect(element.shadowRoot.querySelectorAll('#remove')).toHaveSize(3);
 		});
 
 		it('renders three plus one surrounding placeholders', async () => {
@@ -138,11 +133,13 @@ describe('Waypoints', () => {
 		});
 
 		describe('when single waypoint action-button is pressed', () => {
+			const createWaypointEvent = (eventType, waypoint) => {
+				return new CustomEvent(eventType, { detail: { waypoint: waypoint } });
+			};
 			describe('and a waypoint should be removed', () => {
 				it('removes the first waypoint', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -150,7 +147,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[0].click();
+					waypointItemElements[0].dispatchEvent(createWaypointEvent('remove', waypointItemElements[0].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[1, 1],
@@ -160,8 +157,7 @@ describe('Waypoints', () => {
 
 				it('removes the waypoint in the middle', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -169,7 +165,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[1].click();
+					waypointItemElements[1].dispatchEvent(createWaypointEvent('remove', waypointItemElements[1].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -179,8 +175,7 @@ describe('Waypoints', () => {
 
 				it('removes the last waypoint', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#remove');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -188,7 +183,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[2].click();
+					waypointItemElements[2].dispatchEvent(createWaypointEvent('remove', waypointItemElements[2].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -200,8 +195,7 @@ describe('Waypoints', () => {
 			describe('and a waypoint should be moved', () => {
 				it('moves the first waypoint forward', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#increase');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -209,7 +203,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[0].click();
+					waypointItemElements[0].dispatchEvent(createWaypointEvent('increase', waypointItemElements[0].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[1, 1],
@@ -220,8 +214,7 @@ describe('Waypoints', () => {
 
 				it('does NOT moves the first waypoint backward', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#decrease');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -229,7 +222,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[0].click();
+					waypointItemElements[0].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[0].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -240,8 +233,7 @@ describe('Waypoints', () => {
 
 				it('does NOT moves the last waypoint forward', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#increase');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -249,7 +241,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[2].click();
+					waypointItemElements[2].dispatchEvent(createWaypointEvent('increase', waypointItemElements[2].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -260,8 +252,7 @@ describe('Waypoints', () => {
 
 				it('moves the last waypoint backward', async () => {
 					const element = await setup(defaultRoutingState);
-
-					const actionButtonElements = element.shadowRoot.querySelectorAll('#decrease');
+					const waypointItemElements = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],
@@ -269,7 +260,7 @@ describe('Waypoints', () => {
 						[2, 2]
 					]);
 
-					actionButtonElements[2].click();
+					waypointItemElements[2].dispatchEvent(createWaypointEvent('decrease', waypointItemElements[2].waypoint));
 
 					expect(store.getState().routing.waypoints).toEqual([
 						[0, 0],

@@ -9,6 +9,9 @@ import { $injector } from '../../../../injection/index';
 import { toLonLat } from '../../../../../node_modules/ol/proj';
 import { round } from '../../../../utils/numberUtils';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
+import arrowUpSvg from '../assets/arrow-up-short.svg';
+import arrowDownSvg from '../assets/arrow-down-short.svg';
+import removeSvg from '../assets/trash.svg';
 
 const Update_Waypoint = 'update_waypoint';
 const Update_Category = 'update_category';
@@ -99,6 +102,15 @@ export class WaypointItem extends MvuElement {
 		};
 		const label = getLabel(waypoint) ?? `${translate('routing_waypoints_waypoint')} ${waypoint?.index}`;
 		const coordinate = waypoint ? toLonLat(waypoint.point) : [0, 0];
+
+		const onClick = (type) => {
+			this.dispatchEvent(
+				new CustomEvent(type, {
+					detail: { waypoint: waypoint }
+				})
+			);
+		};
+
 		return waypoint
 			? html`<style>
 						${css}
@@ -109,6 +121,37 @@ export class WaypointItem extends MvuElement {
 						</div>
 						<div class="line" style=${`background:${getCategoryColor(categoryId)};`}></div>
 						<span class="text"><b>${label} - [${round(coordinate[0], 3)} ${round(coordinate[1], 3)}]</b></span>
+						<div class="waypoint__buttons">
+							<ba-icon
+								id="decrease"
+								.icon="${arrowUpSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('routing_waypoint_move_up')}
+								.disabled=${waypoint.isStart}
+								@click=${() => onClick('decrease')}
+							></ba-icon>
+							<ba-icon
+								id="increase"
+								.icon="${arrowDownSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('routing_waypoint_move_down')}
+								.disabled=${waypoint.isDestination}
+								@click=${() => onClick('increase')}
+							></ba-icon>
+							<ba-icon
+								id="remove"
+								.icon="${removeSvg}"
+								.color=${'var(--primary-color)'}
+								.color_hover=${'var(--text3)'}
+								.size=${2.6}
+								.title=${translate('routing_waypoint_remove')}
+								@click=${() => onClick('remove')}
+							></ba-icon>
+						</div>
 					</div>`
 			: nothing;
 	}

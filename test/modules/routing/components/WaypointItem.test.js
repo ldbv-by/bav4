@@ -57,6 +57,11 @@ describe('WaypointItem', () => {
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
+
+			// waypoint action buttons
+			expect(waypointElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
+			expect(waypointElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
 		});
 
 		it('renders the start view', async () => {
@@ -64,6 +69,14 @@ describe('WaypointItem', () => {
 
 			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
 			expect(startElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_start - [11.932 47.898]');
+
+			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
+			expect(decreaseIconElement).toBeTruthy();
+			expect(decreaseIconElement.disabled).toBeTrue();
+
+			// other waypoint action buttons
+			expect(startElement.shadowRoot.querySelectorAll('#increase')).toHaveSize(1);
+			expect(startElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
 		});
 
 		it('renders the destination view', async () => {
@@ -71,6 +84,35 @@ describe('WaypointItem', () => {
 
 			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
 			expect(destinationElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_destination - [11.932 47.898]');
+
+			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
+			expect(increaseIconElement).toBeTruthy();
+			expect(increaseIconElement.disabled).toBeTrue();
+
+			// other waypoint action buttons
+			expect(destinationElement.shadowRoot.querySelectorAll('#decrease')).toHaveSize(1);
+			expect(destinationElement.shadowRoot.querySelectorAll('#remove')).toHaveSize(1);
+		});
+
+		describe('when buttons clicked', () => {
+			it('raise CustomEvents', async () => {
+				const waypointElement = await setup(defaultWaypoint);
+				const increaseSpy = jasmine.createSpy();
+				const decreaseSpy = jasmine.createSpy();
+				const removeSpy = jasmine.createSpy();
+
+				waypointElement.addEventListener('increase', increaseSpy);
+				waypointElement.addEventListener('decrease', decreaseSpy);
+				waypointElement.addEventListener('remove', removeSpy);
+
+				waypointElement.shadowRoot.querySelector('#increase').click();
+				waypointElement.shadowRoot.querySelector('#decrease').click();
+				waypointElement.shadowRoot.querySelector('#remove').click();
+
+				expect(increaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+				expect(decreaseSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+				expect(removeSpy).toHaveBeenCalledOnceWith(jasmine.any(CustomEvent));
+			});
 		});
 	});
 

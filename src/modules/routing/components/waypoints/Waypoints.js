@@ -7,12 +7,9 @@ import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
 import css from './waypoints.css';
-import { setWaypoints } from '../../../../store/routing/routing.action';
+import { setDestination, setStart, setWaypoints } from '../../../../store/routing/routing.action';
 import { getPlaceholder, isDraggable, isPlaceholder } from './WaypointItem';
-import arrowUpSvg from '../assets/arrow-up-short.svg';
-import arrowDownSvg from '../assets/arrow-down-short.svg';
 import arrowDownUpSvg from '../assets/arrow-down-up.svg';
-import removeSvg from '../assets/trash.svg';
 
 const Update_Status = 'update_status';
 const Update_Waypoints = 'update_waypoints';
@@ -208,9 +205,21 @@ export class Waypoints extends MvuElement {
 		setWaypoints(waypoints.toSpliced(from, 1).toSpliced(to, 0, waypoint));
 	}
 
-	_removeWaypoint(index) {
+	_removeWaypoint(waypoint) {
 		const { waypoints } = this.getModel();
-		setWaypoints(waypoints.toSpliced(index, 1));
+		const cleanedWaypoints = waypoints.toSpliced(waypoint.index, 1);
+		const getRemoveAction = (waypoint) => {
+			if (waypoints.length === 2 && waypoint.isStart) {
+				return () => setDestination(cleanedWaypoints);
+			}
+			if (waypoints.length === 2 && waypoint.isDestination) {
+				return () => setStart(cleanedWaypoints);
+			}
+			return () => setWaypoints(cleanedWaypoints);
+		};
+
+		const removeAction = getRemoveAction(waypoint);
+		removeAction();
 	}
 
 	_createDraggableItems(waypoints) {
@@ -233,7 +242,6 @@ export class Waypoints extends MvuElement {
 	}
 
 	_createWaypointElement(waypoint, waypoints) {
-		const translate = (key) => this._translationService.translate(key);
 		const increaseIndex = (waypoint) => {
 			if (waypoint.index < waypoints.length) {
 				this._moveWaypoint(waypoint.index, waypoint.index + 1);
@@ -247,39 +255,16 @@ export class Waypoints extends MvuElement {
 		};
 
 		const remove = (waypoint) => {
-			this._removeWaypoint(waypoint.index);
+			this._removeWaypoint(waypoint);
 		};
-
-		return html`<ba-routing-waypoint-item .waypoint=${waypoint} data-test-id> </ba-routing-waypoint-item>
-			<div class="waypoint__buttons">
-				<ba-icon
-					id="decrease"
-					.icon="${arrowUpSvg}"
-					.color=${'var(--primary-color)'}
-					.color_hover=${'var(--text3)'}
-					.size=${2.6}
-					.title=${translate('routing_waypoint_move_up')}
-					@click=${() => decreaseIndex(waypoint)}
-				></ba-icon>
-				<ba-icon
-					id="increase"
-					.icon="${arrowDownSvg}"
-					.color=${'var(--primary-color)'}
-					.color_hover=${'var(--text3)'}
-					.size=${2.6}
-					.title=${translate('routing_waypoint_move_down')}
-					@click=${() => increaseIndex(waypoint)}
-				></ba-icon>
-				<ba-icon
-					id="remove"
-					.icon="${removeSvg}"
-					.color=${'var(--primary-color)'}
-					.color_hover=${'var(--text3)'}
-					.size=${2.6}
-					.title=${translate('routing_waypoint_remove')}
-					@click=${() => remove(waypoint)}
-				></ba-icon>
-			</div>`;
+		return html`<ba-routing-waypoint-item
+			.waypoint=${waypoint}
+			@increase=${(e) => increaseIndex(e.detail.waypoint)}
+			@decrease=${(e) => decreaseIndex(e.detail.waypoint)}
+			@remove=${(e) => remove(e.detail.waypoint)}
+			data-test-id
+		>
+		</ba-routing-waypoint-item> `;
 	}
 
 	static get tag() {
