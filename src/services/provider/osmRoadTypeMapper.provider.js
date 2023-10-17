@@ -1,7 +1,6 @@
 /**
  * @module services/provider/osmRoadTypeMapper_provider
  */
-import { isNumber } from '../../utils/checks';
 
 /**
  * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}.
