@@ -12,7 +12,9 @@ import {
 	ROUTING_RESET,
 	ROUTING_START_SET,
 	ROUTING_DESTINATION_SET,
-	ROUTING_WAYPOINTS_CHANGED
+	ROUTING_WAYPOINTS_CHANGED,
+	ROUTING_HIGHLIGHT_SEGMENTS_SET,
+	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
 } from './routing.reducer';
 
 const getStore = () => {
@@ -74,7 +76,7 @@ export const setRoute = (route) => {
  * @function
  */
 export const setWaypoints = (coordinates) => {
-	if (coordinates.length > 1 && !coordinates.some((c) => !isCoordinate(c))) {
+	if (coordinates?.length > 1 && !coordinates.some((c) => !isCoordinate(c))) {
 		getStore().dispatch({
 			type: ROUTING_WAYPOINTS_CHANGED,
 			payload: [...coordinates]
@@ -140,5 +142,26 @@ export const deactivate = () => {
 	getStore().dispatch({
 		type: ROUTING_ACTIVE_CHANGED,
 		payload: false
+	});
+};
+
+/**
+ * Highlights the given segments of the current route geometry.
+ * @param {Array<Array<number>>} segments
+ */
+export const setHighlightedSegments = (segments) => {
+	getStore().dispatch({
+		type: ROUTING_HIGHLIGHT_SEGMENTS_SET,
+		payload: [...segments]
+	});
+};
+
+/**
+ * Removes the highlighted segments.
+ */
+export const resetHighlightedSegments = () => {
+	getStore().dispatch({
+		type: ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
+		payload: {}
 	});
 };
