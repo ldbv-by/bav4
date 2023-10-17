@@ -70,7 +70,7 @@ export const bvvChartItemStylesProvider = () => {
 		paved: {
 			id: 400,
 			color: 'rgb(195,195,195)',
-			label: lang === 'de' ? 'Straßenbelag' : 'Paved'
+			label: lang === 'de' ? 'Straßenbelag' : 'paved'
 		}
 	};
 
