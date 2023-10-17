@@ -6,7 +6,7 @@ import { routingReducer } from '../../src/store/routing/routing.reducer';
 import { toolsReducer } from '../../src/store/tools/tools.reducer';
 import { setCurrentTool } from '../../src/store/tools/tools.action';
 import { Tools } from '../../src/domain/tools';
-import { deactivate, activate, setWaypoints, setStart, reset } from '../../src/store/routing/routing.action';
+import { deactivate, activate } from '../../src/store/routing/routing.action';
 import { $injector } from '../../src/injection';
 import { LevelTypes } from '../../src/store/notifications/notifications.action';
 import { notificationReducer } from '../../src/store/notifications/notifications.reducer';
@@ -32,7 +32,7 @@ describe('RoutingPlugin', () => {
 	};
 
 	describe('when not yet initialized and toolId changes', () => {
-		it('initializes the routing service and updates the "active" property', async () => {
+		it('initializes the routing service and updates the active property', async () => {
 			const store = setup();
 			const instanceUnderTest = new RoutingPlugin();
 			await instanceUnderTest.register(store);
@@ -68,7 +68,7 @@ describe('RoutingPlugin', () => {
 	});
 
 	describe('when toolId changes', () => {
-		it('updates the "active" property (I)', async () => {
+		it('updates the active property (I)', async () => {
 			const store = setup();
 			const instanceUnderTest = new RoutingPlugin();
 			instanceUnderTest._initialized = true;
@@ -82,7 +82,7 @@ describe('RoutingPlugin', () => {
 			expect(store.getState().routing.active).toBeTrue();
 		});
 
-		it('updates the "active" property (II)', async () => {
+		it('updates the active property (II)', async () => {
 			const store = setup({
 				tools: {
 					current: Tools.ROUTING
@@ -98,7 +98,7 @@ describe('RoutingPlugin', () => {
 		});
 	});
 
-	describe('when "active" property changes', () => {
+	describe('when active property changes', () => {
 		it('adds or removes the routing layer', async () => {
 			const store = setup();
 			const instanceUnderTest = new RoutingPlugin();
@@ -115,32 +115,6 @@ describe('RoutingPlugin', () => {
 			deactivate();
 
 			expect(store.getState().layers.active.length).toBe(0);
-		});
-	});
-
-	describe('when "waypoint" property changes', () => {
-		it('updates the "active" property', async () => {
-			const store = setup();
-			const instanceUnderTest = new RoutingPlugin();
-			instanceUnderTest._initialized = true;
-			await instanceUnderTest.register(store);
-
-			setWaypoints([
-				[0, 1],
-				[1, 2]
-			]);
-
-			expect(store.getState().routing.active).toBeTrue();
-
-			deactivate();
-			expect(store.getState().routing.active).toBeFalse();
-			setStart([11, 22]);
-
-			expect(store.getState().routing.active).toBeTrue();
-
-			reset();
-
-			expect(store.getState().routing.active).toBeTrue();
 		});
 	});
 });
