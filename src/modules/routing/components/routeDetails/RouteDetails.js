@@ -4,7 +4,6 @@
 import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
-import { isNumber } from '../../../../utils/checks';
 import { MvuElement } from '../../../MvuElement';
 import css from './routeDetails.css';
 
@@ -108,22 +107,19 @@ export class RouteDetails extends MvuElement {
 
 		const { surface: surfaceTypes, road_class: roadClasses } = statistics.details;
 
-		const surfaceTypeDist = this._calcDistance(surfaceTypes);
-		const roadClassDist = this._calcDistance(roadClasses);
-
 		for (const surfaceType in surfaceTypes) {
 			data.surfaceTypes[surfaceType] = {
-				absolute: this._sanitizeDistance(surfaceTypes[surfaceType]),
-				relative: this._percentageOfDistance(this._sanitizeDistance(surfaceTypes[surfaceType]), surfaceTypeDist),
-				segments: this._sanitizeSegments(surfaceTypes[surfaceType])
+				absolute: surfaceTypes[surfaceType].distance,
+				relative: this._percentageOfDistance(surfaceTypes[surfaceType].distance, statistics.dist),
+				segments: surfaceTypes[surfaceType].segments
 			};
 		}
 
 		for (const roadClass in roadClasses) {
 			data.roadTypes[roadClass] = {
-				absolute: this._sanitizeDistance(roadClasses[roadClass]),
-				relative: this._percentageOfDistance(this._sanitizeDistance(roadClasses[roadClass]), roadClassDist),
-				segments: this._sanitizeSegments(roadClasses[roadClass])
+				absolute: roadClasses[roadClass].distance,
+				relative: this._percentageOfDistance(roadClasses[roadClass].distance, statistics.dist),
+				segments: roadClasses[roadClass].segments
 			};
 		}
 
@@ -134,21 +130,6 @@ export class RouteDetails extends MvuElement {
 		const hundred = 100;
 		return (portion / total) * hundred;
 	}
-
-	_calcDistance(segments) {
-		return Object.entries(segments).reduce((previousDistance, current) => {
-			const value = current[1];
-			return previousDistance + this._sanitizeDistance(value.distance);
-		}, 0);
-	}
-
-	_sanitizeDistance = (candidate) => {
-		return isNumber(candidate) ? candidate : candidate.distance;
-	};
-
-	_sanitizeSegments = (candidate) => {
-		return candidate.segments ?? [];
-	};
 
 	static get tag() {
 		return 'ba-routing-details';
