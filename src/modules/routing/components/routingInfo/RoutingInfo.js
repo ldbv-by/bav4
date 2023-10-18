@@ -11,7 +11,6 @@ const Update_Status = 'update_status';
 const Update_Route = 'update_route';
 const Update_Category = 'update_category';
 
-const Category_Badge_Color_Default = 'cadetblue';
 const Minute_In_Seconds = 60;
 
 /**

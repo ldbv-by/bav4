@@ -7,6 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './routingChart.css';
 import { $injector } from '../../../../injection/index';
+import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 
 /**
  * @typedef {Object} RoutingChartData
@@ -97,26 +98,8 @@ export class RoutingChart extends MvuElement {
 			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
 		};
 
-		// eslint-disable-next-line no-unused-vars
-		const onMouseOut = (item) => {
-			/**
-			 * todo:
-			 * implement EventLike store-operation to routing slice-of-state
-			 *  type:'REMOVE_HIGHLIGHTED_SEGMENTS'
-			 *  payload: {}
-			 */
-			console.warn('EventLike for REMOVE_HIGHLIGHTED_SEGMENTS must be implemented.');
-		};
-
-		// eslint-disable-next-line no-unused-vars
 		const onMouseOver = (item) => {
-			/**
-			 * todo:
-			 * implement EventLike store-operation to routing slice-of-state
-			 *  type:'HIGHLIGHT_SEGMENTS'
-			 *  payload: { segments: item.segments, zoomToExtent: false }
-			 */
-			console.warn('EventLike for HIGHLIGHT_SEGMENTS must be implemented.');
+			setHighlightedSegments({ segments: item.data.segments, zoomToExtent: false });
 		};
 
 		return html`<style>
@@ -145,7 +128,7 @@ export class RoutingChart extends MvuElement {
 										class="highlight"
 										title=${getChartTitle(legendItem)}
 										@mouseover=${() => onMouseOver(legendItem)}
-										@mouseout=${() => onMouseOut(legendItem)}
+										@mouseout=${() => resetHighlightedSegments()}
 									>
 										<div class="legend_item" style=${getLegendStyle(legendItem)}></div>
 										<span class="legend_item_label"> ${legendItem.label}:</span>

@@ -7,6 +7,7 @@ import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
 import css from './routingWarnings.css';
 import { $injector } from '../../../../injection/index';
+import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 
 /**
  * @typedef {Object} WarningItem
@@ -79,33 +80,14 @@ export class RoutingWarnings extends MvuElement {
 
 	_getWarningElement(warningItem) {
 		const translate = (key) => this._translationService.translate(key);
-		// eslint-disable-next-line no-unused-vars
-		const onMouseOut = (item) => {
-			/**
-			 * todo:
-			 * implement EventLike store-operation to routing slice-of-state
-			 *  type:'REMOVE_HIGHLIGHTED_SEGMENTS'
-			 *  payload: {}
-			 */
+
+		const highlightSegments = (zoomToExtent) => {
+			setHighlightedSegments({ segments: warningItem.segments, zoomToExtent: zoomToExtent });
 		};
 
-		// eslint-disable-next-line no-unused-vars
-		const onMouseOver = (item) => {
-			highlightSegments(true);
-		};
-
-		// eslint-disable-next-line no-unused-vars
-		const highlightSegments = (zoomToExtend) => {
-			/**
-			 * todo:
-			 * implement EventLike store-operation to routing slice-of-state
-			 *  type:'HIGHLIGHT_SEGMENTS'
-			 *  payload: { segments: item.segments, zoomToExtent: zoomToExtent }
-			 */
-		};
 		const warningClasses = { hint_icon: warningItem.criticality === 'hint', warning_icon: warningItem.criticality !== 'hint' };
 		return html`<div class="item">
-			<div class="highlight${classMap(warningClasses)}" @mouseover=${() => onMouseOver(warningItem)} @mouseout=${() => onMouseOut(warningItem)}>
+			<div class="highlight${classMap(warningClasses)}" @mouseover=${() => highlightSegments(false)} @mouseout=${() => resetHighlightedSegments()}>
 				<span class="noselect">${warningItem.message}</span>
 			</div>
 			<button class="geolocation-icon" title=${translate('routing_warnings_zoom')} @click=${() => highlightSegments(true)}></button>

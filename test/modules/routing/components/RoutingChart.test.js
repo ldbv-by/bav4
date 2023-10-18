@@ -10,6 +10,7 @@ describe('RoutingChart', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
 	};
+	let store;
 	const setup = (state, properties) => {
 		const initialState = {
 			media: {
@@ -18,7 +19,7 @@ describe('RoutingChart', () => {
 			...state
 		};
 
-		TestUtils.setupStoreAndDi(initialState, {
+		store = TestUtils.setupStoreAndDi(initialState, {
 			media: createNoInitialStateMediaReducer(),
 			routing: routingReducer
 		});
@@ -350,10 +351,7 @@ describe('RoutingChart', () => {
 			]
 		};
 		it('highlights the related segments in the map', async () => {
-			// todo: resolve this test to the implemented version (expect changes in store)
-			// of the mouseover-behavior
 			const element = await setup({}, properties);
-			const consoleSpy = spyOn(console, 'warn').and.callFake(() => {});
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 			const selectorElement = containerElement.querySelector('.chart-selector');
@@ -363,15 +361,18 @@ describe('RoutingChart', () => {
 			const progressBarElement = containerElement.querySelector('.highlight');
 
 			progressBarElement.dispatchEvent(new Event('mouseover'));
-
-			expect(consoleSpy).toHaveBeenCalledWith('EventLike for HIGHLIGHT_SEGMENTS must be implemented.');
+			expect(store.getState().routing.highlightedSegments).toEqual(
+				jasmine.objectContaining({
+					segments: [
+						[0, 1],
+						[3, 4]
+					]
+				})
+			);
 		});
 
 		it('removes the highlighted segments from the map', async () => {
-			// todo: resolve this test to the implemented version (expect changes in store)
-			// of the mouseout-behavior
 			const element = await setup({}, properties);
-			const consoleSpy = spyOn(console, 'warn').and.callFake(() => {});
 
 			const containerElement = element.shadowRoot.querySelector('.container');
 			const selectorElement = containerElement.querySelector('.chart-selector');
@@ -379,9 +380,19 @@ describe('RoutingChart', () => {
 			selectorElement.click();
 			const progressBarElements = containerElement.querySelectorAll('.highlight');
 
+			progressBarElements[0].dispatchEvent(new Event('mouseover'));
+			expect(store.getState().routing.highlightedSegments).toEqual(
+				jasmine.objectContaining({
+					segments: [
+						[0, 1],
+						[3, 4]
+					]
+				})
+			);
+
 			progressBarElements[0].dispatchEvent(new Event('mouseout'));
 
-			expect(consoleSpy).toHaveBeenCalledWith('EventLike for REMOVE_HIGHLIGHTED_SEGMENTS must be implemented.');
+			expect(store.getState().routing.highlightedSegments).toBeNull();
 		});
 	});
 });
