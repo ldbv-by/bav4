@@ -73,7 +73,7 @@ export class RoutingInfo extends MvuElement {
 			const parentId = this._routingService.getParent(categoryId);
 			const category = this._routingService.getCategoryById(parentId);
 
-			return category?.color ?? Category_Badge_Color_Default;
+			return category.color;
 		};
 
 		const getDistance = () => {
