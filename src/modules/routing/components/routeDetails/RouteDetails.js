@@ -100,30 +100,23 @@ export class RouteDetails extends MvuElement {
 	}
 
 	_aggregateRouteStatistics(statistics) {
-		const data = {
-			surfaceTypes: {},
-			roadTypes: {}
-		};
-
 		const { surface: surfaceTypes, road_class: roadClasses } = statistics.details;
 
-		for (const surfaceType in surfaceTypes) {
-			data.surfaceTypes[surfaceType] = {
-				absolute: surfaceTypes[surfaceType].distance,
-				relative: this._percentageOfDistance(surfaceTypes[surfaceType].distance, statistics.dist),
-				segments: surfaceTypes[surfaceType].segments
-			};
-		}
+		const aggregate = (routeDetailTypeAttributes) =>
+			Object.entries(routeDetailTypeAttributes).reduce((accumulator, current) => {
+				const [attributeTypeName, attributeTypeProperties] = current;
+				accumulator[attributeTypeName] = {
+					absolute: attributeTypeProperties.distance,
+					relative: this._percentageOfDistance(attributeTypeProperties.distance, statistics.dist),
+					segments: attributeTypeProperties.segments
+				};
+				return accumulator;
+			}, {});
 
-		for (const roadClass in roadClasses) {
-			data.roadTypes[roadClass] = {
-				absolute: roadClasses[roadClass].distance,
-				relative: this._percentageOfDistance(roadClasses[roadClass].distance, statistics.dist),
-				segments: roadClasses[roadClass].segments
-			};
-		}
-
-		return data;
+		return {
+			surfaceTypes: aggregate(surfaceTypes),
+			roadTypes: aggregate(roadClasses)
+		};
 	}
 
 	_percentageOfDistance(portion, total) {
