@@ -47,7 +47,6 @@ export class RoutingWarnings extends MvuElement {
 		const toggleCollapseWarnings = () => {
 			this.signal(Update_Collapsed_Warnings, !collapsedWarnings);
 		};
-		console.log(items);
 		const bodyCollapseClassInfo = {
 			iscollapsed: !collapsedWarnings
 		};
