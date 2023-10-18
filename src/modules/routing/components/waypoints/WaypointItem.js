@@ -15,7 +15,6 @@ import removeSvg from '../assets/trash.svg';
 
 const Update_Waypoint = 'update_waypoint';
 const Update_Category = 'update_category';
-const Category_Color_Default = 'cadetblue';
 
 /**
  * Options to display a waypoint.
@@ -94,7 +93,7 @@ export class WaypointItem extends MvuElement {
 			const parentId = this._routingService.getParent(categoryId);
 			const category = this._routingService.getCategoryById(parentId);
 
-			return category?.color ?? Category_Color_Default;
+			return category?.color;
 		};
 
 		const getLabel = (waypoint) => {

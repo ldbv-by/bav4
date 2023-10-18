@@ -7,7 +7,7 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
-	const category = { color: 'gray' };
+	const category = { color: 'rgb(128, 128, 128)' };
 	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo' };
 
 	const setup = async (waypoint = null) => {
@@ -56,6 +56,8 @@ describe('WaypointItem', () => {
 
 			expect(waypointElement.shadowRoot.querySelectorAll('.container')).toHaveSize(1);
 			expect(waypointElement.shadowRoot.querySelector('.icon').classList).toHaveSize(1);
+			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.icon')).background).toBe('rgb(128, 128, 128)');
+			expect(getComputedStyle(waypointElement.shadowRoot.querySelector('.line')).background).toBe('rgb(128, 128, 128)');
 			expect(waypointElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_waypoint 42 - [11.932 47.898]');
 
 			// waypoint action buttons
@@ -68,6 +70,8 @@ describe('WaypointItem', () => {
 			const startElement = await setup(startWaypoint);
 
 			expect(startElement.shadowRoot.querySelector('.icon-bg').classList.contains('start')).toBeTrue();
+			expect(getComputedStyle(startElement.shadowRoot.querySelector('.icon')).background).toBe('rgb(128, 128, 128)');
+			expect(getComputedStyle(startElement.shadowRoot.querySelector('.line')).background).toBe('rgb(128, 128, 128)');
 			expect(startElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_start - [11.932 47.898]');
 
 			const decreaseIconElement = startElement.shadowRoot.querySelector('#decrease');
@@ -83,6 +87,8 @@ describe('WaypointItem', () => {
 			const destinationElement = await setup(destinationWaypoint);
 
 			expect(destinationElement.shadowRoot.querySelector('.icon-bg').classList.contains('destination')).toBeTrue();
+			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.icon')).background).toBe('rgb(128, 128, 128)');
+			expect(getComputedStyle(destinationElement.shadowRoot.querySelector('.line')).background).toBe('rgb(128, 128, 128)');
 			expect(destinationElement.shadowRoot.querySelector('span').innerText).toBe('routing_waypoints_destination - [11.932 47.898]');
 
 			const increaseIconElement = destinationElement.shadowRoot.querySelector('#increase');
