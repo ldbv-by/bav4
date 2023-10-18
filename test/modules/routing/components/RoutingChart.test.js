@@ -366,7 +366,8 @@ describe('RoutingChart', () => {
 					segments: [
 						[0, 1],
 						[3, 4]
-					]
+					],
+					zoomToExtent: false
 				})
 			);
 		});
@@ -386,7 +387,8 @@ describe('RoutingChart', () => {
 					segments: [
 						[0, 1],
 						[3, 4]
-					]
+					],
+					zoomToExtent: false
 				})
 			);
 

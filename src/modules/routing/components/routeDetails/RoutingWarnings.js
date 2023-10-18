@@ -47,7 +47,7 @@ export class RoutingWarnings extends MvuElement {
 		const toggleCollapseWarnings = () => {
 			this.signal(Update_Collapsed_Warnings, !collapsedWarnings);
 		};
-
+		console.log(items);
 		const bodyCollapseClassInfo = {
 			iscollapsed: !collapsedWarnings
 		};
@@ -70,7 +70,7 @@ export class RoutingWarnings extends MvuElement {
 					<div class="overflow-container">
 						${repeat(
 							items,
-							(warningItem) => warningItem.id,
+							(warningItem) => warningItem.name,
 							(warningItem) => this._getWarningElement(warningItem)
 						)}
 					</div>
@@ -85,7 +85,7 @@ export class RoutingWarnings extends MvuElement {
 			setHighlightedSegments({ segments: warningItem.segments, zoomToExtent: zoomToExtent });
 		};
 
-		const warningClasses = { hint_icon: warningItem.criticality === 'hint', warning_icon: warningItem.criticality !== 'hint' };
+		const warningClasses = { hint_icon: warningItem.criticality === 'Hint', warning_icon: warningItem.criticality !== 'Hint' };
 		return html`<div class="item">
 			<div class="highlight${classMap(warningClasses)}" @mouseover=${() => highlightSegments(false)} @mouseout=${() => resetHighlightedSegments()}>
 				<span class="noselect">${warningItem.message}</span>
