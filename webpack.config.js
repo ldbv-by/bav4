@@ -66,6 +66,7 @@ module.exports = {
 				{ from: path.resolve(__dirname, './src/assets/favicon/favicon.ico'), to: path.join('assets') },
 				{ from: path.resolve(__dirname, './src/assets/favicon/icon_192x192.png'), to: path.join('assets') },
 				{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512.png'), to: path.join('assets') },
+				{ from: path.resolve(__dirname, './src/assets/favicon/icon_512x512_maskable.png'), to: path.join('assets') },
 				{ from: path.resolve(__dirname, './src/assets/favicon/icon.svg'), to: path.join('assets') },
 				{ from: path.resolve(__dirname, './src/assets/favicon/apple-touch-icon.png'), to: path.join('assets') }
 			]

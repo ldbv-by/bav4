@@ -10,11 +10,11 @@ test.describe('favicons', () => {
 		const responsePng512 = await request.get(`${BASE_URL}/assets/icon_512x512.png`);
 		const responsePng512_maskable = await request.get(`${BASE_URL}/assets/icon_512x512_maskable.png`);
 
-		expect(responseIco.ok()).toBeTruthy();
-		expect(responseManifest.ok).toBeTruthy();
-		expect(responsePng192.ok).toBeTruthy();
-		expect(responsePng512.ok).toBeTruthy();
-		expect(responsePng512_maskable.ok).toBeTruthy();
+		expect(responseIco.ok()).toBe(true);
+		expect(responseManifest.ok()).toBe(true);
+		expect(responsePng192.ok()).toBe(true);
+		expect(responsePng512.ok()).toBe(true);
+		expect(responsePng512_maskable.ok()).toBe(true);
 		expect(await responseManifest.json()).toEqual({
 			icons: [
 				{
