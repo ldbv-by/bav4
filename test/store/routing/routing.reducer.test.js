@@ -3,8 +3,10 @@ import {
 	activate,
 	deactivate,
 	reset,
+	resetHighlightedSegments,
 	setCategory,
 	setDestination,
+	setHighlightedSegments,
 	setRoute,
 	setRouteStats,
 	setStart,
@@ -29,6 +31,7 @@ describe('routingReducer', () => {
 			stats: null,
 			route: null,
 			waypoints: [],
+			highlightedSegments: null,
 			active: false
 		});
 	});
@@ -91,6 +94,11 @@ describe('routingReducer', () => {
 		expect(store.getState().routing.waypoints).toEqual([]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
 
+		setWaypoints({});
+
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Destination_Missing);
+
 		setWaypoints(coordinates);
 
 		expect(store.getState().routing.waypoints).toEqual(coordinates);
@@ -142,6 +150,30 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
+	});
+
+	it("sets and removes the 'highlightedSegments' property", () => {
+		const store = setup();
+		const segments = [
+			[1, 22],
+			[30, 44]
+		];
+
+		setHighlightedSegments({
+			segments
+		});
+
+		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: false, segments });
+
+		setHighlightedSegments({
+			segments,
+			zoomToExtent: true
+		});
+		expect(store.getState().routing.highlightedSegments).toEqual({ zoomToExtent: true, segments });
+
+		resetHighlightedSegments();
+
+		expect(store.getState().routing.highlightedSegments).toBeNull();
 	});
 
 	it("changes the 'active' property", () => {

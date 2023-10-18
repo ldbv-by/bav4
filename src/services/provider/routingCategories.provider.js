@@ -6,7 +6,7 @@ import { $injector } from '../../injection/index';
 /**
  * Bvv specific implementation of {@link module:services/RoutingService~routingCategoriesProvider}
  * @function
- * @type {module:services/FeedbackService~feedbackStorageProvider}
+ * @type {module:services/RoutingService~routingCategoriesProvider}
  */
 export const bvvRoutingCategoriesProvider = async () => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');

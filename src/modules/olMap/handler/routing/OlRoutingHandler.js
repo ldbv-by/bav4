@@ -25,6 +25,7 @@ import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
 import { setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
+import { fit } from '../../../../store/position/position.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -47,6 +48,7 @@ export const ROUTING_CATEGORY = 'Routing_Cat';
 export const ROUTING_FEATURE_TYPE = 'Routing_Feature_Type';
 export const ROUTING_FEATURE_INDEX = 'Routing_Feature_Index';
 export const ROUTING_SEGMENT_INDEX = 'Routing_Segment_Index';
+export const REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS = 2500;
 
 /**
  * LayerHandler for routing specific tasks.
@@ -553,6 +555,42 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return null;
 	}
 
+	_highlightSegments(highlightedSegments, highlightLayer, routeLayer) {
+		if (highlightedSegments) {
+			const { segments, zoomToExtent } = highlightedSegments;
+
+			const clearHighlightLayerWithDelay = function () {
+				setTimeout(() => {
+					highlightLayer.getSource().clear();
+				}, REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS);
+			};
+
+			const routeFeatureCoordinates = routeLayer
+				.getSource()
+				.getFeatures()
+				.find((f) => f.get(ROUTING_FEATURE_TYPE) && f.get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.ROUTE)
+				.getGeometry()
+				.getCoordinates();
+			const highlightFeatures = segments.map((s) => {
+				const feature = new Feature(new LineString(routeFeatureCoordinates.slice(s[0], s[1] + 1)));
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE_HIGHLIGHT);
+				feature.setStyle(getRoutingStyleFunction());
+				return feature;
+			});
+
+			highlightLayer.getSource().addFeatures(highlightFeatures);
+
+			if (zoomToExtent) {
+				fit(highlightLayer.getSource().getExtent());
+				clearHighlightLayerWithDelay();
+			} else if (this._environmentService.isTouch()) {
+				clearHighlightLayerWithDelay();
+			}
+		} else {
+			highlightLayer.getSource().clear();
+		}
+	}
+
 	_register(store) {
 		const updateCategoryAndRequestRoute = (coordinates3857, catId, status) => {
 			// let's ensure each request is executed one after each other
@@ -572,6 +610,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 				store,
 				(state) => state.routing.categoryId,
 				(categoryId, state) => updateCategoryAndRequestRoute(state.routing.waypoints, categoryId, state.routing.status)
+			),
+			observe(
+				store,
+				(state) => state.routing.highlightedSegments,
+				(highlightedSegments) => this._highlightSegments(highlightedSegments, this._highlightLayer, this._routeLayer)
 			)
 		];
 	}

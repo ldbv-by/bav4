@@ -76,14 +76,7 @@ export class RoutingPlugin extends BaPlugin {
 			}
 		};
 
-		const onWaypointsChanged = (waypoints) => {
-			if (waypoints.length >= 1) {
-				activate();
-			}
-		};
-
 		observe(store, (state) => state.routing.active, onChange);
-		observe(store, (state) => state.routing.waypoints, onWaypointsChanged);
 		observe(store, (state) => state.tools.current, onToolChanged, false);
 	}
 }

@@ -4,6 +4,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import {
 	OlRoutingHandler,
+	REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS,
 	ROUTING_CATEGORY,
 	ROUTING_FEATURE_INDEX,
 	ROUTING_FEATURE_TYPE,
@@ -16,7 +17,7 @@ import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
 import { Modify, Select, Translate } from 'ol/interaction';
-import { setCategory, setWaypoints } from '../../../../../src/store/routing/routing.action';
+import { setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { Feature, MapBrowserEvent } from 'ol';
 import Event from 'ol/events/Event';
@@ -30,6 +31,7 @@ import { getRoutingStyleFunction } from '../../../../../src/modules/olMap/handle
 import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpTooltip';
 import { SelectEvent } from 'ol/interaction/Select';
 import { RoutingStatusCodes } from '../../../../../src/domain/routing';
+import { positionReducer } from '../../../../../src/store/position/position.reducer';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -85,7 +87,7 @@ describe('OlRoutingHandler', () => {
 				...state
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(initialState, { routing: routingReducer, notifications: notificationReducer });
+		const store = TestUtils.setupStoreAndDi(initialState, { routing: routingReducer, notifications: notificationReducer, position: positionReducer });
 
 		$injector
 			.registerSingleton('RoutingService', routingServiceMock)
@@ -200,7 +202,7 @@ describe('OlRoutingHandler', () => {
 					//map listeners
 					expect(instanceUnderTest._mapListeners).toHaveSize(1);
 
-					expect(instanceUnderTest._registeredObservers).toHaveSize(2);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
 				});
 			});
 
@@ -237,7 +239,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._modifyInteraction).toBeNull();
 					expect(instanceUnderTest._map.getInteractions().getArray()).not.toContain(instanceUnderTest._modifyInteraction);
 
-					expect(instanceUnderTest._registeredObservers).toHaveSize(2);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
 				});
 			});
 
@@ -296,7 +298,7 @@ describe('OlRoutingHandler', () => {
 	});
 
 	describe('events', () => {
-		describe('when observed slices-of-state change', () => {
+		describe('when observed "waypoints" and "categoryId" changes', () => {
 			it('updates the category and calculates a route', async () => {
 				const coordinates = [
 					[22, 33],
@@ -317,6 +319,25 @@ describe('OlRoutingHandler', () => {
 				await TestUtils.timeout();
 				expect(instanceUnderTest._catId).toBe(catId);
 				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
+			});
+		});
+
+		describe('when observed "highlightedSegments" changes', () => {
+			it('adds or removes the highlight features', async () => {
+				const segments = [
+					[22, 33],
+					[44, 55]
+				];
+				const { instanceUnderTest } = await newTestInstance();
+				const highlightSegmentsSpy = spyOn(instanceUnderTest, '_highlightSegments');
+
+				setHighlightedSegments({ segments });
+
+				expect(highlightSegmentsSpy).toHaveBeenCalledWith(
+					{ segments, zoomToExtent: false },
+					instanceUnderTest._highlightLayer,
+					instanceUnderTest._routeLayer
+				);
 			});
 		});
 	});
@@ -1011,6 +1032,100 @@ describe('OlRoutingHandler', () => {
 
 				expect(feature0.get(ROUTING_FEATURE_INDEX)).toBe(1);
 				expect(feature1.get(ROUTING_FEATURE_INDEX)).toBe(22);
+			});
+		});
+
+		describe('_highlightSegments', () => {
+			it('adds and removes highlight features', async () => {
+				const coordinates = [
+					[0, 0],
+					[10, 10],
+					[20, 20]
+				];
+				const feature0 = new Feature({
+					geometry: new LineString(coordinates)
+				});
+				feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
+				const { instanceUnderTest } = await newTestInstance();
+				const highlightLayer = instanceUnderTest._highlightLayer;
+				const routeLayer = instanceUnderTest._routeLayer;
+				routeLayer.getSource().addFeature(feature0);
+
+				instanceUnderTest._highlightSegments({ segments: [[0, 1]], zoomToExtent: false }, highlightLayer, routeLayer);
+
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(1);
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()[0].getGeometry().getCoordinates()).toEqual([
+					coordinates[0],
+					coordinates[1]
+				]);
+
+				instanceUnderTest._highlightSegments(null, highlightLayer, routeLayer);
+
+				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+			});
+
+			describe('and "zoomToExtent" property is "true"', () => {
+				afterEach(() => {
+					jasmine.clock().uninstall();
+				});
+
+				it('additionally places a fit request and automatically removes the highlight feature', async () => {
+					const coordinates = [
+						[0, 0],
+						[10, 10],
+						[20, 20]
+					];
+					const feature0 = new Feature({
+						geometry: new LineString(coordinates)
+					});
+					feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
+					const { instanceUnderTest, store } = await newTestInstance();
+					jasmine.clock().install(); // newTestInstance uses an async operation, therefore we wait installing the clock until we are here
+					const highlightLayer = instanceUnderTest._highlightLayer;
+					const routeLayer = instanceUnderTest._routeLayer;
+					routeLayer.getSource().addFeature(feature0);
+
+					instanceUnderTest._highlightSegments({ segments: [[0, 1]], zoomToExtent: true }, highlightLayer, routeLayer);
+
+					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(1);
+					expect(store.getState().position.fitRequest.payload.extent).toEqual([...coordinates[0], ...coordinates[1]]);
+
+					jasmine.clock().tick(REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS + 100);
+
+					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+				});
+			});
+
+			describe('and we are in a touch environment', () => {
+				afterEach(() => {
+					jasmine.clock().uninstall();
+				});
+
+				it('automatically remove the highlight feature', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					const coordinates = [
+						[0, 0],
+						[10, 10],
+						[20, 20]
+					];
+					const feature0 = new Feature({
+						geometry: new LineString(coordinates)
+					});
+					feature0.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.ROUTE);
+					const { instanceUnderTest } = await newTestInstance();
+					jasmine.clock().install(); // newTestInstance uses an async operation, therefore we wait installing the clock until we are here
+					const highlightLayer = instanceUnderTest._highlightLayer;
+					const routeLayer = instanceUnderTest._routeLayer;
+					routeLayer.getSource().addFeature(feature0);
+
+					instanceUnderTest._highlightSegments({ segments: [[0, 1]], zoomToExtent: false }, highlightLayer, routeLayer);
+
+					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(1);
+
+					jasmine.clock().tick(REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS + 100);
+
+					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+				});
 			});
 		});
 

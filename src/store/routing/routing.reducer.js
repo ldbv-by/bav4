@@ -10,6 +10,8 @@ export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
 export const ROUTING_START_REMOVED = 'routing/startRemoved';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
+export const ROUTING_HIGHLIGHT_SEGMENTS_SET = 'routing/highlightSet';
+export const ROUTING_HIGHLIGHT_SEGMENTS_REMOVED = 'routing/highlightRemoved';
 
 export const initialState = {
 	/**
@@ -32,6 +34,10 @@ export const initialState = {
 	 * @property {Coordinate[]}
 	 */
 	waypoints: [],
+	/**
+	 * @property {module:store/routing/routing_action~HighlightSegments}
+	 */
+	highlightedSegments: null,
 	/**
 	 * @property {boolean}
 	 */
@@ -93,6 +99,18 @@ export const routingReducer = (state = initialState, action) => {
 				...state,
 				waypoints: [[...payload]],
 				status: RoutingStatusCodes.Start_Missing
+			};
+		}
+		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
+			return {
+				...state,
+				highlightedSegments: { ...payload, segments: [...payload.segments.map((c) => [...c])] /**deep clone segments */ }
+			};
+		}
+		case ROUTING_HIGHLIGHT_SEGMENTS_REMOVED: {
+			return {
+				...state,
+				highlightedSegments: null
 			};
 		}
 		case ROUTING_ACTIVE_CHANGED: {
