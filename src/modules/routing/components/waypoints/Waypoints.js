@@ -149,9 +149,8 @@ export class Waypoints extends MvuElement {
 			if (isPlaceholder(waypointItem) && draggedItem) {
 				this._moveWaypoint(draggedItem.index, getNewIndex(waypointItem.index));
 			}
-			if (e.target.classList.contains('placeholder')) {
-				e.target.classList.remove('over');
-			}
+			e.target.classList.remove('over');
+
 			this.signal(Update_Dragged_Item, false);
 		};
 		const onDragOver = (e, waypointItem) => {
@@ -174,9 +173,7 @@ export class Waypoints extends MvuElement {
 
 		const onDragLeave = (e) => {
 			e.stopPropagation();
-			if (e.target?.classList.contains('over')) {
-				e.target.classList.remove('over');
-			}
+			e.target.classList.remove('over');
 		};
 		return html`${repeat(
 			draggableItems,
@@ -193,7 +190,7 @@ export class Waypoints extends MvuElement {
 					index=${index}
 					class="draggable waypoint"
 				>
-					${isPlaceholder(draggableItem) ? createPlaceholderElement(draggableItem) : this._createWaypointElement(draggableItem, waypoints)}
+					${isPlaceholder(draggableItem) ? createPlaceholderElement(draggableItem) : this._createWaypointElement(draggableItem)}
 				</li>`
 		)}`;
 	}
@@ -241,11 +238,9 @@ export class Waypoints extends MvuElement {
 		return draggableItems;
 	}
 
-	_createWaypointElement(waypoint, waypoints) {
+	_createWaypointElement(waypoint) {
 		const increaseIndex = (waypoint) => {
-			if (waypoint.index < waypoints.length) {
-				this._moveWaypoint(waypoint.index, waypoint.index + 1);
-			}
+			this._moveWaypoint(waypoint.index, waypoint.index + 1);
 		};
 
 		const decreaseIndex = (waypoint) => {

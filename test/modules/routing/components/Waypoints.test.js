@@ -516,7 +516,7 @@ describe('Waypoints', () => {
 				expect(dragoverEvt.dataTransfer.dropEffect).toBe('none');
 			});
 
-			it('drops first layer on placeholder to be penultimate layer', () => {
+			it('drops first waypoint on placeholder to be penultimate waypoint', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
@@ -541,7 +541,7 @@ describe('Waypoints', () => {
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
 			});
 
-			it('drops last on placeholder to be penultimate layer', () => {
+			it('drops last on placeholder to be penultimate waypoint', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[2];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_2');
@@ -564,6 +564,31 @@ describe('Waypoints', () => {
 				expect(store.getState().routing.waypoints[1]).toEqual([2, 2]);
 				expect(store.getState().routing.waypoints[2]).toEqual([1, 1]);
 				expect(neighborPlaceholder.classList.contains('over')).toBeFalse();
+			});
+
+			it('drops on waypoint to be ignored', () => {
+				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
+				const droppedWaypointElement = waypoints[2];
+				const dropOnWaypointElement = waypoints[0];
+				element.signal('update_dragged_item', droppedWaypointElement.waypoint);
+				expect(element.getModel().draggedItem.index).toBe(2);
+				const dropEvt = document.createEvent('MouseEvents');
+				dropEvt.initMouseEvent('drop', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, dropOnWaypointElement);
+				dropEvt.dataTransfer = createNewDataTransfer();
+
+				/*
+				 *  0     0    1     1    2     2     3
+				 * [p0] [id0] [p2] [id1] [p4] [id2] [p5]
+				 *        ^_____________________|
+				 */
+
+				dropOnWaypointElement.classList.add('over');
+				dropOnWaypointElement.dispatchEvent(dropEvt);
+
+				expect(store.getState().routing.waypoints[0]).toEqual([0, 0]);
+				expect(store.getState().routing.waypoints[1]).toEqual([1, 1]);
+				expect(store.getState().routing.waypoints[2]).toEqual([2, 2]);
+				expect(dropOnWaypointElement.classList.contains('over')).toBeFalse();
 			});
 		});
 	});
