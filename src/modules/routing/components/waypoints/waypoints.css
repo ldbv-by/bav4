@@ -6,19 +6,6 @@
 	align-items: center;
 }
 
-.icon {
-	background: var(--primary-color);
-	mask-size: cover;
-	-webkit-mask-size: cover;
-	display: inline-block;
-	height: 16px;
-	width: 10px;
-	-moz-transform: rotate(90deg);
-	-webkit-transform: rotate(90deg);
-	transform: rotate(90deg);
-	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
-}
-
 ul {
 	display: flex;
 	flex-direction: column;
@@ -51,10 +38,6 @@ li {
 
 .over {
 	background-color: var(--primary-color);
-}
-
-.dragged {
-	opacity: 0.5;
 }
 
 .isdragged {

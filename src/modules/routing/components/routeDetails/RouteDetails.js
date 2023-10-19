@@ -57,11 +57,11 @@ export class RouteDetails extends MvuElement {
 						${css}
 					</style>
 					<div class="container">
-						<div class="overflow-container">
-							<div class="warnings">
+						<div>
+							<div>
 								<ba-routing-warnings .items=${asArray(warnings)}></ba-routing-warnings>
 							</div>
-							<div class="charts">
+							<div>
 								<ba-routing-chart .label=${translate('routing_details_surface')} .items=${asArray(chartData.surface)}></ba-routing-chart>
 								<ba-routing-chart .label=${translate('routing_details_road_type')} .items=${asArray(chartData.roadTypes)}></ba-routing-chart>
 							</div>
