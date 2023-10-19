@@ -180,6 +180,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		console.log('🚀 ~ file: AdminPanel.js:183 ~ AdminPanel ~ update ~ data:', data);
 		switch (type) {
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
@@ -310,11 +311,11 @@ export class AdminPanel extends MvuElement {
 
 			// eslint-disable-next-line no-console
 			console.log('addEntry');
-			const newCatalogWithResourceData = addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
+			addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
 			// eslint-disable-next-line no-console
-			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', updatedCatalogWithResourceData);
 
-			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
+			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
@@ -324,58 +325,75 @@ export class AdminPanel extends MvuElement {
 			return { newEntry, newUid };
 		};
 
-		const addEntryToChildrenRecursively = (copyOfCatalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ copyOfCatalogWithResourceData:', copyOfCatalogWithResourceData);
+		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogWithResourceData:', catalogWithResourceData);
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
 			// itterate over catalogEntry.children
+			console.log('addEntryToChildrenRecursively - itterate over catalogEntry.children');
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry.children:', catalogEntry.children);
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
+				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ n:', n);
 				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
-					// Found the uid in one of the children
-					console.log('Found the uid in one of the children');
+					// found the uid in one of the children
+					console.log('found the uid in one of the children');
 					const inBetween = calcPosition(n, catalogEntry.children);
 					console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
 					catalogEntry.children.push(newEntryWithPosition);
-					this._sortCatalog(copyOfCatalogWithResourceData);
-					return copyOfCatalogWithResourceData;
+					this._sortCatalog(catalogWithResourceData);
+					return true;
 				}
 
-				// Check the children if any
+				// check the children recursivly, if any
 				if (childCatalogEntry.children) {
-					const returnCatalog = addEntryToChildrenRecursively(copyOfCatalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
-					return returnCatalog;
+					console.log('recursivly check children');
+					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
+					if (found) {
+						return found;
+					}
 				}
 			}
-			return copyOfCatalogWithResourceData;
+			return false;
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
-			console.log('🚀 ~ AdminPanel ~ addEntry ~   insert newEntry:', newEntry);
-			console.log('🚀 ~ AdminPanel ~ addEntry ~   before currentCatalogEntryUid:', currentCatalogEntryUid);
+			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
+			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ before currentCatalogEntryUid:', currentCatalogEntryUid);
 			// itterate over catalogWithResourceData
+			console.log('addEntry - itterate over catalogWithResourceData');
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
+				console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber);
 
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
-					// Found the uid in the top-level entries
+					// found the uid in the top-level entries
+					console.log('found the uid in the top-level entries');
 					const inBetween = calcPosition(entryNumber, catalogWithResourceData);
 
-					catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
+					const newEntryWithPosition = { ...newEntry, position: inBetween };
+					catalogWithResourceData.push(newEntryWithPosition);
+
+					// catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
 					this._sortCatalog(catalogWithResourceData);
-					return catalogWithResourceData;
+					return;
 				}
 
-				// Check the children if any
+				// check the children if any
 				if (catalogEntry.children) {
-					return addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
+					console.log('check children');
+					console.log('🚀 ~ AdminPanel ~ addEntry ~ catalogEntry:', catalogEntry);
+					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
+					if (found) {
+						return;
+					}
 				}
 			}
 		};
@@ -384,10 +402,10 @@ export class AdminPanel extends MvuElement {
 			// find georesource to add
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
 
-			const copyOfCatalogWithResourceData = addEntry([...catalogWithResourceDataFromTree], currentCatalogEntryUid, newEntry);
-			this._sortCatalog(copyOfCatalogWithResourceData);
+			addEntry(catalogWithResourceDataFromTree, currentCatalogEntryUid, newEntry);
+			this._sortCatalog(catalogWithResourceDataFromTree);
 
-			this.signal(Update_CatalogWithResourceData, copyOfCatalogWithResourceData);
+			this.signal(Update_CatalogWithResourceData, catalogWithResourceDataFromTree);
 
 			return newUid;
 		};
