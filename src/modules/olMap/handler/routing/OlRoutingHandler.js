@@ -95,7 +95,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * Activates the Handler.
+	 * Activates the handler.
 	 * @override
 	 */
 	onActivate(olMap) {
