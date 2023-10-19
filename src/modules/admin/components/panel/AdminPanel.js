@@ -312,7 +312,7 @@ export class AdminPanel extends MvuElement {
 			console.log('addEntry');
 			const newCatalogWithResourceData = addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
 			// eslint-disable-next-line no-console
-			// console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
+			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', newCatalogWithResourceData);
 
 			this.signal(Update_CatalogWithResourceData, newCatalogWithResourceData);
 		};
@@ -325,18 +325,25 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (copyOfCatalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ copyOfCatalogWithResourceData:', copyOfCatalogWithResourceData);
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
+			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
 			// itterate over catalogEntry.children
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
+				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
 					// Found the uid in one of the children
+					console.log('Found the uid in one of the children');
 					const inBetween = calcPosition(n, catalogEntry.children);
+					console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
 					catalogEntry.children.push(newEntryWithPosition);
-					this._sortCatalog(catalogWithResourceData);
+					this._sortCatalog(copyOfCatalogWithResourceData);
 					return copyOfCatalogWithResourceData;
 				}
 
@@ -350,6 +357,8 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			console.log('🚀 ~ AdminPanel ~ addEntry ~   insert newEntry:', newEntry);
+			console.log('🚀 ~ AdminPanel ~ addEntry ~   before currentCatalogEntryUid:', currentCatalogEntryUid);
 			// itterate over catalogWithResourceData
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
