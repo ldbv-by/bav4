@@ -202,8 +202,8 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ AdminPanel ~ createView ~ catalogWithResourceData:', catalogWithResourceData);
 
 		const calcPosition = (index, arrayWithEntry) => {
 			if (index > 0) {
@@ -220,23 +220,23 @@ export class AdminPanel extends MvuElement {
 		console.log('');
 
 		const findElementRecursively = (uid, catalogEntry) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ findElementRecursively ~ catalogEntry:', catalogEntry);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ findElementRecursively ~ catalogEntry:', catalogEntry);
 			// itterate over catalogEntry.children
-			// eslint-disable-next-line no-console
-			console.log('itterate over catalogEntry.children');
-			// eslint-disable-next-line no-console
-			console.log('and look for uid:', uid);
+			// // eslint-disable-next-line no-console
+			// console.log('itterate over catalogEntry.children');
+			// // eslint-disable-next-line no-console
+			// console.log('and look for uid:', uid);
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ findElementRecursively ~ childCatalogEntry:', childCatalogEntry);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ AdminPanel ~ findElementRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === uid) {
 					// found the uid in one of the children
-					// eslint-disable-next-line no-console
-					console.log('found the uid in one of the children');
+					// // eslint-disable-next-line no-console
+					// console.log('found the uid in one of the children');
 					return childCatalogEntry;
 				}
 
@@ -253,10 +253,10 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const findElement = (uid, catalogWithResourceData) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ createView(model) ~ findElement ~ uid: ', uid, ' in ');
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ createView(model) ~ findElement ~ catalogWithResourceData:', catalogWithResourceData);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ createView(model) ~ findElement ~ uid: ', uid, ' in ');
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ createView(model) ~ findElement ~ catalogWithResourceData:', catalogWithResourceData);
 			// itterate over catalogWithResourceData
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
@@ -264,8 +264,8 @@ export class AdminPanel extends MvuElement {
 				// and look for uid
 				if (catalogEntry.uid === uid) {
 					// found the uid in the top-level entries
-					// eslint-disable-next-line no-console
-					console.log('found the uid in the top-level entries --> return entry');
+					// // eslint-disable-next-line no-console
+					// console.log('found the uid in the top-level entries --> return entry');
 					return catalogEntry;
 				}
 
@@ -274,12 +274,12 @@ export class AdminPanel extends MvuElement {
 					const element = findElementRecursively(uid, catalogEntry);
 					if (element) {
 						// found the uid in children --> return entry
-						// eslint-disable-next-line no-console
-						console.log('found the uid in children --> return entry');
+						// // eslint-disable-next-line no-console
+						// console.log('found the uid in children --> return entry');
 						return element;
 					}
-					// eslint-disable-next-line no-console
-					console.log('not found in children');
+					// // eslint-disable-next-line no-console
+					// console.log('not found in children');
 				}
 			}
 		};
