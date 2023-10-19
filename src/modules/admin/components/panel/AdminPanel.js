@@ -180,6 +180,7 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
+		// eslint-disable-next-line no-console
 		console.log('🚀 ~ file: AdminPanel.js:183 ~ AdminPanel ~ update ~ data:', data);
 		switch (type) {
 			case Update_CatalogWithResourceData:
@@ -326,23 +327,33 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogWithResourceData:', catalogWithResourceData);
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
 			// itterate over catalogEntry.children
+			// eslint-disable-next-line no-console
 			console.log('addEntryToChildrenRecursively - itterate over catalogEntry.children');
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry.children:', catalogEntry.children);
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
+				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ n:', n);
+				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in one of the children
+					// eslint-disable-next-line no-console
 					console.log('found the uid in one of the children');
 					const inBetween = calcPosition(n, catalogEntry.children);
+					// eslint-disable-next-line no-console
 					console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
@@ -353,6 +364,7 @@ export class AdminPanel extends MvuElement {
 
 				// check the children recursivly, if any
 				if (childCatalogEntry.children) {
+					// eslint-disable-next-line no-console
 					console.log('recursivly check children');
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
 					if (found) {
@@ -364,17 +376,22 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
+			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ before currentCatalogEntryUid:', currentCatalogEntryUid);
 			// itterate over catalogWithResourceData
+			// eslint-disable-next-line no-console
 			console.log('addEntry - itterate over catalogWithResourceData');
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
+				// eslint-disable-next-line no-console
 				console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber);
 
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in the top-level entries
+					// eslint-disable-next-line no-console
 					console.log('found the uid in the top-level entries');
 					const inBetween = calcPosition(entryNumber, catalogWithResourceData);
 
@@ -388,7 +405,9 @@ export class AdminPanel extends MvuElement {
 
 				// check the children if any
 				if (catalogEntry.children) {
+					// eslint-disable-next-line no-console
 					console.log('check children');
+					// eslint-disable-next-line no-console
 					console.log('🚀 ~ AdminPanel ~ addEntry ~ catalogEntry:', catalogEntry);
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
 					if (found) {
