@@ -347,7 +347,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			let dist = Number.MAX_VALUE;
 			let index = -1;
 			for (let i = 0; i < coords.length; i++) {
-				// Note: we're calculating the planar distance although we are having coordinates, but it should be precisely enough in this case
+				// Note: we're calculating the planar distance although we are having spherical coordinates, but it should be precisely enough in this case
 				const d = distance(coords[i], closest);
 				if (d < dist) {
 					dist = d;
