@@ -74,6 +74,15 @@
  */
 
 /**
+ * Style object related to a specific {@link RouteDetailTypeAttribute}
+ * @typedef {Object} ChartItemStyle
+ * @property {number} id The id of this chart item
+ * @property {string} label The label of this chart item
+ * @property {string} [image] the stringified image, visualizing the chart item
+ * @property {string} color the stringified color as rgba-value
+ */
+
+/**
  * Routing related status code.
  * @readonly
  * @enum {number}

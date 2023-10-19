@@ -84,25 +84,17 @@ import { bvvEtaCalculatorProvider } from './provider/etaCalculator.provider';
  */
 
 /**
- * @typedef {Object} ChartItemStyle
- * @property {number} id The id of this chart item
- * @property {string} label The label of this chart item
- * @property {string} [image] the stringified image, visualizing the chart item
- * @property {string} color the stringified color as rgba-value
- */
-
-/**
  * Returns all available surface type styles
  * @function
  * @name module:services/RoutingService~RoutingService#getSurfaceTypeStyles
- * @returns {ChartItemStyle[]} surfaceTypeStyles
+ * @returns {Array<module:domain/routing~ChartItemStyle>} surfaceTypeStyles
  */
 
 /**
  * Returns all available road type styles
  * @function
  * @name module:services/RoutingService~RoutingService#getRoadTypeStyles
- * @returns {ChartItemStyle[]} roadTypeStyles
+ * @returns {Array<module:domain/routing~ChartItemStyle>} roadTypeStyles
  */
 
 /**
@@ -114,8 +106,8 @@ import { bvvEtaCalculatorProvider } from './provider/etaCalculator.provider';
  */
 
 /**
- * A default style object for chart items of road-classes
- * if the @see {@link module:services/RoutingService~RoutingService#chartItemStylesProvider} cannot
+ * A default {@link module:domain/routing~ChartItemStyle} object for chart items of road-classes
+ * if the {@link module:services/RoutingService~chartItemStylesProvider} cannot
  * provide a specific style
  */
 export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
@@ -126,8 +118,8 @@ export const CHART_ITEM_ROAD_STYLE_UNKNOWN = {
 };
 
 /**
- * A default style object for chart items of surface-classes
- * if the @see {@link module:services/RoutingService~RoutingService#chartItemStylesProvider} cannot
+ * A default {@link module:domain/routing~ChartItemStyle} object for chart items of surface-classes
+ * if the {@link module:services/RoutingService~chartItemStylesProvider} cannot
  * provide a specific style
  */
 export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
@@ -138,26 +130,21 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
 };
 
 /**
- * @typedef {Object} OSMRoadClass
- * @property {number} distance
- * @property {Array<number>} segments
- */
-
-/**
- * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}.
+ * A function that maps and reduces {@link module:domain/routing~RouteDetailTypeAttribute}
+ * with OSM road type names to the name of defined {@link module:domain/routing~ChartItemStyle}
  * @function
  * @name module:services/RoutingService~RoutingService#mapOsmRoadTypes
- * @returns {Map<string, module:services/RoutingService~RoutingService#OSMRoadClass>} mapping
+ * @returns {Map<string,module:domain/routing~RouteDetailTypeAttribute>} mapping
  */
 
 /**
- * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}
+ * A function that maps and reduces {@link module:domain/routing~RouteDetailTypeAttribute}
+ * with OSM road type names to the name of defined {@link module:domain/routing~ChartItemStyle}
  * @typedef {Function} osmRoadTypeMappingProvider
- * @returns {Map<string, module:services/RoutingService~RoutingService#OSMRoadClass>} mapping
+ * @returns {Map<string,module:domain/routing~RouteDetailTypeAttribute>} mapping
  */
 
 /**
-
  * A function that returns a list of categories/vehicles for routing
  * @async
  * @typedef {Function} routeProvider
@@ -187,14 +174,14 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
  * @function
  * @name module:services/RoutingService~RoutingService#getETACalculatorFor
  * @param {string} categoryId
- * @returns {module:services/RoutingService~RoutingService#ETACalculator| null} etaCalculator
+ * @returns {module:services/RoutingService~ETACalculator| null} etaCalculator
  */
 
 /**
  * A function that provides a ETACalculator for a defined vehicle type.
  * @typedef {Function} etaCalculatorProvider
  * @param {string} categoryId id of the requested category
- * @returns {module:services/RoutingService~RoutingService#ETACalculator| null} etaCalculator
+ * @returns {module:services/RoutingService~ETACalculator| null} etaCalculator
  */
 
 /**
@@ -274,8 +261,8 @@ export class BvvRoutingService {
 		return this._chartItemsStyles['surface'] ?? {};
 	}
 
-	mapOsmRoadTypes(osmRoadClasses) {
-		return this._mapper(osmRoadClasses);
+	mapOsmRoadTypes(routeDetailTypeAttributes) {
+		return this._mapper(routeDetailTypeAttributes);
 	}
 
 	/**
