@@ -1054,10 +1054,9 @@ describe('OlRoutingHandler', () => {
 				instanceUnderTest._highlightSegments({ segments: [[0, 1]], zoomToExtent: false }, highlightLayer, routeLayer);
 
 				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(1);
-				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()[0].getGeometry().getCoordinates()).toEqual([
-					coordinates[0],
-					coordinates[1]
-				]);
+				const feature = instanceUnderTest._highlightLayer.getSource().getFeatures()[0];
+				expect(feature.getGeometry().getCoordinates()).toEqual([coordinates[0], coordinates[1]]);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 
 				instanceUnderTest._highlightSegments(null, highlightLayer, routeLayer);
 
