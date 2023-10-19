@@ -1152,7 +1152,7 @@ describe('OlRoutingHandler', () => {
 					layerFilter: () => true,
 					hitTolerance: 42
 				};
-				spyOn(instanceUnderTest, '_getPointerMoveGetFeaturesAtPixelOptions')
+				spyOn(instanceUnderTest, '_getFeaturesAtPixelOptionsForPointerMove')
 					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer, instanceUnderTest._routeLayerCopy)
 					.and.returnValue(pointerMoveGetFeaturesAtPixelOptions);
 				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue([21, 42]);
@@ -1170,7 +1170,7 @@ describe('OlRoutingHandler', () => {
 				const alternativeRouteLayerMock = { id: '1' };
 				const routeLayerCopyMock = { id: '2' };
 
-				const options = instanceUnderTest._getPointerMoveGetFeaturesAtPixelOptions(
+				const options = instanceUnderTest._getFeaturesAtPixelOptionsForPointerMove(
 					interactionLayerMock,
 					alternativeRouteLayerMock,
 					routeLayerCopyMock

@@ -131,7 +131,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return this._routingLayerGroup;
 	}
 
-	_getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+	_getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		return {
 			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
 			hitTolerance: 5
@@ -162,7 +162,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const pixel = map.getEventPixel(event.originalEvent);
 				const hit = map.getFeaturesAtPixel(
 					pixel,
-					this._getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy)
+					this._getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy)
 				);
 
 				if (hit.length > 0) {
