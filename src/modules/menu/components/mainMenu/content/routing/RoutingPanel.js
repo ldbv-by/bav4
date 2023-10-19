@@ -26,8 +26,9 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 
 	createView() {
 		const translate = (key) => this._translationService.translate(key);
-		//temp close
+
 		const close = () => {
+			console.warn("Closing RoutingPanel is temporary implemented by setTab('maps').");
 			setTab(TabIds.MAPS);
 		};
 
@@ -67,6 +68,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 	 * @returns {import('../../../../../../../node_modules/lit-html/lit-html').TemplateResult}
 	 */
 	_getDemoContent() {
+		console.warn('Providing demo routing data is temporary and for development use only');
 		const onClickLoadRoutingData1 = () => {
 			setCategory('bvv-hike');
 			setStatus(RoutingStatusCodes.Start_Destination_Missing);

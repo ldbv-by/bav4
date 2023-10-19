@@ -71,12 +71,16 @@ describe('RoutingPanel', () => {
 
 	describe('when close icon is clicked', () => {
 		it('updates the store', async () => {
+			const warnSpy = spyOn(console, 'warn').and.callThrough();
 			const element = await setup();
 
 			const closeIcon = element.shadowRoot.querySelector('ba-icon');
 
 			closeIcon.click();
 
+			// due to the temporary development solution, we test for a console warning
+			// todo: rework after full implementation
+			expect(warnSpy).toHaveBeenCalledWith("Closing RoutingPanel is temporary implemented by setTab('maps').");
 			expect(store.getState().mainMenu.tab).toBe(TabIds.MAPS);
 		});
 	});
