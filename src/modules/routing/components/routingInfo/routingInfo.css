@@ -33,11 +33,6 @@
 	margin-right: 0.5em;
 }
 
-.duration {
-	mask-image: url('../assets/time.svg');
-	-webkit-mask-image: url('../assets/time.svg');
-}
-
 .distance {
 	mask-image: url('../assets/arrow-left-right.svg');
 	-webkit-mask-image: url('../assets/arrow-left-right.svg');
