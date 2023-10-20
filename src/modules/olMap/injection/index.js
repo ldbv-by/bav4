@@ -10,6 +10,7 @@ import { InteractionStorageService } from '../services/InteractionStorageService
 import { OlFeatureInfoHandler } from '../handler/featureInfo/OlFeatureInfoHandler';
 import { OlMfpHandler } from '../handler/mfp/OlMfpHandler';
 import { OlElevationProfileHandler } from '../handler/elevationProfile/OlElevationProfileHandler';
+import { OlRoutingHandler } from '../handler/routing/OlRoutingHandler';
 
 export const mapModule = ($injector) => {
 	$injector
@@ -24,5 +25,6 @@ export const mapModule = ($injector) => {
 		.register('OverlayService', OverlayService)
 		.register('OlFeatureInfoHandler', OlFeatureInfoHandler)
 		.register('OlElevationProfileHandler', OlElevationProfileHandler)
-		.register('OlMfpHandler', OlMfpHandler);
+		.register('OlMfpHandler', OlMfpHandler)
+		.register('OlRoutingHandler', OlRoutingHandler);
 };
