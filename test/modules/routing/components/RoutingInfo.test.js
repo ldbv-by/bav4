@@ -237,7 +237,7 @@ describe('RoutingInfo', () => {
 		getCategoryById: () => category,
 		getParent: () => 'foo',
 		calculateRouteStats: () => mockedRouteStatistic,
-		getETACalculatorFor: () => {}
+		getETAFor: () => {}
 	};
 
 	const unitsServiceMock = {
@@ -331,7 +331,7 @@ describe('RoutingInfo', () => {
 						categoryId: 'some'
 					}
 				};
-				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(null);
+				spyOn(routingServiceMock, 'getETAFor').and.returnValue(null);
 				const warnSpy = spyOn(console, 'warn');
 				const element = await setup(state);
 				setRoute(defaultRoute);
@@ -355,8 +355,8 @@ describe('RoutingInfo', () => {
 						categoryId: 'some'
 					}
 				};
-				const calculator = { getETAfor: () => 42000000 };
-				spyOn(routingServiceMock, 'getETACalculatorFor').and.returnValue(calculator);
+
+				spyOn(routingServiceMock, 'getETAFor').and.returnValue(42000000);
 				spyOn(routingServiceMock, 'calculateRouteStats').and.returnValue(null);
 				const element = await setup(state);
 				setRoute(defaultRoute);
@@ -379,8 +379,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-hike'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-hike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -402,8 +403,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-hike'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-hike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-hike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -419,8 +421,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-bike'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-bike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -440,8 +443,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-bike'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-bike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-bike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -457,8 +461,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-mtb'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-mtb').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -474,8 +479,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'bvv-mtb'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('bvv-mtb').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('bvv-mtb', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');
@@ -490,8 +496,9 @@ describe('RoutingInfo', () => {
 							categoryId: 'racingbike'
 						}
 					};
-					const calculator = { getETAfor: () => 42000000 };
-					const calculatorSpy = spyOn(routingServiceMock, 'getETACalculatorFor').withArgs('racingbike').and.returnValue(calculator);
+					const calculatorSpy = spyOn(routingServiceMock, 'getETAFor')
+						.withArgs('racingbike', jasmine.any(Number), jasmine.any(Number), jasmine.any(Number))
+						.and.returnValue(42000000);
 					const element = await setup(state);
 
 					const routingDuration = element.shadowRoot.querySelectorAll('.routing-info-duration');

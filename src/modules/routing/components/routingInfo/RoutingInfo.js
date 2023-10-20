@@ -63,8 +63,6 @@ export class RoutingInfo extends MvuElement {
 			return this._routingService.getCategoryById(parentId);
 		};
 
-		const category = getCategory(categoryId);
-
 		const getDuration = () => {
 			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
 			const seconds = estimate / 1000;
@@ -93,9 +91,9 @@ export class RoutingInfo extends MvuElement {
 					</style>
 					<div class="header">
 						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type" style=${`background:${category.color};`}>
+						<div class="badge routing-info-type" style=${`background:${getCategory(categoryId).color};`}>
 							<span class=${`icon icon-${categoryId}`}></span>
-							<span class="text">${category.label}<span>
+							<span class="text">${getCategory(categoryId).label}<span>
 						</div>
 					</div>
 					<div class="container">
@@ -135,13 +133,13 @@ export class RoutingInfo extends MvuElement {
 	}
 
 	_estimateTimeFor(categoryId, stats) {
-		const calculatorMissingAction = (categoryId) => {
+		const unknownCategoryAction = (categoryId) => {
 			console.warn(`Unknown category, no estimate available for '${categoryId}'`);
 			return null;
 		};
 
-		const calculator = this._routingService.getETACalculatorFor(categoryId);
-		return calculator ? calculator.getETAfor(stats.dist, stats.twoDiff[0], stats.twoDiff[1]) : calculatorMissingAction(categoryId);
+		const estimatedTime = this._routingService.getETAFor(categoryId, stats.dist, stats.twoDiff[0], stats.twoDiff[1]);
+		return estimatedTime ?? unknownCategoryAction(categoryId);
 	}
 
 	static get tag() {

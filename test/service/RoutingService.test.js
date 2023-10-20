@@ -1,6 +1,6 @@
 import { BvvRoutingService } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
-import { bvvEtaCalculatorProvider } from '../../src/services/provider/etaCalculator.provider';
+import { bvvEtaCalculationProvider } from '../../src/services/provider/etaCalculation.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
@@ -13,7 +13,7 @@ describe('BvvRoutingService', () => {
 		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		etaCalculatorProvider = bvvEtaCalculatorProvider
+		etaCalculatorProvider = bvvEtaCalculationProvider
 	) => {
 		return new BvvRoutingService(
 			routingCategoriesProvider,
@@ -33,7 +33,7 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
 			expect(instanceUnderTest._mapper).toEqual(bvvOsmRoadTypeMappingProvider);
-			expect(instanceUnderTest._etaCalculatorProvider).toEqual(bvvEtaCalculatorProvider);
+			expect(instanceUnderTest._etaCalculationProvider).toEqual(bvvEtaCalculationProvider);
 		});
 
 		it('initializes the service with custom provider', async () => {
@@ -323,7 +323,7 @@ describe('BvvRoutingService', () => {
 		});
 	});
 
-	describe('getETACalculatorFor', () => {
+	describe('getETAFor', () => {
 		/**
 		 * @implements {module:services/RoutingService~ETACalculator}
 		 */
@@ -331,12 +331,17 @@ describe('BvvRoutingService', () => {
 		const etaCalculator = { getETAfor: (distance, elevationUp, elevationDown) => 42 };
 
 		it('provides a ETACalculator', () => {
-			const mockEtaCalculatorProvider = jasmine.createSpy().withArgs('some').and.returnValue(etaCalculator);
-			const instanceUnderTest = setup(null, null, null, null, null, mockEtaCalculatorProvider);
+			const category = 'some';
+			const dist = 420000;
+			const up = 21;
+			const down = 4221;
+			const expectedETA = 4242;
+			const mockEtaCalculationProvider = jasmine.createSpy().withArgs(category, dist, up, down).and.returnValue(4242);
+			const instanceUnderTest = setup(null, null, null, null, null, mockEtaCalculationProvider);
 
-			const actualCalculator = instanceUnderTest.getETACalculatorFor('some');
+			const actualETA = instanceUnderTest.getETAFor(category, dist, up, down);
 
-			expect(actualCalculator).toEqual(etaCalculator);
+			expect(actualETA).toEqual(expectedETA);
 		});
 	});
 });

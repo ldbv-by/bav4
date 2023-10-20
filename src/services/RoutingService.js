@@ -12,7 +12,7 @@ import { isCoordinate } from '../utils/checks';
 import { bvvRouteProvider } from './provider/route.provider';
 import { bvvRoutingCategoriesProvider } from './provider/routingCategories.provider';
 import { bvvRouteStatsProvider } from './provider/routeStats.provider';
-import { bvvEtaCalculatorProvider } from './provider/etaCalculator.provider';
+import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
 
 /**
  * Route result containing a multiple routes (one for each requested category/vehicle) (see also {@link module:domain/routing~Route})
@@ -161,27 +161,24 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
  */
 
 /**
- * A Calculator for ETAs (Estimated Time Arrived)
- * @typedef {Object} ETACalculator
+ * A function that provides a ETA calculation for a defined categoryId (vehicle type).
+ * @function
+ * @name module:services/RoutingService~RoutingService#getETAFor
+ * @param {string} categoryId
  * @param {Number} distance distance in meter
  * @param {Number} elevationUp elevation upwards in meter
  * @param {Number} elevationDown  elevation downwards in meter
- * @property {function(distance, elevationUp, elevationDown):(number)} getETAfor function that returns the ETA in milliseconds.
+ * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
  */
 
 /**
- * A function that provides a ETACalculator for a defined category
- * @function
- * @name module:services/RoutingService~RoutingService#getETACalculatorFor
- * @param {string} categoryId
- * @returns {module:services/RoutingService~ETACalculator| null} etaCalculator
- */
-
-/**
- * A function that provides a ETACalculator for a defined vehicle type.
- * @typedef {Function} etaCalculatorProvider
+ * A function that provides a ETA calculation for a defined categoryId (vehicle type).
+ * @typedef {Function} etaCalculationProvider
  * @param {string} categoryId id of the requested category
- * @returns {module:services/RoutingService~ETACalculator| null} etaCalculator
+ * @param {Number} distance distance in meter
+ * @param {Number} elevationUp elevation upwards in meter
+ * @param {Number} elevationDown  elevation downwards in meter
+ * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
  */
 
 /**
@@ -196,7 +193,7 @@ export class BvvRoutingService {
 	 * @param {module:services/RoutingService~routeStatsProvider} [routeStatsProvider]
 	 * @param {module:services/RoutingService~chartItemStylesProvider} [chartItemStylesProvider]
 	 * @param {module:services/RoutingService~osmRoadTypeMappingProvider} [osmRoadTypeMappingProvider]
-	 * @param {module:services/RoutingService~etaCalculatorProvider} [etaCalculatorProvider]
+	 * @param {module:services/RoutingService~etaCalculationProvider} [etaCalculationProvider]
 	 *
 	 */
 	constructor(
@@ -205,15 +202,14 @@ export class BvvRoutingService {
 		routeStatsProvider = bvvRouteStatsProvider,
 		chartItemStylesProvider = bvvChartItemStylesProvider,
 		osmRoadTypeMappingProvider = bvvOsmRoadTypeMappingProvider,
-		etaCalculatorProvider = bvvEtaCalculatorProvider
+		etaCalculationProvider = bvvEtaCalculationProvider
 	) {
 		this._categoriesProvider = categoriesProvider;
 		this._chartItemsStylesProvider = chartItemStylesProvider;
 		this._mapper = osmRoadTypeMappingProvider;
 		this._routeProvider = routeProvider;
-		this._chartItemsStyles = null;
 		this._routeStatsProvider = routeStatsProvider;
-		this._etaCalculatorProvider = etaCalculatorProvider;
+		this._etaCalculationProvider = etaCalculationProvider;
 		this._categories = null;
 	}
 
@@ -248,17 +244,11 @@ export class BvvRoutingService {
 	}
 
 	getRoadTypeStyles() {
-		if (!this._chartItemsStyles) {
-			this._chartItemsStyles = this._chartItemsStylesProvider();
-		}
-		return this._chartItemsStyles['road'] ?? {};
+		return this._chartItemsStylesProvider()['road'] ?? {};
 	}
 
 	getSurfaceTypeStyles() {
-		if (!this._chartItemsStyles) {
-			this._chartItemsStyles = this._chartItemsStylesProvider();
-		}
-		return this._chartItemsStyles['surface'] ?? {};
+		return this._chartItemsStylesProvider()['surface'] ?? {};
 	}
 
 	mapOsmRoadTypes(routeDetailTypeAttributes) {
@@ -337,11 +327,7 @@ export class BvvRoutingService {
 		return this._routeStatsProvider(route);
 	}
 
-	/**
-	 * Returns a ETACalculator for a defined vehicle type
-	 * @param {string} categoryId
-	 */
-	getETACalculatorFor(categoryId) {
-		return this._etaCalculatorProvider(categoryId);
+	getETAFor(categoryId, distance, elevationUp, elevationDown) {
+		return this._etaCalculationProvider(categoryId, distance, elevationUp, elevationDown);
 	}
 }
