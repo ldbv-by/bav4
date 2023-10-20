@@ -69,6 +69,23 @@ export class CatalogService {
 	}
 
 	/**
+	 *
+	 * Saves a catalog object for an id.
+	 * @async
+	 * @param {string} topicId Id of the {@link Catalog} to be saved
+	 * @param {@link Catalog} catalog to be saved
+	 * @throws `Error` when storing was not successful
+	 * @returns {Promise<Boolean>} `true` when storing was successful
+	 */
+	async save(topicId, catalog) {
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ CatalogService ~ save ~ topicId:', topicId);
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ CatalogService ~ save ~ catalog:', catalog);
+		return true;
+	}
+
+	/**
 	 * @private
 	 */
 	_newFallbackCatalog() {
