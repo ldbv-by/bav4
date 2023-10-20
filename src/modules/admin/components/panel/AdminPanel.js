@@ -113,6 +113,8 @@ export class AdminPanel extends MvuElement {
 
 					// eslint-disable-next-line no-console
 					console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ geoResource:', geoResource);
+
+					return { ...category, label: ' ' };
 				}
 
 				return { ...category, label: geoResource.label };
@@ -139,6 +141,7 @@ export class AdminPanel extends MvuElement {
 
 			try {
 				const catalogFromService = await this._catalogService.byId(currentTopicId);
+				console.log('🚀 ~ AdminPanel ~ updateCatalog ~ catalogFromService:', catalogFromService);
 				const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
 				this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
 				// eslint-disable-next-line no-console
@@ -217,9 +220,6 @@ export class AdminPanel extends MvuElement {
 				return newPosition;
 			}
 		};
-
-		// eslint-disable-next-line no-console
-		console.log('');
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			// // eslint-disable-next-line no-console
@@ -544,6 +544,52 @@ export class AdminPanel extends MvuElement {
 			return nonDigitPart + incrementedDigitPart;
 		};
 
+		// Function to recursively extract geoResourceId from the input object
+		const extractGeoResource = (obj) => {
+			const result = {};
+			if (obj.geoResourceId) {
+				result.geoResourceId = obj.geoResourceId;
+			}
+			if (obj.label) {
+				result.label = obj.label;
+			}
+			if (obj.children && obj.children.length > 0) {
+				result.children = obj.children.map((child) => extractGeoResource(child));
+			}
+			return result;
+		};
+
+		// Reduce the JSON data to the desired format
+		const reducedData = (obj) => {
+			return obj.map((item) => {
+				return extractGeoResource(item);
+			});
+		};
+
+		const addLayerGroup = () => {
+			// eslint-disable-next-line no-console
+			console.log('addLayerGroup');
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ catalog ~ catalogWithResourceData:', catalogWithResourceData);
+
+			// eslint-disable-next-line no-console
+			console.log(JSON.stringify(catalogWithResourceData));
+
+			const catalog = reducedData(catalogWithResourceData);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ catalog ~ catalog:', catalog);
+
+			// eslint-disable-next-line no-console
+			console.log(JSON.stringify(catalog));
+
+			catalog.push({ label: 'XXXXX', children: [{ label: 'YYYYY' }] });
+
+			this.#catalog = this._checkAndAugmentPositioningInfo(catalog);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
+			this._mergeCatalogWithResources();
+		};
+
 		// todo parent
 		// @ts-ignore
 		const copyBranchRoot = (positionInCatalog, catalogWithResourceData, catalogEntry) => {
@@ -587,6 +633,7 @@ export class AdminPanel extends MvuElement {
 							.removeEntry="${removeEntry}"
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
+							.addLayerGroup="${addLayerGroup}"
 							.copyBranchRoot="${copyBranchRoot}"
 							.dummy="${dummy}"
 						></ba-layer-tree>

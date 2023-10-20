@@ -97,6 +97,7 @@ export class LayerTree extends MvuElement {
 		this._copyBranchRoot = (a, catalog, b) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (currentCatalogEntryUid, uidFromDrag) => {};
+		this._addLayerGroup = () => {};
 
 		this.#currentGeoResourceId = null;
 	}
@@ -384,6 +385,12 @@ export class LayerTree extends MvuElement {
 			// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
 		};
 
+		const handleNewLayerGroupClick = (e) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree. ~ handleNewLayerGroupClick ~ e:', e);
+			this._addLayerGroup();
+		};
+
 		const renderEntry = (entry) => {
 			// console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
 			return html`
@@ -418,6 +425,7 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
+		// <button @click="${handleNewClick}">New</button>
 		if (topics) {
 			return html`
 				<style>
@@ -426,7 +434,7 @@ export class LayerTree extends MvuElement {
 
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema</h2>
-					<button @click="${handleNewClick}">New</button>
+					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 
 					<select @change="${this.handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
@@ -498,6 +506,17 @@ export class LayerTree extends MvuElement {
 
 	get dummy() {
 		return this.getModel().dummy;
+	}
+
+	/**
+	 * @property {function} addLayerGroup - Callback function
+	 */
+	set addLayerGroup(callback) {
+		this._addLayerGroup = callback;
+	}
+
+	get addLayerGroup() {
+		return this._addLayerGroup;
 	}
 
 	/**
