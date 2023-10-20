@@ -58,6 +58,12 @@ export class RoutingInfo extends MvuElement {
 		const { status, stats, categoryId } = model;
 		const translate = (key) => this._translationService.translate(key);
 		const isVisible = status === RoutingStatusCodes.Ok;
+		const getCategory = (categoryId) => {
+			const parentId = this._routingService.getParent(categoryId);
+			return this._routingService.getCategoryById(parentId);
+		};
+
+		const category = getCategory(categoryId);
 
 		const getDuration = () => {
 			const estimate = this._estimateTimeFor(categoryId, stats) ?? stats.time;
@@ -67,12 +73,6 @@ export class RoutingInfo extends MvuElement {
 			}
 
 			return this._formatDuration(seconds);
-		};
-		const getCategoryColor = (categoryId) => {
-			const parentId = this._routingService.getParent(categoryId);
-			const category = this._routingService.getCategoryById(parentId);
-
-			return category.color;
 		};
 
 		const getDistance = () => {
@@ -93,11 +93,9 @@ export class RoutingInfo extends MvuElement {
 					</style>
 					<div class="header">
 						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type" style=${`background:${getCategoryColor(categoryId)};`}>
-							<span class=${`icon icon-${categoryId}`} ></span>
-							<span class="text">
-								${translate(`routing_category_label_${categoryId.replace('-', '_')}`)}
-							<span>
+						<div class="badge routing-info-type" style=${`background:${category.color};`}>
+							<span class=${`icon icon-${categoryId}`}></span>
+							<span class="text">${category.label}<span>
 						</div>
 					</div>
 					<div class="container">
