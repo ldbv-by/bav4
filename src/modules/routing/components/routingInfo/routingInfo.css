@@ -69,6 +69,7 @@
 .icon {
 	height: 2em;
 	width: 2em;
+	margin-right: 0.3em;
 	background: #fff;
 	mask-size: cover;
 	-webkit-mask-size: cover;
@@ -95,4 +96,5 @@
 
 .text {
 	margin: auto;
+	white-space: nowrap;
 }
