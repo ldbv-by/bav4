@@ -1,5 +1,5 @@
 /**
- * @module services/provider/etaCalculator_provider
+ * @module services/provider/etaCalculation_provider
  */
 
 /**
