@@ -755,22 +755,46 @@ describe('OlRoutingHandler', () => {
 		});
 
 		describe('_setInteractionsActive', () => {
-			it('enables or disables all interactions', async () => {
-				const { instanceUnderTest } = await newTestInstance();
+			describe('in a non-touch environment', () => {
+				it('enables or disables all interactions', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(false);
+					const { instanceUnderTest } = await newTestInstance();
 
-				instanceUnderTest._setInteractionsActive(true);
+					instanceUnderTest._setInteractionsActive(true);
 
-				expect(instanceUnderTest._selectInteraction.getActive()).toBeTrue();
-				expect(instanceUnderTest._translateInteraction.getActive()).toBeTrue();
-				expect(instanceUnderTest._modifyInteraction.getActive()).toBeTrue();
-				expect(instanceUnderTest._activeInteraction).toBeTrue();
+					expect(instanceUnderTest._selectInteraction.getActive()).toBeTrue();
+					expect(instanceUnderTest._translateInteraction.getActive()).toBeTrue();
+					expect(instanceUnderTest._modifyInteraction.getActive()).toBeTrue();
+					expect(instanceUnderTest._activeInteraction).toBeTrue();
 
-				instanceUnderTest._setInteractionsActive(false);
+					instanceUnderTest._setInteractionsActive(false);
 
-				expect(instanceUnderTest._selectInteraction.getActive()).toBeFalse();
-				expect(instanceUnderTest._translateInteraction.getActive()).toBeFalse();
-				expect(instanceUnderTest._modifyInteraction.getActive()).toBeFalse();
-				expect(instanceUnderTest._activeInteraction).toBeFalse();
+					expect(instanceUnderTest._selectInteraction.getActive()).toBeFalse();
+					expect(instanceUnderTest._translateInteraction.getActive()).toBeFalse();
+					expect(instanceUnderTest._modifyInteraction.getActive()).toBeFalse();
+					expect(instanceUnderTest._activeInteraction).toBeFalse();
+				});
+			});
+
+			describe('in a touch environment', () => {
+				it('enables or disables all interactions', async () => {
+					spyOn(environmentServiceMock, 'isTouch').and.returnValue(true);
+					const { instanceUnderTest } = await newTestInstance();
+
+					instanceUnderTest._setInteractionsActive(true);
+
+					expect(instanceUnderTest._selectInteraction.getActive()).toBeTrue();
+					expect(instanceUnderTest._translateInteraction.getActive()).toBeTrue();
+					expect(instanceUnderTest._modifyInteraction).toBeNull();
+					expect(instanceUnderTest._activeInteraction).toBeTrue();
+
+					instanceUnderTest._setInteractionsActive(false);
+
+					expect(instanceUnderTest._selectInteraction.getActive()).toBeFalse();
+					expect(instanceUnderTest._translateInteraction.getActive()).toBeFalse();
+					expect(instanceUnderTest._modifyInteraction).toBeNull();
+					expect(instanceUnderTest._activeInteraction).toBeFalse();
+				});
 			});
 		});
 
