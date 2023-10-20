@@ -1054,10 +1054,9 @@ describe('OlRoutingHandler', () => {
 				instanceUnderTest._highlightSegments({ segments: [[0, 1]], zoomToExtent: false }, highlightLayer, routeLayer);
 
 				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(1);
-				expect(instanceUnderTest._highlightLayer.getSource().getFeatures()[0].getGeometry().getCoordinates()).toEqual([
-					coordinates[0],
-					coordinates[1]
-				]);
+				const feature = instanceUnderTest._highlightLayer.getSource().getFeatures()[0];
+				expect(feature.getGeometry().getCoordinates()).toEqual([coordinates[0], coordinates[1]]);
+				expect(feature.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
 
 				instanceUnderTest._highlightSegments(null, highlightLayer, routeLayer);
 
@@ -1153,7 +1152,7 @@ describe('OlRoutingHandler', () => {
 					layerFilter: () => true,
 					hitTolerance: 42
 				};
-				spyOn(instanceUnderTest, '_getPointerMoveGetFeaturesAtPixelOptions')
+				spyOn(instanceUnderTest, '_getFeaturesAtPixelOptionsForPointerMove')
 					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer, instanceUnderTest._routeLayerCopy)
 					.and.returnValue(pointerMoveGetFeaturesAtPixelOptions);
 				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue([21, 42]);
@@ -1171,7 +1170,7 @@ describe('OlRoutingHandler', () => {
 				const alternativeRouteLayerMock = { id: '1' };
 				const routeLayerCopyMock = { id: '2' };
 
-				const options = instanceUnderTest._getPointerMoveGetFeaturesAtPixelOptions(
+				const options = instanceUnderTest._getFeaturesAtPixelOptionsForPointerMove(
 					interactionLayerMock,
 					alternativeRouteLayerMock,
 					routeLayerCopyMock

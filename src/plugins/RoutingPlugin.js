@@ -10,7 +10,7 @@ import { $injector } from '../injection/index';
 import { LevelTypes, emitNotification } from '../store/notifications/notifications.action';
 
 /**
- * Id of the layer used for measurement interaction.
+ * Id of the layer used for routing interaction.
  * LayerHandler of a map implementation will also use this id as their key.
  */
 export const ROUTING_LAYER_ID = 'routing_layer';

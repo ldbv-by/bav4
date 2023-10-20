@@ -95,7 +95,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	/**
-	 * Activates the Handler.
+	 * Activates the handler.
 	 * @override
 	 */
 	onActivate(olMap) {
@@ -131,7 +131,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		return this._routingLayerGroup;
 	}
 
-	_getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
+	_getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
 		return {
 			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer, routeLayerCopy].includes(layer),
 			hitTolerance: 5
@@ -162,7 +162,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				const pixel = map.getEventPixel(event.originalEvent);
 				const hit = map.getFeaturesAtPixel(
 					pixel,
-					this._getPointerMoveGetFeaturesAtPixelOptions(interactionLayer, alternativeRouteLayer, routeLayerCopy)
+					this._getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy)
 				);
 
 				if (hit.length > 0) {
@@ -347,7 +347,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			let dist = Number.MAX_VALUE;
 			let index = -1;
 			for (let i = 0; i < coords.length; i++) {
-				// Note: we're calculating the planar distance although we are having coordinates, but it should be precisely enough in this case
+				// Note: we're calculating the planar distance although we are having spherical coordinates, but it should be precisely enough in this case
 				const d = distance(coords[i], closest);
 				if (d < dist) {
 					dist = d;
