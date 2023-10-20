@@ -6,7 +6,7 @@ import { Injector } from '../../src/injection/core/injector.js';
 describe('injector configuration', () => {
 	it('registers the expected dependencies', () => {
 		expect($injector.isReady()).toBeTrue();
-		expect($injector.count()).toBe(69);
+		expect($injector.count()).toBe(72);
 
 		expect($injector.getScope('ProjectionService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('HttpService')).toBe(Injector.SCOPE_PERLOOKUP);
@@ -39,8 +39,10 @@ describe('injector configuration', () => {
 		expect($injector.getScope('MfpService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ChipsConfigurationService')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('FeedbackService')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('RoutingService')).toBe(Injector.SCOPE_SINGLETON);
 
 		expect($injector.getScope('DrawPlugin')).toBe(Injector.SCOPE_SINGLETON);
+		expect($injector.getScope('RoutingPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('TopicsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('ChipsPlugin')).toBe(Injector.SCOPE_SINGLETON);
 		expect($injector.getScope('LayersPlugin')).toBe(Injector.SCOPE_SINGLETON);
@@ -80,6 +82,7 @@ describe('injector configuration', () => {
 		expect($injector.getScope('OlElevationProfileHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlOverlayMapHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 		expect($injector.getScope('OlMfpHandler')).toBe(Injector.SCOPE_PERLOOKUP);
+		expect($injector.getScope('OlRoutingHandler')).toBe(Injector.SCOPE_PERLOOKUP);
 
 		// topic module
 		expect($injector.getScope('CatalogService')).toBe(Injector.SCOPE_SINGLETON);

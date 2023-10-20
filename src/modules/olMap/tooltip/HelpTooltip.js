@@ -5,6 +5,21 @@ import { BaOverlay, BaOverlayTypes } from '../components/BaOverlay';
 import Overlay from 'ol/Overlay';
 import { $injector } from '../../../injection';
 
+/**
+ * A function that returns the message for the tooltip
+ * @param {module:modules/olMap/tooltip/HelpTooltip~InteractionState} interactionState
+ * @typedef {Function} tooltipMessageProviderFunction
+ * @returns {String|null} the message for the tooltip
+ */
+
+/**
+ * Defines the state at the moment a user interaction event occurred.
+ * The object may contain further use-case-specific properties (we should put them to a separate field (e.g `properties`) eventually)
+ * @typedef {Object} InteractionState
+ * @property {module:domain/coordinateTypeDef~Coordinate} coordinate coordinate (in the map SRID) of the current event
+ * @property {boolean} dragging `true` if the current event is a dragging event
+ */
+
 export class HelpTooltip {
 	constructor() {
 		this._overlay = null;
@@ -47,6 +62,10 @@ export class HelpTooltip {
 
 	set messageProvideFunction(value) {
 		this._tooltipMessageProvideFunction = value;
+	}
+
+	get messageProvideFunction() {
+		return this._tooltipMessageProvideFunction;
 	}
 
 	_createOverlay(overlayOptions = {}, type) {
