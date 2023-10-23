@@ -124,7 +124,6 @@ export class TiledCoordinateBag {
 					// Drawing at 90deg breaks things, thats why we stop at 89
 					const lat = geographicMath.copysign(89, this.#worldIndex * geodesicGeometry.area);
 					coordinates.push([last[0], lat], [first[0], lat]);
-					console.log('foo');
 				}
 				coordinates.push(first);
 				return [coordinates];
