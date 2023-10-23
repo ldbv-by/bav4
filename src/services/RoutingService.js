@@ -39,7 +39,7 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  * @function
  * @name module:services/RoutingService~RoutingService#getCategoryById
  * @param {String} id category id
- * @returns {module:domain/routing~RoutingCategory|null} the category of `null`
+ * @returns {module:domain/routing~RoutingCategory|null} the category or `null`
  */
 
 /**
