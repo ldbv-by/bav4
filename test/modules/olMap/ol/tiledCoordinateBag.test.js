@@ -1,13 +1,13 @@
-import { CoordinateBag } from '../../../../src/modules/olMap/ol/geodesic/coordinateBag';
+import { TiledCoordinateBag } from '../../../../src/modules/olMap/ol/geodesic/tiledCoordinateBag';
 
 import { MultiLineString } from 'ol/geom';
 
-describe('CoordinateBag', () => {
+describe('TiledCoordinateBag', () => {
 	describe('constructor', () => {
 		it('initializes an instance', () => {
-			const instance = new CoordinateBag();
+			const instance = new TiledCoordinateBag();
 
-			expect(instance).toBeInstanceOf(CoordinateBag);
+			expect(instance).toBeInstanceOf(TiledCoordinateBag);
 		});
 	});
 
@@ -16,25 +16,25 @@ describe('CoordinateBag', () => {
 		const coordinateParis = [2, 48];
 		const coordinateBeijing = [116, 40];
 		it('does NOT creates geometries for ZERO or ONE point', () => {
-			const instance = new CoordinateBag();
+			const instance = new TiledCoordinateBag();
 
-			const emptyGeometry = instance.createGeometry();
+			const emptyGeometry = instance.createTiledGeometry();
 			expect(emptyGeometry).toBeInstanceOf(MultiLineString);
 			expect(emptyGeometry.getCoordinates()).toEqual([]);
 			instance.add(coordinateMunich);
 
-			const afterFirstPointGeometry = instance.createGeometry();
+			const afterFirstPointGeometry = instance.createTiledGeometry();
 			expect(afterFirstPointGeometry).toBeInstanceOf(MultiLineString);
 			expect(afterFirstPointGeometry.getCoordinates()).toEqual([]);
 		});
 
 		it('creates a geometry for 2 points', () => {
-			const instance = new CoordinateBag();
+			const instance = new TiledCoordinateBag();
 
 			instance.add(coordinateMunich);
 			instance.add(coordinateParis);
 
-			const afterSecondPointGeometry = instance.createGeometry();
+			const afterSecondPointGeometry = instance.createTiledGeometry();
 			const pointCount = afterSecondPointGeometry.getCoordinates()[0].length;
 			const firstPoint = afterSecondPointGeometry.getCoordinates()[0][0];
 			const secondPoint = afterSecondPointGeometry.getCoordinates()[0][1];
@@ -46,13 +46,13 @@ describe('CoordinateBag', () => {
 		});
 
 		it('creates a geometry for 3 points over date shift border left', () => {
-			const instance = new CoordinateBag();
+			const instance = new TiledCoordinateBag();
 
 			instance.add(coordinateMunich);
 			instance.add([coordinateBeijing[0] - 360, coordinateBeijing[1]]);
 			instance.add([coordinateParis[0] - 360, coordinateBeijing[1]]);
 
-			const geometry = instance.createGeometry();
+			const geometry = instance.createTiledGeometry();
 			const pointCount = geometry.getCoordinates()[0].length;
 
 			expect(geometry).toBeInstanceOf(MultiLineString);

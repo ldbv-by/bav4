@@ -15,14 +15,13 @@ const Right_World = 1;
 const Dateline_Buffer = 40;
 
 /**
- * Class to organize spherical coordinates and create geometries as
+ * Class to organize spherical coordinates based on a linear tiling scheme along the equator and create geometries as
  * - a MultiLineString (createGeometry())
  * - a MultiPolygon (createPolygon())
- *
  * based on the AutoSplitArray in https://github.com/geoadmin/web-mapviewer
  *
  */
-export class CoordinateBag {
+export class TiledCoordinateBag {
 	#lastCoordinate = null;
 	#lineStringIndex = 0;
 	#lineStrings = [[]];
@@ -94,10 +93,10 @@ export class CoordinateBag {
 	}
 
 	/**
-	 * Creates a geodetic Geometry from all added coordinates
+	 * Creates a tiled Geometry from all added coordinates.
 	 * @returns  {MultiLineString}
 	 */
-	createGeometry() {
+	createTiledGeometry() {
 		if (this.#lineStrings[this.#lineStringIndex].length <= 1) {
 			this.#lineStrings.pop();
 		}
@@ -108,13 +107,8 @@ export class CoordinateBag {
 	 * @param {import('./geodesicGeometry').GeodesicGeometry} geodesicGeometry
 	 * @returns {MultiPolygon | null}
 	 */
-	createPolygon(geodesicGeometry) {
-		if (
-			!geodesicGeometry.isPolygon ||
-			(geodesicGeometry.isDrawing && this.#lineStringIndex === 1) ||
-			(this.#lineStringIndex > 1 && this.#worldIndex !== 0) ||
-			this.#lineStringIndex > 2
-		) {
+	createTiledPolygon(geodesicGeometry) {
+		if (this.#lineStringIndex === 1 || (this.#lineStringIndex > 1 && this.#worldIndex !== 0) || this.#lineStringIndex > 2) {
 			/* If polygon should not be filled OR
             the chance for the algorithm to not color the polygon correctly is too high.*/
 			return null;
@@ -130,6 +124,7 @@ export class CoordinateBag {
 					// Drawing at 90deg breaks things, thats why we stop at 89
 					const lat = geographicMath.copysign(89, this.#worldIndex * geodesicGeometry.area);
 					coordinates.push([last[0], lat], [first[0], lat]);
+					console.log('foo');
 				}
 				coordinates.push(first);
 				return [coordinates];

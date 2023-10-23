@@ -3,7 +3,7 @@
  */
 import { Geodesic, PolygonArea, Math as geographicMath } from 'geographiclib-geodesic';
 import { LineString, Polygon } from 'ol/geom';
-import { CoordinateBag } from './coordinateBag';
+import { TiledCoordinateBag } from './tiledCoordinateBag';
 
 const GEODESIC_WGS84 = Geodesic.WGS84;
 const WEBMERCATOR = 'EPSG:3857';
@@ -35,8 +35,8 @@ export class GeodesicGeometry {
 		const geodesicCoords = this._calculateGeodesicCoordinates(coordinates, resolution);
 
 		this.azimuthCircle = hasAzimuthCircle ? this._calculateAzimuthCircle(coordinates, geodesicProperties.rotation, geodesicProperties.length) : null;
-		this.geometry = geodesicCoords.createGeometry();
-		this.polygon = geodesicCoords.createPolygon(this);
+		this.geometry = geodesicCoords.createTiledGeometry();
+		this.polygon = this.isPolygon && !this.isDrawing ? geodesicCoords.createTiledPolygon(this) : null;
 		this.extent = this.geometry.getExtent();
 
 		this._length = geodesicProperties.length;
@@ -116,7 +116,7 @@ export class GeodesicGeometry {
 
 	_calculateGeodesicCoordinates(coordinates, resolution) {
 		let currentDistance = 0;
-		const geodesicCoordinates = new CoordinateBag();
+		const geodesicCoordinates = new TiledCoordinateBag();
 
 		for (let i = 0; i < coordinates.length - 1; i++) {
 			const from = coordNormalize(coordinates[i]);
@@ -149,7 +149,7 @@ export class GeodesicGeometry {
 		const center = coords[0];
 		const pointsOnArc = 1000;
 		const arcLength = 360 / pointsOnArc;
-		const circleCoords = new CoordinateBag();
+		const circleCoords = new TiledCoordinateBag();
 		for (let i = 0; i <= pointsOnArc; i++) {
 			const res = GEODESIC_WGS84.Direct(
 				center[1],
@@ -160,7 +160,7 @@ export class GeodesicGeometry {
 			);
 			circleCoords.add([res.lon2, res.lat2]);
 		}
-		return circleCoords.createGeometry();
+		return circleCoords.createTiledGeometry();
 	}
 
 	/** @returns {import('ol').MultiLineString} Represents the drawn LineString or the border of the drawn Polygon */
