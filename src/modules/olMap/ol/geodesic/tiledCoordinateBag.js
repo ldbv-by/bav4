@@ -1,5 +1,5 @@
 /**
- * @module modules/olMap/ol/geodesic/coordinateBag
+ * @module modules/olMap/ol/geodesic/tiledCoordinateBag
  */
 import { Math as geographicMath } from 'geographiclib-geodesic';
 import { MultiLineString, MultiPolygon } from 'ol/geom';
