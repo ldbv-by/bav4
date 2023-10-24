@@ -32,6 +32,7 @@ export class RoutingWarnings extends MvuElement {
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
 	}
+
 	update(type, data, model) {
 		switch (type) {
 			case Update_Items:
