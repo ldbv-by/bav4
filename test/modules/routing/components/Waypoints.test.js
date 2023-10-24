@@ -43,7 +43,7 @@ describe('Waypoints', () => {
 			const model = new Waypoints().getModel();
 
 			expect(model).toEqual({
-				status: 900,
+				status: null,
 				waypoints: [],
 				draggedItem: null
 			});

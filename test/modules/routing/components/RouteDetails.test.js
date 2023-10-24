@@ -285,9 +285,9 @@ describe('RouteDetails', () => {
 			const model = new RouteDetails().getModel();
 
 			expect(model).toEqual({
-				status: 900,
-				warnings: jasmine.objectContaining({ 500: jasmine.any(Object) }),
-				chartData: jasmine.objectContaining({ surface: jasmine.any(Object), roadTypes: jasmine.any(Object) })
+				status: null,
+				warnings: null,
+				chartData: null
 			});
 		});
 	});

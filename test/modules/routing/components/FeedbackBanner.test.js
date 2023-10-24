@@ -39,7 +39,7 @@ describe('FeedbackBanner', () => {
 			const model = new FeedbackBanner().getModel();
 
 			expect(model).toEqual({
-				status: 900
+				status: null
 			});
 		});
 	});
