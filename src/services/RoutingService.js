@@ -98,6 +98,17 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  */
 
 /**
+ * A function that provides a ETA calculation for a defined categoryId (vehicle type).
+ * @function
+ * @name module:services/RoutingService~RoutingService#getETAFor
+ * @param {string} categoryId
+ * @param {Number} distance distance in meter
+ * @param {Number} elevationUp elevation upwards in meter
+ * @param {Number} elevationDown  elevation downwards in meter
+ * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
+ */
+
+/**
  * A function that returns a list of available ChartItems to display statistical
  * data (road type, surface type) for routing
  * @function
@@ -158,17 +169,6 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
  * @typedef {Function} routeStatsProvider
  * @param {module:domain/routing~Route} route the route
  * @returns {module:domain/routing~RouteStats} the statistics of the route
- */
-
-/**
- * A function that provides a ETA calculation for a defined categoryId (vehicle type).
- * @function
- * @name module:services/RoutingService~RoutingService#getETAFor
- * @param {string} categoryId
- * @param {Number} distance distance in meter
- * @param {Number} elevationUp elevation upwards in meter
- * @param {Number} elevationDown  elevation downwards in meter
- * @returns {number|null} the ETA in milliseconds or null if no ETA for the given category is available.
  */
 
 /**
