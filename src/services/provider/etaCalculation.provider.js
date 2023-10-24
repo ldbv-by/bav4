@@ -23,7 +23,7 @@ const VehicleSpeedOptions = {
  *  - https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf
  * @see https://de.wikipedia.org/wiki/Marschzeitberechnung
  * @function
- * @implements {module:services/RoutingService~etaCalculationProvider}
+ * @implements @type {module:services/RoutingService~etaCalculationProvider}
  * @returns {number|null}
  */
 export const bvvEtaCalculationProvider = (categoryId, distance, elevationUp, elevationDown) => {
