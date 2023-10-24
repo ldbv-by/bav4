@@ -1,13 +1,13 @@
 import { RoutingStatusCodes } from '../../../../src/domain/routing';
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RoutingInfo } from '../../../../src/modules/routing/components/routingInfo/RoutingInfo';
+import { RouteInfo } from '../../../../src/modules/routing/components/routeInfo/RouteInfo';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { setRoute } from '../../../../src/store/routing/routing.action';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(RoutingInfo.tag, RoutingInfo);
+window.customElements.define(RouteInfo.tag, RouteInfo);
 
 const mockedRouteStatistic = {
 	time: 3600000,
@@ -263,7 +263,7 @@ describe('RoutingInfo', () => {
 			.registerSingleton('UnitsService', unitsServiceMock)
 			.registerSingleton('RoutingService', routingServiceMock);
 
-		return TestUtils.render(RoutingInfo.tag, properties);
+		return TestUtils.render(RouteInfo.tag, properties);
 	};
 
 	describe('class', () => {
@@ -277,7 +277,7 @@ describe('RoutingInfo', () => {
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			await setup();
-			const model = new RoutingInfo().getModel();
+			const model = new RouteInfo().getModel();
 
 			expect(model).toEqual({
 				status: 900,

@@ -1,11 +1,11 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RoutingChart } from '../../../../src/modules/routing/components/routeDetails/RoutingChart';
+import { RouteChart } from '../../../../src/modules/routing/components/routeDetails/RouteChart';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(RoutingChart.tag, RoutingChart);
+window.customElements.define(RouteChart.tag, RouteChart);
 describe('RoutingChart', () => {
 	const environmentServiceMock = {
 		isTouch: () => false
@@ -25,7 +25,7 @@ describe('RoutingChart', () => {
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key }).registerSingleton('EnvironmentService', environmentServiceMock);
 
-		return TestUtils.render(RoutingChart.tag, properties);
+		return TestUtils.render(RouteChart.tag, properties);
 	};
 
 	describe('class', () => {
@@ -39,7 +39,7 @@ describe('RoutingChart', () => {
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			await setup();
-			const model = new RoutingChart().getModel();
+			const model = new RouteChart().getModel();
 
 			expect(model).toEqual({
 				items: [],

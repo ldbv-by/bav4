@@ -1,11 +1,11 @@
 /**
  * @module modules/routing/components/routingInfo/RoutingInfo
  */
-import { html, nothing } from '../../../../../node_modules/lit-html/lit-html';
+import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
-import css from './routingInfo.css';
+import css from './routeInfo.css';
 
 const Update_Status = 'update_status';
 const Update_Route = 'update_route';
@@ -19,7 +19,7 @@ const Minute_In_Seconds = 60;
  *
  * @author thiloSchlemmer
  */
-export class RoutingInfo extends MvuElement {
+export class RouteInfo extends MvuElement {
 	constructor() {
 		super({ status: null, stats: null, categoryId: null });
 		const { TranslationService, RoutingService, UnitsService } = $injector.inject('TranslationService', 'RoutingService', 'UnitsService');

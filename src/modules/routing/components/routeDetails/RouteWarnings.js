@@ -5,7 +5,7 @@ import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
-import css from './routingWarnings.css';
+import css from './routeWarnings.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 
@@ -26,7 +26,7 @@ const Update_Collapsed_Warnings = 'update_show_warnings';
  * @property {Array<WarningItem>} items the routing chart items
  * @author thiloSchlemmer
  */
-export class RoutingWarnings extends MvuElement {
+export class RouteWarnings extends MvuElement {
 	constructor() {
 		super({ items: [], collapsedWarnings: false });
 		const { TranslationService } = $injector.inject('TranslationService');

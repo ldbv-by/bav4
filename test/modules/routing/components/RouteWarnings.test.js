@@ -1,13 +1,13 @@
 import { $injector } from '../../../../src/injection';
 import { MvuElement } from '../../../../src/modules/MvuElement';
-import { RoutingWarnings } from '../../../../src/modules/routing/components/routeDetails/RoutingWarnings';
+import { RouteWarnings } from '../../../../src/modules/routing/components/routeDetails/RouteWarnings';
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { TestUtils } from '../../../test-utils';
 
-window.customElements.define(RoutingWarnings.tag, RoutingWarnings);
+window.customElements.define(RouteWarnings.tag, RouteWarnings);
 
-describe('RoutingWarnings', () => {
+describe('RouteWarnings', () => {
 	let store;
 	const setup = (state, properties) => {
 		const initialState = {
@@ -23,7 +23,7 @@ describe('RoutingWarnings', () => {
 		});
 		$injector.registerSingleton('TranslationService', { translate: (key) => key });
 
-		return TestUtils.render(RoutingWarnings.tag, properties);
+		return TestUtils.render(RouteWarnings.tag, properties);
 	};
 
 	describe('class', () => {
@@ -37,7 +37,7 @@ describe('RoutingWarnings', () => {
 	describe('when instantiated', () => {
 		it('has a model containing default values', async () => {
 			await setup();
-			const model = new RoutingWarnings().getModel();
+			const model = new RouteWarnings().getModel();
 
 			expect(model).toEqual({
 				items: [],

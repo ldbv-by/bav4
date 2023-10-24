@@ -5,7 +5,7 @@ import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
-import css from './routingChart.css';
+import css from './routeChart.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
 
@@ -36,7 +36,7 @@ const Update_Collapsed_Chart = 'update_collapsed_chart';
  * @property {string} label the route chart label
  * @author thiloSchlemmer
  */
-export class RoutingChart extends MvuElement {
+export class RouteChart extends MvuElement {
 	constructor() {
 		super({ items: [], label: null, collapsedChart: false });
 		const { TranslationService } = $injector.inject('TranslationService');
