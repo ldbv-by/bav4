@@ -21,7 +21,9 @@ export class Waypoints extends MvuElement {
 		const { TranslationService, EnvironmentService } = $injector.inject('TranslationService', 'EnvironmentService');
 		this._translationService = TranslationService;
 		this._environmentService = EnvironmentService;
+	}
 
+	onInitialize() {
 		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
