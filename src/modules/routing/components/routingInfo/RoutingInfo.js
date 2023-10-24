@@ -14,7 +14,7 @@ const Update_Category = 'update_category';
 const Minute_In_Seconds = 60;
 
 /**
- * Renders basic statistical information of route like
+ * Renders basic statistical information about a route like
  * distance, ETA (Estimated Time Arrived),cumulated climbs and descents
  *
  * @author thiloSchlemmer
