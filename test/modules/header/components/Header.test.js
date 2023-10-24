@@ -14,6 +14,8 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
+import { Tools } from '../../../../src/domain/tools';
 
 window.customElements.define(Header.tag, Header);
 
@@ -51,6 +53,7 @@ describe('Header', () => {
 			network: networkReducer,
 			layers: layersReducer,
 			search: searchReducer,
+			tools: toolsReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
@@ -325,7 +328,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
 		});
 
-		it('focused menue-button loses the focus after swipe', async () => {
+		it('focused menu-button loses the focus after swipe', async () => {
 			const element = await setup();
 			const mapButton = element.shadowRoot.querySelector('.header__button-container').children[1];
 			const closeButton = element.shadowRoot.querySelector('.close-menu');
@@ -340,6 +343,16 @@ describe('Header', () => {
 			TestUtils.simulateTouchEvent('touchend', closeButton, center.x - 200, center.y);
 
 			expect(mapButton.matches(':focus')).toBeFalse();
+		});
+	});
+
+	describe('when routing button is clicked', () => {
+		it('changes the current active tool', async () => {
+			const element = await setup();
+
+			element.shadowRoot.querySelector('.header__routing-button').click();
+
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
 		});
 	});
 
