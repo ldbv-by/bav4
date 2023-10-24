@@ -4,7 +4,6 @@ import { RouteDetails } from '../../../../src/modules/routing/components/routeDe
 import { createNoInitialStateMediaReducer } from '../../../../src/store/media/media.reducer';
 import { routingReducer } from '../../../../src/store/routing/routing.reducer';
 import { bvvChartItemStylesProvider } from '../../../../src/services/provider/chartItemStyles.provider';
-import { bvvOsmRoadTypeMappingProvider } from '../../../../src/services/provider/osmRoadTypeMapper.provider';
 import { TestUtils } from '../../../test-utils';
 import { RoutingStatusCodes } from '../../../../src/domain/routing';
 
@@ -246,7 +245,7 @@ describe('RouteDetails', () => {
 			const styles = bvvChartItemStylesProvider();
 			return styles['road'];
 		},
-		mapOsmRoadTypes: bvvOsmRoadTypeMappingProvider
+		mapRoadTypesToCatalogId: (chartData) => chartData
 	};
 	const configService = {
 		getValue: () => {}

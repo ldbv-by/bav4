@@ -96,6 +96,14 @@
  */
 
 /**
+ * Chart data object related to a specific {@link RouteDetailTypeAttribute}
+ * @typedef {Object} ChartData
+ * @property {number} absolute the absolute value
+ * @property {string} relative the relative value
+ * @property {Array<Array<number>>} segments the stringified image, visualizing the chart item
+ */
+
+/**
  * Routing related status code.
  * @readonly
  * @enum {number}

@@ -141,18 +141,20 @@ export const CHART_ITEM_SURFACE_STYLE_UNKNOWN = {
 };
 
 /**
- * A function that maps and reduces {@link module:domain/routing~RouteDetailTypeAttribute}
- * with OSM road type names to the name of defined {@link module:domain/routing~ChartItemStyle}
+ * A function that maps and reduces {@link module:domain/routing~ChartData}
+ * with OSM road type names to the catalogId of defined {@link module:domain/routing~ChartItemStyle}
  * @function
- * @name module:services/RoutingService~RoutingService#mapOsmRoadTypes
- * @returns {Map<string,module:domain/routing~RouteDetailTypeAttribute>} mapping
+ * @name module:services/RoutingService~RoutingService#mapRoadTypesToCatalogId
+ * @param {Object.<string, module:domain/routing~ChartData>} routeChartData
+ * @returns {Object.<string, module:domain/routing~ChartData>} the mapped chartData
  */
 
 /**
- * A function that maps and reduces {@link module:domain/routing~RouteDetailTypeAttribute}
- * with OSM road type names to the name of defined {@link module:domain/routing~ChartItemStyle}
+ * A function that maps the name of a OSM road type
+ * to the catalogId a of defined {@link module:domain/routing~ChartItemStyle}
  * @typedef {Function} osmRoadTypeMappingProvider
- * @returns {Map<string,module:domain/routing~RouteDetailTypeAttribute>} mapping
+ * @param {string} osmRoadTypeName the name of a OSM road type
+ * @returns {string} the mapped catalogId
  */
 
 /**
@@ -206,7 +208,7 @@ export class BvvRoutingService {
 	) {
 		this._categoriesProvider = categoriesProvider;
 		this._chartItemsStylesProvider = chartItemStylesProvider;
-		this._mapper = osmRoadTypeMappingProvider;
+		this._osmRoadTypeMapper = osmRoadTypeMappingProvider;
 		this._routeProvider = routeProvider;
 		this._routeStatsProvider = routeStatsProvider;
 		this._etaCalculationProvider = etaCalculationProvider;
@@ -255,8 +257,33 @@ export class BvvRoutingService {
 			: { unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN };
 	}
 
-	mapOsmRoadTypes(routeDetailTypeAttributes) {
-		return this._mapper(routeDetailTypeAttributes);
+	mapRoadTypesToCatalogId(routeChartData) {
+		const merge = (roadType, data) => {
+			return {
+				...roadType,
+				absolute: roadType.absolute + data.absolute,
+				relative: roadType.relative + data.relative,
+				segments: roadType.segments.concat(data.segments)
+			};
+		};
+		const add = (data) => {
+			return {
+				absolute: data.absolute,
+				relative: data.relative,
+				segments: data.segments
+			};
+		};
+
+		const mappedChartData = {};
+		Object.keys(routeChartData).forEach((key) => {
+			const catalogId = this._osmRoadTypeMapper(key);
+			if (catalogId) {
+				mappedChartData[catalogId] = mappedChartData[catalogId] ? merge(mappedChartData[catalogId], routeChartData[key]) : add(routeChartData[key]);
+			} else {
+				mappedChartData[key] = add(routeChartData[key]);
+			}
+		});
+		return mappedChartData;
 	}
 
 	/**

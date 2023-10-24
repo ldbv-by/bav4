@@ -32,7 +32,7 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest._routeProvider).toEqual(bvvRouteProvider);
 			expect(instanceUnderTest._routeStatsProvider).toEqual(bvvRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(bvvChartItemStylesProvider);
-			expect(instanceUnderTest._mapper).toEqual(bvvOsmRoadTypeMappingProvider);
+			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(bvvOsmRoadTypeMappingProvider);
 			expect(instanceUnderTest._etaCalculationProvider).toEqual(bvvEtaCalculationProvider);
 		});
 
@@ -55,7 +55,7 @@ describe('BvvRoutingService', () => {
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
 			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
 			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(customChartItemStylesProvider);
-			expect(instanceUnderTest._mapper).toEqual(customOsmRoadTypeMappingProvider);
+			expect(instanceUnderTest._osmRoadTypeMapper).toEqual(customOsmRoadTypeMappingProvider);
 			expect(instanceUnderTest._etaCalculationProvider).toEqual(customEtaCalculationProvider);
 		});
 	});
@@ -391,15 +391,43 @@ describe('BvvRoutingService', () => {
 		});
 	});
 
-	describe('mapOsmRoadTypes', () => {
-		it('provides OSM road type mapping', async () => {
-			const mappedTypes = { foo: 'baz' };
-			const mockOsmRoadTypeMappingProvider = jasmine.createSpy().withArgs({ foo: 'bar' }).and.returnValue(mappedTypes);
-			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+	describe('mapRoadTypesToCatalogId', () => {
+		it('maps osm road class name to defined catalogId', async () => {
+			const osmClasses = {
+				foo: { absolute: 4, relative: 42, segments: [0, 1] },
+				other: { absolute: 2, relative: 55, segments: [0, 1] }
+			};
+			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' ? 'bar' : null);
 
-			const parameter = { foo: 'bar' };
-			const mapped = instanceUnderTest.mapOsmRoadTypes(parameter);
-			expect(mapped).toBe(mappedTypes);
+			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
+
+			expect(roadClasses.bar.absolute).toBe(4);
+			expect(roadClasses.other.absolute).toBe(2);
+			expect(roadClasses.bar.relative).toBe(42);
+			expect(roadClasses.other.relative).toBe(55);
+			expect(roadClasses.bar.segments).toEqual([0, 1]);
+			expect(roadClasses.other.segments).toEqual([0, 1]);
+		});
+
+		it('maps and merges osm road class map to application road classes', async () => {
+			const osmClasses = {
+				foo: { absolute: 2, relative: 33, segments: [0, 1] },
+				other: { absolute: 2, relative: 33, segments: [2, 3] },
+				track_grade1: { absolute: 2, relative: 100, segments: [4, 6] }
+			};
+			const mockOsmRoadTypeMappingProvider = (osmRoadType) => (osmRoadType === 'foo' || osmRoadType === 'other' ? 'other' : null);
+
+			const instanceUnderTest = setup(null, null, null, null, mockOsmRoadTypeMappingProvider);
+			const roadClasses = instanceUnderTest.mapRoadTypesToCatalogId(osmClasses);
+
+			expect(roadClasses.other.absolute).toBe(4);
+			expect(roadClasses.other.relative).toBe(66);
+			expect(roadClasses.other.segments).toEqual([0, 1, 2, 3]);
+
+			expect(roadClasses.track_grade1.absolute).toBe(2);
+			expect(roadClasses.track_grade1.relative).toBe(100);
+			expect(roadClasses.track_grade1.segments).toEqual([4, 6]);
 		});
 	});
 

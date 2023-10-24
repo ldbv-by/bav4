@@ -92,17 +92,17 @@ export class RouteDetails extends MvuElement {
 		const getRoadChartItems = (roadTypes) => appendChartStyle(roadTypes, this._routingService.getRoadTypeStyles());
 
 		const createChartDataFrom = (statistics) => {
-			const collectedRouteData = this._aggregateRouteStatistics(statistics);
+			const collectedRouteChartData = this._aggregateRouteChartData(statistics);
 			return {
-				surface: getSurfaceChartItems(collectedRouteData.surfaceTypes),
-				roadTypes: getRoadChartItems(this._routingService.mapOsmRoadTypes(collectedRouteData.roadTypes))
+				surface: getSurfaceChartItems(collectedRouteChartData.surfaceTypes),
+				roadTypes: getRoadChartItems(this._routingService.mapRoadTypesToCatalogId(collectedRouteChartData.roadTypes))
 			};
 		};
 
 		return routeStatistics ? createChartDataFrom(routeStatistics) : { surface: {}, roadTypes: {} };
 	}
 
-	_aggregateRouteStatistics(statistics) {
+	_aggregateRouteChartData(statistics) {
 		const { surface: surfaceTypes, road_class: roadClasses } = statistics.details;
 
 		const aggregate = (routeDetailTypeAttributes) =>

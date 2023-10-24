@@ -17,43 +17,12 @@ const bvvMapping = {
 	mainstreet: ['secondary', 'primary', 'motorway']
 };
 
-export const bvvOsmRoadTypeMappingProvider = (osmRoadClasses) => {
-	const getRoadTypeFor = (osmRoadType) => {
-		for (const roadTypeName in bvvMapping) {
-			const osmClasses = bvvMapping[roadTypeName];
-			if (osmClasses.indexOf(osmRoadType) > -1) {
-				return roadTypeName;
-			}
+export const bvvOsmRoadTypeMappingProvider = (osmRoadType) => {
+	for (const roadTypeName in bvvMapping) {
+		const osmClasses = bvvMapping[roadTypeName];
+		if (osmClasses.indexOf(osmRoadType) > -1) {
+			return roadTypeName;
 		}
-		return null;
-	};
-
-	const merge = (roadType, data) => {
-		return {
-			...roadType,
-			absolute: roadType.absolute + data.absolute,
-			relative: roadType.relative + data.relative,
-			segments: roadType.segments.concat(data.segments)
-		};
-	};
-	const add = (data) => {
-		return {
-			absolute: data.absolute,
-			relative: data.relative,
-			segments: data.segments
-		};
-	};
-
-	const mappedRoadType = {};
-	Object.keys(osmRoadClasses).forEach((osmRoadClass) => {
-		const roadType = getRoadTypeFor(osmRoadClass);
-		if (roadType) {
-			mappedRoadType[roadType] = mappedRoadType[roadType]
-				? merge(mappedRoadType[roadType], osmRoadClasses[osmRoadClass])
-				: add(osmRoadClasses[osmRoadClass]);
-		} else {
-			mappedRoadType[osmRoadClass] = add(osmRoadClasses[osmRoadClass]);
-		}
-	});
-	return mappedRoadType;
+	}
+	return null;
 };
