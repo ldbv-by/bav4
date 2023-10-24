@@ -31,13 +31,12 @@ export class CategoryBar extends MvuElement {
 		}
 	}
 
-	async onInitialize() {
+	onInitialize() {
 		this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Selected_Category, categoryId)
 		);
 
-		await this._routingService.init();
 		this.signal(Update_Categories, this._routingService.getCategories());
 	}
 
