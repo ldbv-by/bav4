@@ -87,14 +87,14 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  * Returns all available surface type styles
  * @function
  * @name module:services/RoutingService~RoutingService#getSurfaceTypeStyles
- * @returns {Array<module:domain/routing~ChartItemStyle>} surfaceTypeStyles
+ * @returns {module:domain/routing~ChartItemStyleCatalog} surfaceTypeStyles
  */
 
 /**
  * Returns all available road type styles
  * @function
  * @name module:services/RoutingService~RoutingService#getRoadTypeStyles
- * @returns {Array<module:domain/routing~ChartItemStyle>} roadTypeStyles
+ * @returns {module:domain/routing~ChartItemStyleCatalog} roadTypeStyles
  */
 
 /**
@@ -113,7 +113,7 @@ import { bvvEtaCalculationProvider } from './provider/etaCalculation.provider';
  * data (road type, surface type) for routing
  * @function
  * @typedef {Function} chartItemStylesProvider
- * @returns {Map<string,module:domain/routing~ChartItemStyle>} available chartItems
+ * @returns {module:domain/routing~ChartItemStyleCatalogs} available chartItems
  */
 
 /**

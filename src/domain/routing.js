@@ -74,6 +74,19 @@
  */
 
 /**
+ * Catalog object for a list of road- and surface-related {@link ChartItemStyleCatalog}
+ * @typedef {Object} ChartItemStyleCatalogs
+ * @property {ChartItemStyleCatalog} road The catalog for road styles
+ * @property {ChartItemStyleCatalog} surface The catalog for road styles
+ */
+
+/**
+ * Catalog object for a list of {@link ChartItemStyle} to a specific {@link RouteDetailTypeAttribute}
+ * @typedef {Object} ChartItemStyleCatalog
+ * @property {ChartItemStyle} catalogId The specific chartItemStyle for a {@link RouteDetailTypeAttribute}
+ */
+
+/**
  * Style object related to a specific {@link RouteDetailTypeAttribute}
  * @typedef {Object} ChartItemStyle
  * @property {number} id The id of this chart item
