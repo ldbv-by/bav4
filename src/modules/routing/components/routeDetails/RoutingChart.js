@@ -28,10 +28,12 @@ import { resetHighlightedSegments, setHighlightedSegments } from '../../../../st
 const Update_Items = 'update_items';
 const Update_Label = 'update_label';
 const Update_Collapsed_Chart = 'update_collapsed_chart';
+
 /**
- * Displays number values of in a chart with a legend.
+ * Displays the number values in a chart with a legend.
  * @class
- * @property {Array<RoutingChartItem>} items the routing chart items
+ * @property {Array<RoutingChartItem>} items the route chart items
+ * @property {string} label the route chart label
  * @author thiloSchlemmer
  */
 export class RoutingChart extends MvuElement {
