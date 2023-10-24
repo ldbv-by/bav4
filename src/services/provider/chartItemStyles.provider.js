@@ -6,8 +6,8 @@ import { $injector } from '../../injection/index';
 import { CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../RoutingService';
 
 /**
- * @implements chartItemStylesProvider
- * @returns {Map<string,ChartItemStyle>} available chartItems
+ * @implements @type {module:services/RoutingService~chartItemStylesProvider}
+ * @returns {Map<string,module:services/RoutingService~ChartItemStyle>} available chartItems
  */
 export const bvvChartItemStylesProvider = () => {
 	const { ConfigService: configService } = $injector.inject('ConfigService');
