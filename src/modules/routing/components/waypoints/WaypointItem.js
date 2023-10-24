@@ -64,7 +64,9 @@ export class WaypointItem extends MvuElement {
 		const { TranslationService, RoutingService } = $injector.inject('TranslationService', 'RoutingService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
+	}
 
+	onInitialize() {
 		this.observe(
 			(state) => state.routing.categoryId,
 			(categoryId) => this.signal(Update_Category, categoryId)
