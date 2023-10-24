@@ -40,10 +40,23 @@ describe('BvvRoutingService', () => {
 			const customRoutingCategoriesProvider = async () => {};
 			const customRouteProvider = async () => {};
 			const customRouteStatsProvider = () => {};
-			const instanceUnderTest = setup(customRoutingCategoriesProvider, customRouteProvider, customRouteStatsProvider);
+			const customChartItemStylesProvider = () => {};
+			const customOsmRoadTypeMappingProvider = () => {};
+			const customEtaCalculationProvider = () => {};
+			const instanceUnderTest = setup(
+				customRoutingCategoriesProvider,
+				customRouteProvider,
+				customRouteStatsProvider,
+				customChartItemStylesProvider,
+				customOsmRoadTypeMappingProvider,
+				customEtaCalculationProvider
+			);
 			expect(instanceUnderTest._categoriesProvider).toEqual(customRoutingCategoriesProvider);
 			expect(instanceUnderTest._routeProvider).toEqual(customRouteProvider);
 			expect(instanceUnderTest._routeStatsProvider).toEqual(customRouteStatsProvider);
+			expect(instanceUnderTest._chartItemsStylesProvider).toEqual(customChartItemStylesProvider);
+			expect(instanceUnderTest._mapper).toEqual(customOsmRoadTypeMappingProvider);
+			expect(instanceUnderTest._etaCalculationProvider).toEqual(customEtaCalculationProvider);
 		});
 	});
 
