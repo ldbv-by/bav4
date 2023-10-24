@@ -1,5 +1,5 @@
 /**
- * @module modules/routing/components/routingInfo/RoutingInfo
+ * @module modules/routing/components/routeInfo/RouteInfo
  */
 import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';

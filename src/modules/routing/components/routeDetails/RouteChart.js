@@ -1,5 +1,5 @@
 /**
- * @module modules/routing/components/routeDetails/RoutingChart
+ * @module modules/routing/components/routeDetails/RouteChart
  */
 import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
