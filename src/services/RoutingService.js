@@ -244,11 +244,15 @@ export class BvvRoutingService {
 	}
 
 	getRoadTypeStyles() {
-		return this._chartItemsStylesProvider()['road'] ?? {};
+		return this._chartItemsStylesProvider()['road']
+			? { unknown: CHART_ITEM_ROAD_STYLE_UNKNOWN, ...this._chartItemsStylesProvider()['road'] }
+			: { unknown: CHART_ITEM_ROAD_STYLE_UNKNOWN };
 	}
 
 	getSurfaceTypeStyles() {
-		return this._chartItemsStylesProvider()['surface'] ?? {};
+		return this._chartItemsStylesProvider()['surface']
+			? { unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN, ...this._chartItemsStylesProvider()['surface'] }
+			: { unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN };
 	}
 
 	mapOsmRoadTypes(routeDetailTypeAttributes) {

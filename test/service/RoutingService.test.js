@@ -1,4 +1,4 @@
-import { BvvRoutingService } from '../../src/services/RoutingService';
+import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
 import { bvvEtaCalculationProvider } from '../../src/services/provider/etaCalculation.provider';
 import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
@@ -268,10 +268,20 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
 
-			expect(styles).toEqual(roadStylesMock);
+			expect(styles).toEqual(
+				jasmine.objectContaining({
+					foo: 'bar',
+					unknown: {
+						id: 0,
+						color: 'transparent',
+						image: 'repeating-linear-gradient(45deg,#eee 0px,#eee 7px, #999 8px, #999 10px, #eee 11px)',
+						label: 'Unknown'
+					}
+				})
+			);
 		});
 
-		it('provides empty styles object from ChartItemStylesProvider', async () => {
+		it('provides default styles object from ChartItemStylesProvider', async () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
@@ -280,7 +290,37 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getRoadTypeStyles();
 
-			expect(styles).toEqual({});
+			expect(styles).toEqual(jasmine.objectContaining({ unknown: CHART_ITEM_ROAD_STYLE_UNKNOWN }));
+		});
+
+		it('allows the provider to override default style object ', async () => {
+			const mockChartItemStylesProvider = () => {
+				return {
+					road: {
+						unknown: {
+							id: 0,
+							color: 'foo',
+							image: 'bar',
+							label: 'baz'
+						}
+					}
+				};
+			};
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getRoadTypeStyles();
+
+			expect(styles).toEqual(
+				jasmine.objectContaining({
+					unknown: {
+						id: 0,
+						color: 'foo',
+						image: 'bar',
+						label: 'baz'
+					}
+				})
+			);
 		});
 	});
 
@@ -295,10 +335,20 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
 
-			expect(styles).toEqual(surfaceStylesMock);
+			expect(styles).toEqual(
+				jasmine.objectContaining({
+					foo: 'bar',
+					unknown: {
+						id: 0,
+						color: 'transparent',
+						image: 'repeating-linear-gradient(45deg,gray 25%, transparent 25%,transparent 50%, gray 50%, gray 55%, transparent 55%, transparent)',
+						label: 'Unknown'
+					}
+				})
+			);
 		});
 
-		it('provides empty styles object from ChartItemStylesProvider', async () => {
+		it('provides default styles object from ChartItemStylesProvider', async () => {
 			const mockChartItemStylesProvider = () => {
 				return { some: {} };
 			};
@@ -307,7 +357,37 @@ describe('BvvRoutingService', () => {
 
 			const styles = instanceUnderTest.getSurfaceTypeStyles();
 
-			expect(styles).toEqual({});
+			expect(styles).toEqual(jasmine.objectContaining({ unknown: CHART_ITEM_SURFACE_STYLE_UNKNOWN }));
+		});
+
+		it('allows the provider to override default style object ', async () => {
+			const mockChartItemStylesProvider = () => {
+				return {
+					surface: {
+						unknown: {
+							id: 0,
+							color: 'foo',
+							image: 'bar',
+							label: 'baz'
+						}
+					}
+				};
+			};
+			const instanceUnderTest = setup(async () => {}, null, null, mockChartItemStylesProvider);
+			await instanceUnderTest.init();
+
+			const styles = instanceUnderTest.getSurfaceTypeStyles();
+
+			expect(styles).toEqual(
+				jasmine.objectContaining({
+					unknown: {
+						id: 0,
+						color: 'foo',
+						image: 'bar',
+						label: 'baz'
+					}
+				})
+			);
 		});
 	});
 
