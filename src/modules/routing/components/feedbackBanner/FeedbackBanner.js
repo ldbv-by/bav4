@@ -21,7 +21,9 @@ export class FeedbackBanner extends MvuElement {
 		super({ status: null });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+	}
 
+	onInitialize() {
 		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
