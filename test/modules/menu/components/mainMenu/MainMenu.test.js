@@ -325,6 +325,14 @@ describe('MainMenu', () => {
 			setTab(TabIds.MAPS);
 
 			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
+
+			setTab(TabIds.ROUTING);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(1);
+
+			setTab(TabIds.MAPS);
+
+			expect(element.shadowRoot.querySelectorAll('.main-menu.is-full-size')).toHaveSize(0);
 		});
 	});
 
