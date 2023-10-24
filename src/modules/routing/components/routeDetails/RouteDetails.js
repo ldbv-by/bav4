@@ -21,6 +21,9 @@ export class RouteDetails extends MvuElement {
 		const { RoutingService, TranslationService } = $injector.inject('RoutingService', 'TranslationService');
 		this._translationService = TranslationService;
 		this._routingService = RoutingService;
+	}
+
+	onInitialize() {
 		this.observe(
 			(store) => store.routing.status,
 			(status) => this.signal(Update_Status, status)
