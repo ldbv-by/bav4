@@ -13,7 +13,7 @@ const Update_Status = 'update_status';
 const Status_Visibility = [RoutingStatusCodes.Http_Backend_400, RoutingStatusCodes.Http_Backend_500, RoutingStatusCodes.Start_Destination_Missing];
 
 /**
- * Renders routing status
+ * Gives the user feedback about the routing status.
  * @author thiloSchlemmer
  */
 export class FeedbackBanner extends MvuElement {
