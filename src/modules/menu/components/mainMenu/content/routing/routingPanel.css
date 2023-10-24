@@ -19,8 +19,10 @@
 
 .demo {
 	position: fixed;
-	bottom: 4em;
+	bottom: 0;
+	padding-bottom: 3em;
 	width: 100%;
+	background-color: var(--primary-bg-color);
 }
 
 .demo_title {
