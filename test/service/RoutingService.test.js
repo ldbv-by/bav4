@@ -324,13 +324,7 @@ describe('BvvRoutingService', () => {
 	});
 
 	describe('getETAFor', () => {
-		/**
-		 * @implements {module:services/RoutingService~ETACalculator}
-		 */
-		// eslint-disable-next-line no-unused-vars
-		const etaCalculator = { getETAfor: (distance, elevationUp, elevationDown) => 42 };
-
-		it('provides a ETACalculator', () => {
+		it('provides a ETA', () => {
 			const category = 'some';
 			const dist = 420000;
 			const up = 21;
