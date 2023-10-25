@@ -202,58 +202,58 @@ export class LayerTree extends MvuElement {
 			if (uidFromDrag) {
 				if (uidFromDrag === currentCatalogEntry.uid) {
 					// still where drag started --> do nothing
-					if (
-						logOnce(
-							'🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag ' +
-								uidFromDrag +
-								' === currentCatalogEntry.uid ' +
-								currentCatalogEntry.uid +
-								' --> return'
-						)
-					) {
-						// eslint-disable-next-line no-console
-						console.log('still where drag started --> do nothing');
-					}
+					// if (
+					// 	logOnce(
+					// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag ' +
+					// 			uidFromDrag +
+					// 			' === currentCatalogEntry.uid ' +
+					// 			currentCatalogEntry.uid +
+					// 			' --> return'
+					// 	)
+					// ) {
+					// 	// eslint-disable-next-line no-console
+					// 	console.log('still where drag started --> do nothing');
+					// }
 
 					event.preventDefault();
 					return;
 				}
 				if (this.#currentUId === currentCatalogEntry.uid) {
 					// this.#currentUId already set to currentCatalogEntry.uid --> do nothing
-					if (
-						logOnce(
-							'🚀 ~ LayerTree ~ createView ~ onDragOver ~ this.#currentUId ' +
-								this.#currentUId +
-								' === currentCatalogEntry.uid ' +
-								currentCatalogEntry.uid +
-								' --> return'
-						)
-					) {
-						// eslint-disable-next-line no-console
-						console.log('this.#currentUId already set to currentCatalogEntry.uid --> do nothing');
-					}
+					// if (
+					// 	logOnce(
+					// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ this.#currentUId ' +
+					// 			this.#currentUId +
+					// 			' === currentCatalogEntry.uid ' +
+					// 			currentCatalogEntry.uid +
+					// 			' --> return'
+					// 	)
+					// ) {
+					// 	// eslint-disable-next-line no-console
+					// 	console.log('this.#currentUId already set to currentCatalogEntry.uid --> do nothing');
+					// }
 					event.preventDefault();
 					return;
 				}
-				if (
-					logOnce(
-						'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid + uidFromDrag,
-						'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry) with'
-					)
-				) {
-					// eslint-disable-next-line no-console
-					console.log('      event: ', event);
-					// eslint-disable-next-line no-console
-					console.log('      currentCatalogEntry: ', currentCatalogEntry);
-					// eslint-disable-next-line no-console
-					console.log(' ');
-					// eslint-disable-next-line no-console
-					console.log('      uidFromDrag: ', uidFromDrag);
-					// eslint-disable-next-line no-console
-					console.log(' ');
-					// eslint-disable-next-line no-console
-					console.log(' ');
-				}
+				// if (
+				// 	logOnce(
+				// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid + uidFromDrag,
+				// 		'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry) with'
+				// 	)
+				// ) {
+				// 	// eslint-disable-next-line no-console
+				// 	console.log('      event: ', event);
+				// 	// eslint-disable-next-line no-console
+				// 	console.log('      currentCatalogEntry: ', currentCatalogEntry);
+				// 	// eslint-disable-next-line no-console
+				// 	console.log(' ');
+				// 	// eslint-disable-next-line no-console
+				// 	console.log('      uidFromDrag: ', uidFromDrag);
+				// 	// eslint-disable-next-line no-console
+				// 	console.log(' ');
+				// 	// eslint-disable-next-line no-console
+				// 	console.log(' ');
+				// }
 
 				// this.signal(Update_CurrentUid, currentCatalogEntry.uid);
 				this.#currentUId = currentCatalogEntry.uid;
@@ -380,14 +380,14 @@ export class LayerTree extends MvuElement {
 			this.copyBranchRoot(positionInCatalog, catalogWithResourceData, catalogEntry);
 		};
 
-		const handleNewClick = () => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
-		};
+		// const handleNewClick = () => {
+		// 	// eslint-disable-next-line no-console
+		// 	// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
+		// };
 
 		const handleNewLayerGroupClick = (e) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree. ~ handleNewLayerGroupClick ~ e:', e);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ LayerTree. ~ handleNewLayerGroupClick ~ e:', e);
 			this._addLayerGroup();
 		};
 

@@ -99,29 +99,83 @@ export class AdminPanel extends MvuElement {
 		return catalogWithPositioningInfo;
 	}
 
-	_mergeCatalogWithResourcesRecursive(catalogBranch) {
-		const updatedCatalogBranch = catalogBranch.map((category) => {
-			if (category.children) {
-				const updatedChildren = this._mergeCatalogWithResourcesRecursive(category.children);
-				return { ...category, children: updatedChildren };
+	// _mergeCatalogWithResourcesRecursive(catalogBranch) {
+	// 	const updatedCatalogBranch = catalogBranch.map((category) => {
+	// 		if (category.children) {
+	// 			const updatedChildren = this._mergeCatalogWithResourcesRecursive(category.children);
+	// 			return { ...category, children: updatedChildren };
+	// 		} else {
+	// 			const geoResource = this.#geoResources.find((georesource) => georesource.id === category.geoResourceId);
+
+	// 			if (!geoResource) {
+	// 				// eslint-disable-next-line no-console
+	// 				console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ category:', category);
+
+	// 				// eslint-disable-next-line no-console
+	// 				console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ geoResource:', geoResource);
+
+	// 				return { ...category, label: ' ' };
+	// 			}
+
+	// 			return { ...category, label: geoResource.label };
+	// 		}
+	// 	});
+
+	// 	return updatedCatalogBranch;
+	// }
+
+	_enrichWithGeoResource(obj, extractFunction, geoResources) {
+		const result = { uid: obj.uid, position: obj.position };
+
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+
+			const geoResource = geoResources.find((georesource) => georesource.id === obj.geoResourceId);
+
+			if (geoResource) {
+				result.label = geoResource.label;
 			} else {
-				const geoResource = this.#geoResources.find((georesource) => georesource.id === category.geoResourceId);
-
-				if (!geoResource) {
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ category:', category);
-
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ geoResource:', geoResource);
-
-					return { ...category, label: ' ' };
-				}
-
-				return { ...category, label: geoResource.label };
+				result.label = ' ';
 			}
-		});
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			// for (let index = 0; index < obj.children.length; index++) {
+			// 	const child = obj.children[index];
+			// 	console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.child.label:', child.label);
+			// }
 
-		return updatedCatalogBranch;
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction, geoResources));
+			// for (let index = 0; index < result.children.length; index++) {
+			// 	const child = result.children[index];
+			// 	console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ result.child.label:', child.label);
+			// }
+		}
+		return result;
+	}
+
+	// extract 'original data' recursively from the input object
+	_extractOriginal(obj, extractFunction) {
+		const result = {};
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+		}
+		return result;
+	}
+
+	// reduce / enrich the JSON data to the desired format
+	_reduceData(obj, extractFunction, geoResources) {
+		return obj.map((item) => {
+			return extractFunction(item, extractFunction, geoResources);
+		});
 	}
 
 	_mergeCatalogWithResources() {
@@ -129,23 +183,25 @@ export class AdminPanel extends MvuElement {
 			return null;
 		}
 
-		const catalogWithResourceData = this._mergeCatalogWithResourcesRecursive(this.#catalog);
+		const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
+
+		// const catalogWithResourceData = this._mergeCatalogWithResourcesRecursive(this.#catalog);
 
 		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 	}
 
 	async onInitialize() {
 		const updateCatalog = async (currentTopicId) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ updateCatalog ~ currentTopicId:', currentTopicId);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ currentTopicId:', currentTopicId);
 
 			try {
 				const catalogFromService = await this._catalogService.byId(currentTopicId);
-				console.log('🚀 ~ AdminPanel ~ updateCatalog ~ catalogFromService:', catalogFromService);
+				// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ catalogFromService:', catalogFromService);
 				const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
 				this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
 
 				this._mergeCatalogWithResources();
 			} catch (error) {
@@ -183,8 +239,8 @@ export class AdminPanel extends MvuElement {
 	}
 
 	update(type, data, model) {
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ file: AdminPanel.js:183 ~ AdminPanel ~ update ~ data:', data);
+		// // eslint-disable-next-line no-console
+		// console.log('🚀 ~ file: AdminPanel.js:183 ~ AdminPanel ~ update ~ data:', data);
 		switch (type) {
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: [...data], dummy: !model.dummy };
@@ -203,28 +259,6 @@ export class AdminPanel extends MvuElement {
 			data.sort((a, b) => a.position - b.position);
 			data.forEach((item) => this._sortChildrenByIdRecursive(item));
 		}
-	}
-
-	// extract 'original data' recursively from the input object
-	_extractOriginal(obj, extractFunction) {
-		const result = {};
-		if (obj.geoResourceId) {
-			result.geoResourceId = obj.geoResourceId;
-		}
-		if (obj.label) {
-			result.label = obj.label;
-		}
-		if (obj.children && obj.children.length > 0) {
-			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
-		}
-		return result;
-	}
-
-	// reduce / enrich the JSON data to the desired format
-	_reduceData(obj, extractFunction) {
-		return obj.map((item) => {
-			return extractFunction(item, extractFunction);
-		});
 	}
 
 	createView(model) {
@@ -309,34 +343,34 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const moveElement = (currentCatalogEntryUid, uidFromDrag_elementToMove) => {
-			if (
-				logOnce(
-					'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid + currentCatalogEntryUid,
-					'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid
-				)
-			) {
-				// eslint-disable-next-line no-console
-				console.log('      (for dragged element ~ uidFromDrag_elementToMove: ', uidFromDrag_elementToMove, ')');
-			}
+			// if (
+			// 	logOnce(
+			// 		'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid + currentCatalogEntryUid,
+			// 		'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid
+			// 	)
+			// ) {
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('      (for dragged element ~ uidFromDrag_elementToMove: ', uidFromDrag_elementToMove, ')');
+			// }
 
 			const elementToMove = findElement(uidFromDrag_elementToMove, catalogWithResourceData);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ moveElement ~ elementToMove:', elementToMove);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ moveElement ~ elementToMove:', elementToMove);
 			if (!elementToMove) {
-				// eslint-disable-next-line no-console
-				console.log('elementToMove not found --> return');
+				// // eslint-disable-next-line no-console
+				// console.log('elementToMove not found --> return');
 				return;
 			}
 
-			// eslint-disable-next-line no-console
-			console.log('removeEntryRecursively');
+			// // eslint-disable-next-line no-console
+			// console.log('removeEntryRecursively');
 			const updatedCatalogWithResourceData = removeEntryRecursively(uidFromDrag_elementToMove, [...catalogWithResourceData]);
 
-			// eslint-disable-next-line no-console
-			console.log('addEntry');
+			// // eslint-disable-next-line no-console
+			// console.log('addEntry');
 			addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
-			// eslint-disable-next-line no-console
-			console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', updatedCatalogWithResourceData);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', updatedCatalogWithResourceData);
 
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};
@@ -349,34 +383,34 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogWithResourceData:', catalogWithResourceData);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogWithResourceData:', catalogWithResourceData);
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
+			// 	// eslint-disable-next-line no-console
+			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
 			// itterate over catalogEntry.children
-			// eslint-disable-next-line no-console
-			console.log('addEntryToChildrenRecursively - itterate over catalogEntry.children');
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry.children:', catalogEntry.children);
+			// // eslint-disable-next-line no-console
+			// console.log('addEntryToChildrenRecursively - itterate over catalogEntry.children');
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry.children:', catalogEntry.children);
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ n:', n);
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ n:', n);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in one of the children
-					// eslint-disable-next-line no-console
-					console.log('found the uid in one of the children');
+					// // eslint-disable-next-line no-console
+					// console.log('found the uid in one of the children');
 					const inBetween = calcPosition(n, catalogEntry.children);
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
+					// // eslint-disable-next-line no-console
+					// console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
 					catalogEntry.children.push(newEntryWithPosition);
@@ -386,8 +420,8 @@ export class AdminPanel extends MvuElement {
 
 				// check the children recursivly, if any
 				if (childCatalogEntry.children) {
-					// eslint-disable-next-line no-console
-					console.log('recursivly check children');
+					// // eslint-disable-next-line no-console
+					// console.log('recursivly check children');
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
 					if (found) {
 						return found;
@@ -398,23 +432,23 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ before currentCatalogEntryUid:', currentCatalogEntryUid);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ before currentCatalogEntryUid:', currentCatalogEntryUid);
 			// itterate over catalogWithResourceData
-			// eslint-disable-next-line no-console
-			console.log('addEntry - itterate over catalogWithResourceData');
+			// // eslint-disable-next-line no-console
+			// console.log('addEntry - itterate over catalogWithResourceData');
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
-				// eslint-disable-next-line no-console
-				console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber);
+				// // eslint-disable-next-line no-console
+				// console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber);
 
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in the top-level entries
-					// eslint-disable-next-line no-console
-					console.log('found the uid in the top-level entries');
+					// // eslint-disable-next-line no-console
+					// console.log('found the uid in the top-level entries');
 					const inBetween = calcPosition(entryNumber, catalogWithResourceData);
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
@@ -427,10 +461,10 @@ export class AdminPanel extends MvuElement {
 
 				// check the children if any
 				if (catalogEntry.children) {
-					// eslint-disable-next-line no-console
-					console.log('check children');
-					// eslint-disable-next-line no-console
-					console.log('🚀 ~ AdminPanel ~ addEntry ~ catalogEntry:', catalogEntry);
+					// // eslint-disable-next-line no-console
+					// console.log('check children');
+					// // eslint-disable-next-line no-console
+					// console.log('🚀 ~ AdminPanel ~ addEntry ~ catalogEntry:', catalogEntry);
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
 					if (found) {
 						return;
@@ -567,26 +601,26 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addLayerGroup = () => {
-			// eslint-disable-next-line no-console
-			console.log('addLayerGroup');
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ catalog ~ catalogWithResourceData:', catalogWithResourceData);
+			// // eslint-disable-next-line no-console
+			// console.log('addLayerGroup');
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ catalog ~ catalogWithResourceData:', catalogWithResourceData);
 
-			// eslint-disable-next-line no-console
-			console.log(JSON.stringify(catalogWithResourceData));
+			// // eslint-disable-next-line no-console
+			// console.log(JSON.stringify(catalogWithResourceData));
 
 			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginal);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ catalog ~ catalog:', catalog);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ catalog ~ catalog:', catalog);
 
-			// eslint-disable-next-line no-console
-			console.log(JSON.stringify(catalog));
+			// // eslint-disable-next-line no-console
+			// console.log(JSON.stringify(catalog));
 
-			catalog.push({ label: 'XXXXX', children: [{ label: 'YYYYY' }] });
+			catalog.push({ label: 'XXXXX', children: [{ label: ' ' }] });
 
 			this.#catalog = this._checkAndAugmentPositioningInfo(catalog);
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
+			// // eslint-disable-next-line no-console
+			// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
 			this._mergeCatalogWithResources();
 		};
 
