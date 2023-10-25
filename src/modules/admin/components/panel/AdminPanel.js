@@ -544,8 +544,8 @@ export class AdminPanel extends MvuElement {
 			return nonDigitPart + incrementedDigitPart;
 		};
 
-		// Function to recursively extract geoResourceId from the input object
-		const extractGeoResource = (obj) => {
+		// extract 'original data' recursively from the input object
+		const extractOriginal = (obj) => {
 			const result = {};
 			if (obj.geoResourceId) {
 				result.geoResourceId = obj.geoResourceId;
@@ -554,15 +554,15 @@ export class AdminPanel extends MvuElement {
 				result.label = obj.label;
 			}
 			if (obj.children && obj.children.length > 0) {
-				result.children = obj.children.map((child) => extractGeoResource(child));
+				result.children = obj.children.map((child) => extractOriginal(child));
 			}
 			return result;
 		};
 
-		// Reduce the JSON data to the desired format
-		const reducedData = (obj) => {
+		// reduce / enrich the JSON data to the desired format
+		const reduceData = (obj, extractFunction) => {
 			return obj.map((item) => {
-				return extractGeoResource(item);
+				return extractFunction(item);
 			});
 		};
 
@@ -575,7 +575,7 @@ export class AdminPanel extends MvuElement {
 			// eslint-disable-next-line no-console
 			console.log(JSON.stringify(catalogWithResourceData));
 
-			const catalog = reducedData(catalogWithResourceData);
+			const catalog = reduceData(catalogWithResourceData, extractOriginal);
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ catalog ~ catalog:', catalog);
 
