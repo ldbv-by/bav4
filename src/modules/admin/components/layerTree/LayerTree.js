@@ -391,6 +391,11 @@ export class LayerTree extends MvuElement {
 			this._addLayerGroup();
 		};
 
+		const handleSaveClick = (e) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ LayerTree. ~ handleSaveClick ~ e:', e);
+		};
+
 		const renderEntry = (entry) => {
 			// console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
 			return html`
@@ -435,6 +440,7 @@ export class LayerTree extends MvuElement {
 				<div>
 					<h2>Layer Tree - Ebenenbaum für Thema</h2>
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
+					<button @click="${handleSaveClick}">sichern</button>
 
 					<select @change="${this.handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
