@@ -205,6 +205,28 @@ export class AdminPanel extends MvuElement {
 		}
 	}
 
+	// extract 'original data' recursively from the input object
+	_extractOriginal(obj, extractFunction) {
+		const result = {};
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+		}
+		return result;
+	}
+
+	// reduce / enrich the JSON data to the desired format
+	_reduceData(obj, extractFunction) {
+		return obj.map((item) => {
+			return extractFunction(item, extractFunction);
+		});
+	}
+
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
 		// // eslint-disable-next-line no-console
@@ -544,28 +566,6 @@ export class AdminPanel extends MvuElement {
 			return nonDigitPart + incrementedDigitPart;
 		};
 
-		// extract 'original data' recursively from the input object
-		const extractOriginal = (obj) => {
-			const result = {};
-			if (obj.geoResourceId) {
-				result.geoResourceId = obj.geoResourceId;
-			}
-			if (obj.label) {
-				result.label = obj.label;
-			}
-			if (obj.children && obj.children.length > 0) {
-				result.children = obj.children.map((child) => extractOriginal(child));
-			}
-			return result;
-		};
-
-		// reduce / enrich the JSON data to the desired format
-		const reduceData = (obj, extractFunction) => {
-			return obj.map((item) => {
-				return extractFunction(item);
-			});
-		};
-
 		const addLayerGroup = () => {
 			// eslint-disable-next-line no-console
 			console.log('addLayerGroup');
@@ -575,7 +575,7 @@ export class AdminPanel extends MvuElement {
 			// eslint-disable-next-line no-console
 			console.log(JSON.stringify(catalogWithResourceData));
 
-			const catalog = reduceData(catalogWithResourceData, extractOriginal);
+			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginal);
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ AdminPanel ~ catalog ~ catalog:', catalog);
 
