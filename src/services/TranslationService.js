@@ -2,6 +2,7 @@
  * @module services/TranslationService
  */
 import { $injector } from '../injection';
+import { isFunction } from '../utils/checks';
 
 /**
  *  Service for I18n.
@@ -50,11 +51,14 @@ export class TranslationService {
 	}
 
 	/**
-	 * @public
+	 *
+	 * @param {string} key
+	 * @param {string[]} [params] Optional list of parameters (For template interpolation. In that case the provider must return the template from a function)
+	 * @returns the translated text
 	 */
-	translate(key) {
+	translate(key, params = []) {
 		if (this._translations.has(key)) {
-			return this._filter(this._translations.get(key));
+			return this._filter(isFunction(this._translations.get(key)) ? this._translations.get(key)(params) : this._translations.get(key));
 		}
 		console.warn('No value found for ' + this._language + '.' + key);
 		return key;

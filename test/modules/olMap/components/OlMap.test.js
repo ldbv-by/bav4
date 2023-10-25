@@ -144,6 +144,16 @@ describe('OlMap', () => {
 			return getDefaultLayerOptions();
 		}
 	};
+	const routingHandlerMock = {
+		activate() {},
+		deactivate() {},
+		get id() {
+			return 'routingLayerHandlerMockId';
+		},
+		get options() {
+			return getDefaultLayerOptions();
+		}
+	};
 
 	const vectorLayerServiceMock = {};
 
@@ -191,6 +201,7 @@ describe('OlMap', () => {
 			.registerSingleton('OlFeatureInfoHandler', featureInfoHandlerMock)
 			.registerSingleton('OlElevationProfileHandler', olElevationProfileHandlerMock)
 			.registerSingleton('OlMfpHandler', mfpHandlerMock)
+			.registerSingleton('OlRoutingHandler', routingHandlerMock)
 			.registerSingleton('VectorLayerService', vectorLayerServiceMock)
 			.registerSingleton('LayerService', layerServiceMock);
 
@@ -1388,7 +1399,7 @@ describe('OlMap', () => {
 		});
 	});
 
-	describe('mfpHandler handler', () => {
+	describe('mfp handler', () => {
 		it('registers the handler', async () => {
 			const element = await setup();
 
@@ -1409,6 +1420,32 @@ describe('OlMap', () => {
 			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
 
 			removeLayer(mfpHandlerMock.id);
+			expect(activateSpy).not.toHaveBeenCalledWith(map);
+			expect(deactivateSpy).toHaveBeenCalledWith(map);
+		});
+	});
+
+	describe('routing handler', () => {
+		it('registers the handler', async () => {
+			const element = await setup();
+
+			expect(element._layerHandler.get('routingLayerHandlerMockId')).toEqual(routingHandlerMock);
+		});
+
+		it('activates and deactivates the handler', async () => {
+			const olLayer = new VectorLayer({});
+			const activateSpy = spyOn(routingHandlerMock, 'activate').and.returnValue(olLayer);
+			const deactivateSpy = spyOn(routingHandlerMock, 'deactivate').and.returnValue(olLayer);
+			const element = await setup();
+			const map = element._map;
+
+			addLayer(routingHandlerMock.id);
+
+			expect(activateSpy).toHaveBeenCalledWith(map);
+			activateSpy.calls.reset();
+			expect(deactivateSpy).not.toHaveBeenCalledWith(map);
+
+			removeLayer(routingHandlerMock.id);
 			expect(activateSpy).not.toHaveBeenCalledWith(map);
 			expect(deactivateSpy).toHaveBeenCalledWith(map);
 		});
