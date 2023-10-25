@@ -507,21 +507,15 @@ export class AdminPanel extends MvuElement {
 			// found in top level - done
 			if (indexToRemove !== -1) {
 				newCatalogBranch.splice(indexToRemove, 1);
+				if (newCatalogBranch.length === 0) {
+					newCatalogBranch.push({ label: Empty_Label });
+				}
 				return newCatalogBranch;
 			}
 
 			// handle sublevels recursively
 			const updatedCatalogBranch = newCatalogBranch.map((element) => {
 				if (element.children) {
-					const indexToRemove = element.children.findIndex((child) => child.uid === uid);
-
-					// found in children - done
-					if (indexToRemove !== -1) {
-						const updatedChildren = [...element.children];
-						updatedChildren.splice(indexToRemove, 1);
-						return { ...element, children: updatedChildren };
-					}
-
 					// recurse
 					const updatedChildren = removeEntryRecursively(uid, element.children);
 					return { ...element, children: updatedChildren };
