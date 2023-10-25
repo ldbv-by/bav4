@@ -100,31 +100,6 @@ export class AdminPanel extends MvuElement {
 		return catalogWithPositioningInfo;
 	}
 
-	// _mergeCatalogWithResourcesRecursive(catalogBranch) {
-	// 	const updatedCatalogBranch = catalogBranch.map((category) => {
-	// 		if (category.children) {
-	// 			const updatedChildren = this._mergeCatalogWithResourcesRecursive(category.children);
-	// 			return { ...category, children: updatedChildren };
-	// 		} else {
-	// 			const geoResource = this.#geoResources.find((georesource) => georesource.id === category.geoResourceId);
-
-	// 			if (!geoResource) {
-	// 				// eslint-disable-next-line no-console
-	// 				console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ category:', category);
-
-	// 				// eslint-disable-next-line no-console
-	// 				console.log('🚀 ~ AdminPanel ~ updatedCatalogBranch ~ geoResource:', geoResource);
-
-	// 				return { ...category, label: ' ' };
-	// 			}
-
-	// 			return { ...category, label: geoResource.label };
-	// 		}
-	// 	});
-
-	// 	return updatedCatalogBranch;
-	// }
-
 	_enrichWithGeoResource(obj, extractFunction, geoResources) {
 		const result = { uid: obj.uid, position: obj.position };
 
@@ -259,6 +234,18 @@ export class AdminPanel extends MvuElement {
 		if (data && data.length > 0) {
 			data.sort((a, b) => a.position - b.position);
 			data.forEach((item) => this._sortChildrenByPositionRecursive(item));
+		}
+	}
+
+	async _refreshLayers() {
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ _refreshLayers()');
+
+		try {
+			this.#geoResources = await this._geoResourceService.all();
+			this._mergeCatalogWithResources();
+		} catch (error) {
+			console.warn(error.message);
 		}
 	}
 
@@ -683,7 +670,7 @@ export class AdminPanel extends MvuElement {
 					</div>
 
 					<div>
-						<ba-layer-list .geoResources=${this.#geoResources}></ba-layer-list>
+						<ba-layer-list .geoResources=${this.#geoResources} .refreshLayers="${this._refreshLayers}"></ba-layer-list>
 					</div>
 				</div>
 			`;

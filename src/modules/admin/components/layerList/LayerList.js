@@ -36,6 +36,8 @@ export class LayerList extends MvuElement {
 		this._translationService = translationService;
 		this._securityService = securityService;
 		// this._onDrop = () => {};
+
+		this._refreshLayers = () => {};
 	}
 
 	update(type, data, model) {
@@ -98,7 +100,10 @@ export class LayerList extends MvuElement {
 			<div>
 				<h2>Layer List - Verfügbare Ebenen</h2>
 
+				Verfügbare Ebenen:
 				<input type="text" @input="${handleFilterChange}" placeholder="Filter" />
+
+				<button id="refreshButton" @click="${() => this._refreshLayers()}">refresh</button>
 
 				<ul>
 					${filteredGeoResources.map(
@@ -124,16 +129,16 @@ export class LayerList extends MvuElement {
 		return this.getModel().geoResources;
 	}
 
-	// /**
-	//  * @property {function} onDrop - Callback function
-	//  */
-	// set onDrop(callback) {
-	// 	this._onDrop = callback;
-	// }
+	/**
+	 * @property {function} refreshLayers - Callback function
+	 */
+	set refreshLayers(callback) {
+		this._refreshLayers = callback;
+	}
 
-	// get onDrop() {
-	// 	return this._onDrop;
-	// }
+	get onDrop() {
+		return this._refreshLayers;
+	}
 
 	static get tag() {
 		return 'ba-layer-list';
