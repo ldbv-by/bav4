@@ -13,6 +13,7 @@ import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.
 import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
+const Empty_Label = ' ';
 
 /**
  * Contains a form for submitting a general feedback.
@@ -414,6 +415,9 @@ export class AdminPanel extends MvuElement {
 
 					const newEntryWithPosition = { ...newEntry, position: inBetween };
 					catalogEntry.children.push(newEntryWithPosition);
+
+					removePossibleEmptyEntry(catalogEntry.children);
+
 					this._sortCatalog(catalogWithResourceData);
 					return true;
 				}
@@ -431,6 +435,17 @@ export class AdminPanel extends MvuElement {
 			return false;
 		};
 
+		const removePossibleEmptyEntry = (children) => {
+			for (let entryNumber = 0; entryNumber < children.length; entryNumber++) {
+				const catalogEntry = children[entryNumber];
+				// look for empty label
+				if (catalogEntry.label === Empty_Label) {
+					children = children.splice(entryNumber, 1);
+					return;
+				}
+			}
+		};
+
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
 			// // eslint-disable-next-line no-console
 			// console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
@@ -442,7 +457,7 @@ export class AdminPanel extends MvuElement {
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
 				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber);
+				// console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber, ' - ', catalogEntry.label);
 
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
@@ -616,7 +631,7 @@ export class AdminPanel extends MvuElement {
 			// // eslint-disable-next-line no-console
 			// console.log(JSON.stringify(catalog));
 
-			catalog.push({ label: 'XXXXX', children: [{ label: ' ' }] });
+			catalog.push({ label: 'XXXXX', children: [{ label: Empty_Label }] });
 
 			this.#catalog = this._checkAndAugmentPositioningInfo(catalog);
 			// // eslint-disable-next-line no-console
