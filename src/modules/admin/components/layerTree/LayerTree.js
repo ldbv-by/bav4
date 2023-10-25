@@ -413,7 +413,7 @@ export class LayerTree extends MvuElement {
 						@dragstart=${(event) => onDragStart(event, entry)}
 						@dragend=${onDragEnd}
 					>
-						${entry.label}
+						${entry.label} ${entry.geoResourceId ? '(' + entry.geoResourceId + ')' : ''}
 					</span>
 					${entry.children
 						? html`

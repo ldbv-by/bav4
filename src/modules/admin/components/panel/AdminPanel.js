@@ -247,17 +247,17 @@ export class AdminPanel extends MvuElement {
 		}
 	}
 
-	_sortChildrenByIdRecursive = (entry) => {
+	_sortChildrenByPositionRecursive = (entry) => {
 		if (entry.children) {
 			entry.children.sort((a, b) => a.position - b.position);
-			entry.children.forEach((child) => this._sortChildrenByIdRecursive(child)); // Recursively sort children's children
+			entry.children.forEach((child) => this._sortChildrenByPositionRecursive(child)); // Recursively sort children's children
 		}
 	};
 
 	_sortCatalog(data) {
 		if (data && data.length > 0) {
 			data.sort((a, b) => a.position - b.position);
-			data.forEach((item) => this._sortChildrenByIdRecursive(item));
+			data.forEach((item) => this._sortChildrenByPositionRecursive(item));
 		}
 	}
 

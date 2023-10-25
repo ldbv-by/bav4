@@ -104,7 +104,7 @@ export class LayerList extends MvuElement {
 					${filteredGeoResources.map(
 						(geoResource) =>
 							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @drop=${onDrop} @dragend=${onDragEnd}>
-								${geoResource.label}
+								${geoResource.label} (${geoResource.id})
 							</li>`
 					)}
 				</ul>
