@@ -10,13 +10,9 @@ import { MvuElement } from '../../../MvuElement';
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
-const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Update_Layers = 'update_layers';
-// const Update_CurrentGeoResourceId = 'update_currentGeoResourceId';
-// const Update_CurrentUid = 'update_currentUId';
-// const Update_Currents = 'update_currents';
 const Update_Dummy = 'update_dummy';
 
 const hasChildrenClass = 'has-children';
@@ -66,9 +62,7 @@ export class LayerTree extends MvuElement {
 			topics: [],
 			catalogWithResourceData: [],
 			layers: [],
-			selectedTopicId: '',
 			currentGeoResourceId: null,
-			// currentUid: null,
 			dummy: false
 		});
 
@@ -83,13 +77,13 @@ export class LayerTree extends MvuElement {
 		this._securityService = securityService;
 
 		// eslint-disable-next-line no-unused-vars
-		this._addGeoResource = (a, b, c) => {
+		this._addGeoResource = (currentUid, newGeoResourceId, catalogWithResourceData) => {
 			return '';
 		};
 		// eslint-disable-next-line no-unused-vars
 		this._updateTopic = (topic) => {};
 		// eslint-disable-next-line no-unused-vars
-		this._removeEntry = (a) => {};
+		this._removeEntry = (uid) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._showChildren = (a) => {};
 		this._addGeoResourcePermanently = () => {};
@@ -104,33 +98,19 @@ export class LayerTree extends MvuElement {
 
 	update(type, data, model) {
 		switch (type) {
-			case Update_SelectedTopic:
-				return { ...model, selectedTopicId: data };
 			case Update_Topics:
 				return { ...model, topics: data };
 			case Update_CatalogWithResourceData:
 				return { ...model, catalogWithResourceData: data };
 			case Update_Layers:
 				return { ...model, layers: data };
-			// case Update_CurrentGeoResourceId:
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('🚀 ~ update ~ Update_CurrentGeoResourceId:', data);
-			// 	return { ...model, currentGeoResourceId: data };
-			// case Update_CurrentUid:
-			// 	// eslint-disable-next-line no-console
-			// 	// console.log('🚀 ~ update ~ Update_CurrentUid:', data);
-			// 	return { ...model, currentUid: data };
-			// case Update_Currents:
-			// 	// eslint-disable-next-line no-console
-			// 	// console.log('🚀 ~ update ~ Update_Currents:', data);
-			// 	return { ...model, currentUid: data.currentUid, currentGeoResourceId: data.currentGeoResourceId };
 			case Update_Dummy:
 				return { ...model, dummy: data };
 		}
 	}
 
 	createView(model) {
-		const { topics, catalogWithResourceData, currentGeoResourceId } = model; // todo ?? , selectedTopicId, currentUid
+		const { topics, catalogWithResourceData, currentGeoResourceId } = model;
 
 		if (
 			catalogWithResourceData === null ||
@@ -169,8 +149,6 @@ export class LayerTree extends MvuElement {
 			const addIsDragged = () => {
 				target.classList.add('isdragged');
 			};
-
-			// this._removeEntry(draggedEntryUid);
 
 			setTimeout(addIsDragged, 0);
 		};
@@ -487,17 +465,6 @@ export class LayerTree extends MvuElement {
 
 	get layers() {
 		return this.getModel().layers;
-	}
-
-	/**
-	 * @property {string} selectedTopic = []
-	 */
-	set selectedTopic(value) {
-		this.signal(Update_SelectedTopic, value);
-	}
-
-	get selectedTopic() {
-		return this.getModel().selectedTopic;
 	}
 
 	/**
