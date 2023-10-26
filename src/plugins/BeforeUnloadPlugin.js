@@ -4,6 +4,7 @@
 import { BaPlugin } from './BaPlugin';
 import { $injector } from '../injection';
 import { observe } from '../utils/storeUtils';
+import { Tools } from '../domain/tools';
 
 /**
  * This plugin registers a "beforeunload" event listener when a tool is active and removes it when the no tool is currently active.
@@ -26,7 +27,7 @@ export class BeforeUnloadPlugin extends BaPlugin {
 			};
 
 			const onToolChanged = async (toolId) => {
-				if (toolId) {
+				if (this._getTools().includes(toolId)) {
 					window.addEventListener('beforeunload', beforeunloadEventListener);
 				} else {
 					window.removeEventListener('beforeunload', beforeunloadEventListener);
@@ -35,5 +36,9 @@ export class BeforeUnloadPlugin extends BaPlugin {
 
 			observe(store, (state) => state.tools.current, onToolChanged, false);
 		}
+	}
+
+	_getTools() {
+		return [Tools.DRAW, Tools.MEASURE];
 	}
 }
