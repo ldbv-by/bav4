@@ -12,6 +12,25 @@ import VectorLayer from 'ol/layer/Vector';
 
 proj4.defs('EPSG:25832', '+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +axis=neu');
 register(proj4);
+
+describe('StyleTypes', () => {
+	it('provides an enum of all valid StyleTypes', () => {
+		expect(Object.keys(StyleTypes).length).toBe(11);
+
+		expect(StyleTypes.NULL).toBe('null');
+		expect(StyleTypes.DEFAULT).toBe('default');
+		expect(StyleTypes.MEASURE).toBe('measure');
+		expect(StyleTypes.HIGHLIGHT).toBe('highlight');
+		expect(StyleTypes.HIGHLIGHT_TEMP).toBe('highlight_temp');
+		expect(StyleTypes.DRAW).toBe('draw');
+		expect(StyleTypes.MARKER).toBe('marker');
+		expect(StyleTypes.TEXT).toBe('text');
+		expect(StyleTypes.LINE).toBe('line');
+		expect(StyleTypes.POLYGON).toBe('polygon');
+		expect(StyleTypes.GEOJSON).toBe('geojson');
+	});
+});
+
 describe('StyleService', () => {
 	const initialState = {
 		active: false,
@@ -782,6 +801,36 @@ describe('StyleService', () => {
 
 			expect(styleFunction).toBeUndefined();
 			expect(warnSpy).toHaveBeenCalledWith('Could not provide a style for unknown style-type:', 'unknown');
+		});
+	});
+
+	describe('getFeatureStyleFunction', () => {
+		describe('#getStyle returns a style function', () => {
+			it('returns a style function', () => {
+				const style = new Style();
+				const feature = new Feature();
+				const resolution = 42;
+				const spy = jasmine.createSpy().and.returnValue(style);
+				spyOn(instanceUnderTest, 'getStyleFunction').withArgs(StyleTypes.ROUTING).and.returnValue(spy);
+
+				const result = instanceUnderTest.getFeatureStyleFunction(StyleTypes.ROUTING)(feature, resolution);
+
+				expect(spy).toHaveBeenCalledOnceWith(feature, resolution);
+				expect(result).toEqual(style);
+			});
+		});
+
+		describe('#getStyle returns a style', () => {
+			it('returns a style function', () => {
+				const style = new Style();
+				const feature = new Feature();
+				const resolution = 42;
+				spyOn(instanceUnderTest, 'getStyleFunction').withArgs(StyleTypes.ROUTING).and.returnValue(style);
+
+				const result = instanceUnderTest.getFeatureStyleFunction(StyleTypes.ROUTING)(feature, resolution);
+
+				expect(result).toEqual(style);
+			});
 		});
 	});
 

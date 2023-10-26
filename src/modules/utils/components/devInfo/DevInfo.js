@@ -9,7 +9,7 @@ import { MvuElement } from '../../../MvuElement';
 
 /**
  * Displays the SOFTWARE_INFO value, which should
- * contain development informations like build number, date, ...
+ * contain development information like build number, date, ...
  * @class
  * @author taulinger
  */

@@ -22,6 +22,16 @@ export const isString = (val) => {
 };
 
 /**
+ * Checks if a value is a function
+ * @function
+ * @param {*} val
+ * @returns {boolean} `true` if it is a function
+ */
+export const isFunction = (val) => {
+	return typeof val === 'function';
+};
+
+/**
  * Checks if a value is a string (primitive or object).
  * @function
  * @param {*} val
@@ -30,7 +40,7 @@ export const isString = (val) => {
  */
 export const isNumber = (val, strict = true) => {
 	if (strict) {
-		return val != null && !isString(val) && !isNaN(val);
+		return val != null && !isString(val) && !Array.isArray(val) && !isNaN(val);
 	}
 	return val !== null && !Number.isNaN(Number(val)) && val.length !== 0;
 };

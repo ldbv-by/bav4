@@ -16,6 +16,9 @@ describe('StoreService', () => {
 		const drawPluginMock = {
 			register: () => {}
 		};
+		const routingPluginMock = {
+			register: () => {}
+		};
 		const geolocationPluginMock = {
 			register: () => {}
 		};
@@ -90,6 +93,7 @@ describe('StoreService', () => {
 				.registerSingleton('GeoResourceService', geoResourceServiceMock)
 				.registerSingleton('MeasurementPlugin', measurementPluginMock)
 				.registerSingleton('DrawPlugin', drawPluginMock)
+				.registerSingleton('RoutingPlugin', routingPluginMock)
 				.registerSingleton('GeolocationPlugin', geolocationPluginMock)
 				.registerSingleton('LayersPlugin', layersPluginMock)
 				.registerSingleton('TopicsPlugin', topicsPluginMock)
@@ -123,7 +127,7 @@ describe('StoreService', () => {
 			expect(store).toBeDefined();
 
 			const reducerKeys = Object.keys(store.getState());
-			expect(reducerKeys.length).toBe(27);
+			expect(reducerKeys.length).toBe(28);
 			expect(reducerKeys.includes('map')).toBeTrue();
 			expect(reducerKeys.includes('pointer')).toBeTrue();
 			expect(reducerKeys.includes('position')).toBeTrue();
@@ -151,11 +155,13 @@ describe('StoreService', () => {
 			expect(reducerKeys.includes('chips')).toBeTrue();
 			expect(reducerKeys.includes('stateForEncoding')).toBeTrue();
 			expect(reducerKeys.includes('iframeContainer')).toBeTrue();
+			expect(reducerKeys.includes('routing')).toBeTrue();
 		});
 
 		it('registers all plugins', async () => {
 			const measurementPluginSpy = spyOn(measurementPluginMock, 'register');
 			const drawPluginSpy = spyOn(drawPluginMock, 'register');
+			const routingPluginSpy = spyOn(routingPluginMock, 'register');
 			const geolocationPluginSpy = spyOn(geolocationPluginMock, 'register');
 			const layersPluginSpy = spyOn(layersPluginMock, 'register');
 			const topicsPluginSpy = spyOn(topicsPluginMock, 'register');
@@ -188,6 +194,7 @@ describe('StoreService', () => {
 
 			expect(measurementPluginSpy).toHaveBeenCalledWith(store);
 			expect(drawPluginSpy).toHaveBeenCalledWith(store);
+			expect(routingPluginSpy).toHaveBeenCalledWith(store);
 			expect(geolocationPluginSpy).toHaveBeenCalledWith(store);
 			expect(layersPluginSpy).toHaveBeenCalledWith(store);
 			expect(topicsPluginSpy).toHaveBeenCalledWith(store);
