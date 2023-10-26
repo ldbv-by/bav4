@@ -8,7 +8,6 @@ import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
-import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
 // eslint-disable-next-line no-unused-vars
 import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
@@ -166,25 +165,26 @@ export class AdminPanel extends MvuElement {
 		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 	}
 
+	async _updateCatalog(currentTopicId) {
+		// eslint-disable-next-line no-console
+		console.log('🚀 ~ AdminPanel ~ _updateCatalog ~ currentTopicId:', currentTopicId);
+
+		try {
+			const catalogFromService = await this._catalogService.byId(currentTopicId);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ _updateCatalog ~ catalogFromService:', catalogFromService);
+			const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
+			this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ _updateCatalog ~ this.#catalog:', this.#catalog);
+
+			this._mergeCatalogWithResources();
+		} catch (error) {
+			console.warn(error.message);
+		}
+	}
+
 	async onInitialize() {
-		const updateCatalog = async (currentTopicId) => {
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ currentTopicId:', currentTopicId);
-
-			try {
-				const catalogFromService = await this._catalogService.byId(currentTopicId);
-				// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ catalogFromService:', catalogFromService);
-				const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
-				this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ AdminPanel ~ updateCatalog ~ this.#catalog:', this.#catalog);
-
-				this._mergeCatalogWithResources();
-			} catch (error) {
-				console.warn(error.message);
-			}
-		};
-
 		await this._geoResourceService.init();
 		await this._topicsService.init();
 
@@ -200,18 +200,10 @@ export class AdminPanel extends MvuElement {
 			console.warn(error.message);
 		}
 
-		this.observe(
-			(state) => state.admin.currentTopicId,
-			(currentTopicId) => {
-				this.#currentTopicId = currentTopicId;
-				if (!currentTopicId) {
-					const defaultTopic = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
-					updateStore(defaultTopic);
-					return;
-				}
-				updateCatalog(currentTopicId);
-			}
-		);
+		if (!this.#currentTopicId) {
+			this.#currentTopicId = this._configService.getValue('DEFAULT_TOPIC_ID', 'ba');
+			this._updateCatalog(this.#currentTopicId);
+		}
 	}
 
 	update(type, data, model) {
@@ -620,6 +612,14 @@ export class AdminPanel extends MvuElement {
 			this._mergeCatalogWithResources();
 		};
 
+		const updateTopic = (topicId) => {
+			// eslint-disable-next-line no-console
+			console.log('🚀 ~ AdminPanel ~ updateTopic ~ topicId:', topicId);
+
+			this.#currentTopicId = topicId;
+			this._updateCatalog(this.#currentTopicId);
+		};
+
 		// todo parent
 		// @ts-ignore
 		const copyBranchRoot = (positionInCatalog, catalogWithResourceData, catalogEntry) => {
@@ -656,7 +656,8 @@ export class AdminPanel extends MvuElement {
 					<div>
 						<ba-layer-tree
 							.topics="${this.#topics}"
-							.selectedTheme="${this.#currentTopicId}"
+							.selectedTopic="${this.#currentTopicId}"
+							.updateTopic="${updateTopic}"
 							.catalogWithResourceData="${catalogWithResourceData}"
 							.addGeoResource="${addGeoResource}"
 							.moveElement="${moveElement}"

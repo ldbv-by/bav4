@@ -10,8 +10,6 @@ import { MvuElement } from '../../../MvuElement';
 import css from './layerTree.css';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 
-import { setCurrentTopicId as updateStore } from '../../../../store/admin/admin.action';
-
 const Update_SelectedTopic = 'update_selectedtopic';
 const Update_Topics = 'update_topics';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
@@ -88,6 +86,8 @@ export class LayerTree extends MvuElement {
 		this._addGeoResource = (a, b, c) => {
 			return '';
 		};
+		// eslint-disable-next-line no-unused-vars
+		this._updateTopic = (topic) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (a) => {};
 		// eslint-disable-next-line no-unused-vars
@@ -385,15 +385,17 @@ export class LayerTree extends MvuElement {
 		// 	// console.log('🚀 ~ LayerTree. ~ handleNewClick ~ e:', e);
 		// };
 
-		const handleNewLayerGroupClick = (e) => {
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree. ~ handleNewLayerGroupClick ~ e:', e);
+		const handleNewLayerGroupClick = () => {
 			this._addLayerGroup();
 		};
 
 		const handleSaveClick = (e) => {
 			// eslint-disable-next-line no-console
 			console.log('🚀 ~ LayerTree. ~ handleSaveClick ~ e:', e);
+		};
+
+		const handleTopicChange = (event) => {
+			this._updateTopic(event.target.value);
 		};
 
 		const renderEntry = (entry) => {
@@ -442,7 +444,7 @@ export class LayerTree extends MvuElement {
 					<button @click="${handleNewLayerGroupClick}">neue Ebenengruppe</button>
 					<button @click="${handleSaveClick}">sichern</button>
 
-					<select @change="${this.handleTopicChange}">
+					<select @change="${handleTopicChange}">
 						${topics.map((topic) => html` <option value="${topic._id}">${topic._label}</option> `)}
 					</select>
 					<ul>
@@ -452,11 +454,6 @@ export class LayerTree extends MvuElement {
 			`;
 		}
 		return nothing;
-	}
-
-	handleTopicChange(event) {
-		const selectedTopicId = event.target.value;
-		updateStore(selectedTopicId);
 	}
 
 	/**
@@ -493,14 +490,14 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {string} selectedTheme = []
+	 * @property {string} selectedTopic = []
 	 */
 	set selectedTopic(value) {
 		this.signal(Update_SelectedTopic, value);
 	}
 
 	get selectedTopic() {
-		return this.getModel().selectedTheme;
+		return this.getModel().selectedTopic;
 	}
 
 	/**
@@ -523,6 +520,17 @@ export class LayerTree extends MvuElement {
 
 	get addLayerGroup() {
 		return this._addLayerGroup;
+	}
+
+	/**
+	 * @property {function} updateTopic - Callback function
+	 */
+	set updateTopic(callback) {
+		this._updateTopic = callback;
+	}
+
+	get updateTopic() {
+		return this._updateTopic;
 	}
 
 	/**

@@ -30,7 +30,6 @@ import { elevationProfileReducer } from '../store/elevationProfile/elevationProf
 import { chipsReducer } from '../store/chips/chips.reducer';
 import { stateForEncodingReducer } from '../store/stateForEncoding/stateForEncoding.reducer';
 import { iframeContainerReducer } from '../store/iframeContainer/iframeContainer.reducer';
-import { adminReducer } from '../store/admin/admin.reducer';
 import { routingReducer } from '../store/routing/routing.reducer';
 
 /**
@@ -70,7 +69,6 @@ export class StoreService {
 			bottomSheet: bottomSheetReducer,
 			elevationProfile: elevationProfileReducer,
 			chips: chipsReducer,
-			admin: adminReducer,
 			stateForEncoding: stateForEncodingReducer,
 			iframeContainer: iframeContainerReducer,
 			routing: routingReducer
