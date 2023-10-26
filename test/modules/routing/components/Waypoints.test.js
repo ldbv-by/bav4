@@ -358,10 +358,11 @@ describe('Waypoints', () => {
 				dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, waypointElement);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
 				waypointElement.dispatchEvent(dragstartEvt);
+
 				expect(element.getModel().draggedItem).not.toBeFalse();
 			});
 
-			it('on dragstart should update placeholder-content for dragging 1th layer', () => {
+			it('on dragstart should update placeholder-content for dragging 1st waypoint', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 
@@ -380,9 +381,10 @@ describe('Waypoints', () => {
 				expect(activePlaceholders[1].innerText).toBe('3 - routing_waypoints_as_destination');
 			});
 
-			it('on dragstart should update placeholder-content for dragging 2th layer', () => {
+			it('on dragstart should update placeholder-content for dragging 2th waypoint', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[1];
+
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, waypointElement);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -396,9 +398,10 @@ describe('Waypoints', () => {
 				expect(activePlaceholders[1].innerText).toBe('3 - routing_waypoints_as_destination');
 			});
 
-			it('on dragstart should update placeholder-content for dragging 3th layer', () => {
+			it('on dragstart should update placeholder-content for dragging 3th waypoint', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[2];
+
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragstart', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, waypointElement);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -414,9 +417,10 @@ describe('Waypoints', () => {
 
 			it('does NOT add style on dragEnter of neighboring placeholder', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
-				const waypointElement = waypoints[3];
+				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_0');
-				element.signal('update_dragged_item', waypointElement);
+
+				element.signal('update_dragged_item', waypointElement.waypoint);
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -429,7 +433,8 @@ describe('Waypoints', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-				element.signal('update_dragged_item', waypointElement);
+
+				element.signal('update_dragged_item', waypointElement.waypoint);
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
@@ -440,6 +445,7 @@ describe('Waypoints', () => {
 
 			it('does not add style class on dragEnter of unknown element ', () => {
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
+
 				element.signal('update_dragged_item', null);
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragenter', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
@@ -465,7 +471,7 @@ describe('Waypoints', () => {
 				const waypoints = element.shadowRoot.querySelectorAll('ba-routing-waypoint-item');
 				const waypointElement = waypoints[0];
 				const neighborPlaceholder = element.shadowRoot.querySelector('#placeholder_4');
-				element.signal('update_dragged_item', waypointElement);
+				element.signal('update_dragged_item', waypointElement.waypoint);
 				const dragstartEvt = document.createEvent('MouseEvents');
 				dragstartEvt.initMouseEvent('dragleave', true, true, window, 1, 1, 1, 0, 0, false, false, false, false, 0, neighborPlaceholder);
 				dragstartEvt.dataTransfer = createNewDataTransfer();
