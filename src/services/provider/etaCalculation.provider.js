@@ -13,18 +13,18 @@ const VehicleSpeedOptions = {
 };
 
 /**
- * Calculator for ETAs (Estimated Time Arrived)
- * for specific vehicle classes (Hike, Bike,MTB.Racingbike)
+ * BVV specific calculation for ETAs (Estimated Time Arrived)
+ * for defined vehicle classes (Hike, Bike,MTB.Racingbike).
  * Based on formulas from DAV and DIN (DIN 33466) for hiking only
- * but adapted for Bike, MTB and Racingbike
+ * ({@link https://de.wikipedia.org/wiki/Marschzeitberechnung})
+ * but adapted for Bike, MTB and Racingbike.
  *
  * walking duration estimate based on DAV-Normative:
- *  - https://discuss.graphhopper.com/t/walking-duration-estimate-elevation-ignored/4621/4
- *  - https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf
- * @see https://de.wikipedia.org/wiki/Marschzeitberechnung
+ *  - {@link https://discuss.graphhopper.com/t/walking-duration-estimate-elevation-ignored/4621/4}
+ *  - {@link https://www.alpenverein.de/chameleon/public/908f5f80-1a20-3930-1692-41be014372d2/Formel-Gehzeitberechnung_19001.pdf} *
+ *
  * @function
- * @implements @type {module:services/RoutingService~etaCalculationProvider}
- * @returns {number|null}
+ * @type {module:services/RoutingService~etaCalculationProvider}
  */
 export const bvvEtaCalculationProvider = (categoryId, distance, elevationUp, elevationDown) => {
 	const getETAFor = (distance, elevationUp, elevationDown, speedOptions) => {
