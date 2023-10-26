@@ -5,6 +5,7 @@ describe('i18n for header module', () => {
 		const map = provide('de');
 
 		expect(map.header_tab_topics_button).toBe('Themen');
+		expect(map.header_tab_routing_button).toBe('Routing');
 		expect(map.header_tab_topics_title).toBe('Themen öffnen');
 		expect(map.header_tab_maps_button).toBe('Karte');
 		expect(map.header_tab_maps_title).toBe('Kartenverwaltung öffnen');
@@ -22,6 +23,7 @@ describe('i18n for header module', () => {
 		const map = provide('en');
 
 		expect(map.header_tab_topics_button).toBe('Topics');
+		expect(map.header_tab_routing_button).toBe('Routing');
 		expect(map.header_tab_topics_title).toBe('Open topics');
 		expect(map.header_tab_maps_button).toBe('Map');
 		expect(map.header_tab_maps_title).toBe('Open map configuration');
@@ -36,7 +38,7 @@ describe('i18n for header module', () => {
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 12;
+		const expectedSize = 13;
 		const deMap = provide('de');
 		const enMap = provide('en');
 

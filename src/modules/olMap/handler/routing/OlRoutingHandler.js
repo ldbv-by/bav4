@@ -431,7 +431,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 
 	_setModifyActive(active) {
-		this._modifyInteraction.setActive(active);
+		if (this._modifyInteraction) {
+			this._modifyInteraction.setActive(active);
+		}
 	}
 
 	_clearRouteFeatures() {
