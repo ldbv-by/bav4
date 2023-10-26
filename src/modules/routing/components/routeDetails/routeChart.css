@@ -1,0 +1,90 @@
+.container {
+	padding-bottom: 0.3em;
+}
+
+.iscollapsed {
+	display: none;
+}
+
+.chevron {
+	position: relative;
+	mask: url('../assets/chevron-right.svg');
+	-webkit-mask-image: url('../assets/chevron-right.svg');
+	mask-image: url('../assets/chevron-right.svg');
+	margin-right: 1em;
+}
+
+.icon {
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	display: inline-block;
+	height: 16px;
+	width: 10px;
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+}
+
+.iconexpand {
+	-moz-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+
+.chart-selector {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.8em 1.2em;
+	font-weight: bold;
+	border-top: 1px solid var(--header-background-color);
+	color: var(--text2);
+	font-size: 0.9rem;
+}
+.chart-selector:hover .icon {
+	filter: brightness(0.8);
+}
+
+.progress {
+	display: flex;
+	height: 1rem;
+	overflow: hidden;
+	font-size: 0.75rem;
+	vertical-align: baseline;
+	border-radius: 3px;
+	margin-left: 0.5em;
+	margin-right: 1em;
+	margin-bottom: 0.5em;
+}
+
+.progress-bar {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	overflow: hidden;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.legend_item {
+	display: inline-block;
+	width: 1rem;
+	height: 1rem;
+	border-radius: 3px;
+	margin-left: 0.4em;
+}
+
+.legend_item_label {
+	font-weight: bold;
+	user-select: none;
+}
+
+.highlight {
+	cursor: default;
+	margin-bottom: 0.3em;
+}
+
+.highlight:hover {
+	background-color: var(--secondary-bg-color);
+}

@@ -22,7 +22,8 @@ export const provide = (lang) => {
 				menu_misc_content_panel_gp_text: 'Central access to geospatial data and services.',
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Central portal for saving energy, energy efficiency, and renewable energies.',
-				menu_misc_content_panel_feedback_title: 'Feedback'
+				menu_misc_content_panel_feedback_title: 'Feedback',
+				menu_misc_content_panel_routing_title: 'Routing'
 			};
 
 		case 'de':
@@ -47,7 +48,8 @@ export const provide = (lang) => {
 				menu_misc_content_panel_gp_text: 'Zentraler Zugang zu Geodaten und Geodatendiensten.',
 				menu_misc_content_panel_ea_header: 'Energie-Atlas Bayern',
 				menu_misc_content_panel_ea_text: 'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.',
-				menu_misc_content_panel_feedback_title: 'Feedback'
+				menu_misc_content_panel_feedback_title: 'Feedback',
+				menu_misc_content_panel_routing_title: 'Routing'
 			};
 
 		default:
