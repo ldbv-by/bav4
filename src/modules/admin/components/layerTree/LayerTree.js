@@ -85,7 +85,7 @@ export class LayerTree extends MvuElement {
 		// eslint-disable-next-line no-unused-vars
 		this._removeEntry = (uid) => {};
 		// eslint-disable-next-line no-unused-vars
-		this._showChildren = (a) => {};
+		this._showChildren = (uid) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
 		this._copyBranchRoot = (a, catalog, b) => {};
@@ -277,8 +277,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleCategoryClick = (event, entry) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ handleCategoryClick ~ entry:', entry);
 			const li = event.currentTarget;
 			const button = li.querySelector('button');
 
@@ -290,11 +288,6 @@ export class LayerTree extends MvuElement {
 			}
 
 			this._showChildren(entry.uid);
-
-			// const ul = li.querySelector('ul');
-			// if (ul) {
-			// 	li.classList.toggle(showChildrenClass);
-			// }
 		};
 
 		const handleEditClick = (event) => {
