@@ -74,6 +74,35 @@
  */
 
 /**
+ * Catalog object for a list of road- and surface-related {@link ChartItemStyleCatalog}
+ * @typedef {Object} ChartItemStyleCatalogs
+ * @property {module:domain/routing~ChartItemStyleCatalog} road The catalog for road styles
+ * @property {module:domain/routing~ChartItemStyleCatalog} surface The catalog for road styles
+ */
+
+/**
+ * Catalog object for a list of {@link module:domain/routing~ChartItemStyle} to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
+ * @typedef {Object.<string, module:domain/routing~ChartItemStyle>}  ChartItemStyleCatalog
+ */
+
+/**
+ * Style object related to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
+ * @typedef {Object} ChartItemStyle
+ * @property {number} id The id of this chart item
+ * @property {string} label The label of this chart item
+ * @property {string} [image] the stringified image, visualizing the chart item
+ * @property {string} color the stringified color as rgba-value
+ */
+
+/**
+ * Chart data object related to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
+ * @typedef {Object} ChartData
+ * @property {number} absolute the absolute value
+ * @property {string} relative the relative value
+ * @property {Array<Array<number>>} segments the stringified image, visualizing the chart item
+ */
+
+/**
  * Routing related status code.
  * @readonly
  * @enum {number}
