@@ -6,7 +6,7 @@
  * @interface RoutingService
  */
 
-import { bvvOsmRoadTypeMappingProvider } from './provider/osmRoadTypeMapper.provider';
+import { bvvOsmRoadTypeMappingProvider } from './provider/osmRoadTypeMapping.provider';
 import { bvvChartItemStylesProvider } from './provider/chartItemStyles.provider';
 import { isCoordinate } from '../utils/checks';
 import { bvvRouteProvider } from './provider/route.provider';

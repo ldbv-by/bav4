@@ -1,7 +1,7 @@
 import { BvvRoutingService, CHART_ITEM_ROAD_STYLE_UNKNOWN, CHART_ITEM_SURFACE_STYLE_UNKNOWN } from '../../src/services/RoutingService';
 import { bvvChartItemStylesProvider } from '../../src/services/provider/chartItemStyles.provider';
 import { bvvEtaCalculationProvider } from '../../src/services/provider/etaCalculation.provider';
-import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapper.provider';
+import { bvvOsmRoadTypeMappingProvider } from '../../src/services/provider/osmRoadTypeMapping.provider';
 import { bvvRouteProvider } from '../../src/services/provider/route.provider';
 import { bvvRouteStatsProvider } from '../../src/services/provider/routeStats.provider';
 import { bvvRoutingCategoriesProvider } from '../../src/services/provider/routingCategories.provider';

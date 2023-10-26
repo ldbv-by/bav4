@@ -1,11 +1,5 @@
 /**
- * @module services/provider/osmRoadTypeMapper_provider
- */
-
-/**
- * A function that maps and reduces OSM road types to the name of defined {@link ChartItemStyle}.
- *
- * @typedef {function(Map<string,module:services/RoutingService~RoutingService#OSMRoadClass|number>) : (string|null)} osmRoadTypeMapperProvider
+ * @module services/provider/osmRoadTypeMapping_provider
  */
 
 const bvvMapping = {
@@ -17,6 +11,11 @@ const bvvMapping = {
 	mainstreet: ['secondary', 'primary', 'motorway']
 };
 
+/**
+ * Bvv specific implementation of {@link module:services/RoutingService~osmRoadTypeMappingProvider}
+ * @function
+ * @type {module:services/RoutingService~osmRoadTypeMappingProvider}
+ */
 export const bvvOsmRoadTypeMappingProvider = (osmRoadType) => {
 	for (const roadTypeName in bvvMapping) {
 		const osmClasses = bvvMapping[roadTypeName];
