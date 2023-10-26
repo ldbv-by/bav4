@@ -76,18 +76,17 @@
 /**
  * Catalog object for a list of road- and surface-related {@link ChartItemStyleCatalog}
  * @typedef {Object} ChartItemStyleCatalogs
- * @property {ChartItemStyleCatalog} road The catalog for road styles
- * @property {ChartItemStyleCatalog} surface The catalog for road styles
+ * @property {module:domain/routing~ChartItemStyleCatalog} road The catalog for road styles
+ * @property {module:domain/routing~ChartItemStyleCatalog} surface The catalog for road styles
  */
 
 /**
- * Catalog object for a list of {@link ChartItemStyle} to a specific {@link RouteDetailTypeAttribute}
- * @typedef {Object} ChartItemStyleCatalog
- * @property {ChartItemStyle} catalogId The specific chartItemStyle for a {@link RouteDetailTypeAttribute}
+ * Catalog object for a list of {@link module:domain/routing~ChartItemStyle} to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
+ * @typedef {Object.<string, module:domain/routing~ChartItemStyle>}  ChartItemStyleCatalog
  */
 
 /**
- * Style object related to a specific {@link RouteDetailTypeAttribute}
+ * Style object related to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
  * @typedef {Object} ChartItemStyle
  * @property {number} id The id of this chart item
  * @property {string} label The label of this chart item
@@ -96,7 +95,7 @@
  */
 
 /**
- * Chart data object related to a specific {@link RouteDetailTypeAttribute}
+ * Chart data object related to a specific {@link module:domain/routing~RouteDetailTypeAttribute}
  * @typedef {Object} ChartData
  * @property {number} absolute the absolute value
  * @property {string} relative the relative value
