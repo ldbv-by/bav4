@@ -4,6 +4,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				header_tab_topics_button: 'Topics',
+				header_tab_routing_button: 'Routing',
 				header_tab_topics_title: 'Open topics',
 				header_tab_maps_button: 'Map',
 				header_tab_maps_title: 'Open map configuration',
@@ -21,6 +22,7 @@ export const provide = (lang) => {
 			return {
 				//the first part of the snake_case key should be the name of the related module
 				header_tab_topics_button: 'Themen',
+				header_tab_routing_button: 'Routing',
 				header_tab_topics_title: 'Themen öffnen',
 				header_tab_maps_button: 'Karte',
 				header_tab_maps_title: 'Kartenverwaltung öffnen',

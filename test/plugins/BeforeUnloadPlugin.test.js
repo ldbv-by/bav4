@@ -28,7 +28,7 @@ describe('BeforeUnloadPlugin', () => {
 			const instanceUnderTest = new BeforeUnloadPlugin();
 			await instanceUnderTest.register(store);
 
-			expect(instanceUnderTest._getTools()).toEqual([Tools.DRAW, Tools.MEASURE]);
+			expect(instanceUnderTest._getTools()).toEqual([Tools.DRAW, Tools.MEASURE, Tools.ROUTING]);
 		});
 	});
 

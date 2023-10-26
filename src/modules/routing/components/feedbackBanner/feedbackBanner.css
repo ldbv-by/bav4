@@ -1,0 +1,15 @@
+.container {
+	display: block;
+}
+
+.status-400 {
+	background-color: var(--warning-color);
+}
+
+.status-500 {
+	background-color: var(--error-color);
+}
+
+.status-900 {
+	background-color: inherit;
+}

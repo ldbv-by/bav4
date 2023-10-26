@@ -24,6 +24,8 @@ describe('HelpTooltip', () => {
 		const classUnderTest = new HelpTooltip(overlayManager);
 
 		expect(classUnderTest).toBeTruthy();
+		expect(classUnderTest.messageProvideFunction).toEqual(classUnderTest._tooltipMessageProvideFunction);
+		expect(classUnderTest.active).toBeFalse();
 	});
 
 	it('does nothing, when not activated', () => {
@@ -54,6 +56,7 @@ describe('HelpTooltip', () => {
 			classUnderTest.activate(mapMock);
 
 			expect(addSpy).toHaveBeenCalledWith(jasmine.any(Overlay));
+			expect(classUnderTest.active).toBeTrue();
 		});
 	});
 	describe('on deactivate', () => {
@@ -66,6 +69,7 @@ describe('HelpTooltip', () => {
 			classUnderTest.deactivate();
 
 			expect(removeSpy).toHaveBeenCalledWith(jasmine.any(Overlay));
+			expect(classUnderTest.active).toBeFalse();
 		});
 
 		it('does nothing, when overlay is null', () => {
@@ -78,6 +82,7 @@ describe('HelpTooltip', () => {
 			classUnderTest.deactivate();
 
 			expect(removeSpy).not.toHaveBeenCalled();
+			expect(classUnderTest.active).toBeFalse();
 		});
 	});
 	describe('when notified', () => {

@@ -1,0 +1,127 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	padding-bottom: 0.3em;
+}
+
+.iscollapsed {
+	display: none;
+}
+
+.chevron {
+	position: relative;
+	mask: url('../assets/chevron-right.svg');
+	-webkit-mask-image: url('../assets/chevron-right.svg');
+	mask-image: url('../assets/chevron-right.svg');
+}
+
+.icon {
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	display: inline-block;
+	height: 16px;
+	width: 10px;
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	transform: rotate(90deg);
+	transition: all var(--animation-duration-large-open) var(--animation-easing-open);
+
+	margin-right: 1em;
+}
+
+.iconexpand {
+	-moz-transform: rotate(270deg);
+	-webkit-transform: rotate(270deg);
+	transform: rotate(270deg);
+}
+
+.geolocation-icon {
+	mask: url('../assets/geolocation.svg');
+	-webkit-mask-image: url('../assets/geolocation.svg');
+	background: var(--primary-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1.6em;
+	width: 1.6em;
+}
+
+.warnings__logo-badge {
+	background: var(--error-color);
+	font-weight: bold;
+	color: #fff;
+	border-radius: 2em;
+	padding: 0.2em 0.5em;
+	z-index: 999999999;
+	box-shadow: 0 1px 2px rgb(0 0 0 / 50%);
+	font-size: 0.6rem;
+}
+
+.warnings-selector {
+	display: flex;
+	justify-content: space-between;
+	padding: 0.8em 1.2em;
+	font-weight: bold;
+	color: var(--text2);
+	font-size: 0.9rem;
+}
+.warnings-selector:hover .icon {
+	filter: brightness(0.8);
+}
+
+.item {
+	display: flex;
+	align-content: space-between;
+}
+
+button {
+	width: 1rem;
+	height: 1rem;
+}
+
+.warning_icon::before {
+	content: '';
+
+	mask: url('../assets/warning.svg');
+	-webkit-mask-image: url('../assets/warning.svg');
+	background: var(--warning-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1em;
+	width: 1em;
+	margin-right: 0.5em;
+	margin-bottom: 0.1em;
+}
+
+.hint_icon::before {
+	content: '';
+	mask: url('../assets/warning.svg');
+	-webkit-mask-image: url('../assets/warning.svg');
+	background: var(--info-color);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	cursor: pointer;
+	display: inline-block;
+	height: 1em;
+	width: 1em;
+	margin-right: 0.5em;
+	margin-bottom: 0.1em;
+}
+
+.highlight {
+	display: flex;
+	flex-grow: 1;
+}
+
+.highlight:hover {
+	background-color: var(--secondary-bg-color);
+}
+
+.overflow-container {
+	padding: 0.3em 2em 2em 2em;
+}

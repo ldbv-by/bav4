@@ -17,6 +17,7 @@ import {
 	defaultClusterStyleFunction,
 	markerStyleFunction
 } from '../utils/olStyleUtils';
+import { isFunction } from '../../../utils/checks';
 
 /**
  * Enumeration of predefined types of style
@@ -182,6 +183,18 @@ export class StyleService {
 			default:
 				console.warn('Could not provide a style for unknown style-type:', styleType);
 		}
+	}
+
+	/**
+	 * Returns a {@link ol.style.StyleFunction} for a specified {@link StyleTypes}
+	 * @param {StyleTypes} styleType
+	 * @returns {Function|null} the {@link ol.style.StyleFunction} or `null`
+	 */
+	getFeatureStyleFunction(styleType) {
+		return (feature, resolution) => {
+			const result = this.getStyleFunction(styleType);
+			return isFunction(result) ? result(feature, resolution) : result;
+		};
 	}
 
 	/**

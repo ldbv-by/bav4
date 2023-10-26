@@ -50,7 +50,8 @@ export class OlMap extends MvuElement {
 			OlHighlightLayerHandler: olHighlightLayerHandler,
 			OlFeatureInfoHandler: olFeatureInfoHandler,
 			OlElevationProfileHandler: olElevationProfileHandler,
-			OlMfpHandler: olMfpHandler
+			OlMfpHandler: olMfpHandler,
+			OlRoutingHandler: olRoutingHandler
 		} = $injector.inject(
 			'MapService',
 			'GeoResourceService',
@@ -63,7 +64,8 @@ export class OlMap extends MvuElement {
 			'OlHighlightLayerHandler',
 			'OlFeatureInfoHandler',
 			'OlElevationProfileHandler',
-			'OlMfpHandler'
+			'OlMfpHandler',
+			'OlRoutingHandler'
 		);
 
 		this._mapService = mapService;
@@ -77,7 +79,8 @@ export class OlMap extends MvuElement {
 			[geolocationHandler.id, geolocationHandler],
 			[olHighlightLayerHandler.id, olHighlightLayerHandler],
 			[olDrawHandler.id, olDrawHandler],
-			[olMfpHandler.id, olMfpHandler]
+			[olMfpHandler.id, olMfpHandler],
+			[olRoutingHandler.id, olRoutingHandler]
 		]);
 		this._mapHandler = new Map([
 			[olFeatureInfoHandler.id, olFeatureInfoHandler],
