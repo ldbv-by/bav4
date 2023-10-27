@@ -116,6 +116,9 @@ export class AdminPanel extends MvuElement {
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
+			if (obj.showChildren) {
+				result.showChildren = obj.showChildren;
+			}
 			// for (let index = 0; index < obj.children.length; index++) {
 			// 	const child = obj.children[index];
 			// 	console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.child.label:', child.label);
@@ -140,6 +143,24 @@ export class AdminPanel extends MvuElement {
 			result.label = obj.label;
 		}
 		if (obj.children && obj.children.length > 0) {
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+		}
+		return result;
+	}
+
+	// extract 'original data' recursively from the input object
+	_extractOriginalIncShowChildren(obj, extractFunction) {
+		const result = {};
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			if (obj.showChildren) {
+				result.showChildren = obj.showChildren;
+			}
 			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
 		}
 		return result;
@@ -552,7 +573,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addLayerGroup = () => {
-			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginal);
+			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginalIncShowChildren);
 
 			catalog.push({ label: 'XXXXX', children: [{ label: Empty_Label }] });
 
