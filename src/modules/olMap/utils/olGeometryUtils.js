@@ -489,3 +489,24 @@ export const simplify = (geometry, maxCount, tolerance) => {
 	}
 	return geometry;
 };
+
+/**
+ * Returns an array of coordinates suitable for calculating an elevation profile.
+ * @function
+ * @param {Geometry} geometry ol geometry
+ * @returns {Array<module:domain/coordinateTypeDef~Coordinate>} the coordinates
+ */
+export const getCoordinatesForElevationProfile = (geometry) => {
+	if (geometry instanceof Geometry) {
+		const force2D = (coordinates) => coordinates.map((c) => c.slice(0, 2));
+		const simplifiedLineString = simplify(
+			getLineString(geometry),
+			PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
+			PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
+		);
+		if (simplifiedLineString) {
+			return force2D(simplifiedLineString.getCoordinates());
+		}
+	}
+	return [];
+};
