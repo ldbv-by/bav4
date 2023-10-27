@@ -14,6 +14,8 @@ import { modalReducer } from '../../../../src/store/modal/modal.reducer';
 import { REGISTER_FOR_VIEWPORT_CALCULATION_ATTRIBUTE_NAME, TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { setQuery } from '../../../../src/store/search/search.action';
 import { setIsPortrait } from '../../../../src/store/media/media.action';
+import { toolsReducer } from '../../../../src/store/tools/tools.reducer';
+import { Tools } from '../../../../src/domain/tools';
 
 window.customElements.define(Header.tag, Header);
 
@@ -51,6 +53,7 @@ describe('Header', () => {
 			network: networkReducer,
 			layers: layersReducer,
 			search: searchReducer,
+			tools: toolsReducer,
 			media: createNoInitialStateMediaReducer()
 		});
 		$injector
@@ -170,8 +173,8 @@ describe('Header', () => {
 			const element = await setup();
 
 			expect(element.shadowRoot.querySelectorAll('.header')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('.header__modal-button')).toHaveSize(1);
-			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__modal-button')).display).toBe('none');
+			expect(element.shadowRoot.querySelectorAll('.header__routing-button')).toHaveSize(1);
+			expect(window.getComputedStyle(element.shadowRoot.querySelector('.header__routing-button')).display).toBe('block');
 
 			expect(element.shadowRoot.querySelectorAll('.header__button-container')).toHaveSize(1);
 			expect(element.shadowRoot.querySelector('.header__button-container').children.length).toBe(3);
@@ -325,7 +328,7 @@ describe('Header', () => {
 			expect(element.shadowRoot.querySelectorAll('.header.is-open')).toHaveSize(1);
 		});
 
-		it('focused menue-button loses the focus after swipe', async () => {
+		it('focused menu-button loses the focus after swipe', async () => {
 			const element = await setup();
 			const mapButton = element.shadowRoot.querySelector('.header__button-container').children[1];
 			const closeButton = element.shadowRoot.querySelector('.close-menu');
@@ -343,15 +346,13 @@ describe('Header', () => {
 		});
 	});
 
-	describe('when modal button is clicked', () => {
-		it('shows a modal window with the showcase', async () => {
+	describe('when routing button is clicked', () => {
+		it('changes the current active tool', async () => {
 			const element = await setup();
 
-			element.shadowRoot.querySelector('.header__modal-button').click();
+			element.shadowRoot.querySelector('.header__routing-button').click();
 
-			expect(store.getState().modal.data.title).toBe('Showcase');
-			//we expect a lit-html TemplateResult as content
-			expect(store.getState().modal.data.content.strings[0]).toBe('<ba-showcase></ba-showcase>');
+			expect(store.getState().tools.current).toBe(Tools.ROUTING);
 		});
 	});
 

@@ -1,6 +1,7 @@
 import './setupPage';
 
 // register required modules
+import './modules/commons';
 import './modules/admin';
 import './modules/header';
 import './modules/footer';
@@ -8,7 +9,6 @@ import './modules/map';
 import './modules/olMap';
 import './modules/menu';
 import './modules/toolbox';
-import './modules/commons';
 import './modules/search';
 import './modules/topics';
 import './modules/utils';
@@ -29,3 +29,4 @@ import './modules/elevationProfile';
 import './modules/share';
 import './modules/feedback';
 import './modules/export';
+import './modules/routing';

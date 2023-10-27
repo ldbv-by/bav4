@@ -26,6 +26,7 @@ describe('i18n for menu module', () => {
 			'Das zentrale Internet-Portal zum Energiesparen, zur Energieeffizienz und zu erneuerbaren Energien.'
 		);
 		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
+		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
 	});
 
 	it('provides translation for en', () => {
@@ -50,11 +51,11 @@ describe('i18n for menu module', () => {
 		expect(map.menu_misc_content_panel_gp_text).toBe('Central access to geospatial data and services.');
 		expect(map.menu_misc_content_panel_ea_header).toBe('Energie-Atlas Bayern');
 		expect(map.menu_misc_content_panel_ea_text).toBe('Central portal for saving energy, energy efficiency, and renewable energies.');
-		expect(map.menu_misc_content_panel_feedback_title).toBe('Feedback');
+		expect(map.menu_misc_content_panel_routing_title).toBe('Routing');
 	});
 
 	it('have the expected amount of translations', () => {
-		const expectedSize = 20;
+		const expectedSize = 21;
 		const deMap = provide('de');
 		const enMap = provide('en');
 
