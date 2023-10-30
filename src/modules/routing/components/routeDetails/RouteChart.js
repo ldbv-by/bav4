@@ -5,9 +5,11 @@ import { html } from 'lit-html';
 import { repeat } from 'lit-html/directives/repeat.js';
 import { classMap } from 'lit-html/directives/class-map.js';
 import { MvuElement } from '../../../MvuElement';
+import Chart from 'chart.js/auto';
 import css from './routeChart.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
+import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 
 /**
  * @typedef {Object} RoutingChartData
@@ -41,6 +43,7 @@ export class RouteChart extends MvuElement {
 		super({ items: [], label: null, collapsedChart: false });
 		const { TranslationService } = $injector.inject('TranslationService');
 		this._translationService = TranslationService;
+		this._chart = null;
 	}
 
 	update(type, data, model) {
@@ -52,6 +55,10 @@ export class RouteChart extends MvuElement {
 			case Update_Collapsed_Chart:
 				return { ...model, collapsedChart: data };
 		}
+	}
+
+	onAfterRender() {
+		this._updateOrCreateChart();
 	}
 
 	createView(model) {
@@ -114,13 +121,14 @@ export class RouteChart extends MvuElement {
 				</div>
 				<div class="${classMap(bodyCollapseClassInfo)}">
 					<div class="overflow-container">
-						<div class="chart_section progress">
+						<canvas class="chart_section donut"></canvas>
+						<!--<div class="chart_section progress">
 							${repeat(
-								items,
-								(chartItem) => chartItem.id,
-								(chartItem) => html`<div class="progress-bar" style=${getChartStyle(chartItem)} title=${getChartTitle(chartItem)}></div>`
-							)}
-						</div>
+							items,
+							(chartItem) => chartItem.id,
+							(chartItem) => html`<div class="progress-bar" style=${getChartStyle(chartItem)} title=${getChartTitle(chartItem)}></div>`
+						)}
+						</div>-->
 						<div class="legend_section">
 							${repeat(
 								items,
@@ -142,6 +150,79 @@ export class RouteChart extends MvuElement {
 					</div>
 				</div>
 			</div>`;
+	}
+
+	_getChartConfigDoughnut(items, title) {
+		const getLegendValue = (item) => {
+			const value = item.data.absolute;
+
+			const formattedInMeter = (value) => value.toFixed(0) + ' m';
+			const formattedInKilometer = (value) => {
+				return value < 5000 ? value.toFixed(2) + ' km' : value.toFixed(0) + ' km';
+			};
+
+			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
+		};
+
+		const data = {
+			labels: items.map((item) => item.label),
+			datasets: [
+				{
+					label: title,
+					data: items.map((item) => (item.data.relative ? Math.max(item.data.relative, 1) : item.data.relative)),
+					backgroundColor: items.map((item) => item.color),
+					hoverBorderWidth: 2,
+					hoverOffset: 4
+				}
+			]
+		};
+		return {
+			type: 'doughnut',
+			data: data,
+			options: {
+				onHover: (event, elements) => (elements.length === 0 ? resetHighlightedSegments() : () => {}),
+				plugins: {
+					legend: {
+						display: false
+					},
+					tooltip: {
+						enabled: true,
+						mode: 'nearest',
+						callbacks: {
+							label: (tooltipItem) => {
+								const item = items[tooltipItem.dataIndex];
+								setHighlightedSegments({ segments: item.data.segments, zoomToExtent: false });
+								const value = getLegendValue(item);
+								return `${value}`;
+							}
+						}
+					}
+				},
+				borderWidth: 0,
+				borderAlign: 'inner',
+				cutout: '80%'
+			}
+		};
+	}
+
+	_createChart(items, label) {
+		const ctx = this.shadowRoot.querySelector('.donut').getContext('2d');
+		this._chart = new Chart(ctx, this._getChartConfigDoughnut(items, label));
+		this._noAnimation = false;
+	}
+
+	_destroyChart() {
+		if (this._chart) {
+			this._chart.clear();
+			this._chart.destroy();
+			delete this._chart;
+		}
+	}
+
+	_updateOrCreateChart() {
+		const { items, label } = this.getModel();
+		this._destroyChart();
+		this._createChart(items, label);
 	}
 
 	set items(values) {
