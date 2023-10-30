@@ -3,6 +3,7 @@
  */
 import { $injector } from '../../injection/index';
 import { isCoordinate } from '../../utils/checks';
+import { EventLike } from '../../utils/storeUtils';
 import {
 	ROUTING_ACTIVE_CHANGED,
 	ROUTING_CATEGORY_CHANGED,
@@ -14,7 +15,8 @@ import {
 	ROUTING_DESTINATION_SET,
 	ROUTING_WAYPOINTS_CHANGED,
 	ROUTING_HIGHLIGHT_SEGMENTS_SET,
-	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED
+	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
+	ROUTING_PROPOSAL_SET
 } from './routing.reducer';
 
 /**
@@ -78,7 +80,7 @@ export const setRoute = (route) => {
 };
 
 /**
- * Updates the current `waypoints`, updates the `status` to {@link RoutingStatusCodes.Ok}.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}
+ * Updates the current `waypoints`, updates the `status` to {@link RoutingStatusCodes.Ok}.  A least two coordinates must be given, otherwise please use {@link setStart} and {@link setDestination}.
  * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the new waypoint coordinates (in the map's SRID)
  * @function
  */
@@ -103,7 +105,7 @@ export const reset = () => {
 };
 
 /**
- * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}
+ * Sets a coordinate as the start waypoint and updates the status to {@link RoutingStatusCodes.Destination_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the start waypoint (in the SRID of the map)
  * @function
  */
@@ -117,7 +119,7 @@ export const setStart = (coordinate) => {
 };
 
 /**
- * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}
+ * Sets a coordinate as the destination waypoint and updates the status to {@link RoutingStatusCodes.Start_Missing}.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the destination waypoint (in the SRID of the map)
  * @function
  */
@@ -126,6 +128,20 @@ export const setDestination = (coordinate) => {
 		getStore().dispatch({
 			type: ROUTING_DESTINATION_SET,
 			payload: coordinate
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as a proposal coordinate.
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the proposal coordinate (in the SRID of the map)
+ * @function
+ */
+export const setProposal = (coordinate) => {
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_PROPOSAL_SET,
+			payload: new EventLike([...coordinate])
 		});
 	}
 };

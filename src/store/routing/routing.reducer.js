@@ -1,4 +1,5 @@
 import { RoutingStatusCodes } from '../../domain/routing';
+import { EventLike } from '../../utils/storeUtils';
 
 export const ROUTING_CATEGORY_CHANGED = 'routing/categoryChanged';
 export const ROUTING_STATUS_CHANGED = 'routing/statusChanged';
@@ -8,8 +9,8 @@ export const ROUTING_ACTIVE_CHANGED = 'routing/activeChanged';
 export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
 export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
-export const ROUTING_START_REMOVED = 'routing/startRemoved';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
+export const ROUTING_PROPOSAL_SET = 'routing/proposalSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_SET = 'routing/highlightSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_REMOVED = 'routing/highlightRemoved';
 
@@ -31,7 +32,7 @@ export const initialState = {
 	 */
 	route: null,
 	/**
-	 * @property {Coordinate[]}
+	 * @property {domain/coordinateTypeDef~Coordinate[]}
 	 */
 	waypoints: [],
 	/**
@@ -41,7 +42,11 @@ export const initialState = {
 	/**
 	 * @property {boolean}
 	 */
-	active: false
+	active: false,
+	/**
+	 *@property {EventLike<domain/coordinateTypeDef~Coordinate>}
+	 */
+	proposal: new EventLike()
 };
 
 export const routingReducer = (state = initialState, action) => {
@@ -99,6 +104,12 @@ export const routingReducer = (state = initialState, action) => {
 				...state,
 				waypoints: [[...payload]],
 				status: RoutingStatusCodes.Start_Missing
+			};
+		}
+		case ROUTING_PROPOSAL_SET: {
+			return {
+				...state,
+				proposal: payload
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
