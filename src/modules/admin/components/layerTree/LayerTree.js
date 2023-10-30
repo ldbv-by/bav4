@@ -154,6 +154,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
+			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 		};
 
@@ -246,10 +247,9 @@ export class LayerTree extends MvuElement {
 			spanElement.classList.add('drag-over');
 		};
 
-		const onDrop = () => {
-			// const onDrop = (event) => {
+		const onDrop = (event) => {
 			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
+			console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
 
 			this.#currentGeoResourceId = null;
 			// eslint-disable-next-line no-console

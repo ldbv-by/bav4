@@ -54,28 +54,6 @@ export class AdminPanel extends MvuElement {
 		return `${timestamp}-${this.#uniqueIdCounter}`;
 	}
 
-	_insertFirstNodeWithChildrenIntoSecond(catalogFromService) {
-		// todo remove - only here to have themes in themes during testing
-		let first = null;
-		let second = false;
-		const catalogWithSecondLevelChildren = catalogFromService.map((category) => {
-			if (category.children) {
-				if (!second) {
-					if (first) {
-						category.children.push(first);
-						second = true;
-					} else {
-						first = category;
-					}
-				}
-				return { ...category };
-			} else {
-				return { ...category };
-			}
-		});
-		return catalogWithSecondLevelChildren;
-	}
-
 	_checkAndAugmentPositioningInfo(catalogFromService, position = 0) {
 		const catalogWithPositioningInfo = catalogFromService.map((category) => {
 			position += 100000;
@@ -91,7 +69,7 @@ export class AdminPanel extends MvuElement {
 					position
 				};
 			} else {
-				return { uid: uid, ...category, position: position };
+				return { uid, ...category, position };
 			}
 		});
 
@@ -188,8 +166,7 @@ export class AdminPanel extends MvuElement {
 	async _updateCatalog(currentTopicId) {
 		try {
 			const catalogFromService = await this._catalogService.byId(currentTopicId);
-			const catalogFromServiceWithSecondLevel = this._insertFirstNodeWithChildrenIntoSecond(catalogFromService);
-			this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromServiceWithSecondLevel);
+			this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromService);
 			this._mergeCatalogWithResources();
 		} catch (error) {
 			console.warn(error.message);
