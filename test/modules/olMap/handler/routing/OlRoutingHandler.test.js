@@ -387,7 +387,7 @@ describe('OlRoutingHandler', () => {
 				});
 			});
 
-			it('calls the correct methods', async () => {
+			it('switches to an alternative route', async () => {
 				const { instanceUnderTest, map, layer, getSelectOptionsSpy } = await newTestInstance();
 				const switchToAlternativeRouteSpy = spyOn(instanceUnderTest, '_switchToAlternativeRoute');
 
@@ -399,12 +399,31 @@ describe('OlRoutingHandler', () => {
 				feature.set(ROUTING_CATEGORY, category);
 				const mockRoutingResponse = { route: 'foo' };
 				instanceUnderTest._currentRoutingResponse = mockRoutingResponse;
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
 
 				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
 
 				expect(switchToAlternativeRouteSpy).toHaveBeenCalledWith(mockRoutingResponse);
 				expect(instanceUnderTest._catId).toBe(category.id);
 				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
+			});
+
+			it('removes a waypoint', async () => {
+				const pointCoordinate = [11, 22];
+				const { instanceUnderTest, map, layer, store } = await newTestInstance();
+				map.addLayer(layer);
+				const feature = new Feature({
+					geometry: new Point(pointCoordinate)
+				});
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
+				spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
+				setWaypoints([pointCoordinate, [33, 44]]);
+
+				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
+
+				expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 			});
 		});
 
