@@ -6,12 +6,7 @@ import { unByKey } from 'ol/Observable';
 import { $injector } from '../../../../injection';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 import { observe } from '../../../../utils/storeUtils';
-import {
-	getLineString,
-	PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-	PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857,
-	simplify
-} from '../../utils/olGeometryUtils';
+import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { InteractionStateType } from '../../utils/olInteractionUtils';
 import { OlMapHandler } from '../OlMapHandler';
 
@@ -71,17 +66,9 @@ export class OlElevationProfileHandler extends OlMapHandler {
 	}
 
 	_getCoordinates(features) {
-		const featureCount = features.getLength();
-		const force2D = (coordinates) => coordinates.map((c) => c.slice(0, 2));
-
-		if (featureCount === 1) {
+		if (features.getLength() === 1) {
 			const feature = features.getArray()[0];
-			const geometry = simplify(
-				getLineString(feature.getGeometry()),
-				PROFILE_GEOMETRY_SIMPLIFY_MAX_COUNT_COORDINATES,
-				PROFILE_GEOMETRY_SIMPLIFY_DISTANCE_TOLERANCE_3857
-			);
-			return geometry ? force2D(geometry.getCoordinates()) : Empty_Elevation_Profile_Coordinates;
+			return getCoordinatesForElevationProfile(feature.getGeometry());
 		}
 		return Empty_Elevation_Profile_Coordinates;
 	}
