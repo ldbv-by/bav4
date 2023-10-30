@@ -54,30 +54,28 @@ export class AdminPanel extends MvuElement {
 		return `${timestamp}-${this.#uniqueIdCounter}`;
 	}
 
-	_checkAndAugmentPositioningInfo(catalogFromService, position = 0) {
-		const catalogWithPositioningInfo = catalogFromService.map((category) => {
-			position += 100000;
+	_addUniqueId(catalogFromService) {
+		const catalogWithUniqueId = catalogFromService.map((category) => {
 			const uid = this._generateUniqueId();
 
 			if (category.children) {
-				const children = this._checkAndAugmentPositioningInfo(category.children, position);
+				const children = this._addUniqueId(category.children);
 
 				return {
 					uid,
 					...category,
-					children,
-					position
+					children
 				};
 			} else {
-				return { uid, ...category, position };
+				return { uid, ...category };
 			}
 		});
 
-		return catalogWithPositioningInfo;
+		return catalogWithUniqueId;
 	}
 
 	_enrichWithGeoResource(obj, extractFunction, geoResources) {
-		const result = { uid: obj.uid, position: obj.position };
+		const result = { uid: obj.uid };
 
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
@@ -157,7 +155,7 @@ export class AdminPanel extends MvuElement {
 	async _updateCatalog(currentTopicId) {
 		try {
 			const catalogFromService = await this._catalogService.byId(currentTopicId);
-			this.#catalog = this._checkAndAugmentPositioningInfo(catalogFromService);
+			this.#catalog = this._addUniqueId(catalogFromService);
 			this._mergeCatalogWithResources();
 		} catch (error) {
 			console.warn(error.message);
@@ -193,20 +191,6 @@ export class AdminPanel extends MvuElement {
 		}
 	}
 
-	_sortChildrenByPositionRecursive = (entry) => {
-		if (entry.children) {
-			entry.children.sort((a, b) => a.position - b.position);
-			entry.children.forEach((child) => this._sortChildrenByPositionRecursive(child)); // Recursively sort children's children
-		}
-	};
-
-	_sortCatalog(data) {
-		if (data && data.length > 0) {
-			data.sort((a, b) => a.position - b.position);
-			data.forEach((item) => this._sortChildrenByPositionRecursive(item));
-		}
-	}
-
 	async _refreshLayers() {
 		try {
 			this.#geoResources = await this._geoResourceService.all();
@@ -218,17 +202,6 @@ export class AdminPanel extends MvuElement {
 
 	createView(model) {
 		const { catalogWithResourceData, dummy } = model;
-
-		const calcPosition = (index, arrayWithEntry) => {
-			if (index > 0) {
-				const priorCatalogEntry = arrayWithEntry[index - 1];
-				const newPosition = Math.round((arrayWithEntry[index].position + priorCatalogEntry.position) / 2);
-				return newPosition;
-			} else {
-				const newPosition = Math.round(arrayWithEntry[index].position / 2);
-				return newPosition;
-			}
-		};
 
 		const findElementRecursively = (uid, catalogEntry) => {
 			for (let n = 0; n < catalogEntry.children.length; n++) {
@@ -314,18 +287,19 @@ export class AdminPanel extends MvuElement {
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in one of the children
-					// // eslint-disable-next-line no-console
-					// console.log('found the uid in one of the children');
-					const inBetween = calcPosition(n, catalogEntry.children);
-					// // eslint-disable-next-line no-console
-					// console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
+					// // // eslint-disable-next-line no-console
+					// // console.log('found the uid in one of the children');
+					// const inBetween = calcPosition(n, catalogEntry.children);
+					// // // eslint-disable-next-line no-console
+					// // console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
 
-					const newEntryWithPosition = { ...newEntry, position: inBetween };
-					catalogEntry.children.push(newEntryWithPosition);
+					// const newEntryWithPosition = { ...newEntry, position: inBetween };
+					// catalogEntry.children.push(newEntryWithPosition);
 
+					catalogEntry.children.splice(n, 0, newEntry);
 					removePossibleEmptyEntry(catalogEntry.children);
 
-					this._sortCatalog(catalogWithResourceData);
+					// this._sortCatalog(catalogWithResourceData);
 					return true;
 				}
 
@@ -368,16 +342,18 @@ export class AdminPanel extends MvuElement {
 
 				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
-					// found the uid in the top-level entries
-					// // eslint-disable-next-line no-console
-					// console.log('found the uid in the top-level entries');
-					const inBetween = calcPosition(entryNumber, catalogWithResourceData);
+					catalogWithResourceData.splice(entryNumber, 0, newEntry);
 
-					const newEntryWithPosition = { ...newEntry, position: inBetween };
-					catalogWithResourceData.push(newEntryWithPosition);
+					// // found the uid in the top-level entries
+					// // // eslint-disable-next-line no-console
+					// // console.log('found the uid in the top-level entries');
+					// const inBetween = calcPosition(entryNumber, catalogWithResourceData);
 
-					// catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
-					this._sortCatalog(catalogWithResourceData);
+					// const newEntryWithPosition = { ...newEntry, position: inBetween };
+					// catalogWithResourceData.push(newEntryWithPosition);
+
+					// // catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
+					// // this._sortCatalog(catalogWithResourceData);
 					return;
 				}
 
@@ -400,7 +376,7 @@ export class AdminPanel extends MvuElement {
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
 
 			addEntry(catalogWithResourceDataFromTree, currentCatalogEntryUid, newEntry);
-			this._sortCatalog(catalogWithResourceDataFromTree);
+			// this._sortCatalog(catalogWithResourceDataFromTree);
 
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceDataFromTree);
 
@@ -473,19 +449,20 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addGeoResourcePermanently = () => {
-			const catalogWithPositioningInfo = catalogWithResourceData.map((category) => {
+			// todo replace with new
+			const catalog = catalogWithResourceData.map((category) => {
 				if (category.children) {
 					const updatedChildren = category.children.map((child) => {
-						return { uid: child.uid, geoResourceId: child.geoResourceId, position: child.position };
+						return { uid: child.uid, geoResourceId: child.geoResourceId };
 					});
 
-					return { uid: category.uid, position: category.position, label: category.label, children: updatedChildren };
+					return { uid: category.uid, label: category.label, children: updatedChildren };
 				} else {
-					return { uid: category.uid, position: category.position, geoResourceId: category.geoResourceId };
+					return { uid: category.uid, geoResourceId: category.geoResourceId };
 				}
 			});
 
-			this.#catalog = catalogWithPositioningInfo;
+			this.#catalog = catalog;
 		};
 
 		const incrementStringDigit = (str) => {
@@ -513,7 +490,7 @@ export class AdminPanel extends MvuElement {
 
 			catalog.push({ label: 'XXXXX', children: [{ label: Empty_Label }] });
 
-			this.#catalog = this._checkAndAugmentPositioningInfo(catalog);
+			this.#catalog = this._addUniqueId(catalog);
 			this._mergeCatalogWithResources();
 		};
 
@@ -525,25 +502,23 @@ export class AdminPanel extends MvuElement {
 		// todo parent
 		// @ts-ignore
 		const copyBranchRoot = (positionInCatalog, catalogWithResourceData, catalogEntry) => {
-			// , parent = null
-			// todo remove old calculation
-			let inBetweenOld = 0;
-			if (positionInCatalog > 0) {
-				const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
-				inBetweenOld = Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
-			} else {
-				inBetweenOld = Math.round(catalogEntry.position / 2);
-			}
-			const inBetween = calcPosition(positionInCatalog, catalogWithResourceData);
-
-			if (inBetweenOld !== inBetween) {
-				throw new Error(`inBetween wrong`);
-			}
-
-			this.signal(Update_CatalogWithResourceData, [
-				...catalogWithResourceData,
-				{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [], position: inBetween }
-			]);
+			// // , parent = null
+			// // todo remove old calculation
+			// let inBetweenOld = 0;
+			// if (positionInCatalog > 0) {
+			// 	const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
+			// 	inBetweenOld = Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
+			// } else {
+			// 	inBetweenOld = Math.round(catalogEntry.position / 2);
+			// }
+			// const inBetween = calcPosition(positionInCatalog, catalogWithResourceData);
+			// if (inBetweenOld !== inBetween) {
+			// 	throw new Error(`inBetween wrong`);
+			// }
+			// this.signal(Update_CatalogWithResourceData, [
+			// 	...catalogWithResourceData,
+			// 	{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [], position: inBetween }
+			// ]);
 		};
 
 		if (this.#currentTopicId) {
