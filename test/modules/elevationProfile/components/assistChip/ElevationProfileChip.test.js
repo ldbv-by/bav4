@@ -108,7 +108,7 @@ describe('ElevationProfileChip', () => {
 	});
 
 	describe('when observed slice-of-state changes', () => {
-		it('changes visibility accroding to changes in store', async () => {
+		it('changes visibility according to changes in store', async () => {
 			const element = await setup();
 
 			expect(element.isVisible()).toBeFalse();
