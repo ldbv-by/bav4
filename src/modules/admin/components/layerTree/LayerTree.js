@@ -88,7 +88,7 @@ export class LayerTree extends MvuElement {
 		this._showChildren = (uid) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
-		this._copyBranchRoot = (a, catalog, b) => {};
+		this._copyBranchRoot = (catalog, catalogEntry) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (currentCatalogEntryUid, uidFromDrag) => {};
 		this._addLayerGroup = () => {};
@@ -248,15 +248,11 @@ export class LayerTree extends MvuElement {
 			event.preventDefault();
 		};
 
-		const handleCopyClick = (catalogEntry) => {
-			let positionInCatalog = null;
-			for (let i = 0; i < catalogWithResourceData.length; i++) {
-				if (catalogEntry === catalogWithResourceData[i]) {
-					positionInCatalog = i;
-				}
-			}
+		const handleCopyClick = (event, catalogEntry) => {
+			this._copyBranchRoot(catalogWithResourceData, catalogEntry);
 
-			this.copyBranchRoot(positionInCatalog, catalogWithResourceData, catalogEntry);
+			event.stopPropagation();
+			event.preventDefault();
 		};
 
 		// const handleNewClick = () => {
@@ -298,13 +294,13 @@ export class LayerTree extends MvuElement {
 					${entry.children
 						? html`
 								<button @click="${(event) => handleEditClick(event)}">Edit</button>
-								<button @click="${() => handleCopyClick(entry)}">Copy</button>
+								<button @click="${(event) => handleCopyClick(event, entry)}">Copy</button>
 								<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
 									${entry.children.map((child) => html`<li>${renderEntry(child)}</li>`)}
 								</ul>
 						  `
-						: html`<button @click="${() => handleDeleteClick(entry)}">X</button>`}
+						: html`<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>`}
 					<i class="uil uil-draggabledots"></i>
 				</li>
 			`;

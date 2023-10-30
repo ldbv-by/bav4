@@ -441,26 +441,11 @@ export class AdminPanel extends MvuElement {
 			this._updateCatalog(this.#currentTopicId);
 		};
 
-		// todo parent
-		// @ts-ignore
-		const copyBranchRoot = (positionInCatalog, catalogWithResourceData, catalogEntry) => {
-			// // , parent = null
-			// // todo remove old calculation
-			// let inBetweenOld = 0;
-			// if (positionInCatalog > 0) {
-			// 	const priorCatalogEntry = catalogWithResourceData[positionInCatalog - 1];
-			// 	inBetweenOld = Math.round((catalogEntry.position + priorCatalogEntry.position) / 2);
-			// } else {
-			// 	inBetweenOld = Math.round(catalogEntry.position / 2);
-			// }
-			// const inBetween = calcPosition(positionInCatalog, catalogWithResourceData);
-			// if (inBetweenOld !== inBetween) {
-			// 	throw new Error(`inBetween wrong`);
-			// }
-			// this.signal(Update_CatalogWithResourceData, [
-			// 	...catalogWithResourceData,
-			// 	{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [], position: inBetween }
-			// ]);
+		const copyBranchRoot = (catalogWithResourceData, catalogEntry) => {
+			this.signal(Update_CatalogWithResourceData, [
+				...catalogWithResourceData,
+				{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [{ label: Empty_Label }] }
+			]);
 		};
 
 		if (this.#currentTopicId) {
