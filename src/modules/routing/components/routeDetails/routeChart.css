@@ -51,8 +51,8 @@
 }
 
 .overflow-container canvas {
-	max-height: 9em;
-	max-width: 9em;
+	max-height: 8em;
+	max-width: 8em;
 	margin: 1em;
 }
 
@@ -78,24 +78,27 @@
 }
 
 .legend_section {
-	margin: auto;
+	margin: auto 0;
+	width: 100%;
+	padding-right: 2em;
 }
 
 .legend_item {
-	display: inline-block;
-	width: 1rem;
-	height: 1rem;
-	border-radius: 3px;
-	margin-left: 0.4em;
+	width: 1em;
+	height: 1em;
+	margin: auto;
 }
 
 .legend_item_label {
 	font-weight: bold;
 	user-select: none;
+	flex-grow: 1;
+	margin-left: 0.5em;
 }
 
 .highlight {
 	cursor: default;
+	display: flex;
 	margin-bottom: 0.3em;
 }
 
