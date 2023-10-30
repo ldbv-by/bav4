@@ -97,16 +97,7 @@ export class AdminPanel extends MvuElement {
 			if (obj.showChildren) {
 				result.showChildren = obj.showChildren;
 			}
-			// for (let index = 0; index < obj.children.length; index++) {
-			// 	const child = obj.children[index];
-			// 	console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ obj.child.label:', child.label);
-			// }
-
 			result.children = obj.children.map((child) => extractFunction(child, extractFunction, geoResources));
-			// for (let index = 0; index < result.children.length; index++) {
-			// 	const child = result.children[index];
-			// 	console.log('🚀 ~ AdminPanel ~ _enrichWithGeoResource ~ result.child.label:', child.label);
-			// }
 		}
 		return result;
 	}
@@ -217,9 +208,6 @@ export class AdminPanel extends MvuElement {
 	}
 
 	async _refreshLayers() {
-		// eslint-disable-next-line no-console
-		console.log('🚀 ~ AdminPanel ~ _refreshLayers()');
-
 		try {
 			this.#geoResources = await this._geoResourceService.all();
 			this._mergeCatalogWithResources();
@@ -243,15 +231,10 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const findElementRecursively = (uid, catalogEntry) => {
-			// itterate over catalogEntry.children
 			for (let n = 0; n < catalogEntry.children.length; n++) {
-				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
 
 				if (childCatalogEntry.uid === uid) {
-					// found the uid in one of the children
-					// // eslint-disable-next-line no-console
-					// console.log('found the uid in one of the children');
 					return childCatalogEntry;
 				}
 
@@ -268,15 +251,11 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const findElement = (uid, catalogWithResourceData) => {
-			// itterate over catalogWithResourceData
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
 
-				// and look for uid
 				if (catalogEntry.uid === uid) {
 					// found the uid in the top-level entries
-					// // eslint-disable-next-line no-console
-					// console.log('found the uid in the top-level entries --> return entry');
 					return catalogEntry;
 				}
 
@@ -292,34 +271,14 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const moveElement = (currentCatalogEntryUid, uidFromDrag_elementToMove) => {
-			// if (
-			// 	logOnce(
-			// 		'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid + currentCatalogEntryUid,
-			// 		'🚀 ~ AdminPanel ~ createView ~ moveElement ~ currentCatalogEntryUid: ' + currentCatalogEntryUid
-			// 	)
-			// ) {
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('      (for dragged element ~ uidFromDrag_elementToMove: ', uidFromDrag_elementToMove, ')');
-			// }
-
 			const elementToMove = findElement(uidFromDrag_elementToMove, catalogWithResourceData);
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ AdminPanel ~ moveElement ~ elementToMove:', elementToMove);
 			if (!elementToMove) {
-				// // eslint-disable-next-line no-console
-				// console.log('elementToMove not found --> return');
 				return;
 			}
 
-			// // eslint-disable-next-line no-console
-			// console.log('removeEntryRecursively');
 			const updatedCatalogWithResourceData = removeEntryRecursively(uidFromDrag_elementToMove, [...catalogWithResourceData]);
 
-			// // eslint-disable-next-line no-console
-			// console.log('addEntry');
 			addEntry(updatedCatalogWithResourceData, currentCatalogEntryUid, elementToMove);
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 AdminPanel ~ moveElement ~ newCatalogWithResourceData:', updatedCatalogWithResourceData);
 
 			this.signal(Update_CatalogWithResourceData, updatedCatalogWithResourceData);
 		};

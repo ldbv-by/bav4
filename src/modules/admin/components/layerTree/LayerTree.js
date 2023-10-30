@@ -19,34 +19,34 @@ const hasChildrenClass = 'has-children';
 const showChildrenClass = 'show-children';
 const droppableClass = 'droppable';
 
-const logOnceDictionary = {};
-export const logOnce = (key, objectToShow = 'nix') => {
-	if (!logOnceDictionary[key]) {
-		if (objectToShow === 'nix') {
-			// eslint-disable-next-line no-console
-			console.log(key);
-		} else {
-			if (typeof objectToShow === 'string') {
-				// eslint-disable-next-line no-console
-				console.log(objectToShow);
-			} else {
-				// eslint-disable-next-line no-console
-				console.log(JSON.stringify(objectToShow));
-			}
-		}
-		logOnceDictionary[key] = objectToShow;
-		return true;
-	}
-	return false;
-};
+// const logOnceDictionary = {};
+// export const logOnce = (key, objectToShow = 'nix') => {
+// 	if (!logOnceDictionary[key]) {
+// 		if (objectToShow === 'nix') {
+// 			// eslint-disable-next-line no-console
+// 			console.log(key);
+// 		} else {
+// 			if (typeof objectToShow === 'string') {
+// 				// eslint-disable-next-line no-console
+// 				console.log(objectToShow);
+// 			} else {
+// 				// eslint-disable-next-line no-console
+// 				console.log(JSON.stringify(objectToShow));
+// 			}
+// 		}
+// 		logOnceDictionary[key] = objectToShow;
+// 		return true;
+// 	}
+// 	return false;
+// };
 
-export const onlyOnce = (key) => {
-	if (logOnceDictionary[key]) {
-		return false;
-	}
-	logOnceDictionary[key] = key;
-	return true;
-};
+// export const onlyOnce = (key) => {
+// 	if (logOnceDictionary[key]) {
+// 		return false;
+// 	}
+// 	logOnceDictionary[key] = key;
+// 	return true;
+// };
 
 /**
  * Contains
@@ -154,7 +154,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
 		};
 
@@ -249,7 +248,7 @@ export class LayerTree extends MvuElement {
 
 		const onDrop = (event) => {
 			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
+			// console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
 
 			this.#currentGeoResourceId = null;
 			// eslint-disable-next-line no-console

@@ -64,12 +64,8 @@ export class LayerList extends MvuElement {
 		};
 
 		const onDragStart = (e) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerList ~ createView ~ onDragStart ~ e:', e);
 			const target = e.target;
 			const id = target.id;
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerList ~ createView ~ onDragStart ~ id:', id);
 
 			e.dataTransfer.clearData();
 			e.dataTransfer.setData('geoResourceId' + id, id);
@@ -82,14 +78,7 @@ export class LayerList extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerList ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
-		};
-
-		const onDrop = (e) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ file: LayerTree.js:348 ~ onDrop ~ e:', e);
 		};
 
 		return html`
@@ -108,7 +97,7 @@ export class LayerList extends MvuElement {
 				<ul>
 					${filteredGeoResources.map(
 						(geoResource) =>
-							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @drop=${onDrop} @dragend=${onDragEnd}>
+							html`<li id="${geoResource.id}" class="draggable" draggable="true" @dragstart=${onDragStart} @dragend=${onDragEnd}>
 								${geoResource.label} (${geoResource.id})
 							</li>`
 					)}
