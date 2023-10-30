@@ -2,6 +2,7 @@ import { RoutingStatusCodes } from '../../../src/domain/routing';
 import {
 	activate,
 	deactivate,
+	removeWaypoint,
 	reset,
 	resetHighlightedSegments,
 	setCategory,
@@ -109,13 +110,22 @@ describe('routingReducer', () => {
 
 	it('resets the "waypoint", "route" and "status" property', () => {
 		const store = setup({
-			waypoints: [
-				[11, 22],
-				[33, 44]
-			],
-			status: RoutingStatusCodes.Ok,
-			route: {}
+			routing: {
+				waypoints: [
+					[11, 22],
+					[33, 44]
+				],
+				status: RoutingStatusCodes.Ok,
+				route: {}
+			}
 		});
+
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Ok);
+		expect(store.getState().routing.route).not.toBeNull();
 
 		reset();
 
@@ -152,6 +162,32 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.waypoints).toEqual([coordinate]);
 		expect(store.getState().routing.status).toEqual(RoutingStatusCodes.Start_Missing);
+	});
+
+	it('removes a waypoint', () => {
+		const store = setup({
+			routing: {
+				waypoints: [
+					[11, 22],
+					[33, 44]
+				]
+			}
+		});
+
+		removeWaypoint([11, 22, 'foo']); //invalid coordinate
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+
+		removeWaypoint([5, 5]); //unknown coordinate
+		expect(store.getState().routing.waypoints).toEqual([
+			[11, 22],
+			[33, 44]
+		]);
+
+		removeWaypoint([11, 22]);
+		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
 	});
 
 	it('sets a proposal coordinate', () => {

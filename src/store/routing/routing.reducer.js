@@ -1,5 +1,5 @@
 import { RoutingStatusCodes } from '../../domain/routing';
-import { EventLike } from '../../utils/storeUtils';
+import { EventLike, equals } from '../../utils/storeUtils';
 
 export const ROUTING_CATEGORY_CHANGED = 'routing/categoryChanged';
 export const ROUTING_STATUS_CHANGED = 'routing/statusChanged';
@@ -7,6 +7,7 @@ export const ROUTING_ROUTE_CHANGED = 'routing/routeChanged';
 export const ROUTING_STATS_CHANGED = 'routing/statsChanged';
 export const ROUTING_ACTIVE_CHANGED = 'routing/activeChanged';
 export const ROUTING_WAYPOINTS_CHANGED = 'routing/waypointsChanged';
+export const ROUTING_WAYPOINT_DELETED = 'routing/waypointDeleted';
 export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
@@ -82,6 +83,12 @@ export const routingReducer = (state = initialState, action) => {
 				...state,
 				waypoints: [...payload.map((c) => [...c])], // deep clone coordinates
 				status: RoutingStatusCodes.Ok
+			};
+		}
+		case ROUTING_WAYPOINT_DELETED: {
+			return {
+				...state,
+				waypoints: state.waypoints.filter((c) => !equals(c, payload))
 			};
 		}
 		case ROUTING_RESET: {

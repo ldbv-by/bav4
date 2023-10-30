@@ -16,7 +16,8 @@ import {
 	ROUTING_WAYPOINTS_CHANGED,
 	ROUTING_HIGHLIGHT_SEGMENTS_SET,
 	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
-	ROUTING_PROPOSAL_SET
+	ROUTING_PROPOSAL_SET,
+	ROUTING_WAYPOINT_DELETED
 } from './routing.reducer';
 
 /**
@@ -88,6 +89,20 @@ export const setWaypoints = (coordinates) => {
 	if (coordinates?.length > 1 && !coordinates.some((c) => !isCoordinate(c))) {
 		getStore().dispatch({
 			type: ROUTING_WAYPOINTS_CHANGED,
+			payload: [...coordinates]
+		});
+	}
+};
+
+/**
+ * Removes a waypoint.
+ * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the coordinate which should be removed from the waypoints (in the map's SRID)
+ * @function
+ */
+export const removeWaypoint = (coordinates) => {
+	if (isCoordinate(coordinates)) {
+		getStore().dispatch({
+			type: ROUTING_WAYPOINT_DELETED,
 			payload: [...coordinates]
 		});
 	}
