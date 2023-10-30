@@ -8,8 +8,8 @@ import { MvuElement } from '../../../MvuElement';
 import css from './adminPanel.css';
 import { $injector } from '../../../../injection/index';
 import { nothing } from '../../../../../node_modules/lit-html/lit-html';
-// eslint-disable-next-line no-unused-vars
-import { logOnce, onlyOnce } from '../layerTree/LayerTree';
+// // eslint-disable-next-line no-unused-vars
+// import { logOnce, onlyOnce } from '../layerTree/LayerTree';
 
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Empty_Label = ' ';
@@ -115,9 +115,26 @@ export class AdminPanel extends MvuElement {
 		return result;
 	}
 
-	// extract 'original data' recursively from the input object
+	// extract 'original data' recursively from the input object, but keep showChildren
 	_extractOriginalIncShowChildren(obj, extractFunction) {
 		const result = {};
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			if (obj.showChildren) {
+				result.showChildren = obj.showChildren;
+			}
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+		}
+		return result;
+	}
+
+	_copyEverything(obj, extractFunction) {
+		const result = { uid: obj.uid };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
@@ -146,9 +163,6 @@ export class AdminPanel extends MvuElement {
 		}
 
 		const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
-
-		// const catalogWithResourceData = this._mergeCatalogWithResourcesRecursive(this.#catalog);
-
 		this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 	}
 
@@ -264,49 +278,20 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogWithResourceData:', catalogWithResourceData);
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ currentCatalogEntryUid:', currentCatalogEntryUid);
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry:', catalogEntry);
-			// 	// eslint-disable-next-line no-console
-			// 	console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ newEntry:', newEntry);
 			// itterate over catalogEntry.children
-			// // eslint-disable-next-line no-console
-			// console.log('addEntryToChildrenRecursively - itterate over catalogEntry.children');
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ catalogEntry.children:', catalogEntry.children);
 			for (let n = 0; n < catalogEntry.children.length; n++) {
 				// and look for currentUid
 				const childCatalogEntry = catalogEntry.children[n];
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ n:', n);
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ AdminPanel ~ addEntryToChildrenRecursively ~ childCatalogEntry:', childCatalogEntry);
 
 				if (childCatalogEntry.uid === currentCatalogEntryUid) {
 					// found the uid in one of the children
-					// // // eslint-disable-next-line no-console
-					// // console.log('found the uid in one of the children');
-					// const inBetween = calcPosition(n, catalogEntry.children);
-					// // // eslint-disable-next-line no-console
-					// // console.log('🚀 ~ file: AdminPanel.js:344 ~ AdminPanel ~ addEntryToChildrenRecursively ~ inBetween:', inBetween);
-
-					// const newEntryWithPosition = { ...newEntry, position: inBetween };
-					// catalogEntry.children.push(newEntryWithPosition);
-
 					catalogEntry.children.splice(n, 0, newEntry);
 					removePossibleEmptyEntry(catalogEntry.children);
-
-					// this._sortCatalog(catalogWithResourceData);
 					return true;
 				}
 
 				// check the children recursivly, if any
 				if (childCatalogEntry.children) {
-					// // eslint-disable-next-line no-console
-					// console.log('recursivly check children');
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
 					if (found) {
 						return found;
@@ -328,41 +313,17 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ insert newEntry:', newEntry);
-			// // eslint-disable-next-line no-console
-			// console.log('🚀 ~ AdminPanel ~ addEntry ~   🚀 ~ 🚀 ~ before currentCatalogEntryUid:', currentCatalogEntryUid);
 			// itterate over catalogWithResourceData
-			// // eslint-disable-next-line no-console
-			// console.log('addEntry - itterate over catalogWithResourceData');
 			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
 				const catalogEntry = catalogWithResourceData[entryNumber];
-				// // eslint-disable-next-line no-console
-				// console.log('🚀 ~ AdminPanel ~ addEntry ~ entryNumber:', entryNumber, ' - ', catalogEntry.label);
 
-				// and look for currentUid
 				if (catalogEntry.uid === currentCatalogEntryUid) {
 					catalogWithResourceData.splice(entryNumber, 0, newEntry);
-
-					// // found the uid in the top-level entries
-					// // // eslint-disable-next-line no-console
-					// // console.log('found the uid in the top-level entries');
-					// const inBetween = calcPosition(entryNumber, catalogWithResourceData);
-
-					// const newEntryWithPosition = { ...newEntry, position: inBetween };
-					// catalogWithResourceData.push(newEntryWithPosition);
-
-					// // catalogWithResourceData = [...catalogWithResourceData, { ...newEntry, position: inBetween }];
-					// // this._sortCatalog(catalogWithResourceData);
 					return;
 				}
 
 				// check the children if any
 				if (catalogEntry.children) {
-					// // eslint-disable-next-line no-console
-					// console.log('check children');
-					// // eslint-disable-next-line no-console
-					// console.log('🚀 ~ AdminPanel ~ addEntry ~ catalogEntry:', catalogEntry);
 					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
 					if (found) {
 						return;
@@ -449,19 +410,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addGeoResourcePermanently = () => {
-			// todo replace with new
-			const catalog = catalogWithResourceData.map((category) => {
-				if (category.children) {
-					const updatedChildren = category.children.map((child) => {
-						return { uid: child.uid, geoResourceId: child.geoResourceId };
-					});
-
-					return { uid: category.uid, label: category.label, children: updatedChildren };
-				} else {
-					return { uid: category.uid, geoResourceId: category.geoResourceId };
-				}
-			});
-
+			const catalog = this._reduceData(catalogWithResourceData, this._copyEverything);
 			this.#catalog = catalog;
 		};
 
