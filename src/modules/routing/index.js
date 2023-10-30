@@ -5,6 +5,7 @@ import { FeedbackBanner } from './components/feedbackBanner/FeedbackBanner';
 import { RouteInfo } from './components/routeInfo/RouteInfo';
 import { Waypoints } from './components/waypoints/Waypoints';
 import { WaypointItem } from './components/waypoints/WaypointItem';
+import { RoutingChip } from './components/assistChip/RoutingChip';
 import './components/routeDetails';
 
 if (!window.customElements.get(CategoryBar.tag)) {
@@ -19,6 +20,6 @@ if (!window.customElements.get(RouteInfo.tag)) {
 if (!window.customElements.get(Waypoints.tag)) {
 	window.customElements.define(Waypoints.tag, Waypoints);
 }
-if (!window.customElements.get(WaypointItem.tag)) {
-	window.customElements.define(WaypointItem.tag, WaypointItem);
+if (!window.customElements.get(RoutingChip.tag)) {
+	window.customElements.define(RoutingChip.tag, RoutingChip);
 }
