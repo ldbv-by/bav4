@@ -64,7 +64,6 @@ describe('CategoryBar', () => {
 			const model = new CategoryBar().getModel();
 
 			expect(model).toEqual({
-				categories: [],
 				selectedCategory: null
 			});
 		});
