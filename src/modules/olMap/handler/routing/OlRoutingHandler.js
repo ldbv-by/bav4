@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 
@@ -126,9 +126,29 @@ export class OlRoutingHandler extends OlLayerHandler {
 			olMap.on(
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
-			)
+			),
+			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer))
 		);
 		return this._routingLayerGroup;
+	}
+
+	_getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer) {
+		return {
+			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer].includes(layer),
+			hitTolerance: 5
+		};
+	}
+
+	_newClickHandler(map, interactionLayer, alternativeRouteLayer) {
+		return (event) => {
+			const coord = map.getEventCoordinate(event.originalEvent);
+			const pixel = map.getEventPixel(event.originalEvent);
+			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
+			// handle event only if there's no feature handled by the select interaction
+			if (hit.length < 1) {
+				setProposal(coord);
+			}
+		};
 	}
 
 	_getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
@@ -255,13 +275,13 @@ export class OlRoutingHandler extends OlLayerHandler {
 			pixelTolerance: 5,
 			deleteCondition: () => false
 		});
-		modify.on('modifystart', (evt) => {
-			if (evt.mapBrowserEvent.type !== 'singleclick') {
-				// this._map.getTarget().classList.add('grabbing');
-				// managePopup();
-				// Todo: show context menu
-			}
-		});
+		// modify.on('modifystart', (evt) => {
+		// if (evt.mapBrowserEvent.type !== 'singleclick') {
+		// this._map.getTarget().classList.add('grabbing');
+		// managePopup();
+		// Todo: show context menu
+		// }
+		// });
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {
 				// this._map.getTarget().classList.remove('grabbing');

@@ -200,7 +200,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._selectInteraction).toBeInstanceOf(Select);
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._selectInteraction);
 					//map listeners
-					expect(instanceUnderTest._mapListeners).toHaveSize(1);
+					expect(instanceUnderTest._mapListeners).toHaveSize(2);
 
 					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
 				});
@@ -1149,6 +1149,64 @@ describe('OlRoutingHandler', () => {
 
 					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
 				});
+			});
+		});
+
+		describe('_newClickHandler', () => {
+			const eventCoordinate = [11, 22];
+			const featureCoordinate = [10, 20];
+			const pixel = [21, 42];
+			const feature = new Feature({
+				geometry: new Point(featureCoordinate)
+			});
+			const callClickHandler = async (feature) => {
+				const { instanceUnderTest, map, store } = await newTestInstance();
+
+				const handler = instanceUnderTest._newClickHandler(map, instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				const event = { originalEvent: {}, coordinate: eventCoordinate };
+				const getFeaturesAtPixelOptionsForClickHandlerOptions = {
+					layerFilter: () => true,
+					hitTolerance: 42
+				};
+				spyOn(instanceUnderTest, '_getFeaturesAtPixelOptionsForClickHandler')
+					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer)
+					.and.returnValue(getFeaturesAtPixelOptionsForClickHandlerOptions);
+				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue(pixel);
+				spyOn(map, 'getEventCoordinate').withArgs(event.originalEvent).and.returnValue(featureCoordinate);
+				spyOn(map, 'getFeaturesAtPixel')
+					.withArgs(pixel, getFeaturesAtPixelOptionsForClickHandlerOptions)
+					.and.returnValue(feature ? [feature] : []);
+
+				handler(event);
+				return { map, store };
+			};
+
+			it('is properly configured', async () => {
+				setup();
+				const instanceUnderTest = new OlRoutingHandler();
+				const interactionLayerMock = { id: '0' };
+				const alternativeRouteLayerMock = { id: '1' };
+
+				const options = instanceUnderTest._getFeaturesAtPixelOptionsForClickHandler(interactionLayerMock, alternativeRouteLayerMock);
+				expect(options).toEqual({
+					layerFilter: jasmine.any(Function),
+					hitTolerance: 5
+				});
+				expect(options.layerFilter(interactionLayerMock)).toBeTrue();
+				expect(options.layerFilter(alternativeRouteLayerMock)).toBeTrue();
+				expect(options.layerFilter({})).toBeFalse();
+			});
+
+			it('updates the "proposal" property of the routing s-o-s', async () => {
+				const { store } = await callClickHandler();
+
+				expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: featureCoordinate }));
+			});
+
+			it('does not update the routing s-o-s when a feature is hit', async () => {
+				const { store } = await callClickHandler(feature);
+
+				expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
 			});
 		});
 
