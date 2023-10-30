@@ -9,7 +9,7 @@ import { OlMapHandler } from '../OlMapHandler';
 
 /**
  * `MapHandler` that indicates if a vector feature or a pixel of a WMS or tile image is selectable
- * (e.g. for a retrieving a feature info)
+ * (e.g. for a retrieving feature info)
  * by changing the cursor when a user moves the pointer over it.
  * The handler does nothing when a tool is active.
  * @class
