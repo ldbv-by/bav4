@@ -15,8 +15,6 @@ const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Empty_Label = ' ';
 
 /**
- * Contains a form for submitting a general feedback.
- * @property {Function} onSubmit
  * @class
  */
 export class AdminPanel extends MvuElement {
@@ -25,7 +23,6 @@ export class AdminPanel extends MvuElement {
 	#geoResources = [];
 	#topics = [];
 	#currentTopicId = null;
-	// #elementToMove = null;
 
 	constructor() {
 		super({
@@ -337,15 +334,12 @@ export class AdminPanel extends MvuElement {
 			const { newEntry, newUid } = createNewGeoResourceEntry(newGeoresourceId);
 
 			addEntry(catalogWithResourceDataFromTree, currentCatalogEntryUid, newEntry);
-			// this._sortCatalog(catalogWithResourceDataFromTree);
-
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceDataFromTree);
 
 			return newUid;
 		};
 
 		const removeEntryRecursively = (uid, catalogBranch) => {
-			// const newCatalogBranch = [...catalogBranch];
 			const indexToRemove = catalogBranch.findIndex((entry) => entry.uid === uid);
 
 			// found in top level - done
@@ -360,7 +354,6 @@ export class AdminPanel extends MvuElement {
 			// handle sublevels recursively
 			const updatedCatalogBranch = catalogBranch.map((element) => {
 				if (element.children) {
-					// recurse
 					const updatedChildren = removeEntryRecursively(uid, element.children);
 					return { ...element, children: updatedChildren };
 				}

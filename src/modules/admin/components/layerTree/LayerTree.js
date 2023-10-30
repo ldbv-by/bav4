@@ -241,8 +241,11 @@ export class LayerTree extends MvuElement {
 			event.stopPropagation();
 		};
 
-		const handleDeleteClick = (catalogEntry) => {
+		const handleDeleteClick = (event, catalogEntry) => {
 			this._removeEntry(catalogEntry.uid);
+
+			event.stopPropagation();
+			event.preventDefault();
 		};
 
 		const handleCopyClick = (catalogEntry) => {
@@ -296,7 +299,7 @@ export class LayerTree extends MvuElement {
 						? html`
 								<button @click="${(event) => handleEditClick(event)}">Edit</button>
 								<button @click="${() => handleCopyClick(entry)}">Copy</button>
-								<button @click="${() => handleDeleteClick(entry)}">X</button>
+								<button @click="${(event) => handleDeleteClick(event, entry)}">X</button>
 								<ul>
 									${entry.children.map((child) => html`<li>${renderEntry(child)}</li>`)}
 								</ul>
