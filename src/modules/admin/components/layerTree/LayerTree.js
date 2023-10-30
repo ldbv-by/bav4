@@ -128,20 +128,11 @@ export class LayerTree extends MvuElement {
 
 			const newElementUid = this._addGeoResource(currentCatalogEntryUid, newGeoResourceIdFromList, [...catalogWithResourceData]);
 
-			// this.signal(Update_Currents, { currentGeoResourceId: newGeoResourceIdFromList, currentUid: newElementUid });
-			// this.signal(Update_CurrentUid, newElementUid);
 			this.#currentUId = newElementUid;
 		};
 
 		const onDragStart = (event, draggedEntry) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ event:', event);
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntry:', draggedEntry);
-
 			const draggedEntryUid = draggedEntry.uid;
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ onDragStart ~ draggedEntryUid:', draggedEntryUid);
 			event.dataTransfer.clearData();
 			event.dataTransfer.setData('UID' + draggedEntryUid, draggedEntryUid);
 
@@ -162,16 +153,11 @@ export class LayerTree extends MvuElement {
 			const matchedElement = types.find((element) => /georesourceid(.+)/i.test(element));
 			const newGeoResourceIdFromList = matchedElement ? matchedElement.replace(/georesourceid/, '') : null;
 			if (newGeoResourceIdFromList) {
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ onDragOver ~ newGeoResourceIdFromList:', newGeoResourceIdFromList);
-
 				if (newGeoResourceIdFromList === currentCatalogEntry.geoResourceId) {
 					event.preventDefault();
 					return;
 				}
 				this.#currentGeoResourceId = newGeoResourceIdFromList;
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ onDragOver ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
 				insertDraggedGeoResource(currentCatalogEntry.uid, newGeoResourceIdFromList);
 			}
 
@@ -179,80 +165,24 @@ export class LayerTree extends MvuElement {
 			const uidFromDrag = matchedElementUid ? matchedElementUid.replace(/uid/, '') : null;
 			if (uidFromDrag) {
 				if (uidFromDrag === currentCatalogEntry.uid) {
-					// still where drag started --> do nothing
-					// if (
-					// 	logOnce(
-					// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ uidFromDrag ' +
-					// 			uidFromDrag +
-					// 			' === currentCatalogEntry.uid ' +
-					// 			currentCatalogEntry.uid +
-					// 			' --> return'
-					// 	)
-					// ) {
-					// 	// eslint-disable-next-line no-console
-					// 	console.log('still where drag started --> do nothing');
-					// }
-
 					event.preventDefault();
 					return;
 				}
 				if (this.#currentUId === currentCatalogEntry.uid) {
-					// this.#currentUId already set to currentCatalogEntry.uid --> do nothing
-					// if (
-					// 	logOnce(
-					// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ this.#currentUId ' +
-					// 			this.#currentUId +
-					// 			' === currentCatalogEntry.uid ' +
-					// 			currentCatalogEntry.uid +
-					// 			' --> return'
-					// 	)
-					// ) {
-					// 	// eslint-disable-next-line no-console
-					// 	console.log('this.#currentUId already set to currentCatalogEntry.uid --> do nothing');
-					// }
 					event.preventDefault();
 					return;
 				}
-				// if (
-				// 	logOnce(
-				// 		'🚀 ~ LayerTree ~ createView ~ onDragOver ~ currentCatalogEntry.uid: ' + currentCatalogEntry.uid + uidFromDrag,
-				// 		'🚀 ~ LayerTree ~ createView ~ onDragOver(event, currentCatalogEntry) with'
-				// 	)
-				// ) {
-				// 	// eslint-disable-next-line no-console
-				// 	console.log('      event: ', event);
-				// 	// eslint-disable-next-line no-console
-				// 	console.log('      currentCatalogEntry: ', currentCatalogEntry);
-				// 	// eslint-disable-next-line no-console
-				// 	console.log(' ');
-				// 	// eslint-disable-next-line no-console
-				// 	console.log('      uidFromDrag: ', uidFromDrag);
-				// 	// eslint-disable-next-line no-console
-				// 	console.log(' ');
-				// 	// eslint-disable-next-line no-console
-				// 	console.log(' ');
-				// }
 
-				// this.signal(Update_CurrentUid, currentCatalogEntry.uid);
 				this.#currentUId = currentCatalogEntry.uid;
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
 			}
 
 			const spanElement = event.target;
-			if (!spanElement) {
-				// eslint-disable-next-line no-console
-				// console.log('🪢🪢🪢 ~ LayerTree ~ onDragOver ~ event:', event);
-			}
 			spanElement.classList.add('drag-over');
 		};
 
-		const onDrop = (event) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ onDrop ~ event:', event);
-
+		const onDrop = () => {
 			this.#currentGeoResourceId = null;
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
 
 			this._addGeoResourcePermanently();
 		};
@@ -263,15 +193,10 @@ export class LayerTree extends MvuElement {
 			event.preventDefault();
 
 			if (this.#currentGeoResourceId !== null) {
-				// eslint-disable-next-line no-console
-				// console.log('🪢 ~ LayerTree ~ createView ~ ~ onDragLeave ~ ~ removeEntry(currentUid) (with currentUid: ', currentUid, ')');
 				this._removeEntry(this.#currentUId);
 				this.#currentGeoResourceId = null;
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#currentGeoResourceId:', this.#currentGeoResourceId);
 			}
 
-			// this.signal(Update_CurrentUid, '');
 			this.#currentUId = '';
 		};
 
@@ -286,25 +211,17 @@ export class LayerTree extends MvuElement {
 				return;
 			}
 
-			this._showChildren(entry.uid);
+			if (entry.children) {
+				this._showChildren(entry.uid);
+			}
 		};
 
 		const handleEditClick = (event) => {
-			//, catalogEntry
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ event:', event);
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ catalogEntry:', catalogEntry);
-
 			const button = event.target;
 			const li = button.parentNode;
 
 			if (button.textContent === 'Edit') {
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ li:', li);
 				const span = li.firstElementChild;
-				// eslint-disable-next-line no-console
-				// console.log('🚀 ~ LayerTree ~ createView ~ handleEditClick ~ span:', span);
 
 				const input = document.createElement('input');
 				input.type = 'text';
@@ -325,8 +242,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleDeleteClick = (catalogEntry) => {
-			// eslint-disable-next-line no-console
-			// console.log('🚀 ~ LayerTree ~ createView ~ handleDeleteClick ~ catalogEntry:', catalogEntry);
 			this._removeEntry(catalogEntry.uid);
 		};
 
@@ -336,15 +251,6 @@ export class LayerTree extends MvuElement {
 				if (catalogEntry === catalogWithResourceData[i]) {
 					positionInCatalog = i;
 				}
-
-				// if (catalogEntry.children) {
-				// 	// Check the children for the geoResourceId
-				// 	for (let j = 0; j < catalogEntry.children.length; j++) {
-				// 		if (catalogEntry.children[j].geoResourceId === resourceId) {
-				// 			// Found the geoResourceId in the children
-				// 			return [i, j];
-				// 		}
-				// 	}
 			}
 
 			this.copyBranchRoot(positionInCatalog, catalogWithResourceData, catalogEntry);
@@ -369,7 +275,6 @@ export class LayerTree extends MvuElement {
 		};
 
 		const renderEntry = (entry) => {
-			// console.log('🚀 ~ file: LayerTree.js:438 ~ renderEntry ~ entry:', entry);
 			return html`
 				<li
 					@click="${(event) => handleCategoryClick(event, entry)}"

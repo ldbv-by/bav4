@@ -345,20 +345,20 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const removeEntryRecursively = (uid, catalogBranch) => {
-			const newCatalogBranch = [...catalogBranch];
-			const indexToRemove = newCatalogBranch.findIndex((entry) => entry.uid === uid);
+			// const newCatalogBranch = [...catalogBranch];
+			const indexToRemove = catalogBranch.findIndex((entry) => entry.uid === uid);
 
 			// found in top level - done
 			if (indexToRemove !== -1) {
-				newCatalogBranch.splice(indexToRemove, 1);
-				if (newCatalogBranch.length === 0) {
-					newCatalogBranch.push({ label: Empty_Label });
+				catalogBranch.splice(indexToRemove, 1);
+				if (catalogBranch.length === 0) {
+					catalogBranch.push({ label: Empty_Label });
 				}
-				return newCatalogBranch;
+				return catalogBranch;
 			}
 
 			// handle sublevels recursively
-			const updatedCatalogBranch = newCatalogBranch.map((element) => {
+			const updatedCatalogBranch = catalogBranch.map((element) => {
 				if (element.children) {
 					// recurse
 					const updatedChildren = removeEntryRecursively(uid, element.children);
