@@ -168,29 +168,45 @@ describe('routingReducer', () => {
 	});
 
 	it('removes a waypoint', () => {
+		const waypoints = [
+			[11, 22],
+			[33, 44]
+		];
 		const store = setup({
 			routing: {
-				waypoints: [
-					[11, 22],
-					[33, 44]
-				]
+				waypoints,
+				status: RoutingStatusCodes.Ok
 			}
 		});
 
 		removeWaypoint([11, 22, 'foo']); //invalid coordinate
-		expect(store.getState().routing.waypoints).toEqual([
-			[11, 22],
-			[33, 44]
-		]);
+		expect(store.getState().routing.waypoints).toEqual(waypoints);
 
 		removeWaypoint([5, 5]); //unknown coordinate
-		expect(store.getState().routing.waypoints).toEqual([
-			[11, 22],
-			[33, 44]
-		]);
+		expect(store.getState().routing.waypoints).toEqual(waypoints);
+
+		removeWaypoint([11, 22]); // remove start waypoint
+		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Missing);
+
+		setWaypoints(waypoints);
+
+		removeWaypoint([33, 44]); // remove destination waypoint
+		expect(store.getState().routing.waypoints).toEqual([[11, 22]]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Destination_Missing);
+
+		removeWaypoint([11, 22]); // remove the last waypoint
+		expect(store.getState().routing.waypoints).toEqual([]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Start_Destination_Missing);
+
+		setWaypoints([...waypoints, [55, 66]]); // we have three three waypoinst now
 
 		removeWaypoint([11, 22]);
-		expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+		expect(store.getState().routing.waypoints).toEqual([
+			[33, 44],
+			[55, 66]
+		]);
+		expect(store.getState().routing.status).toBe(RoutingStatusCodes.Ok);
 	});
 
 	it('sets a proposal coordinate', () => {

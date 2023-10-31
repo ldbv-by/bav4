@@ -116,7 +116,7 @@ export const setWaypoints = (coordinates) => {
 };
 
 /**
- * Removes a waypoint.
+ * Removes a waypoint and updates the status when appropriate.
  * @param {module:domain/coordinateTypeDef~Coordinate[]}  coordinates the coordinate which should be removed from the waypoints (in the map's SRID)
  * @function
  */

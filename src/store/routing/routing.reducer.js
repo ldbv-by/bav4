@@ -91,9 +91,25 @@ export const routingReducer = (state = initialState, action) => {
 			};
 		}
 		case ROUTING_WAYPOINT_DELETED: {
+			const index = state.waypoints.findIndex((c) => equals(c, payload));
+			const getNewStatus = () => {
+				if (state.waypoints.length === 1 && index === 0) {
+					return RoutingStatusCodes.Start_Destination_Missing;
+				} else if (state.waypoints.length === 2) {
+					switch (index) {
+						case 0:
+							return RoutingStatusCodes.Start_Missing;
+						case 1:
+							return RoutingStatusCodes.Destination_Missing;
+					}
+				}
+				return state.status;
+			};
+
 			return {
 				...state,
-				waypoints: state.waypoints.filter((c) => !equals(c, payload))
+				waypoints: state.waypoints.filter((c) => !equals(c, payload)),
+				status: getNewStatus()
 			};
 		}
 		case ROUTING_RESET: {
