@@ -5,7 +5,7 @@
 	justify-content: space-between;
 
 	--thumb-size: 2rem;
-	--thumb: hsl(0 0% 5%);
+	--thumb: var(--primary-bg-color);
 	--thumb-highlight: hsl(0 0% 100% / 25%);
 
 	--thumb-color: var(--thumb);
@@ -15,7 +15,7 @@
 	--track-padding: 2px;
 
 	--track-inactive: hsl(80 0% 35%);
-	--track-active: hsl(80 60% 60%);
+	--track-active: var(--primary-color);
 
 	--track-color-inactive: var(--track-inactive);
 	--track-color-active: var(--track-active);
