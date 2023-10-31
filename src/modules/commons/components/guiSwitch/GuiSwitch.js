@@ -40,6 +40,10 @@ const Toggle_No_Op = (checked) => {};
  */
 export class GuiSwitch extends MvuElement {
 	#switch = {};
+	#onToggle = Toggle_No_Op;
+	#activeThumb = null;
+	#recentlyDragged = false;
+	#dragging = false;
 
 	constructor() {
 		super({
@@ -48,8 +52,6 @@ export class GuiSwitch extends MvuElement {
 			disabled: false,
 			title: ''
 		});
-		// eslint-disable-next-line no-unused-vars
-		this._onToggle = Toggle_No_Op;
 	}
 
 	onInitialize() {
@@ -63,7 +65,7 @@ export class GuiSwitch extends MvuElement {
 					detail: { checked: data }
 				})
 			);
-			this._onToggle(data);
+			this.#onToggle(data);
 
 			return data;
 		};
@@ -85,12 +87,6 @@ export class GuiSwitch extends MvuElement {
 
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			this._state = {
-				activeThumb: null,
-				recentlyDragged: false,
-				dragging: false
-			};
-
 			const checkbox = this.shadowRoot.querySelector('input');
 			const thumbSize = getPseudoStyle(checkbox, 'width');
 			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
@@ -145,19 +141,19 @@ export class GuiSwitch extends MvuElement {
 	_dragInit(event) {
 		if (event.target.disabled) return;
 
-		this._state.activeThumb = event.target;
-		this._state.activeThumb.addEventListener('pointermove', (event) => {
+		this.#activeThumb = event.target;
+		this.#activeThumb.addEventListener('pointermove', (event) => {
 			this._dragging(event);
 		});
 		window.addEventListener('pointerup', () => this._dragEnd(), { once: true });
-		this._state.activeThumb.style.setProperty('--thumb-transition-duration', '0s');
-		this._state.activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+		this.#activeThumb.style.setProperty('--thumb-transition-duration', '0s');
+		this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
 	}
 
 	_dragging(event) {
-		if (this._state.activeThumb) {
-			this._state.activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
-			this._state.dragging = true;
+		if (this.#activeThumb) {
+			this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+			this.#dragging = true;
 		}
 	}
 
@@ -169,41 +165,41 @@ export class GuiSwitch extends MvuElement {
 		};
 
 		const { thumbSize, bounds, padding } = this.#switch;
-		const directionality = getStyle(this._state.activeThumb, '--isLTR');
-		const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
+		const directionality = getStyle(this.#activeThumb, '--isLTR');
+		const track = directionality === -1 ? this.#activeThumb.clientWidth * -1 + thumbSize + padding : 0;
 
 		const position = getHarmonizedPosition(offsetX, thumbSize, bounds);
 		return `${track + position}px`;
 	}
 
 	_dragEnd() {
-		if (!this._state.activeThumb) return;
+		if (!this.#activeThumb) return;
 
-		this._state.activeThumb.checked = this._state.dragging ? this._determineChecked() : !this._determineChecked();
-		this.signal(Update_Checked, this._state.activeThumb.checked);
-		if (this._state.activeThumb.indeterminate) {
-			this._state.activeThumb.indeterminate = false;
+		this.#activeThumb.checked = this.#dragging ? this._determineChecked() : !this._determineChecked();
+		this.signal(Update_Checked, this.#activeThumb.checked);
+		if (this.#activeThumb.indeterminate) {
+			this.#activeThumb.indeterminate = false;
 		}
 
-		this._state.activeThumb.style.removeProperty('--thumb-transition-duration');
-		this._state.activeThumb.style.removeProperty('--thumb-position');
-		this._state.activeThumb.removeEventListener('pointermove', this._dragging);
-		this._state.activeThumb = null;
-		this._state.dragging = false;
+		this.#activeThumb.style.removeProperty('--thumb-transition-duration');
+		this.#activeThumb.style.removeProperty('--thumb-position');
+		this.#activeThumb.removeEventListener('pointermove', this._dragging);
+		this.#activeThumb = null;
+		this.#dragging = false;
 
 		this._padRelease();
 	}
 
 	_padRelease() {
-		this._state.recentlyDragged = true;
+		this.#recentlyDragged = true;
 
 		setTimeout(() => {
-			this._state.recentlyDragged = false;
+			this.#recentlyDragged = false;
 		}, 300);
 	}
 
 	_preventBubbles(event) {
-		if (this._state.recentlyDragged) {
+		if (this.#recentlyDragged) {
 			event.preventDefault();
 			event.stopPropagation();
 		}
@@ -227,7 +223,7 @@ export class GuiSwitch extends MvuElement {
 		const target = event.target;
 		const checkbox = target.querySelector('input');
 
-		if (this._state.recentlyDragged || !target.classList.contains('ba-switch') || checkbox.disabled) {
+		if (this.#recentlyDragged || !target.classList.contains('ba-switch') || checkbox.disabled) {
 			return;
 		}
 
@@ -237,8 +233,7 @@ export class GuiSwitch extends MvuElement {
 
 	_determineChecked() {
 		const { bounds } = this.#switch;
-		const currentPosition = parseInt(this._state.activeThumb.style.getPropertyValue('--thumb-position'));
-		console.log(currentPosition);
+		const currentPosition = parseInt(this.#activeThumb.style.getPropertyValue('--thumb-position'));
 		return currentPosition >= bounds.middle;
 	}
 
@@ -274,11 +269,11 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().checked;
 	}
 	set onToggle(callback) {
-		this._onToggle = callback && isFunction(callback) ? callback : Toggle_No_Op;
+		this.#onToggle = callback && isFunction(callback) ? callback : Toggle_No_Op;
 	}
 
 	get onToggle() {
-		return this._onToggle;
+		return this.#onToggle;
 	}
 
 	static get tag() {
