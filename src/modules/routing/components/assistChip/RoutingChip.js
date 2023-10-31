@@ -1,3 +1,6 @@
+/**
+ * @module modules/routing/components/assistChip/RoutingChip
+ */
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { AbstractAssistChip } from '../../../chips/components/assistChips/AbstractAssistChip';
@@ -7,7 +10,7 @@ const Update_Coordinate = 'update_coordinate';
 const Update_Status = 'update_status';
 
 /**
- *
+ * An AssistChip to start a routing with a proposal point
  * @class
  * @author thiloSchlemmer
  */
