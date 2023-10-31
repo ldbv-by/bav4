@@ -88,7 +88,7 @@ export class LayerTree extends MvuElement {
 		this._showChildren = (uid) => {};
 		this._addGeoResourcePermanently = () => {};
 		// eslint-disable-next-line no-unused-vars
-		this._copyBranchRoot = (catalog, catalogEntry) => {};
+		this._copyBranch = (catalog, catalogEntry) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (currentCatalogEntryUid, uidFromDrag) => {};
 		this._addLayerGroup = () => {};
@@ -249,7 +249,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const handleCopyClick = (event, catalogEntry) => {
-			this._copyBranchRoot(catalogWithResourceData, catalogEntry);
+			this._copyBranch(catalogWithResourceData, catalogEntry);
 
 			event.stopPropagation();
 			event.preventDefault();
@@ -441,14 +441,14 @@ export class LayerTree extends MvuElement {
 	}
 
 	/**
-	 * @property {function} copyBranchRoot - Callback function
+	 * @property {function} copyBranch - Callback function
 	 */
-	set copyBranchRoot(callback) {
-		this._copyBranchRoot = callback;
+	set copyBranch(callback) {
+		this._copyBranch = callback;
 	}
 
-	get copyBranchRoot() {
-		return this._copyBranchRoot;
+	get copyBranch() {
+		return this._copyBranch;
 	}
 
 	/**

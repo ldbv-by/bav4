@@ -14,11 +14,17 @@ import { nothing } from '../../../../../node_modules/lit-html/lit-html';
 const Update_CatalogWithResourceData = 'update_catalogWithResourceData';
 const Empty_Label = ' ';
 
+let _uniqueIdCounter = 0;
+const _generateUniqueId = () => {
+	const timestamp = new Date().getTime();
+	_uniqueIdCounter++;
+	return `${timestamp}-${_uniqueIdCounter}`;
+};
+
 /**
  * @class
  */
 export class AdminPanel extends MvuElement {
-	#uniqueIdCounter = 0;
 	#catalog = [];
 	#geoResources = [];
 	#topics = [];
@@ -45,15 +51,9 @@ export class AdminPanel extends MvuElement {
 		this._topicsService = topicsService;
 	}
 
-	_generateUniqueId() {
-		const timestamp = new Date().getTime();
-		this.#uniqueIdCounter++;
-		return `${timestamp}-${this.#uniqueIdCounter}`;
-	}
-
 	_addUniqueId(catalogFromService) {
 		const catalogWithUniqueId = catalogFromService.map((category) => {
-			const uid = this._generateUniqueId();
+			const uid = _generateUniqueId();
 
 			if (category.children) {
 				const children = this._addUniqueId(category.children);
@@ -132,6 +132,23 @@ export class AdminPanel extends MvuElement {
 
 	_copyEverything(obj, extractFunction) {
 		const result = { uid: obj.uid };
+		if (obj.geoResourceId) {
+			result.geoResourceId = obj.geoResourceId;
+		}
+		if (obj.label) {
+			result.label = obj.label;
+		}
+		if (obj.children && obj.children.length > 0) {
+			if (obj.showChildren) {
+				result.showChildren = obj.showChildren;
+			}
+			result.children = obj.children.map((child) => extractFunction(child, extractFunction));
+		}
+		return result;
+	}
+
+	_copyBranch(obj, extractFunction) {
+		const result = { uid: _generateUniqueId() };
 		if (obj.geoResourceId) {
 			result.geoResourceId = obj.geoResourceId;
 		}
@@ -269,7 +286,7 @@ export class AdminPanel extends MvuElement {
 
 		const createNewGeoResourceEntry = (newGeoresourceId) => {
 			const geoResource = this.#geoResources.find((georesource) => georesource.id === newGeoresourceId);
-			const newUid = this._generateUniqueId();
+			const newUid = _generateUniqueId();
 			const newEntry = { uid: newUid, geoResourceId: newGeoresourceId, label: geoResource.label };
 			return { newEntry, newUid };
 		};
@@ -441,10 +458,11 @@ export class AdminPanel extends MvuElement {
 			this._updateCatalog(this.#currentTopicId);
 		};
 
-		const copyBranchRoot = (catalogWithResourceData, catalogEntry) => {
+		const copyBranch = (catalogWithResourceData, catalogEntry) => {
+			const newBranch = this._reduceData(catalogEntry.children, this._copyBranch);
 			this.signal(Update_CatalogWithResourceData, [
 				...catalogWithResourceData,
-				{ uid: this._generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: [{ label: Empty_Label }] }
+				{ uid: _generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: newBranch }
 			]);
 		};
 
@@ -469,7 +487,7 @@ export class AdminPanel extends MvuElement {
 							.showChildren="${showChildren}"
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.addLayerGroup="${addLayerGroup}"
-							.copyBranchRoot="${copyBranchRoot}"
+							.copyBranch="${copyBranch}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>
