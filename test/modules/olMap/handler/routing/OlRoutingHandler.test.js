@@ -892,7 +892,7 @@ describe('OlRoutingHandler', () => {
 		describe('_displayAlternativeRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
-				const category = { id: 'hike' };
+				const category = { id: 'hike', style: {} };
 				const categoryResponse = {
 					vehicle: 'foo',
 					paths: [
@@ -924,7 +924,7 @@ describe('OlRoutingHandler', () => {
 		describe('_displayCurrentRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
-				const category = { id: 'hike' };
+				const category = { id: 'hike', style: {} };
 				const categoryResponse = {
 					vehicle: 'foo',
 					paths: [
