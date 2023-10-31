@@ -6,6 +6,7 @@ import { html } from 'lit-html';
 import { MvuElement } from '../../../MvuElement';
 import { getPseudoStyle, getStyle } from '../../../../utils/style-utils';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../utils/markup';
+import { isFunction } from '../../../../utils/checks';
 
 const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
@@ -33,7 +34,7 @@ const Update_Title = 'update_title';
  * @property {boolean} indeterminate = false - The checkbox has an indeterminate state.
  * @property {string} title = '' - The title of the button.
  * @property {boolean} disabled = false - The checkbox react on user interactions or not.
- * @property {function} onToggle - The toggle event fires when the checked state of a GuiSwitch element is toggled.
+ * @property {function(checked)} onToggle - The toggle event fires when the checked state of a GuiSwitch element is toggled.
  */
 export class GuiSwitch extends MvuElement {
 	#switch = {};
@@ -45,10 +46,11 @@ export class GuiSwitch extends MvuElement {
 			disabled: false,
 			title: ''
 		});
+		// eslint-disable-next-line no-unused-vars
+		this._onToggle = (checked) => {};
 	}
 
 	onInitialize() {
-		this._onToggle = () => {};
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
@@ -59,9 +61,8 @@ export class GuiSwitch extends MvuElement {
 					detail: { checked: data }
 				})
 			);
-			if (this._onToggle) {
-				this._onToggle(data);
-			}
+			this._onToggle(data);
+
 			return data;
 		};
 
@@ -82,13 +83,12 @@ export class GuiSwitch extends MvuElement {
 
 	onAfterRender(firstTime) {
 		if (firstTime) {
-			const switchLabelElement = this.shadowRoot.querySelector('.ba-switch');
 			this._state = {
 				activeThumb: null,
 				recentlyDragged: false
 			};
 
-			const checkbox = switchLabelElement.querySelector('input');
+			const checkbox = this.shadowRoot.querySelector('input');
 			const thumbSize = getPseudoStyle(checkbox, 'width');
 			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
@@ -265,7 +265,7 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().checked;
 	}
 	set onToggle(callback) {
-		this._onToggle = callback;
+		this._onToggle = callback && isFunction(callback) ? callback : () => {};
 	}
 
 	get onToggle() {

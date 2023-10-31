@@ -92,6 +92,40 @@ describe('GuiSwitch', () => {
 				expect(element.title).toBe('foo');
 			});
 		});
+
+		describe("when callback property 'onToggle' changes", () => {
+			it('sets the callback', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const callbackFunction = () => {};
+
+				element.onToggle = callbackFunction;
+				expect(element.onToggle).toBe(callbackFunction);
+			});
+
+			it('does NOT sets the callback with a invalid value', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+
+				element.onToggle = 42;
+				expect(element.onToggle).not.toBe(42);
+				expect(element.onToggle).toEqual(jasmine.any(Function));
+
+				element.onToggle = 'something';
+				expect(element.onToggle).not.toBe('something');
+				expect(element.onToggle).toEqual(jasmine.any(Function));
+
+				element.onToggle = { foo: 'something' };
+				expect(element.onToggle).not.toEqual({ foo: 'something' });
+				expect(element.onToggle).toEqual(jasmine.any(Function));
+
+				element.onToggle = null;
+				expect(element.onToggle).not.toBeNull();
+				expect(element.onToggle).toEqual(jasmine.any(Function));
+
+				element.onToggle = undefined;
+				expect(element.onToggle).not.toBeUndefined();
+				expect(element.onToggle).toEqual(jasmine.any(Function));
+			});
+		});
 	});
 
 	describe('event handling', () => {
