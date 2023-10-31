@@ -32,6 +32,7 @@ import { HelpTooltip } from '../../../../../src/modules/olMap/tooltip/HelpToolti
 import { SelectEvent } from 'ol/interaction/Select';
 import { RoutingStatusCodes } from '../../../../../src/domain/routing';
 import { positionReducer } from '../../../../../src/store/position/position.reducer';
+import { elevationProfileReducer } from '../../../../../src/store/elevationProfile/elevationProfile.reducer';
 
 describe('constants and enums', () => {
 	it('provides an enum of all valid RoutingFeatureTypes', () => {
@@ -87,7 +88,12 @@ describe('OlRoutingHandler', () => {
 				...state
 			}
 		};
-		const store = TestUtils.setupStoreAndDi(initialState, { routing: routingReducer, notifications: notificationReducer, position: positionReducer });
+		const store = TestUtils.setupStoreAndDi(initialState, {
+			routing: routingReducer,
+			notifications: notificationReducer,
+			position: positionReducer,
+			elevationProfile: elevationProfileReducer
+		});
 
 		$injector
 			.registerSingleton('RoutingService', routingServiceMock)
@@ -949,6 +955,33 @@ describe('OlRoutingHandler', () => {
 				expect(segmentFeature1.getGeometry()).toBeInstanceOf(LineString);
 				expect(segmentFeature1.getGeometry().getCoordinates()).toEqual(coordinates);
 				expect(segmentFeature1.getStyle()(feature)).toEqual(getRoutingStyleFunction()(feature));
+			});
+
+			it('updates the elevationProfile s-o-s', async () => {
+				const { instanceUnderTest, store } = await newTestInstance();
+				const category = { id: 'hike' };
+				const categoryResponse = {
+					vehicle: 'foo',
+					paths: [
+						{
+							points:
+								'gxfiHu~fgAYRaBvBMH[J{ATq@R_@T}BlBwAr@}@t@[LU?wMeBsBm@e@Ua@Yc@VgAb@wBn@iBR_C?eLYiC?{_@VeMBkCTiBDsIK_A@i@Jq@Xk@`@]Zi@p@g@~@[`AWjAg@lEi@pC]tA{A`Fa@|As@jD]l@WXc@Ve@JAsBAe@W}@SrAa@lBk@Am@zBg@z@sAxC'
+						}
+					]
+				};
+				const coordinates = [
+					[21, 42],
+					[5, 55]
+				];
+				const geometry = new LineString(coordinates);
+				spyOn(instanceUnderTest, '_polylineToGeometry').withArgs(categoryResponse.paths[0].points).and.returnValue(geometry);
+				const segmentGeometries = [new LineString(coordinates), new LineString(coordinates)];
+				spyOn(instanceUnderTest, '_splitRouteByIntermediatePoints').withArgs(geometry).and.returnValue(segmentGeometries);
+				spyOn(routingServiceMock, 'getCategoryById').withArgs(categoryResponse.vehicle).and.returnValue(category);
+
+				instanceUnderTest._displayCurrentRoutingGeometry(categoryResponse);
+
+				expect(store.getState().elevationProfile.coordinates.length).toBeGreaterThan(0);
 			});
 		});
 
