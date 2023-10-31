@@ -12,6 +12,8 @@ const Update_Disabled = 'update_disabled';
 const Update_Checked = 'update_checked';
 const Update_Indeterminate = 'update_indeterminate';
 const Update_Title = 'update_title';
+// eslint-disable-next-line no-unused-vars
+const Toggle_No_Op = (checked) => {};
 
 /**
  * new 'nicer' toggle element based on https://web.dev/building-a-switch-component/
@@ -47,7 +49,7 @@ export class GuiSwitch extends MvuElement {
 			title: ''
 		});
 		// eslint-disable-next-line no-unused-vars
-		this._onToggle = (checked) => {};
+		this._onToggle = Toggle_No_Op;
 	}
 
 	onInitialize() {
@@ -265,7 +267,7 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().checked;
 	}
 	set onToggle(callback) {
-		this._onToggle = callback && isFunction(callback) ? callback : () => {};
+		this._onToggle = callback && isFunction(callback) ? callback : Toggle_No_Op;
 	}
 
 	get onToggle() {

@@ -104,26 +104,27 @@ describe('GuiSwitch', () => {
 
 			it('does NOT sets the callback with a invalid value', async () => {
 				const element = await TestUtils.render(GuiSwitch.tag);
+				const initialCallback = element.onToggle;
 
 				element.onToggle = 42;
 				expect(element.onToggle).not.toBe(42);
-				expect(element.onToggle).toEqual(jasmine.any(Function));
+				expect(element.onToggle).toBe(initialCallback);
 
 				element.onToggle = 'something';
 				expect(element.onToggle).not.toBe('something');
-				expect(element.onToggle).toEqual(jasmine.any(Function));
+				expect(element.onToggle).toBe(initialCallback);
 
 				element.onToggle = { foo: 'something' };
 				expect(element.onToggle).not.toEqual({ foo: 'something' });
-				expect(element.onToggle).toEqual(jasmine.any(Function));
+				expect(element.onToggle).toBe(initialCallback);
 
 				element.onToggle = null;
 				expect(element.onToggle).not.toBeNull();
-				expect(element.onToggle).toEqual(jasmine.any(Function));
+				expect(element.onToggle).toBe(initialCallback);
 
 				element.onToggle = undefined;
 				expect(element.onToggle).not.toBeUndefined();
-				expect(element.onToggle).toEqual(jasmine.any(Function));
+				expect(element.onToggle).toBe(initialCallback);
 			});
 		});
 	});
@@ -138,6 +139,14 @@ describe('GuiSwitch', () => {
 				element.shadowRoot.querySelector('#guiSwitch').click();
 
 				expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+				expect(element.checked).toBeTrue();
+
+				element.shadowRoot.querySelector('#guiSwitch').click();
+
+				expect(element.checked).toBeFalse();
+
+				element.shadowRoot.querySelector('label').click();
+
 				expect(element.checked).toBeTrue();
 			});
 
@@ -157,6 +166,11 @@ describe('GuiSwitch', () => {
 				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
 
 				element.shadowRoot.querySelector('#guiSwitch').click();
+
+				expect(onToggleSpy).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+
+				element.shadowRoot.querySelector('label').click();
 
 				expect(onToggleSpy).not.toHaveBeenCalled();
 				expect(element.checked).toBeFalse();
@@ -282,6 +296,39 @@ describe('GuiSwitch', () => {
 				expect(spy).toHaveBeenCalled();
 				// expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 				expect(element.checked).toBeTrue();
+			});
+
+			it('does nothing when disabled', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				element.disabled = true;
+
+				const keydownEvent = new KeyboardEvent('keydown', {
+					key: ' '
+				});
+
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				const inputElement = element.shadowRoot.querySelector('input');
+				inputElement.dispatchEvent(keydownEvent);
+
+				expect(onToggleSpy).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
+			});
+
+			it('does nothing when hitting other keys', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+
+				const keydownEvent = new KeyboardEvent('keydown', {
+					key: 'f'
+				});
+
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+
+				const inputElement = element.shadowRoot.querySelector('input');
+				inputElement.dispatchEvent(keydownEvent);
+
+				expect(onToggleSpy).not.toHaveBeenCalled();
+				expect(element.checked).toBeFalse();
 			});
 		});
 	});
