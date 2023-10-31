@@ -87,7 +87,8 @@ export class GuiSwitch extends MvuElement {
 		if (firstTime) {
 			this._state = {
 				activeThumb: null,
-				recentlyDragged: false
+				recentlyDragged: false,
+				dragging: false
 			};
 
 			const checkbox = this.shadowRoot.querySelector('input');
@@ -150,31 +151,36 @@ export class GuiSwitch extends MvuElement {
 		});
 		window.addEventListener('pointerup', () => this._dragEnd(), { once: true });
 		this._state.activeThumb.style.setProperty('--thumb-transition-duration', '0s');
+		this._state.activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
 	}
 
 	_dragging(event) {
-		const getHarmonizedPosition = (event, thumbSize, bounds) => {
-			const rawPosition = Math.round(event.offsetX - thumbSize / 2);
+		if (this._state.activeThumb) {
+			this._state.activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+			this._state.dragging = true;
+		}
+	}
+
+	_calculateThumbPosition(offsetX) {
+		const getHarmonizedPosition = (offsetX, thumbSize, bounds) => {
+			const rawPosition = Math.round(offsetX - thumbSize / 2);
 
 			return rawPosition < bounds.lower ? 0 : rawPosition > bounds.upper ? bounds.upper : rawPosition;
 		};
 
-		if (this._state.activeThumb) {
-			const { thumbSize, bounds, padding } = this.#switch;
-			const directionality = getStyle(this._state.activeThumb, '--isLTR');
-			const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
+		const { thumbSize, bounds, padding } = this.#switch;
+		const directionality = getStyle(this._state.activeThumb, '--isLTR');
+		const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
 
-			const position = getHarmonizedPosition(event, thumbSize, bounds);
-			this._state.activeThumb.style.setProperty('--thumb-position', `${track + position}px`);
-		}
+		const position = getHarmonizedPosition(offsetX, thumbSize, bounds);
+		return `${track + position}px`;
 	}
 
 	_dragEnd() {
 		if (!this._state.activeThumb) return;
 
-		this._state.activeThumb.checked = this._determineChecked();
+		this._state.activeThumb.checked = this._state.dragging ? this._determineChecked() : !this._determineChecked();
 		this.signal(Update_Checked, this._state.activeThumb.checked);
-
 		if (this._state.activeThumb.indeterminate) {
 			this._state.activeThumb.indeterminate = false;
 		}
@@ -183,6 +189,7 @@ export class GuiSwitch extends MvuElement {
 		this._state.activeThumb.style.removeProperty('--thumb-position');
 		this._state.activeThumb.removeEventListener('pointermove', this._dragging);
 		this._state.activeThumb = null;
+		this._state.dragging = false;
 
 		this._padRelease();
 	}
@@ -231,7 +238,7 @@ export class GuiSwitch extends MvuElement {
 	_determineChecked() {
 		const { bounds } = this.#switch;
 		const currentPosition = parseInt(this._state.activeThumb.style.getPropertyValue('--thumb-position'));
-
+		console.log(currentPosition);
 		return currentPosition >= bounds.middle;
 	}
 
