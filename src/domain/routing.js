@@ -15,6 +15,7 @@
  * @typedef {Object} RoutingCategoryStyle
  * @property {string} routeColor The fill color of the displayed route
  * @property {string} routeBorderColor The border color of the displayed route
+ * @property {number} [routeZindex] Optional zIndex of this route
  * @property {string} [icon] Optional SVG path of the icon (at least the parent category should have one)
  * @property {string} [color] Optional color of this category (at least the parent category should have one)
  */
