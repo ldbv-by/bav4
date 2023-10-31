@@ -56,18 +56,21 @@ export class GuiSwitch extends MvuElement {
 	 * @override
 	 */
 	update(type, data, model) {
+		const returnAndPropagate = (data) => {
+			this.dispatchEvent(
+				new CustomEvent('toggle', {
+					detail: { checked: data }
+				})
+			);
+			if (this._onToggle) {
+				this._onToggle(data);
+			}
+			return data;
+		};
+
 		switch (type) {
 			case Update_Checked:
-				this.dispatchEvent(
-					new CustomEvent('toggle', {
-						detail: { checked: data }
-					})
-				);
-				if (this._onToggle) {
-					this._onToggle(data);
-				}
-
-				return { ...model, checked: data, indeterminate: false };
+				return { ...model, checked: returnAndPropagate(data), indeterminate: false };
 
 			case Update_Indeterminate:
 				return { ...model, indeterminate: data };
