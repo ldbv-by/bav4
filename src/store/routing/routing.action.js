@@ -17,8 +17,7 @@ import {
 	ROUTING_HIGHLIGHT_SEGMENTS_SET,
 	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
 	ROUTING_PROPOSAL_SET,
-	ROUTING_WAYPOINT_DELETED,
-	ROUTING_INTERMEDIATE_SET
+	ROUTING_WAYPOINT_DELETED
 } from './routing.reducer';
 
 /**
@@ -27,6 +26,26 @@ import {
  * @property {Array<Array<number>>} segments the segments
  * @property {boolean} [zoomToExtent] `true` if the map should be zoomed to the extent of the segments. Default is `false`.
  */
+
+/**
+ * Contains a coordinate and its intention.
+ * @typedef {Object} CoordinateProposal
+ * @property {module:domain/coordinateTypeDef~Coordinate}  coordinate The coordinate (in the SRID of the map)
+ * @property {module:store/routing/routing_action~CoordinateProposalType} type Intention of the coordinate
+ */
+
+/**
+ * @readonly
+ * @enum {Number}
+ */
+export const CoordinateProposalType = Object.freeze({
+	START_OR_DESTINATION: 0,
+	START: 1,
+	DESTINATION: 2,
+	INTERMEDIATE: 3,
+	EXISTING_START_OR_DESTINATION: 4,
+	EXISTING_INTERMEDIATE: 5
+});
 
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
@@ -151,27 +170,14 @@ export const setDestination = (coordinate) => {
 /**
  * Sets a coordinate as a proposal coordinate.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the proposal coordinate (in the SRID of the map)
+ * @param {module:store/routing/routing_action~CoordinateProposalType} type
  * @function
  */
-export const setProposal = (coordinate) => {
-	if (isCoordinate(coordinate)) {
+export const setProposal = (coordinate, type) => {
+	if (isCoordinate(coordinate) && type) {
 		getStore().dispatch({
 			type: ROUTING_PROPOSAL_SET,
-			payload: new EventLike([...coordinate])
-		});
-	}
-};
-
-/**
- * Sets a coordinate as a proposal for a new intermediate waypoint.
- * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
- * @function
- */
-export const setIntermediate = (coordinate) => {
-	if (isCoordinate(coordinate)) {
-		getStore().dispatch({
-			type: ROUTING_INTERMEDIATE_SET,
-			payload: new EventLike([...coordinate])
+			payload: new EventLike({ coord: [...coordinate], type })
 		});
 	}
 };

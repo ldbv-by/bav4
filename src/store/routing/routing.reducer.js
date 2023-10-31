@@ -12,7 +12,6 @@ export const ROUTING_RESET = 'routing/reset';
 export const ROUTING_START_SET = 'routing/startSet';
 export const ROUTING_DESTINATION_SET = 'routing/destinationSet';
 export const ROUTING_PROPOSAL_SET = 'routing/proposalSet';
-export const ROUTING_INTERMEDIATE_SET = 'routing/intermediateSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_SET = 'routing/highlightSet';
 export const ROUTING_HIGHLIGHT_SEGMENTS_REMOVED = 'routing/highlightRemoved';
 
@@ -46,13 +45,9 @@ export const initialState = {
 	 */
 	active: false,
 	/**
-	 *@property {EventLike<domain/coordinateTypeDef~Coordinate>}
+	 *@property {EventLike<store/routing/routing_action~CoordinateProposal>}
 	 */
-	proposal: new EventLike(),
-	/**
-	 *@property {EventLike<domain/coordinateTypeDef~Coordinate>}
-	 */
-	intermediate: new EventLike()
+	proposal: new EventLike()
 };
 
 export const routingReducer = (state = initialState, action) => {
@@ -122,12 +117,6 @@ export const routingReducer = (state = initialState, action) => {
 			return {
 				...state,
 				proposal: payload
-			};
-		}
-		case ROUTING_INTERMEDIATE_SET: {
-			return {
-				...state,
-				intermediate: payload
 			};
 		}
 		case ROUTING_HIGHLIGHT_SEGMENTS_SET: {
