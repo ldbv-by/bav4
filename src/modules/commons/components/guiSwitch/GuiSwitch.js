@@ -92,24 +92,6 @@ export class GuiSwitch extends MvuElement {
 			const thumbSize = getPseudoStyle(checkbox, 'width');
 			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
-			checkbox.addEventListener('pointerdown', (event) => {
-				this._dragInit(event);
-			});
-			checkbox.addEventListener('pointerup', () => {
-				this._dragEnd();
-			});
-			checkbox.addEventListener('click', (event) => {
-				this._preventBubbles(event);
-			});
-
-			checkbox.addEventListener('keydown', (event) => {
-				this._keydown(event);
-			});
-
-			switchLabelElement.addEventListener('click', (event) => {
-				this._labelClick(event);
-			});
-
 			this.#switch = {
 				thumbSize: thumbSize,
 				padding,
@@ -119,12 +101,6 @@ export class GuiSwitch extends MvuElement {
 					upper: checkbox.clientWidth - thumbSize - padding
 				}
 			};
-
-			window.addEventListener('pointerup', () => {
-				if (!this._state.activeThumb) return;
-
-				this._dragEnd();
-			});
 		}
 	}
 
@@ -141,10 +117,14 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="guiSwitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+			<label title="${title}" for="guiSwitch" @click=${(e) => this._labelClick(e)} class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				<slot name="before"></slot>
 				<input
 					@change=${onChange}
+					@pointerdown=${(event) => this._dragInit(event)}
+					@pointerup=${() => this._dragEnd()}
+					@click=${(event) => this._preventBubbles(event)}
+					@keydown=${(event) => this._keydown(event)}
 					id="guiSwitch"
 					type="checkbox"
 					role="switch"
@@ -166,6 +146,7 @@ export class GuiSwitch extends MvuElement {
 		this._state.activeThumb.addEventListener('pointermove', (event) => {
 			this._dragging(event);
 		});
+		window.addEventListener('pointerup', () => this._dragEnd(), { once: true });
 		this._state.activeThumb.style.setProperty('--thumb-transition-duration', '0s');
 	}
 
