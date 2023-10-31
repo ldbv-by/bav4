@@ -176,19 +176,20 @@ export class GuiSwitch extends MvuElement {
 	}
 
 	_dragging(event) {
-		if (!this._state.activeThumb) return;
+		const getHarmonizedPosition = (event, thumbSize, bounds) => {
+			const rawPosition = Math.round(event.offsetX - thumbSize / 2);
 
-		const { thumbSize, bounds, padding } = this.#switch;
-		const directionality = getStyle(this._state.activeThumb, '--isLTR');
+			return rawPosition < bounds.lower ? 0 : rawPosition > bounds.upper ? bounds.upper : rawPosition;
+		};
 
-		const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
+		if (this._state.activeThumb) {
+			const { thumbSize, bounds, padding } = this.#switch;
+			const directionality = getStyle(this._state.activeThumb, '--isLTR');
+			const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
 
-		let pos = Math.round(event.offsetX - thumbSize / 2);
-
-		if (pos < bounds.lower) pos = 0;
-		if (pos > bounds.upper) pos = bounds.upper;
-
-		this._state.activeThumb.style.setProperty('--thumb-position', `${track + pos}px`);
+			const position = getHarmonizedPosition(event, thumbSize, bounds);
+			this._state.activeThumb.style.setProperty('--thumb-position', `${track + position}px`);
+		}
 	}
 
 	_dragEnd() {
