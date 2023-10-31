@@ -110,8 +110,10 @@ describe('styleUtils', () => {
 			const category = {
 				id: 'bike',
 				label: 'Fahrrad',
-				color: 'gray',
-				borderColor: 'green',
+				style: {
+					routeColor: 'gray',
+					routeBorderColor: 'green'
+				},
 				subcategories: []
 			};
 			const feature = new Feature();
@@ -135,16 +137,20 @@ describe('styleUtils', () => {
 			const categoryWithZIndex = {
 				id: 'bike',
 				label: 'Fahrrad',
-				color: 'gray',
-				borderColor: 'green',
-				zIndex: 1,
+				style: {
+					routeColor: 'gray',
+					routeBorderColor: 'green',
+					routeZindex: 1
+				},
 				subcategories: []
 			};
 			const categoryWithOutZIndex = {
 				id: 'mtb',
 				label: 'Mountainbike',
-				color: 'gray',
-				borderColor: 'SpringGreen',
+				style: {
+					routeColor: 'gray',
+					routeBorderColor: 'SpringGreen'
+				},
 				subcategories: []
 			};
 			const feature0 = new Feature();
@@ -165,7 +171,7 @@ describe('styleUtils', () => {
 				new Style({
 					zIndex: 2,
 					stroke: new Stroke({
-						color: feature0.get('Routing_Cat').color,
+						color: feature0.get(ROUTING_CATEGORY).style.routeColor,
 						width: 3,
 						lineDash: [5]
 					})
@@ -183,7 +189,7 @@ describe('styleUtils', () => {
 				new Style({
 					zIndex: 1,
 					stroke: new Stroke({
-						color: feature0.get('Routing_Cat').color,
+						color: feature0.get(ROUTING_CATEGORY).style.routeColor,
 						width: 3,
 						lineDash: [5]
 					})
@@ -201,9 +207,11 @@ describe('styleUtils', () => {
 			const category = {
 				id: 'bike',
 				label: 'Fahrrad',
-				color: 'gray',
-				borderColor: 'green',
-				zIndex: 1,
+				style: {
+					routeColor: 'gray',
+					routeBorderColor: 'green',
+					routeZindex: 1
+				},
 				subcategories: []
 			};
 			const feature = new Feature();
