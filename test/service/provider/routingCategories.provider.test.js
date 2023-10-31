@@ -25,7 +25,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 			borderColor: 'red',
 			subcategories: []
 		};
-		const bvv_bike = {
+		const bvv_hike = {
 			id: 'bvv-hike',
 			label: 'Wandern (Freizeitwege)',
 			description: 'Wandern möglichst auf offiziellen Wanderwegen',
@@ -50,7 +50,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 			zIndex: 1,
 			subcategories: []
 		};
-		const bvv_hike = {
+		const bvv_bike = {
 			id: 'bvv-bike',
 			label: 'Fahrrad (Freizeitwege)',
 			description: 'Fahrradfahren möglichst auf offiziellen Freizeitwegen',
@@ -99,7 +99,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 			borderColor: 'red',
 			subcategories: []
 		};
-		const bvv_bike = {
+		const bvv_hike = {
 			id: 'bvv-hike',
 			label: 'Hiking (BVV Freizeitwege)',
 			description: 'Hike on "BVV Freizeitwege" tracks where possible',
@@ -124,7 +124,7 @@ describe('bvvRoutingCategoriesProvider', () => {
 			zIndex: 1,
 			subcategories: []
 		};
-		const bvv_hike = {
+		const bvv_bike = {
 			id: 'bvv-bike',
 			label: 'Bicycle (BVV Freizeitwege)',
 			description: 'Ride a bicycle on "BVV Freizeitwege" tracks where possible',

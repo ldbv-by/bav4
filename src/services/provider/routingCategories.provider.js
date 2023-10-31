@@ -19,7 +19,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 		borderColor: 'red',
 		subcategories: []
 	};
-	const bvv_bike = {
+	const bvv_hike = {
 		id: 'bvv-hike',
 		label: lang === 'de' ? 'Wandern (Freizeitwege)' : 'Hiking (BVV Freizeitwege)',
 		description: lang === 'de' ? 'Wandern möglichst auf offiziellen Wanderwegen' : 'Hike on "BVV Freizeitwege" tracks where possible',
@@ -44,7 +44,7 @@ export const bvvRoutingCategoriesProvider = async () => {
 		zIndex: 1,
 		subcategories: []
 	};
-	const bvv_hike = {
+	const bvv_bike = {
 		id: 'bvv-bike',
 		label: lang === 'de' ? 'Fahrrad (Freizeitwege)' : 'Bicycle (BVV Freizeitwege)',
 		description:
