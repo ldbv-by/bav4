@@ -17,7 +17,8 @@ import {
 	ROUTING_HIGHLIGHT_SEGMENTS_SET,
 	ROUTING_HIGHLIGHT_SEGMENTS_REMOVED,
 	ROUTING_PROPOSAL_SET,
-	ROUTING_WAYPOINT_DELETED
+	ROUTING_WAYPOINT_DELETED,
+	ROUTING_INTERMEDIATE_SET
 } from './routing.reducer';
 
 /**
@@ -156,6 +157,20 @@ export const setProposal = (coordinate) => {
 	if (isCoordinate(coordinate)) {
 		getStore().dispatch({
 			type: ROUTING_PROPOSAL_SET,
+			payload: new EventLike([...coordinate])
+		});
+	}
+};
+
+/**
+ * Sets a coordinate as a proposal for a new intermediate waypoint.
+ * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the coordinate (in the SRID of the map) which should be a new intermediate waypoint of the route
+ * @function
+ */
+export const setIntermediate = (coordinate) => {
+	if (isCoordinate(coordinate)) {
+		getStore().dispatch({
+			type: ROUTING_INTERMEDIATE_SET,
 			payload: new EventLike([...coordinate])
 		});
 	}

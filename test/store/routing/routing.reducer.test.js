@@ -8,6 +8,7 @@ import {
 	setCategory,
 	setDestination,
 	setHighlightedSegments,
+	setIntermediate,
 	setProposal,
 	setRoute,
 	setRouteStats,
@@ -35,7 +36,8 @@ describe('routingReducer', () => {
 			waypoints: [],
 			highlightedSegments: null,
 			active: false,
-			proposal: jasmine.objectContaining({ payload: null })
+			proposal: jasmine.objectContaining({ payload: null }),
+			intermediate: jasmine.objectContaining({ payload: null })
 		});
 	});
 
@@ -201,6 +203,19 @@ describe('routingReducer', () => {
 		setProposal([11, 22]);
 
 		expect(store.getState().routing.proposal.payload).toEqual(coordinate);
+	});
+
+	it('sets a intermediate coordinate', () => {
+		const store = setup();
+		const coordinate = [11, 22];
+
+		setIntermediate([11, 22, 'foo']);
+
+		expect(store.getState().routing.intermediate).toEqual(jasmine.objectContaining({ payload: null }));
+
+		setIntermediate([11, 22]);
+
+		expect(store.getState().routing.intermediate.payload).toEqual(coordinate);
 	});
 
 	it("sets and removes the 'highlightedSegments' property", () => {
