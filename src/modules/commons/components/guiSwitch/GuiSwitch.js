@@ -27,10 +27,13 @@ const Update_Title = 'update_title';
  *
  * @class
  * @author nklein
+ * @author thiloSchlemmer
  *
- *  todo: ignore dragging in wrong direction
- *  todo: more tests
- *
+ * @property {boolean} checked = false - The checkbox is whether checked or not.
+ * @property {boolean} indeterminate = false - The checkbox has an indeterminate state.
+ * @property {string} title = '' - The title of the button.
+ * @property {boolean} disabled = false - The checkbox react on user interactions or not.
+ * @property {function} onToggle - The toggle event fires when the checked state of a GuiSwitch element is toggled.
  */
 export class GuiSwitch extends MvuElement {
 	#switch = {};
@@ -44,17 +47,11 @@ export class GuiSwitch extends MvuElement {
 		});
 	}
 
-	/**
-	 * @override
-	 */
 	onInitialize() {
 		this._onToggle = () => {};
 		this.setAttribute(TEST_ID_ATTRIBUTE_NAME, '');
 	}
 
-	/**
-	 * @override
-	 */
 	update(type, data, model) {
 		const returnAndPropagate = (data) => {
 			this.dispatchEvent(
@@ -83,9 +80,6 @@ export class GuiSwitch extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	onAfterRender(firstTime) {
 		if (firstTime) {
 			const switchLabelElement = this.shadowRoot.querySelector('.ba-switch');
@@ -134,9 +128,6 @@ export class GuiSwitch extends MvuElement {
 		}
 	}
 
-	/**
-	 * @override
-	 */
 	createView(model) {
 		const { checked, indeterminate, disabled, title } = model;
 
@@ -261,9 +252,6 @@ export class GuiSwitch extends MvuElement {
 		return currentPosition >= bounds.middle;
 	}
 
-	/**
-	 * @property {boolean} indeterminate = false - Checkbox is indeterminate
-	 */
 	set indeterminate(value) {
 		this.signal(Update_Indeterminate, value);
 	}
@@ -272,9 +260,6 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().indeterminate;
 	}
 
-	/**
-	 * @property {string} title = '' - The title of the button
-	 */
 	set title(value) {
 		this.signal(Update_Title, value);
 	}
@@ -283,9 +268,6 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().title;
 	}
 
-	/**
-	 * @property {boolean} disabled = false - Checkbox is clickable
-	 */
 	set disabled(value) {
 		this.signal(Update_Disabled, value);
 	}
@@ -294,9 +276,6 @@ export class GuiSwitch extends MvuElement {
 		return this.getModel().disabled;
 	}
 
-	/**
-	 * @property {boolean} checked = false - Checkbox is checked
-	 */
 	set checked(value) {
 		this.signal(Update_Checked, value);
 	}
@@ -304,10 +283,6 @@ export class GuiSwitch extends MvuElement {
 	get checked() {
 		return this.getModel().checked;
 	}
-
-	/**
-	 * @property {function} onToggle - Callback function
-	 */
 	set onToggle(callback) {
 		this._onToggle = callback;
 	}
