@@ -179,14 +179,17 @@ describe('GuiSwitch', () => {
 
 		describe('"drag" events', () => {
 			describe('when dragging starts', () => {
-				it('sets the "state.activeThumb" property to the checkbox element', async () => {
+				it('sets the "--thumb-position" CSS variable on the checkbox element', async () => {
 					const element = await TestUtils.render(GuiSwitch.tag);
 
 					const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
 					const pointerdown = new Event('pointerdown');
+					pointerdown.offsetX = 0;
 					guiSwitch.dispatchEvent(pointerdown);
 
-					expect(element._state.activeThumb.type).toBe('checkbox');
+					const computedStyle = window.getComputedStyle(guiSwitch);
+					const thumbPosition = computedStyle.getPropertyValue('--thumb-position');
+					expect(thumbPosition).toBe('0px');
 				});
 
 				it('sets the "--thumb-transition-duration" CSS variable to "0s"', async () => {
@@ -196,7 +199,7 @@ describe('GuiSwitch', () => {
 					const pointerdown = new Event('pointerdown');
 					guiSwitch.dispatchEvent(pointerdown);
 
-					const computedStyle = window.getComputedStyle(element._state.activeThumb);
+					const computedStyle = window.getComputedStyle(guiSwitch);
 					const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
 					expect(thumbTransitionDuration).toBe('0s');
 				});
@@ -222,7 +225,10 @@ describe('GuiSwitch', () => {
 					guiSwitch.dispatchEvent(pointerdown);
 
 					expect(dragInitSpy).toHaveBeenCalled();
-					expect(element._state.activeThumb).toBe(null);
+					const computedStyle = window.getComputedStyle(guiSwitch);
+					// property values should be the same as defined in guiSwitch.css
+					expect(computedStyle.getPropertyValue('--thumb-position')).toBe('0%');
+					expect(computedStyle.getPropertyValue('--thumb-transition-duration')).toBe('0.25s');
 				});
 			});
 		});
@@ -237,7 +243,7 @@ describe('GuiSwitch', () => {
 				const pointerdown = new Event('pointerdown');
 				guiSwitch.dispatchEvent(pointerdown);
 
-				const computedStyle = window.getComputedStyle(element._state.activeThumb);
+				const computedStyle = window.getComputedStyle(guiSwitch);
 				const thumbTransitionDuration = computedStyle.getPropertyValue('--thumb-transition-duration');
 				expect(thumbTransitionDuration).toBe('0s');
 
@@ -294,7 +300,6 @@ describe('GuiSwitch', () => {
 				inputElement.dispatchEvent(keydownEvent);
 
 				expect(spy).toHaveBeenCalled();
-				// expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
 				expect(element.checked).toBeTrue();
 			});
 
