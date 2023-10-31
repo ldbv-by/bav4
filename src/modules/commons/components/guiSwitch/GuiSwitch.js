@@ -87,12 +87,12 @@ export class GuiSwitch extends MvuElement {
 		if (firstTime) {
 			const switchLabelElement = this.shadowRoot.querySelector('.ba-switch');
 			this._state = {
-				activethumb: null,
+				activeThumb: null,
 				recentlyDragged: false
 			};
 
 			const checkbox = switchLabelElement.querySelector('input');
-			const thumbsize = getPseudoStyle(checkbox, 'width');
+			const thumbSize = getPseudoStyle(checkbox, 'width');
 			const padding = getStyle(checkbox, 'padding-left') + getStyle(checkbox, 'padding-right');
 
 			checkbox.addEventListener('pointerdown', (event) => {
@@ -114,17 +114,17 @@ export class GuiSwitch extends MvuElement {
 			});
 
 			this.#switch = {
-				thumbsize,
+				thumbSize: thumbSize,
 				padding,
 				bounds: {
 					lower: 0,
 					middle: (checkbox.clientWidth - padding) / 4,
-					upper: checkbox.clientWidth - thumbsize - padding
+					upper: checkbox.clientWidth - thumbSize - padding
 				}
 			};
 
 			window.addEventListener('pointerup', () => {
-				if (!this._state.activethumb) return;
+				if (!this._state.activeThumb) return;
 
 				this._dragEnd();
 			});
@@ -147,11 +147,11 @@ export class GuiSwitch extends MvuElement {
 				${css}
 			</style>
 
-			<label title="${title}" for="guiswitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
+			<label title="${title}" for="guiSwitch" class="ba-switch  ${disabled ? 'cursor-disabled' : ''}">
 				<slot name="before"></slot>
 				<input
 					@change=${onChange}
-					id="guiswitch"
+					id="guiSwitch"
 					type="checkbox"
 					role="switch"
 					.checked=${checked}
@@ -168,43 +168,43 @@ export class GuiSwitch extends MvuElement {
 	_dragInit(event) {
 		if (event.target.disabled) return;
 
-		this._state.activethumb = event.target;
-		this._state.activethumb.addEventListener('pointermove', (event) => {
+		this._state.activeThumb = event.target;
+		this._state.activeThumb.addEventListener('pointermove', (event) => {
 			this._dragging(event);
 		});
-		this._state.activethumb.style.setProperty('--thumb-transition-duration', '0s');
+		this._state.activeThumb.style.setProperty('--thumb-transition-duration', '0s');
 	}
 
 	_dragging(event) {
-		if (!this._state.activethumb) return;
+		if (!this._state.activeThumb) return;
 
-		const { thumbsize, bounds, padding } = this.#switch;
-		const directionality = getStyle(this._state.activethumb, '--isLTR');
+		const { thumbSize, bounds, padding } = this.#switch;
+		const directionality = getStyle(this._state.activeThumb, '--isLTR');
 
-		const track = directionality === -1 ? this._state.activethumb.clientWidth * -1 + thumbsize + padding : 0;
+		const track = directionality === -1 ? this._state.activeThumb.clientWidth * -1 + thumbSize + padding : 0;
 
-		let pos = Math.round(event.offsetX - thumbsize / 2);
+		let pos = Math.round(event.offsetX - thumbSize / 2);
 
 		if (pos < bounds.lower) pos = 0;
 		if (pos > bounds.upper) pos = bounds.upper;
 
-		this._state.activethumb.style.setProperty('--thumb-position', `${track + pos}px`);
+		this._state.activeThumb.style.setProperty('--thumb-position', `${track + pos}px`);
 	}
 
 	_dragEnd() {
-		if (!this._state.activethumb) return;
+		if (!this._state.activeThumb) return;
 
-		this._state.activethumb.checked = this._determineChecked();
-		this.signal(Update_Checked, this._state.activethumb.checked);
+		this._state.activeThumb.checked = this._determineChecked();
+		this.signal(Update_Checked, this._state.activeThumb.checked);
 
-		if (this._state.activethumb.indeterminate) {
-			this._state.activethumb.indeterminate = false;
+		if (this._state.activeThumb.indeterminate) {
+			this._state.activeThumb.indeterminate = false;
 		}
 
-		this._state.activethumb.style.removeProperty('--thumb-transition-duration');
-		this._state.activethumb.style.removeProperty('--thumb-position');
-		this._state.activethumb.removeEventListener('pointermove', this._dragging);
-		this._state.activethumb = null;
+		this._state.activeThumb.style.removeProperty('--thumb-transition-duration');
+		this._state.activeThumb.style.removeProperty('--thumb-position');
+		this._state.activeThumb.removeEventListener('pointermove', this._dragging);
+		this._state.activeThumb = null;
 
 		this._padRelease();
 	}
@@ -252,9 +252,9 @@ export class GuiSwitch extends MvuElement {
 
 	_determineChecked() {
 		const { bounds } = this.#switch;
-		const curpos = parseInt(this._state.activethumb.style.getPropertyValue('--thumb-position'));
+		const currentPosition = parseInt(this._state.activeThumb.style.getPropertyValue('--thumb-position'));
 
-		return curpos >= bounds.middle;
+		return currentPosition >= bounds.middle;
 	}
 
 	/**
