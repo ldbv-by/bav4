@@ -18,27 +18,18 @@ const Toggle_No_Op = (checked) => {};
 export const PAD_RELEASE_TIMEOUT = 300;
 
 /**
- * new 'nicer' toggle element based on https://web.dev/building-a-switch-component/
- *
- * Events:
- * - onToggle()
- *
- * Properties:
- * - `checked`
- * - `disabled`
- * - `indeterminate`
- * - `title`
- *
+ * A toggle web component based on {@link https://web.dev/building-a-switch-component/}
  *
  * @class
  * @author nklein
  * @author thiloSchlemmer
  *
- * @property {boolean} checked = false - The checkbox is whether checked or not.
- * @property {boolean} indeterminate = false - The checkbox has an indeterminate state.
- * @property {string} title = '' - The title of the button.
- * @property {boolean} disabled = false - The checkbox react on user interactions or not.
- * @property {function(checked)} onToggle - The toggle event fires when the checked state of a GuiSwitch element is toggled.
+ * @property {boolean} checked=false - The checkbox is whether checked or not.
+ * @property {boolean} indeterminate=false - The checkbox has an indeterminate state.
+ * @property {string} title='' - The title of the button.
+ * @property {boolean} disabled=false - The checkbox react on user interactions or not.
+ * @property {function(checked)} onToggle - The toggle callback function when the checked state of a GuiSwitch element is toggled.
+ * @fires onToggle The toggle event fires when the checked state of a GuiSwitch element is toggled
  */
 export class GuiSwitch extends MvuElement {
 	#switch = {};
@@ -96,7 +87,7 @@ export class GuiSwitch extends MvuElement {
 
 			this.#switch = {
 				thumbSize: thumbSize,
-				padding,
+				padding: padding,
 				bounds: {
 					lower: 0,
 					middle: (checkbox.clientWidth - padding) / 4,
