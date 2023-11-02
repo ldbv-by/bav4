@@ -338,6 +338,56 @@ describe('GuiSwitch', () => {
 		});
 	});
 
+	describe('when in indeterminate state', () => {
+		const renderIndeterminateElement = async () => TestUtils.render(GuiSwitch.tag, { indeterminate: true });
+		it('toggles on click', async () => {
+			const element = await renderIndeterminateElement();
+			const spy = jasmine.createSpy();
+			element.addEventListener('toggle', spy);
+
+			expect(element.indeterminate).toBeTrue();
+
+			element.shadowRoot.querySelector('#guiSwitch').click();
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+			expect(element.checked).toBeTrue();
+			expect(element.indeterminate).toBeFalse();
+		});
+
+		it('toggles on key SPACE', async () => {
+			const element = await renderIndeterminateElement();
+			const spy = jasmine.createSpy();
+			element.addEventListener('toggle', spy);
+
+			expect(element.indeterminate).toBeTrue();
+
+			const inputElement = element.shadowRoot.querySelector('input');
+			const keydownEvent = new KeyboardEvent('keydown', { key: ' ' });
+			inputElement.dispatchEvent(keydownEvent);
+
+			expect(spy).toHaveBeenCalledOnceWith(jasmine.objectContaining({ detail: { checked: true } }));
+			expect(element.checked).toBeTrue();
+			expect(element.indeterminate).toBeFalse();
+		});
+
+		it('toggles on drag', async () => {
+			const element = await renderIndeterminateElement();
+			const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+			const pointerdown = new Event('pointerdown');
+			const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
+
+			expect(element.indeterminate).toBeTrue();
+
+			const pointerup = new Event('pointerup');
+			guiSwitch.dispatchEvent(pointerdown);
+			guiSwitch.dispatchEvent(pointermove);
+			guiSwitch.dispatchEvent(pointerup);
+
+			expect(element.checked).toBeTrue();
+			expect(element.indeterminate).toBeFalse();
+		});
+	});
+
 	describe('when slots are used', () => {
 		it('renders content in the  before slot', async () => {
 			const beforeSlotContent = '<div>Before Slot Content</div>';

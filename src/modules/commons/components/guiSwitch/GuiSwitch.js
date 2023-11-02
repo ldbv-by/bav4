@@ -44,6 +44,7 @@ export class GuiSwitch extends MvuElement {
 	#activeThumb = null;
 	#recentlyDragged = false;
 	#dragging = false;
+	#draggingListener = null;
 
 	constructor() {
 		super({
@@ -142,19 +143,16 @@ export class GuiSwitch extends MvuElement {
 		if (event.target.disabled) return;
 
 		this.#activeThumb = event.target;
-		this.#activeThumb.addEventListener('pointermove', (event) => {
-			this._dragging(event);
-		});
+		this.#draggingListener = new AbortController();
+		this.#activeThumb.addEventListener('pointermove', (e) => this._dragging(e), { signal: this.#draggingListener.signal });
 		window.addEventListener('pointerup', () => this._dragEnd(), { once: true });
 		this.#activeThumb.style.setProperty('--thumb-transition-duration', '0s');
 		this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
 	}
 
 	_dragging(event) {
-		if (this.#activeThumb) {
-			this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
-			this.#dragging = true;
-		}
+		this.#activeThumb.style.setProperty('--thumb-position', this._calculateThumbPosition(event.offsetX));
+		this.#dragging = true;
 	}
 
 	_calculateThumbPosition(offsetX) {
@@ -177,13 +175,11 @@ export class GuiSwitch extends MvuElement {
 
 		this.#activeThumb.checked = this.#dragging ? this._determineChecked() : !this._determineChecked();
 		this.signal(Update_Checked, this.#activeThumb.checked);
-		if (this.#activeThumb.indeterminate) {
-			this.#activeThumb.indeterminate = false;
-		}
 
 		this.#activeThumb.style.removeProperty('--thumb-transition-duration');
 		this.#activeThumb.style.removeProperty('--thumb-position');
-		this.#activeThumb.removeEventListener('pointermove', this._dragging);
+		this.#draggingListener.abort();
+		this.#draggingListener = null;
 		this.#activeThumb = null;
 		this.#dragging = false;
 
