@@ -56,7 +56,7 @@ export class LayerList extends MvuElement {
 			return nothing;
 		}
 
-		const filteredGeoResources = geoResources.filter((resource) => resource.label.toLowerCase().includes(filterText.toLowerCase()));
+		const filteredGeoResources = geoResources.filter((resource) => (resource.label + resource.id).toLowerCase().includes(filterText.toLowerCase()));
 
 		const handleFilterChange = (event) => {
 			const filterText = event.target.value;
