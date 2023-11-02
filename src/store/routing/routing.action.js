@@ -2,7 +2,7 @@
  * @module store/routing/routing_action
  */
 import { $injector } from '../../injection/index';
-import { isCoordinate } from '../../utils/checks';
+import { isCoordinate, isNumber } from '../../utils/checks';
 import { EventLike } from '../../utils/storeUtils';
 import {
 	ROUTING_ACTIVE_CHANGED,
@@ -175,7 +175,7 @@ export const setDestination = (coordinate) => {
  * @function
  */
 export const setProposal = (coordinate, type) => {
-	if (isCoordinate(coordinate) && type) {
+	if (isCoordinate(coordinate) && isNumber(type)) {
 		getStore().dispatch({
 			type: ROUTING_PROPOSAL_SET,
 			payload: new EventLike({ coord: [...coordinate], type })

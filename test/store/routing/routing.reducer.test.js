@@ -217,11 +217,11 @@ describe('routingReducer', () => {
 
 		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
 
-		setProposal([11, 22]);
+		setProposal(coordinate);
 
 		expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
 
-		setProposal([11, 22], CoordinateProposalType.INTERMEDIATE);
+		setProposal(coordinate, CoordinateProposalType.INTERMEDIATE);
 
 		expect(store.getState().routing.proposal.payload.coord).toEqual(coordinate);
 		expect(store.getState().routing.proposal.payload.type).toEqual(CoordinateProposalType.INTERMEDIATE);
