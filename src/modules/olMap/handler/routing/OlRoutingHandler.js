@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { CoordinateProposalType, removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 
@@ -144,9 +144,37 @@ export class OlRoutingHandler extends OlLayerHandler {
 			const coord = map.getEventCoordinate(event.originalEvent);
 			const pixel = map.getEventPixel(event.originalEvent);
 			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
-			// handle event only if there's no feature handled by the select interaction
-			if (hit.length < 1) {
-				setProposal(coord);
+
+			if (hit.length > 0) {
+				const feature = hit[0];
+
+				switch (feature.get(ROUTING_FEATURE_TYPE)) {
+					case RoutingFeatureTypes.START:
+					case RoutingFeatureTypes.DESTINATION: {
+						setProposal(coord, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+						break;
+					}
+					case RoutingFeatureTypes.INTERMEDIATE: {
+						setProposal(coord, CoordinateProposalType.EXISTING_INTERMEDIATE);
+						break;
+					}
+				}
+			} else {
+				if (this._getInteractionFeatures().length === 0) {
+					setProposal(coord, CoordinateProposalType.START_OR_DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START
+				) {
+					setProposal(coord, CoordinateProposalType.DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setProposal(coord, CoordinateProposalType.START);
+				} else {
+					setProposal(coord, CoordinateProposalType.INTERMEDIATE);
+				}
 			}
 		};
 	}

@@ -17,7 +17,7 @@ import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
 import { Modify, Select, Translate } from 'ol/interaction';
-import { setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
+import { CoordinateProposalType, setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { Feature, MapBrowserEvent } from 'ol';
 import Event from 'ol/events/Event';
@@ -1178,7 +1178,7 @@ describe('OlRoutingHandler', () => {
 			const feature = new Feature({
 				geometry: new Point(featureCoordinate)
 			});
-			const callClickHandler = async (feature) => {
+			const callClickHandler = async (hitFeature = null, interactionFeatures = []) => {
 				const { instanceUnderTest, map, store } = await newTestInstance();
 
 				const handler = instanceUnderTest._newClickHandler(map, instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
@@ -1194,7 +1194,8 @@ describe('OlRoutingHandler', () => {
 				spyOn(map, 'getEventCoordinate').withArgs(event.originalEvent).and.returnValue(featureCoordinate);
 				spyOn(map, 'getFeaturesAtPixel')
 					.withArgs(pixel, getFeaturesAtPixelOptionsForClickHandlerOptions)
-					.and.returnValue(feature ? [feature] : []);
+					.and.returnValue(hitFeature ? [hitFeature] : []);
+				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue(interactionFeatures);
 
 				handler(event);
 				return { map, store };
@@ -1217,15 +1218,55 @@ describe('OlRoutingHandler', () => {
 			});
 
 			it('updates the "proposal" property of the routing s-o-s', async () => {
-				const { store } = await callClickHandler();
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				let store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_START_OR_DESTINATION
+				});
 
-				expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: featureCoordinate }));
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_START_OR_DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
+				store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_INTERMEDIATE
+				});
 			});
 
-			it('does not update the routing s-o-s when a feature is hit', async () => {
-				const { store } = await callClickHandler(feature);
+			it('updates the "proposal" property of the routing s-o-s when a feature is NOT a hit', async () => {
+				let store = (await callClickHandler()).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.START_OR_DESTINATION
+				});
 
-				expect(store.getState().routing.proposal).toEqual(jasmine.objectContaining({ payload: null }));
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.START
+				});
+
+				feature.unset(ROUTING_FEATURE_TYPE);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.INTERMEDIATE
+				});
 			});
 		});
 
