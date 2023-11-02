@@ -15,6 +15,8 @@ const Update_Title = 'update_title';
 // eslint-disable-next-line no-unused-vars
 const Toggle_No_Op = (checked) => {};
 
+export const PAD_RELEASE_TIMEOUT = 300;
+
 /**
  * new 'nicer' toggle element based on https://web.dev/building-a-switch-component/
  *
@@ -191,7 +193,7 @@ export class GuiSwitch extends MvuElement {
 
 		setTimeout(() => {
 			this.#recentlyDragged = false;
-		}, 300);
+		}, PAD_RELEASE_TIMEOUT);
 	}
 
 	_preventBubbles(event) {

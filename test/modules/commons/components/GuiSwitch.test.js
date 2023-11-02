@@ -1,4 +1,4 @@
-import { GuiSwitch } from '../../../../src/modules/commons/components/guiSwitch/GuiSwitch';
+import { GuiSwitch, PAD_RELEASE_TIMEOUT } from '../../../../src/modules/commons/components/guiSwitch/GuiSwitch';
 import { TEST_ID_ATTRIBUTE_NAME } from '../../../../src/utils/markup';
 import { TestUtils } from '../../../test-utils.js';
 window.customElements.define(GuiSwitch.tag, GuiSwitch);
@@ -288,6 +288,46 @@ describe('GuiSwitch', () => {
 
 				expect(spyPointerup).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
+			});
+
+			it('respects the direction-attribute', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag, {}, { dir: 'rtl' });
+				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+
+				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const pointerdown = new Event('pointerdown');
+				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
+				const pointerup = new Event('pointerup');
+
+				guiSwitch.dispatchEvent(pointerdown);
+				guiSwitch.dispatchEvent(pointermove);
+				guiSwitch.dispatchEvent(pointerup);
+
+				expect(spyPointerup).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeFalse();
+			});
+
+			it('prevents bubbles after drag', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag, {}, { dir: 'rtl' });
+
+				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const pointerdown = new Event('pointerdown');
+				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
+				const pointerup = new Event('pointerup');
+
+				guiSwitch.dispatchEvent(pointerdown);
+				guiSwitch.dispatchEvent(pointermove);
+				guiSwitch.dispatchEvent(pointerup);
+
+				const onToggleSpy = spyOn(element, 'onToggle').and.callThrough();
+				guiSwitch.click();
+
+				expect(onToggleSpy).not.toHaveBeenCalled();
+
+				await TestUtils.timeout(PAD_RELEASE_TIMEOUT + 50);
+				guiSwitch.click();
+
+				expect(onToggleSpy).toHaveBeenCalled();
 			});
 		});
 
