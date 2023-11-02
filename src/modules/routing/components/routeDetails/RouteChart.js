@@ -9,7 +9,6 @@ import Chart from 'chart.js/auto';
 import css from './routeChart.css';
 import { $injector } from '../../../../injection/index';
 import { resetHighlightedSegments, setHighlightedSegments } from '../../../../store/routing/routing.action';
-import { removeHighlightFeaturesById } from '../../../../store/highlight/highlight.action';
 
 /**
  * @typedef {Object} RoutingChartData
@@ -78,13 +77,6 @@ export class RouteChart extends MvuElement {
 
 		const title = translate(collapsedChart ? 'routing_chart_hide' : 'routing_chart_show');
 
-		const getChartStyle = (item) => {
-			const { relative } = item.data;
-			const style = `background-color:${item.color}; width: ${relative < 1 ? Math.ceil(relative) : Math.round(relative)}%;`;
-
-			return item.image ? `${style}; background-image: ${item.image}` : style;
-		};
-
 		const getChartTitle = (item) => {
 			const { relative } = item.data;
 			return `${relative < 1 ? '<' + Math.ceil(relative) : Math.round(relative)}%`;
@@ -101,7 +93,8 @@ export class RouteChart extends MvuElement {
 
 			const formattedInMeter = (value) => value.toFixed(0) + ' m';
 			const formattedInKilometer = (value) => {
-				return value < 5000 ? value.toFixed(2) + ' km' : value.toFixed(0) + ' km';
+				const meterInKilometer = (value) => value / 1000;
+				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
 			};
 
 			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
@@ -122,13 +115,6 @@ export class RouteChart extends MvuElement {
 				<div class="${classMap(bodyCollapseClassInfo)}">
 					<div class="overflow-container">
 						<canvas class="chart_section donut"></canvas>
-						<!--<div class="chart_section progress">
-							${repeat(
-							items,
-							(chartItem) => chartItem.id,
-							(chartItem) => html`<div class="progress-bar" style=${getChartStyle(chartItem)} title=${getChartTitle(chartItem)}></div>`
-						)}
-						</div>-->
 						<div class="legend_section">
 							${repeat(
 								items,
@@ -152,13 +138,14 @@ export class RouteChart extends MvuElement {
 			</div>`;
 	}
 
-	_getChartConfigDoughnut(items, title) {
+	_getChartConfig(items, title) {
 		const getLegendValue = (item) => {
 			const value = item.data.absolute;
 
 			const formattedInMeter = (value) => value.toFixed(0) + ' m';
 			const formattedInKilometer = (value) => {
-				return value < 5000 ? value.toFixed(2) + ' km' : value.toFixed(0) + ' km';
+				const meterInKilometer = (value) => value / 1000;
+				return value < 5000 ? meterInKilometer(value).toFixed(2) + ' km' : meterInKilometer(value).toFixed(0) + ' km';
 			};
 
 			return value < 1000 ? formattedInMeter(value) : formattedInKilometer(value);
@@ -207,8 +194,7 @@ export class RouteChart extends MvuElement {
 
 	_createChart(items, label) {
 		const ctx = this.shadowRoot.querySelector('.donut').getContext('2d');
-		this._chart = new Chart(ctx, this._getChartConfigDoughnut(items, label));
-		this._noAnimation = false;
+		this._chart = new Chart(ctx, this._getChartConfig(items, label));
 	}
 
 	_destroyChart() {
