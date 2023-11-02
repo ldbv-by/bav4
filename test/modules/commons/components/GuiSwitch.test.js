@@ -269,6 +269,26 @@ describe('GuiSwitch', () => {
 				expect(onToggleSpy).toHaveBeenCalledTimes(1);
 				expect(element.checked).toBeTrue();
 			});
+
+			it('handles window.pointerup ONCE', async () => {
+				const element = await TestUtils.render(GuiSwitch.tag);
+				const spyPointerup = spyOn(element, '_dragEnd').and.callThrough();
+
+				const guiSwitch = element.shadowRoot.querySelector('#guiSwitch');
+				const pointerdown = new Event('pointerdown');
+				const pointermove = new PointerEvent('pointermove', { bubbles: true, clientX: 100, clientY: 0 });
+				const pointerup = new Event('pointerup');
+
+				guiSwitch.dispatchEvent(pointerdown);
+				guiSwitch.dispatchEvent(pointermove);
+
+				window.dispatchEvent(pointerup);
+				window.dispatchEvent(pointerup);
+				window.dispatchEvent(pointerup);
+
+				expect(spyPointerup).toHaveBeenCalledTimes(1);
+				expect(element.checked).toBeTrue();
+			});
 		});
 
 		describe('pointerup event is triggered', () => {
