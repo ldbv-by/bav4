@@ -1,3 +1,6 @@
+/**
+ * @module modules/routing/components/routingContainer/routingContainer
+ */
 import { html } from '../../../../../node_modules/lit-html/lit-html';
 import { MvuElement } from '../../../MvuElement';
 
