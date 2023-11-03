@@ -292,7 +292,7 @@ export class Header extends MvuElement {
 							gespeichert
 						</span>					
 					</button>
-					<button @click="${openFeatureInfo}"  >
+					<button @click="${openRoutingTab}"  >
 						<span class="icon routing">
 						</span>
 						<span class="text">
