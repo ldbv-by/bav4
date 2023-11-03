@@ -298,12 +298,13 @@ describe('RouteDetails', () => {
 				categoryId: 'bike'
 			}
 		};
-		it('renders RoutingCharts', async () => {
+		it('lazy loads RouteCharts', async () => {
 			const element = await setup(defaultRoutingState);
 
-			const chartElements = element.shadowRoot.querySelectorAll('ba-routing-chart');
+			const lazyLoadElements = element.shadowRoot.querySelectorAll('ba-lazy-load');
 
-			expect(chartElements).toHaveSize(2);
+			expect(lazyLoadElements).toHaveSize(2);
+			expect(Array.from(lazyLoadElements).every((element) => element.content.strings[0].includes('<ba-routing-chart'))).toBeTrue();
 		});
 	});
 
