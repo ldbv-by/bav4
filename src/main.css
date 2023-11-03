@@ -3,13 +3,14 @@
    ========================================================================== */
 
 :root {
-	font-size: calc(0.75em + 0.15vw);
+	font-size: calc(0.9em + 0.15vw);
 
 	--border-radius-button: 2.5em;
 
 	--font-family: 'Open Sans', sans-serif;
 
 	/* z-index */
+	--z-map: 0;
 	--z-footer: 100;
 	--z-mapbuttons: 200;
 	--z-toolbox: 300;
@@ -149,4 +150,54 @@ body {
 
 	-webkit-user-select: none;
 	user-select: none;
+}
+
+html {
+	scroll-snap-type: mandatory;
+	scroll-snap-points-y: repeat(100vh);
+	scroll-snap-type: y mandatory;
+}
+section {
+	scroll-snap-align: end;
+	text-align: center;
+	position: relative;
+}
+h1 {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: center;
+	color: white;
+	width: 100%;
+	left: 0;
+	font-size: calc(1rem + 3vw);
+}
+
+.one {
+	pointer-events: none;
+	background: transparent;
+	height: 90dvh;
+}
+.tow {
+	z-index: 401;
+	background: blue;
+	background: var(--tertiary-bg-color);
+	height: 10dvh;
+	overflow: visible;
+}
+.three1 {
+	z-index: 400;
+	background: green;
+	background: var(--primary-bg-color);
+	height: 50dvh;
+	overflow: scroll;
+}
+.three2 {
+	position: relative;
+	top: -50dvh;
+	z-index: 400;
+	background: green;
+	background: var(--primary-bg-color);
+	height: 90dvh;
+	overflow: scroll;
 }
