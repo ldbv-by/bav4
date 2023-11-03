@@ -26,6 +26,8 @@ import { provide as messageProvide } from './tooltipMessage.provider';
 import { CoordinateProposalType, removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
+import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
+import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -436,6 +438,8 @@ export class OlRoutingHandler extends OlLayerHandler {
 			segmentFeature.setStyle(getRoutingStyleFunction());
 			this._routeLayerCopy.getSource().addFeature(segmentFeature);
 		}
+
+		updateCoordinates(getCoordinatesForElevationProfile(geometry));
 	}
 
 	_displayAlternativeRoutingGeometry(categoryResponse) {
