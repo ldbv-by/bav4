@@ -492,7 +492,7 @@ describe('OlRoutingHandler', () => {
 
 	describe('methods', () => {
 		describe('_requestRoute', () => {
-			describe('an no intermediate features are available', () => {
+			describe('and no intermediate features are available', () => {
 				it('calls the routing service with correct arguments', async () => {
 					const { instanceUnderTest } = await newTestInstance();
 					const defaultCategoryId = 'defaultCategoryId';
