@@ -24,8 +24,8 @@ test.describe('chunks', () => {
 		const response = await request.get(`${BASE_URL}/elevation-profile.js`);
 		expect(response.ok()).toBe(true);
 	});
-	test('should provide the ba-route-chart.js', async ({ request }) => {
-		const response = await request.get(`${BASE_URL}/route-chart.js`);
+	test('should provide the ba-routing.js', async ({ request }) => {
+		const response = await request.get(`${BASE_URL}/routing.js`);
 		expect(response.ok()).toBe(true);
 	});
 });
