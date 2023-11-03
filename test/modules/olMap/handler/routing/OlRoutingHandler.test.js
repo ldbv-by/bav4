@@ -403,6 +403,7 @@ describe('OlRoutingHandler', () => {
 
 		describe('select', () => {
 			it('is properly configured', async () => {
+				setup();
 				const instanceUnderTest = new OlRoutingHandler();
 				const interactionLayerMock = { id: '0' };
 				const alternativeRouteLayerMock = { id: '1' };
@@ -1373,6 +1374,7 @@ describe('OlRoutingHandler', () => {
 			};
 
 			it('is properly configured', async () => {
+				setup();
 				const instanceUnderTest = new OlRoutingHandler();
 				const interactionLayerMock = { id: '0' };
 				const alternativeRouteLayerMock = { id: '1' };
