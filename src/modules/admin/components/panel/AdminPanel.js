@@ -292,21 +292,18 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntryToChildrenRecursively = (catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry) => {
-			// itterate over catalogEntry.children
-			for (let n = 0; n < catalogEntry.children.length; n++) {
-				// and look for currentUid
-				const childCatalogEntry = catalogEntry.children[n];
+			for (let n = 0; n < catalogEntry.length; n++) {
+				const catalogEntryN = catalogEntry[n];
 
-				if (childCatalogEntry.uid === currentCatalogEntryUid) {
-					// found the uid in one of the children
-					catalogEntry.children.splice(n, 0, newEntry);
-					removePossibleEmptyEntry(catalogEntry.children);
+				if (catalogEntryN.uid === currentCatalogEntryUid) {
+					catalogEntry.splice(n, 0, newEntry);
+					removePossibleEmptyEntry(catalogEntry);
 					return true;
 				}
 
 				// check the children recursivly, if any
-				if (childCatalogEntry.children) {
-					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, childCatalogEntry, newEntry);
+				if (catalogEntryN.children) {
+					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntryN.children, newEntry);
 					if (found) {
 						return found;
 					}
@@ -327,23 +324,7 @@ export class AdminPanel extends MvuElement {
 		};
 
 		const addEntry = (catalogWithResourceData, currentCatalogEntryUid, newEntry) => {
-			// itterate over catalogWithResourceData
-			for (let entryNumber = 0; entryNumber < catalogWithResourceData.length; entryNumber++) {
-				const catalogEntry = catalogWithResourceData[entryNumber];
-
-				if (catalogEntry.uid === currentCatalogEntryUid) {
-					catalogWithResourceData.splice(entryNumber, 0, newEntry);
-					return;
-				}
-
-				// check the children if any
-				if (catalogEntry.children) {
-					const found = addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogEntry, newEntry);
-					if (found) {
-						return;
-					}
-				}
-			}
+			addEntryToChildrenRecursively(catalogWithResourceData, currentCatalogEntryUid, catalogWithResourceData, newEntry);
 		};
 
 		const addGeoResource = (currentCatalogEntryUid, newGeoresourceId, catalogWithResourceDataFromTree) => {
