@@ -25,7 +25,7 @@ describe('TranslationService', () => {
 		instanceUnderTest.register('testProvider', () => {
 			return {
 				key0: 'value0',
-				key1: 'value1'
+				key1: () => 'value1'
 			};
 		});
 

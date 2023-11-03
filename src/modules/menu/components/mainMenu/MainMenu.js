@@ -13,6 +13,7 @@ import { FeatureInfoPanel } from '../../../featureInfo/components/featureInfoPan
 import { unsafeHTML } from 'lit-html/directives/unsafe-html.js';
 import { MapsContentPanel } from './content/maps/MapsContentPanel';
 import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
+import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
 
@@ -119,7 +120,7 @@ export class MainMenu extends MvuElement {
 
 		const getMinWidthClass = () => (minWidth ? 'is-desktop' : 'is-tablet');
 
-		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO ? 'is-full-size' : '');
+		const getFullSizeClass = () => (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING ? 'is-full-size' : '');
 
 		const getOverlayClass = () => (open ? 'is-open' : '');
 
@@ -187,6 +188,8 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${MapsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.MISC:
 				return html`${unsafeHTML(`<${BvvMiscContentPanel.tag} data-test-id />`)}`;
+			case TabIds.ROUTING:
+				return html`${unsafeHTML(`<${RoutingPanel.tag} data-test-id />`)}`;
 			case TabIds.SEARCH:
 				return html`${unsafeHTML(`<${SearchResultsPanel.tag} data-test-id />`)}`;
 			case TabIds.TOPICS:

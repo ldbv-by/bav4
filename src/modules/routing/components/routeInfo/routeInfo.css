@@ -1,0 +1,100 @@
+.container {
+	/* display: flex;
+	flex-flow: row;
+	justify-content: space-evenly; */
+	padding: 0.8em 1.5em;
+}
+
+.col {
+	display: flex;
+	flex-flow: column;
+}
+
+.row {
+	display: flex;
+}
+
+.routing-info-icon {
+	height: 1.2em;
+	width: 1.2em;
+	margin: 0;
+	padding: 0;
+	background: var(--text2);
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	margin-right: 0.5em;
+}
+
+.routing-info-text {
+	padding: 0;
+	text-align: center;
+	color: var(--text1);
+	font-weight: bold;
+	margin-right: 0.5em;
+}
+
+.distance {
+	mask-image: url('../assets/arrow-left-right.svg');
+	-webkit-mask-image: url('../assets/arrow-left-right.svg');
+}
+
+.uphill {
+	mask-image: url('../assets/arrow-up-right.svg');
+	-webkit-mask-image: url('../assets/arrow-up-right.svg');
+}
+
+.downhill {
+	mask-image: url('../assets/arrow-down-right.svg');
+	-webkit-mask-image: url('../assets/arrow-down-right.svg');
+}
+
+.header {
+	padding: 0.8em 1em;
+	font-weight: bold;
+	font-size: 1.5rem;
+	display: flex;
+}
+
+.badge {
+	background: cadetblue;
+	font-weight: bold;
+	padding: 0.1em 0.8em 0.1em 0.3em;
+	border-radius: 1.5em;
+	color: #fff;
+	font-size: 0.8rem;
+	width: min-content;
+	margin: 0 0 0 0.5em;
+	display: flex;
+}
+.icon {
+	height: 2em;
+	width: 2em;
+	margin-right: 0.3em;
+	background: #fff;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+}
+.icon-bvv-bike {
+	mask-image: url('../assets/bvv-bike.svg');
+	-webkit-mask-image: url('../assets/bvv-bike.svg');
+}
+
+.icon-bvv-hike {
+	mask-image: url('../assets/bvv-hike.svg');
+	-webkit-mask-image: url('../assets/bvv-hike.svg');
+}
+
+.icon-bvv-mtb {
+	mask-image: url('../assets/bvv-mtb.svg');
+	-webkit-mask-image: url('../assets/bvv-mtb.svg');
+}
+
+.icon-racingbike {
+	mask-image: url('../assets/racingbike.svg');
+	-webkit-mask-image: url('../assets/racingbike.svg');
+}
+
+.text {
+	margin: auto;
+	white-space: nowrap;
+}

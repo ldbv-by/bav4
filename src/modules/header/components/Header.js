@@ -9,8 +9,9 @@ import css from './header.css';
 import { setQuery } from '../../../store/search/search.action';
 import { disableResponsiveParameterObservation, enableResponsiveParameterObservation } from '../../../store/media/media.action';
 import { MvuElement } from '../../MvuElement';
-import { openModal } from '../../../store/modal/modal.action';
 import VanillaSwipe from 'vanilla-swipe';
+import { setCurrentTool } from '../../../store/tools/tools.action';
+import { Tools } from '../../../domain/tools';
 import { toggleSchema } from '../../../store/media/media.action';
 
 const Update_IsOpen_TabIndex = 'update_isOpen_tabIndex';
@@ -132,10 +133,6 @@ export class Header extends MvuElement {
 	createView(model) {
 		const { isOpen, isOpenNav, tabIndex, isFetching, layers, isPortrait, hasMinWidth, searchTerm, darkSchema } = model;
 
-		const showModalInfo = () => {
-			openModal('Showcase', html`<ba-showcase></ba-showcase>`);
-		};
-
 		const getOrientationClass = () => {
 			return isPortrait ? 'is-portrait' : 'is-landscape';
 		};
@@ -236,6 +233,12 @@ export class Header extends MvuElement {
 			openMainMenu();
 		};
 
+		const openRoutingTab = () => {
+			setTab(TabIds.ROUTING);
+			setCurrentTool(Tools.ROUTING);
+			openMainMenu();
+		};
+
 		const clearSearchInput = () => {
 			const input = this.shadowRoot.getElementById('input');
 			input.value = '';
@@ -326,9 +329,10 @@ export class Header extends MvuElement {
 						</span>					
 					</button>
 					<button @click="${toggleSchema}" class="theme-toggle">
-						<span class="icon ${getSchemaClass()}  ">
-						</span>				
-					</button>
+					<span class="icon ${getSchemaClass()}  ">
+					</span>				
+				</button>
+
 				</div>
 				<div class="${getOrientationClass()} ${getMinWidthClass()} ${getDemoClass()}  ${getOverlayTestClass()}">
 					<div class='header__logo'>				
@@ -363,7 +367,7 @@ export class Header extends MvuElement {
 								</div>
 							<span class="header__search-clear ${getIsClearClass()}" @click="${clearSearchInput}">        							
 							</span>       
-							<button @click="${showModalInfo}" class="header__modal-button" title="modal">
+							<button @click="${openRoutingTab}" class="header__routing-button" title="${translate('header_tab_routing_button')}">
 							&nbsp;
 							</button>
 						</div>

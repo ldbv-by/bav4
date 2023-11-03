@@ -7,6 +7,7 @@ import { close, open, setTab } from '../store/mainMenu/mainMenu.action';
 import { TabIds } from '../domain/mainMenu';
 import { $injector } from '../injection';
 import { QueryParameters } from '../domain/queryParameters';
+import { Tools } from '../domain/tools';
 
 /**
  * @class
@@ -76,10 +77,22 @@ export class MainMenuPlugin extends BaPlugin {
 		};
 
 		const onTabChanged = (tab, state) => {
-			if (tab === TabIds.FEATUREINFO) {
+			if (tab === TabIds.FEATUREINFO || tab === TabIds.ROUTING) {
 				this._open = state.mainMenu.open;
 			} else {
 				this._previousTab = tab;
+			}
+		};
+
+		const onToolIdChanged = (toolId) => {
+			switch (toolId) {
+				case Tools.ROUTING:
+					open();
+					setTab(TabIds.ROUTING);
+					break;
+				case null:
+					setTab(this._previousTab);
+					break;
 			}
 		};
 
@@ -87,5 +100,6 @@ export class MainMenuPlugin extends BaPlugin {
 		observe(store, (state) => state.featureInfo.aborted, onFeatureInfoAbortedChanged);
 		observe(store, (state) => state.search.query, onQueryChanged, false);
 		observe(store, (store) => store.mainMenu.tab, onTabChanged, false);
+		observe(store, (state) => state.tools.current, onToolIdChanged);
 	}
 }

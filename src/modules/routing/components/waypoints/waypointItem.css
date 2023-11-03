@@ -1,0 +1,66 @@
+.container {
+	display: flex;
+	align-items: center;
+	padding: 1.5em 1em;
+	position: relative;
+}
+.icon {
+	height: 1.6em;
+	width: 1.6em;
+	margin-right: 1.5em;
+	padding: 0;
+	background: cadetblue;
+	mask-size: cover;
+	-webkit-mask-size: cover;
+	mask-image: url('../assets/intermediate.svg');
+	-webkit-mask-image: url('../assets/intermediate.svg');
+}
+
+.icon-bg {
+	border-radius: 1em;
+	width: 1.6em;
+	background: var(--primary-bg-color);
+	position: absolute;
+	z-index: 1;
+}
+
+.start .icon {
+	background: cadetblue;
+	mask-image: url('../assets/marker.svg');
+	-webkit-mask-image: url('../assets/marker.svg');
+}
+
+.destination .icon {
+	background: cadetblue;
+	mask-image: url('../assets/flag.svg');
+	-webkit-mask-image: url('../assets/flag.svg');
+}
+
+.line {
+	position: absolute;
+	height: 100%;
+	width: 0.15em;
+	left: 1.75em;
+	background: cadetblue;
+	z-index: 0;
+}
+
+.start + .line {
+	top: 50%;
+	height: 50%;
+}
+
+.destination + .line {
+	top: 0;
+	height: 50%;
+}
+
+.text {
+	margin-left: 2.5em;
+}
+
+.waypoint__buttons {
+	display: flex;
+	justify-content: right;
+	margin: auto;
+}
