@@ -466,6 +466,12 @@ export class AdminPanel extends MvuElement {
 			]);
 		};
 
+		const saveCatalog = async () => {
+			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginal);
+			const xxx = await this._catalogService.save(this.#currentTopicId, catalog);
+			console.log('🚀 ~ file: AdminPanel.js:474 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
+		};
+
 		if (this.#currentTopicId) {
 			return html`
 				<style>
@@ -488,6 +494,7 @@ export class AdminPanel extends MvuElement {
 							.addGeoResourcePermanently="${addGeoResourcePermanently}"
 							.addLayerGroup="${addLayerGroup}"
 							.copyBranch="${copyBranch}"
+							.saveCatalog="${saveCatalog}"
 							.dummy="${dummy}"
 						></ba-layer-tree>
 					</div>

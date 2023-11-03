@@ -1,6 +1,7 @@
 /**
  * @module modules/topics/services/CatalogService
  */
+import { $injector } from '../../../injection/index';
 import {
 	FALLBACK_GEORESOURCE_ID_0,
 	FALLBACK_GEORESOURCE_ID_1,
@@ -48,9 +49,11 @@ export class CatalogService {
 
 	/**
 	 * Returns a catalog definition for an id.
+	 * @async
 	 * @public
 	 * @param {string} topicId Id of the desired {@link Catalog}
-	 * @returns {Array<module:modules/topics/services/CatalogService~CatalogEntry> | null}
+	 * @throws `Error` when loading was not successful
+	 * @returns {Promise<Array<module:modules/topics/services/CatalogService~CatalogEntry> | null>}
 	 */
 	async byId(topicId) {
 		try {
@@ -82,8 +85,48 @@ export class CatalogService {
 		console.log('🚀 ~ CatalogService ~ save ~ topicId:', topicId);
 		// eslint-disable-next-line no-console
 		console.log('🚀 ~ CatalogService ~ save ~ catalog:', catalog);
+
+		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
+
+		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
+		// const headers = {
+		// 	'X-AUTH-ADMIN-TOKEN': 'adminToken123'
+		// };
+
+		// const ret = httpService.post(url, {
+		// 	headers: headers,
+		// 	mode: 'no-cors',
+		// 	timeout: 5000
+		// });
+		// console.log('🚀 ~ file: CatalogService.js:97 ~ CatalogService ~ save ~ ret:', ret);
+		// // const url = `${configService.getValueAsPath('BACKEND_URL')}georesource/info/${geoResource.id}`;
+		// // return httpService.get(url, { timeout: 5000 });
+
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-AUTH-ADMIN-TOKEN': 'adminToken123' // include any other headers if required
+			},
+			body: JSON.stringify(catalog)
+		})
+			.then(() => {
+				console.log('Catalog successfully posted.'); // handle success, if needed
+			})
+			.catch((error) => {
+				console.error('There has been a problem with your fetch operation:', error);
+			});
+
 		return true;
 	}
+	// headers: {
+	//     "Content-Type": "application/json",
+
+	//   }
+
+	//   X-AUTH-ADMIN-TOKEN
+
+	//   adminToken123
 
 	/**
 	 * @private

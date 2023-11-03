@@ -91,6 +91,8 @@ export class LayerTree extends MvuElement {
 		this._copyBranch = (catalog, catalogEntry) => {};
 		// eslint-disable-next-line no-unused-vars
 		this._moveElement = (currentCatalogEntryUid, uidFromDrag) => {};
+		// eslint-disable-next-line no-unused-vars
+		this._saveCatalog = (catalogId, catalog) => {};
 		this._addLayerGroup = () => {};
 
 		this.#currentGeoResourceId = null;
@@ -264,9 +266,8 @@ export class LayerTree extends MvuElement {
 			this._addLayerGroup();
 		};
 
-		const handleSaveClick = (e) => {
-			// eslint-disable-next-line no-console
-			console.log('🚀 ~ LayerTree. ~ handleSaveClick ~ e:', e);
+		const handleSaveClick = () => {
+			this._saveCatalog();
 		};
 
 		const handleTopicChange = (event) => {
@@ -306,7 +307,7 @@ export class LayerTree extends MvuElement {
 			`;
 		};
 
-		// <button @click="${handleNewClick}">New</button>
+		// <button @click="${handleNewClick}">New</button>			<button @click="${handleSaveClick(catalogWithResourceData)}">sichern</button>
 		if (topics) {
 			return html`
 				<style>
@@ -460,6 +461,17 @@ export class LayerTree extends MvuElement {
 
 	get moveElement() {
 		return this._moveElement;
+	}
+
+	/**
+	 * @property {function} saveCatalog - Callback function
+	 */
+	set saveCatalog(callback) {
+		this._saveCatalog = callback;
+	}
+
+	get saveCatalog() {
+		return this._saveCatalog;
 	}
 
 	static get tag() {
