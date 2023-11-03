@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { CoordinateProposalType, removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
@@ -128,9 +128,57 @@ export class OlRoutingHandler extends OlLayerHandler {
 			olMap.on(
 				MapBrowserEventType.POINTERMOVE,
 				this._newPointerMoveHandler(olMap, this._interactionLayer, this._alternativeRouteLayer, this._routeLayerCopy)
-			)
+			),
+			olMap.on(MapBrowserEventType.CLICK, this._newClickHandler(olMap, this._interactionLayer, this._alternativeRouteLayer))
 		);
 		return this._routingLayerGroup;
+	}
+
+	_getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer) {
+		return {
+			layerFilter: (layer) => [interactionLayer, alternativeRouteLayer].includes(layer),
+			hitTolerance: 5
+		};
+	}
+
+	_newClickHandler(map, interactionLayer, alternativeRouteLayer) {
+		return (event) => {
+			const coord = map.getEventCoordinate(event.originalEvent);
+			const pixel = map.getEventPixel(event.originalEvent);
+			const hit = map.getFeaturesAtPixel(pixel, this._getFeaturesAtPixelOptionsForClickHandler(interactionLayer, alternativeRouteLayer));
+
+			if (hit.length > 0) {
+				const feature = hit[0];
+
+				switch (feature.get(ROUTING_FEATURE_TYPE)) {
+					case RoutingFeatureTypes.START:
+					case RoutingFeatureTypes.DESTINATION: {
+						setProposal(coord, CoordinateProposalType.EXISTING_START_OR_DESTINATION);
+						break;
+					}
+					case RoutingFeatureTypes.INTERMEDIATE: {
+						setProposal(coord, CoordinateProposalType.EXISTING_INTERMEDIATE);
+						break;
+					}
+				}
+			} else {
+				if (this._getInteractionFeatures().length === 0) {
+					setProposal(coord, CoordinateProposalType.START_OR_DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.START
+				) {
+					setProposal(coord, CoordinateProposalType.DESTINATION);
+				} else if (
+					this._getInteractionFeatures().length === 1 &&
+					this._getInteractionFeatures()[0].get(ROUTING_FEATURE_TYPE) === RoutingFeatureTypes.DESTINATION
+				) {
+					setProposal(coord, CoordinateProposalType.START);
+				} else {
+					setProposal(coord, CoordinateProposalType.INTERMEDIATE);
+				}
+			}
+		};
 	}
 
 	_getFeaturesAtPixelOptionsForPointerMove(interactionLayer, alternativeRouteLayer, routeLayerCopy) {
@@ -202,13 +250,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		translate.on('translatestart', (evt) => {
 			startCoordinate = evt.coordinate;
 		});
-		translate.on('translating', () => {
-			// this._map.getTarget().classList.add('grabbing');
-			// managePopup();
-			// Todo: hide context menu
-		});
 		translate.on('translateend', (evt) => {
-			// this._map.getTarget().classList.remove('grabbing');
 			if (evt.coordinate[0] !== startCoordinate[0] || evt.coordinate[1] !== startCoordinate[1]) {
 				this._requestRouteFromInteractionLayer();
 			}
@@ -228,22 +270,16 @@ export class OlRoutingHandler extends OlLayerHandler {
 		select.on('select', (evt) => {
 			if (evt.selected[0]) {
 				const feature = evt.selected[0];
+				const geometry = feature.getGeometry();
 				const category = feature.get(ROUTING_CATEGORY);
 				if (category) {
 					// change to alternative route
 					this._catId = category.id;
 					this._switchToAlternativeRoute(this._currentRoutingResponse);
-					// hideHelpTooltip();
-					// Todo: hide context menu
-				} else {
-					// Update the position of the popup according to the click event.
-					// managePopup(evt.selected[0], evt.mapBrowserEvent.coordinate, function () {
-					// 	select.getFeatures().clear();
-					// });
-					// console.log(feature.getGeometry().getFirstCoordinate());
-					// this._removeFeature(feature);
-					// Todo: update context menu
+				} else if (geometry instanceof Point) {
+					removeWaypoint(geometry.getFirstCoordinate());
 				}
+				this._helpTooltip.deactivate();
 				select.getFeatures().clear();
 			}
 		});
@@ -257,17 +293,9 @@ export class OlRoutingHandler extends OlLayerHandler {
 			pixelTolerance: 5,
 			deleteCondition: () => false
 		});
-		modify.on('modifystart', (evt) => {
-			if (evt.mapBrowserEvent.type !== 'singleclick') {
-				// this._map.getTarget().classList.add('grabbing');
-				// managePopup();
-				// Todo: show context menu
-			}
-		});
+
 		modify.on('modifyend', (evt) => {
 			if (evt.mapBrowserEvent.type === 'pointerup') {
-				// this._map.getTarget().classList.remove('grabbing');
-
 				// find the feature which was modified
 				// be careful with the revision number -> setting the style or properties on a feature also increments it
 				// in our case, the modified feature is the feature which holds the highest revision number
@@ -477,17 +505,6 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 		this._interactionLayer.getSource().addFeature(iconFeature);
 	}
-
-	// _removeFeature(feature) {
-	// 	const coordinate = feature.getGeometry().getFirstCoordinate();
-
-	// 	const {
-	// 		routing: { waypoints }
-	// 	} = this._storeService.getStore().getState();
-
-	// 	// we just update the store
-	// 	setWaypoints([...waypoints.filter((c) => !equals(c, coordinate))]);
-	// }
 
 	async _requestRouteFromCoordinates(coordinates3857, status) {
 		if (coordinates3857.length > 0) {

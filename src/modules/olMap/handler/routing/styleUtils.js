@@ -5,7 +5,7 @@ import { Style, Icon, Stroke, Text as TextStyle, Circle, Fill } from 'ol/style';
 import baRoutingStartIcon from './assets/ba-routing-start.svg';
 import baRoutingIntermediateIcon from './assets/ba-routing-intermediate.svg';
 import baRoutingDestinationIcon from './assets/ba-routing-destination.svg';
-import { ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
+import { ROUTING_CATEGORY, ROUTING_FEATURE_TYPE, RoutingFeatureTypes } from './OlRoutingHandler';
 
 export const getRoutingStyleFunction = () => {
 	return (feature) => {
@@ -62,7 +62,7 @@ export const getRoutingStyleFunction = () => {
 				return [
 					new Style({
 						stroke: new Stroke({
-							color: feature.get('Routing_Cat').borderColor,
+							color: feature.get(ROUTING_CATEGORY).style.routeBorderColor,
 							width: 6
 						})
 					})
@@ -70,7 +70,7 @@ export const getRoutingStyleFunction = () => {
 			case RoutingFeatureTypes.ROUTE_ALTERNATIVE:
 				return [
 					new Style({
-						zIndex: feature.get('Routing_Cat').zIndex || 0,
+						zIndex: feature.get(ROUTING_CATEGORY).style.routeZindex || 0,
 						stroke: new Stroke({
 							color: 'white',
 							width: 5,
@@ -78,9 +78,9 @@ export const getRoutingStyleFunction = () => {
 						})
 					}),
 					new Style({
-						zIndex: feature.get('Routing_Cat').zIndex + 1 || 1,
+						zIndex: feature.get(ROUTING_CATEGORY).style.routeZindex + 1 || 1,
 						stroke: new Stroke({
-							color: feature.get('Routing_Cat').color,
+							color: feature.get(ROUTING_CATEGORY).style.routeColor,
 							width: 3,
 							lineDash: [5]
 						})
@@ -90,7 +90,7 @@ export const getRoutingStyleFunction = () => {
 				return [
 					new Style({
 						stroke: new Stroke({
-							color: feature.get('Routing_Cat').color,
+							color: feature.get(ROUTING_CATEGORY).style.routeColor,
 							width: 2
 						})
 					})
