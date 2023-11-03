@@ -17,7 +17,13 @@ import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
 import { Modify, Select, Translate } from 'ol/interaction';
-import { CoordinateProposalType, setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
+import {
+	CoordinateProposalType,
+	setCategory,
+	setHighlightedSegments,
+	setIntermediate,
+	setWaypoints
+} from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { Feature, MapBrowserEvent } from 'ol';
 import Event from 'ol/events/Event';
@@ -202,7 +208,7 @@ describe('OlRoutingHandler', () => {
 					//map listeners
 					expect(instanceUnderTest._mapListeners).toHaveSize(2);
 
-					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(4);
 				});
 			});
 
@@ -239,7 +245,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._modifyInteraction).toBeNull();
 					expect(instanceUnderTest._map.getInteractions().getArray()).not.toContain(instanceUnderTest._modifyInteraction);
 
-					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
+					expect(instanceUnderTest._registeredObservers).toHaveSize(4);
 				});
 			});
 
@@ -338,6 +344,26 @@ describe('OlRoutingHandler', () => {
 					instanceUnderTest._highlightLayer,
 					instanceUnderTest._routeLayer
 				);
+			});
+		});
+
+		describe('when observed "intermediate" changes', () => {
+			it('updates the waypoints and calculates a route', async () => {
+				const coordinates = [
+					[11, 44],
+					[22, 55],
+					[33, 66]
+				];
+				const { instanceUnderTest } = await newTestInstance({
+					status: RoutingStatusCodes.Ok
+				});
+				const addIntermediateSpy = spyOn(instanceUnderTest, '_addIntermediate').and.returnValue(coordinates);
+				const requestRouteFromCoordinatesSpy = spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
+
+				setIntermediate([22, 55]);
+				await TestUtils.timeout();
+				expect(addIntermediateSpy).toHaveBeenCalledWith([22, 55], instanceUnderTest._routeLayerCopy);
+				expect(requestRouteFromCoordinatesSpy).toHaveBeenCalledWith(coordinates, RoutingStatusCodes.Ok);
 			});
 		});
 	});
@@ -1168,6 +1194,46 @@ describe('OlRoutingHandler', () => {
 
 					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
 				});
+			});
+		});
+
+		describe('_addIntermediate', () => {
+			it('calculates the index of a new intermediate coordinate and returns the coordinates', async () => {
+				const intermediateCoord = [16, 16];
+				const wpCoord0 = [0, 0];
+				const wpCoord1 = [10, 10];
+				const wpCoord2 = [20, 20];
+				const wpCoord3 = [30, 30];
+
+				const wp0 = new Feature({ geometry: new Point(wpCoord0) });
+				wp0.set(ROUTING_FEATURE_INDEX, 0);
+				const wp1 = new Feature({ geometry: new Point(wpCoord1) });
+				wp1.set(ROUTING_FEATURE_INDEX, 1);
+				const wp2 = new Feature({ geometry: new Point(wpCoord2) });
+				wp2.set(ROUTING_FEATURE_INDEX, 2);
+				const wp3 = new Feature({ geometry: new Point(wpCoord3) });
+				wp3.set(ROUTING_FEATURE_INDEX, 3);
+
+				const seg0 = new Feature({
+					geometry: new LineString([wpCoord0, wpCoord1])
+				});
+				seg0.set(ROUTING_SEGMENT_INDEX, 0);
+				const seg1 = new Feature({
+					geometry: new LineString([wpCoord1, wpCoord2])
+				});
+				seg1.set(ROUTING_SEGMENT_INDEX, 1);
+				const seg2 = new Feature({
+					geometry: new LineString([wpCoord2, wpCoord3])
+				});
+				seg2.set(ROUTING_SEGMENT_INDEX, 1);
+				const { instanceUnderTest } = await newTestInstance();
+				const routeLayerCopy = instanceUnderTest._routeLayerCopy;
+				routeLayerCopy.getSource().addFeatures([seg0, seg1, seg2]);
+				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue([wp0, wp1, wp2, wp3]);
+
+				const result = instanceUnderTest._addIntermediate(intermediateCoord, routeLayerCopy);
+
+				expect(result).toEqual([wpCoord0, wpCoord1, intermediateCoord, wpCoord2, wpCoord3]);
 			});
 		});
 

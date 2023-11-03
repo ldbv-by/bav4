@@ -578,7 +578,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 		if (highlightedSegments) {
 			const { segments, zoomToExtent } = highlightedSegments;
 
-			const clearHighlightLayerWithDelay = function () {
+			const clearHighlightLayerWithDelay = () => {
 				setTimeout(() => {
 					highlightLayer.getSource().clear();
 				}, REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS);
@@ -610,12 +610,42 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
+	_addIntermediate(intermediateCoord3857, routeLayerCopy) {
+		// find the closest segment
+		const closestSegmentFeature = routeLayerCopy
+			.getSource()
+			.getFeatures()
+			.reduce((acc, curr) => {
+				const closestCurr = curr.getGeometry().getClosestPoint(intermediateCoord3857);
+				const closestAcc = acc.getGeometry().getClosestPoint(intermediateCoord3857);
+				// planar distance! -> must be adapted when changed to 3857
+				const dCurr = distance(closestCurr, intermediateCoord3857);
+				const dAcc = distance(closestAcc, intermediateCoord3857);
+				return dCurr < dAcc ? curr : acc;
+			});
+
+		const segmentIndex = closestSegmentFeature.get(ROUTING_SEGMENT_INDEX);
+
+		const coordinates3857 = this._getInteractionFeatures().map((feature) => {
+			return feature.getGeometry().getCoordinates();
+		});
+		coordinates3857.splice(segmentIndex + 1, 0, intermediateCoord3857);
+
+		return coordinates3857;
+	}
+
 	_register(store) {
 		const updateCategoryAndRequestRoute = (coordinates3857, catId, status) => {
 			// let's ensure each request is executed one after each other
 			this._promiseQueue.add(async () => {
 				this._catId = catId;
 				await this._requestRouteFromCoordinates([...coordinates3857.map((c) => [...c])], status);
+			});
+		};
+		const addIntermediatePointAndRequestRoute = (coordinate3857, status) => {
+			// let's ensure each request is executed one after each other
+			this._promiseQueue.add(async () => {
+				await this._requestRouteFromCoordinates([...this._addIntermediate(coordinate3857, this._routeLayerCopy).map((c) => [...c])], status);
 			});
 		};
 		return [
@@ -634,6 +664,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 				store,
 				(state) => state.routing.highlightedSegments,
 				(highlightedSegments) => this._highlightSegments(highlightedSegments, this._highlightLayer, this._routeLayer)
+			),
+			observe(
+				store,
+				(state) => state.routing.intermediate,
+				(intermediate, state) => addIntermediatePointAndRequestRoute([...intermediate.payload], state.routing.status)
 			)
 		];
 	}
@@ -661,11 +696,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 	}
 	_unsubscribe(observers) {
 		observers.forEach((unsubscribe) => unsubscribe());
-		observers.splice(0, observe.length);
+		observers.splice(0, observers.length);
 	}
 
 	_unregisterMapListener(listeners) {
 		listeners.forEach((listener) => unByKey(listener));
-		listeners.splice(0, observe.length);
+		listeners.splice(0, listeners.length);
 	}
 }
