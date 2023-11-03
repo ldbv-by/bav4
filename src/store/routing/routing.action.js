@@ -171,7 +171,7 @@ export const setDestination = (coordinate) => {
 /**
  * Sets a coordinate as a proposal coordinate.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the proposal coordinate (in the SRID of the map)
- * @param {module:store/routing/routing_action~CoordinateProposalType} type
+ * @param {module:store/routing/routing_action~CoordinateProposalType} type the type of intention of the coordinate
  * @function
  */
 export const setProposal = (coordinate, type) => {
