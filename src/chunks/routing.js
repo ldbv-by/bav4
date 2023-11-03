@@ -1,6 +1,7 @@
 /**
  * This file just defines all dependencies for the chunk "routing"
  */
+import '../modules/routing/i18n';
 import { RoutingContainer } from '../modules/routing/components/routingContainer/routingContainer';
 import { CategoryBar } from '../modules/routing/components/categoryBar/CategoryBar';
 import { FeedbackBanner } from '../modules/routing/components/feedbackBanner/FeedbackBanner';
