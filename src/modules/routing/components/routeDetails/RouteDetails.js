@@ -55,15 +55,6 @@ export class RouteDetails extends MvuElement {
 			Object.entries(objectData).map(([k, v]) => {
 				return { ...v, name: k };
 			});
-		const surfaceContent = html`<ba-routing-chart
-			.label=${translate('routing_details_surface')}
-			.items=${asArray(chartData.surface)}
-		></ba-routing-chart>`;
-		const roadTypeContent = html`<ba-routing-chart
-			.label=${translate('routing_details_road_type')}
-			.items=${asArray(chartData.roadTypes)}
-		></ba-routing-chart>`;
-		const chunkName = 'route-chart';
 		return isVisible
 			? html`<style>
 						${css}
@@ -74,8 +65,8 @@ export class RouteDetails extends MvuElement {
 								<ba-routing-warnings .items=${asArray(warnings)}></ba-routing-warnings>
 							</div>
 							<div>
-								<ba-lazy-load .chunkName=${chunkName} .content=${surfaceContent}></ba-lazy-load>
-								<ba-lazy-load .chunkName=${chunkName} .content=${roadTypeContent}></ba-lazy-load>
+								<ba-routing-chart .label=${translate('routing_details_surface')} .items=${asArray(chartData.surface)}></ba-routing-chart>
+								<ba-routing-chart .label=${translate('routing_details_road_type')} .items=${asArray(chartData.roadTypes)}></ba-routing-chart>
 							</div>
 						</div>
 					</div>`

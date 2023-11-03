@@ -32,6 +32,9 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 			setTab(TabIds.MAPS);
 		};
 
+		const content = html`<ba-routing-container></ba-routing-container>`;
+		const chunkName = 'routing';
+
 		return html`
 			<style>
 				${css}
@@ -48,11 +51,7 @@ export class RoutingPanel extends AbstractMvuContentPanel {
 					</li>
 				</ul>
 				<div>
-					<ba-routing-feedback></ba-routing-feedback>
-					<ba-routing-category-bar></ba-routing-category-bar>
-					<ba-routing-waypoints></ba-routing-waypoints>
-					<ba-routing-info></ba-routing-info>
-					<ba-routing-details></ba-routing-details>
+					<ba-lazy-load .chunkName=${chunkName} .content=${content}></ba-lazy-load>
 				</div>
 				<div class="chips__container">
 					<ba-profile-chip></ba-profile-chip>

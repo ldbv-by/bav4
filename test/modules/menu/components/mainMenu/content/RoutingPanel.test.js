@@ -58,11 +58,11 @@ describe('RoutingPanel', () => {
 			const container = element.shadowRoot.querySelectorAll('.container');
 
 			expect(container).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-waypoints')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-category-bar')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-info')).toHaveSize(1);
-			expect(element.shadowRoot.querySelectorAll('ba-routing-details')).toHaveSize(1);
 
+			// lazy loading component with the routing content
+			const lazyLoadElement = element.shadowRoot.querySelector('ba-lazy-load');
+			expect(lazyLoadElement).toBeTruthy();
+			expect(lazyLoadElement.content.strings[0].includes('<ba-routing-container')).toBeTrue();
 			expect(element.shadowRoot.querySelectorAll('ba-profile-chip')).toHaveSize(1);
 
 			expect(element.shadowRoot.querySelectorAll('.demo')).toHaveSize(1);
