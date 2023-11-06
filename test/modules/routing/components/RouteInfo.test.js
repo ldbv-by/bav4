@@ -232,7 +232,7 @@ const mockedRouteStatistic = {
 	slopeDist: 102055.31270225867
 };
 describe('RoutingInfo', () => {
-	const category = { color: 'gray' };
+	const category = { style: { color: 'red', icon: 'icon_category' } };
 	const routingServiceMock = {
 		getCategoryById: () => category,
 		getParent: () => 'foo',

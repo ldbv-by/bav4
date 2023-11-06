@@ -5,6 +5,7 @@ import { html, nothing } from 'lit-html';
 import { RoutingStatusCodes } from '../../../../domain/routing';
 import { $injector } from '../../../../injection/index';
 import { MvuElement } from '../../../MvuElement';
+import { unsafeSVG } from 'lit-html/directives/unsafe-svg.js';
 import css from './routeInfo.css';
 
 const Update_Status = 'update_status';
@@ -85,14 +86,27 @@ export class RouteInfo extends MvuElement {
 			return stats ? this._unitsService.formatDistance(stats.twoDiff[1]) : '0';
 		};
 
+		const renderCategoryIcon = (category) => {
+			if (category.style.icon) {
+				return html`
+					<svg class="category-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+						${unsafeSVG(category.style.icon)}
+					</svg>
+				`;
+			}
+			return nothing;
+		};
+
 		return isVisible
 			? html`<style>
 						${css}
 					</style>
 					<div class="header">
 						<span class="routing-info-duration" title=${translate('routing_info_duration')}>${stats ? getDuration() : '-:-'}</span>
-						<div class="badge routing-info-type" style=${`background:${getCategory(categoryId).color};`}>
-							<span class=${`icon icon-${categoryId}`}></span>
+						<div class="badge routing-info-type" style=${`background:${getCategory(categoryId).style.color};`}>
+							<span class=${`icon icon-${categoryId}`}>
+							${renderCategoryIcon(getCategory(categoryId))}
+							</span>
 							<span class="text">${getCategory(categoryId).label}<span>
 						</div>
 					</div>
