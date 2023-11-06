@@ -532,9 +532,14 @@ export class OlRoutingHandler extends OlLayerHandler {
 
 				// request route
 				const alternativeCategoryIds = this._routingService.getAlternativeCategoryIds(this._catId);
-				this._currentRoutingResponse = await this._requestRoute(this._catId, alternativeCategoryIds, coordinates3857);
-				// update store
-				setRoute(this._currentRoutingResponse[this._catId]);
+				try {
+					this._currentRoutingResponse = await this._requestRouteAndDisplayRoute(this._catId, alternativeCategoryIds, coordinates3857);
+					// update store
+					setRoute(this._currentRoutingResponse[this._catId]);
+				} catch (error) {
+					console.error(error);
+					emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+				}
 			}
 			// enable interaction also if request failed
 			this._setInteractionsActive(true);
@@ -556,26 +561,20 @@ export class OlRoutingHandler extends OlLayerHandler {
 		}
 	}
 
-	async _requestRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
+	async _requestRouteAndDisplayRoute(defaultCategoryId, alternativeCategoryIds, coordinates3857) {
 		const categories = this._getIntermediateFeatures().length === 0 ? [defaultCategoryId].concat(alternativeCategoryIds) : [defaultCategoryId];
 
-		try {
-			const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);
+		const routingResult = await this._routingService.calculateRoute(categories, coordinates3857);
 
-			this._displayCurrentRoutingGeometry(routingResult[defaultCategoryId]);
+		this._displayCurrentRoutingGeometry(routingResult[defaultCategoryId]);
 
-			if (this._getIntermediateFeatures().length === 0) {
-				alternativeCategoryIds.forEach((id) => {
-					this._displayAlternativeRoutingGeometry(routingResult[id]);
-				});
-			}
-
-			return routingResult;
-		} catch (error) {
-			console.error(error);
-			emitNotification(`${this._translationService.translate('global_routingService_exception')}`, LevelTypes.ERROR);
+		if (this._getIntermediateFeatures().length === 0) {
+			alternativeCategoryIds.forEach((id) => {
+				this._displayAlternativeRoutingGeometry(routingResult[id]);
+			});
 		}
-		return null;
+
+		return routingResult;
 	}
 
 	_highlightSegments(highlightedSegments, highlightLayer, routeLayer) {
