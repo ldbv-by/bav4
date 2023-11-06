@@ -28,6 +28,7 @@ import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/r
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
 import { updateCoordinates } from '../../../../store/elevationProfile/elevationProfile.action';
+import { equals } from '../../../../../node_modules/ol/coordinate';
 
 export const RoutingFeatureTypes = Object.freeze({
 	START: 'start',
@@ -251,7 +252,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 			startCoordinate = evt.coordinate;
 		});
 		translate.on('translateend', (evt) => {
-			if (evt.coordinate[0] !== startCoordinate[0] || evt.coordinate[1] !== startCoordinate[1]) {
+			if (!equals(startCoordinate, evt.coordinate)) {
 				this._requestRouteFromInteractionLayer();
 			}
 		});

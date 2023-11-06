@@ -399,6 +399,30 @@ describe('OlRoutingHandler', () => {
 				);
 				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(1);
 			});
+
+			it('does nothing when feature was not translated', async () => {
+				const { instanceUnderTest, map, layer } = await newTestInstance();
+				const requestRouteFromInteractionLayerSpy = spyOn(instanceUnderTest, '_requestRouteFromInteractionLayer');
+				map.addLayer(layer);
+
+				const feature = new Feature({
+					geometry: new Point([0, 0])
+				});
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translatestart', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDOWN))
+				);
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translating', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERDRAG))
+				);
+
+				instanceUnderTest._translateInteraction.dispatchEvent(
+					new TranslateEvent('translateend', new Collection([feature]), [0, 0], [0, 0], new Event(MapBrowserEventType.POINTERUP))
+				);
+
+				expect(requestRouteFromInteractionLayerSpy).toHaveBeenCalledTimes(0);
+			});
 		});
 
 		describe('select', () => {
