@@ -28,26 +28,6 @@ import {
  * @property {boolean} [zoomToExtent] `true` if the map should be zoomed to the extent of the segments. Default is `false`.
  */
 
-/**
- * Contains a coordinate and its intention.
- * @typedef {Object} CoordinateProposal
- * @property {module:domain/coordinateTypeDef~Coordinate}  coordinate The coordinate (in the SRID of the map)
- * @property {module:store/routing/routing_action~CoordinateProposalType} type Intention of the coordinate
- */
-
-/**
- * @readonly
- * @enum {Number}
- */
-export const CoordinateProposalType = Object.freeze({
-	START_OR_DESTINATION: 0,
-	START: 1,
-	DESTINATION: 2,
-	INTERMEDIATE: 3,
-	EXISTING_START_OR_DESTINATION: 4,
-	EXISTING_INTERMEDIATE: 5
-});
-
 const getStore = () => {
 	const { StoreService: storeService } = $injector.inject('StoreService');
 	return storeService.getStore();
@@ -171,7 +151,7 @@ export const setDestination = (coordinate) => {
 /**
  * Sets a coordinate as a proposal coordinate.
  * @param {module:domain/coordinateTypeDef~Coordinate}  coordinate the proposal coordinate (in the SRID of the map)
- * @param {module:store/routing/routing_action~CoordinateProposalType} type the type of intention of the coordinate
+ * @param {CoordinateProposalType} type the type of intention of the coordinate
  * @function
  */
 export const setProposal = (coordinate, type) => {
