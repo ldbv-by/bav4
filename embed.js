@@ -669,21 +669,21 @@
 					<div class="notification_item ${gp(n)}">
 						${(t=>{switch(t){case Gf.T.INFO:return lp.dy`<div id="notification-info" data-test-id class="notification_level">${i("notifications_item_info")}</div>`;case Gf.T.WARN:return lp.dy`<div class="notification_level">${i("notifications_item_warn")}</div>`;case Gf.T.ERROR:return lp.dy`<div class="notification_level">${i("notifications_item_error")}</div>`;default:return lp.dy.nothing}})(e.level)}
 						<div class="notification_content">${e.content}</div>
-					</div>`:lp.Ld}_hide(){const{notification:t,autocloseTimeoutId:e}=this.getModel(),i=this.shadowRoot.querySelector(".notification_item");i.classList.add("notification_item_hide"),i.addEventListener("animationend",(()=>{this.onClose(t),clearTimeout(e)}))}static get tag(){return"ba-notification-item"}set content(t){const e={...xA,...t};this.signal(bA,e)}set onClose(t){this._onClose=t}get onClose(){return this._onClose}}window.customElements.get(uA.tag)||window.customElements.define(uA.tag,uA),window.customElements.get(_A.tag)||window.customElements.define(_A.tag,_A),window.customElements.get(wA.tag)||window.customElements.define(wA.tag,wA);const{TranslationService:SA}=t.U.inject("TranslationService");SA.register("featureInfoProvider",(t=>{switch(t){case"en":return{featureInfo_close_button:"Close",featureInfo_header:"Object Information",geometryInfo_title_coordinate:"Coordinate",geometryInfo_title_azimuth:"Azimuth-angle",geometryInfo_title_line_length:"Distance",geometryInfo_title_polygon_length:"Perimeter",geometryInfo_title_polygon_area:"Area"};case"de":return{featureInfo_close_button:"Schließen",featureInfo_header:"Objekt-Info",geometryInfo_title_coordinate:"Koordinate",geometryInfo_title_azimuth:"Azimuth-Winkel",geometryInfo_title_line_length:"Länge",geometryInfo_title_polygon_length:"Umfang",geometryInfo_title_polygon_area:"Fläche"};default:return{}}}));var MA=r(4728),IA=r.n(MA);class TA extends _I.T{constructor(t={}){if(super(t),this.constructor===TA)throw new TypeError("Can not construct abstract class.")}defaultCss(){return lp.dy`
+					</div>`:lp.Ld}_hide(){const{notification:t,autocloseTimeoutId:e}=this.getModel(),i=this.shadowRoot.querySelector(".notification_item");i.classList.add("notification_item_hide"),i.addEventListener("animationend",(()=>{this.onClose(t),clearTimeout(e)}))}static get tag(){return"ba-notification-item"}set content(t){const e={...xA,...t};this.signal(bA,e)}set onClose(t){this._onClose=t}get onClose(){return this._onClose}}window.customElements.get(uA.tag)||window.customElements.define(uA.tag,uA),window.customElements.get(_A.tag)||window.customElements.define(_A.tag,_A),window.customElements.get(wA.tag)||window.customElements.define(wA.tag,wA);const{TranslationService:SA}=t.U.inject("TranslationService");SA.register("featureInfoProvider",(t=>{switch(t){case"en":return{featureInfo_close_button:"Close",featureInfo_header:"Object Information",geometryInfo_title_coordinate:"Coordinate",geometryInfo_title_azimuth:"Azimuth-angle",geometryInfo_title_line_length:"Distance",geometryInfo_title_polygon_length:"Perimeter",geometryInfo_title_polygon_area:"Area"};case"de":return{featureInfo_close_button:"Schließen",featureInfo_header:"Objekt-Info",geometryInfo_title_coordinate:"Koordinate",geometryInfo_title_azimuth:"Azimuth-Winkel",geometryInfo_title_line_length:"Länge",geometryInfo_title_polygon_length:"Umfang",geometryInfo_title_polygon_area:"Fläche"};default:return{}}}));var MA=r(4728),IA=r.n(MA);const TA="update_disabled";class EA extends _I.T{constructor(t={}){if(super({...t,active:!1}),this.constructor===EA)throw new TypeError("Can not construct abstract class.")}update(t,e,i){if(t===TA)return{...i,active:e}}defaultCss(){return lp.dy`
 			${super.defaultCss()}
 			<style>
 				${IA()}
 			</style>
-		`}}var EA=r(518),CA=r.n(EA);const AA="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctbGVmdC1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIgOGEuNS41IDAgMCAxLS41LjVINS43MDdsMi4xNDcgMi4xNDZhLjUuNSAwIDAgMS0uNzA4LjcwOGwtMy0zYS41LjUgMCAwIDEgMC0uNzA4bDMtM2EuNS41IDAgMSAxIC43MDguNzA4TDUuNzA3IDcuNUgxMS41YS41LjUgMCAwIDEgLjUuNXoiLz48L3N2Zz4K",LA="update_featureInfo_data",kA="update_isPortrait_hasMinWidth",PA=`highlightedFeatureInfoGeometry_${(0,or.g4)()}`;class DA extends TA{constructor(){super({featureInfoData:[],isPortrait:!1});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(LA,[...t]))),this.observe((t=>t.media),(t=>this.signal(kA,t.portrait)))}update(t,e,i){switch(t){case LA:return{...i,featureInfoData:[...e]};case kA:return{...i,isPortrait:e}}}createView(t){const{featureInfoData:e,isPortrait:i}=t,n=t=>this._translationService.translate(t);return lp.dy`
+		`}set active(t){this.signal(TA,t)}get active(){return this.getModel().active}}var CA=r(518),AA=r.n(CA);const LA="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktYXJyb3ctbGVmdC1zaG9ydCI+PCEtLU1JVCBMaWNlbnNlLS0+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMTIgOGEuNS41IDAgMCAxLS41LjVINS43MDdsMi4xNDcgMi4xNDZhLjUuNSAwIDAgMS0uNzA4LjcwOGwtMy0zYS41LjUgMCAwIDEgMC0uNzA4bDMtM2EuNS41IDAgMSAxIC43MDguNzA4TDUuNzA3IDcuNUgxMS41YS41LjUgMCAwIDEgLjUuNXoiLz48L3N2Zz4K",kA="update_featureInfo_data",PA="update_isPortrait_hasMinWidth",DA=`highlightedFeatureInfoGeometry_${(0,or.g4)()}`;class RA extends EA{constructor(){super({featureInfoData:[],isPortrait:!1});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(kA,[...t]))),this.observe((t=>t.media),(t=>this.signal(PA,t.portrait)))}update(t,e,i){switch(t){case kA:return{...i,featureInfoData:[...e]};case PA:return{...i,isPortrait:e}}}createView(t){const{featureInfoData:e,isPortrait:i}=t,n=t=>this._translationService.translate(t);return lp.dy`
 			<style>
-				${CA()}
+				${AA()}
 			</style>
 			<div>
 				<div class="container  ${i?"is-portrait":"is-landscape"}">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${AA}" .size=${4} .title=${n("featureInfo_close_button")} @click=${lx}></ba-icon>
+								<ba-icon .icon="${LA}" .size=${4} .title=${n("featureInfo_close_button")} @click=${lx}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${n("featureInfo_header")} </span>
@@ -699,8 +699,8 @@
 								<li class="ba-section selectable">
 									<button
 										class="ba-list-item ba-list-item__header ${i=t.geometry,i?"is-geometry":""}"
-										@mouseenter=${()=>(t=>{t&&(0,E_.Lq)({id:PA,type:E_.c1.TEMPORARY,data:{geometry:t.data,geometryType:E_.z2.GEOJSON}})})(t.geometry)}
-										@mouseleave=${()=>(t.geometry,void(0,E_.g)(PA))}
+										@mouseenter=${()=>(t=>{t&&(0,E_.Lq)({id:DA,type:E_.c1.TEMPORARY,data:{geometry:t.data,geometryType:E_.z2.GEOJSON}})})(t.geometry)}
+										@mouseleave=${()=>(t.geometry,void(0,E_.g)(DA))}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${t.title}</span>
 										<span class="ba-list-item__after">
@@ -714,7 +714,7 @@
 					<div></div>
 				</div>
 			</div>
-		`}static get tag(){return"ba-feature-info-panel"}}var RA=r(4694),zA=r.n(RA);const NA="update_statistics",FA={coordinate:null,azimuth:null,length:null,area:null};class OA extends _I.T{constructor(){super({statistics:FA});const{CoordinateService:e,UnitsService:i,TranslationService:n}=t.U.inject("CoordinateService","UnitsService","TranslationService");this._translationService=n,this._coordinateService=e,this._unitsService=i}update(t,e,i){if(t===NA)return{...i,statistics:e}}createView(t){const e=t=>this._translationService.translate(t),i=(t=>{if(null!=t.coordinate){const t=e("geometryInfo_title_coordinate");return lp.dy`<div class="stats-point stats-content" title=${t}></div>`}if(null!=t.length&&null!=t.azimuth){const i=e("geometryInfo_title_azimuth"),n=e("geometryInfo_title_line_length");return lp.dy`<div class="stats-line-azimuth stats-content" title=${i}>
+		`}static get tag(){return"ba-feature-info-panel"}}var zA=r(4694),NA=r.n(zA);const FA="update_statistics",OA={coordinate:null,azimuth:null,length:null,area:null};class jA extends _I.T{constructor(){super({statistics:OA});const{CoordinateService:e,UnitsService:i,TranslationService:n}=t.U.inject("CoordinateService","UnitsService","TranslationService");this._translationService=n,this._coordinateService=e,this._unitsService=i}update(t,e,i){if(t===FA)return{...i,statistics:e}}createView(t){const e=t=>this._translationService.translate(t),i=(t=>{if(null!=t.coordinate){const t=e("geometryInfo_title_coordinate");return lp.dy`<div class="stats-point stats-content" title=${t}></div>`}if(null!=t.length&&null!=t.azimuth){const i=e("geometryInfo_title_azimuth"),n=e("geometryInfo_title_line_length");return lp.dy`<div class="stats-line-azimuth stats-content" title=${i}>
 						<span>${i}:</span>${t.azimuth.toFixed(2)}°
 					</div>
 					<div class="stats-line-length stats-content" title=${n}>
@@ -727,23 +727,23 @@
 					</div>`}if(null!=t.length){const i=e("geometryInfo_title_line_length");return lp.dy`<div class="stats-line-length stats-content" title=${i}>
 					<span>${i}:</span>${this._unitsService.formatDistance(t.length,2)}
 				</div>`}return null})(t.statistics);return i?lp.dy` <style>
-						${zA()}
+						${NA()}
 					</style>
 					<div>
 						<div class="stats-container">
 							${i}
 							<div></div>
 						</div>
-					</div>`:lp.Ld}static get tag(){return"ba-geometry-info"}set statistics(t){this.signal(NA,t)}}var jA=r(9648),BA=r.n(jA);const GA="update_featureInfo_data",UA=`highlightedFeatureInfoGeometry_${(0,or.g4)()}`;class VA extends _I.T{constructor(){super({featureInfoData:[]});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(GA,[...t])))}update(t,e,i){if(t===GA)return{...i,featureInfoData:[...e]}}createView(t){const{featureInfoData:e}=t,i=t=>this._translationService.translate(t);return lp.dy`
+					</div>`:lp.Ld}static get tag(){return"ba-geometry-info"}set statistics(t){this.signal(FA,t)}}var BA=r(9648),GA=r.n(BA);const UA="update_featureInfo_data",VA=`highlightedFeatureInfoGeometry_${(0,or.g4)()}`;class ZA extends _I.T{constructor(){super({featureInfoData:[]});const{TranslationService:e}=t.U.inject("TranslationService");this._translationService=e,this.observe((t=>t.featureInfo.current),(t=>this.signal(UA,[...t])))}update(t,e,i){if(t===UA)return{...i,featureInfoData:[...e]}}createView(t){const{featureInfoData:e}=t,i=t=>this._translationService.translate(t);return lp.dy`
 			<style>
-				${BA()}
+				${GA()}
 			</style>
 			<div>
 				<div class="container">
 					<ul class="ba-list">
 						<li class="ba-list-item  ba-list-inline ba-list-item__header featureinfo-header">
 							<span class="ba-list-item__pre" style="position:relative;left:-1em;">
-								<ba-icon .icon="${AA}" .size=${4} .title=${i("featureInfo_close_button")} @click=${lx}></ba-icon>
+								<ba-icon .icon="${LA}" .size=${4} .title=${i("featureInfo_close_button")} @click=${lx}></ba-icon>
 							</span>
 							<span class="ba-list-item__text vertical-center">
 								<span class="ba-list-item__main-text" style="position:relative;left:-1em;"> ${i("featureInfo_header")} </span>
@@ -753,8 +753,8 @@
 								<li class="ba-section">
 									<button
 										class="ba-list-item ba-list-item__header ${i=t.geometry,i?"is-geometry":""}"
-										@mouseenter=${()=>(t=>{t&&(0,E_.Lq)({id:UA,type:E_.c1.TEMPORARY,data:{geometry:t.data,geometryType:E_.z2.GEOJSON}})})(t.geometry)}
-										@mouseleave=${()=>(t.geometry,void(0,E_.g)(UA))}
+										@mouseenter=${()=>(t=>{t&&(0,E_.Lq)({id:VA,type:E_.c1.TEMPORARY,data:{geometry:t.data,geometryType:E_.z2.GEOJSON}})})(t.geometry)}
+										@mouseleave=${()=>(t.geometry,void(0,E_.g)(VA))}
 									>
 										<span class="ba-list-item__text  ba-list-item__primary-text">${t.title}</span>
 										<span class="ba-list-item__after">
@@ -768,4 +768,4 @@
 					<div></div>
 				</div>
 			</div>
-		`}static get tag(){return"ba-feature-info-iframe-panel"}}window.customElements.get(DA.tag)||window.customElements.define(DA.tag,DA),window.customElements.get(VA.tag)||window.customElements.define(VA.tag,VA),window.customElements.get(OA.tag)||window.customElements.define(OA.tag,OA)})()})();
+		`}static get tag(){return"ba-feature-info-iframe-panel"}}window.customElements.get(RA.tag)||window.customElements.define(RA.tag,RA),window.customElements.get(ZA.tag)||window.customElements.define(ZA.tag,ZA),window.customElements.get(jA.tag)||window.customElements.define(jA.tag,jA)})()})();
