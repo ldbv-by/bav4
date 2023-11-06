@@ -20,16 +20,19 @@ describe('CategoryBar', () => {
 		{
 			id: 'category_1',
 			label: 'label_category_1',
+			style: { color: 'red', icon: 'icon_category_1' },
 			subcategories: []
 		},
 		{
 			id: 'category_2',
 			label: 'label_category_2',
+			style: { color: 'blue', icon: 'icon_category_2' },
 			subcategories: []
 		},
 		{
 			id: 'category_3',
 			label: 'label_category_3',
+			style: { color: 'green', icon: 'icon_category_3' },
 			subcategories: []
 		}
 	];
@@ -79,19 +82,18 @@ describe('CategoryBar', () => {
 			expect(buttons).toHaveSize(3);
 		});
 
-		it('renders button defined by category id', async () => {
+		it('renders icon defined by category id', async () => {
 			spyOn(routingService, 'getCategories').and.returnValue(categories);
 			const element = await setup({});
 
-			const buttons = element.shadowRoot.querySelectorAll('button');
+			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(buttons).toHaveSize(3);
-			expect(buttons[0].classList.contains('category-button')).toBeTrue();
-			expect(buttons[0].classList.contains('icon-category_1')).toBeTrue();
-			expect(buttons[1].classList.contains('category-button')).toBeTrue();
-			expect(buttons[1].classList.contains('icon-category_2')).toBeTrue();
-			expect(buttons[2].classList.contains('category-button')).toBeTrue();
-			expect(buttons[2].classList.contains('icon-category_3')).toBeTrue();
+			expect(icon).toHaveSize(3);
+			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
+
+			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
+
+			expect(icon[2].innerHTML.includes('icon_category_3')).toBeTrue();
 		});
 	});
 
