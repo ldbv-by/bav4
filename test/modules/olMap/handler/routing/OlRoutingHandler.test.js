@@ -435,36 +435,9 @@ describe('OlRoutingHandler', () => {
 				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
 				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 			});
-
-			it('removes a waypoint', async () => {
-				const pointCoordinate = [11, 22];
-				const { instanceUnderTest, map, layer, store } = await newTestInstance();
-				map.addLayer(layer);
-				const feature = new Feature({
-					geometry: new Point(pointCoordinate)
-				});
-				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
-				spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
-				setWaypoints([pointCoordinate, [33, 44]]);
-
-				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
-
-				expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
-				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
-			});
 		});
 
 		describe('modify', () => {
-			// describe('"modifystart" event', () => {
-			// it('calls the correct methods', async () => {
-			// 	const { instanceUnderTest} = await newTestInstance();
-			// 	instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.POINTERDOWN)));
-			// });
-			// it('does nothing on "singleclick" event', async () => {
-			// 	const { instanceUnderTest } = await newTestInstance();
-			// 	instanceUnderTest._modifyInteraction.dispatchEvent(new ModifyEvent('modifystart', null, new Event(MapBrowserEventType.SINGLECLICK)));
-			// });
-			// });
 			describe('"modifyend" event', () => {
 				it('calls the correct methods', async () => {
 					const { instanceUnderTest, map, layer } = await newTestInstance();

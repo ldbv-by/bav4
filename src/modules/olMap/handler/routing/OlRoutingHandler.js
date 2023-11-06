@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import { removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
@@ -270,14 +270,11 @@ export class OlRoutingHandler extends OlLayerHandler {
 		select.on('select', (evt) => {
 			if (evt.selected[0]) {
 				const feature = evt.selected[0];
-				const geometry = feature.getGeometry();
 				const category = feature.get(ROUTING_CATEGORY);
 				if (category) {
 					// change to alternative route
 					this._catId = category.id;
 					this._switchToAlternativeRoute(this._currentRoutingResponse);
-				} else if (geometry instanceof Point) {
-					removeWaypoint(geometry.getFirstCoordinate());
 				}
 				this._helpTooltip.deactivate();
 				select.getFeatures().clear();
