@@ -197,8 +197,6 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
-			default:
-				return nothing;
 		}
 	}
 
