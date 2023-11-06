@@ -32,7 +32,7 @@ describe('CategoryBar', () => {
 		{
 			id: 'category_3',
 			label: 'label_category_3',
-			style: { color: 'green', icon: 'icon_category_3' },
+			style: { color: 'green' },
 			subcategories: []
 		}
 	];
@@ -88,12 +88,10 @@ describe('CategoryBar', () => {
 
 			const icon = element.shadowRoot.querySelectorAll('.category-icon');
 
-			expect(icon).toHaveSize(3);
+			expect(icon).toHaveSize(2);
 			expect(icon[0].innerHTML.includes('icon_category_1')).toBeTrue();
 
 			expect(icon[1].innerHTML.includes('icon_category_2')).toBeTrue();
-
-			expect(icon[2].innerHTML.includes('icon_category_3')).toBeTrue();
 		});
 	});
 
