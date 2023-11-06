@@ -297,9 +297,7 @@ export class OlRoutingHandler extends OlLayerHandler {
 				// find the feature which was modified
 				// be careful with the revision number -> setting the style or properties on a feature also increments it
 				// in our case, the modified feature is the feature which holds the highest revision number
-				console.log(evt.features.getArray());
 				const modifiedSegmentFeature = evt.features.getArray().reduce((acc, curr) => {
-					console.log(curr.getRevision());
 					return acc.getRevision() >= curr.getRevision() ? acc : curr;
 				});
 				const segmentIndex = modifiedSegmentFeature.get(ROUTING_SEGMENT_INDEX);
