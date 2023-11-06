@@ -7,7 +7,7 @@ import { TestUtils } from '../../../test-utils';
 window.customElements.define(WaypointItem.tag, WaypointItem);
 
 describe('WaypointItem', () => {
-	const category = { color: 'rgb(128, 128, 128)' };
+	const category = { style: { color: 'rgb(128, 128, 128)' } };
 	const routingServiceMock = { getCategoryById: () => category, getParent: () => 'foo' };
 
 	const setup = async (waypoint = null) => {
