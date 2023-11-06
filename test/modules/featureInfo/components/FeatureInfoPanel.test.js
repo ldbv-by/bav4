@@ -46,7 +46,8 @@ describe('FeatureInfoPanel', () => {
 
 			expect(model).toEqual({
 				featureInfoData: [],
-				isPortrait: false
+				isPortrait: false,
+				active: false
 			});
 		});
 	});

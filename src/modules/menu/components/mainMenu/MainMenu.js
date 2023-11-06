@@ -1,7 +1,7 @@
 /**
  * @module modules/menu/components/mainMenu/MainMenu
  */
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import css from './mainMenu.css';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
@@ -16,6 +16,7 @@ import { BvvMiscContentPanel } from './content/misc/BvvMiscContentPanel';
 import { RoutingPanel } from './content/routing/RoutingPanel';
 import { MvuElement } from '../../../MvuElement';
 import VanillaSwipe from 'vanilla-swipe';
+import { isString } from '../../../../utils/checks';
 
 const Update_Main_Menu = 'update_main_menu';
 const Update_Media = 'update_media';
@@ -77,9 +78,11 @@ export class MainMenu extends MvuElement {
 
 	_activateTab(key) {
 		const tabcontents = [...this._root.querySelectorAll('.tabcontent')];
-		tabcontents.forEach((tabcontent, i) =>
-			Object.values(TabIds)[i] === key ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active')
-		);
+		tabcontents.forEach((tabcontent, i) => {
+			const active = Object.values(TabIds)[i] === key;
+			tabcontent.firstElementChild.active = active;
+			active ? tabcontent.classList.add('is-active') : tabcontent.classList.remove('is-active');
+		});
 	}
 
 	/**
@@ -124,7 +127,9 @@ export class MainMenu extends MvuElement {
 
 		const getPreloadClass = () => (observeResponsiveParameter ? '' : 'prevent-transition');
 
-		const contentPanels = Object.values(TabIds).map((v) => this._getContentPanel(v));
+		const contentPanels = Object.values(TabIds)
+			.filter((v) => isString(v))
+			.map((v) => this._getContentPanel(v));
 
 		const translate = (key) => this._translationService.translate(key);
 
@@ -192,8 +197,6 @@ export class MainMenu extends MvuElement {
 				return html`${unsafeHTML(`<${TopicsContentPanel.tag} data-test-id />`)}`;
 			case TabIds.FEATUREINFO:
 				return html`${unsafeHTML(`<${FeatureInfoPanel.tag} data-test-id />`)}`;
-			default:
-				return nothing;
 		}
 	}
 
