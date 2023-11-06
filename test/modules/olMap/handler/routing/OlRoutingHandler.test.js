@@ -17,7 +17,7 @@ import { $injector } from '../../../../../src/injection';
 import { PromiseQueue } from '../../../../../src/utils/PromiseQueue';
 import { Vector } from 'ol/layer';
 import { Modify, Select, Translate } from 'ol/interaction';
-import { setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
+import { CoordinateProposalType, setCategory, setHighlightedSegments, setWaypoints } from '../../../../../src/store/routing/routing.action';
 import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { Feature, MapBrowserEvent } from 'ol';
 import Event from 'ol/events/Event';
@@ -206,7 +206,7 @@ describe('OlRoutingHandler', () => {
 					expect(instanceUnderTest._selectInteraction).toBeInstanceOf(Select);
 					expect(instanceUnderTest._map.getInteractions().getArray()).toContain(instanceUnderTest._selectInteraction);
 					//map listeners
-					expect(instanceUnderTest._mapListeners).toHaveSize(1);
+					expect(instanceUnderTest._mapListeners).toHaveSize(2);
 
 					expect(instanceUnderTest._registeredObservers).toHaveSize(3);
 				});
@@ -393,7 +393,7 @@ describe('OlRoutingHandler', () => {
 				});
 			});
 
-			it('calls the correct methods', async () => {
+			it('switches to an alternative route', async () => {
 				const { instanceUnderTest, map, layer, getSelectOptionsSpy } = await newTestInstance();
 				const switchToAlternativeRouteSpy = spyOn(instanceUnderTest, '_switchToAlternativeRoute');
 
@@ -405,12 +405,31 @@ describe('OlRoutingHandler', () => {
 				feature.set(ROUTING_CATEGORY, category);
 				const mockRoutingResponse = { route: 'foo' };
 				instanceUnderTest._currentRoutingResponse = mockRoutingResponse;
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
 
 				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
 
 				expect(switchToAlternativeRouteSpy).toHaveBeenCalledWith(mockRoutingResponse);
 				expect(instanceUnderTest._catId).toBe(category.id);
 				expect(getSelectOptionsSpy).toHaveBeenCalledWith(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
+			});
+
+			it('removes a waypoint', async () => {
+				const pointCoordinate = [11, 22];
+				const { instanceUnderTest, map, layer, store } = await newTestInstance();
+				map.addLayer(layer);
+				const feature = new Feature({
+					geometry: new Point(pointCoordinate)
+				});
+				const helpTooltipDeactivateSpy = spyOn(instanceUnderTest._helpTooltip, 'deactivate');
+				spyOn(instanceUnderTest, '_requestRouteFromCoordinates');
+				setWaypoints([pointCoordinate, [33, 44]]);
+
+				instanceUnderTest._selectInteraction.dispatchEvent(new SelectEvent('select', [feature], [], new Event(MapBrowserEventType.POINTERDOWN)));
+
+				expect(store.getState().routing.waypoints).toEqual([[33, 44]]);
+				expect(helpTooltipDeactivateSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -479,7 +498,7 @@ describe('OlRoutingHandler', () => {
 
 	describe('methods', () => {
 		describe('_requestRoute', () => {
-			describe('an no intermediate features are available', () => {
+			describe('and no intermediate features are available', () => {
 				it('calls the routing service with correct arguments', async () => {
 					const { instanceUnderTest } = await newTestInstance();
 					const defaultCategoryId = 'defaultCategoryId';
@@ -879,7 +898,7 @@ describe('OlRoutingHandler', () => {
 		describe('_displayAlternativeRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
-				const category = { id: 'hike' };
+				const category = { id: 'hike', style: {} };
 				const categoryResponse = {
 					vehicle: 'foo',
 					paths: [
@@ -911,7 +930,7 @@ describe('OlRoutingHandler', () => {
 		describe('_displayCurrentRoutingGeometry', () => {
 			it('adds a correctly configured feature', async () => {
 				const { instanceUnderTest } = await newTestInstance();
-				const category = { id: 'hike' };
+				const category = { id: 'hike', style: {} };
 				const categoryResponse = {
 					vehicle: 'foo',
 					paths: [
@@ -1181,6 +1200,105 @@ describe('OlRoutingHandler', () => {
 					jasmine.clock().tick(REMOVE_HIGHLIGHTED_SEGMENTS_TIMEOUT_MS + 100);
 
 					expect(instanceUnderTest._highlightLayer.getSource().getFeatures()).toHaveSize(0);
+				});
+			});
+		});
+
+		describe('_newClickHandler', () => {
+			const eventCoordinate = [11, 22];
+			const featureCoordinate = [10, 20];
+			const pixel = [21, 42];
+			const feature = new Feature({
+				geometry: new Point(featureCoordinate)
+			});
+			const callClickHandler = async (hitFeature = null, interactionFeatures = []) => {
+				const { instanceUnderTest, map, store } = await newTestInstance();
+
+				const handler = instanceUnderTest._newClickHandler(map, instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer);
+				const event = { originalEvent: {}, coordinate: eventCoordinate };
+				const getFeaturesAtPixelOptionsForClickHandlerOptions = {
+					layerFilter: () => true,
+					hitTolerance: 42
+				};
+				spyOn(instanceUnderTest, '_getFeaturesAtPixelOptionsForClickHandler')
+					.withArgs(instanceUnderTest._interactionLayer, instanceUnderTest._alternativeRouteLayer)
+					.and.returnValue(getFeaturesAtPixelOptionsForClickHandlerOptions);
+				spyOn(map, 'getEventPixel').withArgs(event.originalEvent).and.returnValue(pixel);
+				spyOn(map, 'getEventCoordinate').withArgs(event.originalEvent).and.returnValue(featureCoordinate);
+				spyOn(map, 'getFeaturesAtPixel')
+					.withArgs(pixel, getFeaturesAtPixelOptionsForClickHandlerOptions)
+					.and.returnValue(hitFeature ? [hitFeature] : []);
+				spyOn(instanceUnderTest, '_getInteractionFeatures').and.returnValue(interactionFeatures);
+
+				handler(event);
+				return { map, store };
+			};
+
+			it('is properly configured', async () => {
+				setup();
+				const instanceUnderTest = new OlRoutingHandler();
+				const interactionLayerMock = { id: '0' };
+				const alternativeRouteLayerMock = { id: '1' };
+
+				const options = instanceUnderTest._getFeaturesAtPixelOptionsForClickHandler(interactionLayerMock, alternativeRouteLayerMock);
+				expect(options).toEqual({
+					layerFilter: jasmine.any(Function),
+					hitTolerance: 5
+				});
+				expect(options.layerFilter(interactionLayerMock)).toBeTrue();
+				expect(options.layerFilter(alternativeRouteLayerMock)).toBeTrue();
+				expect(options.layerFilter({})).toBeFalse();
+			});
+
+			it('updates the "proposal" property of the routing s-o-s', async () => {
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				let store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_START_OR_DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_START_OR_DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.INTERMEDIATE);
+				store = (await callClickHandler(feature)).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.EXISTING_INTERMEDIATE
+				});
+			});
+
+			it('updates the "proposal" property of the routing s-o-s when a feature is NOT a hit', async () => {
+				let store = (await callClickHandler()).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.START_OR_DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.START);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.DESTINATION
+				});
+
+				feature.set(ROUTING_FEATURE_TYPE, RoutingFeatureTypes.DESTINATION);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.START
+				});
+
+				feature.unset(ROUTING_FEATURE_TYPE);
+				store = (await callClickHandler(null, [feature])).store;
+				expect(store.getState().routing.proposal.payload).toEqual({
+					coord: featureCoordinate,
+					type: CoordinateProposalType.INTERMEDIATE
 				});
 			});
 		});

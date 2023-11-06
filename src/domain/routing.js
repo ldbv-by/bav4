@@ -7,8 +7,17 @@
  * @property {string} label The label of this category
  * @property {string} description The description of this category
  * @property {string[]} subcategories Ids of possible subordinated categories
- * @property {string} color Style: the fill color
- * @property {string} borderColor Style: the border color
+ * @property {module:domain/routing~RoutingCategoryStyle} style Style configuration for this category
+ */
+
+/**
+ * Defines style properties for a {@link module:domain/routing~RoutingCategory}
+ * @typedef {Object} RoutingCategoryStyle
+ * @property {string} routeColor The fill color of the displayed route
+ * @property {string} routeBorderColor The border color of the displayed route
+ * @property {number} [routeZindex] Optional zIndex of the displayed route
+ * @property {string} [icon] Optional SVG path of the icon (at least the parent category should have one)
+ * @property {string} [color] Optional color of this category (at least the parent category should have one)
  */
 
 /**

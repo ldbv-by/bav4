@@ -41,7 +41,6 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 
 		const requestPayload = {
 			...{
-				id: geoResource.id,
 				easting: coordinate3857[0],
 				northing: coordinate3857[1],
 				srid: 3857,
@@ -50,7 +49,7 @@ export const loadBvvFeatureInfo = async (geoResourceId, coordinate3857, mapResol
 			...determineCredential(geoResource)
 		};
 
-		const url = `${configService.getValueAsPath('BACKEND_URL')}getFeature`;
+		const url = configService.getValueAsPath('BACKEND_URL') + `getFeature/${geoResourceId}`;
 
 		const result = await httpService.post(url, JSON.stringify(requestPayload), MediaType.JSON, {
 			timeout: 10000
