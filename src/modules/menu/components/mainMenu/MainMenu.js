@@ -1,7 +1,7 @@
 /**
  * @module modules/menu/components/mainMenu/MainMenu
  */
-import { html, nothing } from 'lit-html';
+import { html } from 'lit-html';
 import css from './mainMenu.css';
 import { $injector } from '../../../../injection';
 import { DevInfo } from '../../../utils/components/devInfo/DevInfo';
