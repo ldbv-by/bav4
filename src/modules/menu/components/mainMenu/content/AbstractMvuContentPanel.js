@@ -49,8 +49,4 @@ export class AbstractMvuContentPanel extends MvuElement {
 	get active() {
 		return this.getModel().active;
 	}
-
-	setActive(active) {
-		this.signal(Update_Active, active);
-	}
 }
