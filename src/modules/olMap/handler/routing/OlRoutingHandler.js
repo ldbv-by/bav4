@@ -23,7 +23,7 @@ import MapBrowserEventType from 'ol/MapBrowserEventType';
 import { unByKey } from 'ol/Observable';
 import { HelpTooltip } from '../../tooltip/HelpTooltip';
 import { provide as messageProvide } from './tooltipMessage.provider';
-import {  removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
+import { removeWaypoint, setProposal, setRoute, setWaypoints } from '../../../../store/routing/routing.action';
 import { CoordinateProposalType, RoutingStatusCodes } from '../../../../domain/routing';
 import { fit } from '../../../../store/position/position.action';
 import { getCoordinatesForElevationProfile } from '../../utils/olGeometryUtils';
