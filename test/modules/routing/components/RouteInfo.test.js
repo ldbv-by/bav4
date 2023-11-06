@@ -371,6 +371,24 @@ describe('RoutingInfo', () => {
 				expect(routingElements[2].innerText).toBe('0');
 			});
 
+			it('renders category icon', async () => {
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon').innerHTML).toContain('icon_category');
+			});
+
+			it('renders NOTHING, if category.style.icon is missing', async () => {
+				const missingIconCategory = { style: { color: 'red', icon: null } };
+				spyOn(routingServiceMock, 'getCategoryById').and.returnValue(missingIconCategory);
+				const element = await setup(defaultRoutingState);
+
+				setRoute(defaultRoute);
+
+				expect(element.shadowRoot.querySelector('.category-icon')).toBeNull();
+			});
+
 			describe('when rendering estimate for specific vehicle', () => {
 				it('calculates the estimate for hike', async () => {
 					const state = {
