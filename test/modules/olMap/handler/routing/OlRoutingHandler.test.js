@@ -473,24 +473,33 @@ describe('OlRoutingHandler', () => {
 						geometry: new LineString([
 							[0, -6757423],
 							[0, 6757423]
-						]),
-						getRevision: () => 100
+						])
 					});
+					mockSegmentFeature0.changed(); // increase revision
+					mockSegmentFeature0.changed(); // increase revision
 					mockSegmentFeature0.set(ROUTING_SEGMENT_INDEX, 42);
 					const mockSegmentFeature1 = new Feature({
 						geometry: new LineString([
 							[0, -6757423],
 							[0, 6757423]
-						]),
-						getRevision: () => 1
+						])
 					});
 					mockSegmentFeature1.set(ROUTING_SEGMENT_INDEX, 20);
+					mockSegmentFeature1.changed();
+					const mockSegmentFeature2 = new Feature({
+						geometry: new LineString([
+							[0, -6757423],
+							[0, 6757423]
+						])
+					});
+					mockSegmentFeature2.set(ROUTING_SEGMENT_INDEX, 10);
+					mockSegmentFeature2.changed(); // increase revision
 					const mockCoordinate = [21, 42];
 
 					instanceUnderTest._modifyInteraction.dispatchEvent(
 						new ModifyEvent(
 							'modifyend',
-							new Collection([mockSegmentFeature0, mockSegmentFeature1]),
+							new Collection([mockSegmentFeature2, mockSegmentFeature1, mockSegmentFeature0]),
 							newMapBrowserEventForCoordinate(MapBrowserEventType.POINTERUP, map, mockCoordinate)
 						)
 					);
