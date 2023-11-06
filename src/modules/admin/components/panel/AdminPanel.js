@@ -445,16 +445,14 @@ export class AdminPanel extends MvuElement {
 				...catalogWithResourceData,
 				{ uid: _generateUniqueId(), label: incrementStringDigit(catalogEntry.label), children: newBranch }
 			]);
+			// todo - check if catalog ok in save
 		};
 
 		const saveCatalog = async () => {
-			const catalog = this._reduceData(catalogWithResourceData, this._extractOriginal);
-			const xxx = await this._catalogService.save(this.#currentTopicId, catalog);
-			console.log('🚀 ~ file: AdminPanel.js:474 ~ AdminPanel ~ saveCatalog ~ xxx:', xxx);
+			this._reduceData(catalogWithResourceData, this._extractOriginal);
 		};
 
 		const resetCatalog = async () => {
-			console.log('🚀 ~ AdminPanel ~ resetCatalog ');
 			const catalogWithResourceData = this._reduceData(this.#catalog, this._enrichWithGeoResource, this.#geoResources);
 			this.signal(Update_CatalogWithResourceData, catalogWithResourceData);
 		};

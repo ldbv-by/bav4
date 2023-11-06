@@ -150,10 +150,7 @@ export class LayerTree extends MvuElement {
 		};
 
 		const onDragEnd = (event) => {
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ event:', event);
 			event.target.classList.remove('isdragged');
-
-			console.log('🚀 ~ LayerTree ~ onDragEnd ~ this.#overTarget:', this.#overTarget);
 
 			if (!this.#overTarget) {
 				this._resetCatalog();
@@ -185,7 +182,6 @@ export class LayerTree extends MvuElement {
 				}
 
 				this.#overTarget = true;
-				console.log('🚀 ~ LayerTree ~ onDragOver ~ this.#overTarget:', this.#overTarget);
 				this.#currentUId = currentCatalogEntry.uid;
 				this._moveElement(currentCatalogEntry.uid, uidFromDrag);
 			}
@@ -196,8 +192,6 @@ export class LayerTree extends MvuElement {
 
 		const onDrop = () => {
 			this.#currentGeoResourceId = null;
-			console.log('🚀 ~ LayerTree ~ onDrop ~ this.#overTarget:', this.#overTarget);
-
 			if (this.#overTarget) {
 				this.#overTarget = false;
 				this._addGeoResourcePermanently();
@@ -208,7 +202,6 @@ export class LayerTree extends MvuElement {
 
 		const onDragLeave = (event) => {
 			this.#overTarget = false;
-			console.log('🚀 ~ LayerTree ~ onDragLeave ~ this.#overTarget:', this.#overTarget);
 			event.target.classList.add('isdragged');
 			event.target.classList.remove('drag-over');
 			event.preventDefault();

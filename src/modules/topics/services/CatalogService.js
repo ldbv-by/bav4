@@ -86,6 +86,7 @@ export class CatalogService {
 		// eslint-disable-next-line no-console
 		console.log('🚀 ~ CatalogService ~ save ~ catalog:', catalog);
 
+		// eslint-disable-next-line no-unused-vars
 		const { HttpService: httpService, ConfigService: configService } = $injector.inject('HttpService', 'ConfigService');
 
 		const url = `${configService.getValueAsPath('BACKEND_URL')}adminui/catalog/ba`;
@@ -110,9 +111,12 @@ export class CatalogService {
 			},
 			body: JSON.stringify(catalog)
 		})
+			// eslint-disable-next-line promise/prefer-await-to-then
 			.then(() => {
+				// eslint-disable-next-line no-console
 				console.log('Catalog successfully posted.'); // handle success, if needed
 			})
+			// eslint-disable-next-line promise/prefer-await-to-then
 			.catch((error) => {
 				console.error('There has been a problem with your fetch operation:', error);
 			});
